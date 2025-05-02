@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="event_event">Sự Kiện</string>
     <string name="no_data">Không có dữ liệu</string>
     <string name="feature_configuration">Cấu hình chức năng</string>
     <string name="change_calendar_view">Thay đổi lịch</string>
@@ -17,7 +16,6 @@
     <string name="navigation_analytics">Phân tích</string>
     <string name="navigation_tasks">Nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
-    <string name="navigation_events">Sự kiện</string>
     <string name="navigation_relationships">Mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
@@ -25,8 +23,6 @@
     <string name="event_overview">Chi tiết</string>
     <string name="select_option">Chọn</string>
     <string name="search">Tìm kiếm</string>
-    <string name="jira_issue_sent">Vấn đề đã được gửi</string>
-    <string name="jira_issue_sent_error">Có lỗi khi gửi vấn đề</string>
     <string name="events">sự kiện</string>
     <string name="data_sets">Biểu nhập</string>
     <string name="tei">Đối Tượng Theo Dõi</string>
@@ -43,12 +39,7 @@
     <string name="filters_title_state">Đồng bộ</string>
     <string name="filters_title_assigned">Gán cho tôi</string>
     <string name="filters_title_date">Ngày</string>
-    <string name="filters_title_event_date">Ngày sự kiện</string>
-    <string name="enrollment_date">Ngày đăng ký</string>
-    <string name="filters_title_event_status">Trạng thái sự kiện</string>
-    <string name="filters_title_enrollment_status">Trạng thái đăng ký</string>
     <string name="filter_follow_up_label">Theo dõi %s</string>
-
     <!-- State -->
     <string name="state_synced">Đồng bộ</string>
     <string name="state_to_post">Gửi</string>
@@ -74,8 +65,6 @@
     <string name="enrollment_status_completed">Hoàn tất</string>
     <string name="enrollment_status_cancelled">Đã hủy</string>
     <string name="record_marked_for_deletion">Dữ liệu này được chọn để xóa. Bạn không thể truy cập nó. </string>
-
-    <string name="enrollment_org_unit">Đơn vị đăng ký</string>
 
     <!-- Periods -->
     <string name="filter_period_today">Hôm nay</string>
@@ -141,9 +130,6 @@
     <string name="section_indicators">Chỉ số</string>
     <string name="section_charts">Biểu đồ</string>
     <string name="section_charts_indicators">Biểu đồ và Chỉ số</string>
-
-    <!-- Enrollment -->
-    <string name="enrolled_in">Đã đăng ký vào:</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">Thiếu mật khẩu. Xin vui lòng nhập mật khẩu</string>
@@ -234,4 +220,5 @@
     <plurals name="overdue_years">
         <item quantity="other">Trễ hẹn %d năm</item>
     </plurals>
-</resources>
+
+    </resources>

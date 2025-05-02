@@ -20,13 +20,13 @@ import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 import org.dhis2.bindings.userComponent
 import org.dhis2.commons.Constants
-import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.date.DateUtils.OnFromToSelector
-import org.dhis2.commons.date.Period
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
+import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
@@ -46,14 +46,10 @@ import org.dhis2.usescases.programEventDetail.eventMap.EventMapFragment
 import org.dhis2.utils.analytics.DATA_CREATION
 import org.dhis2.utils.category.CategoryDialog
 import org.dhis2.utils.category.CategoryDialog.Companion.TAG
-import org.dhis2.utils.customviews.RxDateDialog
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
-import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-import timber.log.Timber
-import java.util.Date
 import javax.inject.Inject
 
 class ProgramEventDetailActivity :
@@ -360,35 +356,9 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            DateUtils.getInstance()
-                .fromCalendarSelector(this.context) { datePeriod: List<DatePeriod?>? ->
-                    FilterManager.getInstance().addPeriod(datePeriod)
-                }
+            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            val onFromToSelector =
-                OnFromToSelector { datePeriods ->
-                    FilterManager.getInstance().addPeriod(datePeriods)
-                }
-
-            DateUtils.getInstance().showPeriodDialog(
-                this,
-                onFromToSelector,
-                true,
-            ) {
-                val disposable = RxDateDialog(activity, Period.WEEKLY)
-                    .createForFilter().show()
-                    .subscribe(
-                        { selectedDates: org.dhis2.commons.data.tuples.Pair<Period?, List<Date?>?> ->
-                            onFromToSelector.onFromToSelected(
-                                DateUtils.getInstance().getDatePeriodListFor(
-                                    selectedDates.val1(),
-                                    selectedDates.val0(),
-                                ),
-                            )
-                        },
-                        { t: Throwable? -> Timber.e(t) },
-                    )
-            }
+            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

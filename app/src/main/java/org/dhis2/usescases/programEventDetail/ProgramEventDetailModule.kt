@@ -23,6 +23,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
 import org.dhis2.tracker.data.ProfilePictureProvider
@@ -83,6 +84,7 @@ class ProgramEventDetailModule(
             MapStyleConfiguration(
                 d2,
                 programUid,
+                MapScope.PROGRAM,
                 programConfigurationRepository,
             ),
             eventDetailRepository,

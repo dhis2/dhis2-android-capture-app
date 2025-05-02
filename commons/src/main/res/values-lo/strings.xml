@@ -36,12 +36,7 @@
     <string name="filters_title_state">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="filters_title_assigned">ມອບໝາຍໃຫ້ຂ້ອຍ</string>
     <string name="filters_title_date">ວັນທີ່</string>
-    <string name="filters_title_event_date">ວັນທີເຫດການ</string>
-    <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
-    <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
-    <string name="filters_title_enrollment_status">ສະຖານະການລົງທະບຽນ</string>
     <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
-
     <!-- State -->
     <string name="state_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="state_to_post">ສົ່ງ</string>
@@ -63,7 +58,6 @@
     <string name="enrollment_status_active">ເປີດ</string>
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
-
     <!-- Periods -->
     <string name="filter_period_today">ມື້ນີ້</string>
     <string name="filter_period_yesterday">ມື້ວານນີ</string>
@@ -114,9 +108,6 @@
     <string name="section_feedback">ຜົນຕອບຮັບ</string>
     <string name="section_indicators">ຕົວຊີ້ວັດ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
-    <!-- Enrollment -->
-    <string name="enrolled_in">ລົງທະບຽນໃນ:</string>
-
     <string name="login_error_dhis_version">ຄອມພີວເຕີໜ່ວຍແມ່ກໍາລັງທໍາງານກັບລະບົບ DHIS2 ລຸ້ນສູງກ່ວາ 2.29. ກະລຸນາ ນໍາໃຊ້ລຸນທີ່ສູງກ່ວາ ຫຼື ນໍາໃຊ້ລະບົບທົດລອງແທນ</string>
     <string name="login_error_bad_credentials">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານບໍ່ຖຶກຕ້ອງ</string>
     <string name="online_search_parsing_error">ມີຄໍາຜິດໃນຂະນະທີ່ສົ່ງຜົນໄດ້ຮັບ</string>

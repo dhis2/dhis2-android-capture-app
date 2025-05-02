@@ -25,12 +25,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.dhis2.android.rtsm.R
-import org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.ui.home.screens.HomeScreen
 import org.dhis2.android.rtsm.ui.managestock.ManageStockViewModel
 import org.dhis2.android.rtsm.utils.NetworkUtils
+import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.OnSyncNavigationListener
@@ -58,7 +57,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         filterManager = FilterManager.getInstance()
-        intent.getParcelableExtra<AppConfig>(INTENT_EXTRA_APP_CONFIG)
+        intent.getStringExtra(Constants.PROGRAM_UID)
             ?.let { manageStockViewModel.setConfig(it) }
 
         handleInsets()

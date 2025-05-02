@@ -169,8 +169,11 @@
     <string name="customactivityoncrash_error_activity_restart_app">Вернуться</string>
     <string name="customactivityoncrash_error_activity_error_details_close">Закрыть</string>
     <string name="section_charts">Диаграммы</string>
+    <string name="navigation_list_view">Список</string>
+    <string name="navigation_map_view">Карты</string>
     <string name="navigation_analytics">Аналитика</string>
     <string name="navigation_programs">Программы</string>
+    <string name="navigation_charts">Диаграммы</string>
     <string name="navigation_notes">Заметки</string>
     <string name="navigation_data_entry">Ввод данных</string>
     <string name="navigation_tei_data">Детали</string>
@@ -207,7 +210,14 @@
     <string name="mark_follow_up">Отметить для последующего наблюдения</string>
     <string name="coordinates">Координаты</string>
     <string name="schedule">Расписание</string>
+    <string name="refer">Создать направление</string>
+    <string name="scheduled_enter_event">Запланировано</string>
     <string name="program_stage">Этап программы</string>
     <string name="event">событие</string>
     <string name="optional">Опционно</string>
+    <string name="show_more">Показать больше</string>
+    <string name="show_less">Показать меньше информации</string>
+    <string name="show_description">Показать описание</string>
+    <string name="hide_description">Скрыть описание</string>
+    <string name="transfer">Передать</string>
     </resources>

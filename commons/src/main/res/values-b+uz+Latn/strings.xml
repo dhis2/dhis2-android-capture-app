@@ -35,10 +35,6 @@
     <string name="filters_title_state">Sinxronlash</string>
     <string name="filters_title_assigned">Menga berilgan vakolat</string>
     <string name="filters_title_date">Sana</string>
-    <string name="filters_title_event_date">Hodisa/Tadbir sanasi</string>
-    <string name="enrollment_date">Qayd qilingan sana</string>
-    <string name="filters_title_event_status">Hodisa/Tadbir holati</string>
-    <string name="filters_title_enrollment_status">roʼyxatga olish holati</string>
     <!-- State -->
     <string name="state_synced">Sinxronlash</string>
     <string name="state_to_post">Yuborish uchun</string>

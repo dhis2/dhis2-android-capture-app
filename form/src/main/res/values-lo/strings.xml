@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">ອະຍາດໃຫ້ປ້ອນແຕ່ຄ່າ 0 ຫາ 100 ເທົ່ານັ້ນ </string>
-    <string name="invalid_field">ກະລຸນາກວດສອບຊ່ອງປ້ອນຂໍ້ມູນນີ້</string>
-    <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
-    <string name="invalid_possitive">ອະນຸຍາດໃຫ້ປ້ອນແຕ່ຄ່າບວກເທົ່ານັ້ນ</string>
-    <string name="invalid_phone_number">ເບີໂທລະສັບບໍ່ຖືກຕ້ອງ</string>
-    <string name="invalid_email">ຊື່ອີແມ໋ວບໍ່ຖືກ</string>
-    <string name="invalid_negative_number">ອະນຸຍາດໃຫ້ປ້ອນໄດ້ພຽງແຕ່ຄ່າລົບເທົ່ານັ້ນ</string>
-    <string name="invalid_possitive_zero">ອະນຸຍາດໃຫ້ປ້ອນໄດ້ພຽງແຕ່ຄ່າບວກ ຫຼື ສູນເທົ່ານັ້ນ</string>
-    <string name="invalid_interval">ອະນຸຍາດໃຫ້ປ້ອນແຕ່ຄ່າ 0 ຫາ 1 ເທົ່ານັ້ນ</string>
-    <string name="validation_url">ຊື່ url ບໍ່ຖຶກຕ້ອງ</string>
-    <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
     <string name="error">ເກີດການຜິດພາດ</string>
     <string name="select_time">ເລືອກເວລາ</string>
     <string name="choose_date">ເລືອກວັນທີ</string>
@@ -47,7 +36,6 @@
     <string name="action_close">ປິດ</string>
     <string name="copied_text">ສຳເນົາແລ້ວ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>
-    <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>
     <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
     <string name="tei_coordinates">ປະສານງານຫາ</string>

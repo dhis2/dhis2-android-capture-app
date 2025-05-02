@@ -28,23 +28,6 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
         this.dataSetUid = dataSetUid;
     }
 
-    @Override
-    public Flowable<List<DateRangeInputPeriodModel>> getDataInputPeriod() {
-        return d2.dataSetModule().dataSets().withDataInputPeriods().uid(dataSetUid).get().toFlowable()
-                .flatMapIterable(dataSet -> dataSet.dataInputPeriods())
-                .flatMap(dataInputPeriod ->
-                        Flowable.just(d2.periodModule().periodHelper().getPeriodForPeriodId(dataInputPeriod.period().uid()).blockingGet())
-                                .map(period -> {
-                                    Date periodStartDate = period.startDate();
-                                    Date periodEndDate = period.endDate();
-
-                                    return DateRangeInputPeriodModel.create(dataSetUid,
-                                            dataInputPeriod.period().uid(), dataInputPeriod.openingDate(),
-                                            dataInputPeriod.closingDate(), periodStartDate, periodEndDate);
-                                })
-                ).toList().toFlowable();
-    }
-
     @NonNull
     @Override
     public Observable<DataSetInitialModel> dataSet() {

@@ -961,7 +961,6 @@
     <string name="optional">Opcional</string>
     <string name="database_export_downloaded">Base de datos descargada</string>
     <string name="importing_database">Importando base de datos</string>
-    <string name="re_open_to_edit">Reabrir el formulario para editar</string>
     <string name="empty_search_attributes_message">No hay campos de búsqueda configurados.\nContacte con su administrador por favor.</string>
     <string name="show_more">Mostrar más</string>
     <string name="show_less">Mostrar menos</string>

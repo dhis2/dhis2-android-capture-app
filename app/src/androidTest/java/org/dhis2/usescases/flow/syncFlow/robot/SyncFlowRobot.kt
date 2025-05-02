@@ -12,8 +12,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.clickChildViewWithId
-import org.dhis2.ui.dialogs.bottomsheet.MAIN_BUTTON_TAG
-import org.dhis2.ui.dialogs.bottomsheet.TITLE
+import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
+import org.dhis2.commons.dialogs.bottomsheet.TITLE
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.DataSetListViewHolder
 
 fun syncFlowRobot(

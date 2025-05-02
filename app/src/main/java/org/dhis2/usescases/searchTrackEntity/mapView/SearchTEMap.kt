@@ -221,7 +221,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                 ListCard(
                                     modifier = Modifier.fillParentMaxWidth().testTag("MAP_ITEM"),
                                     listCardState = rememberListCardState(
-                                        title = ListCardTitleModel(text = item.title),
+                                        title = ListCardTitleModel(text = item.title, allowOverflow = false),
                                         description = item.description?.let {
                                             ListCardDescriptionModel(
                                                 text = it,

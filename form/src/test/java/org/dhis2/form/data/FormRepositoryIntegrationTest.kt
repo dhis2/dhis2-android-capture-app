@@ -1,5 +1,6 @@
 package org.dhis2.form.data
 
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
@@ -13,7 +14,7 @@ import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -92,7 +93,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfIsNewAndNotCompleted() {
+    fun shouldOpenEnrollmentDetailSectionIfIsNewAndNotCompleted() = runBlocking {
         mockUncompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
@@ -103,7 +104,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfIsNewAndCompleted() {
+    fun shouldOpenEnrollmentDetailSectionIfIsNewAndCompleted() = runBlocking {
         mockCompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
@@ -114,7 +115,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfNotCompleted() {
+    fun shouldOpenEnrollmentDetailSectionIfNotCompleted() = runBlocking {
         mockUncompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
@@ -125,7 +126,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldNotOpenEnrollmentDetailSectionIfCompleted() {
+    fun shouldNotOpenEnrollmentDetailSectionIfCompleted() = runBlocking {
         mockCompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 

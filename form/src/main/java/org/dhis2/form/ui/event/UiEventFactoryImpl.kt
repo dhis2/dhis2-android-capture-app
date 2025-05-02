@@ -3,8 +3,6 @@ package org.dhis2.form.ui.event
 import android.content.Intent
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
-import org.dhis2.form.model.UiEventType.ADD_FILE
-import org.dhis2.form.model.UiEventType.ADD_PICTURE
 import org.dhis2.form.model.UiEventType.OPEN_FILE
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
 import org.dhis2.form.model.UiEventType.SHARE_IMAGE
@@ -35,9 +33,6 @@ class UiEventFactoryImpl(
                     featureType = getFeatureType(renderingType),
                     value = value,
                 )
-
-                ADD_PICTURE -> RecyclerViewUiEvents.AddImage(uid)
-                ADD_FILE -> RecyclerViewUiEvents.OpenFileSelector(fieldUiModel)
                 OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
                 SHARE_IMAGE -> RecyclerViewUiEvents.OpenChooserIntent(
                     Intent.ACTION_SEND,

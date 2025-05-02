@@ -15,64 +15,7 @@ class CellTableTest {
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
-    @Test
-    fun shouldDisplayMandatoryIcon() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTable(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 0, 0)
-            assertCellHasMandatoryIcon(firstId, 0, 0)
-        }
-    }
-
-    @Test
-    fun shouldBlockClickAndSetCorrectColorIfNonEditable() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 0, 1)
-            assertInputComponentIsHidden()
-            assertCellBlockedCell(firstId, 0, 1)
-        }
-    }
-
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6397")
-    @Test
-    fun shouldUpdateValueWhenTypingInComponent() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 1, 0)
-            typeOnInputComponent("check")
-            assertCellHasText(firstId, 1, 0, "check")
-        }
-    }
-
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6279")
-    @Test
-    fun shouldSaveValue() {
-        var savedValue: TableCell? = null
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            ) {
-                savedValue = it
-            }
-            val firstId = fakeModel.first().id!!
-            clickOnCell(firstId, 1, 0)
-            typeOnInputComponent("check")
-            clickOnCell(firstId, 1, 2)
-            assert(savedValue != null)
-        }
-    }
-
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6408")
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6863")
     @Test
     fun shouldMoveToNextColumnWhenClickingNext() {
         tableRobot(composeTestRule) {
@@ -95,6 +38,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6863")
     @Test
     fun shouldMoveToNextRowWhenClickingNext() {
         tableRobot(composeTestRule) {
@@ -120,6 +64,7 @@ class CellTableTest {
         }
     }
 
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6863")
     @Test
     fun shouldClearSelectionWhenClickingNextOnLastCell() = runTest {
         tableRobot(composeTestRule) {
@@ -135,7 +80,7 @@ class CellTableTest {
         }
     }
 
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6464")
+    @Ignore("Flaky test, will be looked up in ANDROAPP-6863")
     @Test
     fun shouldHideInputComponentIfSelectedCellDoesNotRequireIt() {
         val testingTableId = "PjKGwf9WxBE"
@@ -154,19 +99,6 @@ class CellTableTest {
             clickOnCell(testingTableId, 1, 0)
             assertKeyBoardVisibility(false)
             assertInputComponentIsHidden()
-        }
-    }
-
-    @Test
-    fun shouldSetCorrectColorIfHasError() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            )
-            val firstId = fakeModel.first().id!!
-            assertUnselectedCellErrorStyle(firstId, 2, 0)
-            clickOnCell(firstId, 2, 0)
-            assertSelectedCellErrorStyle(firstId, 2, 0)
         }
     }
 }

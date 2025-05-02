@@ -39,12 +39,7 @@
     <string name="filters_title_state">同步</string>
     <string name="filters_title_assigned">指派给我</string>
     <string name="filters_title_date">日期</string>
-    <string name="filters_title_event_date">事件日期</string>
-    <string name="enrollment_date">登记日期</string>
-    <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">登记状态</string>
     <string name="filter_follow_up_label">跟进%s</string>
-
     <!-- State -->
     <string name="state_synced">同步</string>
     <string name="state_to_post">发送</string>
@@ -136,9 +131,6 @@
     <string name="section_charts">图表</string>
     <string name="section_charts_indicators">图表和指标</string>
 
-    <!-- Enrollment -->
-    <string name="enrolled_in">报名参加：</string>
-
     <!--SDK error codes-->
     <string name="login_error_null_pass">密码丢失。请输入密码。</string>
     <string name="login_error_null_username">缺少用户名。请输入用户名。</string>
@@ -200,8 +192,12 @@
     <string name="error_min_attributes">没有足够的属性来执行搜索。请使用更多属性优化您的搜索。</string>
     <string name="error_org_unit_scope">在线搜索仅适用于您的用户搜索组织单位。</string>
     <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
+    <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
+    <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
     <string name="unsupported_field_description">该字段不可用于移动采集</string>
     <string name="add_image">添加图片</string>
+    <string name="add_signature">添加签名</string>
+    <string name="add_file">添加文件</string>
     <string name="action_ok">Ok!</string>
     <string name="enable_location_message">您的设备定位已断开或关闭。请启用它以便捕获地理坐标</string>
     <string name="keep_editing">继续编辑</string>
@@ -210,4 +206,19 @@
     <string name="complete">完成</string>
     <string name="default_table_header_label">值</string>
     <string name="discard_changes">忽略修改</string>
+    <string name="default_empty_dataset_section_label">数据</string>
+    <string name="title_network_connection_unavailable">网络连接不可用</string>
+    <string name="msg_network_connection_maps">需要互联网连接才能使用地图。</string>
+
+    <string name="overdue_today">今天</string>
+    <plurals name="overdue_days">
+        <item quantity="other">逾期 %d 天</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="other">逾期 %d 个月</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="other">逾期 %d 年</item>
+    </plurals>
+
     </resources>

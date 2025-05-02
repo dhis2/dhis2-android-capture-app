@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Завершити</string>
+    <string name="discard_changes">Відхилити внесені зміни</string>
+    <string name="not_now">Не зараз</string>
+    <string name="keep_editing">Продовжити редагування</string>
+    <string name="review">Перегляд</string>
+    <string name="cancel">Скасувати</string>
+    <string name="save">Зберегти</string>
+    <string name="clear">Очистити</string>
+    <string name="action_done">Обрати</string>
+    <string name="action_cancel">Скасувати</string>
+    <string name="action_close">Закрити</string>
+    <string name="hint_search">Пошук</string>
+    <string name="action_clear_all">Очистити все</string>
+    </resources>

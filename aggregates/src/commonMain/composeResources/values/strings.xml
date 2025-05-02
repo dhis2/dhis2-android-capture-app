@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="default_column_label">Values</string>
+    <string name="total_header_label">Totals</string>
+    <string name= "input_age_date_of_birth">Date of birth</string>
+    <string name= "input_age">Age</string>
+    <string name= "input_age_or">or</string>
+    <string name = "input_action_accept">Accept</string>
+    <string name = "input_action_cancel">Cancel</string>
+    <string name="no_results_found">No results found</string>
+    <string name="search_to_find_more">Search to find more</string>
+    <string name="action_done">Done</string>
+    <string name="input_coordinate_latitude">Latitude</string>
+    <string name="input_coordinate_longitude">Longitude</string>
+    <string name="input_coordinate_add_location">Add location</string>
+    <string name="input_date_out_of_range">Out of range</string>
+    <string name="format_error">Incorrect format</string>
+    <string name="input_not_supported">Not supported</string>
+    <string name="completion_dialog_title">Everything looks good</string>
+    <string name="completion_dialog_description">Do you also want to complete the dataset?</string>
+    <string name="validation_success_title">Everything looks good</string>
+    <string name="mark_dataset_complete">Do you also want to complete the data set?</string>
+    <string name="not_now">Not now</string>
+    <string name="complete">Complete</string>
+    <string name="saved">Saved!</string>
+    <string name="field_mandatory">There are missing mandatory fields. Please, fill them to complete the data set.</string>
+    <string name="field_required">If you set a value, the whole row needs all of values to complete the Data Set.</string>
+    <string name="ok">OK</string>
+    <string name="dataset_saved_completed">Saved and completed!</string>
+    <string name="error_on_complete_dataset">There has been an error completing the dataset</string>
+    <string name="run_validation_rules">Do you want to check data quality?</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="error">Error</string>
+    <string name="errors">Errors</string>
+    <string name="complete_anyway">Complete anyway</string>
+    <string name="review">Review</string>
+    <string name="validation_rules_data_to_review">Data to review</string>
+    <string name="action_can_not_be_performed">This action can not be performed</string>
+    <string name="action_next">Next</string>
+    <string name="add_file">Add file</string>
+    <string name="file_downloaded">File downloaded successfully</string>
+    <string name="file_download_error">Could not download file</string>
+    <string name="add_image">Add Image</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="from_gallery">Add from Gallery</string>
+    <string name="indicators_label">Indicators</string>
+    <string name="no_data_write_access">You do not have permission to edit this data</string>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">You do not have permission to edit data for %1$s</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">You cannot edit data from %1$s</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">You cannot edit data for %1$s in %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">You cannot edit data for %1$s in %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">You cannot edit data for the period %1$s in %2$s</string>
+    <string name="dataset_closed">This data is not editable because it is marked as closed</string>
+    <string name="dataset_expired">This data is not editable because its edition time has expired</string>
+
+</resources>

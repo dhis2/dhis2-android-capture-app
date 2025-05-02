@@ -38,10 +38,6 @@
     <string name="filters_title_state">Synchronisation</string>
     <string name="filters_title_assigned">Assigné à moi</string>
     <string name="filters_title_date">Date</string>
-    <string name="filters_title_event_date">Date d\'événement</string>
-    <string name="enrollment_date">Date d\'enrôlement</string>
-    <string name="filters_title_event_status">Statut de l\'événement</string>
-    <string name="filters_title_enrollment_status">Statut de l\'enrôlement</string>
     <!-- State -->
     <string name="state_synced">Synchronisation</string>
     <string name="state_to_post">Envoyer</string>
@@ -132,9 +128,6 @@
     <string name="section_indicators">Indicateurs</string>
     <string name="section_charts">Graphiques</string>
     <string name="section_charts_indicators">Graphiques et indicateurs</string>
-
-    <!-- Enrollment -->
-    <string name="enrolled_in">Inscrire à:</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">Le mot de passe est manquant. Veuillez entrer le mot de passe.</string>

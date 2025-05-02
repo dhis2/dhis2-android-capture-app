@@ -1,6 +1,7 @@
 package org.dhis2.android.rtsm.utils
 
 import android.text.TextUtils
+import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import timber.log.Timber
 import java.util.regex.Pattern
 
@@ -55,5 +56,16 @@ class Utils {
                     it.uppercase()
                 }
         }
+
+        @JvmStatic
+        fun emptyStockUseCase() = StockUseCase(
+            programType = "",
+            programUid = "",
+            itemCode = "",
+            itemDescription = "",
+            description = "",
+            stockOnHand = "",
+            transactions = emptyList(),
+        )
     }
 }

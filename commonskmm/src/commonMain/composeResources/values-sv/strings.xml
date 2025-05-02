@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_close">Stänga</string>
+    <string name="warning_error_on_complete_title">Kolla detta!</string>
+</resources>

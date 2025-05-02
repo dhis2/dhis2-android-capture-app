@@ -7,10 +7,8 @@ import org.dhis2.commons.bindings.dataSet
 import org.dhis2.commons.bindings.dataSetInstanceSummaries
 import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.programs
-import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference.Companion.PIN
-import org.dhis2.usescases.main.program.toAppConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -76,11 +74,7 @@ class HomeRepositoryImpl(
                     program.displayName() ?: program.uid(),
                     program.access().data().write() == true,
                     program.trackedEntityType()?.uid() ?: "",
-                    stockConfig = if (d2.isStockProgram(program.uid())) {
-                        d2.stockUseCase(program.uid())?.toAppConfig()
-                    } else {
-                        null
-                    },
+                    isStockUseCase = d2.isStockProgram(program.uid()),
                 )
 
             program?.programType() == ProgramType.WITHOUT_REGISTRATION ->

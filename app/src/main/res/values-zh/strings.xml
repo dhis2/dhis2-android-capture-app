@@ -150,10 +150,10 @@
     <string name="no_options">无可用选项</string>
 
     <!--TEI Enrollment list-->
-    <string name="enrollment_list">注册清单</string>
+    <string name="enrollment_list">登记清单</string>
     <string name="active_programs">活动项目</string>
-    <string name="to_enroll_programs">注册的项目</string>
-    <string name="enroll">注册</string>
+    <string name="to_enroll_programs">加入的项目</string>
+    <string name="enroll">加入</string>
     <string name="last_visit">上次访问：</string>
     <string name="apply">应用</string>
 
@@ -240,7 +240,7 @@
     <string name="settingsExportDBMessage">导出数据库并与管理员共享</string>
     <!--endregion-->
 
-    <string name="enrollmment_date">注册日期</string>
+    <string name="enrollmment_date">加入日期</string>
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">搜索</string>
@@ -300,7 +300,7 @@
     <string name="search_min_num_attr">你至少需要输入 %d个属性便于搜索</string>
     <string name="search_attr">你至少需要输入 一个属性便于搜索</string>
     <string name="search_max_tei_reached">有多余%d个结果，请再细化搜索条件</string>
-    <string name="search_criteria_not_met">你的搜索没有返回任何结果，修改你的条件或者注册一个新的 %s</string>
+    <string name="search_criteria_not_met">你的搜索没有返回任何结果，修改你的条件或者加入一个新的 %s</string>
     <string name="search_init">输入你的搜索条件</string>
 
     <!-- QR -->
@@ -309,7 +309,7 @@
     <string name="button_ok">好</string>
     <string name="qr_id">标识</string>
     <string name="qr_attributes">属性</string>
-    <string name="qr_enrollment">注册</string>
+    <string name="qr_enrollment">加入</string>
     <string name="qr_events">事件</string>
     <string name="qr_relationships">关系</string>
     <string name="read_more_qr">读取下一个二维码获取更多信息</string>
@@ -317,10 +317,10 @@
     <string name="qr_no_data">无数据</string>
     <string name="qr_error_id">无效的二维码</string>
     <string name="qr_error_attr">该属性不能被添加</string>
-    <string name="qr_error_enrollment">该注册不能添加</string>
+    <string name="qr_error_enrollment">该加入登记不能添加</string>
 
     <string name="about">关于</string>
-    <string name="programs_to_enroll">注册的项目</string>
+    <string name="programs_to_enroll">加入的项目</string>
     <string name="select_all">全选</string>
     <string name="clear_all">清除选择</string>
     <string name="empty_program_list">选择的过滤器没有相关信息，请尝试改变</string>
@@ -367,7 +367,7 @@
     <string name="online_search_parsing_error">解析结果发生错误</string>
     <string name="online_search_error">在线搜索返回错误。</string>
     <string name="online_search_response_error">服务器出现错误</string>
-    <string name="search_program_not_selected">选择一个项目开始注册</string>
+    <string name="search_program_not_selected">选择一个项目开始加入登记</string>
     <string name="search_access_error">你没有请求的权限</string>
     <string name="feature_unavaible">功能还没有实现。</string>
     <string name="relationship_label_error">获取关系标签发生错误</string>
@@ -386,7 +386,7 @@
     <string name="message_generate_new_event">你要创建另外的事件？</string>
     <string name="event_completed_title">完成的事件</string>
     <string name="event_completed_message">该项目的所有事件已经完成。你同时要关闭该项目吗？</string>
-    <string name="complete_enrollment_message">您还想完成注册吗？</string>
+    <string name="complete_enrollment_message">您还想同时完成加入登记吗？</string>
     <string name="complete_enrollment_message_V2">您也想完成%s吗？</string>
     <string name="check_event">检查</string>
 
@@ -412,7 +412,7 @@
     <string name="tuto_dashboard_5">点击创建或调度一个事件或流转到其它机构</string>
     <string name="tuto_dashboard_6">这里你将看到所有的事件。点击查看事件详情。</string>
     <string name="tuto_dashboard_7">通过菜单添加关系、查看指标或写笔记。</string>
-    <string name="tuto_dashboard_8">点击查看实体的所有注册数据或者创建一个新的</string>
+    <string name="tuto_dashboard_8">点击查看实体的所有登记数据或者创建一个新的</string>
     <string name="tuto_tei_event_1">点击删除该事件。该操作不能取消。</string>
     <string name="tuto_tei_event_2">完成事件</string>
     <string name="tuto_program_event_1">所有该项目的相关事件将列表在这里。</string>
@@ -443,7 +443,7 @@
     <string name="warnings_in_form">表格中有警告</string>
     <string name="what_to_do">你想做什么？</string>
     <string name="field_errors">有些字段有错误，请检查，才能完成项目</string>
-    <string name="unselect_enrollment">所有的注册</string>
+    <string name="unselect_enrollment">所有的加入登记</string>
     <string name="unselect_enrollment_description">显示所有活动项目的仪表盘</string>
     <string name="CHECK_SYNC_ERRORS">打开同步错误日志</string>
     <string name="error_dialog_title">同步错误日志</string>
@@ -622,7 +622,7 @@
     <string name="sms_disabled">短信模块被关闭</string>
     <string name="sms_downloading_data">下载短信模块，请等待。</string>
     <string name="sms_empty_gateway">短信网关不能为空</string>
-    <string name="granular_sync_enrollments_empty">没有注册可以上传</string>
+    <string name="granular_sync_enrollments_empty">没有登记可以上传</string>
     <string name="granular_sync_unsupported_task">转换任务不支持。</string>
     <string name="disable_pin_locked">不再显示锁屏</string>
     <string name="set_pin">设置PIN</string>
@@ -943,7 +943,6 @@
     <string name="optional">可选项描述</string>
     <string name="database_export_downloaded">数据库已下载</string>
     <string name="importing_database">导入数据库</string>
-    <string name="re_open_to_edit">重新打开表单进行编辑</string>
     <string name="empty_search_attributes_message">没有配置可用的搜索字段，请联系您的管理员。</string>
     <string name="show_more">更多</string>
     <string name="show_less">显示较少</string>

@@ -20,8 +20,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import org.dhis2.R
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatComboUiModel
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
@@ -43,9 +44,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputYesNoFieldValues
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideStringResource
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Locale
 
@@ -60,6 +62,7 @@ fun SchedulingDialogUi(
     val programStages by viewModel.programStages.collectAsState()
     val selectedProgramStage by viewModel.programStage.collectAsState()
     val enrollment by viewModel.enrollment.collectAsState()
+    val overdueSubtitle by viewModel.overdueEventSubtitle.collectAsState()
 
     val yesNoOptions = InputYesNoFieldValues.entries.map {
         RadioButtonData(
@@ -73,14 +76,21 @@ fun SchedulingDialogUi(
     val scheduleNew by remember(optionSelected) {
         derivedStateOf { optionSelected == yesNoOptions.first() }
     }
-
+    val bottomSheetTitle = bottomSheetTitle(
+        launchMode = launchMode,
+        programStages = programStages,
+    )
     BottomSheetShell(
-        title = bottomSheetTitle(
-            launchMode = launchMode,
-            programStages = programStages,
+        uiState = BottomSheetShellUIState(
+            bottomPadding = bottomSheetLowerPadding(),
+            showTopSectionDivider = false,
+            showBottomSectionDivider = false,
+            title = bottomSheetTitle,
+            subtitle = overdueSubtitle,
+            headerTextAlignment = TextAlign.Start,
+            animateHeaderOnKeyboardAppearance = false,
         ),
-        subtitle = viewModel.overdueSubtitle,
-        headerTextAlignment = TextAlign.Start,
+        windowInsets = { bottomSheetInsets() },
         buttonBlock = {
             ButtonBlock(
                 launchMode = launchMode,
@@ -92,10 +102,10 @@ fun SchedulingDialogUi(
                 onDismiss = onDismiss,
             )
         },
-        showSectionDivider = false,
         content = {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(Spacing.Spacing0),
+                verticalArrangement = Arrangement.spacedBy(Spacing.Spacing16),
             ) {
                 if (launchMode.showYesNoOptions) {
                     RadioButtonBlock(
@@ -125,7 +135,7 @@ fun SchedulingDialogUi(
             }
         },
         onDismiss = onDismiss,
-        animateHeaderOnKeyboardAppearance = false,
+
     )
 }
 
@@ -142,7 +152,7 @@ private fun ButtonBlock(
 ) {
     Box(
         modifier
-            .padding(top = Spacing24, bottom = Spacing24, start = Spacing24, end = Spacing24),
+            .padding(BottomSheetShellDefaults.buttonBlockPaddings()),
     ) {
         when (launchMode) {
             is LaunchMode.NewSchedule -> {
@@ -164,7 +174,8 @@ private fun ButtonBlock(
 
             is LaunchMode.EnterEvent -> {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(Spacing.Spacing0),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
                 ) {
                     val eventLabel =
                         selectedProgramStage?.displayEventLabel() ?: stringResource(R.string.event)
@@ -177,7 +188,6 @@ private fun ButtonBlock(
                             viewModel.enterEvent(launchMode)
                         },
                     )
-
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.OUTLINED,
@@ -247,6 +257,8 @@ fun ProvideScheduleNewEventForm(
         InputDropDown(
             title = stringResource(id = R.string.program_stage),
             state = InputShellState.UNFOCUSED,
+            windowInsets = { bottomSheetInsets() },
+            bottomSheetLowerPadding = bottomSheetLowerPadding(),
             fetchItem = { index -> dropdownItems[index] },
             itemCount = dropdownItems.size,
             onSearchOption = { query ->
@@ -298,6 +310,7 @@ fun ProvideScheduleNewEventForm(
 
     if (!catCombo.isDefault && launchMode !is LaunchMode.EnterEvent) {
         catCombo.categories.forEach { category ->
+
             ProvideCategorySelector(
                 eventCatComboUiModel = EventCatComboUiModel(
                     category = category,

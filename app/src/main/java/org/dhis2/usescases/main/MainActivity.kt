@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
@@ -38,10 +39,12 @@ import org.dhis2.bindings.app
 import org.dhis2.bindings.hasPermissions
 import org.dhis2.commons.animations.hide
 import org.dhis2.commons.animations.show
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.filters.FilterItem
 import org.dhis2.commons.filters.FilterManager
+import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.FiltersAdapter
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -98,11 +101,17 @@ class MainActivity :
     private var backDropActive = false
 
     private val requestWritePermissions =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-        ) { granted ->
-            if (granted) {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 onDownloadNewVersion()
+            } else if (granted) {
+                onDownloadNewVersion()
+            } else {
+                Toast.makeText(
+                    context,
+                    getString(R.string.storage_denied),
+                    Toast.LENGTH_LONG,
+                ).show()
             }
         }
 
@@ -413,16 +422,9 @@ class MainActivity :
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance()
-                .fromCalendarSelector(this) { FilterManager.getInstance().addPeriod(it) }
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            DateUtils.getInstance()
-                .showPeriodDialog(
-                    this,
-                    { datePeriods -> FilterManager.getInstance().addPeriod(datePeriods) },
-                    true,
-                    { FilterManager.getInstance().addPeriod(null) },
-                )
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
@@ -668,10 +670,9 @@ class MainActivity :
             hasNoPermissionToInstall() ->
                 manageUnknownSources.launch(
                     Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-                        .setData(Uri.parse(String.format("package:%s", packageName))),
+                        .setData(String.format("package:%s", packageName).toUri()),
                 )
-
-            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) ->
+            !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) && Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
                 requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
 
             else -> Intent(Intent.ACTION_VIEW).apply {
@@ -704,7 +705,9 @@ class MainActivity :
 
     private val requestReadStoragePermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
-            if (granted) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                onDownloadNewVersion()
+            } else if (granted) {
                 onDownloadNewVersion()
             } else {
                 Toast.makeText(

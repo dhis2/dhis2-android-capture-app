@@ -17,10 +17,15 @@ class MockWebServerRobot(private val dhis2MockServer: Dhis2MockServer) {
     }
 
     companion object {
-        const val API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH =
+        const val API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH =
             "/api/trackedEntityAttributes/lZGmxYbs97q/generateAndReserve?.*"
-        const val API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE =
-            "mocks/teidashboard/tracked_entity_attribute_reserved_values.json"
+        const val API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE =
+            "mocks/teidashboard/unique_id_tracked_entity_attribute_reserved_values.json"
+        const val API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH =
+            "/api/trackedEntityAttributes/xs8A6tQJY0s/generateAndReserve?.*"
+        const val API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE =
+            "mocks/teidashboard/tb_identifier_tracked_entity_attribute_reserved_values.json"
+
         const val API_TRACKED_ENTITY_PATH = "/api/tracker/trackedEntities?.*"
         const val API_TRACKED_ENTITY_EMPTY_RESPONSE =
             "mocks/teilist/tracked_entity_empty_response.json"

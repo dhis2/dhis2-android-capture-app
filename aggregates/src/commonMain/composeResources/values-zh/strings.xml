@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="not_now">现在不要</string>
+    <string name="complete">完成</string>
+    <string name="saved">已经保存！</string>
+    <string name="error">错误</string>
+    <string name="review">审查</string>
+    <string name="take_photo">拍照</string>
+    </resources>

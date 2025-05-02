@@ -39,6 +39,7 @@ data class DashboardEnrollmentModel(
     override val teiHeader: String?,
     override val avatarPath: String?,
     override val ownerOrgUnit: OrganisationUnit?,
+    val quickActions: List<String>,
 ) : DashboardModel(
     trackedEntityInstance,
     trackedEntityAttributeValues,

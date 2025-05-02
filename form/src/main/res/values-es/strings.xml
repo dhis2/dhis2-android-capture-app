@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Solo se permiten valores entre 0 y 100</string>
-    <string name="invalid_field">Revise este campo por favor</string>
-    <string name="formatting_error">Error de formato</string>
-    <string name="invalid_possitive">Solo se permiten números positivos</string>
-    <string name="invalid_phone_number">Este no es un número de teléfono válido</string>
-    <string name="invalid_email">Este no es un email válido</string>
-    <string name="invalid_negative_number">Solo se permiten números negativos</string>
-    <string name="invalid_possitive_zero">Solo se permiten números positivos o cero</string>
-    <string name="invalid_interval">Solo se permiten valores entre 0 y 1</string>
-    <string name="validation_url">La URL no es válida</string>
-    <string name="invalid_integer">El valor debe ser un entero</string>
-    <string name="wrong_pattern">No tiene el formato correcto</string>
-    <string name="pattern_error">El patrón %s configurado es incorrecto.</string>
     <string name="update_field_error">No se ha podido actualizar este campo. Pruebe otra vez.</string>
     <string name="error">Error</string>
     <string name="unique_warning">El valor debe ser único, se ha encontrado una coincidencia. El campo no se ha guardado, revíselo.</string>
@@ -77,25 +64,9 @@
     <string name="copied_text">Copiado</string>
     <string name="empty_description">No hay información para este campo</string>
     <string name="take_photo">Tomar foto</string>
-    <string name="from_gallery">Elija de la galería</string>
     <string name="warning_error_on_complete_title">¡Importante!</string>
     <string name="action_do_not_show_again">No volver a mostrar</string>
-    <string name="validation_error_message">El valor introducido no es válido en este campo</string>
-    <string name="error_boolean_zero_is_not_false">Carácter 0 no válido</string>
-    <string name="error_boolean_one_is_not_true">Carácter 1 no es válido</string>
-    <string name="error_boolean_malformed">El valor no es ni cierto ni falso</string>
-    <string name="error_date_parsing">Este formato de fecha no es válido</string>
-    <string name="error_date_time_parsing">Este formato de fecha y hora no es válido</string>
-    <string name="error_time_parsing">Este formato de hora no es válido</string>
-    <string name="error_letter_empty">El valor está vacío</string>
-    <string name="error_letter_more_than_one">El valor contiene más de una letra</string>
-    <string name="error_letter_not_a_letter">El valor no es una letra</string>
-    <string name="error_text_too_long">El texto es muy largo</string>
-    <string name="error_true_only_malformed">El valor no es ni cierto ni falso</string>
-    <string name="error_true_only_false_not_valid">El calor solo puede ser cierto</string>
-    <string name="error_true_only_one_is_not_true">Carácter 1 no es válido</string>
     <string name="data_values_save_error">Los DataValues no pueden guardarse con estos argumentos. Use el otro método.</string>
-    <string name="leading_zero_error">No se permiten números con ceros a la izquierda</string>
     <string name="enrollment_single_section_label">Atributos - %s</string>
     <string name="tei_coordinates">Coordenadas para</string>
     <string name="no_reserved_values">No quedan valores reservados. Contacte con el administrador del sistema.</string>
