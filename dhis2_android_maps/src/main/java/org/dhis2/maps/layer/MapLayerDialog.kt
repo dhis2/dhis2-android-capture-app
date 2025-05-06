@@ -3,12 +3,36 @@ package org.dhis2.maps.layer
 import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.widget.CompoundButtonCompat
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -19,7 +43,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.resources.getPrimaryColor
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.DialogMapLayerBinding
-import org.dhis2.maps.databinding.ItemLayerBinding
 import org.dhis2.maps.layer.basemaps.BasemapAdapter
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
@@ -132,20 +155,28 @@ class MapLayerDialog : BottomSheetDialogFragment() {
     }
 
     private fun initProgramData() {
-        val layerMap: LinkedHashMap<String, MutableList<View>> = linkedMapOf(
-            Pair("TEI", mutableListOf()),
-            Pair("ENROLLMENT", mutableListOf()),
-            Pair("TRACKER_EVENT", mutableListOf()),
-            Pair("RELATIONSHIP", mutableListOf()),
-            Pair("EVENT", mutableListOf()),
-            Pair("DE", mutableListOf()),
-            Pair("HEATMAP", mutableListOf()),
+        binding.composeView.setContent {
+            val layersData = remember { getMapLayer() }
+            MapLayerList(layersData, layerVisibility)
+        }
+    }
+
+    private fun getMapLayer(): LinkedHashMap<String, MutableList<MapLayerItem>> {
+        val layerMap = linkedMapOf<String, MutableList<MapLayerItem>>(
+            "TEI" to mutableListOf(),
+            "ENROLLMENT" to mutableListOf(),
+            "TRACKER_EVENT" to mutableListOf(),
+            "RELATIONSHIP" to mutableListOf(),
+            "EVENT" to mutableListOf(),
+            "DE" to mutableListOf(),
+            "HEATMAP" to mutableListOf(),
         )
+
         mapManager?.mapLayerManager?.mapLayers?.toSortedMap()?.forEach { (source, layer) ->
             layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
             when (layer) {
                 is TeiMapLayer -> layerMap["TEI"]?.add(
-                    addCheckBox(
+                    MapLayerItem(
                         source,
                         requireContext().getString(R.string.dialog_layer_tei_coordinates),
                         MapLayerManager.TEI_ICON_ID,
@@ -153,7 +184,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 )
 
                 is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
-                    addCheckBox(
+                    MapLayerItem(
                         source,
                         resourceManager.formatWithEnrollmentLabel(
                             programUid = programUid,
@@ -162,17 +193,20 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                         ),
                         MapLayerManager.ENROLLMENT_ICON_ID,
                     ),
-                )
+                ).also {
+                    for (i in 1..10) {
+                        layerMap["ENROLLMENT"]?.add(
+                            MapLayerItem("ENROLLMENT_$i", "Layer option $i", MapLayerManager.ENROLLMENT_ICON_ID),
+                        )
+                    }
+                }
 
                 is TeiEventMapLayer -> layerMap["TRACKER_EVENT"]?.add(
-                    addCheckBox(
-                        source,
-                        image = "${MapLayerManager.STAGE_ICON_ID}_$source",
-                    ),
+                    MapLayerItem(source, image = "${MapLayerManager.STAGE_ICON_ID}_$source"),
                 )
 
                 is HeatmapMapLayer -> layerMap["HEATMAP"]?.add(
-                    addCheckBox(
+                    MapLayerItem(
                         source,
                         requireContext().getString(R.string.dialog_layer_heatmap),
                         HEATMAP_ICON,
@@ -180,15 +214,11 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 )
 
                 is RelationshipMapLayer -> layerMap["RELATIONSHIP"]?.add(
-                    addCheckBox(
-                        source,
-                        null,
-                        "${RELATIONSHIP_ICON}_$source",
-                    ),
+                    MapLayerItem(source, null, "${RELATIONSHIP_ICON}_$source"),
                 )
 
                 is EventMapLayer -> layerMap["EVENT"]?.add(
-                    addCheckBox(
+                    MapLayerItem(
                         source,
                         requireContext().getString(R.string.dialog_layer_event),
                         EventMapManager.ICON_ID,
@@ -196,7 +226,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 )
 
                 is FieldMapLayer -> layerMap["DE"]?.add(
-                    addCheckBox(
+                    MapLayerItem(
                         source,
                         mapManager?.getLayerName(source),
                         "${EventMapManager.DE_ICON_ID}_$source",
@@ -204,10 +234,74 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 )
             }
         }
-        layerMap.forEach {
-            if (it.value.isNotEmpty()) {
-                it.value.forEach { checkBox ->
-                    binding.layout.addView(checkBox)
+        return layerMap
+    }
+
+    @Composable
+    private fun MapLayerList(
+        mapLayersMap: LinkedHashMap<String, MutableList<MapLayerItem>>,
+        layerVisibility: HashMap<String, Boolean>,
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            val mapLayers = mutableListOf<MapLayerItem>()
+            mapLayersMap.forEach { mapLayers.addAll(it.value) }
+            items(
+                items = mapLayers,
+                key = { mapLayer -> mapLayer.source },
+            ) { item ->
+                MapLayerCheckbox(item, layerVisibility) {
+                    layerVisibility[item.source] = it
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun MapLayerCheckbox(
+        item: MapLayerItem,
+        layerVisibility: java.util.HashMap<String, Boolean>,
+        onCheckedChange: (Boolean) -> Unit = {},
+    ) {
+        var isChecked by remember { mutableStateOf(layerVisibility[item.source] ?: false) }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(
+                checked = isChecked,
+                onCheckedChange = {
+                    onCheckedChange(it)
+                    isChecked = it
+                },
+                colors = CheckboxDefaults.colors(checkedColor = colorResource(id = R.color.colorPrimary)),
+            )
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = item.text ?: item.source,
+            )
+
+            item.image?.let {
+                val bitmap = if (it == HEATMAP_ICON) {
+                    BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.ic_heatmap_icon)
+                } else {
+                    mapManager?.mapLayerManager?.mapBoxMap?.style?.getImage(item.image)
+                }
+
+                bitmap?.let { bmp ->
+                    Image(
+                        modifier = Modifier.size(24.dp),
+                        bitmap = bmp.asImageBitmap(),
+                        contentDescription = null,
+                    )
+                    Spacer(Modifier.padding(end = 8.dp))
                 }
             }
         }
@@ -223,39 +317,5 @@ class MapLayerDialog : BottomSheetDialogFragment() {
             }
             dismiss()
         }
-    }
-
-    private fun addCheckBox(
-        source: String,
-        layerText: String? = null,
-        image: String? = null,
-    ): View {
-        return ItemLayerBinding.inflate(LayoutInflater.from(context)).apply {
-            root.tag = "tag_$source"
-            layerCheckBox.apply {
-                text = layerText ?: source
-                isChecked = layerVisibility[source] ?: false
-                CompoundButtonCompat.setButtonTintList(
-                    this,
-                    ColorStateList.valueOf(
-                        requireContext().getPrimaryColor(ColorType.PRIMARY),
-                    ),
-                )
-                setOnCheckedChangeListener { _, isChecked ->
-                    layerVisibility[source] = isChecked
-                }
-            }
-            image?.let {
-                if (it == HEATMAP_ICON) {
-                    layerIcon.setImageResource(R.drawable.ic_heatmap_icon)
-                } else {
-                    mapManager?.let { manager ->
-                        layerIcon.setImageBitmap(
-                            manager.mapLayerManager.mapBoxMap.style?.getImage(image),
-                        )
-                    }
-                }
-            }
-        }.root
     }
 }
