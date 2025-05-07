@@ -140,6 +140,7 @@ object Injector {
             conf = EnrollmentConfiguration(
                 provideD2(),
                 enrollmentRecords.enrollmentUid,
+                provideDispatchers(),
             ),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
@@ -162,6 +163,7 @@ object Injector {
                 provideResourcesManager(context),
             ),
             eventMode = eventRecords.eventMode,
+            dispatcherProvider = provideDispatchers()
         )
     }
 

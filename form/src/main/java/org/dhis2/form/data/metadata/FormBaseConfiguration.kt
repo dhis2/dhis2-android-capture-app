@@ -4,11 +4,13 @@ import androidx.paging.PagingData
 import androidx.paging.filter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.disableCollapsableSectionsInProgram
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.option.Option
 
-open class FormBaseConfiguration(private val d2: D2) {
+open class FormBaseConfiguration(private val d2: D2, private val dispatcher: DispatcherProvider) {
     fun optionGroups(optionGroupUids: List<String>) = d2.optionModule().optionGroups()
         .withOptions()
         .byUid().`in`(optionGroupUids)
@@ -41,28 +43,29 @@ open class FormBaseConfiguration(private val d2: D2) {
                     .getPagingData(10)
         }.map { pagingData ->
             pagingData.filter { option ->
+                withContext(dispatcher.io()) {
+                    val optionInGroupToHide = d2.optionModule().optionGroups()
+                        .withOptions()
+                        .byUid().`in`(optionGroupsToHide)
+                        .blockingGet().any { optionGroup ->
+                            optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                        }
 
-                val optionInGroupToHide = d2.optionModule().optionGroups()
-                    .withOptions()
-                    .byUid().`in`(optionGroupsToHide)
-                    .blockingGet().any { optionGroup ->
-                        optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                    val optionInGroupToShow = d2.optionModule().optionGroups()
+                        .withOptions()
+                        .byUid().`in`(optionGroupsToShow)
+                        .blockingGet().any { optionGroup ->
+                            optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                        }
+
+                    val hideOption = if (optionGroupsToShow.isEmpty()) {
+                        optionsToHide.contains(option.uid()) || optionInGroupToHide
+                    } else {
+                        !optionInGroupToShow
                     }
 
-                val optionInGroupToShow = d2.optionModule().optionGroups()
-                    .withOptions()
-                    .byUid().`in`(optionGroupsToShow)
-                    .blockingGet().any { optionGroup ->
-                        optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
-                    }
-
-                val hideOption = if (optionGroupsToShow.isEmpty()) {
-                    optionsToHide.contains(option.uid()) || optionInGroupToHide
-                } else {
-                    !optionInGroupToShow
+                    !hideOption
                 }
-
-                !hideOption
             }
         }
     }
