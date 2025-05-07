@@ -19,7 +19,7 @@ import org.junit.Test
 
 
 class AgeProviderTest {
-    val resourceManager =
+    private val resourceManager =
         Injector.provideResourcesManager(InstrumentationRegistry.getInstrumentation().getContext())
 
     companion object {
