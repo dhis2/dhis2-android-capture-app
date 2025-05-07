@@ -59,6 +59,7 @@ class LoginViewModel(
     private val crashReportController: CrashReportController,
     private val network: NetworkUtils,
     private var userManager: UserManager?,
+    private val repository: LoginRepository,
 ) : ViewModel() {
 
     private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
@@ -69,7 +70,7 @@ class LoginViewModel(
     val password = MutableLiveData<String>()
     val isDataComplete = MutableLiveData<Boolean>()
     val isTestingEnvironment = MutableLiveData<Trio<String, String, String>>()
-    var testingCredentials: MutableMap<String, TestingCredential>? = null
+    private var testingCredentials: List<TestingCredential> = emptyList()
     private val _loginProgressVisible = MutableLiveData(false)
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
 
@@ -81,6 +82,9 @@ class LoginViewModel(
 
     private val _displayMoreActions = MutableLiveData<Boolean>(true)
     val displayMoreActions: LiveData<Boolean> = _displayMoreActions
+
+    private val _autoCompleteData = MutableLiveData<Pair<List<String>, List<String>>>()
+    val autoCompleteData: LiveData<Pair<List<String>, List<String>>> = _autoCompleteData
 
     init {
         this.userManager?.let {
@@ -116,6 +120,11 @@ class LoginViewModel(
             )
         } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
         displayManageAccount()
+
+        viewModelScope.launch {
+            testingCredentials = repository.getTestingCredentials()
+            loadAutoCompleteData(testingCredentials)
+        }
     }
 
     private fun trackServerVersion() {
@@ -176,7 +185,8 @@ class LoginViewModel(
         _canLoginWithBiometrics.value =
             biometricController.hasBiometric() &&
             userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
-            preferenceProvider.getString(SECURE_SERVER_URL)?.let { it == serverUrl.value } ?: false &&
+            preferenceProvider.getString(SECURE_SERVER_URL)
+                ?.let { it == serverUrl.value } ?: false &&
             preferenceProvider.contains(SECURE_PASS)
     }
 
@@ -381,11 +391,11 @@ class LoginViewModel(
         }
     }
 
-    fun getAutocompleteData(
-        testingCredentials: List<TestingCredential>,
-    ): Pair<MutableList<String>, MutableList<String>> {
-        val urls = preferenceProvider.getSet(PREFS_URLS, emptySet())!!.toMutableList()
-        val users = preferenceProvider.getSet(PREFS_USERS, emptySet())!!.toMutableList()
+    private fun loadAutoCompleteData(testingCredentials: List<TestingCredential>) {
+        val urls =
+            preferenceProvider.getSet(PREFS_URLS, emptySet())?.toMutableList() ?: mutableListOf()
+        val users =
+            preferenceProvider.getSet(PREFS_USERS, emptySet())?.toMutableList() ?: mutableListOf()
 
         urls.let {
             for (testingCredential in testingCredentials) {
@@ -393,19 +403,19 @@ class LoginViewModel(
                     it.add(testingCredential.server_url)
                 }
             }
-        }
 
-        preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
+            preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
+        }
 
         users.let {
             if (!it.contains(USER_TEST_ANDROID)) {
                 it.add(USER_TEST_ANDROID)
             }
+
+            preferenceProvider.setValue(PREFS_USERS, HashSet(users))
         }
 
-        preferenceProvider.setValue(PREFS_USERS, HashSet(users))
-
-        return Pair(urls, users)
+        _autoCompleteData.value = Pair(urls, users)
     }
 
     fun displayManageAccount() {
@@ -474,19 +484,12 @@ class LoginViewModel(
     }
 
     private fun checkTestingEnvironment(serverUrl: String) {
-        testingCredentials?.get(serverUrl)?.let { credentials ->
+        testingCredentials.find { it.server_url == serverUrl }?.let { credentials ->
             isTestingEnvironment.value = Trio.create(
                 serverUrl,
                 credentials.user_name,
                 credentials.user_pass,
             )
-        }
-    }
-
-    fun setTestingCredentials(testingCredentials: List<TestingCredential>) {
-        this.testingCredentials = HashMap()
-        for (testingCredential in testingCredentials) {
-            this.testingCredentials!![testingCredential.server_url] = testingCredential
         }
     }
 

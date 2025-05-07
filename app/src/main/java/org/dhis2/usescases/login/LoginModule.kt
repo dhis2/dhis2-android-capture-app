@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
@@ -46,6 +47,7 @@ class LoginModule(
         analyticsHelper: AnalyticsHelper,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
+        repository: LoginRepository,
     ): LoginViewModel {
         return ViewModelProvider(
             viewModelStoreOwner,
@@ -60,6 +62,7 @@ class LoginModule(
                 crashReportController,
                 networkUtils,
                 userManager,
+                repository,
             ),
         )[LoginViewModel::class.java]
     }
@@ -68,5 +71,18 @@ class LoginModule(
     @PerActivity
     fun openIdProviders(context: Context): OpenIdProviders {
         return OpenIdProviders(context)
+    }
+
+    @Provides
+    @PerActivity
+    fun provideLoginRepository(
+        context: Context,
+        dispatcherProvider: DispatcherProvider,
+    ): LoginRepository {
+        return LoginRepository(
+            context.resources,
+            Gson(),
+            dispatcherProvider,
+        )
     }
 }

@@ -23,6 +23,7 @@ class LoginViewModelFactory(
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
     private val userManager: UserManager?,
+    private val repository: LoginRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return LoginViewModel(
@@ -36,6 +37,7 @@ class LoginViewModelFactory(
             crashReportController,
             networkUtils,
             userManager,
+            repository,
         ) as T
     }
 }

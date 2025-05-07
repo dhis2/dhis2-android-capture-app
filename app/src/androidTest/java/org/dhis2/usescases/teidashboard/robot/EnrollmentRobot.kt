@@ -46,7 +46,7 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnSaveEnrollment() {
-        onView(withId(R.id.save)).perform(click())
+        waitForView(withId(R.id.save)).perform(click())
     }
 
     fun checkActiveAndPastEnrollmentDetails(enrollmentListUIModel: EnrollmentListUIModel) {
