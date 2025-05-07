@@ -741,10 +741,6 @@ class FormViewModel(
         )
     }
 
-    fun getFocusedItemUid(): String? {
-        return items.value?.firstOrNull { it.focused }?.uid
-    }
-
     private fun processCalculatedItems(skipProgramRules: Boolean = false, finish: Boolean = false) {
         fieldListChannel.trySend(
             FieldListConfiguration(skipProgramRules, finish),

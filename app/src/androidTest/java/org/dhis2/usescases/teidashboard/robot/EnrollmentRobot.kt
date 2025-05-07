@@ -116,14 +116,12 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun typeOnDateParameterWithLabel(label: String, dateValue: String) {
         composeTestRule.apply {
-            onNode(
+            val dateTextFieldNode = onNode(
                 hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
                 useUnmergedTree = true,
-            ).performTextReplacement(dateValue)
-            onNode(
-                hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
-                useUnmergedTree = true,
-            ).performImeAction()
+            )
+            dateTextFieldNode.performTextReplacement(dateValue)
+            dateTextFieldNode.performImeAction()
         }
     }
 

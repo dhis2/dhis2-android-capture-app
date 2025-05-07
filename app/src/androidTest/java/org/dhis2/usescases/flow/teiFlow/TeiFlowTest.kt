@@ -82,13 +82,13 @@ class TeiFlowTest : BaseTest() {
     private fun createFirstSpecificDate() = DateRegistrationUIModel(
         2016,
         6,
-        30
+        9
     )
 
     private fun createEnrollmentDate() = DateRegistrationUIModel(
         2017,
         6,
-        30
+        9
     )
 
     private fun getCurrentDate(): String {
