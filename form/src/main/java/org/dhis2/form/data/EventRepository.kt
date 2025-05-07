@@ -58,7 +58,7 @@ class EventRepository(
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val eventMode: EventMode,
-    dispatcherProvider: DispatcherProvider
+    dispatcherProvider: DispatcherProvider,
 ) : DataEntryBaseRepository(FormBaseConfiguration(d2, dispatcherProvider), fieldFactory, metadataIconProvider) {
 
     private val getEventPeriods = GetEventPeriods(

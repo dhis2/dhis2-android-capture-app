@@ -163,7 +163,7 @@ object Injector {
                 provideResourcesManager(context),
             ),
             eventMode = eventRecords.eventMode,
-            dispatcherProvider = provideDispatchers()
+            dispatcherProvider = provideDispatchers(),
         )
     }
 
