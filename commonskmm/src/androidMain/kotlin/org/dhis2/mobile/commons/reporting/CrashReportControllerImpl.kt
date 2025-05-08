@@ -3,6 +3,7 @@ package org.dhis2.mobile.commons.reporting
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import org.hisp.dhis.android.core.D2Manager
+import timber.log.Timber
 
 const val DATA_STORE_CRASH_PERMISSION_KEY = "analytics_permission"
 
@@ -62,7 +63,7 @@ class CrashReportControllerImpl : CrashReportController {
                     ?.toBoolean() == true
             ).also { granted ->
             if (!granted) {
-                // Timber.d("Tracking is disabled")
+                Timber.d("Tracking is disabled")
             }
         }
     }
