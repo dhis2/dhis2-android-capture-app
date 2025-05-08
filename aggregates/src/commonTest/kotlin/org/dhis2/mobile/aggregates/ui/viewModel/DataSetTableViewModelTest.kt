@@ -174,7 +174,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList()
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -758,7 +762,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList()
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -770,7 +778,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertEquals(TextAlignment.LEFT, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals(
+                    TextAlignment.LEFT,
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment
+                )
                 assertEquals("Title", this.dataSetDetails.customTitle.header)
                 assertEquals("Subtitle", this.dataSetDetails.customTitle.subHeader)
             }
@@ -796,7 +807,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList()
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -808,7 +823,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertEquals(TextAlignment.RIGHT, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals(
+                    TextAlignment.RIGHT,
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment
+                )
             }
         }
     }
@@ -832,7 +850,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList()
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -844,7 +866,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertEquals(TextAlignment.CENTER, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals(
+                    TextAlignment.CENTER,
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment
+                )
             }
         }
     }
