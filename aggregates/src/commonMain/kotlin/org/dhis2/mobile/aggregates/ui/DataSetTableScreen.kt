@@ -252,9 +252,9 @@ fun DataSetInstanceScreen(
             (dataSetScreenState as? DataSetScreenState.Loaded)?.let { state ->
                 when {
                     state.modalDialog != null ->
-                    ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
+                        ValidationBottomSheet(dataSetUIState = (dataSetScreenState as? DataSetScreenState.Loaded)?.modalDialog!!)
 
-                state.validationBar != null ->
+                    state.validationBar != null ->
                         ValidationBar(uiState = (dataSetScreenState as? DataSetScreenState.Loaded)?.validationBar!!)
 
                     state.dataSetDetails.isCompleted or !state.dataSetDetails.edition.editable -> {

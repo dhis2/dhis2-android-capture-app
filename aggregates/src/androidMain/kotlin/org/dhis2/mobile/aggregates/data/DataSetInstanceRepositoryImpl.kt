@@ -828,7 +828,7 @@ internal class DataSetInstanceRepositoryImpl(
             ?.compulsoryDataElementOperands()
             ?.find {
                 it.dataElement()?.uid() == dataElementUid &&
-                        it.categoryOptionCombo()?.uid() == categoryOptionComboUid
+                    it.categoryOptionCombo()?.uid() == categoryOptionComboUid
             } != null
         val dataElementValueType = dataElement?.valueType()?.toInputType()
         val inputType = requireNotNull(dataElementValueType).takeIf {
