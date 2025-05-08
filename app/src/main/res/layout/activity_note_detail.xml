@@ -23,6 +23,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/ic_front_home_backdrop_bg"
         tools:context="org.dhis2.usescases.notes.noteDetail.NoteDetailActivity">
 
         <androidx.constraintlayout.widget.Guideline
@@ -67,6 +68,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
+            android:contentDescription="@string/username"
             app:tint="?colorPrimary"
             android:transitionName="@string/transitionElement_userImage"
             android:visibility="@{isForm ? View.GONE : View.VISIBLE}"

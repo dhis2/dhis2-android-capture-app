@@ -11,7 +11,6 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_EVENTS_EM
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_EVENTS_PATH
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_EMPTY_RESPONSE
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_PATH
-import org.dhis2.commons.resources.SIMPLE_DATE_FORMAT
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
@@ -26,8 +25,6 @@ import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class SearchTETest : BaseTest() {
 
@@ -207,10 +204,6 @@ class SearchTETest : BaseTest() {
         val eventStatusFilter = context.getString(R.string.filters_title_event_status)
         val totalCount = "1"
         val registerTeiDetails = createRegisterTEI()
-        val dateFormat =
-            SimpleDateFormat(SIMPLE_DATE_FORMAT, java.util.Locale.getDefault()).format(Date())
-        val scheduledEventTitle = context.getString(R.string.scheduled_for)
-            .format(dateFormat)
 
         setDatePicker()
         prepareTestAdultWomanProgrammeIntentAndLaunchActivity(rule)
@@ -260,12 +253,6 @@ class SearchTETest : BaseTest() {
         val enrollmentDateTo = createToEnrollmentDate()
         val totalFilterCount = "2"
         val filterCount = "1"
-
-        val enrollmentStatusFilter = context.getString(R.string.filters_title_enrollment_status)
-            .format(
-                context.resources.getQuantityString(R.plurals.enrollment, 1)
-                    .capitalize(Locale.current),
-            )
 
         setDatePicker()
         prepareChildProgrammeIntentAndLaunchActivity(rule)
@@ -486,6 +473,5 @@ class SearchTETest : BaseTest() {
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
-        const val MAP_LOADED = "LOADED"
     }
 }

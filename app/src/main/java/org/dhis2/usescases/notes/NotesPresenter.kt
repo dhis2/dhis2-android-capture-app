@@ -31,6 +31,7 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.hisp.dhis.android.core.note.Note
 import timber.log.Timber
@@ -58,6 +59,7 @@ class NotesPresenter(
         compositeDisposable.add(
             noteProcessor.startWith(true)
                 .flatMapSingle {
+                    CountingIdlingResourceSingleton.increment()
                     when (noteType) {
                         NoteType.EVENT -> notesRepository.getEventNotes(uid)
                         NoteType.ENROLLMENT -> notesRepository.getEnrollmentNotes(uid)
@@ -85,6 +87,7 @@ class NotesPresenter(
     }
 
     private fun handleNotes(notes: List<Note>) {
+        CountingIdlingResourceSingleton.decrement()
         when {
             notes.isEmpty() -> view.setEmptyNotes()
             else -> view.swapNotes(notes)
