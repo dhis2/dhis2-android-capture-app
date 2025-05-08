@@ -2,23 +2,30 @@ package org.dhis2.maps.layer
 
 import android.app.Dialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Text
@@ -30,20 +37,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.databinding.DataBindingUtil
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.databinding.ObservableInt
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.resources.getPrimaryColor
 import org.dhis2.maps.R
-import org.dhis2.maps.databinding.DialogMapLayerBinding
-import org.dhis2.maps.layer.basemaps.BasemapAdapter
+import org.dhis2.maps.databinding.BasemapItemBinding
 import org.dhis2.maps.layer.types.EnrollmentMapLayer
 import org.dhis2.maps.layer.types.EventMapLayer
 import org.dhis2.maps.layer.types.FieldMapLayer
@@ -55,6 +63,13 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.managers.RelationshipMapManager.Companion.RELATIONSHIP_ICON
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 class MapLayerDialog : BottomSheetDialogFragment() {
 
@@ -63,7 +78,6 @@ class MapLayerDialog : BottomSheetDialogFragment() {
     private var onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {}
 
     private val layerVisibility: HashMap<String, Boolean> = hashMapOf()
-    lateinit var binding: DialogMapLayerBinding
     lateinit var resourceManager: ResourceManager
 
     override fun onAttach(context: Context) {
@@ -82,19 +96,81 @@ class MapLayerDialog : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_map_layer, container, false)
-        mapManager?.let {
-            binding.baseMapCarousel.adapter = BasemapAdapter(it.mapLayerManager)
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            color = SurfaceColor.SurfaceBright,
+                            shape = RoundedCornerShape(
+                                topStart = Radius.XL,
+                                topEnd = Radius.XL,
+                            ),
+                        )
+                        .padding(horizontal = Spacing.Spacing24, vertical = Spacing.Spacing16),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.map_layers),
+                        style = getTextStyle(DHIS2TextStyle.LABEL_MEDIUM),
+                    )
+                    var currentStyle =
+                        ObservableInt(mapManager?.mapLayerManager?.currentStylePosition ?: 0)
+                    LazyRow {
+                        itemsIndexed(
+                            mapManager?.mapLayerManager?.baseMapManager?.getBaseMaps()
+                                ?: emptyList(),
+                        ) { index, baseMap ->
+                            AndroidView(
+                                modifier = Modifier
+                                    .width(100.dp)
+                                    .clickable {
+                                        mapManager?.mapLayerManager?.changeStyle(index)
+                                        currentStyle.set(index)
+                                    },
+                                factory = { context ->
+                                    BasemapItemBinding.inflate(
+                                        LayoutInflater.from(context),
+                                    ).also { binding ->
+                                        binding.apply {
+                                            currentSelectedStyle = currentStyle
+                                            itemStyle = index
+                                            if (baseMap.basemapImage != null) {
+                                                baseMapImage.setImageDrawable(baseMap.basemapImage)
+                                                baseMapImage.scaleType =
+                                                    ImageView.ScaleType.CENTER_CROP
+                                            } else {
+                                                baseMapImage.setBackgroundColor(android.graphics.Color.GRAY)
+                                                baseMapImage.setImageResource(R.drawable.unknown_base_map)
+                                                baseMapImage.scaleType =
+                                                    ImageView.ScaleType.FIT_CENTER
+                                            }
+                                            basemapName.text = baseMap.basemapName
+                                        }
+                                    }.root
+                                },
+                                update = {},
+                            )
+                        }
+                    }
+                    val layersData = remember { getMapLayer() }
+                    MapLayerList(layersData, layerVisibility)
+                    Button(
+                        text = stringResource(R.string.action_apply),
+                        style = ButtonStyle.TEXT,
+                    ) {
+                        layerVisibility.forEach { (sourceId, visible) ->
+                            mapManager?.mapLayerManager?.handleLayer(sourceId, visible)
+                        }
+                        mapManager?.let {
+                            onLayersVisibility(it.updateLayersVisibility(layerVisibility))
+                        }
+                        dismiss()
+                    }
+                }
+            }
         }
-        binding.acceptButton.setTextColor(
-            ColorStateList.valueOf(
-                requireContext().getPrimaryColor(ColorType.PRIMARY),
-            ),
-        )
-        initProgramData()
-        initListeners()
-
-        return binding.root
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
@@ -154,13 +230,6 @@ class MapLayerDialog : BottomSheetDialogFragment() {
         }
     }
 
-    private fun initProgramData() {
-        binding.composeView.setContent {
-            val layersData = remember { getMapLayer() }
-            MapLayerList(layersData, layerVisibility)
-        }
-    }
-
     private fun getMapLayer(): LinkedHashMap<String, MutableList<MapLayerItem>> {
         val layerMap = linkedMapOf<String, MutableList<MapLayerItem>>(
             "TEI" to mutableListOf(),
@@ -196,7 +265,11 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 ).also {
                     for (i in 1..10) {
                         layerMap["ENROLLMENT"]?.add(
-                            MapLayerItem("ENROLLMENT_$i", "Layer option $i", MapLayerManager.ENROLLMENT_ICON_ID),
+                            MapLayerItem(
+                                "ENROLLMENT_$i",
+                                "Layer option $i",
+                                MapLayerManager.ENROLLMENT_ICON_ID,
+                            ),
                         )
                     }
                 }
@@ -244,7 +317,8 @@ class MapLayerDialog : BottomSheetDialogFragment() {
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxWidth()
+                .heightIn(max = 300.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
@@ -252,7 +326,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
             mapLayersMap.forEach { mapLayers.addAll(it.value) }
             items(
                 items = mapLayers,
-                key = { mapLayer -> mapLayer.source },
+                key = { mapLayer -> mapLayer.hashCode() },
             ) { item ->
                 MapLayerCheckbox(item, layerVisibility) {
                     layerVisibility[item.source] = it
@@ -290,7 +364,10 @@ class MapLayerDialog : BottomSheetDialogFragment() {
 
             item.image?.let {
                 val bitmap = if (it == HEATMAP_ICON) {
-                    BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.ic_heatmap_icon)
+                    BitmapFactory.decodeResource(
+                        LocalContext.current.resources,
+                        R.drawable.ic_heatmap_icon,
+                    )
                 } else {
                     mapManager?.mapLayerManager?.mapBoxMap?.style?.getImage(item.image)
                 }
@@ -304,18 +381,6 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                     Spacer(Modifier.padding(end = 8.dp))
                 }
             }
-        }
-    }
-
-    private fun initListeners() {
-        binding.acceptButton.setOnClickListener {
-            layerVisibility.forEach { (sourceId, visible) ->
-                mapManager?.mapLayerManager?.handleLayer(sourceId, visible)
-            }
-            mapManager?.let {
-                onLayersVisibility(it.updateLayersVisibility(layerVisibility))
-            }
-            dismiss()
         }
     }
 }
