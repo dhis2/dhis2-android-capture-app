@@ -101,14 +101,6 @@ internal class DataSetTableViewModel(
     fun loadDataSet() {
         viewModelScope.launch(dispatcher.io()) {
             val dataSetInstanceData = getDataSetInstanceData(this)
-
-            _dataSetScreenState.value = DataSetScreenState.Loaded(
-                dataSetDetails = dataSetInstanceData.dataSetDetails,
-                dataSetSections = dataSetInstanceData.dataSetSections,
-                renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
-                dataSetSectionTable = DataSetSectionTable.Loading,
-                initialSection = dataSetInstanceData.initialSectionToLoad,
-            )
             val initialSection = dataSetInstanceData.initialSectionToLoad
 
             val dataSetSectionTitle =
@@ -122,6 +114,23 @@ internal class DataSetTableViewModel(
             } else {
                 dataSetInstanceData.dataSetSections.firstOrNull()?.uid ?: NO_SECTION_UID
             }
+            _dataSetScreenState.value = DataSetScreenState.Loaded(
+                dataSetDetails = dataSetInstanceData.dataSetDetails.copy(
+                    customTitle = dataSetInstanceData.dataSetDetails.customTitle.copy(
+                        header = dataSetSectionTitle,
+                    ),
+                ),
+                dataSetSections = dataSetInstanceData.dataSetSections,
+                renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
+                dataSetSectionTable = DataSetSectionTable(
+                    null,
+                    emptyList(),
+                    overridingDimensions = OverwrittenDimension(),
+                    loading = true,
+                ),
+                initialSection = dataSetInstanceData.initialSectionToLoad,
+            )
+
             val sectionTable = async { sectionData(sectionToLoad) }
 
             _dataSetScreenState.update {
@@ -133,10 +142,11 @@ internal class DataSetTableViewModel(
                                     header = dataSetSectionTitle,
                                 ),
                             ),
-                            dataSetSectionTable = DataSetSectionTable.Loaded(
-                                id = sectionToLoad,
-                                tableModels = sectionTable.await(),
+                            dataSetSectionTable = DataSetSectionTable(
+                                sectionToLoad,
+                                sectionTable.await(),
                                 overridingDimensions = overwrittenWidths(sectionToLoad),
+                                loading = false,
                             ),
                         )
 
@@ -145,10 +155,11 @@ internal class DataSetTableViewModel(
                             dataSetDetails = dataSetInstanceData.dataSetDetails,
                             dataSetSections = dataSetInstanceData.dataSetSections,
                             renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
-                            dataSetSectionTable = DataSetSectionTable.Loaded(
-                                id = sectionToLoad,
-                                tableModels = sectionTable.await(),
+                            dataSetSectionTable = DataSetSectionTable(
+                                sectionToLoad,
+                                sectionTable.await(),
                                 overridingDimensions = overwrittenWidths(sectionToLoad),
+                                loading = true,
                             ),
                             initialSection = initialSection,
                         )
@@ -163,7 +174,12 @@ internal class DataSetTableViewModel(
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
                         it.copy(
-                            dataSetSectionTable = DataSetSectionTable.Loading,
+                            dataSetSectionTable = it.dataSetSectionTable.copy(
+                                id = it.dataSetSectionTable.id,
+                                tableModels = it.dataSetSectionTable.tableModels,
+                                overridingDimensions = it.dataSetSectionTable.overridingDimensions,
+                                loading = true,
+                            ),
                             selectedCellInfo = null,
                         )
                     } else {
@@ -189,10 +205,11 @@ internal class DataSetTableViewModel(
                                     isConfiguredTitle = it.dataSetDetails.customTitle.isConfiguredTitle,
                                 ),
                             ),
-                            dataSetSectionTable = DataSetSectionTable.Loaded(
+                            dataSetSectionTable = it.dataSetSectionTable.copy(
                                 id = sectionUid,
                                 tableModels = sectionData.await(),
                                 overridingDimensions = overwrittenWidths(sectionUid),
+                                loading = false,
                             ),
                         )
                     } else {
@@ -310,17 +327,18 @@ internal class DataSetTableViewModel(
 
         _dataSetScreenState.update {
             (it as? DataSetScreenState.Loaded)?.copy(
-                dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
-                    tableModels = it.dataSetSectionTable.tables().map { table ->
-                        table.updateValue(
-                            cellId = cellId,
-                            updatedValue = inputData?.displayValue,
-                            legendData = inputData?.legendData,
-                            error = validationError,
-                            resourceManager = resourceManager,
-                        )
-                    },
-                ) ?: it.dataSetSectionTable,
+                dataSetSectionTable = it.dataSetSectionTable.copy(
+                    tableModels = it.dataSetSectionTable.tableModels.map { table ->
+                            table.updateValue(
+                                cellId = cellId,
+                                updatedValue = inputData?.displayValue,
+                                legendData = inputData?.legendData,
+                                error = validationError,
+                                resourceManager = resourceManager,
+                            )
+                        },
+
+                    ),
                 selectedCellInfo = inputData,
             ) ?: it
         }
@@ -518,7 +536,7 @@ internal class DataSetTableViewModel(
 
     private fun findNextEditableCell(cellId: String): Pair<String, TableCell>? {
         val tables =
-            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tables()
+            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tableModels
         var currentCell: TableCell? = null
 
         for (table in tables) {
@@ -538,7 +556,7 @@ internal class DataSetTableViewModel(
 
     private fun isLastCell(cellId: String): Boolean {
         val tables =
-            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tables()
+            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tableModels
 
         for (table in tables.asReversed()) {
             val lastEditableCell = getLastEditableCellFromTable(table)
