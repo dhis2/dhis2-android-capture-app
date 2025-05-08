@@ -177,7 +177,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(
                         uid = "sectionUid",
                         title = "sectionTitle",
-                        misconfiguredRows = emptyList()
+                        misconfiguredRows = emptyList(),
                     ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
@@ -765,7 +765,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(
                         uid = "sectionUid",
                         title = "sectionTitle",
-                        misconfiguredRows = emptyList()
+                        misconfiguredRows = emptyList(),
                     ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
@@ -780,7 +780,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 assertTrue(this is DataSetScreenState.Loaded)
                 assertEquals(
                     TextAlignment.LEFT,
-                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment,
                 )
                 assertEquals("Title", this.dataSetDetails.customTitle.header)
                 assertEquals("Subtitle", this.dataSetDetails.customTitle.subHeader)
@@ -810,7 +810,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(
                         uid = "sectionUid",
                         title = "sectionTitle",
-                        misconfiguredRows = emptyList()
+                        misconfiguredRows = emptyList(),
                     ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
@@ -825,7 +825,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 assertTrue(this is DataSetScreenState.Loaded)
                 assertEquals(
                     TextAlignment.RIGHT,
-                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment,
                 )
             }
         }
@@ -853,7 +853,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                     DataSetSection(
                         uid = "sectionUid",
                         title = "sectionTitle",
-                        misconfiguredRows = emptyList()
+                        misconfiguredRows = emptyList(),
                     ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
@@ -868,7 +868,7 @@ internal class DataSetTableViewModelTest : KoinTest {
                 assertTrue(this is DataSetScreenState.Loaded)
                 assertEquals(
                     TextAlignment.CENTER,
-                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment,
                 )
             }
         }
