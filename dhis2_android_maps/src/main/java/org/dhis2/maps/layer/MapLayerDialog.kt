@@ -262,17 +262,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                         ),
                         MapLayerManager.ENROLLMENT_ICON_ID,
                     ),
-                ).also {
-                    for (i in 1..10) {
-                        layerMap["ENROLLMENT"]?.add(
-                            MapLayerItem(
-                                "ENROLLMENT_$i",
-                                "Layer option $i",
-                                MapLayerManager.ENROLLMENT_ICON_ID,
-                            ),
-                        )
-                    }
-                }
+                )
 
                 is TeiEventMapLayer -> layerMap["TRACKER_EVENT"]?.add(
                     MapLayerItem(source, image = "${MapLayerManager.STAGE_ICON_ID}_$source"),
