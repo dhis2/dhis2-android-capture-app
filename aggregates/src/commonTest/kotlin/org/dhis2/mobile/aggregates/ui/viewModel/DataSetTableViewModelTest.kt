@@ -64,7 +64,6 @@ import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
-import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
@@ -287,11 +286,11 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loading)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
+                assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
         }
     }
@@ -312,11 +311,11 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.onSectionSelected("section_uid2")
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loading)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
+                assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
         }
     }
