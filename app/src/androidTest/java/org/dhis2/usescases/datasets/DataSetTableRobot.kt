@@ -217,6 +217,7 @@ internal class DataSetTableRobot(
         )
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun assertCellHasValue(
         tableId: String,
         cellId: String,
@@ -225,6 +226,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(expectedValue))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
             .onChildren()
             .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
