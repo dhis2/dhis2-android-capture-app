@@ -45,6 +45,7 @@ class DataSetTest : BaseTest() {
         createDataSetInstanceStep(
             period = period,
             orgUnit = orgUnit,
+            openFuturePeriods = 9,
         )
 
         tableIsVisible()
@@ -726,6 +727,7 @@ class DataSetTest : BaseTest() {
         orgUnit: String,
         period: String,
         catCombo: String? = null,
+        openFuturePeriods: Int? = null,
     ) {
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
@@ -745,7 +747,7 @@ class DataSetTest : BaseTest() {
         }
 
         reportPeriodSelectorRobot(composeTestRule) {
-            checkFuturePeriodAvailable(9)
+            openFuturePeriods?.let { checkFuturePeriodAvailable(it) }
             selectReportPeriod(period)
         }
 
