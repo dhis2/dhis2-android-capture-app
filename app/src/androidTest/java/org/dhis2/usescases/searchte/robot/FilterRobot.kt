@@ -1,5 +1,6 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasText
@@ -117,6 +118,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun chooseDate(date: String) {
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(
@@ -124,6 +126,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             substring = true,
             useUnmergedTree = true,
         ).performClick()
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Date"))
         composeTestRule.onNodeWithText("Date").performTextReplacement(date)
         composeTestRule.onNodeWithText("OK", true).performClick()
     }
