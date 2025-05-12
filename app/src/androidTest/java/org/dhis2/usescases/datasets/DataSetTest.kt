@@ -205,8 +205,8 @@ class DataSetTest : BaseTest() {
     fun saveAndCompleteOptionalValidationRule() = runTest {
         val dataSetUid = "Nyh6laLdBEJ"
         val dataSetName = "IDSR weekly"
-        val periodListLabel = "Week 9 2025-02-24 To 2025-03-02"
-        val periodSelectorLabel = "Week 9: Feb 24 - Mar 2, 2025"
+        val periodListLabel = "Week 19 2025-05-05 To 2025-05-11"
+        val periodSelectorLabel = "Week 19: May 5 - May 11, 2025"
         val orgUnit = "Ngelehun CHC"
         val tableId = "gbvX3pogf7p"
         val cellMandatoryFieldCombination01Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
