@@ -2,12 +2,15 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.isEditable
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -118,7 +121,6 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun chooseDate(date: String) {
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(
@@ -126,8 +128,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             substring = true,
             useUnmergedTree = true,
         ).performClick()
-        composeTestRule.waitUntilAtLeastOneExists(hasText("Date"))
-        composeTestRule.onNodeWithText("Date").performTextReplacement(date)
+        composeTestRule.onNodeWithContentDescription("Date", substring = true).performTextReplacement(date)
         composeTestRule.onNodeWithText("OK", true).performClick()
     }
 
