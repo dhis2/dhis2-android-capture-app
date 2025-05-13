@@ -29,13 +29,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.swipeDown
-import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
@@ -88,6 +85,7 @@ internal class DataSetTableRobot(
 
     fun clickOnCell(tableId: String, cellId: String) {
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
@@ -111,11 +109,7 @@ internal class DataSetTableRobot(
     }
 
     fun scrollToTop(){
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performTouchInput {
-                swipeDown()
-                swipeDown()
-            }
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(0)
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
@@ -223,6 +217,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
             .onChildren()
             .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
@@ -383,6 +378,7 @@ internal class DataSetTableRobot(
     }
 
     fun clickOnSection(sectionIndex: Int, sectionName: String) {
+        scrollToTop()
         composeTestRule.onNode(
             hasTestTag("SCROLLABLE_TAB_$sectionIndex") and
                     hasText(sectionName)
