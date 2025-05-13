@@ -171,6 +171,7 @@ internal class DataSetTableViewModel(
     fun onSectionSelected(sectionUid: String) {
         viewModelScope.launch((dispatcher.io())) {
             if (dataSetScreenState.value.currentSection() != sectionUid) {
+                CoroutineTracker.increment()
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
                         it.copy(
@@ -216,6 +217,7 @@ internal class DataSetTableViewModel(
                         it
                     }
                 }
+                CoroutineTracker.decrement()
             }
         }
     }

@@ -3,6 +3,7 @@ package org.dhis2.mobile.aggregates.model.mapper
 import androidx.compose.ui.graphics.toArgb
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
@@ -13,6 +14,7 @@ internal suspend fun TableModel.updateValue(
     error: String?,
     resourceManager: ResourceManager,
 ): TableModel {
+    CoroutineTracker.increment()
     val hasTotalColumn = tableHeaderModel.extraColumns.isNotEmpty()
     val hasTotalRow = tableRows.last().id() == totalHeaderRowId(id)
     val tableRows = tableRows.map { tableRowModel ->
@@ -44,9 +46,11 @@ internal suspend fun TableModel.updateValue(
     }
 
     return if (hasTotalRow) {
+        CoroutineTracker.decrement()
         val totalRowIndex = tableRows.last().row()
         copy(tableRows = tableRows.dropLast(1)).withTotalsRow(resourceManager, totalRowIndex)
     } else {
+        CoroutineTracker.decrement()
         copy(tableRows = tableRows)
     }
 }
