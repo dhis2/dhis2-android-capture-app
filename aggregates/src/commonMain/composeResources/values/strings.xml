@@ -2,11 +2,11 @@
 <resources>
     <string name="default_column_label">Values</string>
     <string name="total_header_label">Totals</string>
-    <string name= "input_age_date_of_birth">Date of birth</string>
-    <string name= "input_age">Age</string>
-    <string name= "input_age_or">or</string>
-    <string name = "input_action_accept">Accept</string>
-    <string name = "input_action_cancel">Cancel</string>
+    <string name="input_age_date_of_birth">Date of birth</string>
+    <string name="input_age">Age</string>
+    <string name="input_age_or">or</string>
+    <string name="input_action_accept">Accept</string>
+    <string name="input_action_cancel">Cancel</string>
     <string name="no_results_found">No results found</string>
     <string name="search_to_find_more">Search to find more</string>
     <string name="action_done">Done</string>
