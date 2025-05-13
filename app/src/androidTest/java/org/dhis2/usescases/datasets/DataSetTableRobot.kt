@@ -1,7 +1,9 @@
 package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
@@ -212,6 +214,23 @@ internal class DataSetTableRobot(
     ) {
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
+        val cellTag = cellTestTag(tableId, cellId)
+        scrollToItemWithTag(cellTag)
+
+        composeTestRule.waitUntil(
+            condition = {
+                composeTestRule.onNodeWithTag(cellTag, true)
+                    .onChildren()
+                    .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
+                    .fetchSemanticsNodes().any { node ->
+                        node.config.getOrNull(SemanticsProperties.Text)
+                            ?.any { it.text == expectedValue } == true
+                    }
+            },
+            timeoutMillis = 5000
+        )
+
+        composeTestRule.onNodeWithTag(cellTag, true)
         scrollToItemWithTag(cellTestTag(tableId, cellId))
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
