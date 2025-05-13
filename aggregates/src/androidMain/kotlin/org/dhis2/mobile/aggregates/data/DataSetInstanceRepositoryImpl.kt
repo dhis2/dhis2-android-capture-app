@@ -72,17 +72,17 @@ internal class DataSetInstanceRepositoryImpl(
         val dataSetDTOCustomTitle = dataSet?.displayOptions()?.customText()
 
         val period = d2.periodModule().periods().byPeriodId().eq(periodId)
-            .one().blockingGet()
+            .one().blockingGet() ?: d2.periodModule().periodHelper()
+            .blockingGetPeriodForPeriodId(periodId)
 
-        val periodLabel = period?.let {
-            periodLabelProvider(
-                periodType = period.periodType(),
-                periodId = period.periodId()!!,
-                periodStartDate = period.startDate()!!,
-                periodEndDate = period.endDate()!!,
-                locale = Locale.getDefault(),
-            )
-        } ?: periodId
+        val periodLabel = periodLabelProvider(
+            periodType = period.periodType(),
+            periodId = period.periodId()!!,
+            periodStartDate = period.startDate()!!,
+            periodEndDate = period.endDate()!!,
+            locale = Locale.getDefault(),
+            forTags = true,
+        )
 
         val edition = d2.dataSetModule().dataSetInstanceService().blockingGetEditableStatus(
             dataSetUid,
@@ -163,7 +163,7 @@ internal class DataSetInstanceRepositoryImpl(
             ) ?: DataSetDetails(
             customTitle = dataSetDTOCustomTitle.toCustomTitle(),
             dataSetTitle = dataSet?.displayName()!!,
-            dateLabel = periodId,
+            dateLabel = periodLabel,
             orgUnitLabel = d2.organisationUnitModule().organisationUnits()
                 .uid(orgUnitUid)
                 .blockingGet()
@@ -171,7 +171,7 @@ internal class DataSetInstanceRepositoryImpl(
             catOptionComboLabel = d2.categoryModule().categoryOptionCombos()
                 .uid(attrOptionComboUid)
                 .blockingGet()
-                ?.displayName(),
+                ?.displayName()?.takeIf { isDefaultCatCombo != true },
             isCompleted = isComplete(dataSetUid, periodId, orgUnitUid, attrOptionComboUid),
             edition = edition,
         )
@@ -189,14 +189,13 @@ internal class DataSetInstanceRepositoryImpl(
         orgUnitUid: String,
         attrOptionComboUid: String,
     ): Boolean {
-        return d2.dataSetModule().dataSetCompleteRegistrations()
+        return !d2.dataSetModule().dataSetCompleteRegistrations()
             .byDataSetUid().eq(dataSetUid)
             .byPeriod().eq(periodId)
             .byOrganisationUnitUid().eq(orgUnitUid)
             .byAttributeOptionComboUid().eq(attrOptionComboUid)
             .byDeleted().isFalse
-            .isEmpty()
-            .map { isEmpty -> !isEmpty }.blockingGet()
+            .blockingIsEmpty()
     }
 
     override suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean {
