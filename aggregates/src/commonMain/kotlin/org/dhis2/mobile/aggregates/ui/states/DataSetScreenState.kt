@@ -17,7 +17,7 @@ internal sealed class DataSetScreenState {
         val selectedCellInfo: InputDataUiState? = null,
         val modalDialog: DataSetModalDialogUIState? = null,
         val validationBar: ValidationBarUiState? = null,
-        val nextCellSelection: TableSelection.CellSelection? = null,
+        val nextCellSelection: Pair<TableSelection.CellSelection?, Boolean> = Pair(null, false),
     ) : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs

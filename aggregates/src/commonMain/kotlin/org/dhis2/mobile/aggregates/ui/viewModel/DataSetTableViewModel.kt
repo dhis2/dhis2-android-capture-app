@@ -281,12 +281,30 @@ internal class DataSetTableViewModel(
                         validationError = validationError,
                         valueWithError = newValue,
                         isLastCell = isLastCell(cellId),
-                        onDone = { updateSelectedCell(null) },
+                        onDone = {
+                            _dataSetScreenState.update {
+                                (it as? DataSetScreenState.Loaded)?.copy(
+                                    nextCellSelection = Pair(null, false),
+                                ) ?: it
+                            }
+                            updateSelectedCell(null)
+                        },
                         onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
                     )
                 }
             } else {
                 null
+            }
+
+            val isLastCell = isLastCell(cellId ?: "")
+            val nextCellSelection =
+                (_dataSetScreenState.value as DataSetScreenState.Loaded).nextCellSelection.first
+            if (isLastCell && nextCellSelection != null) {
+                _dataSetScreenState.update {
+                    (it as? DataSetScreenState.Loaded)?.copy(
+                        nextCellSelection = Pair(nextCellSelection, true),
+                    ) ?: it
+                }
             }
 
             _dataSetScreenState.update {
@@ -319,11 +337,14 @@ internal class DataSetTableViewModel(
                     findNextEditableCell(uiAction.cellId)?.let { (tableId, nextCell) ->
                         _dataSetScreenState.update {
                             (it as? DataSetScreenState.Loaded)?.copy(
-                                nextCellSelection = TableSelection.CellSelection(
-                                    tableId = tableId,
-                                    rowIndex = nextCell.row ?: return@update it,
-                                    columnIndex = nextCell.column,
-                                    globalIndex = 0, // TODO: Check if this is needed in the mobile UI
+                                nextCellSelection = Pair(
+                                    TableSelection.CellSelection(
+                                        tableId = tableId,
+                                        rowIndex = nextCell.row ?: return@update it,
+                                        columnIndex = nextCell.column,
+                                        globalIndex = 0, // TODO: Check if this is needed in the mobile UI
+                                    ),
+                                    false,
                                 ),
                             ) ?: it
                         }
