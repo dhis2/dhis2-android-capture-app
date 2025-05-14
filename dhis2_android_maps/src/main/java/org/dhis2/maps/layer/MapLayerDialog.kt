@@ -2,6 +2,7 @@ package org.dhis2.maps.layer
 
 import android.app.Dialog
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -211,6 +212,11 @@ class MapLayerDialog : BottomSheetDialogFragment() {
             })
         }
         return dialog
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        dismiss()
     }
 
     fun setOnLayersVisibilityListener(listener: (HashMap<String, MapLayer>) -> Unit): MapLayerDialog {
