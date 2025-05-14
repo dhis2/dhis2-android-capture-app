@@ -30,7 +30,6 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 import org.hisp.dhis.android.core.sms.domain.repository.WebApiRepository
 import org.hisp.dhis.android.core.sms.domain.repository.internal.LocalDbRepository
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
@@ -164,18 +163,6 @@ class SettingsRepositoryTest {
             .assertNoErrors()
             .assertValue {
                 it.numberOfReservedValuesToDownload == SETTINGS_PREF_RV
-            }
-    }
-
-    @Ignore
-    @Test
-    fun `Should return non editable sms configuration if settings exist`() {
-        configureGeneralSettings(true)
-        val testObserver = settingsRepository.sms().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                !it.isGatewayNumberEditable && !it.isResponseNumberEditable
             }
     }
 

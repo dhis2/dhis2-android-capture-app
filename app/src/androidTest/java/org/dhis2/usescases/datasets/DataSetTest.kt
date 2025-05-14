@@ -8,7 +8,6 @@ import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
 import org.dhis2.usescases.datasets.dataSetTable.pivotTestingData
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
-import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.hisp.dhis.android.core.D2Manager

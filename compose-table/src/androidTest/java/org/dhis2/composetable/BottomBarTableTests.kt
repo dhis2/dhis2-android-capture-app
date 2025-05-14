@@ -75,28 +75,6 @@ class BottomBarTableTests {
         }
     }
 
-    @Ignore
-    @Test
-    fun shouldHideInputFieldIfTextInputViewModeIsOff() {
-        tableRobot(composeTestRule) {
-            val fakeModel = initTableAppScreen(
-                fakeModelType = FakeModelType.MANDATORY_TABLE,
-                tableConfiguration = TableConfiguration(
-                    headerActionsEnabled = false,
-                    textInputViewMode = false
-                )
-            )
-            val tableId = fakeModel[0].id
-            clickOnCell(tableId!!, 1, 0)
-            composeTestRule.waitForIdle()
-            typeOnInputComponent("test")
-            assertCellHasText(tableId, 1, 0, "test")
-            clickOnBack()
-            composeTestRule.waitForIdle()
-            assertBottomBarIsNotVisible()
-        }
-    }
-
     @Test
     fun shouldShowInputFieldIfTextInputViewModeIsOn() {
         tableRobot(composeTestRule) {

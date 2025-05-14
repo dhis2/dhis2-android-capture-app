@@ -13,7 +13,6 @@ import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.AssignedUserMode
-import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -21,7 +20,6 @@ import org.hisp.dhis.android.core.period.DatePeriod
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -64,19 +62,6 @@ class FilterManagerTest {
         assertTrue(filterManager.observeField(Filters.CAT_OPT_COMB).get() == 0)
         assertTrue(filterManager.observeField(Filters.EVENT_STATUS).get() == 0)
         assertTrue(filterManager.observeField(Filters.ASSIGNED_TO_ME).get() == 0)
-    }
-
-    @Ignore
-    @Test
-    fun `Should only add one sync state filter if to_post, to_update and uploading are set`() {
-        filterManager.addState(
-            false,
-            State.TO_POST,
-            State.TO_UPDATE,
-            State.UPLOADING,
-        )
-        assertTrue(filterManager.totalFilters == 1)
-        assertTrue(filterManager.observeField(Filters.SYNC_STATE).get() == 1)
     }
 
     @Test
