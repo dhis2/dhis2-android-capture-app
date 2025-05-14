@@ -17,6 +17,7 @@
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
     <string name="navigation_relationships">Relaciones</string>
+    <string name="navigation_relations">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>
     <string name="navigation_tei_data">Detalles</string>

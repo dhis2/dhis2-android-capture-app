@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="default_column_label">Значення</string>
-    <string name="total_header_label">Усього</string>
     <string name="input_age_date_of_birth">Дата народження</string>
     <string name="input_age_or">або</string>
     <string name="input_action_accept">Прийняти</string>
