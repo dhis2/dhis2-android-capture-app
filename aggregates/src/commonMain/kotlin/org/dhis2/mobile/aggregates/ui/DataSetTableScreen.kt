@@ -171,11 +171,14 @@ fun DataSetInstanceScreen(
         }
     }
 
-    var tableCellSelection by remember { mutableStateOf<TableSelection>(TableSelection.Unselected()) }
+    var tableCellSelection by remember {
+        mutableStateOf<TableSelection>(TableSelection.Unselected())
+    }
 
     LaunchedEffect((dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection) {
-        tableCellSelection = (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection
-            ?: TableSelection.Unselected()
+        tableCellSelection =
+            (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first
+                ?: TableSelection.Unselected()
     }
 
     Scaffold(
