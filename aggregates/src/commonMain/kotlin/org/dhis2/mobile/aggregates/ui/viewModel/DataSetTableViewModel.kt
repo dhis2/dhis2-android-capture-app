@@ -253,13 +253,12 @@ internal class DataSetTableViewModel(
             tables + indicators
         }
 
-    fun updateSelectedCell(
+    suspend fun updateSelectedCell(
         cellId: String?,
         fetchOptions: Boolean = false,
         newValue: String? = null,
         validationError: String? = null,
     ) {
-        viewModelScope.launch {
             CoroutineTracker.increment()
             val inputData = if (cellId != null) {
                 val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
@@ -281,7 +280,7 @@ internal class DataSetTableViewModel(
                         validationError = validationError,
                         valueWithError = newValue,
                         isLastCell = isLastCell(cellId),
-                        onDone = { updateSelectedCell(null) },
+                        onDone = { viewModelScope.launch {updateSelectedCell(null) }},
                         onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
                     )
                 }
@@ -306,7 +305,6 @@ internal class DataSetTableViewModel(
                 ) ?: it
             }
             CoroutineTracker.decrement()
-        }
     }
 
     fun onUiAction(uiAction: UiAction) {
