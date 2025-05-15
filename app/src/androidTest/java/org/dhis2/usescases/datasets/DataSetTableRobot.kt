@@ -179,8 +179,6 @@ internal class DataSetTableRobot(
 
     fun typeOnInputDialog(value: String, inputTestTag: String) {
         composeTestRule.onNodeWithTag(inputTestTag).performTextReplacement(value)
-//        composeTestRule.waitForIdle()
-        Thread.sleep(1000)
     }
 
     fun pressOnInputDialogNext() {
