@@ -113,6 +113,7 @@ android {
     }
     packaging {
         jniLibs {
+            useLegacyPackaging = false
             excludes.addAll(listOf("META-INF/licenses/**"))
         }
         resources {
@@ -150,6 +151,9 @@ android {
         }
         getByName("release") {
             isMinifyEnabled = false
+            ndk {
+                debugSymbolLevel = "none"
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
