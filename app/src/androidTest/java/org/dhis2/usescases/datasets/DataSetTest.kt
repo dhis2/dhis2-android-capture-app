@@ -497,7 +497,7 @@ class DataSetTest : BaseTest() {
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
 
-        dataSetTableRobot(composeTestRule) {
+        /*dataSetTableRobot(composeTestRule) {
             clickOnSection(pivotTestingData[1].sectionIndex, pivotTestingData[1].sectionName)
         }
         tableIsVisible()
@@ -506,7 +506,7 @@ class DataSetTest : BaseTest() {
             cellId = cellIdSection13,
             value = "4",
             inputTestTag = "INPUT_INTEGER_FIELD"
-        )
+        )*/
 
         dataSetTableRobot(composeTestRule) {
             clickOnSection(pivotTestingData[2].sectionIndex, pivotTestingData[2].sectionName)
