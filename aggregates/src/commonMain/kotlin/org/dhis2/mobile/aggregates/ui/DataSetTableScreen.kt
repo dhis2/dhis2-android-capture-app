@@ -229,7 +229,7 @@ fun DataSetInstanceScreen(
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
             AnimatedVisibility(
                 visible = loadedState?.dataSetSectionTable is DataSetSectionTable.Loaded &&
-                        loadedState.selectedCellInfo == null,
+                    loadedState.selectedCellInfo == null,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -603,7 +603,7 @@ private fun DataSetSinglePane(
                                         end = Spacing.Spacing0,
                                     ),
 
-                                    )
+                                )
                             }
                         },
                         onCellSelected = onCellSelected,
