@@ -253,60 +253,58 @@ internal class DataSetTableViewModel(
             tables + indicators
         }
 
-    fun updateSelectedCell(
+    suspend fun updateSelectedCell(
         cellId: String?,
         fetchOptions: Boolean = false,
         newValue: String? = null,
         validationError: String? = null,
     ) {
-        viewModelScope.launch {
-            CoroutineTracker.increment()
-            val inputData = if (cellId != null) {
-                val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                val dataElementUid = getDataElementUid(rowIds, columnIds)
-                val categoryOptionComboUidData = getCategoryOptionCombo(
-                    rowIds,
-                    columnIds,
+        CoroutineTracker.increment()
+        val inputData = if (cellId != null) {
+            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
+            val dataElementUid = getDataElementUid(rowIds, columnIds)
+            val categoryOptionComboUidData = getCategoryOptionCombo(
+                rowIds,
+                columnIds,
+            )
+
+            withContext(dispatcher.io()) {
+                val cellInfo = getDataValueInput(
+                    dataElementUid,
+                    categoryOptionComboUidData,
+                    fetchOptions,
                 )
-
-                withContext(dispatcher.io()) {
-                    val cellInfo = getDataValueInput(
-                        dataElementUid,
-                        categoryOptionComboUidData,
-                        fetchOptions,
-                    )
-                    inputDataUiStateMapper.map(
-                        cellId = cellId,
-                        cellInfo = cellInfo,
-                        validationError = validationError,
-                        valueWithError = newValue,
-                        isLastCell = isLastCell(cellId),
-                        onDone = { updateSelectedCell(null) },
-                        onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
-                    )
-                }
-            } else {
-                null
+                inputDataUiStateMapper.map(
+                    cellId = cellId,
+                    cellInfo = cellInfo,
+                    validationError = validationError,
+                    valueWithError = newValue,
+                    isLastCell = isLastCell(cellId),
+                    onDone = { viewModelScope.launch { updateSelectedCell(null) } },
+                    onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
+                )
             }
-
-            _dataSetScreenState.update {
-                (it as? DataSetScreenState.Loaded)?.copy(
-                    dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
-                        tableModels = it.dataSetSectionTable.tables().map { table ->
-                            table.updateValue(
-                                cellId = cellId,
-                                updatedValue = inputData?.displayValue,
-                                legendData = inputData?.legendData,
-                                error = validationError,
-                                resourceManager = resourceManager,
-                            )
-                        },
-                    ) ?: it.dataSetSectionTable,
-                    selectedCellInfo = inputData,
-                ) ?: it
-            }
-            CoroutineTracker.decrement()
+        } else {
+            null
         }
+
+        _dataSetScreenState.update {
+            (it as? DataSetScreenState.Loaded)?.copy(
+                dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
+                    tableModels = it.dataSetSectionTable.tables().map { table ->
+                        table.updateValue(
+                            cellId = cellId,
+                            updatedValue = inputData?.displayValue,
+                            legendData = inputData?.legendData,
+                            error = validationError,
+                            resourceManager = resourceManager,
+                        )
+                    },
+                ) ?: it.dataSetSectionTable,
+                selectedCellInfo = inputData,
+            ) ?: it
+        }
+        CoroutineTracker.decrement()
     }
 
     fun onUiAction(uiAction: UiAction) {

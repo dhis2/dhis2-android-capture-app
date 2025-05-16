@@ -6,7 +6,6 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnySibling
@@ -14,8 +13,8 @@ import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.hasTextExactly
+import androidx.compose.ui.test.isEnabled
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
-import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -29,20 +28,16 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
-import org.dhis2.composetable.ui.semantics.CellSelected
 import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DISMISS_TAG
-import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_TAG
 import org.dhis2.mobile.aggregates.ui.constants.MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG
@@ -109,14 +104,6 @@ internal class DataSetTableRobot(
             .performScrollToNode(hasText(text, substring = true))
     }
 
-    fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
-        composeTestRule.onNode(
-            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
-                    and
-                    SemanticsMatcher.expectValue(CellSelected, true), true
-        ).assertIsDisplayed()
-    }
-
     fun clickOnEditValue() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
     }
@@ -181,6 +168,7 @@ internal class DataSetTableRobot(
     }
 
     fun assertInputDialogIsDisplayed() {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG).assertIsDisplayed()
     }
 
@@ -191,19 +179,25 @@ internal class DataSetTableRobot(
 
     fun typeOnInputDialog(value: String, inputTestTag: String) {
         composeTestRule.onNodeWithTag(inputTestTag).performTextReplacement(value)
-        composeTestRule.waitForIdle()
     }
 
-    fun pressOnInputDialogDone() {
-        composeTestRule.onNodeWithTag(INPUT_DIALOG_DONE_TAG).performClick()
-    }
-
-    fun pressOnInputDialogNext(){
+    fun pressOnInputDialogNext() {
         composeTestRule.onNodeWithTag(INPUT_DIALOG_NEXT_TAG).performClick()
     }
 
-    fun pressOnInputDialogDismiss(){
+    @OptIn(ExperimentalTestApi::class)
+    fun pressOnInputDialogDismiss() {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(INPUT_DIALOG_DISMISS_TAG) and isEnabled(),
+            timeoutMillis = TIMEOUT
+        )
+
         composeTestRule.onNodeWithTag(INPUT_DIALOG_DISMISS_TAG).performClick()
+
+        composeTestRule.waitUntilDoesNotExist(
+            hasTestTag(INPUT_DIALOG_TAG),
+            timeoutMillis = TIMEOUT
+        )
     }
 
     fun assertCellHasValue(
@@ -241,26 +235,6 @@ internal class DataSetTableRobot(
         composeTestRule.waitForIdle()
     }
 
-    fun assertColumnTotalValue(
-        tableId: String,
-        columnIndex: Int,
-        expectedValue: String,
-    ) {
-        composeTestRule.onNodeWithTag(rowHeaderTestTag(tableId, "${tableId}_totals"))
-            .performScrollTo()
-
-        composeTestRule.onNodeWithTag(
-            "CELL_TEST_TAG_${tableId}${tableId}_totals_$columnIndex",
-            true
-        )
-            .onChild().assertTextEquals(expectedValue)
-
-        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToIndex(0)
-
-        composeTestRule.waitForIdle()
-    }
-
     fun returnToDataSetInstanceList() {
         composeTestRule.onNodeWithContentDescription("back arrow")
             .performClick()
@@ -274,15 +248,22 @@ internal class DataSetTableRobot(
         )
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun tapOnSaveButton() {
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilExactlyOneExists(
+            matcher = hasTestTag(SAVE_BUTTON_TAG),
+            timeoutMillis = TIMEOUT
+        )
         composeTestRule.onNodeWithTag(SAVE_BUTTON_TAG).performClick()
         composeTestRule.waitForIdle()
     }
 
     @OptIn(ExperimentalTestApi::class)
     fun checkCompleteDialogIsDisplayed() {
-        composeTestRule.waitUntilExactlyOneExists(hasTestTag("COMPLETION"),3000)
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag("COMPLETION"),
+            timeoutMillis = TIMEOUT
+        )
         composeTestRule.onNodeWithTag("COMPLETION").assertIsDisplayed()
     }
 
