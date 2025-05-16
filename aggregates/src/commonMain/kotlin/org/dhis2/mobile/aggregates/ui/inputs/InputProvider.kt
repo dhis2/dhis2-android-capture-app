@@ -49,6 +49,7 @@ import org.dhis2.mobile.aggregates.resources.take_photo
 import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
+import org.dhis2.mobile.commons.extensions.hasDateFormat
 import org.dhis2.mobile.commons.extensions.toImageBitmap
 import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
@@ -212,7 +213,9 @@ internal fun InputProvider(
                         is AgeInputType.DateOfBirth -> type.value.text
                         else -> null
                     }
-                    onAction(UiAction.OnValueChanged(inputData.id, value))
+                    if (value == null || value.hasDateFormat()) {
+                        onAction(UiAction.OnValueChanged(inputData.id, value))
+                    }
                 },
                 onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 modifier = modifierWithFocus,

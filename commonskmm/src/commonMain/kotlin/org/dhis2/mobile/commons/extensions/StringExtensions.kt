@@ -34,6 +34,7 @@ suspend fun String.userFriendlyValue(
         return when {
             valueInfo.isMultiText ->
                 valueParser.valueFromMultiTextAsOptionNames(valueInfo.optionSetUid!!, this)
+
             valueInfo.parseToOptionName() ->
                 valueParser.valueFromOptionSetAsOptionName(valueInfo.optionSetUid!!, this)
 
@@ -118,10 +119,20 @@ fun String.getDateFromAge(age: AgeInputType.Age): String? {
             TimeUnitValues.DAYS -> calendar.add(Calendar.DAY_OF_MONTH, -age.value.text.toInt())
         }
 
-        val dateFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DB_FORMAT, Locale.ENGLISH)
         dateFormat.format(calendar.time)
     } catch (e: Exception) {
         null
+    }
+}
+
+fun String.hasDateFormat(format: String = DB_FORMAT): Boolean {
+    return try {
+        val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
+        dateFormat.parse(this)
+        true
+    } catch (e: Exception) {
+        false
     }
 }
 
