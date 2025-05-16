@@ -11,6 +11,7 @@ internal data class DataSetModalDialogUIState(
     val type: DataSetModalType,
     val violations: List<Violation>? = null,
     val mandatory: Boolean = false,
+    val canComplete: Boolean = true,
 )
 
 internal enum class DataSetModalType {
