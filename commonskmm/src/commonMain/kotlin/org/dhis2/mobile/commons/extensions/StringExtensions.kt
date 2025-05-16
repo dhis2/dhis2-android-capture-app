@@ -11,6 +11,7 @@ import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.dates.dateFormat
 import org.dhis2.mobile.commons.dates.dateTimeFormat
 import org.dhis2.mobile.commons.dates.timeFormat
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.TimeUnitValues
 import org.koin.mp.KoinPlatform.getKoin
@@ -20,13 +21,14 @@ import java.util.Locale
 
 expect fun String.toImageBitmap(): ImageBitmap?
 
+val crashReportController = getKoin().get<CrashReportController>()
+
 suspend fun String.userFriendlyValue(
     uid: String,
     addPercentageSymbol: Boolean = true,
 ): String {
     return try {
         val valueParser = getKoin().get<ValueParser>()
-
         val valueInfo = valueParser.getValueInfo(uid, this)
 
         return when {
@@ -69,9 +71,25 @@ suspend fun String.userFriendlyValue(
     }
 }
 
-fun String.toDateTimeFormat() = LocalDateTime.parse(this).format(dateTimeFormat)
-fun String.toDateFormat() = LocalDate.parse(this).format(dateFormat)
-fun String.toTimeFormat() = LocalTime.parse(this).format(timeFormat)
+fun String.toDateTimeFormat() = try {
+    LocalDateTime.parse(this).format(dateTimeFormat)
+} catch (e: Exception) {
+    crashReportController.trackError(e, e.message)
+    this
+}
+fun String.toDateFormat() = try {
+    LocalDate.parse(this).format(dateFormat)
+} catch (e: Exception) {
+    crashReportController.trackError(e, e.message)
+    this
+}
+
+fun String.toTimeFormat() = try {
+    LocalTime.parse(this).format(timeFormat)
+} catch (e: Exception) {
+    crashReportController.trackError(e, e.message)
+    this
+}
 
 fun String.toColor(): Color {
     val color = this.replace("#", "")

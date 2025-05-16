@@ -10,8 +10,6 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.reporting.CrashReportController
-import org.dhis2.commons.reporting.CrashReportControllerImpl
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
@@ -22,6 +20,8 @@ import org.dhis2.form.data.UniqueAttributeController
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.files.FileController
+import org.dhis2.mobile.commons.reporting.CrashReportController
+import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository

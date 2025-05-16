@@ -15,7 +15,6 @@ import org.dhis2.commons.filters.data.GetFiltersApplyingWebAppConfig
 import org.dhis2.commons.periods.data.EventPeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
@@ -34,6 +33,7 @@ import org.dhis2.metadata.usecases.ProgramConfiguration
 import org.dhis2.metadata.usecases.TrackedEntityTypeConfiguration
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.files.FileControllerImpl
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.ui.ThemeManager
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.AnalyticsInterceptor

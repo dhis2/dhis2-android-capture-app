@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.utils.analytics.AnalyticsHelper
 
 class LoginViewModelFactory(

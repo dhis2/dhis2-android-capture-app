@@ -10,7 +10,6 @@ import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -41,6 +40,7 @@ import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2

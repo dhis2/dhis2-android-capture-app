@@ -54,6 +54,7 @@ kotlin {
 
             // Atomicfu
             implementation(libs.atomicfu)
+
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -67,6 +68,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
             implementation(libs.test.espresso.idlingresource)
+            api(libs.analytics.timber)
+            // Sentry
+            api(libs.analytics.sentry)
         }
 
         androidUnitTest.dependencies {
