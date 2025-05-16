@@ -8,6 +8,7 @@ import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.disableCollapsableSectionsInProgram
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.option.Option
 
 open class FormBaseConfiguration(private val d2: D2, private val dispatcher: DispatcherProvider) {
@@ -32,13 +33,13 @@ open class FormBaseConfiguration(private val d2: D2, private val dispatcher: Dis
         return when {
             query.isEmpty() -> d2.optionModule()
                 .options()
-                .byOptionSetUid().eq(optionSetUid)
+                .byOptionSetUid().eq(optionSetUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .getPagingData(10)
 
             else ->
                 d2.optionModule()
                     .options()
-                    .byOptionSetUid().eq(optionSetUid)
+                    .byOptionSetUid().eq(optionSetUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                     .byDisplayName().like("%$query%")
                     .getPagingData(10)
         }.map { pagingData ->
