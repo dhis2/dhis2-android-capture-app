@@ -144,6 +144,7 @@ class DataSetTest : BaseTest() {
         dataSetTableRobot(composeTestRule) {
             scrollToItemWithText("CONTENT AFTER 2:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
+            scrollToTop()
         }
     }
 
@@ -324,12 +325,16 @@ class DataSetTest : BaseTest() {
             clickOnSection(categoryToRowList[1].sectionIndex, categoryToRowList[1].sectionName)
         }
         tableIsVisible()
+        dataSetTableRobot(composeTestRule) {
+            scrollToTop()
+        }
         enterDataStep(
             tableId = "t3aNCvHsoSn",
             cellId = cellIdSection16,
             value = "11",
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
+        composeTestRule.waitForIdle()
         enterDataStep(
             tableId = "t3aNCvHsoSn",
             cellId = cellId2Section16,
@@ -463,6 +468,7 @@ class DataSetTest : BaseTest() {
             value = "7",
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
+        composeTestRule.waitForIdle()
         enterDataStep(
             tableId = table222,
             cellId = cellId2Section22,
@@ -521,6 +527,7 @@ class DataSetTest : BaseTest() {
 
         dataSetTableRobot(composeTestRule) {
             pivotTestingData.forEach { data ->
+                scrollToTop()
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
                 assertTableHeaders(data.headerTestTags)
@@ -600,13 +607,16 @@ class DataSetTest : BaseTest() {
         inputTestTag: String,
     ) {
         dataSetTableRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnCell(tableId, cellId)
             assertInputDialogIsDisplayed()
             dataElementDescription?.let {
                 assertInputDescriptionIsDisplayed(dataElementDescription)
             }
             typeOnInputDialog(value, inputTestTag)
+            composeTestRule.waitForIdle()
             pressOnInputDialogDismiss()
+            composeTestRule.waitForIdle()
             assertCellHasValue(tableId, cellId, value)
         }
 

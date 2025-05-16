@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -228,7 +227,7 @@ fun DataSetInstanceScreen(
         floatingActionButton = {
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
             AnimatedVisibility(
-                visible = loadedState?.dataSetSectionTable is DataSetSectionTable.Loaded &&
+                visible = loadedState?.dataSetSectionTable?.loading == false &&
                     loadedState.selectedCellInfo == null,
                 enter = fadeIn(),
                 exit = fadeOut(),
@@ -533,81 +532,83 @@ private fun DataSetSinglePane(
     currentSelection: TableSelection,
     onTableResize: (ResizeAction) -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize(),
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary),
     ) {
-        SectionTabs(
-            dataSetSections = dataSetSections,
-            onSectionSelected = onSectionSelected,
-            selectedTab = initialTab,
-        )
-
-        Box(
-            modifier = Modifier.clip(
-                shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+        Column(
+            Modifier.fillMaxSize().clip(
+                shape = RoundedCornerShape(
+                    topStart = Radius.L,
+                    topEnd = Radius.L,
+                ),
+            ).background(
+                color = MaterialTheme.colorScheme.surfaceBright,
             ),
         ) {
-            when (dataSetSectionTable) {
-                is DataSetSectionTable.Loaded ->
-                    DataSetTable(
-                        dataSetSectionTable = dataSetSectionTable,
-                        onCellClick = onCellClick,
-                        inputDialogSize = inputDialogSize,
-                        topContent = {
-                            Column(
-                                modifier = modifier.fillMaxWidth()
-                                    .padding(bottom = Spacing.Spacing24),
-                                verticalArrangement = spacedBy(Spacing.Spacing24),
-                            ) {
-                                DataSetDetails(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    dataSetDetails = dataSetDetails,
-                                )
+            DataSetTable(
+                dataSetSectionTable = dataSetSectionTable,
+                onCellClick = onCellClick,
+                inputDialogSize = inputDialogSize,
+                topContent = {
+                    Column(
+                        modifier = modifier.fillMaxWidth()
+                            .padding(bottom = Spacing.Spacing24),
+                    ) {
+                        SectionTabs(
+                            modifier = Modifier,
+                            dataSetSections = dataSetSections,
+                            onSectionSelected = onSectionSelected,
+                            selectedTab = initialTab,
+                        )
+                        DataSetDetails(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            dataSetDetails = dataSetDetails,
+                        )
 
-                                if (dataSetSectionTable.tables().isEmpty()) {
-                                    val message = if (dataSetSections.isEmpty()) {
-                                        emptyDatasetMessage
-                                    } else {
-                                        emptySectionMessage
-                                    }
-                                    WarningInfoBar(message)
-                                }
-
-                                dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-                                    HtmlContentBox(
-                                        text = it,
-                                        modifier = Modifier.padding(
-                                            bottom = Spacing.Spacing8,
-                                            start = Spacing.Spacing16,
-                                            end = Spacing.Spacing16,
-                                        ),
-                                    )
-                                }
+                        if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
+                            val message = if (dataSetSections.isEmpty()) {
+                                emptyDatasetMessage
+                            } else {
+                                emptySectionMessage
                             }
-                        },
-                        bottomContent = {
-                            dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
-                                HtmlContentBox(
-                                    text = it,
-                                    modifier = Modifier.padding(
-                                        top = Spacing.Spacing24,
-                                        start = Spacing.Spacing0,
-                                        end = Spacing.Spacing0,
-                                    ),
+                            WarningInfoBar(message)
+                        }
 
-                                )
-                            }
-                        },
-                        onCellSelected = onCellSelected,
-                        currentSelection = currentSelection,
-                        onTableResize = onTableResize,
-                    )
+                        dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                            HtmlContentBox(
+                                text = it,
+                                modifier = Modifier.padding(
+                                    top = Spacing.Spacing8,
+                                    bottom = Spacing.Spacing8,
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                ),
+                            )
+                        }
+                    }
+                },
+                bottomContent = {
+                    dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                        HtmlContentBox(
+                            text = it,
+                            modifier = Modifier.padding(
+                                top = Spacing.Spacing24,
+                                start = Spacing.Spacing0,
+                                end = Spacing.Spacing0,
+                            ),
 
-                DataSetSectionTable.Loading ->
-                    ContentLoading(Modifier.fillMaxSize())
-            }
+                        )
+                    }
+                },
+                onCellSelected = onCellSelected,
+                currentSelection = currentSelection,
+                onTableResize = onTableResize,
+                loading = dataSetSectionTable.loading,
+
+            )
         }
     }
 }
@@ -625,7 +626,8 @@ private fun SectionTabs(
     AdaptiveTabRow(
         modifier = modifier
             .height(Spacing.Spacing48)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(Color.Transparent),
         tabLabels = tabLabels,
         selectedTab = selectedTab,
         onTabClicked = { selectedTabIndex ->
@@ -656,77 +658,72 @@ private fun DataSetTableContent(
     Box(
         modifier = modifier,
     ) {
-        when (dataSetSectionTable) {
-            is DataSetSectionTable.Loaded ->
-                DataSetTable(
-                    dataSetSectionTable = dataSetSectionTable,
-                    inputDialogSize = inputDialogSize,
-                    onCellClick = onCellClick,
-                    topContent = {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            val dataSetDetailsBottomPadding =
-                                if (dataSetSections.firstOrNull { it.uid == currentSection }?.topContent != null) {
-                                    Spacing.Spacing24
-                                } else {
-                                    Spacing.Spacing8
-                                }
-                            DataSetDetails(
-                                modifier.clip(
-                                    RoundedCornerShape(
-                                        topStart = Radius.L,
-                                        topEnd = Radius.L,
-                                    ),
-                                ).padding(
-                                    start = Spacing.Spacing16,
-                                    end = Spacing.Spacing16,
-                                    bottom = dataSetDetailsBottomPadding,
-                                ).animateContentSize(),
-                                dataSetDetails = dataSetDetails,
-                            )
-
-                            if (dataSetSectionTable.tables().isEmpty()) {
-                                val message = if (dataSetSections.isEmpty()) {
-                                    emptyDatasetMessage
-                                } else {
-                                    emptySectionMessage
-                                }
-                                WarningInfoBar(message)
-                            }
-
-                            dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
-                                HtmlContentBox(
-                                    text = it,
-                                    modifier = Modifier.padding(
-                                        bottom = Spacing.Spacing8,
-                                        start = Spacing.Spacing16,
-                                        end = Spacing.Spacing16,
-                                    ),
-                                )
-                            }
+        DataSetTable(
+            dataSetSectionTable = dataSetSectionTable,
+            inputDialogSize = inputDialogSize,
+            onCellClick = onCellClick,
+            topContent = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    val dataSetDetailsBottomPadding =
+                        if (dataSetSections.firstOrNull { it.uid == currentSection }?.topContent != null) {
+                            Spacing.Spacing24
+                        } else {
+                            Spacing.Spacing8
                         }
-                    },
-                    bottomContent = {
-                        dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
-                            HtmlContentBox(
-                                text = it,
-                                modifier = Modifier.padding(
-                                    top = Spacing.Spacing24,
-                                    start = Spacing.Spacing0,
-                                    end = Spacing.Spacing0,
-                                ).testTag("HTML_BOTTOM_CONTENT"),
-                            )
-                        }
-                    },
-                    onCellSelected = onCellSelected,
-                    currentSelection = currentSelection,
-                    onTableResize = onTableResize,
-                )
+                    DataSetDetails(
+                        modifier.clip(
+                            RoundedCornerShape(
+                                topStart = Radius.L,
+                                topEnd = Radius.L,
+                            ),
+                        ).padding(
+                            start = Spacing.Spacing16,
+                            end = Spacing.Spacing16,
+                            bottom = dataSetDetailsBottomPadding,
+                        ).animateContentSize(),
+                        dataSetDetails = dataSetDetails,
+                    )
 
-            DataSetSectionTable.Loading ->
-                ContentLoading(Modifier.fillMaxSize())
-        }
+                    if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
+                        val message = if (dataSetSections.isEmpty()) {
+                            emptyDatasetMessage
+                        } else {
+                            emptySectionMessage
+                        }
+                        WarningInfoBar(message)
+                    }
+
+                    dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                        HtmlContentBox(
+                            text = it,
+                            modifier = Modifier.padding(
+                                bottom = Spacing.Spacing8,
+                                start = Spacing.Spacing16,
+                                end = Spacing.Spacing16,
+                            ),
+                        )
+                    }
+                }
+            },
+            bottomContent = {
+                dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
+                    HtmlContentBox(
+                        text = it,
+                        modifier = Modifier.padding(
+                            top = Spacing.Spacing24,
+                            start = Spacing.Spacing0,
+                            end = Spacing.Spacing0,
+                        ).testTag("HTML_BOTTOM_CONTENT"),
+                    )
+                }
+            },
+            onCellSelected = onCellSelected,
+            currentSelection = currentSelection,
+            onTableResize = onTableResize,
+            loading = dataSetSectionTable.loading,
+        )
     }
 }
 
@@ -746,7 +743,7 @@ private fun ContentLoading(
 @Composable
 private fun WarningInfoBar(message: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing.Spacing24),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(
@@ -782,11 +779,12 @@ private fun DataSetTable(
     ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
     onTableResize: (ResizeAction) -> Unit,
+    loading: Boolean,
 ) {
     val density = LocalDensity.current
 
     TableTheme(
-        tableDimensions = dataSetSectionTable.overridingDimensions()?.let { overwrittenDimension ->
+        tableDimensions = dataSetSectionTable.overridingDimensions.let { overwrittenDimension ->
             TableDimensions(
                 extraWidths = with(density) {
                     overwrittenDimension.overwrittenTableWidth.mapValues { (_, width) ->
@@ -806,14 +804,14 @@ private fun DataSetTable(
                     }
                 },
             )
-        } ?: TableDimensions(),
+        },
     ) {
         val sectionId by remember(dataSetSectionTable) {
-            derivedStateOf { dataSetSectionTable.sectionId() }
+            derivedStateOf { dataSetSectionTable.id }
         }
 
         DataTable(
-            tableList = dataSetSectionTable.tables(),
+            tableList = dataSetSectionTable.tableModels,
             currentSelection = currentSelection,
             onResizedActions = object : TableResizeActions {
                 override fun onRowHeaderResize(tableId: String, newValue: Float) {
@@ -872,6 +870,7 @@ private fun DataSetTable(
                 end = Spacing.Spacing16,
                 bottom = if (inputDialogSize == null) Spacing.Spacing200 else (Spacing.Spacing200 + (inputDialogSize.dp / 2)),
             ),
+            loading = loading,
         )
     }
 }

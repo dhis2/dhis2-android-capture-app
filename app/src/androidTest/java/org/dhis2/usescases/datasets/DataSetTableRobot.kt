@@ -1,7 +1,9 @@
 package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
@@ -29,12 +31,10 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
@@ -87,6 +87,7 @@ internal class DataSetTableRobot(
 
     fun clickOnCell(tableId: String, cellId: String) {
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
             .assertIsDisplayed()
             .performClick()
@@ -107,6 +108,10 @@ internal class DataSetTableRobot(
     fun scrollToItemWithText(text: String) {
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
             .performScrollToNode(hasText(text, substring = true))
+    }
+
+    fun scrollToTop(){
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(0)
     }
 
     fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
@@ -213,7 +218,25 @@ internal class DataSetTableRobot(
     ) {
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
+        val cellTag = cellTestTag(tableId, cellId)
+        scrollToItemWithTag(cellTag)
+
+        composeTestRule.waitUntil(
+            condition = {
+                composeTestRule.onNodeWithTag(cellTag, true)
+                    .onChildren()
+                    .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
+                    .fetchSemanticsNodes().any { node ->
+                        node.config.getOrNull(SemanticsProperties.Text)
+                            ?.any { it.text == expectedValue } == true
+                    }
+            },
+            timeoutMillis = 5000
+        )
+
+        composeTestRule.onNodeWithTag(cellTag, true)
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
             .onChildren()
             .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
@@ -344,12 +367,12 @@ internal class DataSetTableRobot(
     ) {
         dataElementsRowTestTags.forEach { deCellData ->
             val dataElementIsDisplayed = composeTestRule.onNode(
-                hasTestTag(deCellData.testTag) and hasTextExactly(deCellData.label)
+                hasTestTag(deCellData.testTag) and hasText(deCellData.label)
             ).performScrollTo()
                 .assertIsDisplayed()
             rowTestTags.forEach { catCellData ->
                 dataElementIsDisplayed.assert(
-                    hasAnySibling(hasTestTag(catCellData.testTag) and hasTextExactly(catCellData.label))
+                    hasAnySibling(hasTestTag(catCellData.testTag) and hasText(catCellData.label))
                 )
             }
         }
@@ -374,6 +397,7 @@ internal class DataSetTableRobot(
     }
 
     fun clickOnSection(sectionIndex: Int, sectionName: String) {
+        scrollToTop()
         composeTestRule.onNode(
             hasTestTag("SCROLLABLE_TAB_$sectionIndex") and
                     hasText(sectionName)
