@@ -1,0 +1,18 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">ផ្ទាំងដើម</string>
+    <string name="action_settings">ការ​កំណត់</string>
+
+    <string name="username">ឈ្មោះ​គណនី</string>
+    <string name="password">ពាក្យ​សម្ងាត់</string>
+    <string name="delete">​លុប​</string>
+    <string name="ok">យល់ព្រម</string>
+    <string name="cancel">បោះបង់</string>
+    <string name="prompt_password">ពាក្យ​សម្ងាត់</string>
+    <string name="content_desc_search">ស្វែងរក</string>
+    <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
+    <string name="done_task">ផ្ទាំងដើម</string>
+    <string name="back">ថយក្រោយ</string>
+    <string name="action_sync">ផ្ញើទៅ</string>
+    <string name="count">ផលរាប់</string>
+    <string name="invalid_possitive_zero">លេខវិជ្ជមាន រឺ លេខ ០ តែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    </resources>

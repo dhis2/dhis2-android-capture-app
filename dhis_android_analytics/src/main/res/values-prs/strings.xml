@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">پذیرش</string>
+    <string name="period">دوره</string>
+    <string name="none">هیچ‌کدام</string>
+    <string name="daily">روزنه</string>
+    <string name="today">امروز</string>
+    <string name="other">دیگر</string>
+    <string name="yesterday">دیروز</string>
+    <string name="weekly">هفته وار</string>
+    <string name="monthly">ماهانه</string>
+    <string name="yearly">سالانه</string>
+    <string name="all">همه</string>
+    <string name="reset">مرتب سازی مجدد</string>
+    </resources>

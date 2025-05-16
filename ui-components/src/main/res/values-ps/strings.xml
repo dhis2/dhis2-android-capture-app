@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">بشپړ یې کړئ</string>
+    <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="save">ثبت یې کړئ [ ژباړه - ثبت کړئ ]</string>
+    <string name="clear">پاک یې کړئ</string>
+    <string name="action_done">ترسره شو</string>
+    <string name="action_cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="action_close">بند یې کړئ</string>
+    <string name="hint_search">جستجو</string>
+    </resources>

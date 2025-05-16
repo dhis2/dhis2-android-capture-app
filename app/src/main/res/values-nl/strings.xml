@@ -91,6 +91,7 @@
     <string name="program_inactive">Programma inactief</string>
 
     <string name="event_open">Open</string>
+    <string name="event_completed">Evenement voltooid</string>
     <string name="read_only">Alleen lezen</string>
     <string name="finish_and_complete">Afwerken en voltooi</string>
     <string name="completed">Voltooid</string>
@@ -149,12 +150,15 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Zie de details</string>
     <string name="view_more">BEKIJK MEER</string>
+    <string name="edit">Bewerk</string>
     <string name="follow_up">Volg op</string>
     <string name="follow_up_enabled">Vervolg ingeschakeld</string>
     <string name="follow_up_disabled">Opvolging uitgeschakeld</string>
     <string name="deactivate">Deactiveren</string>
     <string name="program_not_allow_events">Dit programma staat niet meer evenementen toe</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Geen gegevens</string>
     <string name="events">evenementen</string>
     <string name="done_task">Thuis</string>
     <string name="app_info">App informatie</string>
@@ -364,6 +368,7 @@
     <string name="date_dialog_tigle">Selecteer datums om te filteren</string>
     <string name="select_option">Selecteer optie</string>
     <string name="issue_reported">Probleem gemeld</string>
+    <string name="dialog_generate_new_event">Nieuw evenement genereren</string>
     <string name="message_generate_new_event">Wil je nog een evenement aanmaken?</string>
     <string name="event_completed_title">Evenementen voltooid</string>
     <string name="event_completed_message">Alle evenementen in dit programma zijn voltooid. Wilt u het programma ook afsluiten?</string>
@@ -463,6 +468,7 @@
     <string name="send_user_name_title">Verstuur data</string>
     <string name="send_user_name_mesage">Help DHIS2 deze app te verbeteren door foutenlogboeken te delen die zijn gekoppeld aan uw gebruikers-ID.</string>
     <string name="improve_app_msg_title">Wil je ons helpen deze app te verbeteren?</string>
+    <string name="improve_app_msg_text">Als u ja zegt, stuurt de app anonieme statistieken en foutlogboeken die ons helpen de gebruikerservaring en prestaties te verbeteren.\n\nRaadpleeg ons privacybeleid voor meer informatie.</string>
     <string name="improve_app_msg_clickable_word">privacybeleid</string>
     <string name="check_mandatory_field">Velden controleren</string>
     <string name="error_no_network_during_sync">Je internetverbinding is verbroken tijdens het uitvoeren van je configuratiesynchronisatie. Probeer het later opnieuw</string>
@@ -591,6 +597,7 @@
     <string name="filter_event_status_visited">Bezocht</string>
     <string name="filter_event_status_completed">Voltooid</string>
     <string name="filter_event_status_skipped">Overgeslaten</string>
+    <string name="event_tei_limits">Evenementen:%smax:%s%shuidig:%s TEI:%smax:%s%shuidig:%s</string>
     <string name="event_tei_limits_v2">Instellingen beperkt %s\nevenementen: %s/%s TEI: %s/%s</string>
     <string name="enrollment_data_hide">Inschrijvingsgegevens verbergen</string>
     <string name="enrollment_data_show">Toon inschrijvingsgegevens</string>
@@ -675,6 +682,7 @@
     <string name="download_tei_error">De geselecteerde %s kon niet worden gedownload.</string>
     <string name="completed_by">Aangevuld door %s: %s</string>
     <string name="updated_time">Bijgewerkt: %s</string>
+    <string name="action_done">Klaar</string>
     <string name="validation_internal_error_datasets">We konden de gegevenskwaliteit niet controleren. Neem contact op met uw beheerder</string>
     <string name="are_you_sure">Weet je het zeker?</string>
     <string name="reopen_question">Wilt u de dataset opnieuw openen?</string>
@@ -702,10 +710,12 @@
     <string name="error_init_session">We kunnen de sessie met uw gebruiker niet starten</string>
     <string name="enrollment_date_edition_warning">Er zijn geplande evenementen die niet opnieuw worden gepland</string>
     <string name="section_charts">Grafieken</string>
+    <string name="navigation_list_view">Lijst</string>
     <string name="navigation_table_view">Tabel weergave</string>
     <string name="navigation_analytics">Analyse</string>
     <string name="navigation_tasks">Taken</string>
     <string name="navigation_programs">Programma\'s</string>
+    <string name="navigation_charts">Grafieken</string>
     <string name="navigation_notes">Notities</string>
     <string name="navigation_data_entry">Gegevensinvoer</string>
     <string name="navigation_tei_data">Details</string>
@@ -880,4 +890,23 @@
     <string name="storage_denied">Opslagtoestemming is geweigerd.\nU moet deze inschakelen om de versie te installeren.</string>
     <string name="app_version">App versie</string>
     <string name="error_applying_rule_effects">Er is iets misgegaan met de programmaconfiguratie, we kunnen dit evenement niet laden. Neem contact op met uw systeembeheerder.</string>
+    <string name="marked_follow_up">Gemarkeerd voor vervolg</string>
+    <string name="view_only">Alleen bekijken</string>
+    <string name="skipped">Overgeslaten</string>
+    <string name="programs">Programma\'s</string>
+    <string name="sync_warning">Sync waarschuwing</string>
+    <string name="sync_error">Synchronisatiefout</string>
+    <string name="mark_follow_up">Markeer voor vervolg</string>
+    <string name="schedule">Schema</string>
+    <string name="refer">Refereren</string>
+    <string name="scheduled_enter_event">Gepland</string>
+    <string name="program_stage">Programma fase</string>
+    <string name="event">evenement</string>
+    <string name="timeline">Tijdlijn</string>
+    <string name="show_more">Laat meer zien</string>
+    <string name="show_less">Toon minder</string>
+    <string name="sync">Synchroniseren</string>
+    <string name="syncing_something">%s synchroniseren...</string>
+    <string name="show_description">Laat beschrijving zien</string>
+    <string name="hide_description">Beschrijving verbergen</string>
     </resources>

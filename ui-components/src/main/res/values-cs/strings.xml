@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Dokončit</string>
+    <string name="discard_changes">Zrušit změny</string>
+    <string name="not_now">Teď ne</string>
+    <string name="keep_editing">Pokračovat v úpravách</string>
+    <string name="review">Posouzení</string>
+    <string name="cancel">Zrušit</string>
+    <string name="save">Uložit</string>
+    <string name="clear">Vyčistit</string>
+    <string name="draw_here">Zde kreslete</string>
+    <string name="action_done">Hotovo</string>
+    <string name="action_cancel">Zrušit</string>
+    <string name="action_close">Zavřít</string>
+    <string name="hint_search">Hledat</string>
+    <string name="action_clear_all">Vymazat vše</string>
+    <plurals name="error_count">
+        <item quantity="one">%s chyba</item>
+        <item quantity="few">%s chyby</item>
+        <item quantity="many">%s chyb</item>
+        <item quantity="other">%s chyb</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="one">%s varování</item>
+        <item quantity="few">%s varování</item>
+        <item quantity="many">%s varování</item>
+        <item quantity="other">%s varování</item>
+    </plurals>
+</resources>

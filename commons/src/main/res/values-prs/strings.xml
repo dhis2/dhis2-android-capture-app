@@ -1,3 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_data">معلوماتی وجود ندارد</string>
+    <string name="action_accept">پذیرش</string>
+    <string name="next">بعدی</string>
+    <string name="cancel">انصراف</string>
+    <string name="yes">بلی</string>
+    <string name="no">نخیر</string>
+    <string name="navigation_analytics">تجزیه و تحلیل</string>
+    <string name="navigation_programs">برنامه ها</string>
+    <string name="navigation_relationships">وابستگی ها</string>
+    <string name="navigation_notes">یاداشت ها</string>
+    <string name="navigation_data_entry">وارد کردن معلومات</string>
+    <string name="navigation_tei_data">جزئیات</string>
+    <string name="event_overview">جزئیات</string>
+    <string name="select_option">انتخاب گزینه</string>
+    <string name="search">جستجو</string>
+    <string name="data_sets">دیتا سیت ها</string>
+    <string name="done">انجام شد</string>
+
+    <string name="filters_title_period">دوره</string>
+    <string name="filters_title_sorting">تنظیم کردن</string>
+    <string name="filters_title_status">وضعیت</string>
+    <string name="filters_title_date">تاریخ</string>
+    <string name="select_period">انتخاب نوع دوره</string>
+    <string name="daily_period">روزنه</string>
+    <string name="weekly">هفته وار</string>
+    <string name="monthly">ماهانه</string>
+    <string name="bi_monthly">دوبار در- ماه</string>
+    <string name="quarterly">سه ماهه</string>
+    <string name="six_monthly">شش-ماهه</string>
+    <string name="yearly">سالانه</string>
+    <string name="state_error">خطا</string>
+    <string name="state_warning">هشدار\:</string>
+    <string name="state_relationship">رابطه/ وابستگی</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">باز کردن</string>
+    <string name="filter_event_status_schedule">تقسیم اوقات</string>
+    <string name="filter_event_status_overdue">گذشته از موعد</string>
+    <string name="filter_event_status_completed">تکمیل شد</string>
+    <string name="filter_event_status_skipped">اسکیپ شده</string>
+    <string name="active">فعال</string>
+    <string name="enrollment_status_active">باز کردن</string>
+    <string name="enrollment_status_completed">تکمیل</string>
+    <!-- Periods -->
+    <string name="filter_period_today">امروز</string>
+    <string name="filter_period_yesterday">دیروز</string>
+    <string name="filter_period_this_week">هفته جاری</string>
+    <string name="filter_period_last_week">هفته گذشته</string>
+    <string name="filter_period_this_month">ماه جاری</string>
+    <string name="filter_period_last_month">ماه گذشته</string>
+    <string name="filter_period_other">دیگر</string>
+    <string name="filter_period_this_year">سال جاری</string>
+    <string name="filter_period_this_quarter">سه ماهه جاری</string>
+    <string name="filter_period_last_quarter">سه ماهه آخیر</string>
+    <string name="filter_period_months_this_year">ماه های سال هذا</string>
+    <string name="filter_period_quarters_this_year">ربع های سال هذا</string>
+    <string name="filter_period_months_last_year">ماه های سال گذشته</string>
+    <string name="filter_period_last_year">سال گذشته</string>
+    <string name="filter_period_this_financial_year">سال مالی جاری</string>
+    <string name="filter_period_last_financial_year">سال گذشته مالی</string>
+    <string name="period">دوره</string>
+    <string name="DAILY">روزنه</string>
+    <string name="WEEKLY">هفته وار</string>
+    <string name="MONTHLY">ماهانه</string>
+    <string name="YEARLY">سالانه</string>
+
+    <string name="interval_yesterday">دیروز</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">نظرات/فیدبک</string>
+    <string name="section_indicators">شاخص ها</string>
+    <string name="section_charts">چارت ها</string>
+    <string name="action_ok">او کی\!</string>
+    <string name="complete">تکمیل</string>
+    <string name="default_table_header_label">مقدار</string>
+    <string name="default_empty_dataset_section_label">دیتا</string>
+    <string name="overdue_today">امروز</string>
+    <string name="remove">حذف</string>
+    <string name="period_daily_title">روزنه</string>
+    <string name="period_weekly_title">هفته</string>
+    <string name="period_monthly_title">ماه</string>
+    <string name="period_quarter_title">سه ماهه</string>
+    <string name="period_yearly_title">سال</string>
     </resources>

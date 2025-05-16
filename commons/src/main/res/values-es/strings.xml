@@ -17,6 +17,7 @@
     <string name="navigation_tasks">Tareas</string>
     <string name="navigation_programs">Programas</string>
     <string name="navigation_relationships">Relaciones</string>
+    <string name="navigation_relations">Relaciones</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>
     <string name="navigation_tei_data">Detalles</string>
@@ -40,6 +41,17 @@
     <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filters_title_date">Fecha</string>
     <string name="filter_follow_up_label">Seguido %s</string>
+    <string name="select_period">Seleccionar tipo de periodo</string>
+    <string name="daily_period">Diario</string>
+    <string name="weekly">Semanal</string>
+    <string name="bi_weekly">Quincenal</string>
+    <string name="weekly_start_thursday">Semanal a partir del jueves</string>
+    <string name="monthly">Mensual</string>
+    <string name="bi_monthly">Bimestral</string>
+    <string name="quarterly">Trimestral</string>
+    <string name="six_monthly">Semestral</string>
+    <string name="six_monthly_april">Semestral a partir de abril</string>
+    <string name="yearly">Anual</string>
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
     <string name="state_to_post">Por enviar</string>
@@ -130,6 +142,9 @@
     <string name="section_indicators">Indicadores</string>
     <string name="section_charts">Gráficas</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Inscrito en</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">La contraseña está vacía. Ingrese la contraseña.</string>
@@ -227,4 +242,20 @@
         <item quantity="other">%d años de retraso</item>
     </plurals>
 
+    <string name="open_with">Abrir con</string>
+
+    <string name="enrollment_data_section_label_V2">%s datos</string>
+    <string name="new_enrollment">Nuevo %s</string>
+    <string name="enrolling_ou">Inscrito en:</string> <string name="new_event_label">Nuevo %s</string>
+    <string name="delete_event_label">Eliminar %s</string>
+    <string name="week_period_span_default_label">Semana %d %s a %s</string>
+    <string name="enrollment_reopen">Reabrir</string>
+
+    <string name="sync_retry">Reintentar sincronización</string>
+    <string name="syncing">Sincronizando...</string>
+    <string name="remove">Eliminar</string>
+    <string name="period_daily_title">Diario</string>
+    <string name="period_weekly_title">Semana</string>
+    <string name="period_monthly_title">Mes</string>
+    <string name="period_yearly_title">Año</string>
     </resources>

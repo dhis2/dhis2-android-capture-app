@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="no">না</string>
+    <string name="yes">হ্যাঁ</string>
+    <string name="error">ভুল</string>
+    <string name="errors">ভুলগুলো</string>
+    </resources>

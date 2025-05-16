@@ -17,6 +17,8 @@
     <string name="search">Ҷустуҷӯ</string>
     <string name="read_only">Танҳо барои хондан</string>
     <string name="completed">Анҷомёфта</string>
+    <string name="active">Фаъол</string>
+
     <string name="state_error">Хатогӣ</string>
     <!--Event initial-->
     <string name="create">Сохтан</string>
@@ -31,6 +33,9 @@
     <string name="due_date">Санаи пешбинишуда</string>
     <string name="cancel">Бекор кардан</string>
     <string name="delete">Нест кардан</string>
+    <string name="edit">Таҳрир</string>
+    <!--DONE TASKS-->
+    <string name="events_no_data">Ягон иттилоот нест</string>
     <string name="done_task">Саҳифаи асосӣ</string>
     <string name="wipe_data_no">Бекор кардан</string>
     <string name="SYNC_MANAGER">Танзимот</string>
@@ -49,6 +54,7 @@
     <string name="period">Давра</string>
     <string name="next">Навбатӣ</string>
     <string name="SAVE">Захира кардан</string>
+    <string name="button_ok">OK</string>
     <string name="qr_attributes">Нишонаҳо</string>
     <string name="qr_events">Рӯйдодҳо</string>
     <string name="about">Дар бораи</string>
@@ -65,8 +71,10 @@
     <string name="event_indicators">Индикаторҳо</string>
     <string name="please_wait">Лутфан мунтазир шавед</string>
     <string name="table">Ҷадвал</string>
+    <string name="action_continue">Идома додан</string>
     <string name="state_warning">Огоҳӣ</string>
     <string name="action_close">Пӯшидан</string>
+    <string name="data_set_complete">Анҷом ёфт</string>
     <string name="data_every_day">Ҳаррӯза</string>
     <string name="data_every_week">Ҳафтаина</string>
     <string name="sms_completed">Анҷомёфта</string>
@@ -81,4 +89,43 @@
     <string name="filter_period_last_week">Ҳафтаи гузашта</string>
     <string name="filter_period_last_month">Моҳи гузашта</string>
     <string name="filter_period_other">Дигар</string>
+    <string name="filter_event_status_schedule">Ҷадвал</string>
+    <string name="filter_event_status_completed">Анҷомёфта</string>
+    <string name="go_back">Ба ҷафо равед</string>
+    <string name="data_sets">Маҷмӯъҳои иттилоот</string>
+    <string name="interval_yesterday">Дирӯз</string>
+    <string name="dataset_overview">Маълумоти муфассал</string>
+    <string name="name">Ном</string>
+    <string name="formula">Формула</string>
+    <string name="enrollment_date">Санаи номнавис</string>
+    <string name="enrollment_status_completed">Анҷом ёфт</string>
+    <string name="event_data">Иттилоот</string>
+    <string name="action_done">Иҷро шуд</string>
+    <string name="are_you_sure">Оё боварӣ доред?</string>
+    <string name="filters_title_date">Сана</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Ба ҷафо равед</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Пӯшидан</string>
+    <string name="navigation_map_view">Харитаҳо</string>
+    <string name="navigation_programs">Барномаҳо</string>
+    <string name="navigation_data_entry">Ворид кардани иттилоот</string>
+    <string name="navigation_tei_data">Маълумоти муфассал</string>
+    <string name="filter_period_this_year">Имсол</string>
+    <string name="filter_period_last_quarter">Семоҳаи охир</string>
+    <string name="filter_period_months_this_year">Моҳҳо дар ин сол</string>
+    <string name="filter_period_quarters_this_year">Семоҳаҳои ин сол</string>
+    <string name="filter_period_months_last_year">Моҳҳо дар соли гузашта</string>
+    <string name="filter_period_last_year">Соли гузашта</string>
+    <string name="filter_period_last_financial_year">Соли молиявии гузашта</string>
+    <string name="section_feedback">Изҳори назар</string>
+    <string name="section_indicators">Индикаторҳо</string>
+    <string name="value">Қимат</string>
+    <string name="invalid_integer">Қимат бояд адади бутун бошад</string>
+    <string name="available">Мавҷуда</string>
+    <string name="unknown_date">Номаълум</string>
+    <string name="sync_dialog_action_send">Фиристодан</string>
+    <string name="sync_dialog_action_refresh">Таҷдид</string>
+    <string name="programs">Барномаҳо</string>
+    <string name="coordinates">Координатаҳо</string>
+    <string name="schedule">Ҷадвал</string>
+    <string name="optional">Ихтиёрӣ</string>
     </resources>

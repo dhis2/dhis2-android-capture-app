@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="input_action_accept">Accept</string>
+    <string name="input_action_cancel">Anulare</string>
+    <string name="no_results_found">Nu au fost găsite rezultate</string>
+    <string name="action_done">Terminat</string>
+    <string name="no">Nu</string>
+    <string name="yes">Da</string>
+    <string name="error">Eroare</string>
+    <string name="errors">Erori</string>
+    <string name="action_next">Următorul</string>
+    <string name="indicators_label">Indicatori</string>
+    </resources>

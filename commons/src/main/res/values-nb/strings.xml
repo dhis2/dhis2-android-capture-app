@@ -38,6 +38,28 @@
     <string name="filters_title_state">Synk</string>
     <string name="filters_title_assigned">Tildelt til meg</string>
     <string name="filters_title_date">Dato</string>
+    <string name="select_period">Velg periodetype</string>
+    <string name="daily_period">Daglig</string>
+    <string name="weekly">Ukentlig</string>
+    <string name="bi_weekly">Toukentlig</string>
+    <string name="weekly_start_wednesday">Ukentlig, startes onsdag</string>
+    <string name="weekly_start_thursday">Ukentlig, startes torsdag</string>
+    <string name="weekly_start_saturday">Ukentlig, startes lørdag</string>
+    <string name="weekly_start_sunday">Ukentlig, startes lørdag</string>
+    <string name="monthly">Månedlig</string>
+    <string name="bi_monthly">Tomånedlig</string>
+    <string name="quarterly">Kvartalsvis</string>
+    <string name="six_monthly">Halvårlig</string>
+    <string name="six_monthly_april">Hver sjette måned, start i April</string>
+    <string name="six_monthly_nov">Hver sjette måned, start i November</string>
+    <string name="yearly">Årlig</string>
+    <string name="financial_year_april">Regnskapsår med start april</string>
+    <string name="financial_year_july">Regnskapsår med start juli</string>
+    <string name="financial_year_october">Regnskapsår med start oktober</string>
+    <string name="financial_year_november">Regnskapsår med start november</string>
+
+
+
     <!-- State -->
     <string name="state_synced">Synk</string>
     <string name="state_to_post">Å sende</string>
@@ -113,10 +135,23 @@
     <string name="login_error_dhis_version">Denne serveren kjører en dhis versjon som er forskjellig fra 2.29. Oppdater din serverversjon eller bruk testmiljøet for å fortsette.</string>
     <string name="online_search_parsing_error">Feil under analyse av resultater</string>
     <string name="add_image">Legg til bilde</string>
+    <string name="add_file">Legg til fil</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Enhetsplasseringen din er koblet fra. Aktiver den for å registrere koordinater</string>
     <string name="keep_editing">Fortsett å rediger</string>
     <string name="complete">Fullfør</string>
     <string name="default_table_header_label">Verdi</string>
     <string name="discard_changes">Forkast endringer</string>
+    <string name="default_empty_dataset_section_label">Data</string>
+    <string name="overdue_today">I dag</string>
+    <string name="enrollment_reopen">Åpne igjen</string>
+
+    <string name="syncing">Synkroniserer...</string>
+    <string name="remove">Fjern</string>
+    <string name="period_daily_title">Daglig</string>
+    <string name="period_weekly_title">Uke</string>
+    <string name="period_biweekly_title">Biukentlig</string>
+    <string name="period_monthly_title">Måned</string>
+    <string name="period_quarter_title">Kvartal</string>
+    <string name="period_yearly_title">År</string>
     </resources>

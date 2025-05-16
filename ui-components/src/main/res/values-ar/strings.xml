@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">مكتمل</string>
+    <string name="discard_changes">تجاهل التغييرات</string>
+    <string name="not_now">ليس الان</string>
+    <string name="keep_editing">استمر في التعديل</string>
+    <string name="review">المراجعة</string>
+    <string name="cancel">إلغاء</string>
+    <string name="save">حفظ</string>
+    <string name="clear">مسح</string>
+    <string name="action_done">تم</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_close">إغلاق</string>
+    <string name="hint_search">بحث</string>
+    <string name="action_clear_all">تنظيف الكل</string>
+    <plurals name="error_count">
+        <item quantity="zero">%s الأخطاء</item>
+        <item quantity="one">%s الخطأ</item>
+        <item quantity="two">%s الأخطاء</item>
+        <item quantity="few">%s الأخطاء</item>
+        <item quantity="many">%s الأخطاء</item>
+        <item quantity="other">%s الأخطاء</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="zero">%s التحذيرات</item>
+        <item quantity="one">%s تحذير</item>
+        <item quantity="two">%s التحذيرات</item>
+        <item quantity="few">%s التحذيرات</item>
+        <item quantity="many">%s التحذيرات</item>
+        <item quantity="other">%s التحذيرات</item>
+    </plurals>
+</resources>

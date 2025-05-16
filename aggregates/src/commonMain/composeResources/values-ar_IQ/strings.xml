@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="total_header_label">الإجماليات</string>
+    <string name="input_action_accept">قبول</string>
+    <string name="input_action_cancel">إلغاء</string>
+    <string name="complete">مكتمل</string>
+    <string name="no">لا</string>
+    <string name="yes">نعم</string>
+    <string name="error">خطأ</string>
+    <string name="errors">اخطاء</string>
+    <string name="action_next">التالي</string>
+    <string name="indicators_label">المؤشرات</string>
+    </resources>

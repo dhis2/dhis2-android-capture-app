@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">Não ha dados</string>
+    <string name="next">Próximo</string>
+    <string name="cancel">Cancelar</string>
+    <string name="yes">Sim</string>
+    <string name="no">nenhum</string>
+    <string name="navigation_programs">Programas</string>
+    <string name="navigation_relationships">Relacionamentos</string>
+    <string name="navigation_notes">Notas</string>
+    <string name="navigation_data_entry">Entrada de dados</string>
+    <string name="navigation_tei_data">Detalhes</string>
+    <string name="event_overview">Detalhes</string>
+    <string name="search">Pesquisar</string>
+    <string name="data_sets">Agregação de Dados</string>
+    <string name="done">Concluído</string>
+
+    <string name="filters_title_period">Período</string>
+    <string name="filters_title_status">Estado</string>
+    <string name="filters_title_date">Data</string>
+    <string name="select_period">Seleccione o tipo de período</string>
+    <string name="daily_period">Diário</string>
+    <string name="weekly">Semanal</string>
+    <string name="monthly">Mensal</string>
+    <string name="bi_monthly">Bimensal</string>
+    <string name="quarterly">Trimestral</string>
+    <string name="six_monthly">Semestral</string>
+    <string name="yearly">Anual</string>
+    <string name="state_error">Erro</string>
+    <string name="state_warning">Advertência</string>
+    <string name="state_relationship">Relação</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">Abrir</string>
+    <string name="filter_event_status_schedule">Programar</string>
+    <string name="filter_event_status_overdue">Atrasado</string>
+    <string name="filter_event_status_completed">Concluído</string>
+    <string name="filter_event_status_skipped">Ignorado</string>
+    <string name="active">Activo</string>
+    <string name="cancelled">Cancelado</string>
+    <string name="enrollment_status_active">Abrir</string>
+    <string name="enrollment_status_completed">Completo</string>
+    <string name="enrollment_status_cancelled">Cancelado</string>
+    <!-- Periods -->
+    <string name="filter_period_today">Hoje</string>
+    <string name="filter_period_yesterday">Ontém</string>
+    <string name="filter_period_last_week">Última semana</string>
+    <string name="filter_period_last_month">Mês passado</string>
+    <string name="filter_period_other">Outro</string>
+    <string name="filter_period_this_year">Este ano</string>
+    <string name="filter_period_last_quarter">Último trimestre</string>
+    <string name="filter_period_months_this_year">Meses deste ano</string>
+    <string name="filter_period_quarters_this_year">Trimestres deste ano</string>
+    <string name="filter_period_months_last_year">Meses do ano passado</string>
+    <string name="filter_period_last_year">Ano passado</string>
+    <string name="filter_period_last_financial_year">último ano financeiro</string>
+    <string name="period">Período</string>
+    <string name="DAILY">Diário</string>
+    <string name="WEEKLY">Semanal</string>
+    <string name="MONTHLY">Mensal</string>
+    <string name="YEARLY">Anual</string>
+
+    <string name="interval_yesterday">Ontém</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Retroinformacão</string>
+    <string name="section_indicators">Indicadores</string>
+    <string name="action_ok">Esta bem</string>
+    <string name="complete">Completo</string>
+    <string name="default_table_header_label">Valor</string>
+    <string name="default_empty_dataset_section_label">Dados</string>
+    <string name="overdue_today">Hoje</string>
+    <string name="remove">Remover</string>
+    <string name="period_daily_title">Diário</string>
+    <string name="period_weekly_title">Semana</string>
+    <string name="period_monthly_title">Mês</string>
+    <string name="period_yearly_title">Ano</string>
+    </resources>

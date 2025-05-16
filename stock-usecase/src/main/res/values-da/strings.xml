@@ -1,0 +1,11 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="action_settings">Settings</string>
+
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="prompt_password">Password</string>
+    <string name="back">Back</string>
+    </resources>

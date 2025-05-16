@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="invalid_integer">অবশ্যই সংখ্যা হতে হবে</string>
+    <string name="error">ভুল</string>
+    <string name="date">তারিখ</string>
+    <string name="due_date">নির্ধারিত তারিখ</string>
+    </resources>
