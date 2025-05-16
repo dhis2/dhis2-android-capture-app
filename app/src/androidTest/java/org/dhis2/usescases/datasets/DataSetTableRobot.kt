@@ -6,6 +6,7 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.hasAnyChild
@@ -29,17 +30,14 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
-import androidx.compose.ui.test.swipeLeft
 import androidx.compose.ui.test.swipeRight
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
-import org.dhis2.composetable.ui.semantics.CellSelected
 import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DISMISS_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
@@ -54,6 +52,7 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.dhis2.ui.toColor
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.CellSelected
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
@@ -109,12 +108,14 @@ internal class DataSetTableRobot(
             .performScrollToNode(hasText(text, substring = true))
     }
 
-    fun assertCellSelected(tableId: String, rowIndex: Int, columnIndex: Int) {
-        composeTestRule.onNode(
-            hasTestTag("$tableId${CELL_TEST_TAG}$rowIndex$columnIndex")
-                    and
-                    SemanticsMatcher.expectValue(CellSelected, true), true
-        ).assertIsDisplayed()
+    fun assertCellSelected(tableId: String, cellId: String) {
+        composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true).assert(
+            SemanticsMatcher.expectValue(CellSelected, true),
+        )
+    }
+
+    fun assertCellDisabled(tableId: String, cellId: String) {
+        composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId)).assertIsNotEnabled()
     }
 
     fun clickOnEditValue() {
@@ -206,6 +207,7 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(INPUT_DIALOG_DISMISS_TAG).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun assertCellHasValue(
         tableId: String,
         cellId: String,
@@ -214,6 +216,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(expectedValue))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
             .onChildren()
             .filter(hasTestTag("CELL_VALUE_TEST_TAG"))
