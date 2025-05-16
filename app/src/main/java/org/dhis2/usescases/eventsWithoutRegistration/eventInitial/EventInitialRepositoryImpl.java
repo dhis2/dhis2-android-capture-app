@@ -13,6 +13,7 @@ import org.dhis2.ui.MetadataIconData;
 import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
+import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.ObjectStyle;
 import org.hisp.dhis.android.core.common.ValueType;
@@ -318,7 +319,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
         boolean mandatory = stage.compulsory();
         String optionSet = dataElement.optionSetUid();
         String dataValue = value;
-        List<Option> option = optionSet != null ? d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet() : new ArrayList<>();
+        List<Option> option = optionSet != null ? d2.optionModule().options().byOptionSetUid().eq(optionSet).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).byCode().eq(dataValue).blockingGet() : new ArrayList<>();
         boolean allowFutureDates = stage.allowFutureDate();
         String formName = dataElement.displayFormName();
         String description = dataElement.displayDescription();
@@ -326,7 +327,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
 
         OptionSetConfiguration optionSetConfig = null;
         if (optionSet != null) {
-            List<Option> dataValueOptions = d2.optionModule().options().byOptionSetUid().eq(optionSet).byCode().eq(dataValue).blockingGet();
+            List<Option> dataValueOptions = d2.optionModule().options().byOptionSetUid().eq(optionSet).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).byCode().eq(dataValue).blockingGet();
             if (!dataValueOptions.isEmpty()) {
                 dataValue = option.get(0).displayName();
             }
@@ -334,7 +335,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                     null,
                     query -> null,
                     OptionSetConfiguration.Companion.optionDataFlow(
-                            d2.optionModule().options().byOptionSetUid().eq(optionSet).getPagingData(10),
+                            d2.optionModule().options().byOptionSetUid().eq(optionSet).orderBySortOrder(RepositoryScope.OrderByDirection.ASC).getPagingData(10),
                             option1 -> metadataIconProvider.invoke(option1.style()))
             );
         }
