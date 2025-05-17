@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Анҷом ёфт</string>
+    <string name="cancel">Бекор кардан</string>
+    <string name="save">Захира кардан</string>
+    <string name="clear">Пок кардан</string>
+    <string name="action_done">Иҷро шуд</string>
+    <string name="action_cancel">Бекор кардан</string>
+    <string name="action_close">Пӯшидан</string>
+    <string name="hint_search">Ҷустуҷӯ</string>
+    </resources>

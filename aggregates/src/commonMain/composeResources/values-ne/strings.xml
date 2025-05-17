@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="input_action_accept">स्वीकार</string>
+    <string name="input_action_cancel">रद्द गर्नुहोस्</string>
+    <string name="no_results_found">कुनै पनि नतिजा भेटिएन</string>
+    </resources>

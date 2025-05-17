@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="total_header_label">مجموعه</string>
+    <string name="input_age_date_of_birth">تاریخ تولد</string>
+    <string name="input_age">سن</string>
+    <string name="input_age_or">تنظیم</string>
+    <string name="input_action_accept">پذیرش</string>
+    <string name="input_action_cancel">انصراف</string>
+    <string name="no_results_found">هیج نتیجه ی یافت نشد</string>
+    <string name="action_done">انجام شد</string>
+    <string name="input_coordinate_latitude">عرض البلد</string>
+    <string name="input_coordinate_longitude">طول البلد</string>
+    <string name="complete">تکمیل</string>
     <string name="ok">تأیید</string>
-
-
-</resources>
+    <string name="no">نخیر</string>
+    <string name="yes">بلی</string>
+    <string name="error">خطا</string>
+    <string name="errors">خطاها</string>
+    <string name="action_next">بعدی</string>
+    <string name="indicators_label">شاخص ها</string>
+    </resources>

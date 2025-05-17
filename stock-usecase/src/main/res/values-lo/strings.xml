@@ -4,29 +4,118 @@
     <string name="action_settings">ຕັ້ງຄ່າ</string>
 
     <string name="discard">ຍົົກເລິກ</string>
+    <string name="select_transaction">ເລືອກທຸລະກຳ</string>
+    <string name="recent_activity">ກິດຈະກຳທີ່ຜ່ານມາ</string>
+    <string name="last_synced">ອັບເດດຂໍ້ມູນຄັ້ງສຸດທ້າຍ:</string>
+    <string name="select_facility">ເລືອກສະຖານທີ່ບໍລິການ</string>
+    <!-- Sign in -->
+    <string name="server">ເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່:</string>
+    <string name="sign_in">ເຂົ້າສູ່ລະບົບ</string>
+    <string name="sign_in_to_your_account">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີຂອງທ່ານ</string>
+    <string name="sign_in_to_with_oidc">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ ICRC</string>
     <string name="username">ຊື່ຜູ້ໃຊ້</string>
     <string name="password">ລະຫັດຜ່ານ</string>
+    <string name="forgot_password">ລືມລະຫັດຜ່ານ\?</string>
+
+    <!-- FloatingActionButtons -->
+    <string name="proceed">ດຳເນີນ</string>
     <string name="review">ທົບທວນຄືນ</string>
 
+    <string name="search">ຄົ້ນຫາລາຍການ</string>
+    <string name="search_placeholder">ຄົ້ນຫາ...</string>
     <string name="delete">ລົບ</string>
     <string name="ok">​ຕົກ​ລົງ</string>
     <string name="cancel">ຍົກເລີກ</string>
     <string name="from">ຈາກ</string>
     <string name="language">ພາສາ</string>
+    <string name="logout">ອອກຈາກລະບົບ</string>
+
+
+    <string name="quantity">ປະລິມານ</string>
+    <string name="items_available">ລາຍການທີ່ມີຢູ່</string>
+    <string name="logout_confirmation_message">ທ່ານໝັ້ນໃຈບໍວ່າທ່ານຕ້ອງການອອກຈາກລະບົບ\?</string>
+
+    <plurals name="items_found">
+        <item quantity="other">%d ລາຍການ</item>
+    </plurals>
+    <string name="no_items_found">ບໍ່ພົບລາຍການໃດໆ</string>
     <string name="prompt_email">ອີເມວ</string>
     <string name="prompt_password">ລະຫັດຜ່ານ</string>
+    <string name="action_sign_in">ເຂົ້າສູ່ລະບົບ ຫຼື ລົງທະບຽນ</string>
+    <string name="action_sign_in_short">ເຂົ້າສູ່ລະບົບ</string>
+    <string name="welcome">ຍິນດີຕ້ອນຮັບ !</string>
+    <string name="invalid_username">ບໍ່ແມ່ນຊື່ຜູ້ໃຊ້ທີ່ຖືກຕ້ອງ</string>
+    <string name="invalid_password">ລະຫັດຜ່ານຕ້ອງມີ >5 ຕົວອັກສອນ</string>
+    <string name="login_failed">ການເຂົ້າສູ່ລະບົບຜິດພາດ</string>
+    <string name="resync">ອັບເດດຂໍ້ມູນຄືນໃໝ່</string>
+
+    <!-- Errors -->
+    <string name="login_error">ບໍ່ສາມາດເຂົ້າສູ່ລະບົບໄດ້</string>
+    <string name="facilities_load_error">ບໍ່ສາມາດໂຫຼດລາຍຊື່ສະຖານທີ່ບໍລິການທີ່ມີຢູ່ໄດ້</string>
     <string name="content_desc_search">ຄົ້ນຫາ</string>
+    <string name="content_desc_clear_text">ລ້າງຂໍ້ຄວາມ</string>
+    <string name="content_desc_last_sync">ອັບເດດຂໍ້ມູນຄັ້ງສຸດທ້າຍ</string>
+    <string name="content_desc_quantity_info">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບປະລິມານ</string>
+    <string name="content_desc_remove">ລົບລາຍການ</string>
     <string name="confirm_transaction_label">ຢືນຢັນ</string>
+    <string name="restart_later">ເລີ່ມຕົ້ນໃໝ່ໃນພາຍຫຼັງ</string>
+    <string name="logout_success_message">ອອກຈາກລະບົບສຳເລັດແລ້ວ</string>
+
     <string name="invalid_quantity">ບໍ່ຖືກຕ້ອງ</string>
+    <string name="speech_network_error">ຂໍ້ຜິດພາດທາງເຄື່ອຂ່າຍ</string>
+    <string name="speech_network_timeout_error">ການເຮັດວຽກຂອງອິນເຕີເນັດໝົດເວລາແລ້ວ</string>
+    <string name="negative_number_speech_input_error">
+ບໍ່ອະນຸຍາດໃຫ້ປ້ອນຕົວເລກລົບ:\"%s\" </string>
+
+    <string name="no_network_available">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>
+    <string name="unable_to_sync_data_no_network_available">
+ບໍ່ສາມາດ ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນຂໍ້ມູນໄດ້ເນື່ອງຈາກບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">ມີບາງສິ່ງບາງຢ່າງຜິດພາດ. ກະລຸນາກວດເບິ່ງທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່, ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານວ່າຖືກຕ້ອງແລ້ວ ແລ້ວລອງໃໝ່ອີກຄັ້ງ.</string>
+    <string name="login_error_error_response">Oops! ມີບາງສິ່ງບາງຢ່າງຜິດພາດທາງດ້ານຄອມພິວເຕີໜ່ວຍແມ່</string>
+    <string name="login_error_no_dhis_instance">URL ທີ່ສະໜອງໃຫ້ບໍ່ແມ່ນຄອມພິວເຕີໜ່ວຍແມ່ຂອງ DHIS2.</string>
+    <string name="login_error_bad_credentials">ຊື່ຜູ້ໃຊ້ ແລະ/ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</string>
     <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
+    <string name="online_search_parsing_error">ມີຄໍາຜິດໃນຂະນະທີ່ສົ່ງຜົນໄດ້ຮັບ</string>
+    <string name="error_unexpected">ມີບາງຢ່າງທີ່ບໍ່ຄາດຄິດເກີດຂື້ນ.</string>
+    <string name="error_many_requests">ຄອມພິວເຕິ້ໜ່ວຍແມ່ຍັງບໍ່ຫວ່າງໃນເວລານີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</string>
     <string name="error_already_authenticated">ຜູ້ໃຊ້ໄດ້ເຂົ້າສູ່ລະບົບແລ້ວ.</string>
     <string name="error_already_executed">ການຮ້ອງຂໍໄດ້ດຳເນີນການແລ້ວ</string>
+    <string name="error_api_invalid_query">ການຮ້ອງຂໍນຳເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍຖືກຕ້ອງ</string>
+    <string name="error_create_existing_error">ການສ້າງຖືກຍົກເລີກ. ມີວັດຖຸຢູ່ແລ້ວ.</string>
+    <string name="error_export_login">ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອສົ່ງອອກຖານຂໍ້ມູນ.</string>
+    <string name="error_export_encrypted">ບໍ່ຮອງຮັບການສົ່ງອອກຖານຂໍ້ມູນທີ່ຖືກເຂົ້າລະຫັດ.</string>
+    <string name="error_import_exist">ທ່ານກໍາລັງນໍາເຂົ້າຖານຂໍ້ມູນທີ່ມີຢູ່ແລ້ວ.</string>
+    <string name="error_import_logout">ກະລຸນາອອກຈາກລະບົບເພື່ອເຂົ້າຖານຂໍ້ມູນໃຫມ່.</string>
+    <string name="error_import_version">ລຸ່ນຂອງຖານຂໍ້ມູນທີ່ນຳເຂົ້າສູງກ່ວາທີ່ຮອງຮັບ</string>
+    <string name="error_user_no_authenticated">ບໍ່ມີຜູ້ໃຊ້ຮັບຮອງຄວາມຖືກຕ້ອງ</string>
+    <string name="error_user_no_authenticated_offline">ບໍ່ມີຜູ້ໃຊ້ຮັບຮອງຄວາມຖືກຕ້ອງແບບອອບລາຍ</string>
+    <string name="error_different_offline_user">ທ່ານກຳລັງພະຍາຍາມເຂົ້າສູ່ລະບົບແບບອອບລາຍກັບຜູ້ໃຊ້ອື່ນ.</string>
+    <string name="error_object_update">ບໍ່ສາມາດອັບເດດວັດຖຸໄດ້</string>
+    <string name="error_object_insert">ບໍ່ສາມາດໃສ່ວັດຖຸໄດ້.</string>
+    <string name="error_ownership_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃຫ້ເຂົ້າເຖີງ.</string>
+    <string name="error_null_url">ບໍ່ມີທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່. ກະລຸນາປ້ອນທີ່ຢູ່</string>
+    <string name="error_server_malformed">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍ່ຄ່ອຍດີ. ກະລຸນາກວດສອບ</string>
+    <string name="error_settings_app_not_supported">ການຕັ້ງຄ່າເວັບແອັບລຸ່ນນີ້ບໍໄດ້ຮອງຮັບ</string>
+    <string name="error_settings_app_not_intalled">ການຕັ້ງຄ່າເວັບແອັບພິເຄຊັ່ນບໍ່ໄດ້ຕິດຕັ້ງໃນເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່</string>
+    <string name="error_socket_timeout">ເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່ໃຊ້ເວລາຕອບສະໜອງດົນເກີນໄປ. ພວກເຮົາຍົກເລິກການຮ້ອງຂໍ</string>
+    <string name="error_url_not_found">ພວກເຮົາບໍ່ສາມາດຊອກຫາ URL ໄດ້. ກະລຸນາກວດສອບມັນ.</string>
+    <string name="error_account_disabled">ບັນຊີຂອງທ່ານຖືກປິດການນຳໃຊ້ແລ້ວ. ຖ້ານີ້ແມ່ນຄວາມຜິດພາດ, ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_account_locked">ບັນຊີຜູ້ໃຊ້ຂອງທ່ານຖືກລັອກ. ຖ້າຫາກນີ້ແມ່ນຂໍ້ຜິດພາດ, ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_set_value">ບໍ່ສາມາດຕັ້ງຄ່າໄດ້.</string>
+    <string name="error_ssl">ມີບັນຫາກັບໃບຮັບຮອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="done_task">ໜ້າຫຼັກ</string>
     <string name="back">​ກັບ​ຄືນ</string>
     <string name="no_conflicts_message">ສາຍງານນີ້ບໍມີຂໍ້ຂັດແຍ້ງ</string>
     <string name="action_sync">ສົ່ງ</string>
+    <string name="from_facility">ຈາກ ສະຖານທີ່ບໍລິການ</string>
+    <string name="to_facility">ຫາ ສະຖານທີ່ບໍລິການ</string>
+    <string name="stock">ສາງ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="transaction_not_confirmed">ທຸລະກຳຍັງບໍ່ທັນໄດ້ຮັບການຢືນຢັນ. ຖ້າເຈົ້າອອກດຽວນີ້ ຂໍ້ມູນທີ່ປ້ອນເຂົ້າຈະຖືກຍົກເລີກ.</string>
     <string name="count">ນັບ</string>
+    <string name="under_review">ພາຍໃຕ້ການທົບທວນຄືນ</string>
     <string name="formatting_error">ຂໍ້ຜິດພາດໃນການຈັດຮູບແບບ</string>
     <string name="invalid_possitive_zero">ອະນຸຍາດໃຫ້ປ້ອນໄດ້ພຽງແຕ່ຄ່າບວກ ຫຼື ສູນເທົ່ານັ້ນ</string>
-    </resources>
+    <string name="leading_zero_error">ບໍ່ອະນຸຍາດໃຫ້ມີຕົວເລກສູນນຳໜ້າ</string>
+</resources>

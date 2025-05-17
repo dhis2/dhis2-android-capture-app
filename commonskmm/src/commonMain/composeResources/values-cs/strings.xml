@@ -22,6 +22,7 @@
     <string name="conf_error_value_to_assign_option_set">Pravidlo programu %s se snaží přiřadit hodnotu %s, která nepatří do sady možností %s</string>
     <string name="conf_error_value_option_set">Hodnota pole %s nepatří do možnosti nastavené v položce %s</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
+    <string name="required">Vyžadováno</string>
     <string name="date">datum</string>
     <string name="hint_year">Let</string>
     <string name="hint_month">Měsíce</string>
@@ -54,16 +55,14 @@
     <string name="complete">Dokončit</string>
     <string name="discard_changes">Zrušit změny</string>
     <string name="saved">Uloženo!</string>
-    <string name="review_message">Některá pole vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
     <string name="not_now">Teď ne</string>
+    <string name="save_anyway">Přesto uložit</string>
     <string name="keep_editing">Pokračovat v úpravách</string>
+    <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný\?</string>
     <string name="discard_go_back">Pokud nyní odejdete, všechny informace ve formuláři budou zahozeny.</string>
-    <string name="field_errors_not_saved_discard">Některá pole obsahují chyby a neuloží se. \nPokud nyní skončíte, změny budou zahozeny.</string>
     <string name="field_errors_not_saved">Některá pole obsahují chyby a neuloží se.</string>
     <string name="fields_mandatory_missing">Některá povinná pole chybí a formulář nelze uložit.</string>
-    <string name="fields_mandatory_missing_discard">Některá povinná pole chybí a formulář nelze uložit. \nPokud nyní skončíte, změny budou zahozeny.</string>
     <string name="share">Sdílet</string>
-    <string name="camera_permission_denied">Povolení fotoaparátu bylo odepřeno.\nPro použití této funkce je nutné ji povolit.</string>
     <string name="action_close">Zavřít</string>
     <string name="program_rules_loop_warning_title">Upozornění na pravidla programu</string>
     <string name="program_rules_loop_warning_message">Došlo k problému s konfigurací, který způsobuje smyčku v pravidlech. Kontaktujte svého správce.</string>
@@ -92,4 +91,23 @@
     <string name="tei_coordinates">Souřadnice pro</string>
     <string name="no_reserved_values">Neexistují žádné další rezervované hodnoty. Obraťte se na správce systému</string>
     <string name="incident_date">Datum incidentu</string>
-    </resources>
+    <string name="location_permission_denied">Pro zachycení souřadnic je potřeba oprávnění k poloze. Povolte je prosím v nastavení aplikace</string>
+    <string name="open_with">Otevřít s</string>
+    <string name="no_option_found">Nenalezena žádná možnost</string>
+    <string name="download">Stáhnout</string>
+    <string name="scan">Skenování</string>
+    <string name="qr_code">QR kód</string>
+    <string name="bar_code">Čárový kód</string>
+    <string name="add_location">Přidat umístění</string>
+    <string name="form_without_fields">Tento formulář nemá nakonfigurovaná žádná pole</string>
+    <string name="event_details_section_title">Podrobnosti %s</string>
+    <string name="event_data_section_title">%s data</string>
+    <string name="org_unit">Organizační jednotka</string>
+    <string name="coordinates">Souřadnice</string>
+    <string name="category_combo">Kombinovaná kategorie</string>
+    <string name="no_options">K dispozici nejsou žádné možnosti</string>
+    <string name="cat_combo">Kombinace kategorií</string>
+    <string name="yes">ano</string>
+    <string name="no">ne</string>
+    <string name="re_open_to_edit">Znovuotevření formuláře pro úpravy</string>
+</resources>

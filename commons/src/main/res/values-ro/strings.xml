@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">Accept</string>
+    <string name="next">Următorul</string>
+    <string name="cancel">Anulare</string>
+    <string name="yes">Da</string>
+    <string name="no">Nu</string>
+    <string name="navigation_relationships">Relații</string>
+    <string name="search">Căutare</string>
+    <string name="events">evenimente</string>
+    <string name="done">Terminat</string>
+
+    <string name="filters_title_status">Stare</string>
+    <string name="filters_title_date">Data</string>
+    <string name="select_period">Selectați tipul perioadei</string>
+    <string name="monthly">Lunar</string>
+    <string name="quarterly">Trimestrial</string>
+    <string name="yearly">Anual</string>
+    <string name="state_error">Eroare</string>
+    <string name="state_warning">Avertizare</string>
+    <string name="filter_event_status_completed">Complet</string>
+    <string name="active">Activ</string>
+    <string name="cancelled">Anulat</string>
+    <string name="enrollment_status_cancelled">Anulat</string>
+    <!-- Periods -->
+    <string name="filter_period_today">Astăzi</string>
+    <string name="filter_period_yesterday">Ieri</string>
+    <string name="filter_period_this_week">Săptămâna aceasta</string>
+    <string name="filter_period_last_week">Săptămâna trecută</string>
+    <string name="filter_period_this_month">Luna aceasta</string>
+    <string name="filter_period_last_month">Luna trecută</string>
+    <string name="filter_period_last_quarter">Ultimul trimestru</string>
+    <string name="filter_period_weeks_this_year">Săptămâni în anul curent</string>
+    <string name="filter_period_months_this_year">Luni în anul curent</string>
+    <string name="filter_period_quarters_this_year">Trimestre în anul curent</string>
+    <string name="filter_period_months_last_year">Luni în anul trecut</string>
+    <string name="filter_period_last_year">Anul trecut</string>
+    <string name="filter_period_last_financial_year">Ultimul an financiar</string>
+    <string name="MONTHLY">Lunar</string>
+    <string name="YEARLY">Anual</string>
+
+    <string name="interval_yesterday">Ieri</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicatori</string>
+    <string name="overdue_today">Astăzi</string>
+    <string name="period_monthly_title">Lună</string>
+    <string name="period_yearly_title">An</string>
+    </resources>

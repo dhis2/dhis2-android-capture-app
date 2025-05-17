@@ -1,0 +1,25 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Hem</string>
+    <string name="action_settings">Inställningar</string>
+
+    <string name="discard">Kassera</string>
+    <string name="sign_in">Logga in</string>
+    <string name="username">Användarnamn</string>
+    <string name="password">Lösenord</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Fortsätta</string>
+    <string name="delete">Radera</string>
+    <string name="ok">ok</string>
+    <string name="cancel">Avbryt</string>
+    <string name="prompt_email">E-post</string>
+    <string name="prompt_password">Lösenord</string>
+    <string name="action_sign_in_short">Logga in</string>
+    <string name="content_desc_search">Sök</string>
+    <string name="confirm_transaction_label">Bekräfta</string>
+    <string name="online_search_parsing_error">Fel vid tolkning av resultat</string>
+    <string name="done_task">Hem</string>
+    <string name="back">Tillbaka</string>
+    <string name="action_sync">Skicka</string>
+    <string name="count">Räkna</string>
+    <string name="invalid_possitive_zero">Endast positiva tal eller noll tillåts</string>
+    </resources>

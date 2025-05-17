@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="input_action_cancel">Cancel</string>
+    <string name="no_results_found">No results found</string>
+    <string name="ok">OK</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="error">Error</string>
+    <string name="action_next">Next</string>
+    <string name="indicators_label">Indicators</string>
+    </resources>

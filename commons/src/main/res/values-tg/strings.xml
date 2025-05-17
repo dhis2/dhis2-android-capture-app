@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">Ягон иттилоот нест</string>
+    <string name="next">Навбатӣ</string>
+    <string name="cancel">Бекор кардан</string>
+    <string name="yes">Ҳа</string>
+    <string name="no">Не</string>
+    <string name="navigation_programs">Барномаҳо</string>
+    <string name="navigation_data_entry">Ворид кардани иттилоот</string>
+    <string name="navigation_tei_data">Маълумоти муфассал</string>
+    <string name="event_overview">Маълумоти муфассал</string>
+    <string name="search">Ҷустуҷӯ</string>
+    <string name="data_sets">Маҷмӯъҳои иттилоот</string>
+    <string name="done">Иҷро шуд</string>
+
+    <string name="filters_title_period">Давра</string>
+    <string name="filters_title_status">Ҳолат</string>
+    <string name="filters_title_date">Сана</string>
+    <string name="select_period">Интихоби навъи давра</string>
+    <string name="daily_period">Ҳаррӯза</string>
+    <string name="weekly">Ҳафтаина</string>
+    <string name="monthly">Моҳона</string>
+    <string name="bi_monthly">Ду маротиба дар як моҳ</string>
+    <string name="quarterly">Семоҳа</string>
+    <string name="six_monthly">Шашмоҳа</string>
+    <string name="yearly">Солона</string>
+    <string name="state_error">Хатогӣ</string>
+    <string name="state_warning">Огоҳӣ</string>
+    <string name="filter_event_status_schedule">Ҷадвал</string>
+    <string name="filter_event_status_completed">Анҷомёфта</string>
+    <string name="active">Фаъол</string>
+    <string name="enrollment_status_completed">Анҷом ёфт</string>
+    <!-- Periods -->
+    <string name="filter_period_today">Имрӯз</string>
+    <string name="filter_period_yesterday">Дирӯз</string>
+    <string name="filter_period_last_week">Ҳафтаи гузашта</string>
+    <string name="filter_period_last_month">Моҳи гузашта</string>
+    <string name="filter_period_other">Дигар</string>
+    <string name="filter_period_this_year">Имсол</string>
+    <string name="filter_period_last_quarter">Семоҳаи охир</string>
+    <string name="filter_period_months_this_year">Моҳҳо дар ин сол</string>
+    <string name="filter_period_quarters_this_year">Семоҳаҳои ин сол</string>
+    <string name="filter_period_months_last_year">Моҳҳо дар соли гузашта</string>
+    <string name="filter_period_last_year">Соли гузашта</string>
+    <string name="filter_period_last_financial_year">Соли молиявии гузашта</string>
+    <string name="period">Давра</string>
+    <string name="DAILY">Ҳаррӯза</string>
+    <string name="WEEKLY">Ҳафтаина</string>
+    <string name="MONTHLY">Моҳона</string>
+    <string name="YEARLY">Солона</string>
+
+    <string name="interval_yesterday">Дирӯз</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Изҳори назар</string>
+    <string name="section_indicators">Индикаторҳо</string>
+    <string name="complete">Анҷом ёфт</string>
+    <string name="default_table_header_label">Қимат</string>
+    <string name="default_empty_dataset_section_label">Иттилоот</string>
+    <string name="overdue_today">Имрӯз</string>
+    <string name="remove">Тоза кардан</string>
+    <string name="period_daily_title">Ҳаррӯза</string>
+    <string name="period_monthly_title">Моҳ</string>
+    <string name="period_yearly_title">Сол</string>
+    </resources>

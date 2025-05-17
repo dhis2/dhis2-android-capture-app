@@ -1,0 +1,5 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">ଗୃହ</string>
+    <string name="done_task">ଗୃହ</string>
+    <string name="invalid_possitive_zero">କେବଳ ଧନାତ୍ମକ ସଂଖ୍ୟା କିମ୍ବା ଶୂନ ଅନୁମୋଦିତ</string>
+    </resources>

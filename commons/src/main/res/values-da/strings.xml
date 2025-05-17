@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="navigation_programs">Programs</string>
+    <string name="navigation_tei_data">Details</string>
+    <string name="event_overview">Details</string>
+    <string name="data_sets">Data sets</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_date">Date</string>
+    <string name="daily_period">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="monthly">Månedlige</string>
+    <string name="bi_monthly">Bi-monthly</string>
+    <string name="quarterly">Quarterly</string>
+    <string name="six_monthly">Six-monthly</string>
+    <string name="yearly">Yearly</string>
+    <string name="state_error">Error</string>
+    <string name="state_warning">Warning</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">Open</string>
+    <string name="active">Active</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_period_last_month">Last month</string>
+    <string name="filter_period_other">Other</string>
+    <string name="DAILY">Daily</string>
+    <string name="WEEKLY">Weekly</string>
+    <string name="MONTHLY">Monthly</string>
+    <string name="YEARLY">Yearly</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indicators</string>
+    <string name="section_charts">Charts</string>
+    <string name="remove">Remove</string>
+    <string name="period_daily_title">Daily</string>
+    <string name="period_yearly_title">Year</string>
+    </resources>

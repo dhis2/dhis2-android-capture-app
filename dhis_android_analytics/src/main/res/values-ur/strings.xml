@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="period">مدت</string>
+    <string name="none">کوئی نہں</string>
+    <string name="daily">روزانہ</string>
+    <string name="today">آج</string>
+    <string name="other">Ø¯ÛÚ¯Ø±</string>
+    <string name="yesterday">کل</string>
+    <string name="weekly">ہفتہ وار</string>
+    <string name="monthly">ماہانہ</string>
+    <string name="yearly">سالانہ</string>
+    <string name="all">تمام</string>
+    <string name="reset">ری سیٹ کریں</string>
+    </resources>

@@ -14,6 +14,7 @@
     <string name="error_internal_server_error">ຄໍາຜິດທີ່ເກີດຈາກພາຍໃນເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
     <string name="no_value">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="no_reserved_values">ບໍ່ມີຄ່າທີ່ສະຫງວນໃວ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ</string>
+    <string name="no_reserved_values_connection">ບໍ່ມີຄ່າທີ່ສະຫງວນໃວ້. ເຊື່ອມຕໍ່ກັບເຄື່ອຂ່າຍເພື່ອບັນຈຸອີກ</string>
     <string name="errors">ຂໍ້ຜິດພາດ</string>
     <string name="something_wrong">ມີບາງຢ່າງຜິດພາດ</string>
     <!-- SyncService strings: -->
@@ -30,6 +31,8 @@
 
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
+    <string name="sync_incomplete_error_text">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ ແຕ່ພວກເຮົາບໍ່ໄດ້ຮັບການຢືນຢັນຈາກເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ສຳລັບບັນທຶກທັງໝົດ. ເຫຼົ່ານັ້ນຍັງຖືກໝາຍເປັນ \"ອອບລາຍ\" ໃນແອັບ. ພວກເຮົາແນະນຳໃຫ້ລອງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນອີກຄັ້ງ.</string>
+    <string name="metadata_sync_error">ລົ້ມເຫຼວ: ມີບາງຢ່າງຜິດພາດໃນການຊິ້ງຂໍ້ມູນ ຫຼາກທ່ານມີການເຊື່ອມຕໍ່ກັບອີນເຕີເນັດກະລຸນາລອງໃໝ່ອີກຄັ້ງ. ຫາກຂໍ້ຜິດພາດຍັງຄົງຢູ່ ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="data_sync_warning">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ.ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ສາຍງານ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
     <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
     <string name="data_sync_error">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານ ບໍສາມາດຊິ້ງໄດ້. ກວດສອບສະຖານະການຊິ້ງ: ສາຍງານທີ່ມີຂໍ້ຜິດພາດຈະຖຶກໝາຍເປັນ @, TEI\'s ແລະ ເຫດການເປັນ $.</string>
@@ -39,6 +42,8 @@
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
     <string name="add_new">ເພີ່ມໃໝ່</string>
     <string name="add">ເພີ່ມ</string>
+    <string name="enter_event_data">ປ້ອນ%s</string>
+    <string name="enter_cancel_event_data">ປ້ອນ / ຂ້າມ%s</string>
     <string name="schedule_new">ສ້າງແຜນໃໝ່</string>
     <string name="referral">ການສົ່ງຕໍ່</string>
 
@@ -56,6 +61,8 @@
     <string name="configuration_sync_failed">ການຈັດວ່າງລະບົບຂອງທ່ານເພື່ອໃຫ້ທໍາງານຮ່ວມກັນຫຼົມເຫຼວ (ບໍ່ສໍາເລັດ)</string>
     <string name="data_sync_failed">ການເຊື່ອມຂໍ້ມູນເຂົ້າກັບລະບົບຫຼົມເຫຼວ (ບໍ່ສໍາເລັດ)</string>
     <string name="account_recovery">​ປັບ​ປຸງ​ຄືນ​ບັນ​ຊີ​ຂອງ​ທ່ານ</string>
+    <string name="no_network_to_recover_account">ຈໍາເປັນຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ ເພື່ອກູ້ຄືນບັນຊີຂອງທ່ານ.</string>
+
     <!--PERIOD-->
     <string name="DAILY">ທຸກໆມື້</string>
     <string name="WEEKLY">ເປັນອາທິດ</string>
@@ -69,6 +76,9 @@
 
     <!-- Input hints -->
     <string name="search">ຄົນຫາ</string>
+    <string name="search_add_new_te_type">ຄົ້ນຫາ / ເພີ່ມໃໝ່ %s</string>
+    <string name="search_te_type">ຄົ້ນຫາ%s</string>
+    <string name="add_te_type">ເພີ່ມໃໝ່%s</string>
     <string name="enter_text">ຂຽນຄໍາຕອບ</string>
     <string name="enter_long_text">ປ້ອນຂໍ້ມູນເປັນຂໍ້ຄວາມຍາວ</string>
     <string name="enter_number">ຕື່ມຕົວເລກ</string>
@@ -85,10 +95,13 @@
     <string name="program_inactive">ໂປຣແກຣມທີ່ບໍ່ໄດ້ເປີດໃຊ້ງານ</string>
 
     <string name="event_open">ເປີດ</string>
+    <string name="event_not_completed">ບໍ່ສຳເລັດ</string>
+    <string name="event_completed">ກິດຈະກຳສຳເລັດແລ້ວ</string>
     <string name="read_only">ອ່ານໄດ້ເທົ່ານັ້ນ</string>
     <string name="finish_and_complete">ສີ້ນສຸດ ແລະ ສໍາເລັດ</string>
     <string name="completed">ສໍາເລັດແລ້ວ</string>
     <string name="cancelled">ຍົກເລີກແລ້ວ</string>
+    <string name="re_open_form">ເປິດຟອມຄືນໃໝ່</string>
     <string name="activate">ເປິດໃຊ້ງານ</string>
     <string name="active">ທີ່ຍັງນໍາໃຊ້ຢູ່</string>
 
@@ -122,6 +135,7 @@
     <string name="report_period">ຊ່ວງເວລາ ການລາຍງານ</string>
     <string name="field_required">ຖ້າທ່ານຕັ້ງຄ່າ, ແຖວທັ້ງໝົດຕ້ອງໃຊ້ຄ່າທັ້ງໝົດເພື່ອເຮັດໃຫ້ຊຸດຂໍ້ມູນສົມບູນ</string>
     <string name="field_mandatory">ຄ່າຂໍ້ມູນບາງຄ່າທີ່ຈຳເປັນຫາຍໄປ. ທ່ານຕ້ອງກຳນົດຄ່າບັງຄັບ ເພື່ອໃຫ້ຊຸດຂໍ້ມູນສົມບູນ</string>
+    <string name="field_mandatory_v2">ຍັງປ້ອນຂໍ້ມູນບັງຄັບບໍ່ຄົບ. ກະລຸນາ, ປ້ອນຂໍ້ມູນເພື່ອໃຫ້ຊຸດຂໍ້ມູນຄົບຖ້ວນ.</string>
     <string name="datavalue_saved">ປະຫຍັດຄ່າ!</string>
     <string name="there_is_no_available_period">ບໍ່ມີໄລຍະເວລາທີຈະເລືອກ</string>
     <!--Event Detail-->
@@ -141,17 +155,23 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">ເບິ່ງຂໍ້ມູນເພີ່ມຕື່ມ</string>
     <string name="view_more">ເບີ່ງຕື່ມ</string>
+    <string name="edit">ແກ້ໄຂ</string>
     <string name="follow_up">ຕິດຕາມ</string>
     <string name="follow_up_enabled">ເປີດການຕິດຕາມ</string>
     <string name="follow_up_disabled">ການຕິດຕາມບໍ່ສາມາດນໍາໃຊ້ໄດ້</string>
     <string name="deactivate">ຢຸດນໍາໃຊ້</string>
     <string name="program_not_allow_events">ໂປຣແກຣມນີ້ບໍ່ອະນຸຍາດຕື່ມກໍລະນີເຂົ້າອີກ</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="events">ເຫດການ</string>
     <string name="done_task">ໜ້າຫຼັກ</string>
     <string name="app_info">ຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມ</string>
     <string name="log_out">ອອກຈາກລະບົບ</string>
     <string name="block_session">ໄລຍະປີດການນໍາໃຊ້</string>
+    <string name="show_more_events">ສະແດງ%sເພີ່ມເຕີມ</string>
+    <string name="show_less_events">ສະແດງໃຫ້ເຫັນໜ້ອຍລົງ</string>
+
     <!-- SYNC -->
     <string name="a_minute">1 ນາທີ</string>
     <string name="fifteen_minute">15 ນາທີ</string>
@@ -207,6 +227,8 @@
     <string name="settingsReset">ຕັ້ງຄ່າໂປຣແກຣມຄືນໃໝ່</string>
     <string name="settingsReset_descr">ການຕັ້ງຄ່າ ແລະ ຂໍ້ມູນແອັບທີ່ເກັບໄວ້ໃນອຸປະກອນຈະຖືກລຶບອອກ. ທ່ານຈະຖືກຖາມໃຫ້ເຂົ້າສູ່ລະບົບອີກຄັ້ງ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ຊິງຄ໌ກັບເຄື່ອງຄອມພິວເຕີ້ໜ່ວຍແມ່ຈະສູນເສຍໄປ.</string>
     <string name="settingsSms">ຕັ້ງຄ່າຂໍ້ຄວາມ</string>
+    <string name="settingsCheckVersion">ອັບເດດຊັອບແວ</string>
+    <string name="settingsCheckVersionMessage">ຊອບແວ</string>
     <!--endregion-->
 
     <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>
@@ -223,6 +245,7 @@
     <string name="activated">ເປີດການນໍາໃຊ້ແລ້ວ</string>
     <string name="missing_mandatory_fields_title">ຫ້ອງປ້ອນຂໍ້ມູນທີ່ຈໍາເປັນ ບໍ່ເຫັນ</string>
     <string name="missing_mandatory_fields_text">ຫ້ອງປ້ອນຂໍ້ມູນຈໍານວນໜື່ງບໍ່ເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນດຽວນີ້, ຂໍ້ມູນທັງໝົດທີ່ໄດ້ບັນທຶກແລ້ວຈະຖືກລືບ</string>
+    <string name="missing_mandatory_fields_text_not_delete">ຊ່ອງທີປ້ອນຂ້ໍມູນບາງຊ່ອງບໍເຫັນ. ຖ້າທ່ານຕ້ອງການກັບຄືນ, ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ໃຫ້ຄົບ</string>
     <string name="missing_mandatory_fields_events">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="title_delete_go_back">ຂໍ້ມູນຂອງທ່ານບໍ່ໄດ້ບັນທຶກ</string>
     <string name="delete_go_back">ຖ້າທ່ານກັບຄືນຕອນນີ້ ຂໍ້ມູນທີ່ປ້ອນທັ້ງໝົດຈະຖຶກລົບ</string>
@@ -349,6 +372,7 @@
     <string name="date_dialog_tigle">ເລືອກວັນທີເພື່ອຄັດຈ້ອນ</string>
     <string name="select_option">ເລືອກທາງເລືອກ</string>
     <string name="issue_reported">ບັນຫາຖືກລາຍງານແລ້ວ</string>
+    <string name="dialog_generate_new_event">ປ້ອນເຫດການໃໝ່</string>
     <string name="message_generate_new_event">ທ່ານຕ້ອງການປ້ອນຂໍ້ມູນກໍລະນີອື່ນບໍ?</string>
     <string name="event_completed_title">ກໍລະນີໄດ້ປ້ອນເຂົ້າສໍາເລັດແລ້ວ</string>
     <string name="event_completed_message">ກໍລະນີທັງໝົດໃນໂປຣແກຣມນີ້ໄດ້ຖືກດໍາເນີນການສໍາເລັດແລ້ວ. ທ່ານຕ້ອງການປິດໂປຣແກຣມນີ້ບໍ່?</string>
@@ -443,6 +467,7 @@
     <string name="org_unit_selection_warning">ຕ້ອງເລືອກຢ່າງຫນ້ອຍໜື່ງໂຄງຮ່າງການຈັດຕັ້ງ</string>
     <string name="send_user_name_title">ສົ່ງຂໍ້ມູນ</string>
     <string name="send_user_name_mesage">ຊ່ວຍ DHIS2 ປັບປຸງແອບນີ້ດ້ວຍການແບ່ງປັນຂໍ້ຜິດພາດທີ່ກຽ່ວຂ້ອງກັບໄອດີຜູ້ໃຊ້ຂອງທ່ານ</string>
+    <string name="improve_app_msg_title">ທ່ານຕ້ອງການຊ່ວຍພວກເຮົາປັບປຸງແອັບນີ້ບໍ?</string>
     <string name="check_mandatory_field">ກວດເບີ່ງຫ້ອງປ້ອນຂໍ້ມູນ</string>
     <string name="error_no_network_during_sync">ທ່ານສູນເສຍການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານໃນຂະນະທີ່ດໍາເນີນການຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າຂອງທ່ານ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
     <string name="action_agree">ຍິນຍອມ</string>
@@ -488,6 +513,7 @@
     <string name="sms_receiver_number">ຕົວເລກຜູ້ຮັບ</string>
     <string name="sms_amount_question">ທ່ານຍອມຮັບທີ່ຈະສົ່ງ %d ຂໍ້ຄວາມຫຼືບໍ?</string>
     <string name="sms_sending">ກຳລັງສົ່ງ %1$d/%2$d</string>
+    <string name="sms_waiting_amount_confirm">ການຢືນຢັນຈຳນວນທີ່ລໍຖ້າ%d</string>
     <string name="sms_all_sent">ສົ່ງທັ້ງໝົດ</string>
     <string name="sms_submission_completed">ການສົ່ງສຳເລັດແລ້ວ</string>
     <string name="sms_waiting_confirmation">ລໍຖ້າຮັບຂໍ້ຄວາມຢືນຢັນ</string>
@@ -521,6 +547,7 @@
     <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
     <string name="end_sync_granular">ການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນສຳເລັດແລ້ວ</string>
     <string name="error_sync">ເກີດຂໍ້ຜິດພາດລະຫວ່າງການຊິ້ງຂໍ້ມູນ</string>
+    <string name="error_sync_check_logs">ມີຂໍ້ຜິດພາດເກີດຂຶ້ນໃນລະຫວ່າງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ຄລິກທີ່ນີ້ເພື່ອກວດສອບເບິ່ງຂໍ້ຜິດພາດ</string>
     <string name="cancel_sync">ຍົກເລິກການຊິ້ງຂໍ້ມຸນແລ້ວ</string>
 
     <string name="copied_text">ສຳເນົາແລ້ວ</string>
@@ -530,6 +557,7 @@
 
     <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="value_required_but_not_provided">%s ບັງຄັບແຕ່ບໍໄດ້ລະບຸໃວ້</string>
+    <string name="polygon_captured">ບັນທຶກຮູບຫຼາຍຫຼ່ຽມ</string>
     <string name="polygon">Polygon</string>
     <!--endregion-->
 
@@ -585,6 +613,7 @@
     <string name="no_notes">ບໍ່ຂໍ້ຄວາມ</string>
     <string name="no_add_notes">ບໍ່ສາມາດເພີ່ມບັນທຶກໄດ້ອີກ</string>
     <string name="new_note">ບັນທຶກໃໝ່</string>
+    <string name="note_saved">ບົດບັນທຶກໄດ້ບັນທຶກແລ້ວ</string>
     <string name="discard_note">ຍົກເລີກບັນທຶກບໍ?</string>
     <string name="interval_now">ດຽວນີ້</string>
     <string name="interval_minute_ago">%dນາທີທີ່ຜ່ານມາ</string>
@@ -602,18 +631,26 @@
     <string name="choose_image">ເລືອກຮູບພາບ</string>
     <string name="scan_code">ສະແກນລະຫັດ</string>
     <string name="choose_option">ເລືອກຄໍາຕອບ</string>
+    <string name="reserved_values_hint">ດາວໂຫຼດຄ່າລິຂະສິດຕາມຄຸນລັກສະນະTEI</string>
+    <string name="settings_reserved_values_message">ດາວໂຫຼດຄ່າລິຂະສິດຕາມຄຸນລັກສະນະTEI</string>
+    <string name="manage_reserved_values_button">ຈັດການຄ່າລິຂະສິດ</string>
     <string name="events_to_download">ດາວໂຫຼດເຫດການ</string>
+    <string name="teis_to_download">ດາວໂຫຼດ TEIs</string>
     <string name="program_settings">ການຕັ້ງຄ່າສາຍງານ</string>
+    <string name="limit_scope_all_ou_trailing">ໃຫ້ກັບທຸກຫົວໜ່ວຍການຈັດຕັ້ງ</string>
     <string name="limit_scope_global_trailing">ໃນທົ່ວໂລກ</string>
     <string name="limit_scope_ou_trailing">ຕໍ່ຫົວໜ່ວຍການຈັດຕັ້ງ</string>
     <string name="limit_scope_program_trailing">ຕໍ່ສາຍງານ</string>
     <string name="limit_scope_ou_program_trailing">ຕໍ່ຫົວໜ່ວຍການຈັດຕັ້ງ ແລະ ໂປຣແກຣມ</string>
     <string name="activity_program_settings">ການຕັ້ງຄ່າການຊິ້ງສາຍງານ</string>
     <string name="syncing_period_not_editable">ໄລຍະເວລາການຊິ້ງຂໍ້ມູນແມ່ນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
+    <string name="sync_parameters_not_editable">ຕົວກຳນົດອັບເດດຂໍ້ມູນໃຫ້ຄືກັນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
+    <string name="rv_no_editable">ຈຳນວນຄ່າລິຂະສິດທີ່ດາວໂຫຼດແມ່ນບໍ່ສາມາດແກ້ໄຂໄດ້</string>
     <string name="downloading">ກຳລັງດາວໂຫຼດ</string>
     <string name="filter_sync_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນແລ້ວ</string>
     <string name="filter_sync_not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="filter_sync_sms">ຂໍ້ຄວາມອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="dataset_overview">ລາຍລະອຽດ</string>
     <string name="dataset_comments">ຄຳເຫັນ</string>
     <string name="saved">ບັນທຶກແລ້ວ!</string>
@@ -623,9 +660,13 @@
     <string name="dataset_completed">ເຮັດໃຫ້ສຳເລັດແລ້ວ</string>
     <string name="name">ຊື່</string>
     <string name="formula">Formula</string>
+    <string name="complete_anyway">ແນວໃດກໍ່ສຳເລັດຂໍ້ມູນ</string>
     <string name="fk_message">ບໍ່ຄົບຖ້ວນ%s%sຈາກ%s%s</string>
     <string name="filters_title_event_status">ສະຖານະຂອງເຫດການ</string>
     <string name="enrollment_date">ວັນທີ່ລົງທະບຽນ</string>
+    <string name="dataset_empty_list_can_create">ບໍ່ມີຂໍ້ມູນ. ກົດ \"+\" ເພື່ອເພີ່ມບັນທຶກໃຫມ່</string>
+    <string name="dataset_emtpy_list_can_not_create">ບໍ່ມີຂໍ້ມູນ. ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ເພີ່ມໃຫມ່.</string>
+    <string name="validation_rules_empty_description">ບໍ່ມີຄໍາອະທິບາຍຫຼືຄໍາແນະນໍາໃຫ້</string>
     <string name="validation_rules_data_to_review">ຂໍ້ມູນທີ່ຕ້ອງທົບທວນ</string>
     <string name="dataset_saved_completed">ບັນ​ທຶກ​ແລະ​ສໍາ​ເລັດ​!</string>
     <string name="status_change_error_active_exist">ມີການລົງທະບຽນທີ່ໃຊ້ງານຢູ່ແລ້ວ</string>
@@ -633,26 +674,50 @@
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
     <string name="event_data">ຂໍ້ມູນ</string>
+    <string name="download_tei_error">ບໍ່ສາມາດດາວໂຫຼດສິ່ງທີ່ເລືອກໄດ້%s</string>
+    <string name="completed_by">ສຳເລັດໂດຍ %s:%s</string>
+    <string name="updated_time">ອັບເດດແລ້ວ: %s</string>
+    <string name="action_done">ສຳເລັດ</string>
+    <string name="validation_internal_error_datasets">ພວກເຮົາບໍ່ສາມາດກວດສອບຄຸນນະພາບຂໍ້ມູນໄດ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ</string>
     <string name="are_you_sure">ທ່ານ​ແນ່​ໃຈ​ບໍ່?</string>
     <string name="reopen_question">ທ່ານຕ້ອງການເປີດຊຸດຂໍ້ມູນຄືນໃໝ່ບໍ?</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filters_title_event_date">ວັນທີເຫດການ</string>
+    <string name="tei_type_has_no_attributes">%sບໍ່ມີຄຸນສົມບັດສາທາລະນະ. ກະລຸນາເລືອກສາຍງານ</string>
     <string name="privacy_policy_title">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</string>
+    <string name="open_privacy_policy">ກົດບ່ອນນີ້ເພື່ອກວດສອບ<a href="">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ</a>ຂອງພວກເຮົາ</string>
+    <string name="coordinates_error">ປະສານງານບໍ່ຖືກຕ້ອງ</string>
+    <string name="break_glass_error">ທ່ານບໍ່ສາມາດລົງທະບຽນ TEIs ຈາກຫນ່ວຍການຈັດຕັ້ງອື່ນໃນສາຍງານນີ້ໄດ້ເນື່ອງຈາກມີການປ້ອງກັນ.\nຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="field_is_mandatory">ຊ່ອງປ້ອນຂໍ້ມູນນີ້ແມ່ນຈໍາເປັນຕ້ອງປ້ອນຂໍ້ມູນໃສ່</string>
+    <string name="security_debugger_message">ເຫດຜົນດ້ານຄວາມປອດໄພ, ແອັບເວີຊັ່ນນີ້ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ກັບ adb. ກະລຸນາໃຊ້ເວີຊັ່ນທີ່ໃຊ້ສະເພາະການຝຶກອົບຮົມ.</string>
+
+    <string name="customactivityoncrash_error_activity_error_occurred_explanation">ມີບາງຢ່າງບໍ່ເປັນໄປຕາມແຜນທີ່ວາງໄວ້.\nໃຫ້ພວກເຮົານຳທ່ານກັບມາເພື່ອດຳເນີນການຄືນ.</string>
     <string name="customactivityoncrash_error_activity_restart_app">ກັບຄືນ</string>
     <string name="customactivityoncrash_error_activity_close_app">ປິດແອັບ</string>
     <string name="customactivityoncrash_error_activity_error_details">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_title">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>
     <string name="customactivityoncrash_error_activity_error_details_close">ປິດ</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">ສຳເນົາໄປຫາ ຄິບບອດ</string>
+    <string name="customactivityoncrash_error_activity_error_details_clipboard_label">ຂໍ້​ມູນ​ຜິດ​ພາດ​</string>
+    <string name="metada_first_sync_error">ພວກເຮົາພົບເຫັນຂໍ້ຜິດພາດໃນເວລາຊິ້ງກັບເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ຂອງທ່ານ. ແບ່ງປັນຂໍ້ຜິດພາດກັບຜູ້ດູແລລະບົບຂອງທ່ານຖ້າເປັນໄປໄດ້.</string>
+    <string name="enrollment_date_edition_warning">ເຫດການທີ່ວາງແຜນໄວ້ຈະບໍ່ຖືກກຳນົດເວລາໃໝ່</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="navigation_list_view">ສະແດງ</string>
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
+    <string name="navigation_map_view">ແຜນທີ່</string>
     <string name="navigation_analytics">ການວິເຄາະ</string>
+    <string name="navigation_tasks">ວຽກ</string>
     <string name="navigation_programs">ສາຍງານ</string>
+    <string name="navigation_charts">ແຜນວາດຂໍ້ມູນ</string>
     <string name="navigation_notes">ຂໍ້ຄວາມ</string>
     <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
     <string name="navigation_tei_data">ລາຍລະອຽດ</string>
     <string name="show_bar_graph">View as Bar</string>
     <string name="show_line_graph">ເບິ່ງເປັນແຖວ</string>
     <string name="show_table_graph">ເບິ່ງເປັນຕາຕະລາງ</string>
+    <string name="show_table_value">ເບິ່ງເປັນມູນຄ່າ</string>
+    <string name="working_list_default_label">ລາຍຊື່ການເຮັດວຽກ%s</string>
+    <string name="filter_period_last_n_days">%dມື້ຜ່ານມາ</string>
     <string name="filter_period_this_year">ປີນີ້</string>
     <string name="filter_period_this_bimonth">ສອງເດືອນນີ້</string>
     <string name="filter_period_last_bimonth">ສອງເດືອນຜ່ານມາ</string>
@@ -660,43 +725,158 @@
     <string name="filter_period_last_quarter">ໄຕມາດຜ່ານມາ</string>
     <string name="filter_period_six_months">6 ເດືອນນີ້</string>
     <string name="filter_period_last_six_months">6 ເດືອນຜ່ານມາ</string>
+    <string name="filter_period_last_n_years">%dປີຜ່ານມາ</string>
+    <string name="filter_period_last_n_months">%dເດືອນຜ່ານມາ</string>
+    <string name="filter_period__last_n_weeks">%dອາທິດຜ່ານມາ</string>
     <string name="filter_period_weeks_this_year">ອາທິດ ຂອງປີນີ້</string>
     <string name="filter_period_months_this_year">​ເດືອນ​ໃນ​ປີ</string>
+    <string name="filter_period_bimonths_this_year">ສອງເດືອນ ຂອງປີນີ້</string>
     <string name="filter_period_quarters_this_year">​ໄຕຼມາດ​ໃນ​ປີ</string>
     <string name="filter_period_months_last_year">​ເດືອນ​ໃນປີ​ຜ່ານ​ມາ</string>
+    <string name="filter_period_quarters_last_year">ໄຕຼມາດ​ໃນ​ປີ​ຜ່ານ​ມາ</string>
     <string name="filter_period_last_year">ປີກາຍ</string>
     <string name="filter_period_this_biweek">ສອງອາທິດນີ້</string>
     <string name="filter_period_last_biweek">ສອງອາທິດທີ່ຜ່ານມາ</string>
+    <string name="filter_period_last_n_bimonths">%dສອງເດືອນທີ່ຜ່ານມາ</string>
+    <string name="filter_period_last_n_quarters">%dໄຕມາດຜ່ານມາ</string>
+    <string name="last_n_months">%dເດືອນຜ່ານມາ</string>
     <string name="filter_period_this_financial_year">ສົກປີງົບປະມານຂອງປິນີ້</string>
     <string name="filter_period_last_financial_year">​ສົກ​ປີ​ງົບ​ປະ​ມານ​ປີ​ກາຍ</string>
+    <string name="filter_period_last_n_financial_years">ສົກປີງົບປະມານ%dທີ່ຜ່ານມາ</string>
+    <string name="filter_period_last_n_biweeks">%dສອງອາທິດຜ່ານມາ</string>
     <string name="section_feedback">ຜົນຕອບຮັບ</string>
     <string name="section_indicators">ຕົວຊີ້ວັດ</string>
+    <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
     <string name="value">Value</string>
+    <string name="section_charts_indicators">ແຜນວາດ ແລະ ຕົວຊີ້ວັດ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>
     <string name="from_gallery">ເລືອກຈາກຄັງຮູບ</string>
     <string name="data_set_quality_check_done">ສຳເລັດແລ້ວ!</string>
     <string name="break_glass_dialog_title">ໂປຣແກຣມນີ້ໄດ້ຮັບການຄຸ້ມຄອງ</string>
     <string name="break_glass_hint">ອະທິບາຍເຫດຜົນຢູ່ບ່ອນນີ້</string>
+    <string name="authenticating">ກຳລັງກວດສອບຄວາມຖືກຕ້ອງ</string>
+    <string name="login_error_no_dhis_instance">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ທີ່ໃສ່ ບໍ່ແມ່ນຕົວຢ່າງຂອງ dhis</string>
     <string name="login_error_bad_credentials">ຄວາມຜິດພາດຈາກຢັ້ງຢືນເອກະລັກບຸກຄົນ</string>
     <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
     <string name="invalid_integer">ຄ່າຕ້ອງເປັນຈຳນວນຖ້ວນ</string>
+    <string name="openid_session_expired">ໄລຍະເວລາການສື່ສານໄດ້ສິ້ນສຸດລົງແລ້ວ</string>
+    <string name="openid_session_expired_message">ເຊດຊັນປັດຈຸບັນຂອງທ່ານໝົດອາຍຸແລ້ວ. ດ້ວຍເຫດຜົນດ້ານຄວາມປອດໄພ, ທ່ານຈະຕ້ອງໃຫ້ຂໍ້ມູນປະຈໍາຕົວຂອງທ່ານອີກເທື່ອຫນຶ່ງ</string>
+    <string name="dataset_column_default">ຄ່າ</string>
+    <string name="week_period_span_default_label">ອາທິດ%d%sຫາ%s</string>
     <string name="action_do_not_show_again">ບໍ່ຕ້ອງສະແດງອີກ</string>
+    <string name="feature_configuration">ການຕັ້ງຄ່າຄຸນສົມບັດ</string>
+    <string name="show_radar_graph">ສະແດງເປັນ Radar</string>
+    <string name="coordinate_feature_type_error">ບໍ່ສາມາດກຳນົດປະເພດການປະສານງານໄດ້</string>
     <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
+    <string name="wrong_date_format">%sບໍ່ສາມາດວິເຄາະເປັນວັນທີໄດ້</string>
+    <string name="update_field_error">ບໍ່ສາມາດອັບເດດຫ້ອງປ້ອນຂໍ້ມູນນີ້ໄດ້. ກະລຸນາລອງໃໝ່ອີກຄັ້ງ</string>
     <string name="available">ສີ່ງທີ່ມີ</string>
+    <string name="blocked_by_completion">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກຖືກໝາຍວ່າສຳເລັດແລ້ວ</string>
+    <string name="edition_expired">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກເວລາຂອງມັນໝົດອາຍຸແລ້ວ</string>
+    <string name="edition_no_write_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
+    <string name="event_date_not_in_orgunit_range">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກຫົວຫນ່ວຍການຈັດຕັ້ງຖືກປິດໃວ້ຢູ່</string>
+    <string name="edition_no_catcombo_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
+    <string name="edition_orgunit_capture_scope">ທ່ານບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນຈາກຫົວຫນ່ວຍການຈັດຕັ້ງນີ້ໄດ້</string>
+    <string name="reload_list">ລີເຊັດການຄົ້ນຫາ</string>
+    <string name="error_tei_online_search_title">ການຄົ້ນຫາອອນໄລນ໌ສົ່ງຂໍ້ຄວາມຕໍ່ໄປນີ້:</string>
+    <string name="program_rules_loop_warning_title">ຂໍ້ຄວນລະວັງກົດຂອງສາຍງານ</string>
+    <string name="program_rules_loop_warning_message">ມີບັນຫາການກຳນົດຄ່າທີ່ເຮັດໃຫ້ເກີດມີຊ່ອງຫວ່າງໃນກົດລະບຽບ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="granular_sync_refresh">ເລີ່ມໃໝ່</string>
     <string name="unknown_date">ບໍ່ຮູ້</string>
+    <string name="granular_sync_refresh_title">ໂຫຼດຂໍ້ມູນທັງໝົດຄືນໃໝ່</string>
     <string name="add_accout">ເພີ່ມບັນຊີ</string>
     <string name="delete_account">ລົບບັນຊີ</string>
     <string name="manage_accounts">ຈັດການບັນຊີ</string>
+    <string name="main_menu_troubleshooting">ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ການ​ກຳນົດຄ່າ</string>
     <string name="troubleshooting_language_title">Language</string>
+    <string name="troubleshooting_language_description">ແຕະບ່ອນນີ້ເພື່ອ ປ່ຽນພາສາຂອງແອັບພິເຄຊັ່ນ</string>
+    <string name="troubleshooting_rules_title">ການຮັບຮອງກົດຂອງສາຍງານ</string>
+    <string name="troubleshooting_rules_description">ການດຳເນີນການນີ້ຈະກວດສອບກົດລະບຽບທັງຫມົດທີ່ກໍານົດຄ່າໃວ້ ແລະ ສະແດງການຕັ້ງຄ່າທີ່ບໍ່ຖຶກຕ້ອງ ຖ້າມີ</string>
+    <string name="troubleshooting_ongoing_rule_validation">ກຳລັງກວດສອບຄວາມຖຶກຕ້ອງຂອງສາຍງານ...</string>
+    <string name="troubleshooting_pass_rule_validation">ບໍ່ພົບຂໍ້ຄວນລະວັງ</string>
     <string name="not_saved">ບໍ່ໄດ້ບັນທຶກ</string>
+    <string name="review_message">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
+    <string name="search_loading_more">ກຳລັງໂຫຼດຫາຜົນລັບເພີ່ມເຕີມ</string>
+    <string name="search_no_results_in_program">ບໍ່ມີຜົນໄດ້ຮັບເພີ່ມເຕີມສໍາລັບ%s</string>
+    <string name="search_outside_action">ຄົ້ນຫານອກສາຍງານນີ້</string>
+    <string name="string_no_more_results">ບໍ່ມີຜົນລັບເພີ່ມເຕີມ</string>
+    <string name="search_no_more_results_offline">ຄົ້ນຫາຜົນໄດ້ຮັບເພີ່ມເຕີມ</string>
+    <string name="search_no_results">ບໍ່ມີຜົນລັບສຳລັບການຄົ້ນຫານີ້</string>
+    <string name="search_too_many_results">ຜົນໄດ້ຮັບຫຼາຍເກີນໄປ</string>
+    <string name="search_too_many_results_message">ລອງປ່ຽນການຄົ້ນຫາຂອງທ່ານເພື່ອຈຳກັດຜົນລັບໃຫ້ແຄບລົງ.</string>
+    <string name="search_create_new">ສ້າງໃໝ່</string>
+    <string name="search_min_attributes_message">ທ່ານຕ້ອງປ້ອນຢ່າງໜ້ອຍ %s ຂອງຄຸນລັກສະນະເຂົ້າເພື່ອຄົ້ນຫາ</string>
+    <string name="action_ok">ຕົກລົງ</string>
+    <string name="init_search">ເລີ່ມການຄົ້ນຫາເພື່ອຊອກຫາອັນໃດນຶ່ງ%s</string>
+    <string name="search_or_create">ທ່ານສາມາດຄົ້ນຫາຫຼືສ້າງໃຫມ່%s</string>
+    <string name="missing_warning_fields_events">ທ່ານມີບາງຂໍ້ຄວາມເຕືອນ.\nທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
+    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
+    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
+    <string name="changes_will_be_discarted">ຖ້າທ່ານອອກດຽວນີ້, ການປ່ຽນແປງຈະຖືກຍົກເລີກ.</string>
+    <string name="re_opened">ເປີດຄືນໃໝ່</string>
+    <string name="account_disable_title">ບັນຊີຖືກປິດ</string>
+    <string name="account_disable_message">ບັນຊີຂອງທ່ານຖືກປິດການນຳໃຊ້ໂດຍຜູ້ຮັກສາລະບົບ.</string>
     <string name="customactivityoncrash_error_activity_current_date">ວັນທີປະຈຸບັນນີ້: %s</string>
     <string name="customactivityoncrash_error_activity_device">ອຸປະກອນ: %s</string>
+    <string name="customactivityoncrash_error_activity_os_version">Os ລຸ້ນ: %s</string>
+    <string name="open_details">ເປິດ %s ລາຍລະອຽດ</string>
+    <string name="tracked_entity_type_details">%s ລາຍລະອຽດ</string>
+    <string name="syncing_resource">ກຳລັງອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ %s...</string>
+    <string name="sms_sync_waiting_for_response">ຂໍ້ຄວາມໄດ້ສົ່ງແລ້ວ. ກຳລັງລໍຖ້າໃຫ້ເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່ຕອບກັບ.</string>
+    <string name="sms_sync_sent">ສົ່ງຂໍ້ຄວາມແລ້ວ. ກຳລັງອັບເດດສະຖານະ.</string>
+    <string name="sms_sync_not_sent">ບໍ່ໄດ້ສົ່ງຂໍ້ຄວາມ</string>
+    <string name="sms_sync_sms_app_chooser_title">ສົ່ງຂໍ້ຄວາມກັບ</string>
+    <string name="sms_sync_is_sms_sent">ທ່ານໄດ້ສົ່ງຂໍ້ຄວາມແລ້ວບໍ?</string>
+    <string name="sms_sync_manual_confirmation">ກຳລັງລໍຖ້າການຢຶນຢັນຄູ່ມື</string>
     <string name="syncing_events">ອັບເດດເຫດການໃຫ້ຄືກັນ</string>
     <string name="syncing_teis">ອັບເດດຫົວໜ່ວຍທີ່ຕິດຕາມໃຫ້ຄືກັນ</string>
     <string name="syncing_data_sets">ອັບເດດຊຸດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="syncing_done">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ</string>
+    <string name="sms_available_for_individual_records">ການ​ອັບເດດຂໍ້ຄວາມໃຫ້ຄືກັນ ແມ່ນ​ມີ​ຢູ່​ແຕ່​ມີ​ການ​ເຂົ້າ​ເຖິງ​ສໍາ​ລັບ​ການ​ບັນ​ທຶກ​ຂອງ​ແຕ່​ລະ​ລາຍການ</string>
+    <string name="downloading_image_resources">ກຳລັງດາວໂຫຼດຮູບພາບ...</string>
     <string name="program_description">ລາຍລະອຽດຂອງສາຍງານ</string>
+    <string name="wrong_pin">ລະຫັດຜ່ານຜິດພາດ</string>
+    <string name="sync_dialog_title_not_synced">ຈຳເປັນຕ້ອງອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="sync_dialog_title_error">ມີຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="sync_dialog_title_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນແລ້ວ</string>
+    <string name="sync_dialog_title_syncing">ກຳລັງອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="sync_dialog_title_sms_syced">ສົ່ງຂໍ້ຄວາມ</string>
+    <string name="sync_dialog_message_not_synced_all">ທ່ານຕ້ອງການສົ່ງການປ່ຽນແປງທັງໝົດຂອງເຈົ້າບໍ?</string>
+    <string name="sync_dialog_message_not_synced_program">ທ່ານຕ້ອງການສົ່ງການປ່ຽນແປງຂອງທ່ານເພື່ອ %s ຫຼືບໍ?</string>
+    <string name="sync_dialog_message_not_synced_tei">ທ່ານຕ້ອງການສົ່ງການປ່ຽນແປງຂອງທ່ານສໍາລັບການນີ້ %s</string>
+    <string name="sync_dialog_message_synced_all">ທ່ານຕ້ອງການກວດສອບການອັບເດດຫຼືບໍ?</string>
+    <string name="sync_dialog_message_synced_program">ທ່ານຕ້ອງການກວດສອບການອັບເດດ %s ຫຼືບໍ?</string>
+    <string name="sync_dialog_message_sms_synced">ທ່ານຕ້ອງການສົ່ງ SMS ອີກຄັ້ງບໍ?</string>
     <string name="sync_dialog_action_send">ສົ່ງ</string>
+    <string name="sync_dialog_action_refresh">Refresh</string>
     <string name="sync_dialog_action_not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
+    <plurals name="error_count_label">
+        <item quantity="other">%s ຂໍ້ຜິດພາດ</item>
+    </plurals>
+    <string name="software_update">ອັບເດດຊັອບແວ</string>
+    <string name="download_now">ດາວໂຫຼດດຽວນີ້</string>
+    <string name="check_for_updates">ກວດສອບເພື່ອປັບປຸງ</string>
+    <string name="dashboard_menu_delete_person">ລົບບຸກຄົນ</string>
+    <string name="not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="marked_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
+    <string name="overdue">ກາຍເວລາທີ່ກຳນົດ %s</string>
+    <string name="view_only">ເບິ່ງໄດ້ເທົ່ານັ້ນ</string>
+    <string name="skipped">ຂ້າມໄປ</string>
+    <string name="programs">ສາຍງານ</string>
+    <string name="sync_successful">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ</string>
+    <string name="sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="mark_follow_up">ໝາຍໄວ້ເພື່ອຕິດຕາມ</string>
+    <string name="coordinates">Coordinates</string>
+    <string name="schedule">ກຳນົດເວລາ</string>
+    <string name="refer">ອ້າງອີງ</string>
+    <string name="scheduled_enter_event">ຕາມເວລາທີ່ກໍານົດ</string>
+    <string name="enter_event">ປ້ອນ%1$s</string>
+    <string name="program_stage">ຂັ້ນຂອງສາຍງານ</string>
+    <string name="event">ເຫດການ</string>
+    <string name="optional">​ຢ່າງ​ຕ່ຳ ມີ​ ທັງ​ໝົດ 8 ຄຳ ໃນ​ນັ້ນ​ຕ້ອງ​ມີ​ໂຕ​ໃຫ​ຍ່ 1 ໂຕ ແລະ ໂຕ​ເລກ 1 ໂຕ</string>
+    <string name="show_more">ສະແດງໃຫ້ເຫັນຫຼາຍຂຶ້ນ</string>
+    <string name="show_less">ສະແດງໃຫ້ເຫັນໜ້ອຍລົງ</string>
+    <string name="sync">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+    <string name="syncing_something">ກຳລັງອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ %s...</string>
+    <string name="transfer">ໂອນ</string>
     </resources>

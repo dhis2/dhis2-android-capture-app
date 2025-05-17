@@ -1,0 +1,44 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="WEEKLY">ସାପ୍ତାହିକ</string>
+    <string name="MONTHLY">ମାସିକ</string>
+    <string name="YEARLY">ବାର୍ଷିକ</string>
+    <string name="enter_negative_integer">ଋଣାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ</string>
+    <string name="enter_positive_integer_or_zero">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା କିମ୍ବା ଶୂନ ପ୍ରବେଶ କରନ୍ତୁ</string>
+    <string name="enter_positive_integer">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ</string>
+    <string name="choose_date">ତାରିଖ ବାଛନ୍ତୁ</string>
+    <string name="latitude">ଅକ୍ଷାଂଶ</string>
+    <string name="longitude">ଦ୍ରାଘିମା</string>
+    <string name="done_task">ଗୃହ</string>
+    <string name="app_info">ଆପ୍ ସୂଚନା</string>
+    <!-- SYNC -->
+    <string name="a_minute">୧ ମିନିଟ୍</string>
+    <string name="fifteen_minute">୧୫ ମିନିଟ୍</string>
+    <string name="thirty_minutes">୩୦ ମିନିଟ୍</string>
+    <string name="a_hour">୧ ଘଣ୍ଟା</string>
+    <string name="every_6_hours">୬ଘ</string>
+    <string name="a_day">୧ ଦିନ (ଡିଫଲ୍ଟ)</string>
+    <string name="every_12_hours">୧୨ଘ</string>
+    <string name="a_week">୧ ସପ୍ତାହ</string>
+    <string name="invalid_negative_number">କେବଳ ଋଣାତ୍ମକ ସଂଖ୍ୟା ଅନୁମୋଦିତ</string>
+    <string name="invalid_possitive_zero">କେବଳ ଧନାତ୍ମକ ସଂଖ୍ୟା କିମ୍ବା ଶୂନ ଅନୁମୋଦିତ</string>
+    <string name="invalid_possitive">କେବଳ ଧନାତ୍ମକ ସଂଖ୍ୟା ଅନୁମୋଦିତ</string>
+    <string name="menu_home">ଗୃହ</string>
+    <string name="info">ସୂଚନା</string>
+    <string name="event_overview">ବିବରଣୀ</string>
+    <string name="data_every_week">ସାପ୍ତାହିକ</string>
+    <string name="polygon">ବହୁଭୂଜ</string>
+    <string name="filters_title_sorting">ସଜାଣି</string>
+    <string name="filter_period_today">ଆଜି</string>
+    <string name="filter_period_yesterday">ଗତକାଲି</string>
+    <string name="filter_period_tomorrow">ଆସନ୍ତାକାଲି</string>
+    <string name="filter_period_this_week">ଚଳିତ ସପ୍ତାହ</string>
+    <string name="filter_period_last_week">ଗତ ସପ୍ତାହ</string>
+    <string name="filter_period_this_month">ଚଳିତ ମାସ</string>
+    <string name="filter_period_last_month">ଗତ ମାସ</string>
+    <string name="interval_now">ଏବେ</string>
+    <string name="interval_yesterday">ଗତକାଲି</string>
+    <string name="dataset_overview">ବିବରଣୀ</string>
+    <string name="action_done">ହୋଇଗଲା</string>
+    <string name="navigation_tei_data">ବିବରଣୀ</string>
+    <string name="section_feedback">ମତାମତ</string>
+    </resources>
