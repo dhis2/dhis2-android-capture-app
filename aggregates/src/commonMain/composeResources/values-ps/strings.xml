@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="total_header_label">مجموعې</string>
+    <string name="input_age_date_of_birth">د زېږېدو نېټه</string>
+    <string name="input_action_accept">د منلو وړ</string>
+    <string name="input_action_cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="no_results_found">هېڅ پایله ترلاسه نه شوه</string>
+    <string name="action_done">ترسره شو</string>
+    <string name="input_coordinate_latitude">لېټېټيوډ</string>
+    <string name="input_coordinate_longitude">لانګېټيوډ</string>
+    <string name="complete">بشپړ یې کړئ</string>
     <string name="ok">سم دی</string>
-
-
-</resources>
+    <string name="no">نه</string>
+    <string name="yes">هو</string>
+    <string name="error">تېروته</string>
+    <string name="errors">تېروتنې</string>
+    <string name="action_next">راتلونکی</string>
+    <string name="indicators_label">شاخصونه</string>
+    </resources>

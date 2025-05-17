@@ -35,6 +35,15 @@
     <string name="filters_title_state">Sinxronlash</string>
     <string name="filters_title_assigned">Menga berilgan vakolat</string>
     <string name="filters_title_date">Sana</string>
+    <string name="select_period">Davr turini tanlash</string>
+    <string name="daily_period">Кунлик</string>
+    <string name="weekly">Ҳафталик</string>
+    <string name="bi_weekly">Juft hafta</string>
+    <string name="monthly">Ойлик</string>
+    <string name="bi_monthly">Жуфт ойлик</string>
+    <string name="quarterly">Ҳар квартал</string>
+    <string name="six_monthly">Yarim yillik</string>
+    <string name="yearly">Йиллик</string>
     <!-- State -->
     <string name="state_synced">Sinxronlash</string>
     <string name="state_to_post">Yuborish uchun</string>
@@ -110,9 +119,19 @@
     <string name="login_error_dhis_version">Ushbu server 2.29 dan farqli versiyani ishlatmoqda. Server versiyasini yangilang yoki davom etish uchun sinov muddatidan foydalaning.</string>
     <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
     <string name="add_image">Rasm qoʼshish</string>
+    <string name="add_file">Fayl qoʼshish</string>
     <string name="enable_location_message">Sizning qoʼrilmangiz internet aloqasi uzildi. Iltimos, koordinatalarni olish uchun uni yoqing</string>
     <string name="keep_editing">Tahrirni davom eting</string>
     <string name="complete">Bajarildi</string>
     <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
+    <string name="default_empty_dataset_section_label">Маълумот</string>
+    <string name="overdue_today">бугун</string>
+    <string name="enrollment_reopen">qayta ochish</string>
+
+    <string name="syncing">Sinxronizatsiyalanmoqda...</string>
+    <string name="remove">Олиб ташлаш</string>
+    <string name="period_daily_title">Кунлик</string>
+    <string name="period_weekly_title">Hafta</string>
+    <string name="period_yearly_title">Yil</string>
     </resources>

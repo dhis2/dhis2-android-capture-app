@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">පිළිගන්න</string>
+    <string name="yes">ඔව්</string>
+    <string name="no">නැත</string>
+    <string name="search">සොයන්න</string>
+    <string name="done">කළා</string>
+
+    <string name="filters_title_date">දිනය</string>
+    <string name="daily_period">දිනපතා</string>
+    <string name="weekly">සතිපතා</string>
+    <string name="bi_weekly">දෙසතියකට වරක්</string>
+    <string name="monthly">මාස්පතා</string>
+    <string name="bi_monthly">දෙමසකට වරක්</string>
+    <string name="quarterly">කාර්තුවකට වරක්</string>
+    <string name="six_monthly">6 මසකට වරක්</string>
+    <string name="yearly">අවුරුදු පතා</string>
+    <string name="state_error">දෝෂය</string>
+    <string name="state_warning">අවවාදයයි</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">විවෘත කරන්න</string>
+    <string name="enrollment_status_active">විවෘත කරන්න</string>
+    <!-- Periods -->
+    <string name="filter_period_today">අද</string>
+    <string name="filter_period_yesterday">ඊයේ</string>
+    <string name="filter_period_this_week">මෙම සතිය</string>
+    <string name="filter_period_last_week">පසුගිය සතිය</string>
+    <string name="filter_period_this_month">මෙම මාසය</string>
+    <string name="filter_period_last_month">පසුගිය මාසය</string>
+    <string name="filter_period_other">වෙනත්</string>
+    <string name="filter_period_this_year">මෙම වසර</string>
+    <string name="filter_period_last_year">පසුගිය වසර</string>
+    <string name="DAILY">දිනපතා</string>
+    <string name="WEEKLY">සතිපතා</string>
+    <string name="MONTHLY">මාස්පතා</string>
+    <string name="YEARLY">අවුරුදු පතා</string>
+
+    <string name="interval_yesterday">ඊයේ</string>
+
+    <string name="section_charts">ප්‍රස්ථාර</string>
+    <string name="default_table_header_label">අගය</string>
+    <string name="discard_changes">වෙනස් කිරීම් ඉවතලන්න</string>
+    <string name="default_empty_dataset_section_label">දත්ත</string>
+    <string name="overdue_today">අද</string>
+    <string name="remove">ඉවත් කරන්න</string>
+    <string name="period_daily_title">දිනපතා</string>
+    <string name="period_weekly_title">සතිය</string>
+    <string name="period_monthly_title">මාසය</string>
+    <string name="period_yearly_title">වසර</string>
+    </resources>

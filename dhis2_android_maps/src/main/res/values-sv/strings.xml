@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="select_location">Välj plats</string>
+    <string name="dialog_layer_base_map_osm_light">OSM Ljus</string>
+    <string name="action_apply">Verkställ</string>
+    <string name="select_location_title">Välj plats</string>
     </resources>

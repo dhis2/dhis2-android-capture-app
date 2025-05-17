@@ -1,0 +1,21 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Origem</string>
+    <string name="action_settings">Configurações</string>
+
+    <string name="username">Utilizador</string>
+    <string name="password">Password</string>
+    <string name="delete">Apagar</string>
+    <string name="ok">Aprovado</string>
+    <string name="cancel">Cancelar</string>
+    <string name="from">A partir de</string>
+    <string name="prompt_email">E-mail</string>
+    <string name="prompt_password">Password</string>
+    <string name="content_desc_search">Pesquisar</string>
+    <string name="confirm_transaction_label">Confirmar</string>
+    <string name="invalid_quantity">Inválido</string>
+    <string name="speech_network_error">Erro de rede</string>
+    <string name="done_task">Origem</string>
+    <string name="back">Voltar</string>
+    <string name="action_sync">Enviar</string>
+    <string name="count">Contagem</string>
+    </resources>

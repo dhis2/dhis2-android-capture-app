@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="input_action_accept">پەسندکردن</string>
+    <string name="input_action_cancel">لابردن</string>
+    <string name="action_done">تةواو كرا</string>
+    <string name="complete">تەواوبکە</string>
     <string name="ok">تةواو</string>
-
-
-</resources>
+    <string name="no">نەخێر</string>
+    <string name="yes">بەڵێ</string>
+    <string name="error">هەڵە</string>
+    <string name="errors">هەڵە</string>
+    <string name="action_next">داهاتوو</string>
+    <string name="indicators_label">نیشاندەر</string>
+    </resources>

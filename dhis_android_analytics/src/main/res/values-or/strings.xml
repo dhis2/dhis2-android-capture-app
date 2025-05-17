@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="today">ଆଜି</string>
+    <string name="yesterday">ଗତକାଲି</string>
+    <string name="last3Days">ଗତ ୩ ଦିନ</string>
+    <string name="last7Days">ଗତ ୭ ଦିନ</string>
+    <string name="last14Days">ଗତ ୧୪ ଦିନ</string>
+    <string name="last30Days">ଗତ ୩୦ ଦିନ</string>
+    <string name="thisweek">ଚଳିତ ସପ୍ତାହ</string>
+    <string name="lastweek">ଗତ ସପ୍ତାହ</string>
+    <string name="last4weeks">ଗତ ୪ ସପ୍ତାହ</string>
+    <string name="last12weeks">ଗତ ୧୨ ସପ୍ତାହ</string>
+    <string name="thismonth">ଚଳିତ ମାସ</string>
+    <string name="lastmonth">ଗତ ମାସ</string>
+    <string name="last3months">ଗତ ୩ ମାସ</string>
+    <string name="last6months">ଗତ ୬ ମାସ</string>
+    <string name="last12months">ଗତ ୧୨ ମାସ</string>
+    <string name="thisyear">ଚଳିତ ବର୍ଷ</string>
+    <string name="lastyear">ଗତ ବର୍ଷ</string>
+    <string name="last5years">ଗତ ୫ ବର୍ଷ</string>
+    <string name="weekly">ସାପ୍ତାହିକ</string>
+    <string name="monthly">ମାସିକ</string>
+    <string name="yearly">ବାର୍ଷିକ</string>
+    <string name="all">ସବୁ</string>
+    </resources>

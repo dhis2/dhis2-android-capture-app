@@ -2,9 +2,13 @@
 <resources>
     <string name="select_location">选择位置</string>
     <string name="map_layers">地图层</string>
+    <string name="dialog_layer_base_map_osm_light">OSM轻量</string>
     <string name="action_apply">应用</string>
     <string name="dialog_layer_satellite">显示卫星视图</string>
     <string name="dialog_layer_event">显示事件</string>
     <string name="dialog_layer_tei_coordinates">显示跟踪实体坐标</string>
     <string name="dialog_layer_heatmap">显示热力图</string>
+    <string name="accuracy_low">低</string>
+    <string name="accuracy_medium">中</string>
+    <string name="select_location_title">选择位置</string>
     </resources>

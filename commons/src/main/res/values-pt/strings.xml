@@ -17,6 +17,7 @@
     <string name="navigation_tasks">Tarefas</string>
     <string name="navigation_programs">Programas</string>
     <string name="navigation_relationships">Relacionamentos</string>
+    <string name="navigation_relations">Relações</string>
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>
     <string name="navigation_tei_data">Detalhes</string>
@@ -40,6 +41,28 @@
     <string name="filters_title_assigned">Atribuído a mim</string>
     <string name="filters_title_date">Data</string>
     <string name="filter_follow_up_label">Acompanhado%s</string>
+    <string name="select_period">Seleccionar tipo de período</string>
+    <string name="daily_period">Diário</string>
+    <string name="weekly">Semanal</string>
+    <string name="bi_weekly">Quinzenal</string>
+    <string name="weekly_start_wednesday">Semanalmente começando na quarta-feira</string>
+    <string name="weekly_start_thursday">Semanalmente começando na quinta</string>
+    <string name="weekly_start_saturday">Semanalmente começando no sábado</string>
+    <string name="weekly_start_sunday">Semanalmente começando no domingo</string>
+    <string name="monthly">Mensal</string>
+    <string name="bi_monthly">Bimestre</string>
+    <string name="quarterly">Trimestral</string>
+    <string name="six_monthly">Semestral</string>
+    <string name="six_monthly_april">Semestral a partir de abril</string>
+    <string name="six_monthly_nov">Semestral a partir de novembro</string>
+    <string name="yearly">Anualmente</string>
+    <string name="financial_year_april">Ano financeiro começando em abril</string>
+    <string name="financial_year_july">Ano financeiro começando em julho</string>
+    <string name="financial_year_october">Ano financeiro começando em outubro</string>
+    <string name="financial_year_november">Ano financeiro começando em novembro</string>
+
+
+
     <!-- State -->
     <string name="state_synced">Sincronizar</string>
     <string name="state_to_post">Para enviar</string>
@@ -130,6 +153,9 @@
     <string name="section_indicators">Indicadores</string>
     <string name="section_charts">Gráficos</string>
     <string name="section_charts_indicators">Gráficos e indicadores</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Inscrito em</string>
 
     <!--SDK error codes-->
     <string name="login_error_null_pass">A palavra-passe está em falta. Introduza a palavra-passe.</string>
@@ -227,4 +253,22 @@
         <item quantity="other">%d anos em atraso</item>
     </plurals>
 
+    <string name="open_with">Abrir com</string>
+
+    <string name="enrollment_data_section_label_V2">%s dados</string>
+    <string name="new_enrollment">Novo %s</string>
+    <string name="enrolling_ou">Inscrito em:</string> <string name="new_event_label">Novo %s</string>
+    <string name="delete_event_label">Apagar%s</string>
+    <string name="week_period_span_default_label">Semana %d %s a%s</string>
+    <string name="enrollment_reopen">reabrir</string>
+
+    <string name="sync_retry">Repetir a sincronização</string>
+    <string name="syncing">Sincronizando...</string>
+    <string name="remove">Remover</string>
+    <string name="period_daily_title">Diário</string>
+    <string name="period_weekly_title">Semana</string>
+    <string name="period_biweekly_title">Quinzenal</string>
+    <string name="period_monthly_title">Mês</string>
+    <string name="period_quarter_title">Trimestral</string>
+    <string name="period_yearly_title">Ano</string>
     </resources>

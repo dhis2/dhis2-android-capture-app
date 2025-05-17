@@ -233,7 +233,14 @@
         <item quantity="other">%d років прострочено</item>
     </plurals>
 
-    <string name="enrolling_ou">Зареєстровано в:</string> <string name="delete_event_label">Видалити %s</string>
+    <string name="enrolling_ou">Зареєстровано в:</string> <!-- Event -->
+    <plurals name="event_label">
+        <item quantity="one">подія</item>
+        <item quantity="few">події</item>
+        <item quantity="many">події</item>
+        <item quantity="other">події</item>
+    </plurals>
+    <string name="delete_event_label">Видалити %s</string>
     <string name="week_period_span_default_label">Тиждень %d %s до %s</string>
     <string name="enrollment_reopen">повторно відкрити</string>
 

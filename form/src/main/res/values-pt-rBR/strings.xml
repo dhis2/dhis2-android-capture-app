@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">Erro</string>
+    <string name="required">Exigido</string>
+    <string name="date">Data</string>
+    <string name="hint_year">Anos</string>
+    <string name="hint_month">Meses</string>
+    <string name="hint_day">Dias</string>
+    <string name="polygon">Poligono</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="polygon_captured">Polígono capturado</string>
+    <string name="due_date">Data de vencimento</string>
+    <string name="complete">Completo</string>
+    <string name="share">Partilhar</string>
+    <string name="action_close">Fechar</string>
+    <string name="incident_date">Data do incidente</string>
+    <string name="download">Baixar</string>
+    <string name="coordinates">Coordenadas</string>
+    <string name="category_combo">Combinação de categoria</string>
+    </resources>

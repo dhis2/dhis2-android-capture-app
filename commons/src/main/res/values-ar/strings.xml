@@ -39,6 +39,28 @@
     <string name="filters_title_assigned">تم تعيينه لي</string>
     <string name="filters_title_date">التاريخ</string>
     <string name="filter_follow_up_label">تمت متابعة %s</string>
+    <string name="select_period">تحديد نوع الفترة الزمنية</string>
+    <string name="daily_period">يومي</string>
+    <string name="weekly">أسبوعي</string>
+    <string name="bi_weekly">كل اسبوعين</string>
+    <string name="weekly_start_wednesday">أسبوعياً ابتداءً من يوم الأربعاء</string>
+    <string name="weekly_start_thursday">أسبوعياً ابتداءً من يوم الثلاثاء</string>
+    <string name="weekly_start_saturday">أسبوعياً ابتداءً من يوم السبت</string>
+    <string name="weekly_start_sunday">أسبوعياً ابتداءً من يوم الأحد</string>
+    <string name="monthly">شهري</string>
+    <string name="bi_monthly">كل شهرين</string>
+    <string name="quarterly">ربعي</string>
+    <string name="six_monthly">كل ستة-أشهر</string>
+    <string name="six_monthly_april">كل ستة أشهر تبدأ من ابريل</string>
+    <string name="six_monthly_nov">كل ستة أشهر تبدأ من نوفمبر</string>
+    <string name="yearly">سنوي</string>
+    <string name="financial_year_april">تبدأ السنة المالية في ابريل</string>
+    <string name="financial_year_july">تبدأ السنة المالية في يوليو</string>
+    <string name="financial_year_october">تبدأ السنة المالية في اكتوبر</string>
+    <string name="financial_year_november">تبدأ السنة المالية في نوفمبر</string>
+
+
+
     <!-- State -->
     <string name="state_synced">حالة التزامن</string>
     <string name="state_to_post">للإرسال</string>
@@ -130,6 +152,9 @@
     <string name="section_charts">المخططات البيانية</string>
     <string name="section_charts_indicators">الرسوم البيانية والمؤشرات</string>
 
+    <!-- Enrollment -->
+    <string name="enrolled_in">مسجل في</string>
+
     <!--SDK error codes-->
     <string name="login_error_null_pass">كلمة المرور مفقودة. الرجاء إدخال كلمة المرور.</string>
     <string name="login_error_null_username">اسم المستخدم مفقود. الرجاء إدخال اسم المستخدم.</string>
@@ -185,13 +210,43 @@
     <string name="error_sms_not_supported">الرسائل القصيرة غير مدعومة.</string>
     <string name="error_min_attributes">لا توجد سمات كافية لإجراء البحث. يرجى تحسين البحث الخاص بك بمزيد من السمات.</string>
     <string name="error_org_unit_scope">البحث على الإنترنت متاح فقط للوحدات التنظيمية المتاحة للمستخدم للبحث.</string>
+    <string name="error_server_unavailable">الخادم غير متوفر حالياً. حاول مرة أخرى في وقت لاحق.</string>
+    <string name="error_no_internet_connection">أنت غير متصل بالإنترنت. اتصل بالإنترنت وحاول مرة أخرى.</string>
     <string name="unsupported_field_description">هذا الحقل غير متاح للإدخال بالموبايل</string>
     <string name="add_image">إضافة صورة</string>
+    <string name="add_file">إضافة ملف</string>
     <string name="action_ok">موافق\!</string>
     <string name="enable_location_message">خدمة تحديد الموقع ليست قيد التشغيل. يرجى تشغيلها لإلتقاط الإحداثيات</string>
     <string name="keep_editing">استمر في التعديل</string>
     <string name="not_now">ليس الان</string>
+    <string name="review">المراجعة</string>
     <string name="complete">مكتمل</string>
     <string name="default_table_header_label">القيمة</string>
     <string name="discard_changes">تجاهل التغييرات</string>
+    <string name="default_empty_dataset_section_label">بيانات</string>
+    <string name="title_network_connection_unavailable">اتصال الشبكة غير متوفر</string>
+    <string name="msg_network_connection_maps">يلزم الاتصال بالإنترنت لاستخدام الخرائط.</string>
+
+    <string name="overdue_today">اليوم</string>
+    <string name="overdue_due_today">موعد استحقاقها اليوم</string>
+    <string name="file_downloaded">تم تنزيل الملف بنجاح</string>
+
+
+    <string name="break_glass_dialog_description_V2">يجب عليك تقديم سبب للتحقق من %s في هذا البرنامج المحمي. سيتم تسجيل جميع الأنشطة.</string>
+    <string name="edition_enrollment_is_no_open_V2">هذه البيانات غير قابلة للتحرير لأن %s اكتملت أو تم إلغاؤها</string>
+    <string name="enrolling_ou">مسجل في:</string> <string name="delete_event_label">حذف %s</string>
+    <string name="week_period_span_default_label">الأسابيع %d %s إلى %s</string>
+    <string name="enrollment_reopen">إعادة فتح</string>
+
+    <string name="sync_retry">إعادة محاولة المزامنة</string>
+    <string name="syncing">مزامنة...</string>
+    <string name="remove">إزلة</string>
+    <string name="period_daily_title">يومي</string>
+    <string name="period_weekly_title">أسبوع</string>
+    <string name="period_biweekly_title">كل أسبوعين</string>
+    <string name="period_monthly_title">الشهر</string>
+    <string name="period_bi_monthly_title">كل شهرين</string>
+    <string name="period_quarter_title">ربع السنة</string>
+    <string name="period_six_monthly_title">ستة أشهر</string>
+    <string name="period_yearly_title">سنة</string>
     </resources>

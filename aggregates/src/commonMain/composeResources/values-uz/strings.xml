@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
-    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
-    <string name="complete">Бажарилди</string>
+    <string name="default_column_label">Қийматлар</string>
+    <string name="total_header_label">Жами</string>
+    <string name="input_age_date_of_birth">Туғилган сана</string>
+    <string name="input_age">Ёш</string>
+    <string name="input_age_or">ёки</string>
+    <string name="input_action_accept">Қабул қилинг</string>
+    <string name="input_action_cancel">Рад этиш</string>
+    <string name="no_results_found">Натижа йўқ</string>
+    <string name="action_done">Бўлди</string>
+    <string name="input_coordinate_latitude">Кенглик</string>
+    <string name="input_coordinate_longitude">Узунлик</string>
+    <string name="input_coordinate_add_location">Локация қўшинг</string>
+    <string name="input_not_supported">Қўллаб қувватланмайди</string>
+    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми\?</string>
+    <string name="complete">Тўлдириш</string>
     <string name="saved">Сақланди!</string>
     <string name="field_mandatory">Шарт бўлган маълумотлар етишмаяпти. Маълумотлар тўпламини шакллантириш учун уларни тўлдиринг.</string>
     <string name="field_required">Агар сиз қийматни ўрнатган бўлсангиз, маълумотлар тўпламини тўлдириш учун қатордаги барча қийматлар бўлиши лозим.</string>
-    <string name="ok">ОК</string>
+    <string name="ok">ЯХШИ</string>
     <string name="dataset_saved_completed">Якунланди ва сақланди!</string>
-    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
+    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми\?</string>
+    <string name="no">Йўқ</string>
+    <string name="yes">Ҳа</string>
     <string name="error">Хатолик</string>
+    <string name="errors">Хатоликлар</string>
     <string name="complete_anyway">Барибир тўлдиринг</string>
+    <string name="review">Кўриб чиқиш</string>
     <string name="validation_rules_data_to_review">Кўриб чиқиладиган маълумотлар</string>
-
-</resources>
+    <string name="action_next">Кейинги</string>
+    <string name="add_file">Файл қўшиш</string>
+    <string name="add_image">Расм қўшиш</string>
+    <string name="take_photo">Суратга олиш</string>
+    <string name="indicators_label">Кўрсатгичлар</string>
+    </resources>

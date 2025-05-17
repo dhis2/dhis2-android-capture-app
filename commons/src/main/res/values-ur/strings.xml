@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">کوئی مواد نہیں</string>
+    <string name="next">اگلہ</string>
+    <string name="cancel">منسوخ</string>
+    <string name="yes">Ø¬Û ÛØ§Úº</string>
+    <string name="no">ÙÛÛÚº</string>
+    <string name="navigation_analytics">تجزیات</string>
+    <string name="navigation_programs">پروگرامز</string>
+    <string name="navigation_relationships">تعلقات</string>
+    <string name="navigation_notes">نوٹس</string>
+    <string name="navigation_data_entry">ڈیٹا انٹری</string>
+    <string name="navigation_tei_data">تفصیلات</string>
+    <string name="event_overview">تفصیلات</string>
+    <string name="search">تلاش کریں</string>
+    <string name="data_sets">ڈیٹا سیٹس</string>
+    <string name="done">ہو گیا</string>
+
+    <string name="filters_title_period">مدت</string>
+    <string name="filters_title_sorting">ترتیب دیں</string>
+    <string name="filters_title_status">حالت</string>
+    <string name="filters_title_date">تاریخ</string>
+    <string name="select_period">مدت کی قسم منتخب کریں</string>
+    <string name="daily_period">روزانہ</string>
+    <string name="weekly">ہفتہ وار</string>
+    <string name="weekly_start_wednesday">ہفتہ وار شروع ہونے والا ہفتہ</string>
+    <string name="weekly_start_thursday">جمعرات سے شروع ہونے والا ہفتہ</string>
+    <string name="weekly_start_saturday">ہفتہ وار شروع ہفتہ</string>
+    <string name="weekly_start_sunday">اتوار کو شروع ہونے والا اتوار</string>
+    <string name="monthly">ماہانہ</string>
+    <string name="bi_monthly">دو ماہی</string>
+    <string name="quarterly">سہ ماہی</string>
+    <string name="six_monthly">چھ ماہی</string>
+    <string name="six_monthly_april">چھ ماہانہ آغاز اپریل</string>
+    <string name="yearly">سالانہ</string>
+    <string name="financial_year_april">اپریل شروع ہونے والے مالی سال</string>
+    <string name="financial_year_july">جولائی شروع ہونے والے مالی سال</string>
+    <string name="financial_year_october">اکتوبر شروع ہونے والے مالی سال</string>
+    <string name="state_error">غلطی</string>
+    <string name="state_warning">وارنگ</string>
+    <string name="state_relationship">تعلقات</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">کھلا</string>
+    <string name="filter_event_status_schedule">شیڈول</string>
+    <string name="filter_event_status_overdue">زیادہ سے زیادہ</string>
+    <string name="filter_event_status_completed">مکمل</string>
+    <string name="filter_event_status_skipped">کھڑا</string>
+    <string name="active">فعال</string>
+    <string name="cancelled">منسوخ</string>
+    <string name="enrollment_status_active">کھلا</string>
+    <string name="enrollment_status_completed">مکمل</string>
+    <string name="enrollment_status_cancelled">منسوخ</string>
+    <!-- Periods -->
+    <string name="filter_period_today">آج</string>
+    <string name="filter_period_yesterday">کل</string>
+    <string name="filter_period_this_week">اس ہفتے</string>
+    <string name="filter_period_last_week">آخری ہفتہ</string>
+    <string name="filter_period_this_month">اس مہینے</string>
+    <string name="filter_period_last_month">آخری ماہ</string>
+    <string name="filter_period_other">Ø¯ÛÚ¯Ø±</string>
+    <string name="filter_period_this_year">اس سال</string>
+    <string name="filter_period_this_bimonth">یہ مہینہ</string>
+    <string name="filter_period_last_bimonth">آخری بار</string>
+    <string name="filter_period_this_quarter">اس سہ ماہی</string>
+    <string name="filter_period_last_quarter">آخری سہ ماہ</string>
+    <string name="filter_period_weeks_this_year">اس سال ہفتہ</string>
+    <string name="filter_period_months_this_year">ماہ اس سال</string>
+    <string name="filter_period_bimonths_this_year">اس سال دو ماہی</string>
+    <string name="filter_period_quarters_this_year">سہ ماہی اس سال</string>
+    <string name="filter_period_months_last_year">ماہ آخری سال</string>
+    <string name="filter_period_last_year">آخری سال</string>
+    <string name="filter_period_this_financial_year">اس مالیاتی سال</string>
+    <string name="filter_period_last_financial_year">آخری مالیاتی سال</string>
+    <string name="period">مدت</string>
+    <string name="DAILY">روزانہ</string>
+    <string name="WEEKLY">ہفتہ وار</string>
+    <string name="MONTHLY">ماہانہ</string>
+    <string name="YEARLY">سالانہ</string>
+
+    <string name="interval_yesterday">کل</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">رائے</string>
+    <string name="section_indicators">اشارے</string>
+    <string name="section_charts">چارٹس</string>
+    <string name="action_ok">ٹھیک ہے\!</string>
+    <string name="complete">مکمل</string>
+    <string name="default_table_header_label">قدر</string>
+    <string name="default_empty_dataset_section_label">ڈیٹا</string>
+    <string name="overdue_today">آج</string>
+    <string name="remove">حذف</string>
+    <string name="period_daily_title">روزانہ</string>
+    <string name="period_weekly_title">ہفتہ</string>
+    <string name="period_monthly_title">مہینہ</string>
+    <string name="period_quarter_title">سہ ماہی</string>
+    <string name="period_yearly_title">سال</string>
+    </resources>

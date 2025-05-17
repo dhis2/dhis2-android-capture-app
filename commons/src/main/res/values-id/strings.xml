@@ -38,6 +38,15 @@
     <string name="filters_title_state">Sinkronkan</string>
     <string name="filters_title_assigned">Ditugaskan kepada saya</string>
     <string name="filters_title_date">Tanggal</string>
+    <string name="select_period">Pilih tipe periode</string>
+    <string name="daily_period">Harian</string>
+    <string name="weekly">Mingguan</string>
+    <string name="bi_weekly">Dwiwulanan</string>
+    <string name="monthly">Bulanan</string>
+    <string name="bi_monthly">Dua bulanan</string>
+    <string name="quarterly">Triwulanan</string>
+    <string name="six_monthly">Enam bulanan</string>
+    <string name="yearly">Tahunan</string>
     <!-- State -->
     <string name="state_synced">Sinkronkan</string>
     <string name="state_to_post">Untuk dikirim</string>
@@ -127,7 +136,17 @@
     <string name="login_error_dhis_version">Server ini menjalankan versi dhis yang berbeda dari 2.29. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
     <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
     <string name="add_image">Tambahkan gambar</string>
+    <string name="add_file">Tambahkan berkas</string>
     <string name="complete">Lengkap</string>
     <string name="default_table_header_label">Nilai</string>
     <string name="discard_changes">Hapus perubahan</string>
+    <string name="default_empty_dataset_section_label">Data</string>
+    <string name="overdue_today">Hari ini</string>
+    <string name="week_period_span_default_label">Minggu %d %s hingga %s</string>
+    <string name="enrollment_reopen">Buka kembali</string>
+
+    <string name="syncing">Sedang sinkronisasi...</string>
+    <string name="remove">Hapus</string>
+    <string name="period_daily_title">Harian</string>
+    <string name="period_weekly_title">Minggu</string>
     </resources>

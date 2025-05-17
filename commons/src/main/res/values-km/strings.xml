@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clear">លុបចោល</string>
+    <string name="action_accept">ទទួលយក</string>
+    <string name="next">បន្ទាប់</string>
+    <string name="cancel">បោះបង់</string>
+    <string name="yes">បាទ/ចាស</string>
+    <string name="no">ទេ</string>
+    <string name="navigation_relationships">ទំនាក់ទំនង</string>
+    <string name="navigation_notes">ចំណាំ</string>
+    <string name="navigation_tei_data">លម្អិត</string>
+    <string name="event_overview">លម្អិត</string>
+    <string name="select_option">កំណត់​ជម្រើស</string>
+    <string name="search">ស្វែងរក</string>
+    <string name="events">ព្រឹត្តិការណ៏</string>
+    <string name="tei">TEI</string>
+    <string name="done">Done</string>
+
+    <string name="filters_title_period">កំឡុងពេល</string>
+    <string name="filters_title_status">ស្ថានភាព</string>
+    <string name="filters_title_state">បញ្ចូន</string>
+    <string name="filters_title_date">កាលបរិច្ឆេទ</string>
+    <string name="daily_period">រាល់​ថ្ងៃ</string>
+    <string name="weekly">រាល់​សប្ដាហ៍</string>
+    <string name="monthly">រាល់​ខែ</string>
+    <string name="bi_monthly">រាល់ពីរសប្តាហ៍</string>
+    <string name="quarterly">រាល់ត្រីមាស</string>
+    <string name="six_monthly">រាល់ឆមាស</string>
+    <string name="yearly">ប្រចាំឆ្នាំ</string>
+    <!-- State -->
+    <string name="state_synced">បញ្ចូន</string>
+    <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="state_to_delete">ដើម្បីលុប</string>
+    <string name="state_error">កំហុសបច្ចេកទេស</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">បើក</string>
+    <string name="filter_event_status_completed">បានបញ្ចប់</string>
+    <string name="cancelled">បានលុបចោល</string>
+    <string name="enrollment_status_active">បើក</string>
+    <string name="enrollment_status_completed">បញ្ចប់</string>
+    <string name="enrollment_status_cancelled">បានលុបចោល</string>
+    <string name="filter_period_yesterday">កាលពីម្សិលមិញ</string>
+    <string name="filter_period_other">ផ្សេង</string>
+    <string name="period">កំឡុងពេល</string>
+    <string name="DAILY">រាល់​ថ្ងៃ</string>
+    <string name="WEEKLY">រាល់​សប្ដាហ៍</string>
+    <string name="MONTHLY">រាល់​ខែ</string>
+    <string name="YEARLY">ប្រចាំឆ្នាំ</string>
+
+    <string name="filter_sync_error">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
+    <string name="interval_yesterday">កាលពីម្សិលមិញ</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">មតិ​ឆ្លើយតប</string>
+    <string name="section_indicators">Indicators</string>
+    <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
+    <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
+    <string name="add_file">បញ្ចូលឯកសារ</string>
+    <string name="keep_editing">រក្សាទុកការកែប្រែ</string>
+    <string name="complete">បញ្ចប់</string>
+    <string name="default_table_header_label">តម្លៃ</string>
+    <string name="discard_changes">លុបការកែប្រែ</string>
+    <string name="default_empty_dataset_section_label">Data</string>
+    <string name="enrollment_reopen">បើកឡើងវិញ</string>
+
+    <string name="remove">លុបចេញ</string>
+    <string name="period_daily_title">រាល់​ថ្ងៃ</string>
+    <string name="period_yearly_title">ឆ្នាំ</string>
+    </resources>

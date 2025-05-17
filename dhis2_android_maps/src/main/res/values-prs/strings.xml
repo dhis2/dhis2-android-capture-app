@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_layer_base_map_osm_light">روشنی OSM</string>
+    <string name="action_apply">درخواست</string>
+    <string name="accuracy_low">پاین</string>
+    <string name="accuracy_medium">متوسط</string>
+    </resources>

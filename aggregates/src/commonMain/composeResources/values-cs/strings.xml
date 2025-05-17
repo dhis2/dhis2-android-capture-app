@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Všechno vypadá dobře!</string>
-    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
+    <string name="default_column_label">Hodnoty</string>
+    <string name="total_header_label">Součty</string>
+    <string name="input_age_date_of_birth">Datum narození</string>
+    <string name="input_age">Stáří</string>
+    <string name="input_age_or">nebo</string>
+    <string name="input_action_accept">Přijmout</string>
+    <string name="input_action_cancel">Zrušit</string>
+    <string name="no_results_found">Nenalezeny žádné výsledky</string>
+    <string name="action_done">Hotovo</string>
+    <string name="input_coordinate_latitude">Zeměpisná šířka</string>
+    <string name="input_coordinate_longitude">Zeměpisná délka</string>
+    <string name="input_coordinate_add_location">Přidat umístění</string>
+    <string name="input_not_supported">Není podporováno</string>
+    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat\?</string>
+    <string name="not_now">Teď ne</string>
     <string name="complete">Dokončit</string>
     <string name="saved">Uloženo!</string>
     <string name="field_mandatory">Chybí povinná pole. Chcete-li vyplnit soubor dat, vyplňte je prosím.</string>
     <string name="field_required">Pokud nastavíte hodnotu, celý řádek potřebuje k dokončení datové sady všechny hodnoty.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Uloženo a dokončeno!</string>
-    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
+    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat\?</string>
+    <string name="no">Ne</string>
+    <string name="yes">Ano</string>
     <string name="error">Chyba</string>
+    <string name="errors">Chyb</string>
     <string name="complete_anyway">Přesto dokončit</string>
     <string name="review">Posouzení</string>
     <string name="validation_rules_data_to_review">Data ke kontrole</string>
-
-</resources>
+    <string name="action_next">Další</string>
+    <string name="add_file">Přidat soubor</string>
+    <string name="add_image">Přidat obrázek</string>
+    <string name="take_photo">Vyfotit</string>
+    <string name="indicators_label">Indikátory</string>
+    <string name="no_data_write_access">K úpravě těchto údajů nemáte oprávnění</string>
+    </resources>

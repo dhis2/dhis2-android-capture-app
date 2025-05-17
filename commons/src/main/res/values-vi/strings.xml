@@ -17,6 +17,7 @@
     <string name="navigation_tasks">Nhiệm vụ</string>
     <string name="navigation_programs">Chương trình</string>
     <string name="navigation_relationships">Mối quan hệ</string>
+    <string name="navigation_relations">Các mối quan hệ</string>
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
     <string name="navigation_tei_data">Chi tiết</string>
@@ -40,6 +41,15 @@
     <string name="filters_title_assigned">Gán cho tôi</string>
     <string name="filters_title_date">Ngày</string>
     <string name="filter_follow_up_label">Theo dõi %s</string>
+    <string name="select_period">Chọn loại thời điểm</string>
+    <string name="daily_period">Hàng Ngày</string>
+    <string name="weekly">Hàng Tuần</string>
+    <string name="bi_weekly">Định kỳ 2 tuần</string>
+    <string name="monthly">Hàng Tháng</string>
+    <string name="bi_monthly">Định kỳ 2 tháng</string>
+    <string name="quarterly">Hàng Quý</string>
+    <string name="six_monthly">Định kỳ 6 tháng</string>
+    <string name="yearly">Hàng năm</string>
     <!-- State -->
     <string name="state_synced">Đồng bộ</string>
     <string name="state_to_post">Gửi</string>
@@ -131,6 +141,9 @@
     <string name="section_charts">Biểu đồ</string>
     <string name="section_charts_indicators">Biểu đồ và Chỉ số</string>
 
+    <!-- Enrollment -->
+    <string name="enrolled_in">Đã đăng ký trong</string>
+
     <!--SDK error codes-->
     <string name="login_error_null_pass">Thiếu mật khẩu. Xin vui lòng nhập mật khẩu</string>
     <string name="login_error_null_username">Thiếu tên đăng nhập. Xin vui lòng nhập tên đăng nhập.</string>
@@ -221,4 +234,21 @@
         <item quantity="other">Trễ hẹn %d năm</item>
     </plurals>
 
+    <string name="open_with">Mở với</string>
+
+    <string name="enrollment_data_section_label_V2">Dữ liệu %s</string>
+    <string name="new_enrollment">%sMới</string>
+    <string name="enrolling_ou">Đã đăng ký vào:</string> <string name="new_event_label">%sMới</string>
+    <string name="delete_event_label">Xóa %s</string>
+    <string name="week_period_span_default_label">Tuần %d %s đến %s</string>
+    <string name="enrollment_reopen">mở lại</string>
+
+    <string name="sync_retry">Đồng bộ lại</string>
+    <string name="syncing">Đang đồng bộ...</string>
+    <string name="remove">Xóa</string>
+    <string name="period_daily_title">Hàng Ngày</string>
+    <string name="period_weekly_title">Tuần</string>
+    <string name="period_monthly_title">Tháng</string>
+    <string name="period_quarter_title">Quý</string>
+    <string name="period_yearly_title">Năm</string>
     </resources>

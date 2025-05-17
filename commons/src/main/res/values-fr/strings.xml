@@ -38,6 +38,28 @@
     <string name="filters_title_state">Synchronisation</string>
     <string name="filters_title_assigned">Assigné à moi</string>
     <string name="filters_title_date">Date</string>
+    <string name="select_period">Sélectionner type de période</string>
+    <string name="daily_period">Quotidien</string>
+    <string name="weekly">Hebdomadaire</string>
+    <string name="bi_weekly">Bi-hebdomadaire</string>
+    <string name="weekly_start_wednesday">Hebdomadaire débutant un mercredi</string>
+    <string name="weekly_start_thursday">Hebdomadaire débutant un jeudi</string>
+    <string name="weekly_start_saturday">Hebdomadaire débutant un samedi</string>
+    <string name="weekly_start_sunday">Hebdomadaire débutant un dimanche</string>
+    <string name="monthly">Mensuel</string>
+    <string name="bi_monthly">Bimensuel</string>
+    <string name="quarterly">Trimestriel</string>
+    <string name="six_monthly">Semestriel</string>
+    <string name="six_monthly_april">Semestrielle débutant par avril</string>
+    <string name="six_monthly_nov">Semestrielle débutant par novembre</string>
+    <string name="yearly">Annuel</string>
+    <string name="financial_year_april">Année financière débutant par avril</string>
+    <string name="financial_year_july">Année financière débutant par juillet</string>
+    <string name="financial_year_october">Année financière débutant par octobre</string>
+    <string name="financial_year_november">Année financière débutant par Novembre</string>
+
+
+
     <!-- State -->
     <string name="state_synced">Synchronisation</string>
     <string name="state_to_post">Envoyer</string>
@@ -157,6 +179,8 @@
     <string name="error_org_unit_scope">La recherche en ligne n\'est disponible que pour vos unités organisationnelles de recherche d\'utilisateurs.</string>
     <string name="unsupported_field_description">Ce champ n\'est pas disponible pour la capture mobile</string>
     <string name="add_image">Ajouter une image</string>
+    <string name="add_signature">Ajouter une signature</string>
+    <string name="add_file">Ajouter un fichier</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">L\'emplacement de votre appareil est déconnecté. Veuillez l\'activer pour capturer les coordonnées</string>
     <string name="keep_editing">Continuer l’édition</string>
@@ -165,4 +189,29 @@
     <string name="complete">Terminer</string>
     <string name="default_table_header_label">Valeur</string>
     <string name="discard_changes">Annuler les modifications</string>
+    <string name="default_empty_dataset_section_label">Données</string>
+    <string name="title_network_connection_unavailable">Connexion réseau indisponible</string>
+    <string name="msg_network_connection_maps">Une connexion Internet est nécessaire pour utiliser les cartes.</string>
+
+    <string name="overdue_today">Aujourd\'hui</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d jour de retard</item>
+        <item quantity="many">%d jours de retard</item>
+        <item quantity="other">%d jours de retard</item>
+    </plurals>
+    <string name="open_with">Ouvrir avec</string>
+
+    <string name="enrollment_data_section_label_V2">%s donnée</string>
+    <string name="enrolling_ou">Inscrire à:</string> <string name="delete_event_label">Supprimer 1%s</string>
+    <string name="week_period_span_default_label">Semaine %d %s à %s</string>
+    <string name="enrollment_reopen">rouvrir</string>
+
+    <string name="syncing">Synchronisation...</string>
+    <string name="remove">Supprimer</string>
+    <string name="period_daily_title">Quotidien</string>
+    <string name="period_weekly_title">Semaine</string>
+    <string name="period_biweekly_title">Bihebdomadaire</string>
+    <string name="period_monthly_title">Mois</string>
+    <string name="period_quarter_title">Trimestre</string>
+    <string name="period_yearly_title">Année</string>
     </resources>

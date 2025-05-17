@@ -6,6 +6,7 @@
     <string name="choose_date">Velg dato</string>
     <string name="choose_ou">Velg organisasjonsenhet</string>
     <string name="field_is_mandatory">Dette feltet er obligatorisk</string>
+    <string name="required">Påkrevd</string>
     <string name="date">Dato</string>
     <string name="hint_year">År</string>
     <string name="hint_month">Måneder</string>
@@ -32,6 +33,7 @@
     <string name="complete">Fullfør</string>
     <string name="discard_changes">Forkast endringer</string>
     <string name="saved">Lagret!</string>
+    <string name="save_anyway">Lagre likevel</string>
     <string name="keep_editing">Fortsett å rediger</string>
     <string name="share">Del</string>
     <string name="action_close">Lukk</string>
@@ -42,4 +44,10 @@
     <string name="tei_coordinates">Koordinater for</string>
     <string name="no_reserved_values">Det er ingen flere reserverte verdier. Kontakt din systemadministrator</string>
     <string name="incident_date">Forekomstdato</string>
+    <string name="download">Last ned</string>
+    <string name="org_unit">Org enhet</string>
+    <string name="coordinates">Koordinater</string>
+    <string name="category_combo">Kategorikombo</string>
+    <string name="no_options">Ingen alternativer er tilgjengelige</string>
+    <string name="cat_combo">Kat kombo</string>
     </resources>

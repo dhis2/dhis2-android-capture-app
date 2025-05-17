@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Completar</string>
+    <string name="discard_changes">Descartar los cambios</string>
+    <string name="not_now">Ahora no</string>
+    <string name="keep_editing">Seguir editando</string>
+    <string name="review">Revisar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
+    <string name="clear">Limpiar</string>
+    <string name="action_done">Terminado</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_close">Cerrar</string>
+    <string name="hint_search">Buscar</string>
+    </resources>

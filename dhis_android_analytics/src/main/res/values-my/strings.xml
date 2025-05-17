@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="period">အချိန်ကာလ</string>
+    <string name="none">တစ်ခုမှမဟုတ်</string>
+    <string name="daily">နေ့စဉ်</string>
+    <string name="other">အခြား</string>
+    <string name="weekly">အပတ်စဉ်</string>
+    <string name="monthly">လစဉ်</string>
+    <string name="yearly">နှစ်စဉ်</string>
+    <string name="all">အားလုံး</string>
+    </resources>

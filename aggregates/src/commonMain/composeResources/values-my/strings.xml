@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="input_age_or">သို့မဟုတ်</string>
+    <string name="input_action_cancel">ပယ်ဖျက်သည်</string>
+    <string name="no_results_found">No results found</string>
+    <string name="action_done">Done</string>
+    <string name="complete">ပြည့်စုံသည်။</string>
+    <string name="ok">လက်ခံသည်</string>
+    <string name="no">No</string>
+    <string name="yes">မှန်</string>
+    <string name="error">အမှား</string>
+    <string name="action_next">ရှေ့သို့</string>
+    <string name="indicators_label">အညွှန်းများ</string>
+    </resources>

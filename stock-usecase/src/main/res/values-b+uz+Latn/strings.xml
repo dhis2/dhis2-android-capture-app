@@ -1,0 +1,34 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Бош саҳифа</string>
+    <string name="action_settings">Sozlamalar</string>
+
+    <string name="discard">Bekor qilish</string>
+    <string name="sign_in">Tizimga kirish</string>
+    <string name="username">Фойдаланувчи исми</string>
+    <string name="password">Parol</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Davom eting</string>
+    <string name="delete">Oʼchirib tashlash</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="from">Dan</string>
+    <string name="logout">Chiqib ketish</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Element</string>
+    <string name="prompt_email">ye-Pochta</string>
+    <string name="prompt_password">Parol</string>
+    <string name="action_sign_in_short">Tizimga kirish</string>
+    <string name="content_desc_search">Izlash</string>
+    <string name="confirm_transaction_label">Tasdiqlang</string>
+    <string name="invalid_quantity">Yaroqsiz</string>
+    <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
+    <string name="done_task">Бош саҳифа</string>
+    <string name="back">Orqaga</string>
+    <string name="no_conflicts_message">Ushbu dastur uchun hech qanday nizolar mavjud emas</string>
+    <string name="action_sync">Yuborish</string>
+    <string name="count">Ҳисоблаш</string>
+    <string name="formatting_error">Formatlashda xatolik</string>
+    <string name="invalid_possitive_zero">Faqat musbat raqamlar yoki nolga ruxsat beriladi</string>
+    </resources>

@@ -1,0 +1,28 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">گھر</string>
+    <string name="action_settings">ØªØ±ØªÛØ¨Ø§Øª</string>
+
+    <string name="discard">ذائل</string>
+    <string name="sign_in">داخلہ</string>
+    <string name="username">ØµØ§Ø±Ù Ú©Ø§ ÙØ§Ù</string>
+    <string name="password">پاسورڈ</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">آگے بڑھو</string>
+    <string name="delete">حذف</string>
+    <string name="ok">ٹھیک</string>
+    <string name="cancel">منسوخ</string>
+    <string name="from">سے</string>
+    <string name="language">زبان</string>
+    <!-- Stock table -->
+    <string name="item">شے</string>
+    <string name="prompt_email">ای میل</string>
+    <string name="prompt_password">پاسورڈ</string>
+    <string name="action_sign_in_short">داخلہ</string>
+    <string name="content_desc_search">تلاش کریں</string>
+    <string name="confirm_transaction_label">تصدیق کریں</string>
+    <string name="invalid_quantity">غلط</string>
+    <string name="done_task">گھر</string>
+    <string name="back">واپس</string>
+    <string name="action_sync">بھیجو</string>
+    <string name="count">شمار</string>
+    </resources>

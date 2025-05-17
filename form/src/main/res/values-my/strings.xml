@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">အမှား</string>
+    <string name="choose_date">ရက်စွဲ ကိုရွေးချယ်ပါ</string>
+    <string name="required">ဖြည့်သွင်းရန်လိုအပ်သည်</string>
+    <string name="date">ရက်စွဲ</string>
+    <string name="hint_year">နှစ်များ</string>
+    <string name="hint_month">လများ</string>
+    <string name="due_date">Дата выполнения</string>
+    <string name="complete">ပြည့်စုံသည်။</string>
+    <string name="action_close">ပိတ်သည်</string>
+    <string name="incident_date">Incident date</string>
+    <string name="org_unit">ဖွဲ့စည်းပုံယူနစ်</string>
+    </resources>

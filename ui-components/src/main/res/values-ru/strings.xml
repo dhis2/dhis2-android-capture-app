@@ -2,6 +2,9 @@
 <resources>
     <string name="complete">Завершить</string>
     <string name="discard_changes">Не сохранять изменения</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="keep_editing">Продолжить редактирование</string>
+    <string name="review">Просмотр</string>
     <string name="cancel">Отменить</string>
     <string name="save">Сохранить</string>
     <string name="clear">Очистить</string>
@@ -10,4 +13,16 @@
     <string name="action_close">Закрыть</string>
     <string name="hint_search">Поиск</string>
     <string name="action_clear_all">Очистить все</string>
-    </resources>
+    <plurals name="error_count">
+        <item quantity="one">%s ошибка</item>
+        <item quantity="few">%s ошибки</item>
+        <item quantity="many">%s ошибки</item>
+        <item quantity="other">%s ошибок</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="one">%s предупреждение</item>
+        <item quantity="few">%s предупреждения</item>
+        <item quantity="many">%s предупреждения</item>
+        <item quantity="other">%s предупреждений</item>
+    </plurals>
+</resources>
