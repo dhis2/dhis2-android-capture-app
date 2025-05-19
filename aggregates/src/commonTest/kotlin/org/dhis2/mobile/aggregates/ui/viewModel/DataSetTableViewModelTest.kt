@@ -68,6 +68,7 @@ import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
+import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
@@ -126,6 +127,8 @@ internal class DataSetTableViewModelTest : KoinTest {
         Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(aggregatesModule)
+            modules(commonsModule)
+            modules()
             MockProvider.register {
                 mock(it.java)
             }

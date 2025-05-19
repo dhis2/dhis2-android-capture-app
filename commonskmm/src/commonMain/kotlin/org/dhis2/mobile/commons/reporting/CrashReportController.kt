@@ -1,7 +1,6 @@
-package org.dhis2.commons.reporting
+package org.dhis2.mobile.commons.reporting
 
 interface CrashReportController {
-
     fun trackUser(user: String?, server: String?)
 
     fun trackServer(server: String?, serverDhisVersion: String?)

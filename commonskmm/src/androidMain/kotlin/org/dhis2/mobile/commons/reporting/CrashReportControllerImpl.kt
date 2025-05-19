@@ -1,14 +1,13 @@
-package org.dhis2.commons.reporting
+package org.dhis2.mobile.commons.reporting
 
 import io.sentry.Breadcrumb
 import io.sentry.Sentry
 import org.hisp.dhis.android.core.D2Manager
 import timber.log.Timber
-import javax.inject.Inject
 
 const val DATA_STORE_CRASH_PERMISSION_KEY = "analytics_permission"
 
-class CrashReportControllerImpl @Inject constructor() : CrashReportController {
+class CrashReportControllerImpl : CrashReportController {
 
     override fun trackUser(user: String?, server: String?) {
         if (isCrashReportPermissionGranted()) {
