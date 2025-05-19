@@ -304,11 +304,13 @@ fun DataSetInstanceScreen(
                                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                                     onCellClick = { cellId, cellValue, cellError ->
-                                        dataSetTableViewModel.updateSelectedCell(
-                                            cellId = cellId,
-                                            newValue = cellValue,
-                                            validationError = cellError,
-                                        )
+                                        scope.launch {
+                                            dataSetTableViewModel.updateSelectedCell(
+                                                cellId = cellId,
+                                                newValue = cellValue,
+                                                validationError = cellError,
+                                            )
+                                        }
                                     },
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
@@ -381,11 +383,13 @@ fun DataSetInstanceScreen(
                         },
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                         onCellClick = { cellId, cellValue, cellError ->
-                            dataSetTableViewModel.updateSelectedCell(
-                                cellId = cellId,
-                                newValue = cellValue,
-                                validationError = cellError,
-                            )
+                            scope.launch {
+                                dataSetTableViewModel.updateSelectedCell(
+                                    cellId = cellId,
+                                    newValue = cellValue,
+                                    validationError = cellError,
+                                )
+                            }
                         },
                         currentSection = dataSetScreenState.currentSection(),
                         currentSelection = tableCellSelection,
@@ -449,7 +453,9 @@ fun DataSetInstanceScreen(
                             )
                         },
                         onDismiss = {
-                            dataSetTableViewModel.updateSelectedCell(null)
+                            scope.launch {
+                                dataSetTableViewModel.updateSelectedCell(null)
+                            }
                         },
                     )
                 }
