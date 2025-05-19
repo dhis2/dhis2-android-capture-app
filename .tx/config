@@ -1,6 +1,6 @@
 [main]
 host     = https://www.transifex.com
-lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: b+es+419
+lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: b+es+419, ar_IQ: ar-rIQ
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:stock-strings-xml]
 file_filter  = stock-usecase/src/main/res/values-<lang>/strings.xml
