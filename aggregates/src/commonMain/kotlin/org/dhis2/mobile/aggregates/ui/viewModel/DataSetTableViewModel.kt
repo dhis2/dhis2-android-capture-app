@@ -280,13 +280,16 @@ internal class DataSetTableViewModel(
                     validationError = validationError,
                     valueWithError = newValue,
                     isLastCell = isLastCell(cellId),
-                    onDone = { viewModelScope.launch {
-                        _dataSetScreenState.update {
-                            (it as? DataSetScreenState.Loaded)?.copy(
-                                nextCellSelection = Pair(null, false),
-                            ) ?: it
+                    onDone = {
+                        viewModelScope.launch {
+                            _dataSetScreenState.update {
+                                (it as? DataSetScreenState.Loaded)?.copy(
+                                    nextCellSelection = Pair(null, false),
+                                ) ?: it
+                            }
+                            updateSelectedCell(null)
                         }
-                        updateSelectedCell(null) } },
+                    },
                     onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
                 )
             }
