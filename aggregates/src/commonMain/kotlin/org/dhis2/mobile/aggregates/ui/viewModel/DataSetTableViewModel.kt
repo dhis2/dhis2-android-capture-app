@@ -331,16 +331,16 @@ internal class DataSetTableViewModel(
             (it as? DataSetScreenState.Loaded)?.copy(
                 dataSetSectionTable = it.dataSetSectionTable.copy(
                     tableModels = it.dataSetSectionTable.tableModels.map { table ->
-                            table.updateValue(
-                                cellId = cellId,
-                                updatedValue = inputData?.displayValue,
-                                legendData = inputData?.legendData,
-                                error = validationError,
-                                resourceManager = resourceManager,
-                            )
-                        },
+                        table.updateValue(
+                            cellId = cellId,
+                            updatedValue = inputData?.displayValue,
+                            legendData = inputData?.legendData,
+                            error = validationError,
+                            resourceManager = resourceManager,
+                        )
+                    },
 
-                    ),
+                ),
                 selectedCellInfo = inputData,
             ) ?: it
         }
