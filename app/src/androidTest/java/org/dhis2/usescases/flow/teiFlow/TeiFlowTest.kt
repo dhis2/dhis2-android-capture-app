@@ -40,6 +40,7 @@ class TeiFlowTest : BaseTest() {
 
     @Test
     fun shouldEnrollToSameProgramAfterClosingIt() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             ResponseController.GET,
             API_TRACKED_ENTITY_PATH,
@@ -57,6 +58,7 @@ class TeiFlowTest : BaseTest() {
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
             closeEnrollmentAndCheckEvents()
+
             enrollToProgram(ADULT_WOMAN_PROGRAM, enrollmentListDetails)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
             checkPastEventsAreClosed(totalEventsPerEnrollment)
