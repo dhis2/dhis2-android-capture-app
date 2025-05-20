@@ -46,12 +46,12 @@ class TeiDashboardTest : BaseTest() {
 
     override fun setUp() {
         super.setUp()
-        enableIntents()
         setupMockServer()
     }
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -74,10 +74,12 @@ class TeiDashboardTest : BaseTest() {
             clickOnSaveButton()
             checkNewNoteWasCreated(NOTE_VALID)
         }
+
     }
 
     @Test
     fun shouldNotCreateANoteWhenClickClear() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -361,6 +363,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
