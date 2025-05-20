@@ -69,6 +69,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
+            verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_VALID)
             clickOnSaveButton()
             checkNewNoteWasCreated(NOTE_VALID)
@@ -92,6 +93,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
+            verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_INVALID)
             clickOnClearButton()
             clickYesOnAlertDialog()
