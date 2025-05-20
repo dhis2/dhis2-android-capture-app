@@ -599,12 +599,13 @@ private fun DataSetSinglePane(
                                     if (!this.isNullOrEmpty()) {
                                         WarningInfoBar(message.format(info))
                                     }
-                                }dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
+                                }
+                            dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                             HtmlContentBox(
                                 text = it,
                                 modifier = Modifier.padding(
                                     top = Spacing.Spacing8,
-                                    bottom = Spacing.Spacing8,
+                                    bottom = Spacing.Spacing0,
                                     start = Spacing.Spacing16,
                                     end = Spacing.Spacing16,
                                 ),
@@ -618,8 +619,8 @@ private fun DataSetSinglePane(
                             text = it,
                             modifier = Modifier.padding(
                                 top = Spacing.Spacing24,
-                                start = Spacing.Spacing0,
-                                end = Spacing.Spacing0,
+                                start = Spacing.Spacing16,
+                                end = Spacing.Spacing16,
                             ),
 
                         )
@@ -735,8 +736,8 @@ private fun DataSetTableContent(
                         text = it,
                         modifier = Modifier.padding(
                             top = Spacing.Spacing24,
-                            start = Spacing.Spacing0,
-                            end = Spacing.Spacing0,
+                            start = Spacing.Spacing16,
+                            end = Spacing.Spacing16,
                         ).testTag("HTML_BOTTOM_CONTENT"),
                     )
                 }
@@ -765,7 +766,7 @@ private fun ContentLoading(
 @Composable
 private fun WarningInfoBar(message: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = Spacing.Spacing24),
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(
