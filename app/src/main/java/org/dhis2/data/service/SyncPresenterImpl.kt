@@ -217,15 +217,19 @@ class SyncPresenterImpl(
                     updateProyectAnalytics()
                     setUpSMS()
                 },
-        ).andThen(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ).andThen(
-            Completable.fromObservable(
-                d2.fileResourceModule().fileResourceDownloader()
-                    .byDomainType().eq(FileResourceDomainType.ICON)
-                    .download(),
-            ),
-        ).blockingAwait()
+        ).doOnError {
+            Timber.d("error while downloading Metadata")
+        }
+            .onErrorComplete()
+            .andThen(
+                d2.mapsModule().mapLayersDownloader().downloadMetadata(),
+            ).andThen(
+                Completable.fromObservable(
+                    d2.fileResourceModule().fileResourceDownloader()
+                        .byDomainType().eq(FileResourceDomainType.ICON)
+                        .download(),
+                ),
+            ).blockingAwait()
     }
 
     private fun setUpSMS() {
