@@ -224,7 +224,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Nullable
     public String getEnrollmentUid() {
         Event currentEvent = getCurrentEvent();
-        if (currentEvent.enrollment() == null) {
+        if (currentEvent == null) {
             return null;
         }else{
             return currentEvent.enrollment();
