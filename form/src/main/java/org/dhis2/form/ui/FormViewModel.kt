@@ -122,6 +122,7 @@ class FormViewModel(
                     runDataIntegrityCheck()
                 }
             }
+            FormCountingIdlingResource.decrement()
         }
 
         loadData()
