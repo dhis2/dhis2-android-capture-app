@@ -51,6 +51,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -68,14 +69,17 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
+            verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_VALID)
             clickOnSaveButton()
             checkNewNoteWasCreated(NOTE_VALID)
         }
+
     }
 
     @Test
     fun shouldNotCreateANoteWhenClickClear() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -91,6 +95,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
+            verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_INVALID)
             clickOnClearButton()
             clickYesOnAlertDialog()
@@ -358,6 +363,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -385,6 +391,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
+            checkEnrollmentListIsLaunched()
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
         }

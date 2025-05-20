@@ -13,6 +13,8 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -21,6 +23,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
+import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
 import org.dhis2.usescases.teiDashboard.teiProgramList.ui.PROGRAM_TO_ENROLL
 import org.hamcrest.CoreMatchers.allOf
 
@@ -39,6 +42,10 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
             .performClick()
+    }
+
+    fun checkEnrollmentListIsLaunched() {
+        Intents.intended(allOf(hasComponent(TeiProgramListActivity::class.java.name)))
     }
 
     fun clickOnAcceptInDatePicker() {

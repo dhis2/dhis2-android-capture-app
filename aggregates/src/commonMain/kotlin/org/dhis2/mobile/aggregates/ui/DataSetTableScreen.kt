@@ -581,6 +581,21 @@ private fun DataSetSinglePane(
                                     WarningInfoBar(message)
                                 }
 
+                                with(
+                                    dataSetSections.firstOrNull { it.uid == currentSection }?.misconfiguredRows,
+                                ) {
+                                    val message =
+                                        "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
+                                    val info = when {
+                                        this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
+                                        this != null -> joinToString(", ")
+                                        else -> null
+                                    }
+                                    if (!this.isNullOrEmpty()) {
+                                        WarningInfoBar(message.format(info))
+                                    }
+                                }
+
                                 dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                                     HtmlContentBox(
                                         text = it,

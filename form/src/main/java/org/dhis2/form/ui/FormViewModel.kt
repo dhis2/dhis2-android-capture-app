@@ -38,6 +38,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -121,6 +122,7 @@ class FormViewModel(
                     runDataIntegrityCheck()
                 }
             }
+            FormCountingIdlingResource.decrement()
         }
 
         loadData()
@@ -170,6 +172,8 @@ class FormViewModel(
                         handler.postDelayed({
                             processCalculatedItems(skipProgramRules = true)
                         }, 500L)
+                    } else {
+                        FormCountingIdlingResource.decrement()
                     }
                 }
 

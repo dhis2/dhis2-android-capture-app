@@ -39,7 +39,6 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.DataSetNonEditableReason
-import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -181,7 +180,35 @@ internal class DataSetInstanceRepositoryImpl(
         dataSetUid: String,
     ) = d2.dataSetModule().sections()
         .byDataSetUid().eq(dataSetUid)
-        .blockingGet().map(Section::toDataSetSection)
+        .blockingGet().map { section ->
+            section.toDataSetSection(
+                misconfiguredRows(dataSetUid, section.uid()),
+            )
+        }
+
+    private fun misconfiguredRows(dataSetUid: String, sectionUid: String): List<String> {
+        val dataSetElements = d2.dataSetModule().dataSets()
+            .withDataSetElements()
+            .uid(dataSetUid)
+            .blockingGet()?.dataSetElements()?.associate {
+                it.dataElement().uid() to it.categoryCombo()?.uid()
+            } ?: emptyMap()
+
+        return d2.dataSetModule().sections().withDataElements()
+            .uid(sectionUid)
+            .blockingGet()?.dataElements()?.mapNotNull {
+                val catComboUid = dataSetElements[it.uid()] ?: it.categoryComboUid()
+                val emptyCategory = d2.categoryModule().categoryCombos().withCategories()
+                    .uid(catComboUid)
+                    .blockingGet()
+                    ?.categories().isNullOrEmpty()
+                if (emptyCategory) {
+                    it.displayFormName()
+                } else {
+                    null
+                }
+            } ?: emptyList()
+    }
 
     override suspend fun isComplete(
         dataSetUid: String,
@@ -429,7 +456,7 @@ internal class DataSetInstanceRepositoryImpl(
                             ?: dataElementCategoryComboUid(it.uid),
                     )
                 },
-            ).mapIndexed { index, noGroupingDataSetElements ->
+            ).mapIndexedNotNull { index, noGroupingDataSetElements ->
                 val mainCellElement = noGroupingDataSetElements.first()
                 val catComboUid = mainCellElement.categoryComboUid ?: dataElementCategoryComboUid(
                     mainCellElement.uid,
@@ -438,6 +465,8 @@ internal class DataSetInstanceRepositoryImpl(
                     .withCategories()
                     .uid(catComboUid)
                     .blockingGet()!!
+
+                if (catCombo.categories()?.isEmpty() == true) return@mapIndexedNotNull null
 
                 val catComboHasPivotedCategory =
                     catCombo.categories()?.any { it.uid() == pivotedCategoryUid } ?: false
@@ -481,9 +510,10 @@ internal class DataSetInstanceRepositoryImpl(
                 .byUid().`in`(catComboUids)
                 .withCategories()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet().map { catCombo ->
-
-                    val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
+                .blockingGet().mapNotNull { catCombo ->
+                    if (catCombo.categories()?.isEmpty() == true) return@mapNotNull null
+                    val subGroups =
+                        catCombo.categories()?.mapNotNull { it.uid() } ?: return@mapNotNull null
                     val cellElements = dataSetElementsInSection.filter { dataSetElement ->
                         val catComboUid =
                             dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
