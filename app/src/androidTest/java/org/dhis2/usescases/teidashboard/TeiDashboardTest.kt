@@ -46,6 +46,7 @@ class TeiDashboardTest : BaseTest() {
 
     override fun setUp() {
         super.setUp()
+        enableIntents()
         setupMockServer()
     }
 
@@ -385,6 +386,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
+            checkEnrollmentListIsLaunched()
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
         }
