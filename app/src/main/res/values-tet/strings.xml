@@ -13,6 +13,8 @@
     <string name="YEARLY">Anual</string>
     <string name="action_share_zero_items">Partilla</string>
     <string name="read_only">Le deit</string>
+    <string name="active">Ativu</string>
+
     <string name="state_error">Erru</string>
     <!--Event initial-->
     <string name="create">Kria</string>
@@ -20,6 +22,9 @@
     <string name="date">Data</string>
     <string name="cancel">Kansela</string>
     <string name="delete">Soe</string>
+    <string name="edit">Edita</string>
+    <!--DONE TASKS-->
+    <string name="events_no_data">Laiha dadus</string>
     <string name="done_task">Pájina inisial</string>
     <string name="wipe_data_no">Kansela</string>
     <string name="SYNC_MANAGER">Konfigurasaun</string>
@@ -30,8 +35,10 @@
     <string name="period">Períodu</string>
     <string name="next">Próximu</string>
     <string name="SAVE">Rai</string>
+    <string name="button_ok">OK</string>
     <string name="about">Konabá</string>
     <string name="share">Partilla</string>
+    <string name="max">Max</string>
     <string name="warning_on_complete_title">Avizu</string>
     <string name="error_on_complete_title">Erru</string>
     <string name="save">Rai</string>
@@ -44,6 +51,7 @@
     <string name="table">Tabela</string>
     <string name="state_warning">Avizu</string>
     <string name="action_close">Taka</string>
+    <string name="data_set_complete">Kompletu</string>
     <string name="data_every_day">Diáriu</string>
     <string name="data_every_week">Semanal</string>
     <string name="filters_title_period">Períodu</string>
@@ -51,4 +59,31 @@
     <string name="filter_period_last_week">Semana kotuk</string>
     <string name="filter_period_last_month">Fulan kotuk</string>
     <string name="filter_period_other">Seluk</string>
+    <string name="go_back">Fila ba kotuk</string>
+    <string name="data_sets">Pakote dadus</string>
+    <string name="dataset_overview">Detalles</string>
+    <string name="name">Naran</string>
+    <string name="enrollment_status_completed">Kompletu</string>
+    <string name="event_data">Dadus</string>
+    <string name="are_you_sure">Itabo\'ot iha duni serteza kah??</string>
+    <string name="filters_title_date">Data</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Fila ba kotuk</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Taka</string>
+    <string name="navigation_map_view">Mapa</string>
+    <string name="navigation_tei_data">Detalles</string>
+    <string name="filter_period_this_year">Tina ida ne\'e</string>
+    <string name="filter_period_last_quarter">Trimestre kotuk</string>
+    <string name="filter_period_months_this_year">Fulan sira tinan ida ne\'e</string>
+    <string name="filter_period_quarters_this_year">Trimestres sira tinan ida ne\'e</string>
+    <string name="filter_period_months_last_year">Fulan sira tinan kotuk</string>
+    <string name="filter_period_last_year">Tinan kotuk</string>
+    <string name="filter_period_this_financial_year">Tinan finanseiru ida ne\'e</string>
+    <string name="filter_period_last_financial_year">Tinan finanseiru kotuk</string>
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indikadores</string>
+    <string name="value">Valor</string>
+    <string name="available">Disponível</string>
+    <string name="unknown_date">Deskoñesidu</string>
+    <string name="sync_dialog_action_send">Haruka</string>
+    <string name="optional">Opsional</string>
     </resources>

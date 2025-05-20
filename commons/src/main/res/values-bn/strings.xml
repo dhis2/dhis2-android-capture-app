@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yes">হ্যাঁ</string>
+    <string name="no">না</string>
+    <string name="navigation_notes">মন্তব্য</string>
+    <string name="navigation_data_entry">তথ্যের অন্তর্ভুক্তি</string>
+    <string name="filters_title_status">অবস্থা</string>
+    <string name="filters_title_date">তারিখ</string>
+    <string name="state_error">ভুল</string>
+    <string name="filter_event_status_completed">সম্পন্ন</string>
+    </resources>

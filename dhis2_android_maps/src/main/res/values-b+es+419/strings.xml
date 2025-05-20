@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_location">Seleccione ubicación</string>
+    <string name="map_layers">Capas del Mapa</string>
+    <string name="action_apply">Aplicar</string>
+    <string name="dialog_layer_satellite">Mostrar vista satélite</string>
+    <string name="dialog_layer_event">Mostrar eventos</string>
+    <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
+    <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>
+    <string name="select_location_title">Seleccione ubicación</string>
+    </resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="period">Períodu</string>
+    <string name="none">Nein ida</string>
+    <string name="daily">Diáriu</string>
+    <string name="other">Seluk</string>
+    <string name="weekly">Semanal</string>
+    <string name="monthly">Mensal</string>
+    <string name="yearly">Anual</string>
+    <string name="all">Hotu</string>
+    </resources>

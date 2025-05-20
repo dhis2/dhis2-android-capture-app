@@ -38,6 +38,28 @@
     <string name="filters_title_state">Синхронлаш</string>
     <string name="filters_title_assigned">Менга берилган ваколат</string>
     <string name="filters_title_date">Сана</string>
+    <string name="select_period">Давр турини танлаш</string>
+    <string name="daily_period">Кунлик</string>
+    <string name="weekly">Ҳафталик</string>
+    <string name="bi_weekly">Жуфт ҳафталик</string>
+    <string name="weekly_start_wednesday">Чоршанба кунидан бошлаб ҳар ҳафта</string>
+    <string name="weekly_start_thursday">Пайшанба кунидан бошлаб ҳар ҳафта</string>
+    <string name="weekly_start_saturday">Шанба кунидан бошлаб ҳар ҳафта</string>
+    <string name="weekly_start_sunday">Якшанба кунидан бошлаб ҳар ҳафта</string>
+    <string name="monthly">Ойлик</string>
+    <string name="bi_monthly">Жуфт ойлик</string>
+    <string name="quarterly">Ҳар квартал</string>
+    <string name="six_monthly">Ярим йиллик</string>
+    <string name="six_monthly_april">Ярим йиллик Апрелдан бошлаб</string>
+    <string name="six_monthly_nov">Ярим йиллик ноябрдан бошлаб</string>
+    <string name="yearly">Йиллик</string>
+    <string name="financial_year_april">Молиявий йил Апрелдан бошлаб</string>
+    <string name="financial_year_july">Молиявий йил Июлдан бошлаб</string>
+    <string name="financial_year_october">Молиявий йил Октябрдан бошлаб</string>
+    <string name="financial_year_november">Молиявий йил Ноябрдан бошлаб</string>
+
+
+
     <!-- State -->
     <string name="state_synced">Синхронлаш</string>
     <string name="state_to_post">Юбориш учун</string>
@@ -123,10 +145,25 @@
     <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
     <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
     <string name="add_image">Расм қўшиш</string>
+    <string name="add_signature">Имзо қўшинг</string>
+    <string name="add_file">Файл қўшиш</string>
     <string name="action_ok">Яхши</string>
     <string name="enable_location_message">Сизнинг қўрилмангиз интернет алоқаси узилди. Илтимос, координаталарни олиш учун уни ёқинг</string>
     <string name="keep_editing">Таҳрирни давом этинг</string>
+    <string name="review">Кўриб чиқиш</string>
     <string name="complete">Тўлдириш</string>
     <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
+    <string name="default_empty_dataset_section_label">Маълумот</string>
+    <string name="overdue_today">Бугун</string>
+    <string name="enrolling_ou">Қайд этилган:</string> <string name="enrollment_reopen">қайта очиш</string>
+
+    <string name="syncing">Синхронизацияланмоқда...</string>
+    <string name="remove">Олиб ташлаш</string>
+    <string name="period_daily_title">Кунлик</string>
+    <string name="period_weekly_title">Ҳафта</string>
+    <string name="period_biweekly_title">Жуфт ҳафталик</string>
+    <string name="period_monthly_title">Ой</string>
+    <string name="period_quarter_title">Чорак</string>
+    <string name="period_yearly_title">Йил</string>
     </resources>

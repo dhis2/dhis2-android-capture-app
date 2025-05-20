@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error">Хатогӣ</string>
+    <string name="required">Ҳатмӣ</string>
+    <string name="date">Сана</string>
+    <string name="hint_year">Солҳо</string>
+    <string name="hint_month">Моҳҳо</string>
+    <string name="polygon">Бисёркунҷа</string>
+    <string name="latitude">Тӯл</string>
+    <string name="longitude">Арз</string>
+    <string name="due_date">Санаи пешбинишуда</string>
+    <string name="complete">Анҷом ёфт</string>
+    <string name="share">Мубодила</string>
     <string name="action_close">Пӯшидан</string>
-</resources>
+    <string name="download">Боргирӣ</string>
+    <string name="coordinates">Координатаҳо</string>
+    </resources>

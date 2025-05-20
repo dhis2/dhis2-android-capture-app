@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="clear">ta bort</string>
+    <string name="action_accept">Acceptera</string>
+    <string name="next">Nästa</string>
+    <string name="cancel">Avbryt</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
+    <string name="navigation_programs">program</string>
+    <string name="navigation_relationships">Relationer</string>
+    <string name="navigation_tei_data">detaljer</string>
+    <string name="event_overview">detaljer</string>
+    <string name="select_option">Välj alternativ</string>
+    <string name="search">Sök</string>
+    <string name="events">händelser</string>
+    <string name="data_sets">dataset</string>
+    <string name="tei">TEI</string>
+    <string name="filters_title_period">Period</string>
+    <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Synkronisera</string>
+    <string name="filters_title_date">Datum</string>
+    <string name="daily_period">Dagligen</string>
+    <string name="weekly">Varje vecka</string>
+    <string name="monthly">En gång i månaden</string>
+    <string name="bi_monthly">varannan månad</string>
+    <string name="quarterly">Kvartals</string>
+    <string name="six_monthly">Halvårs</string>
+    <string name="yearly">Årlig</string>
+    <!-- State -->
+    <string name="state_synced">Synkronisera</string>
+    <string name="state_to_update">Att uppdatera</string>
+    <string name="state_to_delete">Att radera</string>
+    <string name="state_error">Fel</string>
+    <string name="state_warning">Varning</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">Öppen</string>
+    <string name="filter_event_status_completed">Avklarad</string>
+    <string name="active">Aktiva</string>
+    <string name="cancelled">Avbruten</string>
+    <string name="enrollment_status_active">Öppen</string>
+    <string name="enrollment_status_completed">Färdigt</string>
+    <string name="enrollment_status_cancelled">Avbruten</string>
+    <string name="filter_period_this_week">Denna vecka</string>
+    <string name="filter_period_last_week">Förra veckan</string>
+    <string name="filter_period_this_month">Den här månaden</string>
+    <string name="filter_period_last_month">Förra månaden</string>
+    <string name="filter_period_other">Övrig</string>
+    <string name="filter_period_this_year">Det här året</string>
+    <string name="filter_period_this_quarter">detta kvartal</string>
+    <string name="filter_period_last_quarter">Förra kvartalet</string>
+    <string name="filter_period_months_this_year">Månader i år</string>
+    <string name="filter_period_quarters_this_year">Kvartalen i år</string>
+    <string name="filter_period_months_last_year">Månader förra året</string>
+    <string name="filter_period_last_year">Förra året</string>
+    <string name="filter_period_this_financial_year">Detta räkenskapsår</string>
+    <string name="filter_period_last_financial_year">Föregående räkenskapsår</string>
+    <string name="period">Period</string>
+    <string name="DAILY">Dagligen</string>
+    <string name="WEEKLY">Varje vecka</string>
+    <string name="MONTHLY">En gång i månaden</string>
+    <string name="YEARLY">Årlig</string>
+
+    <string name="filter_sync_error">Synkroniseringsfel</string>
+    <!-- Sections -->
+    <string name="section_feedback">Återkoppling</string>
+    <string name="section_indicators">indikatorer</string>
+    <string name="section_charts">diagram</string>
+    <string name="login_error_dhis_version">Den här servern kör en dhis-version som skiljer sig från 2.29. Uppdatera din serverversion eller använd testmiljön för att fortsätta.</string>
+    <string name="online_search_parsing_error">Fel vid tolkning av resultat</string>
+    <string name="add_file">Lägg till fil</string>
+    <string name="keep_editing">Fortsätt redigera</string>
+    <string name="complete">Färdigt</string>
+    <string name="default_table_header_label">Värde</string>
+    <string name="discard_changes">Ignorera ändringar</string>
+    <string name="default_empty_dataset_section_label">Data</string>
+    <string name="enrollment_reopen">Öppna igen</string>
+
+    <string name="remove">Ta bort</string>
+    <string name="period_daily_title">Dagligen</string>
+    <string name="period_yearly_title">År</string>
+    </resources>

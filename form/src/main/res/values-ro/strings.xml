@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">Eroare</string>
+    <string name="date">Data</string>
+    <string name="hint_year">Ani</string>
+    <string name="hint_month">Luni</string>
+    <string name="hint_day">Zile</string>
+    <string name="save_anyway">Salvare oricum</string>
+    <string name="share">Partajare</string>
+    <string name="action_close">Închidere</string>
+    <string name="incident_date">Data incidentului</string>
+    </resources>

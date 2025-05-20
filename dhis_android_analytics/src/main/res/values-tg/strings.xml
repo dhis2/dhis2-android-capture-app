@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="period">Давра</string>
+    <string name="none">Ягонто</string>
+    <string name="daily">Ҳаррӯза</string>
+    <string name="today">Имрӯз</string>
+    <string name="other">Дигар</string>
+    <string name="yesterday">Дирӯз</string>
+    <string name="weekly">Ҳафтаина</string>
+    <string name="monthly">Моҳона</string>
+    <string name="yearly">Солона</string>
+    <string name="all">Ҳама</string>
+    <string name="reset">Танзими дубора</string>
+    </resources>

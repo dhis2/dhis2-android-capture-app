@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error">غلطی</string>
+    <string name="required">لازمی</string>
+    <string name="date">تاریخ</string>
+    <string name="hint_year">سال</string>
+    <string name="hint_month">مہینے</string>
+    <string name="hint_day">دن</string>
+    <string name="polygon">کثیر زبان</string>
+    <string name="latitude">طول</string>
+    <string name="longitude">لمبائی</string>
+    <string name="due_date">اخری تاریخ</string>
+    <string name="complete">مکمل</string>
+    <string name="share">بانٹیں</string>
     <string name="action_close">بند</string>
-</resources>
+    <string name="incident_date">واقعات کی تاریخ</string>
+    <string name="download">ڈاؤن لوڈ کریں</string>
+    <string name="coordinates">سماج</string>
+    <string name="no_options">کوئی اختیار دستیاب نہیں ہے</string>
+    </resources>

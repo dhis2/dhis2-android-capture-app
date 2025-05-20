@@ -1,0 +1,31 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Beranda</string>
+    <string name="action_settings">Setting</string>
+
+    <string name="discard">Buang</string>
+    <string name="username">Nama pengguna</string>
+    <string name="password">Sandi</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Lanjutkan</string>
+    <string name="delete">Hapus</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Batal</string>
+    <string name="from">Dari</string>
+    <string name="language">Bahasa</string>
+    <string name="logout">Keluar</string>
+
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Sandi</string>
+    <string name="content_desc_search">Pencarian</string>
+    <string name="confirm_transaction_label">Konfirmasi</string>
+    <string name="invalid_quantity">Tidak valid</string>
+    <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
+    <string name="done_task">Beranda</string>
+    <string name="back">Kembali</string>
+    <string name="no_conflicts_message">Tidak ada konflik untuk program ini</string>
+    <string name="action_sync">Kirim</string>
+    <string name="count">Hitung</string>
+    <string name="formatting_error">Memformat kesalahan</string>
+    <string name="invalid_possitive_zero">Hanya angka positif atau nol yang diperbolehkan</string>
+    </resources>

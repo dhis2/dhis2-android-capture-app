@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_table_graph">වගුවක් ලෙස නරඹන්න</string>
+    <string name="show_table_value">අගයක් ලෙස නරඹන්න</string>
+    <string name="action_accept">පිළිගන්න</string>
+    <string name="daily">දිනපතා</string>
+    <string name="today">අද</string>
+    <string name="other">වෙනත්</string>
+    <string name="yesterday">ඊයේ</string>
+    <string name="last3Days">පසුගිය දින 3</string>
+    <string name="last7Days">පසුගිය දින 7</string>
+    <string name="last14Days">පසුගිය දින 14</string>
+    <string name="last30Days">පසුගිය දින 30</string>
+    <string name="thisweek">මෙම සතිය</string>
+    <string name="lastweek">පසුගිය සතිය</string>
+    <string name="last4weeks">පසුගිය සති 4</string>
+    <string name="last12weeks">පසුගිය සති 12</string>
+    <string name="thismonth">මෙම මාසය</string>
+    <string name="lastmonth">පසුගිය මාසය</string>
+    <string name="last3months">පසුගිය මාස 3</string>
+    <string name="last6months">පසුගිය මාස 6</string>
+    <string name="last12months">පසුගිය මාස 12</string>
+    <string name="monthsthisyear">මෙම වසරේ මාස</string>
+    <string name="thisquarter">මෙම කාර්තුව</string>
+    <string name="lastquarter">පසුගිය කාර්තුව</string>
+    <string name="last4quarters">පසුගිය කාර්තු 4</string>
+    <string name="quartersthisyear">මෙම වසරේ කාර්තුව</string>
+    <string name="thisyear">මෙම වසර</string>
+    <string name="lastyear">පසුගිය වසර</string>
+    <string name="last5years">පසුගිය 5 වසර</string>
+    <string name="weekly">සතිපතා</string>
+    <string name="monthly">මාස්පතා</string>
+    <string name="yearly">අවුරුදු පතා</string>
+    <string name="all">සියල්ල</string>
+    <string name="selection">තේරීම</string>
+    <string name="reset">නැවත පිහිටුවන්න</string>
+    </resources>

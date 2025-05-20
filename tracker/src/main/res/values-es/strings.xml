@@ -7,4 +7,5 @@
     <string name="remove_some_relationships_title">¿Eliminar %drelaciones seleccionadas\?</string>
     <string name="remove_some_relationships_desc">Las %drelaciones seleccionadas se eliminarán. Esta acción no puede deshacerse.</string>
     <string name="show_number_more">Mostrar %dmás...</string>
-    </resources>
+    <string name="relationship">Relación</string>
+</resources>
