@@ -77,6 +77,9 @@ abstract class MapManager(
     )
     val locationState = _locationState.asStateFlow()
 
+    private val _dataFinishedLoading = MutableStateFlow(false)
+    val dataFinishedLoading = _dataFinishedLoading.asStateFlow()
+
     fun init(
         mapStyles: List<BaseMapStyle>,
         locationListener: LocationListenerCompat? = null,
@@ -117,6 +120,10 @@ abstract class MapManager(
                     markerViewManager = MarkerViewManager(mapView, map)
                     enableLocationComponent(styleLoaded, onMissingPermission, locationListener)
                     loadDataForStyle()
+                    _dataFinishedLoading.value = true
+                    CoroutineScope(dispatcherProvider.io()).launch {
+                        _dataFinishedLoading.emit(dataFinishedLoading.value)
+                    }
                     onInitializationFinished()
                 }
             }

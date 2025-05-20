@@ -86,6 +86,7 @@ class EventMapFragment :
 
                     val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
                     val locationState = eventMapManager?.locationState?.collectAsState()
+                    val mapDataFinishedLoading = eventMapManager?.dataFinishedLoading?.collectAsState()
 
                     LaunchedEffect(key1 = clickedItem) {
                         clickedItem?.let {
@@ -124,21 +125,29 @@ class EventMapFragment :
                             }
                         },
                         actionButtons = {
-                            IconButton(
-                                style = IconButtonStyle.TONAL,
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_layers),
-                                        contentDescription = "",
-                                        tint = TextColor.OnPrimaryContainer,
-                                    )
-                                },
-                            ) {
-                                val mapLayerDialog = MapLayerDialog.newInstance(presenter.programUid())
-                                mapLayerDialog.mapManager = presenter.mapManager
-                                mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
-                                    presenter.filterVisibleMapItems(layersVisibility)
-                                }.show(childFragmentManager, MapLayerDialog::class.java.name)
+                            mapDataFinishedLoading?.let {
+                                if (it.value) {
+                                    IconButton(
+                                        style = IconButtonStyle.TONAL,
+                                        icon = {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_layers),
+                                                contentDescription = "",
+                                                tint = TextColor.OnPrimaryContainer,
+                                            )
+                                        },
+                                    ) {
+                                        val mapLayerDialog =
+                                            MapLayerDialog.newInstance(presenter.programUid())
+                                        mapLayerDialog.mapManager = presenter.mapManager
+                                        mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
+                                            presenter.filterVisibleMapItems(layersVisibility)
+                                        }.show(
+                                            childFragmentManager,
+                                            MapLayerDialog::class.java.name,
+                                        )
+                                    }
+                                }
                             }
                             locationState?.let {
                                 LocationIcon(

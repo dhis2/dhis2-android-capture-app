@@ -131,6 +131,8 @@ class SearchTEMap : FragmentGlobalAbstract() {
 
                 val locationState = teiMapManager?.locationState?.collectAsState()
 
+                val mapDataFinishedLoading = teiMapManager?.dataFinishedLoading?.collectAsState()
+
                 LaunchedEffect(key1 = clickedItem) {
                     if (clickedItem != null) {
                         listState.animateScrollToItem(
@@ -182,25 +184,30 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                 ) {
                                     viewModel.setSearchScreen()
                                 }
-                                IconButton(
-                                    style = IconButtonStyle.TONAL,
-                                    icon = {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_layers),
-                                            contentDescription = "",
-                                            tint = TextColor.OnPrimaryContainer,
-                                        )
-                                    },
-                                ) {
-                                    val mapLayerDialog = MapLayerDialog.newInstance(viewModel.initialProgramUid)
-                                    mapLayerDialog.mapManager = viewModel.mapManager
-                                    mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
-                                        viewModel.filterVisibleMapItems(layersVisibility)
+                                mapDataFinishedLoading?.let {
+                                    if (it.value) {
+                                        IconButton(
+                                            style = IconButtonStyle.TONAL,
+                                            icon = {
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.ic_layers),
+                                                    contentDescription = "",
+                                                    tint = TextColor.OnPrimaryContainer,
+                                                )
+                                            },
+                                        ) {
+                                            val mapLayerDialog =
+                                                MapLayerDialog.newInstance(viewModel.initialProgramUid)
+                                            mapLayerDialog.mapManager = viewModel.mapManager
+                                            mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
+                                                viewModel.filterVisibleMapItems(layersVisibility)
+                                            }
+                                            mapLayerDialog.show(
+                                                childFragmentManager,
+                                                MapLayerDialog::class.java.name,
+                                            )
+                                        }
                                     }
-                                    mapLayerDialog.show(
-                                        childFragmentManager,
-                                        MapLayerDialog::class.java.name,
-                                    )
                                 }
                                 locationState?.let {
                                     LocationIcon(

@@ -219,6 +219,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
         val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
         val locationState = relationshipMapManager?.locationState?.collectAsState()
+        val mapDataFinishedLoading = relationshipMapManager?.dataFinishedLoading?.collectAsState()
 
         LaunchedEffect(key1 = items) {
             mapData?.let { data ->
@@ -259,23 +260,27 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 }
             },
             actionButtons = {
-                IconButton(
-                    style = IconButtonStyle.TONAL,
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_layers),
-                            contentDescription = "",
-                            tint = TextColor.OnPrimaryContainer,
-                        )
-                    },
-                ) {
-                    relationshipMapManager?.let {
-                        val dialog = MapLayerDialog.newInstance(programUid())
-                        dialog.mapManager = it
-                        dialog.setOnLayersVisibilityListener { layersVisibility ->
-                            presenter.filterVisibleMapItems(layersVisibility)
+                mapDataFinishedLoading?.let {
+                    if (it.value) {
+                        IconButton(
+                            style = IconButtonStyle.TONAL,
+                            icon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_layers),
+                                    contentDescription = "",
+                                    tint = TextColor.OnPrimaryContainer,
+                                )
+                            },
+                        ) {
+                            relationshipMapManager?.let {
+                                val dialog = MapLayerDialog.newInstance(programUid())
+                                dialog.mapManager = it
+                                dialog.setOnLayersVisibilityListener { layersVisibility ->
+                                    presenter.filterVisibleMapItems(layersVisibility)
+                                }
+                                    .show(childFragmentManager, MapLayerDialog::class.java.name)
+                            }
                         }
-                            .show(childFragmentManager, MapLayerDialog::class.java.name)
                     }
                 }
                 locationState?.let {
