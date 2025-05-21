@@ -23,7 +23,6 @@ import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
-import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Assume
 import org.junit.Ignore
@@ -394,7 +393,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
-            checkEnrollmentListIsLaunched()
+            checkEnrollmentListActivityIsLaunched()
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
         }
@@ -404,6 +403,7 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
+            checkEnrollmentActivityIsLaunched()
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()

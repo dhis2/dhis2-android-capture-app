@@ -17,6 +17,8 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
@@ -24,6 +26,8 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.hasCompletedPercentage
 import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
+import org.hamcrest.CoreMatchers.allOf
 
 fun eventRobot(
     composeTestRule: ComposeTestRule,
@@ -110,6 +114,10 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val formattedDate = formatStoredDateToUI(eventDate)
         composeTestRule.onNodeWithText(formattedDate).assertIsDisplayed()
         composeTestRule.onNodeWithText(eventOrgUnit).assertIsDisplayed()
+    }
+
+    fun checkEventCaptureActivityIsLaunched() {
+        Intents.intended(allOf(IntentMatchers.hasComponent(EventCaptureActivity::class.java.name)))
     }
 
     fun openEventDetailsSection() {

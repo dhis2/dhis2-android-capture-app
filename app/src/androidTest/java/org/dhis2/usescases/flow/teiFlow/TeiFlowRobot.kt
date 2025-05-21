@@ -62,7 +62,7 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
 
         enrollmentRobot(composeTestRule) {
-            checkEnrollmentListIsLaunched()
+            checkEnrollmentListActivityIsLaunched()
             clickOnAProgramForEnrollment(composeTestRule, program)
         }
 
