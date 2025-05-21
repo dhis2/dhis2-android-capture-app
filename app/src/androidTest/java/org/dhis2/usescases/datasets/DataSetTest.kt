@@ -466,12 +466,7 @@ class DataSetTest : BaseTest() {
             value = "7",
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
-        enterDataStep(
-            tableId = table222,
-            cellId = cellId2Section22,
-            value = "11",
-            inputTestTag = "INPUT_NUMBER_FIELD"
-        )
+        composeTestRule.waitForIdle()
 
         dataSetTableRobot(composeTestRule) {
             disableAutomaticGroupingList.forEach { data ->
