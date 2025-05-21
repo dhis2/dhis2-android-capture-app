@@ -333,7 +333,6 @@ class DataSetTest : BaseTest() {
             value = "11",
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
-        composeTestRule.waitForIdle()
         enterDataStep(
             tableId = "t3aNCvHsoSn",
             cellId = cellId2Section16,
@@ -600,16 +599,13 @@ class DataSetTest : BaseTest() {
         inputTestTag: String,
     ) {
         dataSetTableRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             clickOnCell(tableId, cellId)
             assertInputDialogIsDisplayed()
             dataElementDescription?.let {
                 assertInputDescriptionIsDisplayed(dataElementDescription)
             }
             typeOnInputDialog(value, inputTestTag)
-            composeTestRule.waitForIdle()
             pressOnInputDialogDismiss()
-            composeTestRule.waitForIdle()
             assertCellHasValue(tableId, cellId, value)
         }
 
