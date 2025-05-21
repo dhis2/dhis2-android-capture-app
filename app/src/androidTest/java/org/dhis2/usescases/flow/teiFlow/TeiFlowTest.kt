@@ -40,6 +40,7 @@ class TeiFlowTest : BaseTest() {
 
     @Test
     fun shouldEnrollToSameProgramAfterClosingIt() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             ResponseController.GET,
             API_TRACKED_ENTITY_PATH,

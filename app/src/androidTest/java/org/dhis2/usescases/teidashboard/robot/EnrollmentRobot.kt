@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextReplacement
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -21,6 +23,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
+import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
@@ -44,9 +47,10 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .performClick()
     }
 
-    fun checkEnrollmentListIsLaunched() {
+    fun checkEnrollmentListActivityIsLaunched() {
         Intents.intended(allOf(hasComponent(TeiProgramListActivity::class.java.name)))
     }
+
 
     fun clickOnAcceptInDatePicker() {
         waitForView(withId(R.id.acceptBtn)).perform(click())
@@ -123,8 +127,10 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun openFormSection(personAttribute: String) {
         composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasText(personAttribute, true))
         composeTestRule.onNodeWithText(personAttribute).performClick()
     }
 
@@ -147,6 +153,7 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 useUnmergedTree = true,
             ).performImeAction()
         }
+        Espresso.closeSoftKeyboard()
     }
 
     companion object {

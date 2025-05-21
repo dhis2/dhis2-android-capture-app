@@ -51,6 +51,7 @@ class ProgramEventTest : BaseTest() {
 
     @Test
     fun shouldOpenExistingEvent() {
+        enableIntents()
         val eventDate = "07/04/2024"
         val eventOrgUnit = "Ngelehun CHC"
 
@@ -61,6 +62,7 @@ class ProgramEventTest : BaseTest() {
         }
 
         eventRobot(composeTestRule) {
+            checkEventCaptureActivityIsLaunched()
             checkEventDetails(eventDate, eventOrgUnit)
         }
     }

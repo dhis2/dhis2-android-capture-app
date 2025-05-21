@@ -197,6 +197,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldMakeAReferral() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -217,6 +218,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
+            checkProgramStageSelectionActivityIsLaunched()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
             checkEventWasCreated(LAB_MONITORING)
@@ -391,7 +393,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
-            checkEnrollmentListIsLaunched()
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
         }
