@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <provider
+            android:name=".data.files.AggregatesProvider"
+            android:authorities="${applicationId}.aggregates.data.AggregatesFileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/aggregates_file_paths"
+                tools:node="merge" />
+        </provider>
+    </application>
+</manifest>

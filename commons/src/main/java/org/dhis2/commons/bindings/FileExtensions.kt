@@ -47,10 +47,39 @@ fun File.rotateImage(context: Context): File {
         else -> bitmap
     }
 
-    return File(
-        FileResourceDirectoryHelper.getFileResourceDirectory(context),
+    val file = File(
+        FileResourceDirectoryHelper.getFileCacheResourceDirectory(context),
         "tempFile.png",
-    ).apply { writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100) }
+    )
+
+    file.writeBitmap(bitmap, Bitmap.CompressFormat.JPEG, 100)
+
+    return file
+}
+
+fun Bitmap.rotateImageAndSave(context: Context): File {
+    val file = File(
+        FileResourceDirectoryHelper.getFileCacheResourceDirectory(context),
+        "tempFile.png",
+    )
+
+    file.writeBitmap(this, Bitmap.CompressFormat.JPEG, 100)
+
+    val ei = ExifInterface(file.path)
+
+    val orientation =
+        ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+    val bitmap = when (orientation) {
+        ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(this, 90F)
+        ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(this, 180F)
+        ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(this, 270F)
+        else -> this
+    }
+
+    file.writeBitmap(bitmap!!, Bitmap.CompressFormat.JPEG, 100)
+
+    return file
 }
 
 private fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
@@ -107,9 +136,11 @@ private fun getFilePath(context: Context, uri: Uri): String? {
                     split[splitIndex].toLong(),
                 )
             }
+
             isExternalStorageDocument(copy) -> {
                 return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
             }
+
             isMediaDocument(copy) -> {
                 copy = when (split[0]) {
                     "image" -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI

@@ -36,14 +36,14 @@ import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -63,6 +63,7 @@ import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber
 import java.io.BufferedReader
@@ -418,7 +419,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 iconResource = R.drawable.ic_line_chart,
                 headerTextAlignment = TextAlign.Start,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now, buttonStyle = ButtonStyle.OUTLINED),
             ),
             onMainButtonClicked = {
                 presenter.grantTrackingPermissions(true)
@@ -432,6 +433,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             onMessageClick = {
                 navigateToPrivacyPolicy()
             },
+            showTopDivider = false,
+            showBottomDivider = true,
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
@@ -496,8 +499,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 message = getString(R.string.biometrics_login_text),
                 iconResource = R.drawable.ic_fingerprint,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now),
+                secondaryButton = DialogButtonStyle.SecondaryButton(textResource = R.string.not_now, buttonStyle = ButtonStyle.OUTLINED),
             ),
+            showTopDivider = true,
             onMainButtonClicked = {
                 presenter.saveUserCredentials(binding.userPassEdit.text.toString())
                 onLoginDataUpdated(false)

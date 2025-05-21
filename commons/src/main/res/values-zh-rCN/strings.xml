@@ -38,10 +38,6 @@
     <string name="filters_title_state">同步</string>
     <string name="filters_title_assigned">指派给我</string>
     <string name="filters_title_date">日期</string>
-    <string name="filters_title_event_date">事故日期</string>
-    <string name="enrollment_date">登记日期</string>
-    <string name="filters_title_event_status">事件状态</string>
-    <string name="filters_title_enrollment_status">登记状态</string>
     <!-- State -->
     <string name="state_synced">同步</string>
     <string name="state_to_post">发送</string>

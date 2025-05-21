@@ -1,5 +1,6 @@
 package org.dhis2.usescases.datasets.datasetDetail;
 
+import static org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FILTER_DIALOG;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,7 +8,6 @@ import android.transition.ChangeBounds;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.view.ViewCompat;
@@ -15,18 +15,16 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import org.dhis2.App;
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ViewExtensionsKt;
 import org.dhis2.commons.Constants;
-import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.FiltersAdapter;
+import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
 import org.dhis2.commons.sync.SyncContext;
 import org.dhis2.databinding.ActivityDatasetDetailBinding;
@@ -37,11 +35,8 @@ import org.dhis2.utils.category.CategoryDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 import org.dhis2.utils.granularsync.SyncStatusDialogNavigatorKt;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
-
 import java.util.List;
-
 import javax.inject.Inject;
-
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment;
 import kotlin.Unit;
 
@@ -96,7 +91,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         binding.setPresenter(presenter);
 
         ViewExtensionsKt.clipWithRoundedCorners(binding.eventsLayout, ExtensionsKt.getDp(16));
-        binding.filterLayout.setAdapter(filtersAdapter);
+        binding.filterRecyclerLayout.setAdapter(filtersAdapter);
         configureBottomNavigation();
 
         if (SyncStatusDialogNavigatorKt.shouldLaunchSyncDialog(getIntent())) {
@@ -156,7 +151,7 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
         ConstraintSet initSet = new ConstraintSet();
         initSet.clone(binding.backdropLayout);
         if (backDropActive) {
-            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterLayout, ConstraintSet.BOTTOM, 50);
+            initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.filterRecyclerLayout, ConstraintSet.BOTTOM, 50);
         } else {
             initSet.connect(R.id.eventsLayout, ConstraintSet.TOP, R.id.backdropGuideTop, ConstraintSet.BOTTOM, 0);
         }
@@ -191,16 +186,13 @@ public class DataSetDetailActivity extends ActivityGlobalAbstract implements Dat
 
     @Override
     public void showPeriodRequest(FilterManager.PeriodRequest periodRequest) {
+        FilterPeriodsDialog filterPeriodsDialog;
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            DateUtils.getInstance().fromCalendarSelector(this, datePeriods -> filterManager.addPeriod(datePeriods));
+            filterPeriodsDialog = FilterPeriodsDialog.Companion.newDatasetsFilter(true);
         } else {
-            DateUtils.getInstance().showPeriodDialog(
-                    this,
-                    datePeriods -> filterManager.addPeriod(datePeriods),
-                    true,
-                    () -> filterManager.addPeriod(null)
-            );
+            filterPeriodsDialog = FilterPeriodsDialog.Companion.newDatasetsFilter(false);
         }
+        filterPeriodsDialog.show(getSupportFragmentManager(), FILTER_DIALOG);
     }
 
     @Override

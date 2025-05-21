@@ -4,9 +4,12 @@ import android.annotation.SuppressLint
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dhis2.org.analytics.charts.data.ChartType
+import org.dhis2.OrientationHelper
 import org.dhis2.R
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH
-import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH
+import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
@@ -21,6 +24,7 @@ import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
+import org.junit.Assume
 import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
@@ -47,6 +51,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         setupCredentials()
 
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
@@ -65,6 +76,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldNotCreateANoteWhenClickClear() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
@@ -82,6 +100,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenNotesDetailsWhenClickOnNote() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         prepareTeiWithExistingNoteAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
@@ -111,6 +136,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowInactiveProgramWhenClickDeactivate() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
@@ -126,6 +158,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldCompleteProgramWhenClickComplete() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         prepareTeiOpenedForCompleteProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
@@ -153,6 +192,19 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldMakeAReferral() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         prepareTeiOpenedForReferralProgrammeAndLaunchActivity(rule)
 
         teiDashboardRobot(composeTestRule) {
@@ -168,6 +220,19 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyScheduleAnEvent() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         val currentDate = LocalDate.now()
         val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
         val formattedCurrentDate = currentDate.format(formatter)
@@ -188,6 +253,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldOpenEventAndSaveSuccessfully() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         setupCredentials()
 
         prepareTeiOpenedProgrammeAndLaunchActivity(rule)
@@ -219,16 +291,20 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
+        //This test is only valid for portrait mode given that landscape is showing details
+        //So the test is skipped for landscape
+        Assume.assumeFalse(OrientationHelper.isLandscape())
+
         //Adding mock response for API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH
         //The TEI does not have value assigned for unique ID, as it is autogenerated, it tries to
         //generate one but there are no reserved values in the database so it performs a new request.
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
-            path = API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
-            sdkResource = API_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
             responseCode = 200,
+        )
 
-            )
         prepareTeiCompletedProgrammeAndLaunchActivity(rule)
 
         val enrollmentFullDetails = createExpectedEnrollmentInformation()
@@ -282,6 +358,13 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         val womanProgram = "MNCH / PNC (Adult Woman)"
         val personAttribute =
             context.getString(R.string.enrollment_single_section_label).replace("%s", "Person")
@@ -330,6 +413,19 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldShowAnalytics() {
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+        mockWebServerRobot.addResponse(
+            method = ResponseController.GET,
+            path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
+            sdkResource = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE,
+            responseCode = 200,
+        )
+
         val chartName = "Daily-TB smear microscopy number of specimen"
         setupCredentials()
         prepareTeiForAnalyticsAndLaunchActivity(rule)

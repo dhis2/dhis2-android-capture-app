@@ -3,7 +3,6 @@ import java.util.Locale
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        google()
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
         mavenCentral()
     }
@@ -65,13 +64,14 @@ allprojects {
     }
 
     repositories {
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
         google()
         mavenCentral()
         maven {
             url = uri("https://maven.google.com")
         }
         maven { url = uri("https://jitpack.io") }
-        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+        mavenLocal()
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
@@ -97,6 +97,7 @@ allprojects {
         filter {
             excludes.add("**/*.kts")
             exclude { element -> element.file.path.contains("androidTest") }
+            exclude { element -> element.file.path.contains("generated") }
             exclude { element -> element.file.path.contains("dhis2-android-sdk") }
         }
     }

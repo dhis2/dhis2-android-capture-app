@@ -1,16 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="invalid_percentage">Faqat 0 dan 100 gacha boʼlgan qiymatlarga ruxsat beriladi</string>
-    <string name="formatting_error">Formatlashda xatolik</string>
-    <string name="invalid_possitive">Faqat musbat raqamlarga ruxsat beriladi</string>
-    <string name="invalid_phone_number">Bu yaroqli telefon raqami emas</string>
-    <string name="invalid_email">Bu yaroqli elektron pochta manzili emas</string>
-    <string name="invalid_negative_number">Faqat manfiy raqamlarga ruxsat beriladi</string>
-    <string name="invalid_possitive_zero">Faqat musbat raqamlar yoki nolga ruxsat beriladi</string>
-    <string name="invalid_interval">Faqat 0 dan 1 gacha boʼlgan qiymatlarga ruxsat beriladi</string>
-    <string name="validation_url">Bu haqiqiy URL emas</string>
-    <string name="invalid_integer">Qiymat butun son boʼlishi lozim</string>
-    <string name="wrong_pattern">Bu toʼgʼri format emas.</string>
     <string name="error">Xatolik</string>
     <string name="unique_warning">Qiymat noyob boʼlishi lozim, bir biriga oʼxshash topildi. U saqlanmadi. Iltimos, tekshirib koʼrish.</string>
     <string name="select_time">Vaqtni tanlang</string>

@@ -15,8 +15,9 @@ json=$(jq -n \
                 --argjson devices ["$browserstack_device_list"] \
                 --arg video "$browserstack_video" \
                 --arg deviceLogs "$browserstack_deviceLogs" \
+                --arg singleRunnerInvocation "$browserstack_singleRunnerInvocation" \
                 --arg buildTag "$buildTag" \
-                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs, buildTag: $buildTag}')
+                '{devices: $devices, testSuite: $module_url, video: $video, deviceLogs: $deviceLogs, singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag}')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/module-build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
@@ -26,7 +27,7 @@ echo "build id running: $build_id"
 
 # Monitor build status
 build_status="running"
-sleep $build_time_average
+sleep $build_time_average_short
 echo "Monitoring build status started...."
 
 while [[ $build_status = "running" ]];

@@ -62,6 +62,9 @@ fun provideParameterSelectorItem(
                 resources = resources,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
+                onFileSelected = {
+                    /*Not supported for search*/
+                },
             )
         },
         status = status,

@@ -43,7 +43,7 @@ echo "build id running: $build_id"
 
 # Monitor build status
 build_status="running"
-sleep $build_time_average
+sleep $build_time_average_long
 echo "Monitoring build status started...."
 
 while [[ $build_status = "running" ]];

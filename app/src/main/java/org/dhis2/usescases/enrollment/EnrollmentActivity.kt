@@ -14,6 +14,9 @@ import org.dhis2.commons.Constants.ENROLLMENT_UID
 import org.dhis2.commons.Constants.PROGRAM_UID
 import org.dhis2.commons.Constants.TEI_UID
 import org.dhis2.commons.data.TeiAttributesInfo
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
@@ -23,9 +26,6 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.ui.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.ui.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -156,8 +156,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                         data.getStringExtra(MapSelectorActivity.DATA_EXTRA)?.let {
                             handleGeometry(
                                 FeatureType.valueOfFeatureType(
-                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA),
-                                ),
+                                    data.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)!!,
+                                )!!,
                                 it,
                                 requestCode,
                             )
@@ -172,7 +172,8 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun openEvent(eventUid: String) {
-        val suggestedEventDateIsNotFutureDate = presenter.suggestedReportDateIsNotFutureDate(eventUid)
+        val suggestedEventDateIsNotFutureDate =
+            presenter.suggestedReportDateIsNotFutureDate(eventUid)
         if (presenter.isEventScheduleOrSkipped(eventUid) && suggestedEventDateIsNotFutureDate) {
             val scheduleEventIntent = ScheduledEventActivity.getIntent(this, eventUid)
             openEventForResult.launch(scheduleEventIntent)
@@ -242,6 +243,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 presenter.deleteAllSavedData()
                 finish()
             },
+            showTopDivider = true,
         ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 

@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
 import org.dhis2.commons.Constants
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
@@ -23,7 +22,7 @@ sealed class HomeItemData(
         override val label: String,
         override val accessDataWrite: Boolean,
         val trackedEntityType: String,
-        val stockConfig: AppConfig?,
+        val isStockUseCase: Boolean,
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class EventProgram(
@@ -54,7 +53,7 @@ fun ProgramUiModel.toHomeItemData(): HomeItemData {
                 title,
                 accessDataWrite,
                 type!!,
-                stockConfig,
+                isStockUseCase,
             )
 
         else -> HomeItemData.DataSet(
@@ -94,12 +93,9 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
             }
 
         is HomeItemData.TrackerProgram -> {
-            if (homeItemData.stockConfig != null) {
+            if (homeItemData.isStockUseCase) {
                 Intent(context, HomeActivity::class.java).apply {
-                    putExtra(
-                        org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG,
-                        homeItemData.stockConfig,
-                    )
+                    putExtras(bundle)
                     launch(this)
                 }
             } else {

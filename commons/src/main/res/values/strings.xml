@@ -45,6 +45,29 @@
     <string name="filters_title_event_label_status">%s status</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Followed up %s</string>
+    <string name="select_period">Select period type</string>
+    <string name="daily_period">Daily</string>
+    <string name="weekly">Weekly</string>
+    <string name="bi_weekly">Bi-weekly</string>
+    <string name="weekly_start_wednesday">Weekly starting Wednesday</string>
+    <string name="weekly_start_thursday">Weekly starting Thursday</string>
+    <string name="weekly_start_saturday">Weekly starting Saturday</string>
+    <string name="weekly_start_sunday">Weekly starting Sunday</string>
+    <string name="monthly">Monthly</string>
+    <string name="bi_monthly">Bi-monthly</string>
+    <string name="quarterly">Quarterly</string>
+    <string name="quarterly_nov">Quarterly Nov</string>
+    <string name="six_monthly">Six-monthly</string>
+    <string name="six_monthly_april">Six-monthly starting April</string>
+    <string name="six_monthly_july">Six-monthly starting July</string>
+    <string name="six_monthly_nov">Six-monthly starting November</string>
+    <string name="yearly">Yearly</string>
+    <string name="financial_year_april">Financial year starting April</string>
+    <string name="financial_year_july">Financial year starting July</string>
+    <string name="financial_year_october">Financial year starting October</string>
+    <string name="financial_year_november">Financial year starting November</string>
+
+
 
     <!-- State -->
     <string name="state_synced">Sync</string>
@@ -255,8 +278,8 @@
 
     <!--Enrollment labels-->
     <plurals name="enrollment">
-        <item quantity="many">enrollments</item>
-        <item quantity="other">enrollment</item>
+        <item quantity="one">enrollment</item>
+        <item quantity="other">enrollments</item>
     </plurals>
     <string name="dialog_layer_enrollment_coordinates_v2">Show %s coordinates</string>
     <string name="enrollment_data_section_label_V2">%s data</string>

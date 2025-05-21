@@ -2,18 +2,12 @@ package org.dhis2.utils.granularsync
 
 import android.content.Context
 import android.content.Intent
-import org.dhis2.android.rtsm.commons.Constants
-import org.dhis2.android.rtsm.data.AppConfig
 import org.dhis2.android.rtsm.ui.home.HomeActivity
-import org.dhis2.commons.bindings.distributedTo
-import org.dhis2.commons.bindings.stockCount
-import org.dhis2.commons.bindings.stockDiscarded
-import org.dhis2.commons.bindings.stockDistribution
 import org.dhis2.commons.sync.OnSyncNavigationListener
 import org.dhis2.commons.sync.SyncStatusItem
 import org.dhis2.commons.sync.SyncStatusType
 import org.dhis2.form.model.EventMode
-import org.dhis2.usescases.datasets.dataSetTable.DataSetTableActivity
+import org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -102,17 +96,8 @@ class SyncStatusDialogNavigator(
                 HomeActivity::class.java,
             ).apply {
                 putExtra(
-                    Constants.INTENT_EXTRA_APP_CONFIG,
-                    AppConfig(
-                        program = stockProgramSyncItem.programUid,
-                        itemCode = stockProgramSyncItem.stockUsecase.itemCode,
-                        itemName = stockProgramSyncItem.stockUsecase.itemDescription,
-                        stockOnHand = stockProgramSyncItem.stockUsecase.stockOnHand,
-                        distributedTo = stockProgramSyncItem.stockUsecase.distributedTo(),
-                        stockDistribution = stockProgramSyncItem.stockUsecase.stockDistribution(),
-                        stockCount = stockProgramSyncItem.stockUsecase.stockCount(),
-                        stockDiscarded = stockProgramSyncItem.stockUsecase.stockDiscarded(),
-                    ),
+                    org.dhis2.commons.Constants.PROGRAM_UID,
+                    stockProgramSyncItem.programUid,
                 )
             }
         } else {
@@ -167,14 +152,15 @@ class SyncStatusDialogNavigator(
     private fun navigateToDataSetInstanceTable(
         tableSyncItem: SyncStatusType.DataSetInstance,
     ): Intent? {
-        return if (context !is DataSetTableActivity) {
-            DataSetTableActivity.intent(
+        return if (context !is DataSetInstanceActivity) {
+            DataSetInstanceActivity.intent(
                 context,
                 tableSyncItem.dataSetUid,
                 tableSyncItem.orgUnitUid,
                 tableSyncItem.periodId,
                 tableSyncItem.attrOptComboUid,
-            ).openErrorLocation()
+                true,
+            )
         } else {
             null
         }

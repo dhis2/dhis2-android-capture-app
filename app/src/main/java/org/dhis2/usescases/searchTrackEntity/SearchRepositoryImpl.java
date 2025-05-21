@@ -29,7 +29,7 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider;
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
@@ -274,7 +274,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 crashReportController,
                                 networkUtils,
                                 searchTEIRepository,
-                                new FieldErrorMessageProvider(resources.getContext()),
+                                new FieldErrorMessageProvider(),
                                 resources
                         );
 

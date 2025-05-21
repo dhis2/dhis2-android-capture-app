@@ -11,7 +11,7 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.form.ui.validation.FieldErrorMessageProvider
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
@@ -58,7 +58,7 @@ class ValueStoreImpl(
         }
     }
 
-    override fun save(
+    override suspend fun save(
         orgUnitUid: String,
         periodId: String,
         attributeOptionComboUid: String,

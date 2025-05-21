@@ -15,7 +15,6 @@ import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.program.ProgramIndicator
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleEffect
@@ -68,8 +67,7 @@ abstract class BaseIndicatorRepository(
     }
 
     fun getRulesIndicators(): Flowable<List<AnalyticsModel>> =
-        d2.programModule().programRules().byProgramUid().eq(programUid).get()
-            .map { UidsHelper.getUidsList(it) }
+        d2.programModule().programRules().byProgramUid().eq(programUid).getUids()
             .flatMap {
                 d2.programModule().programRuleActions()
                     .byProgramRuleUid().`in`(it)
@@ -185,7 +183,7 @@ abstract class BaseIndicatorRepository(
         return mutableListOf<AnalyticsModel>().apply {
             val feedbackList = ruleIndicators.filter {
                 it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
-            }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+            }
             if (feedbackList.isNotEmpty()) {
                 add(SectionTitle(resourceManager.sectionFeedback()))
                 addAll(feedbackList)

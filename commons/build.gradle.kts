@@ -65,6 +65,7 @@ kotlin {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     api(project(":ui-components"))
+    implementation(project(":commonskmm"))
 
     api(libs.dhis2.android.sdk) {
         exclude("org.hisp.dhis", "core-rules")
@@ -91,7 +92,9 @@ dependencies {
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
     api(libs.androidx.compose.paging)
-
+    api(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.composeVM)
     api(libs.google.material)
     api(libs.androidx.material3)
     api(libs.androidx.material3.window)

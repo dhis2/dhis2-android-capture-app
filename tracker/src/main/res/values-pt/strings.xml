@@ -7,4 +7,5 @@
     <string name="remove_some_relationships_title">Remover %d relacionamentos selecionadas\?</string>
     <string name="remove_some_relationships_desc">Os relacionamentos  %d selecionadas serão eliminados. Esta acção não pode ser anulada.</string>
     <string name="show_number_more">Mostrar %d mais...</string>
-    </resources>
+    <string name="relationship">Relacionamento</string>
+</resources>

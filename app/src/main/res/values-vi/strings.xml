@@ -953,7 +953,6 @@
     <string name="optional">Không bắt buộc</string>
     <string name="database_export_downloaded">Cơ sở dữ liệu đã được tải về</string>
     <string name="importing_database">Đang nhập cơ sở dữ liệu</string>
-    <string name="re_open_to_edit">Mở lại form để chỉnh sửa</string>
     <string name="empty_search_attributes_message">Không có các trường tìm kiếm được cấu hình để sử dụng.\nXin vui lòng liên lạc với quản trị của bạn.</string>
     <string name="show_more">Hiện thêm</string>
     <string name="show_less">Ẩn bớt</string>

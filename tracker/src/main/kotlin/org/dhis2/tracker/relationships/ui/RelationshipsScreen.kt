@@ -41,6 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.tracker.R
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
@@ -50,6 +51,7 @@ import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.avatar.AvatarProvider
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -65,6 +67,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.Title
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
@@ -380,15 +384,21 @@ fun DeleteRelationshipsConfirmation(
     onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
-        headerTextAlignment = TextAlign.Start,
-        title = when (relationships.size) {
-            1 -> stringResource(R.string.remove_relationship_title, relationships[0])
-            else -> stringResource(R.string.remove_some_relationships_title, relationships.size)
-        },
-        description = when (relationships.size) {
-            1 -> stringResource(R.string.remove_relationship_desc, relationships[0])
-            else -> stringResource(R.string.remove_some_relationships_desc, relationships.size)
-        },
+        uiState = BottomSheetShellUIState(
+            bottomPadding = bottomSheetLowerPadding(),
+            headerTextAlignment = TextAlign.Start,
+            showTopSectionDivider = true,
+            title = when (relationships.size) {
+                1 -> stringResource(R.string.remove_relationship_title, relationships[0])
+                else -> stringResource(R.string.remove_some_relationships_title, relationships.size)
+            },
+            description = when (relationships.size) {
+                1 -> stringResource(R.string.remove_relationship_desc, relationships[0])
+                else -> stringResource(R.string.remove_some_relationships_desc, relationships.size)
+            },
+        ),
+        windowInsets =  {bottomSheetInsets()} ,
+
         icon = {
             Icon(
                 Icons.Outlined.ErrorOutline,
@@ -398,12 +408,7 @@ fun DeleteRelationshipsConfirmation(
         },
         buttonBlock = {
             ButtonBlock(
-                modifier = Modifier.padding(
-                    top = Spacing24,
-                    bottom = Spacing24,
-                    start = Spacing24,
-                    end = Spacing24
-                ),
+                modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,

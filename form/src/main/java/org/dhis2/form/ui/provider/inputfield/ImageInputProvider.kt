@@ -1,6 +1,8 @@
 package org.dhis2.form.ui.provider.inputfield
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,18 +10,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import org.dhis2.commons.extensions.getBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.UiEventType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.files.rememberCameraPicker
+import org.dhis2.form.ui.files.rememberFilePicker
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.extensions.toImageBitmap
+import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.InputImage
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 
@@ -30,10 +35,39 @@ internal fun ProvideInputImage(
     resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
+    onFileSelected: (filePath: String) -> Unit,
 ) {
-    var uploadState by remember(fieldUiModel) { mutableStateOf(getUploadState(fieldUiModel.displayName, fieldUiModel.isLoadingData)) }
+    var showImageOptions by remember { mutableStateOf(false) }
 
-    val painter = fieldUiModel.displayName?.getBitmap()?.let { BitmapPainter(it.asImageBitmap()) }
+    var uploadState by remember(fieldUiModel) {
+        mutableStateOf(
+            getUploadState(
+                fieldUiModel.displayName,
+                fieldUiModel.isLoadingData,
+            ),
+        )
+    }
+
+    val painter = fieldUiModel.displayName?.toImageBitmap()?.let { BitmapPainter(it) }
+
+    val filePicker = rememberFilePicker(onFileSelected)
+
+    val (tempFileUri, imagePicker, cameraPermission) = rememberCameraPicker(
+        onSuccess = { filePath ->
+            onFileSelected(filePath)
+            uploadState = getUploadState(fieldUiModel.displayName, false)
+        },
+        onError = {
+            uploadState = getUploadState(fieldUiModel.displayName, false)
+            intentHandler.invoke(
+                FormIntent.OnAddImageFinished(fieldUiModel.uid),
+            )
+        },
+        onPermissionAccepted = {
+            uploadState = getUploadState(fieldUiModel.displayName, true)
+        },
+    )
+
     InputImage(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -69,8 +103,32 @@ internal fun ProvideInputImage(
             )
         },
         onAddButtonClicked = {
-            uploadState = getUploadState(fieldUiModel.displayName, true)
-            fieldUiModel.invokeUiEvent(UiEventType.ADD_PICTURE)
+            showImageOptions = true
+        },
+    )
+
+    val context = LocalContext.current
+
+    ImagePickerOptionsDialog(
+        title = fieldUiModel.label,
+        showImageOptions = showImageOptions,
+        cameraButtonLabel = resources.getString(R.string.take_photo),
+        galleryButtonLabel = resources.getString(R.string.from_gallery_v2),
+        onDismiss = { showImageOptions = false },
+        onTakePicture = {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.CAMERA,
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                uploadState = getUploadState(fieldUiModel.displayName, true)
+                imagePicker.launch(tempFileUri)
+            } else {
+                cameraPermission.launch(Manifest.permission.CAMERA)
+            }
+        },
+        onSelectFromGallery = {
+            filePicker.launch("image/*")
         },
     )
 }

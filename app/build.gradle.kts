@@ -10,7 +10,7 @@ plugins {
     kotlin("android")
     kotlin("kapt")
     id("kotlin-parcelize")
-    id("kotlinx-serialization")
+    alias(libs.plugins.kotlin.serialization)
     id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.compose.compiler)
 }
@@ -243,7 +243,6 @@ kotlin {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    implementation(project(":viewpagerdotsindicator"))
     implementation(project(":dhis_android_analytics"))
     implementation(project(":form"))
     implementation(project(":commons"))
@@ -281,6 +280,8 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(platform(libs.dispatcher.dispatchBOM))
     implementation(libs.dispatcher.dispatchCore)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
 
     coreLibraryDesugaring(libs.desugar)
 

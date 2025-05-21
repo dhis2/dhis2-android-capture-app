@@ -5,6 +5,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/dialFabLayout"
+        android:background="@drawable/ic_front_home_backdrop_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

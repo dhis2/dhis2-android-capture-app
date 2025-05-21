@@ -31,6 +31,8 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.commons.data.FileHandler
 import org.dhis2.commons.data.FormFileProvider
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.form.R
@@ -42,8 +44,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonCarousel
 import org.hisp.dhis.mobile.ui.designsystem.component.CarouselButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.QrCodeBlock
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing0
-import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
@@ -121,8 +123,15 @@ QRDetailBottomDialog(
         if (showDialog) {
             val buttonList = getComposeButtonList()
             BottomSheetShell(
+                uiState = BottomSheetShellUIState(
+                    title = label,
+                    showTopSectionDivider = true,
+                    showBottomSectionDivider = true,
+                    bottomPadding = bottomSheetLowerPadding(),
+                ),
+                windowInsets = { bottomSheetInsets() },
+
                 modifier = modifier,
-                title = label,
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Info,
@@ -147,15 +156,7 @@ QRDetailBottomDialog(
                     }
                 },
                 buttonBlock = {
-                    ButtonCarousel(
-                        carouselButtonList = buttonList,
-                        modifier = Modifier.padding(
-                            top = Spacing0,
-                            bottom = Spacing24,
-                            start = Spacing24,
-                            end = Spacing24,
-                        ),
-                    )
+                    ButtonCarousel(modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()), carouselButtonList = buttonList)
                 },
                 onDismiss = {
                     dismiss()

@@ -1,16 +1,17 @@
 [versions]
+kotlinxDatetime = "0.6.2"
 sdk = "35"
 minSdk = "21"
-vCode = "140"
-vName = "3.1.1.1"
-gradle = "8.7.2"
+vCode = "143"
+vName = "3.2.0"
+gradle = "8.8.0"
 kotlin = '2.0.21'
 hilt = '2.47'
 jacoco = '0.8.10'
-designSystem = "0.4.1"
-dhis2sdk = "1.11.1"
-ruleEngine = "3.3.2"
-expressionParser = "1.1.0"
+designSystem = "0.5.0"
+dhis2sdk = "1.12.0"
+ruleEngine = "3.3.9"
+expressionParser = "1.1.10"
 appcompat = "1.6.1"
 annotation = "1.6.0"
 cardview = "1.0.0"
@@ -26,6 +27,7 @@ dynamicanimation = "1.0.0"
 viewpager2 = "1.0.0"
 recyclerview = "1.3.1"
 compose = "1.5.4"
+composePlugin = "1.7.3"
 composePaging = "3.3.0"
 composeLifecycle = "2.8.1"
 composeConstraintLayout = "1.0.1"
@@ -57,7 +59,6 @@ root = "0.0.7"
 openid = "0.8.1"
 conscrypt = "2.5.2"
 gson = "2.9.0"
-#gsonconverter = "2.9.0"
 okhttp = "4.9.3"
 jodatime = "2.10.5"
 glide = "4.9.0"
@@ -68,7 +69,7 @@ junit = "4.13.2"
 mockito_inline = "5.2.0"
 javafaker = "1.0.2"
 junit_ext = "1.1.5"
-espresso_core = "3.5.1"
+espresso_core = "3.6.1"
 androidx_test_orchestrator = "1.4.2"
 androidx_test_runner = "1.5.2"
 androidx_test = "1.5.0"
@@ -83,8 +84,17 @@ preference_ktx = "1.2.1"
 uiautomator = "2.2.0"
 maplibre = "10.2.0"
 material3WindowSize = "1.2.0"
+material3WindowSizeCompose = "1.7.1"
 material3AdaptiveAndroid = "1.0.0"
 agp = "8.7.2"
+
+uiTooling = "1.7.6"
+koin = "4.0.2"
+lifecycleViewmodel = "2.8.7"
+androidx-navigation = "2.7.0"
+junitJupiter = "5.8.1"
+ktxml = "0.3.2"
+atomicfu = "0.27.0"
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -94,7 +104,7 @@ jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
 dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine-jvm", version.ref = "ruleEngine" }
 dhis2-expressionparser = { group = "org.hisp.dhis.lib.expression", name = "expression-parser-jvm", version.ref = "expressionParser" }
-dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem-android", version.ref = "designSystem" }
+dhis2-mobile-designsystem = { group = "org.hisp.dhis.mobile", name = "designsystem", version.ref = "designSystem" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 androidx-activityKtx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityCompose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -126,9 +136,10 @@ androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterfa
 androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class-android", version.ref = "material3WindowSize" }
+compose-material3-window = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeCompose" }
 androidx-material3-adaptative-android = { group = "androidx.compose.material3.adaptive", name = "adaptive-android", version.ref = "material3AdaptiveAndroid" }
 androidx-dynamicanimation = { group = "androidx.dynamicanimation", name = "dynamicanimation", version.ref = "dynamicanimation" }
-androidx-biometric = { group = "androidx.biometric", name = "biometric", version = "1.1.0"}
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version = "1.1.0" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxserialization" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 google-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.6.0" }
@@ -137,6 +148,7 @@ google-autoValue = { group = "com.google.auto.value", name = "auto-value", versi
 google-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 google-material3-themeadapter = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "themeAdapter" }
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 dates-jodatime = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "hilt" }
@@ -164,7 +176,7 @@ analytics-rxlint = { group = "nl.littlerobots.rxlint", name = "rxlint", version.
 analytics-customactivityoncrash = { group = "cat.ereza", name = "customactivityoncrash", version.ref = "crashactivity" }
 analytics-timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
 analytics-sentry = { group = "io.sentry", name = "sentry-android", version.ref = "sentry" }
-analytics-sentry-compose = {group="io.sentry", name="sentry-compose-android", version.ref = "sentry"}
+analytics-sentry-compose = { group = "io.sentry", name = "sentry-compose-android", version.ref = "sentry" }
 security-rootbeer = { group = "com.scottyab", name = "rootbeer-lib", version.ref = "root" }
 security-openId = { group = "net.openid", name = "appauth", version.ref = "openid" }
 security-conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
@@ -203,12 +215,30 @@ dispatcher-dispatchBOM = { group = "com.rickbusarow.dispatch", name = "dispatch-
 dispatcher-dispatchCore = { group = "com.rickbusarow.dispatch", name = "dispatch-core" }
 dispatcher-dispatchEspresso = { group = "com.rickbusarow.dispatch", name = "dispatch-android-espresso", version = "1.0.0-beta10" }
 deprecated-autoValueParcel = { group = "com.ryanharter.auto.value", name = "auto-value-parcel", version.ref = "autovalueparcel" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "uiTooling" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-composeVM = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koin" }
+koin-test-junit5 = { module = "io.insert-koin:koin-test-junit5", version.ref = "koin" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koin" }
+androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleViewmodel" }
+androidx-lifecycle-viewmodel-compose-kpm = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodel" }
+androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
 [bundles]
-uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window","androidx-material3-adaptative-android", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
+uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material3-themeadapter"]
 uicomponents-debugapi = ["androidx-compose-uitooling"]
 uicomponents-androidtest = ["test-junit-ext"]
@@ -217,7 +247,7 @@ analytics-api = ["github-charts"]
 analytics-kapt = ["dagger-compiler"]
 analytics-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-kotlinCoroutines", "test-archCoreTesting"]
 form-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-testCore", "test-archCoreTesting", "test-kotlinCoroutines"]
-map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin","test-turbine", "test-archCoreTesting", "test-kotlinCoroutines"]
+map-test = ["test-mockitoCore", "test-mockitoInline", "test-mockitoKotlin", "test-turbine", "test-archCoreTesting", "test-kotlinCoroutines"]
 table-implementation = ["kotlin-serialization-json", "androidx-appcompat", "androidx-activity-compose", "androidx-compose", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "androidx-compose-livedata"]
 table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifest"]
 table-test = ["test-junit"]

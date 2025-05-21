@@ -28,12 +28,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import org.dhis2.commons.R
 import org.dhis2.commons.featureconfig.di.FeatureConfigComponentProvider
 import org.dhis2.commons.featureconfig.model.FeatureOptions
+import org.dhis2.commons.ui.extensions.handleInsets
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import javax.inject.Inject
 
 class FeatureConfigView : AppCompatActivity() {
@@ -45,7 +49,7 @@ class FeatureConfigView : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        handleInsets()
         (applicationContext as FeatureConfigComponentProvider)
             .provideFeatureConfigActivityComponent()
             ?.inject(this)
@@ -55,12 +59,14 @@ class FeatureConfigView : AppCompatActivity() {
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(
-                        title = { Text(text = stringResource(id = R.string.feature_configuration)) },
+                        backgroundColor = colorResource(id = R.color.colorPrimary),
+                        title = { Text(text = stringResource(id = R.string.feature_configuration), color = Color.White) },
                         navigationIcon = {
                             IconButton(onClick = { onBackPressedDispatcher.onBackPressed() }) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowBackIosNew,
                                     contentDescription = "Back",
+                                    tint = Color.White,
                                 )
                             }
                         },
@@ -79,11 +85,14 @@ class FeatureConfigView : AppCompatActivity() {
                         }
 
                         Row(
-                            Modifier.fillMaxWidth(),
+                            Modifier.fillMaxWidth().padding(Spacing.Spacing16),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = spacedBy(8.dp),
                         ) {
-                            Text(modifier = Modifier.weight(1f), text = currentFeature.feature.description)
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = currentFeature.feature.description,
+                            )
                             currentFeature.extras?.let { options ->
                                 when (options) {
                                     is FeatureOptions.ResponsiveHome -> {

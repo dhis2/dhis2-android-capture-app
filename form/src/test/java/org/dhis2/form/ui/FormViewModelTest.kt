@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -87,7 +88,7 @@ class FormViewModelTest {
 
     @Ignore("We need to update Kotlin version in order to test coroutines")
     @Test
-    fun `Missing and errors fields should show mandatory fields dialog`() {
+    fun `Missing and errors fields should show mandatory fields dialog`() = runBlocking {
         whenever(
             repository.runDataIntegrityCheck(false),
         ) doReturn MissingMandatoryResult(
@@ -107,7 +108,7 @@ class FormViewModelTest {
 
     @Ignore("We need to update Kotlin version in order to test coroutines")
     @Test
-    fun `Error fields should show mandatory fields dialog`() {
+    fun `Error fields should show mandatory fields dialog`() = runBlocking {
         whenever(
             repository.runDataIntegrityCheck(false),
         ) doReturn FieldsWithErrorResult(
@@ -128,7 +129,7 @@ class FormViewModelTest {
 
     @Ignore("We need to update Kotlin version in order to test coroutines")
     @Test
-    fun `Check data integrity is a success`() {
+    fun `Check data integrity is a success`() = runBlocking {
         whenever(
             repository.runDataIntegrityCheck(false),
         ) doReturn SuccessfulResult(
