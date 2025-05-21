@@ -831,6 +831,7 @@ internal class DataSetInstanceRepositoryImpl(
             .uid(dataElementUid)
             .blockingGet()
         val categoryOptionCombo = d2.categoryModule().categoryOptionCombos()
+            .withCategoryOptions()
             .uid(categoryOptionComboUid)
             .blockingGet()
         val isMandatory = d2.dataSetModule().dataSets().withCompulsoryDataElementOperands()
@@ -839,7 +840,7 @@ internal class DataSetInstanceRepositoryImpl(
             ?.compulsoryDataElementOperands()
             ?.find {
                 it.dataElement()?.uid() == dataElementUid &&
-                    it.categoryOptionCombo()?.uid() == categoryOptionComboUid
+                        it.categoryOptionCombo()?.uid() == categoryOptionComboUid
             } != null
         val dataElementValueType = dataElement?.valueType()?.toInputType()
         val inputType = requireNotNull(dataElementValueType).takeIf {
@@ -1122,14 +1123,19 @@ internal class DataSetInstanceRepositoryImpl(
         val isDefaultCategoryCombo = d2.categoryModule().categoryCombos()
             .uid(coc?.categoryCombo()?.uid())
             .blockingGet()
-            ?.isDefault ?: false
+            ?.isDefault == true
+
+        val categoryOptionNames = coc?.categoryOptions()?.mapNotNull {
+            it.displayName() ?: d2.categoryModule().categories().uid(it.uid()).blockingGet()
+                ?.displayName()
+        } ?: emptyList()
 
         val dataElementLabel = dataElement.run { displayFormName() ?: displayName() ?: uid() }
 
         return if (isDefaultCategoryCombo) {
             dataElementLabel
         } else {
-            "$dataElementLabel / ${coc?.displayName()}"
+            (listOf(dataElementLabel) + categoryOptionNames).joinToString(" / ")
         }
     }
 }
