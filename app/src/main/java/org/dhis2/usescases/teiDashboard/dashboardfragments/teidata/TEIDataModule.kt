@@ -6,6 +6,7 @@ import dagger.Provides
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.reporting.CrashReportController
@@ -16,6 +17,7 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.community.relationships.RelationshipRepository
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.data.forms.dataentry.SearchTEIRepository
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
@@ -57,6 +59,7 @@ class TEIDataModule(
         dispatcherProvider: DispatcherProvider,
         createEventUseCase: CreateEventUseCase,
         d2ErrorUtils: D2ErrorUtils,
+        communityRelationshipRepository: RelationshipRepository,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -77,6 +80,7 @@ class TEIDataModule(
             dispatcherProvider,
             createEventUseCase,
             d2ErrorUtils,
+            communityRelationshipRepository
         )
     }
 
@@ -195,4 +199,12 @@ class TEIDataModule(
 
     @Provides
     fun provideDateUtils(): DateUtils = DateUtils.getInstance()
+
+
+    @Provides
+    fun communityRelationshipRepositoryProvider(
+        d2: D2,
+    ): RelationshipRepository {
+        return RelationshipRepository(d2)
+    }
 }

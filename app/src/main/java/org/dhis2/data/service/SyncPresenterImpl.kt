@@ -223,8 +223,16 @@ class SyncPresenterImpl(
             Completable.fromObservable(
                 d2.fileResourceModule().fileResourceDownloader()
                     .byDomainType().eq(FileResourceDomainType.ICON)
-                    .download(),
+                    .download()
             ),
+        ).andThen(
+            Completable.fromObservable(
+                d2.dataStoreModule()
+                    .dataStoreDownloader()
+                    .byNamespace()
+                    .eq("community_redesign")
+                    .download()
+            )
         ).blockingAwait()
     }
 

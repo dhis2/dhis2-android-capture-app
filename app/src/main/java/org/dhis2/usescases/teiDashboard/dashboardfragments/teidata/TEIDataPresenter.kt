@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.BehaviorProcessor
 import kotlinx.coroutines.CoroutineScope
@@ -26,6 +27,8 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.get
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.community.relationships.RelationshipConfig
+import org.dhis2.community.relationships.RelationshipRepository
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.form.data.RulesUtilsProviderImpl
@@ -53,6 +56,7 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
+import java.util.concurrent.Callable
 
 class TEIDataPresenter(
     private val view: TEIDataContracts.View,
@@ -73,6 +77,7 @@ class TEIDataPresenter(
     private val dispatcher: DispatcherProvider,
     private val createEventUseCase: CreateEventUseCase,
     private val d2ErrorUtils: D2ErrorUtils,
+    private val relationshipRepository: RelationshipRepository
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -141,6 +146,8 @@ class TEIDataPresenter(
         }
 
         updateCreateEventButtonVisibility()
+
+        retrieveRelationshipConfig()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -455,5 +462,19 @@ class TEIDataPresenter(
                 )
             }
         }
+    }
+
+    fun retrieveRelationshipConfig() {
+        compositeDisposable.add(
+            Single.fromCallable<RelationshipConfig>(Callable<RelationshipConfig> { relationshipRepository.getRelationshipConfig() })
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(
+                    { relationshipConfig: RelationshipConfig? ->
+                        Timber.d("RelationshipConfig: %s", relationshipConfig)
+                    },
+                    { t: Throwable? -> Timber.e(t) }
+                )
+        )
     }
 }
