@@ -174,10 +174,12 @@ fun DataSetInstanceScreen(
         mutableStateOf<TableSelection>(TableSelection.Unselected())
     }
 
-    LaunchedEffect((dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection) {
-        tableCellSelection =
-            (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first
-                ?: TableSelection.Unselected()
+    LaunchedEffect((dataSetScreenState as? DataSetScreenState.Loaded)) {
+        if ((dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first != null) {
+            tableCellSelection = (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first!!
+        } else if ((dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo == null) {
+            tableCellSelection = TableSelection.Unselected()
+        }
     }
 
     Scaffold(
@@ -457,6 +459,7 @@ fun DataSetInstanceScreen(
                         onDismiss = {
                             scope.launch {
                                 dataSetTableViewModel.updateSelectedCell(null)
+                                tableCellSelection = TableSelection.Unselected()
                             }
                         },
                     )
