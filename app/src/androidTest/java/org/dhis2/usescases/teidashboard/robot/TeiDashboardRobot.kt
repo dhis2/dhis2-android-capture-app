@@ -125,9 +125,14 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnFirstReferralEvent() {
-        onView(withId(R.id.recycler_view))
-            .check(matches(allOf(atPosition(0, hasDescendant(withText("Lab monitoring"))))))
-            .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
+        waitForView(
+            allOf(
+                withId(R.id.recycler_view),
+                hasDescendant(withText("Lab monitoring"))
+            )
+        ).perform(
+            actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click())
+        )
     }
 
     fun checkProgramStageSelectionActivityIsLaunched() {
