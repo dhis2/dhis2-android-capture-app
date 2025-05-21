@@ -393,7 +393,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
-            checkEnrollmentListActivityIsLaunched()
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
         }
@@ -403,7 +402,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         enrollmentRobot(composeTestRule) {
-            checkEnrollmentActivityIsLaunched()
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()

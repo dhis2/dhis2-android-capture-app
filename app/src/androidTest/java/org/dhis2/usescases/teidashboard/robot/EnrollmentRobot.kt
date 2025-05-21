@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teidashboard.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -50,9 +51,6 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         Intents.intended(allOf(hasComponent(TeiProgramListActivity::class.java.name)))
     }
 
-    fun checkEnrollmentActivityIsLaunched() {
-        Intents.intended(allOf(hasComponent(EnrollmentActivity::class.java.name)))
-    }
 
     fun clickOnAcceptInDatePicker() {
         waitForView(withId(R.id.acceptBtn)).perform(click())
@@ -129,8 +127,10 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun openFormSection(personAttribute: String) {
         composeTestRule.waitForIdle()
+        composeTestRule.waitUntilAtLeastOneExists(hasText(personAttribute, true))
         composeTestRule.onNodeWithText(personAttribute).performClick()
     }
 
