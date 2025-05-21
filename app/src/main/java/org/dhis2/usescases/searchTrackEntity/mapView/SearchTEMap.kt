@@ -36,6 +36,7 @@ import org.dhis2.maps.camera.centerCameraOnFeatures
 import org.dhis2.maps.layer.MapLayerDialog
 import org.dhis2.maps.location.MapLocationEngine
 import org.dhis2.maps.managers.TeiMapManager
+import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.MapStyle
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
@@ -134,7 +135,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                 val mapDataFinishedLoading = teiMapManager?.dataFinishedLoading?.collectAsState()
 
                 LaunchedEffect(key1 = clickedItem) {
-                    if (clickedItem != null) {
+                    clickedItem?.let {
                         listState.animateScrollToItem(
                             items.indexOfFirst { it.uid == clickedItem },
                         )
@@ -259,19 +260,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                         }
                                     },
                                     onCardClick = {
-                                        if (fromRelationship) {
-                                            viewModel.onAddRelationship(
-                                                item.uid,
-                                                item.relatedInfo?.relationship?.relationshipTypeUid,
-                                                item.isOnline,
-                                            )
-                                        } else {
-                                            viewModel.onTeiClick(
-                                                item.uid,
-                                                item.relatedInfo?.enrollment?.uid,
-                                                item.isOnline,
-                                            )
-                                        }
+                                        cardClick(item)
                                     },
                                     listAvatar = {
                                         AvatarProvider(
@@ -285,6 +274,22 @@ class SearchTEMap : FragmentGlobalAbstract() {
                     }
                 }
             }
+        }
+    }
+
+    private fun cardClick(item: MapItemModel) {
+        if (fromRelationship) {
+            viewModel.onAddRelationship(
+                item.uid,
+                item.relatedInfo?.relationship?.relationshipTypeUid,
+                item.isOnline,
+            )
+        } else {
+            viewModel.onTeiClick(
+                item.uid,
+                item.relatedInfo?.enrollment?.uid,
+                item.isOnline,
+            )
         }
     }
 
