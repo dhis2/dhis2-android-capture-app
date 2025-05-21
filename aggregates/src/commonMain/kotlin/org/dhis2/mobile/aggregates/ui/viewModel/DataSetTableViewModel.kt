@@ -164,6 +164,7 @@ internal class DataSetTableViewModel(
                         it.copy(
                             dataSetSectionTable = DataSetSectionTable.Loading,
                             selectedCellInfo = null,
+                            nextCellSelection = Pair(null, false),
                         )
                     } else {
                         it
@@ -285,6 +286,7 @@ internal class DataSetTableViewModel(
                             _dataSetScreenState.update {
                                 (it as? DataSetScreenState.Loaded)?.copy(
                                     nextCellSelection = Pair(null, false),
+                                    selectedCellInfo = null,
                                 ) ?: it
                             }
                             updateSelectedCell(null)
