@@ -23,6 +23,7 @@ import org.dhis2.usescases.teidashboard.robot.eventRobot
 import org.dhis2.usescases.teidashboard.robot.indicatorsRobot
 import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
+import org.hamcrest.CoreMatchers.allOf
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Assume
 import org.junit.Ignore
@@ -197,6 +198,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldMakeAReferral() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -217,6 +219,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
+            checkProgramStageSelectionActivityIsLaunched()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
             checkEventWasCreated(LAB_MONITORING)
