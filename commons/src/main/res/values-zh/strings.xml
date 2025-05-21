@@ -240,7 +240,6 @@
     <string name="default_empty_dataset_section_label">数据</string>
     <string name="title_network_connection_unavailable">网络连接不可用</string>
     <string name="msg_network_connection_maps">需要互联网连接才能使用地图。</string>
-
     <string name="overdue_today">今天</string>
     <string name="overdue_due_today">今天到期</string>
     <plurals name="overdue_days">
@@ -283,8 +282,7 @@
     <string name="enrollment_completed_V2">%s 完成</string>
     <string name="enrollment_cancelled_V2">%s 已取消</string>
     <string name="new_enrollment">新%s</string>
-    <string name="enrolling_ou">加入：</string> <!--TODO: Remove this once ANDROAPP-5901 has been merged. Also remove unused TEI card xmls-->
-    <string name="dashboard_menu_delete_enrollment_V2">仅删除%s </string>
+    <string name="enrolling_ou">加入：</string>
     <string name="program_selector_V2">计划%s</string>
     <string name="more_enrollments">更多注册人数</string>
     <string name="remove_from">从</string>

@@ -14,8 +14,8 @@
     <string name="complete">Completo</string>
     <string name="share">Partilhar</string>
     <string name="action_close">Fechar</string>
-<string name="incident_date">Data do incidente</string>
+    <string name="incident_date">Data do incidente</string>
     <string name="download">Baixar</string>
     <string name="coordinates">Coordenadas</string>
     <string name="category_combo">Combinação de categoria</string>
-    </resources>
+</resources>
