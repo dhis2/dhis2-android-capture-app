@@ -32,7 +32,7 @@ import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
-import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_EDITABLE
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetEdition
@@ -444,7 +444,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         // Given there are no validation rules
         whenever(checkValidationRulesConfiguration()) doReturn NONE
         // And data set is not completed
-        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED
+        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED_EDITABLE
 
         whenever(
             dataSetModalDialogProvider.provideCompletionDialog(
@@ -477,7 +477,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         )
         whenever(runValidationRules()) doReturn validationRulesResult
         // And data set is not completed
-        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED
+        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED_EDITABLE
 
         whenever(
             dataSetModalDialogProvider.provideCompletionDialog(

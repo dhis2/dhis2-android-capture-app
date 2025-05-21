@@ -116,6 +116,13 @@ internal interface DataSetInstanceRepository {
         attrOptionComboUid: String,
     ): Boolean
 
+    suspend fun isEditable(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean
+
     suspend fun checkIfHasMissingMandatoryFields(
         dataSetUid: String,
         periodId: String,

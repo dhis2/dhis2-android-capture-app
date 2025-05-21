@@ -110,6 +110,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String) {
+        waitForView((withId(R.id.completion)))
         onView(withId(R.id.completion)).check(matches(hasCompletedPercentage(100)))
         val formattedDate = formatStoredDateToUI(eventDate)
         composeTestRule.onNodeWithText(formattedDate).assertIsDisplayed()

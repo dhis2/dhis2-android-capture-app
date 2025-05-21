@@ -73,6 +73,7 @@ internal class DataSetModalDialogProvider(
         onMarkAsComplete: () -> Unit,
         violations: List<Violation>,
         mandatory: Boolean,
+        canComplete: Boolean,
     ): DataSetModalDialogUIState {
         return DataSetModalDialogUIState(
             contentDialogUIState = BottomSheetShellUIState(
@@ -91,6 +92,7 @@ internal class DataSetModalDialogProvider(
             type = DataSetModalType.VALIDATION_RULES_ERROR,
             violations = violations,
             mandatory = mandatory,
+            canComplete = canComplete,
         )
     }
 }

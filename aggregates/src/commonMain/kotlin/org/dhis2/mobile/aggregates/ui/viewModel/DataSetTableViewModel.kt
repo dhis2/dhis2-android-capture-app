@@ -25,7 +25,8 @@ import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
-import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_EDITABLE
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_NOT_EDITABLE
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
@@ -584,7 +585,7 @@ internal class DataSetTableViewModel(
 
             when (result) {
                 NONE -> {
-                    attemptToFinnish()
+                    attemptToFinish()
                 }
 
                 MANDATORY -> {
@@ -605,7 +606,7 @@ internal class DataSetTableViewModel(
                     it.copy(
                         modalDialog = datasetModalDialogProvider.provideAskRunValidationsDialog(
                             onDismiss = { onModalDialogDismissed() },
-                            onDeny = { attemptToComplete() },
+                            onDeny = { attemptToFinish() },
                             onAccept = { checkValidationRules() },
                         ),
                     )
@@ -624,6 +625,7 @@ internal class DataSetTableViewModel(
             val rules = withContext(dispatcher.io()) {
                 runValidationRules()
             }
+
             when (rules.validationResultStatus) {
                 ValidationResultStatus.OK -> {
                     _dataSetScreenState.update {
@@ -633,11 +635,14 @@ internal class DataSetTableViewModel(
                             it
                         }
                     }
-                    attemptToFinnish()
+                    attemptToFinish()
                 }
 
                 ValidationResultStatus.ERROR -> {
                     onModalDialogDismissed()
+                    val completionStatus = withContext(dispatcher.io()) {
+                        checkCompletionStatus()
+                    }
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
@@ -650,6 +655,7 @@ internal class DataSetTableViewModel(
                                         expandValidationErrors(
                                             violations = rules.violations,
                                             mandatory = rules.mandatory,
+                                            canComplete = completionStatus == NOT_COMPLETED_EDITABLE,
                                         )
                                     },
                                 ),
@@ -664,7 +670,7 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean) {
+    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean, canComplete: Boolean) {
         viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
@@ -674,6 +680,7 @@ internal class DataSetTableViewModel(
                             mandatory = mandatory,
                             onDismiss = { onModalDialogDismissed() },
                             onMarkAsComplete = { attemptToComplete() },
+                            canComplete = canComplete,
                         ),
                     )
                 } else {
@@ -683,7 +690,7 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun attemptToFinnish() {
+    private fun attemptToFinish() {
         viewModelScope.launch {
             CoroutineTracker.increment()
             val onSavedMessage = resourceManager.provideSaved()
@@ -693,8 +700,8 @@ internal class DataSetTableViewModel(
             }
 
             when (result) {
-                COMPLETED -> onExit(onSavedMessage)
-                NOT_COMPLETED -> {
+                COMPLETED, NOT_COMPLETED_NOT_EDITABLE -> onExit(onSavedMessage)
+                NOT_COMPLETED_EDITABLE -> {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
