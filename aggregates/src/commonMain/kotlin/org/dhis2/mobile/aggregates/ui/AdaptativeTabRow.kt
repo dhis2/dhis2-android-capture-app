@@ -1,5 +1,6 @@
 package org.dhis2.mobile.aggregates.ui
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,11 +21,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.dp
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+
+private const val MAX_LABEL_LENGTH = 40
 
 /**
  * Adaptive Tab Row
@@ -45,6 +49,14 @@ fun AdaptiveTabRow(
     var selectedTab by remember { mutableStateOf(selectedTab) }
     val tabWidths = remember { mutableStateListOf<Int>() }
     var scrollable by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+    val indicatorWidth by animateDpAsState(
+        targetValue = with(density) {
+            tabWidths.getOrNull(selectedTab)?.toDp()
+        } ?: 56.dp,
+        label = "indicator_width",
+
+    )
 
     SubcomposeLayout(modifier = modifier) { constraints ->
 
@@ -79,7 +91,7 @@ fun AdaptiveTabRow(
                     edgePadding = Spacing.Spacing16,
                     indicator = { tabPositions ->
                         TabRowDefaults.PrimaryIndicator(
-                            width = 56.dp,
+                            width = indicatorWidth,
                             modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
@@ -112,7 +124,7 @@ fun AdaptiveTabRow(
                     containerColor = MaterialTheme.colorScheme.primary,
                     indicator = { tabPositions ->
                         TabRowDefaults.PrimaryIndicator(
-                            width = 56.dp,
+                            width = indicatorWidth,
                             modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
@@ -151,6 +163,7 @@ private fun AdaptiveTab(
     modifier: Modifier = Modifier,
     index: Int,
     tabLabel: String,
+    maxLength: Int = MAX_LABEL_LENGTH,
     tabWidths: MutableList<Int>,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -158,7 +171,7 @@ private fun AdaptiveTab(
     Tab(
         modifier = modifier
             .height(48.dp)
-            .padding(horizontal = Spacing.Spacing4)
+            .padding(horizontal = Spacing.Spacing32)
             .onGloballyPositioned { coordinates ->
                 tabWidths.add(index, coordinates.size.width)
             },
@@ -167,7 +180,11 @@ private fun AdaptiveTab(
         onClick = onClick,
     ) {
         Text(
-            text = tabLabel,
+            text = if (tabLabel.length > maxLength) {
+                tabLabel.take(maxLength) + "…"
+            } else {
+                tabLabel
+            },
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleSmall,
         )
