@@ -419,6 +419,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
                 assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo == null)
+                assertTrue(this.nextCellSelection.first == null)
             }
         }
     }
