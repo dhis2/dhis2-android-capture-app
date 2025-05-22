@@ -82,13 +82,13 @@ class TeiFlowTest : BaseTest() {
     private fun createFirstSpecificDate() = DateRegistrationUIModel(
         2016,
         6,
-        30
+        9
     )
 
     private fun createEnrollmentDate() = DateRegistrationUIModel(
         2017,
         6,
-        30
+        9
     )
 
     private fun getCurrentDate(): String {
@@ -119,7 +119,5 @@ class TeiFlowTest : BaseTest() {
         const val ORG_UNIT = "Ngelehun CHC"
         const val NAME = "Marta"
         const val LASTNAME = "Stuart"
-
-        const val DATE_FORMAT = "dd/M/yyyy"
     }
 }
