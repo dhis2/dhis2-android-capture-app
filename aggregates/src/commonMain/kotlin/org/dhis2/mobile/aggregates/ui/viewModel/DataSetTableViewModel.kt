@@ -321,6 +321,12 @@ internal class DataSetTableViewModel(
                 )
             }
         } else {
+            _dataSetScreenState.update {
+                (it as? DataSetScreenState.Loaded)?.copy(
+                    nextCellSelection = Pair(null, false),
+                    selectedCellInfo = null,
+                ) ?: it
+            }
             null
         }
         val isLastCell = isLastCell(cellId ?: "")
