@@ -171,6 +171,9 @@ internal class DataSetTableViewModel(
     fun onSectionSelected(sectionUid: String) {
         viewModelScope.launch((dispatcher.io())) {
             if (dataSetScreenState.value.currentSection() != sectionUid) {
+                val selectedSectionIndex = (dataSetScreenState.value as? DataSetScreenState.Loaded)
+                    ?.dataSetSections
+                    ?.indexOfFirst { it.uid == sectionUid }
                 CoroutineTracker.increment()
                 _dataSetScreenState.update {
                     if (it is DataSetScreenState.Loaded) {
@@ -182,6 +185,7 @@ internal class DataSetTableViewModel(
                                 loading = true,
                             ),
                             selectedCellInfo = null,
+                            initialSection = selectedSectionIndex ?: 0,
                         )
                     } else {
                         it
@@ -212,6 +216,7 @@ internal class DataSetTableViewModel(
                                 overridingDimensions = overwrittenWidths(sectionUid),
                                 loading = false,
                             ),
+                            initialSection = selectedSectionIndex ?: 0,
                         )
                     } else {
                         it
