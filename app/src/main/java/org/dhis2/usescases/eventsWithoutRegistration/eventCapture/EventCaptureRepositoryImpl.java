@@ -223,7 +223,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     @Nullable
     public String getEnrollmentUid() {
-        return getCurrentEvent().enrollment();
+        Event currentEvent = getCurrentEvent();
+        if (currentEvent == null) {
+            return null;
+        }else{
+            return currentEvent.enrollment();
+        }
     }
 
     @Override
