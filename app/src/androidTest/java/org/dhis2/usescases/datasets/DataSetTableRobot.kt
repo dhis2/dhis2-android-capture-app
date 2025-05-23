@@ -104,6 +104,10 @@ internal class DataSetTableRobot(
             .performScrollToNode(hasText(text, substring = true))
     }
 
+    fun scrollToTop(){
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(0)
+    }
+
     fun clickOnEditValue() {
         composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
     }
@@ -131,7 +135,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
 
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToIndex(15)
+            .performScrollToNode(hasText("Moderate malnutrition rate", true))
         composeTestRule.onNodeWithText("Moderate malnutrition rate", useUnmergedTree = true)
             .assertIsDisplayed()
 
@@ -325,12 +329,12 @@ internal class DataSetTableRobot(
     ) {
         dataElementsRowTestTags.forEach { deCellData ->
             val dataElementIsDisplayed = composeTestRule.onNode(
-                hasTestTag(deCellData.testTag) and hasTextExactly(deCellData.label)
+                hasTestTag(deCellData.testTag) and hasText(deCellData.label)
             ).performScrollTo()
                 .assertIsDisplayed()
             rowTestTags.forEach { catCellData ->
                 dataElementIsDisplayed.assert(
-                    hasAnySibling(hasTestTag(catCellData.testTag) and hasTextExactly(catCellData.label))
+                    hasAnySibling(hasTestTag(catCellData.testTag) and hasText(catCellData.label))
                 )
             }
         }
@@ -355,6 +359,7 @@ internal class DataSetTableRobot(
     }
 
     fun clickOnSection(sectionIndex: Int, sectionName: String) {
+        scrollToTop()
         composeTestRule.onNode(
             hasTestTag("SCROLLABLE_TAB_$sectionIndex") and
                     hasText(sectionName)

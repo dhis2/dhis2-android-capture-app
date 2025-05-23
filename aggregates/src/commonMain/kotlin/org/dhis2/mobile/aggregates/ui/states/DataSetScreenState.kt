@@ -22,15 +22,9 @@ internal sealed class DataSetScreenState {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
 
-        override fun currentSection(): String? = when (dataSetSectionTable) {
-            is DataSetSectionTable.Loaded -> dataSetSectionTable.id
-            is DataSetSectionTable.Loading -> null
-        }
+        override fun currentSection(): String? = dataSetSectionTable.id
 
-        override fun currentSectionData(): DataSetSection? = when (dataSetSectionTable) {
-            is DataSetSectionTable.Loaded -> dataSetSections.find { it.uid == dataSetSectionTable.id }
-            is DataSetSectionTable.Loading -> null
-        }
+        override fun currentSectionData(): DataSetSection? = dataSetSections.find { it.uid == dataSetSectionTable.id }
     }
 
     data object Loading : DataSetScreenState() {
@@ -46,30 +40,12 @@ internal sealed class DataSetScreenState {
     abstract fun currentSectionData(): DataSetSection?
 }
 
-internal sealed class DataSetSectionTable {
-    data class Loaded(
-        val id: String,
-        val tableModels: List<TableModel>,
-        val overridingDimensions: OverwrittenDimension,
-    ) : DataSetSectionTable()
-
-    data object Loading : DataSetSectionTable()
-
-    fun tables() = when (this) {
-        Loading -> emptyList()
-        is Loaded -> this.tableModels
-    }
-
-    fun sectionId() = when (this) {
-        Loading -> null
-        is Loaded -> this.id
-    }
-
-    fun overridingDimensions() = when (this) {
-        is Loaded -> overridingDimensions
-        Loading -> null
-    }
-}
+internal data class DataSetSectionTable(
+    val id: String?,
+    val tableModels: List<TableModel>,
+    val overridingDimensions: OverwrittenDimension,
+    val loading: Boolean,
+)
 
 internal data class OverwrittenDimension(
     val overwrittenTableWidth: Map<String, Float> = emptyMap(),

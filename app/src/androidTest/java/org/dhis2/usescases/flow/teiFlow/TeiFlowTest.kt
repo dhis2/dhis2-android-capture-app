@@ -58,6 +58,7 @@ class TeiFlowTest : BaseTest() {
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
             closeEnrollmentAndCheckEvents()
+            composeTestRule.waitForIdle()
             enrollToProgram(ADULT_WOMAN_PROGRAM, enrollmentListDetails)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
             checkPastEventsAreClosed(totalEventsPerEnrollment)
