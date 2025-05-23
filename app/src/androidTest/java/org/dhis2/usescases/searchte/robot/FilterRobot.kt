@@ -149,8 +149,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkFilterCounter(filterCount: String) {
-        waitForView(withId(R.id.filterCounter))
-        onView(
+        waitForView(
             allOf(
                 withId(R.id.filterCounter),
                 isDisplayed(),

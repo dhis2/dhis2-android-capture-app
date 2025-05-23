@@ -418,7 +418,10 @@ class DataSetTest : BaseTest() {
         val cellIdSection22 = "PGRlPndjd2JOMWpSMGFyOjxjb2M+U2RPVUkyeVQ0Nkg="
         val cellId2Section22 = "PGRlPk9LajZ2VjhobVRQOjxjb2M+RE9DN2VtTHp5Umk="
         dataSetTableRobot(composeTestRule) {
-            clickOnSection(disableAutomaticGroupingList[0].sectionIndex, disableAutomaticGroupingList[0].sectionName)
+            clickOnSection(
+                disableAutomaticGroupingList[0].sectionIndex,
+                disableAutomaticGroupingList[0].sectionName
+            )
         }
         tableIsVisible()
         enterDataStep(
@@ -435,7 +438,10 @@ class DataSetTest : BaseTest() {
         )
 
         dataSetTableRobot(composeTestRule) {
-            clickOnSection(disableAutomaticGroupingList[1].sectionIndex, disableAutomaticGroupingList[1].sectionName)
+            clickOnSection(
+                disableAutomaticGroupingList[1].sectionIndex,
+                disableAutomaticGroupingList[1].sectionName
+            )
         }
         tableIsVisible()
 
@@ -453,7 +459,10 @@ class DataSetTest : BaseTest() {
         )
 
         dataSetTableRobot(composeTestRule) {
-            clickOnSection(disableAutomaticGroupingList[2].sectionIndex, disableAutomaticGroupingList[2].sectionName)
+            clickOnSection(
+                disableAutomaticGroupingList[2].sectionIndex,
+                disableAutomaticGroupingList[2].sectionName
+            )
         }
         tableIsVisible()
 
@@ -551,6 +560,7 @@ class DataSetTest : BaseTest() {
 
     private fun dataSetInstanceInChronologicalOrderStep() {
         dataSetDetailRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             checkDatasetListIsSortedChronologically()
         }
     }
@@ -666,17 +676,17 @@ class DataSetTest : BaseTest() {
             returnToDataSetInstanceList()
         }
 
-        filterRobot(composeTestRule) {
-            //Open filter
-            openFilters()
-
-            clickOnFilterBy(filter = "ORG. UNIT")
-            typeOrgUnitField(orgUnit)
-            checkFilterCounter("1")
-        }
-
         dataSetDetailRobot(composeTestRule) {
             assertEquals(6, getListItemCount())
+            filterRobot(composeTestRule) {
+                //Open filter
+                openFilters()
+
+                clickOnFilterBy(filter = "ORG. UNIT")
+                typeOrgUnitField(orgUnit)
+                checkFilterCounter("1")
+            }
+            assertEquals(5, getListItemCount())
         }
 
         filterRobot(composeTestRule) {
