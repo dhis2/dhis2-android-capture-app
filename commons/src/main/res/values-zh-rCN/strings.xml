@@ -250,7 +250,8 @@
 
     <string name="enrollment_data_section_label_V2">%s 数据</string>
     <string name="new_enrollment">新%s</string>
-    <string name="enrolling_ou">加入：</string> <string name="new_event_label">新%s</string>
+    <string name="enrolling_ou">加入：</string>
+    <string name="new_event_label">新%s</string>
     <string name="delete_event_label">删除 %s</string>
     <string name="week_period_span_default_label">星期%d %s到%s</string>
     <string name="enrollment_reopen">重新打开</string>
