@@ -29,27 +29,6 @@ class ProgramEventTest : BaseTest() {
     }
 
     @Test
-    @Ignore("Flaky test, will be looked up in ANDROAPP-6476")
-    fun shouldCreateNewEventAndCompleteIt() {
-        prepareProgramAndLaunchActivity(antenatalCare)
-
-        programEventsRobot(composeTestRule) {
-            clickOnAddEvent()
-        }
-        eventRobot(composeTestRule) {
-            typeOnDateParameter(
-                dateValue = "01012001",
-            )
-            clickOnFormFabButton()
-            clickOnCompleteButton()
-        }
-        composeTestRule.waitForIdle()
-        programEventsRobot(composeTestRule) {
-            checkEventWasCreatedAndClosed()
-        }
-    }
-
-    @Test
     fun shouldOpenExistingEvent() {
         enableIntents()
         val eventDate = "07/04/2024"

@@ -23,12 +23,13 @@ class TestingDatabase : BaseTest() {
         const val password = "Android123"
     }
 
-    @Ignore
+    @Ignore("This tests exports the Database to SD card, uncomment to use it locally")
     @Test
     fun copyDatabase() {
 
         /* Download db */
-        val d2 = D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(ApplicationProvider.getApplicationContext<AppTest>()))
+        val d2 =
+            D2Manager.blockingInstantiateD2(ServerModule.getD2Configuration(ApplicationProvider.getApplicationContext<AppTest>()))
         d2?.userModule()
             ?.logIn(username, password, url)
             ?.blockingGet()
