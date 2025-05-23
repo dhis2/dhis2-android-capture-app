@@ -15,8 +15,6 @@ import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
 import org.dhis2.commons.data.tuples.Trio
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.decrement
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.increment
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -203,10 +201,10 @@ class LoginViewModel(
 
     private fun logIn() {
         _loginProgressVisible.postValue(true)
-        increment()
         disposable.add(
             Observable.just(view.initLogin())
                 .flatMap { userManager ->
+                    LoginIdlingResource.increment()
                     this.userManager = userManager
                     userManager.logIn(
                         userName.value!!.trim { it <= ' ' },
@@ -223,8 +221,11 @@ class LoginViewModel(
                             }
                         }
                 }
+                .doOnError {
+                    LoginIdlingResource.decrement()
+                }
                 .doOnTerminate {
-                    decrement()
+                    LoginIdlingResource.decrement()
                     _loginProgressVisible.postValue(false)
                 }
                 .subscribeOn(schedulers.io())

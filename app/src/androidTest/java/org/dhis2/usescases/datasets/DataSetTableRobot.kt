@@ -6,6 +6,8 @@ import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnySibling
@@ -49,6 +51,7 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
 import org.dhis2.ui.toColor
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.CellSelected
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.cellTestTag
@@ -106,6 +109,16 @@ internal class DataSetTableRobot(
 
     fun scrollToTop(){
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(0)
+    }
+
+    fun assertCellSelected(tableId: String, cellId: String) {
+        composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true).assert(
+            SemanticsMatcher.expectValue(CellSelected, true),
+        )
+    }
+
+    fun assertCellDisabled(tableId: String, cellId: String) {
+        composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId)).assertIsNotEnabled()
     }
 
     fun clickOnEditValue() {
@@ -204,6 +217,7 @@ internal class DataSetTableRobot(
         )
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun assertCellHasValue(
         tableId: String,
         cellId: String,
@@ -212,6 +226,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
         composeTestRule.waitForIdle()
         scrollToItemWithTag(cellTestTag(tableId, cellId))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(expectedValue))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), true)
             .onChildren()
             .filter(hasTestTag("CELL_VALUE_TEST_TAG"))

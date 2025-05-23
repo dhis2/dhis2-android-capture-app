@@ -1,9 +1,22 @@
 package org.dhis2.usescases.searchte.robot
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isDialog
+import androidx.compose.ui.test.isEditable
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
+import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
@@ -36,6 +49,10 @@ fun filterRobot(
 }
 
 class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
+
+    fun resetFilters() {
+        onView(withId(R.id.clear_filter)).perform(click())
+    }
 
     fun openFilters() {
         onView(withId(R.id.filter)).perform(click())
@@ -108,6 +125,17 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withId(R.id.acceptBtn)).perform(click())
     }
 
+    fun chooseDate(date: String) {
+        composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription(
+            label = "text",
+            substring = true,
+            useUnmergedTree = true,
+        ).performClick()
+        composeTestRule.onNodeWithContentDescription("Date", substring = true).performTextReplacement(date)
+        composeTestRule.onNodeWithText("OK", true).performClick()
+    }
+
     fun checkTEIWithOrgUnit(orgUnit: String) {
         onView(withId(R.id.scrollView))
             .check(
@@ -125,8 +153,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkFilterCounter(filterCount: String) {
-        waitForView(withId(R.id.filterCounter))
-        onView(
+        waitForView(
             allOf(
                 withId(R.id.filterCounter),
                 isDisplayed(),
@@ -157,8 +184,8 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
-    fun clickOnLastMonthPeriodFilter() {
-        onView(withId(R.id.last_month)).perform(click())
+    fun clickOnThisMonthPeriodFilter() {
+        onView(withId(R.id.this_month)).perform(click())
     }
 
     fun clickOnAnytimePeriodFilter() {

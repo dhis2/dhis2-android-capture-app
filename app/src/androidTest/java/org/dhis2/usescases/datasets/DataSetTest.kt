@@ -44,6 +44,7 @@ class DataSetTest : BaseTest() {
         createDataSetInstanceStep(
             period = period,
             orgUnit = orgUnit,
+            openFuturePeriods = 9,
         )
 
         tableIsVisible()
@@ -63,14 +64,10 @@ class DataSetTest : BaseTest() {
             rowIndex = 0,
             value = "12.0",
         )
+        checkGreyFields()
         reenterDataSetToCheckValueSavedStep()
 
-
-        // Step - Test combination of filters - TODO Move the step after creating dataset instance
-        // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
-        // Period filter from - to specific period where instances exist
-        // Sync move after create dataset instance and check the filter afterwards
-        // checkFilterCombination(orgUnit)
+        checkFilterCombination(orgUnit)
     }
 
     @Test
@@ -421,7 +418,10 @@ class DataSetTest : BaseTest() {
         val cellIdSection22 = "PGRlPndjd2JOMWpSMGFyOjxjb2M+U2RPVUkyeVQ0Nkg="
         val cellId2Section22 = "PGRlPk9LajZ2VjhobVRQOjxjb2M+RE9DN2VtTHp5Umk="
         dataSetTableRobot(composeTestRule) {
-            clickOnSection(disableAutomaticGroupingList[0].sectionIndex, disableAutomaticGroupingList[0].sectionName)
+            clickOnSection(
+                disableAutomaticGroupingList[0].sectionIndex,
+                disableAutomaticGroupingList[0].sectionName
+            )
         }
         tableIsVisible()
         enterDataStep(
@@ -438,7 +438,10 @@ class DataSetTest : BaseTest() {
         )
 
         dataSetTableRobot(composeTestRule) {
-            clickOnSection(disableAutomaticGroupingList[1].sectionIndex, disableAutomaticGroupingList[1].sectionName)
+            clickOnSection(
+                disableAutomaticGroupingList[1].sectionIndex,
+                disableAutomaticGroupingList[1].sectionName
+            )
         }
         tableIsVisible()
 
@@ -456,7 +459,10 @@ class DataSetTest : BaseTest() {
         )
 
         dataSetTableRobot(composeTestRule) {
-            clickOnSection(disableAutomaticGroupingList[2].sectionIndex, disableAutomaticGroupingList[2].sectionName)
+            clickOnSection(
+                disableAutomaticGroupingList[2].sectionIndex,
+                disableAutomaticGroupingList[2].sectionName
+            )
         }
         tableIsVisible()
 
@@ -554,6 +560,7 @@ class DataSetTest : BaseTest() {
 
     private fun dataSetInstanceInChronologicalOrderStep() {
         dataSetDetailRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             checkDatasetListIsSortedChronologically()
         }
     }
@@ -664,33 +671,68 @@ class DataSetTest : BaseTest() {
     private fun checkFilterCombination(
         orgUnit: String,
     ) {
-        filterRobot(composeTestRule) {
-            //Open filter
-            openFilters()
 
-            //Filter by org unit Ngelehun CHC
-            clickOnFilterBy(filter = "ORG. UNIT")
-//            clickOnSortByField(orgUnitFilter) this icons are not visible but can b e pressed do we need them in dataset?
-            typeOrgUnitField(orgUnit)
-            checkFilterCounter("1")
+        dataSetTableRobot(composeTestRule) {
+            returnToDataSetInstanceList()
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(11, getListItemCount())
+            assertEquals(6, getListItemCount())
+            filterRobot(composeTestRule) {
+                //Open filter
+                openFilters()
+
+                clickOnFilterBy(filter = "ORG. UNIT")
+                typeOrgUnitField(orgUnit)
+                checkFilterCounter("1")
+            }
+            assertEquals(5, getListItemCount())
         }
 
         filterRobot(composeTestRule) {
-            //Filter by period Last Month
+            //Filter by peiod
             clickOnFilterBy(filter = "Period")
-            clickOnLastMonthPeriodFilter()
+            clickOnFromToDate()
+            chooseDate("08082024")
+            chooseDate("09092025")
             checkFilterCounter("2")
-
-            clickOnAnytimePeriodFilter()
-            checkFilterCounter("1")
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(11, getListItemCount())
+            assertEquals(2, getListItemCount())
+        }
+
+        filterRobot(composeTestRule) {
+            clickOnFilterBy(filter = "Sync")
+            clickOnNotSync()
+            checkFilterCounter("3")
+        }
+
+        dataSetDetailRobot(composeTestRule) {
+            assertEquals(1, getListItemCount())
+        }
+
+        filterRobot(composeTestRule) {
+            resetFilters()
+        }
+    }
+
+    private fun checkGreyFields() {
+        dataSetTableRobot(composeTestRule) {
+            val tableId = "dzjKKQq0cSO"
+            val firstCell = "PGRlPnBpa096aXlDWGJNOjxjb2M+UHJsdDBDMVJGMHM="
+            val greyCell1 = "PGRlPnBpa096aXlDWGJNOjxjb2M+cHNid3AzQ1FFaHM="
+            val nextCell = "PGRlPnBpa096aXlDWGJNOjxjb2M+VjZMNDI1cFQzQTA="
+            val greyCell2 = "PGRlPnBpa096aXlDWGJNOjxjb2M+aEVGS1NzUFY1ZXQ="
+            val nextLineCell = "PGRlPk8wNW1BQnlPZ0F2Ojxjb2M+UHJsdDBDMVJGMHM="
+            clickOnCell(tableId, firstCell)
+            assertInputDialogIsDisplayed()
+            pressOnInputDialogNext()
+            assertCellDisabled(tableId, greyCell1)
+            assertCellSelected(tableId, nextCell)
+            pressOnInputDialogNext()
+            assertCellDisabled(tableId, greyCell2)
+            assertCellSelected(tableId, nextLineCell)
         }
     }
 
@@ -698,11 +740,13 @@ class DataSetTest : BaseTest() {
         orgUnit: String,
         period: String,
         catCombo: String? = null,
+        openFuturePeriods: Int? = null,
     ) {
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
         dataSetInitialRobot {
+            checkActionInputIsNotDisplayed()
             clickOnInputOrgUnit()
         }
 
@@ -711,10 +755,12 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetInitialRobot {
+            checkActionInputIsNotDisplayed()
             clickOnInputPeriod()
         }
 
         reportPeriodSelectorRobot(composeTestRule) {
+            openFuturePeriods?.let { checkFuturePeriodAvailable(it) }
             selectReportPeriod(period)
         }
 
@@ -726,6 +772,7 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetInitialRobot {
+            checkActionInputIsDisplayed()
             clickOnActionButton()
         }
     }
