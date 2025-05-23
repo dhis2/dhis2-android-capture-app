@@ -21,7 +21,6 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot
 import org.dhis2.common.preferences.PreferencesRobot
 import org.dhis2.common.rules.DisableAnimations
 import org.dhis2.commons.featureconfig.model.Feature
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton
 import org.dhis2.commons.orgunitselector.OrgUnitIdlingResource
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
@@ -115,7 +114,6 @@ open class BaseTest {
 
     private val idlingResources = listOf(
         EventListIdlingResourceSingleton.countingIdlingResource,
-        CountingIdlingResourceSingleton.countingIdlingResource,
         FormCountingIdlingResource.countingIdlingResource,
         TeiDataIdlingResourceSingleton.countingIdlingResource,
         EventIdlingResourceSingleton.countingIdlingResource,
