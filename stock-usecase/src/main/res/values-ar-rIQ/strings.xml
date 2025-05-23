@@ -1,0 +1,11 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">الرئيسية</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="delete">حذف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="from">من</string>
+    <string name="content_desc_search">البحث</string>
+    <string name="confirm_transaction_label">تأكيد</string>
+    <string name="done_task">الرئيسية</string>
+    <string name="count">العدد</string>
+    </resources>

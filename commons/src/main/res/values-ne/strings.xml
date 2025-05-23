@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">स्वीकार</string>
+    <string name="cancel">रद्द गर्नुहोस्</string>
+    <string name="search">खोज</string>
+    <string name="filters_title_period">अबधि</string>
+    <string name="filters_title_status">स्थिती</string>
+    <string name="filters_title_assigned">मलाई निर्दिष्ट गरिएको	</string>
+    <string name="filters_title_date">मिति</string>
+    <string name="daily_period">दैनिक</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">खोल्नुहोस्</string>
+    <string name="enrollment_status_active">खोल्नुहोस्</string>
+    <!-- Periods -->
+    <string name="filter_period_today">आज</string>
+    <string name="filter_period_yesterday">हिजो</string>
+    <string name="filter_period_other">अरु</string>
+    <string name="period">अबधि</string>
+    <string name="DAILY">दैनिक</string>
+    <string name="interval_yesterday">हिजो</string>
+
+    <string name="overdue_today">आज</string>
+    <string name="period_daily_title">दैनिक</string>
+    </resources>

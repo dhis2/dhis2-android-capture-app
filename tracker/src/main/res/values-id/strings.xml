@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="empty_relationships">Tidak ada hubungan, klik \"+\" untuk menambahkan yang baru.</string>
+    <string name="relationship">Hubungan</string>
 </resources>

@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_data">Нет данных</string>
+    <string name="change_calendar_view">Изменить вид календаря</string>
+    <string name="clear">очистить</string>
     <string name="action_accept">Принять</string>
     <string name="next">Следующая</string>
     <string name="cancel">Отмена</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
+    <string name="clear_all">очистить выбор</string>
+    <string name="navigation_list_view">В виде списка</string>
+    <string name="navigation_table_view">В виде таблицы</string>
+    <string name="navigation_map_view">В виде карты</string>
     <string name="navigation_analytics">Аналитика</string>
+    <string name="navigation_tasks">Задачи</string>
     <string name="navigation_programs">Программы</string>
     <string name="navigation_relationships">Зависимости</string>
+    <string name="navigation_relations">Связи</string>
     <string name="navigation_notes">Заметки</string>
     <string name="navigation_data_entry">Ввод данных</string>
     <string name="navigation_tei_data">Детали</string>
@@ -17,13 +25,21 @@
     <string name="search">Поиск</string>
     <string name="events">события/й</string>
     <string name="data_sets">Наборы данных</string>
+    <string name="info">Информация</string>
     <string name="done">Готово</string>
 
+    <!-- Filters -->
+    <string name="filters_active">Применение фильтров</string>
+    <string name="filters_disabled">Фильтры не применены</string>
     <string name="filters_title_period">Период</string>
     <string name="filters_title_org_unit">Орг. единица</string>
     <string name="filters_title_sorting">Сортировка</string>
     <string name="filters_title_status">Статус</string>
+    <string name="filters_title_state">Синхронизация</string>
+    <string name="filters_title_assigned">Назначен мне</string>
     <string name="filters_title_date">Дата</string>
+    <string name="filters_title_event_label_date">%s дата</string>
+    <string name="filters_title_event_label_status">%s статус</string>
     <string name="select_period">Выбрать тип периода</string>
     <string name="daily_period">Ежедневно</string>
     <string name="weekly">Еженедельно</string>
@@ -37,13 +53,28 @@
     <string name="quarterly">Ежеквартально</string>
     <string name="six_monthly">Раз в полугодие</string>
     <string name="six_monthly_april">По шесть месяцев начиная с апреля</string>
+    <string name="six_monthly_july">Раз в полгода, начиная с июля</string>
+    <string name="six_monthly_nov">Раз в полгода, начиная с ноября</string>
     <string name="yearly">Ежегодно</string>
     <string name="financial_year_april">Финансовый год начиная с апреля</string>
     <string name="financial_year_july">Финансовый год начиная с июля</string>
     <string name="financial_year_october">Финансовый год начиная с октября</string>
+    <string name="financial_year_november">Финансовый год начиная с ноября</string>
+
+
+
+    <!-- State -->
+    <string name="state_synced">Синхронизация</string>
+    <string name="state_to_post">Отправить</string>
+    <string name="state_to_update">Обновить</string>
+    <string name="state_to_delete">Удалить</string>
     <string name="state_error">Ошибка</string>
     <string name="state_warning">Предупреждение</string>
+    <string name="state_uploading">Загрузка</string>
     <string name="state_relationship">Зависимость</string>
+    <string name="sent_by_sms">Отправлено по SMS</string>
+    <string name="sync_by_sms">Синхронизировано по SMS</string>
+
     <!-- Status -->
     <string name="filter_event_status_open">Открыть</string>
     <string name="filter_event_status_schedule">Расписание</string>
@@ -56,45 +87,226 @@
     <string name="enrollment_status_active">Открыть</string>
     <string name="enrollment_status_completed">Завершенный</string>
     <string name="enrollment_status_cancelled">Отмененный</string>
+    <string name="record_marked_for_deletion">Эта запись помечена на удаление. Вы не можете получить к ней доступ.</string>
+
     <!-- Periods -->
     <string name="filter_period_today">Сегодня</string>
     <string name="filter_period_yesterday">Вчера</string>
+    <string name="filter_period_tomorrow">Завтра</string>
     <string name="filter_period_this_week">Эта неделя</string>
     <string name="filter_period_last_week">Прошлая неделя</string>
+    <string name="filter_perdior_next_week">Следующая неделя</string>
     <string name="filter_period_this_month">Этот месяц</string>
     <string name="filter_period_last_month">Последний месяц</string>
+    <string name="filter_period_next_month">Следующий месяц</string>
+    <string name="filter_period_form_to">От - к</string>
     <string name="filter_period_other">Другое</string>
+    <string name="filter_period_any">Любое время</string>
+    <string name="working_list_default_label">Рабочий список %s</string>
+    <string name="filter_period_last_n_days">Последние %d дней</string>
     <string name="filter_period_this_year">Этот год</string>
     <string name="filter_period_this_bimonth">Этот бимесяц</string>
     <string name="filter_period_last_bimonth">Прошлый бимесяц</string>
     <string name="filter_period_this_quarter">Этот квартал</string>
     <string name="filter_period_last_quarter">Последний квартал</string>
+    <string name="filter_period_six_months">Эти шесть месяцев</string>
+    <string name="filter_period_last_six_months">Прошлые шесть месяцев</string>
+    <string name="filter_period_last_n_years">Последние%d лет</string>
+    <string name="filter_period_last_n_months">Последние %d месяцев</string>
+    <string name="filter_period__last_n_weeks">Последние %d недель</string>
     <string name="filter_period_weeks_this_year">Недели этого года</string>
     <string name="filter_period_months_this_year">Месяцы этого года</string>
     <string name="filter_period_bimonths_this_year">Бимесяцы этого года</string>
     <string name="filter_period_quarters_this_year">Кварталы этого года</string>
     <string name="filter_period_months_last_year">Месяцы последнего года</string>
+    <string name="filter_period_quarters_last_year">Кварталы прошлого года</string>
     <string name="filter_period_last_year">Прошлый год</string>
+    <string name="filter_period_this_biweek">Раз в эти две недели</string>
+    <string name="filter_period_last_biweek">Прошлые две недели</string>
+    <string name="filter_period_last_n_bimonths">Прошлые%d двухмесячные периоды</string>
+    <string name="filter_period_last_n_quarters">Прошлые %d кварталов</string>
+    <string name="last_n_months">Последние %d месяцев</string>
     <string name="filter_period_this_financial_year">Этот финансовый год</string>
     <string name="filter_period_last_financial_year">Прошлый финансовый год</string>
+    <string name="filter_period_last_n_financial_years">Прошлых %d финансовых лет</string>
     <string name="period">Период</string>
     <string name="DAILY">Ежедневно</string>
     <string name="WEEKLY">Еженедельно</string>
     <string name="MONTHLY">Ежемесячно</string>
     <string name="YEARLY">Ежегодно</string>
 
+    <!-- Sync -->
+    <string name="filter_sync_synced">Синхронизировано</string>
+    <string name="filter_sync_not_synced">Не синхронизировано</string>
+    <string name="filter_sync_error">Ошибка синхронизации</string>
+    <string name="filter_sync_sms">Синхронизированное SMS</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">сейчас</string>
+    <string name="interval_minute_ago">%d мин. назад</string>
+    <string name="interval_hour_ago">%d часов назад</string>
     <string name="interval_yesterday">Вчера</string>
 
     <!-- Sections -->
     <string name="section_feedback">Обратная связь</string>
     <string name="section_indicators">Индикаторы</string>
     <string name="section_charts">Диаграммы</string>
+    <string name="section_charts_indicators">Диаграммы и индикаторы</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">Зарегистрирован в </string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">Пароль отсутствует. Пожалуйста, введите пароль.</string>
+    <string name="login_error_null_username">Имя пользователя отсутствует. Пожалуйста, введите имя пользователя.</string>
+    <string name="login_error_dhis_version">На этом сервере установлена версия dhis, отличная от 2.29. Обновите версию своего сервера или используйте тестовую среду для продолжения работы.</string>
+    <string name="login_error_dhis_version_v2">На этом сервере установлена версия DHIS2, отличная от %s. Обновите версию сервера или обратитесь к администратору.</string>
+    <string name="login_error_unsuccessful_response">Что-то пошло не так. Пожалуйста, проверьте правильность URL-адреса сервера, имени пользователя и пароля и повторите попытку.</string>
+    <string name="login_error_error_response">Извините! Что-то не получилось на стороне сервера.</string>
+    <string name="login_error_no_dhis_instance">Указанный URL-адрес не является сервером DHIS2.</string>
+    <string name="login_error_bad_credentials">Имя пользователя или пароль неверны</string>
+    <string name="login_error_unknown_host">Неизвестный сервер</string>
+    <string name="online_search_parsing_error">Ошибка при отображении результатов</string>
+    <string name="error_unexpected">Что-то неожиданно пошло не так.</string>
+    <string name="error_too_manu_org_units">Ваш пользователь имеет более одной корневой организационной единицы. Пересмотрите свою конфигурацию или обратитесь к администратору.</string>
+    <string name="error_many_requests">В данный момент сервер немного занят. Пожалуйста, попробуйте немного позже.</string>
+    <string name="error_already_authenticated">Пользователь уже вошел в систему.</string>
+    <string name="error_already_executed">Запрос уже выполнен.</string>
+    <string name="error_api_invalid_query">Запрос сервера недействителен.</string>
+    <string name="error_app_name_not_set">Имя приложения не задано.</string>
+    <string name="error_app_version_not_set">Версия приложения не установлена.</string>
+    <string name="error_access_keystore">Невозможно получить доступ к хранилищу ключей устройства.</string>
+    <string name="error_create_existing_error">Создание прервано. Объект уже существует.</string>
+    <string name="error_delete_non_existing_object">Удаление прервано. Объект не существует.</string>
+    <string name="error_reserve_value_on_server">Мы не смогли зарезервировать значения для этих записей. Пожалуйста, свяжитесь с вашим администратором.</string>
+    <string name="error_export_login">Пожалуйста, войдите в систему, чтобы экспортировать базу данных.</string>
+    <string name="error_export_encrypted">Экспорт зашифрованной базы данных не поддерживается.</string>
+    <string name="error_import_exist">Вы импортируете уже существующую базу данных.</string>
+    <string name="error_import_logout">Пожалуйста, выйдите из системы, чтобы импортировать новую базу данных.</string>
+    <string name="error_import_version">Версия импортируемой базы данных выше поддерживаемой.</string>
+    <string name="error_file_not_found">Файл не найден.</string>
+    <string name="error_file_resize">Произошла ошибка при изменении размера изображения.</string>
+    <string name="error_user_no_authenticated">Нет пользователя, прошедшего аутентификацию.</string>
+    <string name="error_user_no_authenticated_offline">Нет пользователя, прошедшего аутентификацию в автономном режиме.</string>
+    <string name="error_different_offline_user">Вы пытаетесь войти в систему в автономном режиме под другим пользователем.</string>
+    <string name="error_object_update">Объект не удалось обновить.</string>
+    <string name="error_object_insert">Объект не удалось вставить.</string>
+    <string name="error_ownership_access">У вас нет доступа.</string>
+    <string name="error_null_url">Отсутствует URL-адрес сервера. Пожалуйста, введите URL.</string>
+    <string name="error_server_malformed">URL-адрес сервера сформирован неправильно. Пожалуйста, проверьте его.</string>
+    <string name="error_socket_timeout">Серверу потребовалось слишком много времени для ответа. Мы отменили запрос. </string>
+    <string name="error_relationship_updated">Связь не может быть обновлена.</string>
+    <string name="error_too_many_periods">Слишком много периодов.</string>
+    <string name="error_url_not_found">Мы не смогли найти URL-адрес. Пожалуйста, проверьте его.</string>
+    <string name="error_account_disabled">Ваша учетная запись пользователя была отключена. Если это ошибка, обратитесь к своему администратору.</string>
+    <string name="error_account_locked">Ваша учетная запись заблокирована. Если это ошибка, обратитесь к своему администратору.</string>
+    <string name="error_set_value">Значение не удалось установить.</string>
+    <string name="error_ssl">Возникла проблема с сертификатами сервера. Пожалуйста, свяжитесь с вашим администратором.</string>
+    <string name="error_min_attributes">Для выполнения поиска недостаточно атрибутов. Пожалуйста, уточните поиск, добавив больше атрибутов.</string>
+    <string name="error_org_unit_scope">Онлайн-поиск доступен только для подразделений вашей организации по поиску пользователей.</string>
+    <string name="error_server_unavailable">Сервер в настоящее время недоступен. Повторите попытку позже.</string>
+    <string name="error_no_internet_connection">Вы находитесь оффлайн. Подключитесь к Интернету и повторите попытку.</string>
+    <string name="unsupported_field_description">Это поле недоступно для мобильного заполнения</string>
+    <string name="add_image">Добавить изображение</string>
+    <string name="add_signature">Добавить подпись</string>
+    <string name="add_file">Добавить файл</string>
     <string name="action_ok">Ok</string>
+    <string name="enable_location_message">Местоположение вашего устройства отключено. Пожалуйста, включите его для получения координат</string>
+    <string name="keep_editing">Продолжить редактирование</string>
+    <string name="not_now">Не сейчас</string>
+    <string name="review">Просмотреть</string>
     <string name="complete">Завершенный</string>
     <string name="default_table_header_label">Значение</string>
     <string name="discard_changes">Сбросить изменения</string>
     <string name="default_empty_dataset_section_label">Данные</string>
+    <string name="title_network_connection_unavailable">Сетевое подключение недоступно</string>
+    <string name="msg_network_connection_maps">Для использования карт необходимо подключение к Интернету.</string>
+
     <string name="overdue_today">Сегодня</string>
+    <string name="overdue_due_today">К выполнению Сегодня</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d просроченный день</item>
+        <item quantity="few">%d дни просрочки</item>
+        <item quantity="many">%d дни просрочки</item>
+        <item quantity="other">%d дни просрочки</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="one">%d просроченный месяц</item>
+        <item quantity="few">%d просроченные месяцы</item>
+        <item quantity="many">%d просроченные месяцы</item>
+        <item quantity="other">%d просроченные месяцы</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="one">%d год просрочки</item>
+        <item quantity="few">%d просроченные годы</item>
+        <item quantity="many">%d просроченные годы</item>
+        <item quantity="other">%d просроченные годы</item>
+    </plurals>
+
+    <plurals name="schedule_days">
+        <item quantity="one">В день %d </item>
+        <item quantity="few">В %d дней</item>
+        <item quantity="many">В %d дней</item>
+        <item quantity="other">Через %d дней</item>
+    </plurals>
+    <plurals name="schedule_months">
+        <item quantity="one">В %d месяц</item>
+        <item quantity="few">Через %d месяцев</item>
+        <item quantity="many">Через %d месяцев</item>
+        <item quantity="other">Через %d месяцев</item>
+    </plurals>
+    <plurals name="schedule_years">
+        <item quantity="one">В %d году</item>
+        <item quantity="few">Через %d лет</item>
+        <item quantity="many">Через %d лет</item>
+        <item quantity="other">Через %d лет</item>
+    </plurals>
+
+    <string name="open_with">Открыть с помощью</string>
+
+    <string name="file_downloaded">Файл успешно загружен</string>
+
+
+    <string name="enrollment_data_section_label_V2">%s данных</string>
+    <string name="enrollment_date_V2">%s дата</string>
+    <string name="enrollment_status">%s статус</string>
+    <string name="break_glass_dialog_description_V2">Вы должны указать причину для проверки %s в этой защищенной программе. Все действия будут регистрироваться.</string>
+    <string name="break_glass_reason_V2">Причина для проверки %s</string>
+    <string name="edition_enrollment_is_no_open_V2">Эти данные нельзя редактировать, поскольку %s завершен или отменен.</string>
+    <string name="enrollment_completed_V2">%s завершено</string>
+    <string name="enrollment_cancelled_V2">%s отменено</string>
+    <string name="new_enrollment">Новый %s</string>
+    <string name="enrolling_ou">Зарегистрирован в:</string>
+    <string name="program_selector_V2">Программа %s</string>
+    <string name="more_enrollments">Больше регистраций</string>
+    <string name="remove_from">Удалить из</string>
+    <string name="refresh_this_record">Обновить эту запись</string>
+    <string name="view_timeline">Просмотр хронологии</string>
+    <string name="group_by_stage">Группировать по этапам</string>
+
+
+    <string name="event_label_completed">%s завершено</string>
+    <string name="event_label_created">%s создано</string>
+    <string name="new_event_label">Новый %s</string>
+    <string name="event_label_date">%s дата</string>
+    <string name="delete_event_label">Удалить %s</string>
+    <string name="event_label_was_deleted">%s успешно удалено</string>
+    <string name="delete_event_label_error">Этот %s еще не создан.</string>
+    <string name="event_label_was_skipped">Этот %s был помечен как пропущенный</string>
+    <string name="confirm_delete_event_label">Вы уверены, что хотите удалить этот %s?</string>
+    <string name="event_label_updated">%s обновлено</string>
+    <string name="event_label_date_in_future_message">У этого %s не может быть даты в будущем. Пожалуйста, измените ее.</string>
+    <string name="failed_insert_event_label">Не удалось вставить новый %s</string>
+    <string name="week_period_span_default_label">Неделя %d %s до %s</string>
+    <string name="group_event_label_by_stage">Группировать %s по этапам</string>
+    <string name="show_event_label_timeline">Показать хронологию %s </string>
+    <string name="empty_tei_event_label_add">Нет зарегистрированных %s, нажмите \"+\", чтобы добавить новый.</string>
+    <string name="empty_tei_event_label_no_add">Нет зарегистрированных %s.</string>
+    <string name="enrollment_date_edition_warning_event_label">Есть запланированные %s, которые не будут перенесены.</string>
+    <string name="enrollment_reopen">снова открыть</string>
+
+    <string name="sync_retry">Повторить синхронизацию</string>
+    <string name="syncing">Синхронизация...</string>
     <string name="remove">Убрать</string>
     <string name="period_daily_title">Ежедневно</string>
     <string name="period_weekly_title">Неделя</string>
@@ -102,4 +314,5 @@
     <string name="period_monthly_title">Месяц</string>
     <string name="period_quarter_title">Квартал</string>
     <string name="period_yearly_title">Год</string>
-    </resources>
+    <string name="no_periods">Нет доступных периодов </string>
+</resources>

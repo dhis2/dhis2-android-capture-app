@@ -1,0 +1,11 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="discard">ඉවත ලන්න</string>
+    <string name="password">රහස්‍ය පදය</string>
+    <string name="delete">ඉවත් කරන්න</string>
+    <string name="prompt_password">රහස්‍ය පදය</string>
+    <string name="content_desc_search">සොයන්න</string>
+    <string name="confirm_transaction_label">තහවුරු කරන්න</string>
+    <string name="invalid_quantity">අවලංගු</string>
+    <string name="action_sync">යවන්න</string>
+    <string name="count">ගණන</string>
+    </resources>

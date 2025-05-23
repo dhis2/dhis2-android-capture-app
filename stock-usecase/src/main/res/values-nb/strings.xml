@@ -1,0 +1,35 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Hjem</string>
+    <string name="action_settings">Innstillinger</string>
+
+    <string name="discard">Forkast</string>
+    <string name="sign_in">Logg inn</string>
+    <string name="username">Brukernavn</string>
+    <string name="password">Passord</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Fortsett</string>
+    <string name="delete">Slett</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Avbryt</string>
+    <string name="from">Fra</string>
+    <string name="language">Språk</string>
+    <string name="logout">Logg ut</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Element</string>
+    <string name="prompt_email">E-post</string>
+    <string name="prompt_password">Passord</string>
+    <string name="action_sign_in_short">Logg inn</string>
+    <string name="content_desc_search">Søk</string>
+    <string name="confirm_transaction_label">Bekreft</string>
+    <string name="invalid_quantity">Ugyldig</string>
+    <string name="online_search_parsing_error">Feil under analyse av resultater</string>
+    <string name="done_task">Hjem</string>
+    <string name="back">Tilbake</string>
+    <string name="no_conflicts_message">Det er ingen konflikter for dette programmet</string>
+    <string name="action_sync">Send</string>
+    <string name="count">Antall</string>
+    <string name="formatting_error">Formateringsfeil</string>
+    <string name="invalid_possitive_zero">Bare positive siffer eller null er tillatt</string>
+    </resources>

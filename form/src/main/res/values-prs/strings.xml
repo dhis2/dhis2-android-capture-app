@@ -1,4 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error">خطا</string>
+    <string name="required">ضروری</string>
+    <string name="date">تاریخ</string>
+    <string name="hint_year">سالانه</string>
+    <string name="hint_month">ماه ها</string>
+    <string name="hint_day">روزها</string>
+    <string name="polygon">چند ضلعی</string>
+    <string name="latitude">عرض البلد</string>
+    <string name="longitude">طول البلد</string>
+    <string name="due_date">موعد مقرر</string>
+    <string name="complete">تکمیل</string>
+    <string name="share">اشتراک</string>
     <string name="action_close">بستن</string>
-</resources>
+    <string name="incident_date">تاریخ رویداد/ واقعه</string>
+    <string name="download">دانلود</string>
+    <string name="coordinates">ځانګړتیاوې</string>
+    <string name="no_options">هیچ گزینه موجود نیست</string>
+    </resources>

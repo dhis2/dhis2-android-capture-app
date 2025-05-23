@@ -40,6 +40,14 @@
     <string name="filters_title_assigned">Toegewezen aan mij</string>
     <string name="filters_title_date">Datum</string>
     <string name="filter_follow_up_label">Gevolgd %s</string>
+    <string name="daily_period">Dagelijks</string>
+    <string name="weekly">Wekelijks</string>
+    <string name="bi_weekly">Tweewekelijks</string>
+    <string name="monthly">Maandelijks</string>
+    <string name="bi_monthly">Tweemaandelijks</string>
+    <string name="quarterly">Driemaandelijks</string>
+    <string name="six_monthly">Zesmaandelijks</string>
+    <string name="yearly">Jaarlijks</string>
     <!-- State -->
     <string name="state_synced">Synchroniseren</string>
     <string name="state_to_post">Versturen</string>
@@ -194,6 +202,7 @@
     <string name="error_invalid_characters">Er zijn ongeldige tekens in de vraag. Vraag de beheerder om de serverconfiguratie te verifiëren (relaxedQueryChars,...).</string>
     <string name="unsupported_field_description">Dit veld is niet beschikbaar voor mobiel vastleggen</string>
     <string name="add_image">Voeg afbeelding toe</string>
+    <string name="add_file">Bestand toevoegen</string>
     <string name="action_ok">OK</string>
     <string name="enable_location_message">De locatie van uw apparaat is losgekoppeld. Schakel het in om coördinaten vast te leggen</string>
     <string name="keep_editing">Blijf bewerken</string>
@@ -206,4 +215,16 @@
     <string name="title_network_connection_unavailable">Netwerkverbinding niet beschikbaar</string>
     <string name="msg_network_connection_maps">Voor het gebruik van maps is een internetverbinding vereist.</string>
 
+    <string name="overdue_today">Vandaag</string>
+    <string name="open_with">Openen met</string>
+
+    <string name="enrolling_ou">Ingeschreven in:</string> <string name="delete_event_label">Verwijder %s</string>
+    <string name="week_period_span_default_label">Week %d %s tot %s</string>
+    <string name="enrollment_reopen">heropenen</string>
+
+    <string name="syncing">Synchroniseren...</string>
+    <string name="remove">Verwijderen</string>
+    <string name="period_daily_title">Dagelijks</string>
+    <string name="period_weekly_title">Week</string>
+    <string name="period_yearly_title">Jaar</string>
     </resources>

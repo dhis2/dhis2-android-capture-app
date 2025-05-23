@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Mọi thứ đều ổn!</string>
-    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
+    <string name="default_column_label">Giá trị</string>
+    <string name="total_header_label">Tổng</string>
+    <string name="input_age_date_of_birth">Ngày sinh</string>
+    <string name="input_age">Tuổi</string>
+    <string name="input_age_or">hoặc</string>
+    <string name="input_action_accept">Chấp nhận</string>
+    <string name="input_action_cancel">Hủy</string>
+    <string name="no_results_found">Không tìm thấy kết quả nào</string>
+    <string name="action_done">Hoàn thành</string>
+    <string name="input_coordinate_latitude">Vĩ độ</string>
+    <string name="input_coordinate_longitude">Kinh độ</string>
+    <string name="input_coordinate_add_location">Thêm vị trí</string>
+    <string name="input_not_supported">Không được hỗ trợ</string>
+    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="complete">Hoàn tất</string>
     <string name="saved">Đã lưu!</string>
-    <string name="field_mandatory">Các trường nhập bắt buộc đang bị thiếu. Xin vui lòng điền giá trị bắt buộc để hoàn thành biểu nhập.</string>
+    <string name="field_mandatory">Các trường nhập bắt buộc bị thiếu. Xin vui lòng điền giá trị cho chúng để hoàn tất biểu nhập.</string>
     <string name="field_required">Nếu bạn nhập một giá trị, cần nhập tất cả giá trị để hoàn tất Biểu Nhập</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Đã lưu và Hoàn tất!</string>
-    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
+    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không\?</string>
+    <string name="no">Không</string>
+    <string name="yes">Có</string>
     <string name="error">Lỗi</string>
+    <string name="errors">Lỗi</string>
     <string name="complete_anyway">Hoàn tất luôn</string>
-    <string name="review">Xem xét</string>
+    <string name="review">Xem lại</string>
     <string name="validation_rules_data_to_review">Dữ liệu để xem xét</string>
-
-</resources>
+    <string name="action_next">Tiếp tục</string>
+    <string name="add_file">Thêm tập tin</string>
+    <string name="add_image">Thêm hình ảnh</string>
+    <string name="take_photo">Chụp ảnh</string>
+    <string name="indicators_label">Chỉ Số</string>
+    <string name="no_data_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
+    </resources>

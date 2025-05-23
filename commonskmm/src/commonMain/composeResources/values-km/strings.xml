@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="invalid_percentage">តំលៃចន្លោះពីលេខ ០ ដល់ ១០០ ត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_possitive">លេខវិជ្ជមានតែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_phone_number">លេខទូរស័ព្ទមិនត្រឹមត្រូវ</string>
+    <string name="invalid_email">អាសយដ្ឋានអ៊ីមែលមិនត្រឹមត្រូវ</string>
+    <string name="invalid_negative_number">លេខអវិជ្ជមានតែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_possitive_zero">លេខវិជ្ជមាន រឺ លេខ ០ តែមួយគត់ដែលត្រូវបានអនុញ្ញាត</string>
+    <string name="invalid_interval">តំលៃចន្លោះពីលេខ ០ ដល់ ១ ត្រូវបានអនុញ្ញាត</string>
+    <string name="error">កំហុសបច្ចេកទេស</string>
+    <string name="choose_date">ជ្រើសរើសថ្ងៃខែឆ្នាំ</string>
+    <string name="required">ទាមទារ</string>
+    <string name="date">កាលបរិច្ឆេទ</string>
+    <string name="hint_year">ឆ្នាំ</string>
+    <string name="hint_month">ខែ</string>
+    <string name="hint_day">ថ្ងៃ</string>
+    <string name="latitude">រយៈទទឹង</string>
+    <string name="longitude">រយៈបណ្តោយ</string>
+    <string name="enter_positive_integer_or_zero">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន រឺ លេខ ០)</string>
+    <string name="enter_negative_integer">បញ្ជូលទិន្នន័យជាលេខ (អវិជ្ជមាន)</string>
+    <string name="enter_positive_integer">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន)</string>
+    <string name="enter_number">បញ្ជូលលេខ</string>
+    <string name="enter_long_text">បញ្ចូលអក្សរច្រើន</string>
+    <string name="enter_text">បញ្ជូលអក្សរ</string>
+    <string name="due_date">កាលបរិច្ឆេទកំណត់</string>
+    <string name="complete">បញ្ចប់</string>
+    <string name="discard_changes">លុបការកែប្រែ</string>
+    <string name="keep_editing">រក្សាទុកការកែប្រែ</string>
+    <string name="share">ចែករំលែក</string>
     <string name="action_close">បិទ</string>
     <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
-</resources>
+    <string name="incident_date">ថ្ងៃខែឆ្នាំ ធ្វើរោគវិនិច្ឆ័យ</string>
+    <string name="org_unit">អង្គភាព</string>
+    <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
+    <string name="yes">យល់ព្រម</string>
+    <string name="no">មិនព្រម</string>
+    </resources>

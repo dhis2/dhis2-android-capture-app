@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">Laiha dadus</string>
+    <string name="next">Próximu</string>
+    <string name="cancel">Kansela</string>
+    <string name="yes">Sim</string>
+    <string name="no">Lae</string>
+    <string name="navigation_tei_data">Detalles</string>
+    <string name="event_overview">Detalles</string>
+    <string name="select_option">Hili opsaun</string>
+    <string name="data_sets">Pakote dadus</string>
+    <string name="filters_title_period">Períodu</string>
+    <string name="filters_title_status">Estadu</string>
+    <string name="filters_title_date">Data</string>
+    <string name="select_period">Hili Tipu períodu</string>
+    <string name="daily_period">Diáriu</string>
+    <string name="weekly">Semanal</string>
+    <string name="monthly">Mensal</string>
+    <string name="bi_monthly">Bimensal</string>
+    <string name="quarterly">Trimestral</string>
+    <string name="six_monthly">Semestral</string>
+    <string name="yearly">Anual</string>
+    <string name="state_error">Erru</string>
+    <string name="state_warning">Avizu</string>
+    <string name="active">Ativu</string>
+    <string name="enrollment_status_completed">Kompletu</string>
+    <string name="filter_period_last_week">Semana kotuk</string>
+    <string name="filter_period_last_month">Fulan kotuk</string>
+    <string name="filter_period_other">Seluk</string>
+    <string name="filter_period_this_year">Tina ida ne\'e</string>
+    <string name="filter_period_last_quarter">Trimestre kotuk</string>
+    <string name="filter_period_months_this_year">Fulan sira tinan ida ne\'e</string>
+    <string name="filter_period_quarters_this_year">Trimestres sira tinan ida ne\'e</string>
+    <string name="filter_period_months_last_year">Fulan sira tinan kotuk</string>
+    <string name="filter_period_last_year">Tinan kotuk</string>
+    <string name="filter_period_this_financial_year">Tinan finanseiru ida ne\'e</string>
+    <string name="filter_period_last_financial_year">Tinan finanseiru kotuk</string>
+    <string name="period">Períodu</string>
+    <string name="DAILY">Diáriu</string>
+    <string name="WEEKLY">Semanal</string>
+    <string name="MONTHLY">Mensal</string>
+    <string name="YEARLY">Anual</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">Feedback</string>
+    <string name="section_indicators">Indikadores</string>
+    <string name="complete">Kompletu</string>
+    <string name="default_table_header_label">Valor</string>
+    <string name="default_empty_dataset_section_label">Dadus</string>
+    <string name="remove">Hasai</string>
+    <string name="period_daily_title">Diáriu</string>
+    <string name="period_yearly_title">Tinan</string>
+    </resources>

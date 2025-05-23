@@ -2,9 +2,19 @@
 <resources>
     <string name="select_location">Vyberte místo</string>
     <string name="map_layers">Mapové vrstvy</string>
+    <string name="dialog_layer_base_map_osm_light">OSM Light</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM Detailed</string>
+    <string name="dialog_layer_base_map_bing_road">Bing Road</string>
+    <string name="dialog_layer_base_map_bing_dark">Bing Dark</string>
+    <string name="dialog_layer_base_map_bing_aerial">Bing Aerial</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Bing Aerial Labels</string>
     <string name="action_apply">Použít</string>
     <string name="dialog_layer_satellite">Zobrazit satelitní pohled</string>
     <string name="dialog_layer_event">Zobrazit události</string>
     <string name="dialog_layer_tei_coordinates">Zobrazit TEI souřadnice</string>
     <string name="dialog_layer_heatmap">Zobrazit vrstvu teplotní mapy</string>
+    <string name="map_attributionErrorNoBrowser">V zařízení není nainstalován webový prohlížeč, nelze otevřít webovou stránku.</string>
+    <string name="accuracy_low">Nízká</string>
+    <string name="accuracy_medium">Střední</string>
+    <string name="select_location_title">Vyberte místo</string>
     </resources>

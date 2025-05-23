@@ -1,0 +1,28 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">صفحه اصلی</string>
+    <string name="action_settings">تنظیمات</string>
+
+    <string name="discard">ازبین بردن</string>
+    <string name="sign_in">ورود به سیستم</string>
+    <string name="username">نام کاربر</string>
+    <string name="password">کلید رمز</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">ادامه دادن</string>
+    <string name="delete">حذف</string>
+    <string name="ok">تأیید</string>
+    <string name="cancel">انصراف</string>
+    <string name="from">از جانب</string>
+    <string name="language">زبان</string>
+    <!-- Stock table -->
+    <string name="item">مورد</string>
+    <string name="prompt_email">برېښنالیک</string>
+    <string name="prompt_password">کلید رمز</string>
+    <string name="action_sign_in_short">ورود به سیستم</string>
+    <string name="content_desc_search">جستجو</string>
+    <string name="confirm_transaction_label">تائید</string>
+    <string name="invalid_quantity">نامعتبر</string>
+    <string name="done_task">صفحه اصلی</string>
+    <string name="back">عقب</string>
+    <string name="action_sync">فرستادن</string>
+    <string name="count">تعداد</string>
+    </resources>

@@ -42,6 +42,8 @@
     <string name="include_this_period_body">سيعرض الفترة الحالية في الرسم البياني.</string>
     <string name="no_data_for_selected_filters">لا تُرجع عوامل التصفية التي قمت بتطبيقها أية بيانات</string>
     <string name="no_data_to_display">ليس لديك أي بيانات ليتم عرضها</string>
+    <string name="visualization_error">هناك خطأ ما في هذا التصور</string>
+    <string name="visualization_failure">هناك خطأ ما في التصورات</string>
     <string name="pie_chart_no_data">كل البيانات صفر</string>
     <string name="error_invalid_arguments">لم يتم تكوين هذا العرض البياني بشكل جيد ، يرجى الاتصال بالمسؤول.</string>
     <string name="error_invalid_visualization">العرض البياني %s مفقود</string>

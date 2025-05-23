@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="total_header_label">Totals</string>
+    <string name="input_action_accept">Acceptera</string>
+    <string name="input_action_cancel">Avbryt</string>
+    <string name="no_results_found">Inga resultat hittades</string>
+    <string name="input_coordinate_latitude">Latitud</string>
+    <string name="input_coordinate_longitude">Longitud</string>
+    <string name="complete">Färdigt</string>
     <string name="ok">ok</string>
-
-
-</resources>
+    <string name="no">Nej</string>
+    <string name="yes">Ja</string>
+    <string name="error">Fel</string>
+    <string name="action_next">Nästa</string>
+    <string name="add_file">Lägg till fil</string>
+    <string name="indicators_label">indikatorer</string>
+    </resources>

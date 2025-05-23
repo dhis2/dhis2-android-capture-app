@@ -13,4 +13,7 @@
     <string name="dialog_layer_event">Toon evenementen</string>
     <string name="dialog_layer_tei_coordinates">Toon tei-coördinaten</string>
     <string name="dialog_layer_heatmap">Warmtebeeld weergeven</string>
+    <string name="accuracy_low">Laag</string>
+    <string name="accuracy_medium">Medium</string>
+    <string name="select_location_title">Selecteer een locatie</string>
     </resources>

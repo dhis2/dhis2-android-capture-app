@@ -87,6 +87,7 @@
     <string name="program_inactive">Program tidak aktif</string>
 
     <string name="event_open">Buka</string>
+    <string name="event_completed">Even selesai</string>
     <string name="read_only">Baca saja</string>
     <string name="finish_and_complete">Selesai dan lengkap</string>
     <string name="completed">Selesai</string>
@@ -145,12 +146,15 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Lihat rincian</string>
     <string name="view_more">LIHAT LAINNYA</string>
+    <string name="edit">Sunting</string>
     <string name="follow_up">Tindak lanjut</string>
     <string name="follow_up_enabled">Tindak lanjut diterapkan</string>
     <string name="follow_up_disabled">Tindak lanjut ditutup</string>
     <string name="deactivate">Deaktivasi</string>
     <string name="program_not_allow_events">Program ini tidak diperbolehkan menambah even</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Tidak ada data</string>
     <string name="events">Even</string>
     <string name="done_task">Beranda</string>
     <string name="app_info">Informasi App</string>
@@ -355,6 +359,7 @@
     <string name="date_dialog_tigle">Pilih tanggal untuk difilter</string>
     <string name="select_option">Pilih opsi</string>
     <string name="issue_reported">Masalah dilaporkan</string>
+    <string name="dialog_generate_new_event">Buat even baru</string>
     <string name="message_generate_new_event">Apakah Anda ingin membuat even lain?</string>
     <string name="event_completed_title">Even Selesai</string>
     <string name="event_completed_message">Semua even dalam program ini selesai. Apakah Anda ingin menutup program?</string>
@@ -770,6 +775,7 @@
     <string name="download_tei_error">%s yang dipilih tidak dapat diunduh.</string>
     <string name="completed_by">Diselesaikan oleh %s: %s</string>
     <string name="updated_time">Diperbarui: %s</string>
+    <string name="action_done">Selesai</string>
     <string name="validation_internal_error_datasets">Kami tidak dapat memeriksa kualitas data. Hubungi administrator Anda</string>
     <string name="are_you_sure">Anda yakin?</string>
     <string name="reopen_question">Apakah Anda ingin membuka kembali data set?</string>
@@ -796,10 +802,13 @@
     <string name="error_init_session">Kami tidak dapat memulai sesi dengan pengguna Anda</string>
     <string name="enrollment_date_edition_warning">Ada even yang direncanakan yang tidak akan dijadwalkan ulang</string>
     <string name="section_charts">Grafik</string>
+    <string name="navigation_list_view">Daftar</string>
     <string name="navigation_table_view">Tampilan tabel</string>
+    <string name="navigation_map_view">Peta</string>
     <string name="navigation_analytics">Analitik</string>
     <string name="navigation_tasks">Tugas</string>
     <string name="navigation_programs">Program-program</string>
+    <string name="navigation_charts">Grafik</string>
     <string name="navigation_notes">Catatan</string>
     <string name="navigation_data_entry">Data entri</string>
     <string name="navigation_tei_data">Rincian</string>
@@ -854,4 +863,20 @@
     <string name="available">Tersedia</string>
     <string name="troubleshooting_language_title">Bahasa</string>
     <string name="search_too_many_results">Hasil terlalu banyak</string>
+    <string name="sync_dialog_title_synced">Tersinkronisasi</string>
+    <string name="sync_dialog_action_send">Kirim</string>
+    <string name="skipped">Dilewati</string>
+    <string name="programs">Program-program</string>
+    <string name="sync_error">Kesalahan sinkronisasi</string>
+    <string name="mark_follow_up">Tandai untuk follow up</string>
+    <string name="coordinates">Koordinat</string>
+    <string name="schedule">Jadwal</string>
+    <string name="refer">Merujuk</string>
+    <string name="scheduled_enter_event">Terjadwal</string>
+    <string name="program_stage">Tahapan program</string>
+    <string name="event">acara/peristiwa</string>
+    <string name="show_more">Tampilkan lebih</string>
+    <string name="show_less">Tampilkan kurang</string>
+    <string name="sync">Sinkronkan</string>
+    <string name="show_description">Tampilkan keterangan</string>
     </resources>
