@@ -50,6 +50,10 @@ fun filterRobot(
 
 class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
+    fun resetFilters() {
+        onView(withId(R.id.clear_filter)).perform(click())
+    }
+
     fun openFilters() {
         onView(withId(R.id.filter)).perform(click())
     }

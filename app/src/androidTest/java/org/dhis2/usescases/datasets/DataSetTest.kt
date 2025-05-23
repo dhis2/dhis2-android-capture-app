@@ -711,6 +711,10 @@ class DataSetTest : BaseTest() {
         dataSetDetailRobot(composeTestRule) {
             assertEquals(1, getListItemCount())
         }
+
+        filterRobot(composeTestRule) {
+            resetFilters()
+        }
     }
 
     private fun checkGreyFields() {
