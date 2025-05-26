@@ -60,6 +60,7 @@ fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
     }
     a.setAnimationListener(object : Animation.AnimationListener {
         override fun onAnimationStart(animation: Animation) {
+            /*do nothing*/
         }
 
         override fun onAnimationEnd(animation: Animation) {
