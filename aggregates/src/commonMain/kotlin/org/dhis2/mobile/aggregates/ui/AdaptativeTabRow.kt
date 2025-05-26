@@ -44,7 +44,7 @@ fun AdaptiveTabRow(
     selectedTab: Int,
     onTabClicked: (index: Int) -> Unit,
 ) {
-    if (tabLabels.isEmpty()) return
+    if (tabLabels.isEmpty() || tabLabels.size == 1) return
 
     var selectedTab by remember { mutableStateOf(selectedTab) }
     val tabWidths = remember { mutableStateListOf<Int>() }
