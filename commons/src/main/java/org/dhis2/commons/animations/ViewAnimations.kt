@@ -4,8 +4,6 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.OvershootInterpolator
 import android.view.animation.Transformation
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.decrement
-import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton.increment
 
 fun View.collapse(callback: () -> Unit) {
     val initialHeight = measuredHeight
@@ -26,17 +24,6 @@ fun View.collapse(callback: () -> Unit) {
         }
     }
     a.duration = 200
-    a.setAnimationListener(object : Animation.AnimationListener {
-        override fun onAnimationStart(animation: Animation) {
-            increment()
-        }
-
-        override fun onAnimationEnd(animation: Animation) {
-            decrement()
-        }
-
-        override fun onAnimationRepeat(animation: Animation) {}
-    })
     startAnimation(a)
 }
 
@@ -73,11 +60,10 @@ fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
     }
     a.setAnimationListener(object : Animation.AnimationListener {
         override fun onAnimationStart(animation: Animation) {
-            increment()
+            /*do nothing*/
         }
 
         override fun onAnimationEnd(animation: Animation) {
-            decrement()
             callback.invoke()
         }
 

@@ -87,7 +87,7 @@ internal class DataSetDetailRobot(
         val dateList = mutableListOf<Date>()
 
         for (i in 0 until itemCount) {
-            onView(withId(R.id.recycler)).perform(scrollToPosition<RecyclerView.ViewHolder>(i))
+            waitForView(withId(R.id.recycler)).perform(scrollToPosition<RecyclerView.ViewHolder>(i))
             val itemTitle = getTitleFromRecyclerViewItem(i)
             val date = SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(itemTitle)
             dateList.add(date)
@@ -101,7 +101,7 @@ internal class DataSetDetailRobot(
 
     fun getListItemCount(): Int {
         val itemCount = intArrayOf(0)
-        onView(withId(R.id.recycler)).perform(
+        waitForView(withId(R.id.recycler)).perform(
             actionOnItemAtPosition<DataSetListViewHolder>(0, object : ViewAction {
                 override fun getConstraints() = null
                 override fun getDescription() = "Get item count"
