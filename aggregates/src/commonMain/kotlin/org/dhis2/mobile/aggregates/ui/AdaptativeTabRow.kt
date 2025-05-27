@@ -44,15 +44,15 @@ fun AdaptiveTabRow(
     selectedTab: Int,
     onTabClicked: (index: Int) -> Unit,
 ) {
-    if (tabLabels.isEmpty() || tabLabels.size == 1) return
+    if (tabLabels.size <= 1) return
 
-    var selectedTab by remember { mutableStateOf(selectedTab) }
+    var currentSelectedTab by remember { mutableStateOf(selectedTab) }
     val tabWidths = remember { mutableStateListOf<Int>() }
     var scrollable by remember { mutableStateOf(false) }
     val density = LocalDensity.current
     val indicatorWidth by animateDpAsState(
         targetValue = with(density) {
-            tabWidths.getOrNull(selectedTab)?.toDp()
+            tabWidths.getOrNull(currentSelectedTab)?.toDp()
         } ?: 56.dp,
         label = "indicator_width",
 
@@ -66,7 +66,7 @@ fun AdaptiveTabRow(
                     index = index,
                     tabLabel = tabLabel,
                     tabWidths = tabWidths,
-                    isSelected = selectedTab == index,
+                    isSelected = currentSelectedTab == index,
                     onClick = {},
                 )
             }
@@ -86,13 +86,13 @@ fun AdaptiveTabRow(
                         .semantics {
                             testTag = "SCROLLABLE_TAB_ROW"
                         },
-                    selectedTabIndex = selectedTab,
+                    selectedTabIndex = currentSelectedTab,
                     containerColor = MaterialTheme.colorScheme.primary,
                     edgePadding = Spacing.Spacing16,
                     indicator = { tabPositions ->
                         TabRowDefaults.PrimaryIndicator(
                             width = indicatorWidth,
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
                     },
@@ -104,9 +104,9 @@ fun AdaptiveTabRow(
                             index = index,
                             tabLabel = tabLabel,
                             tabWidths = tabWidths,
-                            isSelected = selectedTab == index,
+                            isSelected = currentSelectedTab == index,
                             onClick = {
-                                selectedTab = index
+                                currentSelectedTab = index
                                 onTabClicked(index)
                             },
                         )
@@ -120,12 +120,12 @@ fun AdaptiveTabRow(
                         .semantics {
                             testTag = "TAB_ROW"
                         },
-                    selectedTabIndex = selectedTab,
+                    selectedTabIndex = currentSelectedTab,
                     containerColor = MaterialTheme.colorScheme.primary,
                     indicator = { tabPositions ->
                         TabRowDefaults.PrimaryIndicator(
                             width = indicatorWidth,
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
+                            modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
                             color = MaterialTheme.colorScheme.onPrimary,
                         )
                     },
@@ -137,9 +137,9 @@ fun AdaptiveTabRow(
                             index = index,
                             tabLabel = tabLabel,
                             tabWidths = tabWidths,
-                            isSelected = selectedTab == index,
+                            isSelected = currentSelectedTab == index,
                             onClick = {
-                                selectedTab = index
+                                currentSelectedTab = index
                                 onTabClicked(index)
                             },
                         )
