@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTestApi::class)
+
 package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
@@ -186,7 +188,7 @@ internal class DataSetTableRobot(
     }
 
     fun assertInputDialogIsDisplayed() {
-        composeTestRule.waitForIdle()
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(INPUT_DIALOG_TAG),TIMEOUT)
         composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG,useUnmergedTree = true).assertIsDisplayed()
     }
 
@@ -196,6 +198,7 @@ internal class DataSetTableRobot(
     }
 
     fun typeOnInputDialog(value: String, inputTestTag: String) {
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(inputTestTag),TIMEOUT)
         composeTestRule.onNodeWithTag(inputTestTag, useUnmergedTree = true).performTextReplacement(value)
     }
 
