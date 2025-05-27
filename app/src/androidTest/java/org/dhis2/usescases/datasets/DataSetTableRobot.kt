@@ -187,7 +187,7 @@ internal class DataSetTableRobot(
 
     fun assertInputDialogIsDisplayed() {
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG,useUnmergedTree = true).assertIsDisplayed()
     }
 
     fun assertInputDescriptionIsDisplayed(description: String) {
@@ -196,7 +196,7 @@ internal class DataSetTableRobot(
     }
 
     fun typeOnInputDialog(value: String, inputTestTag: String) {
-        composeTestRule.onNodeWithTag(inputTestTag).performTextReplacement(value)
+        composeTestRule.onNodeWithTag(inputTestTag, useUnmergedTree = true).performTextReplacement(value)
     }
 
     fun pressOnInputDialogNext() {
