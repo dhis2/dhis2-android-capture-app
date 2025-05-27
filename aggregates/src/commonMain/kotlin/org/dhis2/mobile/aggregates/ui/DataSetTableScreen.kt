@@ -36,7 +36,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -170,17 +169,16 @@ fun DataSetInstanceScreen(
         }
     }
 
-    var tableCellSelection by remember {
-        mutableStateOf<TableSelection>(TableSelection.Unselected())
-    }
+    val tableCellSelection =
+        (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo?.currentSelectedCell
+            ?: TableSelection.Unselected()
 
-    LaunchedEffect((dataSetScreenState as? DataSetScreenState.Loaded)) {
-        if ((dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first != null) {
-            tableCellSelection = (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first!!
-        } else if ((dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo == null) {
-            tableCellSelection = TableSelection.Unselected()
-        }
-    }
+    /*var tableCellSelection by remember((dataSetScreenState as? DataSetScreenState.Loaded)) {
+        mutableStateOf<TableSelection>(
+            (dataSetScreenState as? DataSetScreenState.Loaded)?.currentSelectedCell
+                ?: TableSelection.Unselected()
+        )
+    }*/
 
     Scaffold(
         modifier = Modifier
@@ -319,7 +317,7 @@ fun DataSetInstanceScreen(
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                     onCellSelected = { cellSelection ->
-                                        tableCellSelection = cellSelection
+//                                        tableCellSelection = cellSelection
                                     },
                                     currentSelection = tableCellSelection,
                                     onTableResize = dataSetTableViewModel::onTableResize,
@@ -361,7 +359,7 @@ fun DataSetInstanceScreen(
                                     .padding(all = Spacing.Spacing0),
                                 tabs = tabs,
                                 onSectionSelected = { sectionUid ->
-                                    tableCellSelection = TableSelection.Unselected()
+//                                    tableCellSelection = TableSelection.Unselected()
                                     dataSetTableViewModel.onSectionSelected(sectionUid)
                                 },
                                 initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
@@ -382,7 +380,7 @@ fun DataSetInstanceScreen(
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
                         onSectionSelected = { sectionUid ->
-                            tableCellSelection = TableSelection.Unselected()
+//                            tableCellSelection = TableSelection.Unselected()
                             dataSetTableViewModel.onSectionSelected(sectionUid)
                         },
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
@@ -398,7 +396,7 @@ fun DataSetInstanceScreen(
                         currentSection = dataSetScreenState.currentSection(),
                         currentSelection = tableCellSelection,
                         onCellSelected = { cellSelection ->
-                            tableCellSelection = cellSelection
+//                            tableCellSelection = cellSelection
                         },
                         onTableResize = dataSetTableViewModel::onTableResize,
                         emptySectionMessage = stringResource(Res.string.empty_section_message),
@@ -445,7 +443,12 @@ fun DataSetInstanceScreen(
                             Button(
                                 style = ButtonStyle.FILLED,
                                 text = inputData.buttonAction.buttonText,
-                                onClick = inputData.buttonAction.action,
+                                onClick = {
+                                    dataSetTableViewModel.onInputAction(
+                                        cellId = inputData.id,
+                                        isActionDone = inputData.buttonAction.isDoneAction,
+                                    )
+                                },
                                 icon = {
                                     Icon(
                                         imageVector = inputData.buttonAction.icon,
@@ -459,7 +462,7 @@ fun DataSetInstanceScreen(
                         onDismiss = {
                             scope.launch {
                                 dataSetTableViewModel.updateSelectedCell(null)
-                                tableCellSelection = TableSelection.Unselected()
+//                                tableCellSelection = TableSelection.Unselected()
                             }
                         },
                     )
@@ -769,7 +772,8 @@ private fun ContentLoading(
 @Composable
 private fun WarningInfoBar(message: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
+        modifier = Modifier.fillMaxWidth()
+            .padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(

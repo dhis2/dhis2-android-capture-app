@@ -3,7 +3,6 @@ package org.dhis2.mobile.aggregates.ui.states
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import org.dhis2.mobile.aggregates.model.InputType
-import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DONE_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
@@ -14,6 +13,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
 @Stable
 internal data class InputDataUiState(
@@ -29,6 +29,7 @@ internal data class InputDataUiState(
     val legendData: LegendData?,
     val isRequired: Boolean,
     val buttonAction: ButtonAction,
+    val currentSelectedCell: TableSelection.CellSelection?,
 ) {
     fun dateExtras() = inputExtra as InputExtra.Date
     fun fileExtras() = inputExtra as InputExtra.File
@@ -75,21 +76,9 @@ internal sealed class InputExtra {
     data object None : InputExtra()
 }
 
-internal sealed class ButtonAction(
-    open val buttonText: String,
-    open val icon: ImageVector,
-    open val testTag: String,
-    open val action: () -> Unit,
-) {
-    data class Next(
-        override val buttonText: String,
-        override val icon: ImageVector,
-        override val action: () -> Unit,
-    ) : ButtonAction(buttonText, icon, INPUT_DIALOG_NEXT_TAG, action)
-
-    data class Done(
-        override val buttonText: String,
-        override val icon: ImageVector,
-        override val action: () -> Unit,
-    ) : ButtonAction(buttonText, icon, INPUT_DIALOG_DONE_TAG, action)
-}
+internal data class ButtonAction(
+    val buttonText: String,
+    val icon: ImageVector,
+    val testTag: String = INPUT_DIALOG_NEXT_TAG,
+    val isDoneAction: Boolean,
+)

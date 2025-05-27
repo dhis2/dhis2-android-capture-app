@@ -527,8 +527,10 @@ internal fun InputProvider(
                 isRequiredField = inputData.isRequired,
                 onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
-                    textValue = it ?: TextFieldValue()
-                    onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
+                    if (textValue.text != it?.text) {
+                        textValue = it ?: TextFieldValue()
+                        onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
+                    }
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
