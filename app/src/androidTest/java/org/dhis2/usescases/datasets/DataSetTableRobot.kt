@@ -86,6 +86,7 @@ internal class DataSetTableRobot(
     fun clickOnCell(tableId: String, cellId: String) {
         scrollToItemWithTag(cellTestTag(tableId, cellId))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
+            .performScrollTo()
             .assertIsDisplayed()
             .performClick()
     }
@@ -245,6 +246,7 @@ internal class DataSetTableRobot(
                         hasText(expectedValue),
                 true
             )
+            .performScrollTo()
             .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(headersTestTag(tableId))
