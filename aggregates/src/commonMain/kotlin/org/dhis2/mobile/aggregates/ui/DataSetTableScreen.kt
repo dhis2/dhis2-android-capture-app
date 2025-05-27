@@ -173,13 +173,6 @@ fun DataSetInstanceScreen(
         (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo?.currentSelectedCell
             ?: TableSelection.Unselected()
 
-    /*var tableCellSelection by remember((dataSetScreenState as? DataSetScreenState.Loaded)) {
-        mutableStateOf<TableSelection>(
-            (dataSetScreenState as? DataSetScreenState.Loaded)?.currentSelectedCell
-                ?: TableSelection.Unselected()
-        )
-    }*/
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -317,7 +310,7 @@ fun DataSetInstanceScreen(
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                     onCellSelected = { cellSelection ->
-//                                        tableCellSelection = cellSelection
+                                        /*no-op*/
                                     },
                                     currentSelection = tableCellSelection,
                                     onTableResize = dataSetTableViewModel::onTableResize,
@@ -359,7 +352,6 @@ fun DataSetInstanceScreen(
                                     .padding(all = Spacing.Spacing0),
                                 tabs = tabs,
                                 onSectionSelected = { sectionUid ->
-//                                    tableCellSelection = TableSelection.Unselected()
                                     dataSetTableViewModel.onSectionSelected(sectionUid)
                                 },
                                 initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
@@ -380,7 +372,6 @@ fun DataSetInstanceScreen(
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
                         onSectionSelected = { sectionUid ->
-//                            tableCellSelection = TableSelection.Unselected()
                             dataSetTableViewModel.onSectionSelected(sectionUid)
                         },
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
@@ -396,7 +387,7 @@ fun DataSetInstanceScreen(
                         currentSection = dataSetScreenState.currentSection(),
                         currentSelection = tableCellSelection,
                         onCellSelected = { cellSelection ->
-//                            tableCellSelection = cellSelection
+                            /*no-op*/
                         },
                         onTableResize = dataSetTableViewModel::onTableResize,
                         emptySectionMessage = stringResource(Res.string.empty_section_message),
@@ -462,7 +453,6 @@ fun DataSetInstanceScreen(
                         onDismiss = {
                             scope.launch {
                                 dataSetTableViewModel.updateSelectedCell(null)
-//                                tableCellSelection = TableSelection.Unselected()
                             }
                         },
                     )
