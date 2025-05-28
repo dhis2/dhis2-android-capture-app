@@ -225,7 +225,7 @@ fun DataSetInstanceScreen(
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
             AnimatedVisibility(
                 visible = loadedState?.dataSetSectionTable?.loading == false &&
-                    loadedState.selectedCellInfo == null,
+                    loadedState.selectedCellInfo !is CellSelectionState.InputDataUiState,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
