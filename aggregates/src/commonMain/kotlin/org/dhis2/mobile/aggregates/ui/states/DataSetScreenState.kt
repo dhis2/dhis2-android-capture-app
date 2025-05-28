@@ -13,7 +13,7 @@ internal sealed class DataSetScreenState {
         val initialSection: Int,
         val renderingConfig: DataSetRenderingConfig,
         val dataSetSectionTable: DataSetSectionTable,
-        val selectedCellInfo: InputDataUiState? = null,
+        val selectedCellInfo: CellSelectionState,
         val modalDialog: DataSetModalDialogUIState? = null,
         val validationBar: ValidationBarUiState? = null,
     ) : DataSetScreenState() {

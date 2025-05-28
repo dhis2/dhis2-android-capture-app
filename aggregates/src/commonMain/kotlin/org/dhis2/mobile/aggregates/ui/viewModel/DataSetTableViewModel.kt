@@ -54,6 +54,7 @@ import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
@@ -129,6 +130,7 @@ internal class DataSetTableViewModel(
                     loading = true,
                 ),
                 initialSection = dataSetInstanceData.initialSectionToLoad,
+                selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
             )
 
             val sectionTable = async { sectionData(sectionToLoad) }
@@ -162,6 +164,7 @@ internal class DataSetTableViewModel(
                                 loading = true,
                             ),
                             initialSection = initialSection,
+                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
                         )
                 }
             }
@@ -184,7 +187,7 @@ internal class DataSetTableViewModel(
                                 overridingDimensions = it.dataSetSectionTable.overridingDimensions,
                                 loading = true,
                             ),
-                            selectedCellInfo = null,
+                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
                             initialSection = selectedSectionIndex ?: 0,
                         )
                     } else {
@@ -316,23 +319,28 @@ internal class DataSetTableViewModel(
                 )
             }
         } else {
-            null
+            CellSelectionState.Default(TableSelection.Unselected())
         }
 
         _dataSetScreenState.update {
             (it as? DataSetScreenState.Loaded)?.copy(
-                dataSetSectionTable = it.dataSetSectionTable.copy(
-                    tableModels = it.dataSetSectionTable.tableModels.map { table ->
-                        table.updateValue(
-                            cellId = cellId,
-                            updatedValue = inputData?.displayValue,
-                            legendData = inputData?.legendData,
-                            error = validationError,
-                            resourceManager = resourceManager,
-                        )
-                    },
+                dataSetSectionTable = if (inputData !is CellSelectionState.Default) {
+                    require(inputData is CellSelectionState.InputDataUiState)
+                    it.dataSetSectionTable.copy(
+                        tableModels = it.dataSetSectionTable.tableModels.map { table ->
+                            table.updateValue(
+                                cellId = cellId,
+                                updatedValue = inputData.displayValue,
+                                legendData = inputData.legendData,
+                                error = validationError,
+                                resourceManager = resourceManager,
+                            )
+                        },
 
-                ),
+                    )
+                } else {
+                    it.dataSetSectionTable
+                },
                 selectedCellInfo = inputData,
             ) ?: it
         }
@@ -357,7 +365,7 @@ internal class DataSetTableViewModel(
                 is UiAction.OnDoneClick -> {
                     _dataSetScreenState.update {
                         (it as? DataSetScreenState.Loaded)?.copy(
-                            selectedCellInfo = null,
+                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
                         ) ?: it
                     }
                     updateSelectedCell(null)
@@ -376,12 +384,15 @@ internal class DataSetTableViewModel(
                     }
                     result.fold(
                         onSuccess = {
+                            val selectedCellInfo =
+                                (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                    ?.selectedCellInfo
+
+                            require(selectedCellInfo is CellSelectionState.InputDataUiState)
+
                             val fetchOptions =
-                                if ((_dataSetScreenState.value as? DataSetScreenState.Loaded)
-                                        ?.selectedCellInfo?.inputType is InputType.MultiText
-                                ) {
-                                    (_dataSetScreenState.value as? DataSetScreenState.Loaded)
-                                        ?.selectedCellInfo?.multiTextExtras()?.optionsFetched != true
+                                if (selectedCellInfo.inputType is InputType.MultiText) {
+                                    selectedCellInfo.multiTextExtras().optionsFetched != true
                                 } else {
                                     false
                                 }
@@ -831,6 +842,18 @@ internal class DataSetTableViewModel(
             onUiAction(UiAction.OnDoneClick(cellId))
         } else {
             onUiAction(UiAction.OnNextClick(cellId))
+        }
+    }
+
+    fun onResizingStatusChanged(selection: TableSelection) {
+        _dataSetScreenState.update {
+            if (it is DataSetScreenState.Loaded) {
+                it.copy(
+                    selectedCellInfo = CellSelectionState.Default(selection),
+                )
+            } else {
+                it
+            }
         }
     }
 }

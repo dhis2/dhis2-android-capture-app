@@ -46,7 +46,7 @@ import org.dhis2.mobile.aggregates.resources.input_not_supported
 import org.dhis2.mobile.aggregates.resources.no_results_found
 import org.dhis2.mobile.aggregates.resources.search_to_find_more
 import org.dhis2.mobile.aggregates.resources.take_photo
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.dhis2.mobile.commons.extensions.hasDateFormat

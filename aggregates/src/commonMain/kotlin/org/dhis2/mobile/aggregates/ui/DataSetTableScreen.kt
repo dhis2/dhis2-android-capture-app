@@ -80,6 +80,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
@@ -170,7 +171,7 @@ fun DataSetInstanceScreen(
     }
 
     val tableCellSelection =
-        (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo?.currentSelectedCell
+        (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo?.tableSelection
             ?: TableSelection.Unselected()
 
     Scaffold(
@@ -310,7 +311,7 @@ fun DataSetInstanceScreen(
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                     onCellSelected = { cellSelection ->
-                                        /*no-op*/
+                                        dataSetTableViewModel.onResizingStatusChanged(cellSelection)
                                     },
                                     currentSelection = tableCellSelection,
                                     onTableResize = dataSetTableViewModel::onTableResize,
@@ -387,7 +388,7 @@ fun DataSetInstanceScreen(
                         currentSection = dataSetScreenState.currentSection(),
                         currentSelection = tableCellSelection,
                         onCellSelected = { cellSelection ->
-                            /*no-op*/
+                            dataSetTableViewModel.onResizingStatusChanged(cellSelection)
                         },
                         onTableResize = dataSetTableViewModel::onTableResize,
                         emptySectionMessage = stringResource(Res.string.empty_section_message),
@@ -407,7 +408,7 @@ fun DataSetInstanceScreen(
             }
 
             AnimatedVisibility(
-                visible = selectedCellInfo != null,
+                visible = selectedCellInfo is CellSelectionState.InputDataUiState,
                 enter = slideInVertically(
                     initialOffsetY = { fullHeight -> fullHeight },
                 ),
@@ -415,7 +416,10 @@ fun DataSetInstanceScreen(
                     targetOffsetY = { fullHeight -> fullHeight },
                 ),
             ) {
-                selectedCellInfo?.let { inputData ->
+                selectedCellInfo?.takeIf {
+                    it is CellSelectionState.InputDataUiState
+                }?.let { inputData ->
+                    require(inputData is CellSelectionState.InputDataUiState)
                     InputDialog(
                         modifier = Modifier.align(Alignment.BottomCenter)
                             .testTag(INPUT_DIALOG_TAG)
@@ -879,7 +883,9 @@ private fun DataSetTable(
 
                 override fun onSelectionChange(newTableSelection: TableSelection) {
                     super.onSelectionChange(newTableSelection)
-                    onCellSelected(newTableSelection)
+                    if (newTableSelection !is TableSelection.CellSelection) {
+                        onCellSelected(newTableSelection)
+                    }
                 }
             },
             topContent = topContent,

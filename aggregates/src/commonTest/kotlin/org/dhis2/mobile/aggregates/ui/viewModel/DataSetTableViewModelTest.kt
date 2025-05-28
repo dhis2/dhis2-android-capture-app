@@ -62,9 +62,10 @@ import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.di.commonsModule
@@ -404,9 +405,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
-                    assertTrue(this.selectedCellInfo != null)
-                    assertEquals("Legend label 1", this.selectedCellInfo?.legendData?.title)
-                    assertEquals("#90EE90".toColor(), this.selectedCellInfo?.legendData?.color)
+                    assertTrue(this.selectedCellInfo is InputDataUiState)
+                    require(this.selectedCellInfo is InputDataUiState)
+                    assertEquals("Legend label 1", this.selectedCellInfo.legendData?.title)
+                    assertEquals("#90EE90".toColor(), this.selectedCellInfo.legendData?.color)
                 } else {
                     assertTrue(false)
                 }
@@ -414,7 +416,8 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
-                    assertTrue(this.selectedCellInfo != null)
+                    assertTrue(this.selectedCellInfo is InputDataUiState)
+                    require(this.selectedCellInfo is InputDataUiState)
                     assertEquals("Legend label 2", this.selectedCellInfo?.legendData?.title)
                     assertEquals("#CD5C5C".toColor(), this.selectedCellInfo?.legendData?.color)
                 } else {
@@ -424,7 +427,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(null)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo == null)
+                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo is CellSelectionState.Default)
             }
         }
     }

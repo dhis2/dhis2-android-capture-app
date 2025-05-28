@@ -12,7 +12,7 @@ import org.dhis2.mobile.aggregates.model.CellValueExtra
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
