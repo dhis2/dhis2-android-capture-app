@@ -149,7 +149,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventWasCreated(eventName: String) {
-        onView(withId(R.id.tei_recycler))
+        waitForView(withId(R.id.tei_recycler))
             .check(
                 matches(
                     allOf(
