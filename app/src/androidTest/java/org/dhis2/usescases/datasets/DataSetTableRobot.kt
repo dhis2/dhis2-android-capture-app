@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTestApi::class)
+
 package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
@@ -86,6 +88,7 @@ internal class DataSetTableRobot(
     fun clickOnCell(tableId: String, cellId: String) {
         scrollToItemWithTag(cellTestTag(tableId, cellId))
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
+            .performScrollTo()
             .assertIsDisplayed()
             .performClick()
     }
@@ -185,8 +188,8 @@ internal class DataSetTableRobot(
     }
 
     fun assertInputDialogIsDisplayed() {
-        composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG).assertIsDisplayed()
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(INPUT_DIALOG_TAG),TIMEOUT)
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG,useUnmergedTree = true).assertIsDisplayed()
     }
 
     fun assertInputDescriptionIsDisplayed(description: String) {
@@ -195,7 +198,8 @@ internal class DataSetTableRobot(
     }
 
     fun typeOnInputDialog(value: String, inputTestTag: String) {
-        composeTestRule.onNodeWithTag(inputTestTag).performTextReplacement(value)
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(inputTestTag),TIMEOUT)
+        composeTestRule.onNodeWithTag(inputTestTag, useUnmergedTree = true).performTextReplacement(value)
     }
 
     fun pressOnInputDialogNext() {
@@ -245,6 +249,7 @@ internal class DataSetTableRobot(
                         hasText(expectedValue),
                 true
             )
+            .performScrollTo()
             .assertIsDisplayed()
 
         composeTestRule.onNodeWithTag(headersTestTag(tableId))

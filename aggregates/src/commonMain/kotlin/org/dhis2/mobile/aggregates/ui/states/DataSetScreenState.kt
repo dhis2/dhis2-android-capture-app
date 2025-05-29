@@ -4,7 +4,6 @@ import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
-import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
 internal sealed class DataSetScreenState {
 
@@ -14,10 +13,9 @@ internal sealed class DataSetScreenState {
         val initialSection: Int,
         val renderingConfig: DataSetRenderingConfig,
         val dataSetSectionTable: DataSetSectionTable,
-        val selectedCellInfo: InputDataUiState? = null,
+        val selectedCellInfo: CellSelectionState,
         val modalDialog: DataSetModalDialogUIState? = null,
         val validationBar: ValidationBarUiState? = null,
-        val nextCellSelection: Pair<TableSelection.CellSelection?, Boolean> = Pair(null, false),
     ) : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) =
             dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs

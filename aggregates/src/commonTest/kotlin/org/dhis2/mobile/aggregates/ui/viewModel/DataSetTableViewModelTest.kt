@@ -62,15 +62,17 @@ import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -373,10 +375,16 @@ internal class DataSetTableViewModelTest : KoinTest {
                 } else {
                     null
                 },
-                buttonAction = ButtonAction.Done(
+                currentSelectedCell = TableSelection.CellSelection(
+                    tableId = "tableId",
+                    columnIndex = 0,
+                    rowIndex = 0,
+                    globalIndex = 0,
+                ),
+                buttonAction = ButtonAction(
                     buttonText = "done",
                     icon = Icons.Default.Done,
-                    action = {},
+                    isDoneAction = true,
                 ),
             )
         }
@@ -390,17 +398,17 @@ internal class DataSetTableViewModelTest : KoinTest {
                     cellInfo = any(),
                     validationError = anyOrNull(),
                     valueWithError = anyOrNull(),
+                    currentCell = anyOrNull(),
                     isLastCell = any(),
-                    onDone = any(),
-                    onNext = any(),
                 ),
             ) doReturnConsecutively inputData
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
-                    assertTrue(this.selectedCellInfo != null)
-                    assertEquals("Legend label 1", this.selectedCellInfo?.legendData?.title)
-                    assertEquals("#90EE90".toColor(), this.selectedCellInfo?.legendData?.color)
+                    assertTrue(this.selectedCellInfo is InputDataUiState)
+                    require(this.selectedCellInfo is InputDataUiState)
+                    assertEquals("Legend label 1", this.selectedCellInfo.legendData?.title)
+                    assertEquals("#90EE90".toColor(), this.selectedCellInfo.legendData?.color)
                 } else {
                     assertTrue(false)
                 }
@@ -408,7 +416,8 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
-                    assertTrue(this.selectedCellInfo != null)
+                    assertTrue(this.selectedCellInfo is InputDataUiState)
+                    require(this.selectedCellInfo is InputDataUiState)
                     assertEquals("Legend label 2", this.selectedCellInfo?.legendData?.title)
                     assertEquals("#CD5C5C".toColor(), this.selectedCellInfo?.legendData?.color)
                 } else {
@@ -418,8 +427,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(null)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo == null)
-                assertTrue(this.nextCellSelection.first == null)
+                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo is CellSelectionState.Default)
             }
         }
     }
@@ -561,10 +569,16 @@ internal class DataSetTableViewModelTest : KoinTest {
             } else {
                 null
             },
-            buttonAction = ButtonAction.Done(
+            currentSelectedCell = TableSelection.CellSelection(
+                tableId = "tableId",
+                columnIndex = 0,
+                rowIndex = 0,
+                globalIndex = 0,
+            ),
+            buttonAction = ButtonAction(
                 buttonText = "done",
                 icon = Icons.Default.Done,
-                action = {},
+                isDoneAction = true,
             ),
         )
 
@@ -575,9 +589,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                 cellInfo = any(),
                 validationError = anyOrNull(),
                 valueWithError = anyOrNull(),
+                currentCell = anyOrNull(),
                 isLastCell = any(),
-                onDone = any(),
-                onNext = any(),
             ),
         ) doReturn inputData
 

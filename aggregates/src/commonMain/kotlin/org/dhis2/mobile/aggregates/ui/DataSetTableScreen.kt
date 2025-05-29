@@ -36,7 +36,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -81,6 +80,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
@@ -170,17 +170,9 @@ fun DataSetInstanceScreen(
         }
     }
 
-    var tableCellSelection by remember {
-        mutableStateOf<TableSelection>(TableSelection.Unselected())
-    }
-
-    LaunchedEffect((dataSetScreenState as? DataSetScreenState.Loaded)) {
-        if ((dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first != null) {
-            tableCellSelection = (dataSetScreenState as? DataSetScreenState.Loaded)?.nextCellSelection?.first!!
-        } else if ((dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo == null) {
-            tableCellSelection = TableSelection.Unselected()
-        }
-    }
+    val tableCellSelection =
+        (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo?.tableSelection
+            ?: TableSelection.Unselected()
 
     Scaffold(
         modifier = Modifier
@@ -233,7 +225,7 @@ fun DataSetInstanceScreen(
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
             AnimatedVisibility(
                 visible = loadedState?.dataSetSectionTable?.loading == false &&
-                    loadedState.selectedCellInfo == null,
+                    loadedState.selectedCellInfo !is CellSelectionState.InputDataUiState,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -319,7 +311,7 @@ fun DataSetInstanceScreen(
                                     currentSection = dataSetScreenState.currentSection(),
                                     dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                                     onCellSelected = { cellSelection ->
-                                        tableCellSelection = cellSelection
+                                        dataSetTableViewModel.onResizingStatusChanged(cellSelection)
                                     },
                                     currentSelection = tableCellSelection,
                                     onTableResize = dataSetTableViewModel::onTableResize,
@@ -361,7 +353,6 @@ fun DataSetInstanceScreen(
                                     .padding(all = Spacing.Spacing0),
                                 tabs = tabs,
                                 onSectionSelected = { sectionUid ->
-                                    tableCellSelection = TableSelection.Unselected()
                                     dataSetTableViewModel.onSectionSelected(sectionUid)
                                 },
                                 initialSelectedTabIndex = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
@@ -382,7 +373,6 @@ fun DataSetInstanceScreen(
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
                         onSectionSelected = { sectionUid ->
-                            tableCellSelection = TableSelection.Unselected()
                             dataSetTableViewModel.onSectionSelected(sectionUid)
                         },
                         dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
@@ -398,7 +388,7 @@ fun DataSetInstanceScreen(
                         currentSection = dataSetScreenState.currentSection(),
                         currentSelection = tableCellSelection,
                         onCellSelected = { cellSelection ->
-                            tableCellSelection = cellSelection
+                            dataSetTableViewModel.onResizingStatusChanged(cellSelection)
                         },
                         onTableResize = dataSetTableViewModel::onTableResize,
                         emptySectionMessage = stringResource(Res.string.empty_section_message),
@@ -418,7 +408,7 @@ fun DataSetInstanceScreen(
             }
 
             AnimatedVisibility(
-                visible = selectedCellInfo != null,
+                visible = selectedCellInfo is CellSelectionState.InputDataUiState,
                 enter = slideInVertically(
                     initialOffsetY = { fullHeight -> fullHeight },
                 ),
@@ -426,7 +416,10 @@ fun DataSetInstanceScreen(
                     targetOffsetY = { fullHeight -> fullHeight },
                 ),
             ) {
-                selectedCellInfo?.let { inputData ->
+                selectedCellInfo?.takeIf {
+                    it is CellSelectionState.InputDataUiState
+                }?.let { inputData ->
+                    require(inputData is CellSelectionState.InputDataUiState)
                     InputDialog(
                         modifier = Modifier.align(Alignment.BottomCenter)
                             .testTag(INPUT_DIALOG_TAG)
@@ -445,7 +438,12 @@ fun DataSetInstanceScreen(
                             Button(
                                 style = ButtonStyle.FILLED,
                                 text = inputData.buttonAction.buttonText,
-                                onClick = inputData.buttonAction.action,
+                                onClick = {
+                                    dataSetTableViewModel.onInputAction(
+                                        cellId = inputData.id,
+                                        isActionDone = inputData.buttonAction.isDoneAction,
+                                    )
+                                },
                                 icon = {
                                     Icon(
                                         imageVector = inputData.buttonAction.icon,
@@ -459,7 +457,6 @@ fun DataSetInstanceScreen(
                         onDismiss = {
                             scope.launch {
                                 dataSetTableViewModel.updateSelectedCell(null)
-                                tableCellSelection = TableSelection.Unselected()
                             }
                         },
                     )
@@ -769,7 +766,8 @@ private fun ContentLoading(
 @Composable
 private fun WarningInfoBar(message: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
+        modifier = Modifier.fillMaxWidth()
+            .padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(
@@ -885,7 +883,9 @@ private fun DataSetTable(
 
                 override fun onSelectionChange(newTableSelection: TableSelection) {
                     super.onSelectionChange(newTableSelection)
-                    onCellSelected(newTableSelection)
+                    if (newTableSelection !is TableSelection.CellSelection) {
+                        onCellSelected(newTableSelection)
+                    }
                 }
             },
             topContent = topContent,

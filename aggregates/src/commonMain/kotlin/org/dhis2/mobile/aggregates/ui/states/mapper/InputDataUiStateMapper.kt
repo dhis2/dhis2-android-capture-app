@@ -12,7 +12,7 @@ import org.dhis2.mobile.aggregates.model.CellValueExtra
 import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -26,6 +26,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
 internal class InputDataUiStateMapper(
     private val resourceManager: ResourceManager,
@@ -36,9 +37,8 @@ internal class InputDataUiStateMapper(
         cellInfo: CellInfo,
         validationError: String?,
         valueWithError: String?,
+        currentCell: TableSelection.CellSelection?,
         isLastCell: Boolean,
-        onDone: () -> Unit,
-        onNext: () -> Unit,
     ) = supervisorScope {
         InputDataUiState(
             id = cellId,
@@ -157,28 +157,25 @@ internal class InputDataUiStateMapper(
             isRequired = cellInfo.isRequired,
             buttonAction = getButtonAction(
                 isLastCell,
-                onDone,
-                onNext,
             ),
+            currentSelectedCell = currentCell,
         )
     }
 
     private suspend fun getButtonAction(
         isLastCell: Boolean,
-        onDone: () -> Unit,
-        onNext: () -> Unit,
     ): ButtonAction {
         return if (isLastCell) {
-            ButtonAction.Done(
+            ButtonAction(
                 buttonText = resourceManager.provideDone(),
                 icon = Icons.Default.Done,
-                action = onDone,
+                isDoneAction = true,
             )
         } else {
-            ButtonAction.Next(
+            ButtonAction(
                 buttonText = resourceManager.provideNext(),
                 icon = Icons.AutoMirrored.Outlined.ArrowForward,
-                action = onNext,
+                isDoneAction = false,
             )
         }
     }
