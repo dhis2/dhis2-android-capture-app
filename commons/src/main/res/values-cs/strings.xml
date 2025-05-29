@@ -260,7 +260,8 @@
 
     <string name="enrollment_data_section_label_V2">%s data</string>
     <string name="new_enrollment">Nový %s</string>
-    <string name="enrolling_ou">Zapsáno v:</string> <string name="new_event_label">Nový %s</string>
+    <string name="enrolling_ou">Zapsáno v:</string>
+    <string name="new_event_label">Nový %s</string>
     <string name="delete_event_label">Smazat %s</string>
     <string name="week_period_span_default_label">Týden %d %s až %s</string>
     <string name="enrollment_reopen">znovu otevřít</string>
