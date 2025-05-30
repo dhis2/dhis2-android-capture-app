@@ -890,6 +890,37 @@ internal class DataSetTableViewModelTest : KoinTest {
         }
     }
 
+    @Test
+    fun shouldKeepFirstSection() = runTest {
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onSectionSelected("section_uid1")
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid1")
+            }
+            viewModel.onSectionSelected("section_uid2")
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid2")
+            }
+            viewModel.onSectionSelected("section_uid1")
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid1")
+            }
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid1")
+            }
+            expectNoEvents()
+        }
+    }
+
     private suspend fun ReceiveTurbine<DataSetScreenState>.awaitInitialization() = with(this) {
         awaitItem()
         awaitItem()
