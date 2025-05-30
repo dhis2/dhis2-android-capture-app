@@ -1,6 +1,6 @@
 package org.dhis2.uicomponents.map.geometry.point
 
-import com.mapbox.geojson.Point
+import org.maplibre.geojson.Point
 import org.junit.Before
 import org.junit.Test
 

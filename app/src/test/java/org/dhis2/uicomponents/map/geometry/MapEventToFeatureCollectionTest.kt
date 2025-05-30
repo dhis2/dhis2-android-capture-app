@@ -1,7 +1,7 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection

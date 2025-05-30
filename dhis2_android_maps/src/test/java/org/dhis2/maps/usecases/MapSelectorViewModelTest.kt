@@ -4,10 +4,10 @@ import android.location.Geocoder
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

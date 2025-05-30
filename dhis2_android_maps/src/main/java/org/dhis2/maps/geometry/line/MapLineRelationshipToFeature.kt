@@ -1,8 +1,8 @@
 package org.dhis2.maps.geometry.line
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.LineString
+import org.maplibre.geojson.Point
 import org.dhis2.maps.geometry.areLngLatCorrect
 import org.dhis2.maps.geometry.closestPointTo
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper

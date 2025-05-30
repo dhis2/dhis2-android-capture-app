@@ -1,7 +1,7 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.FeatureCollection
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage

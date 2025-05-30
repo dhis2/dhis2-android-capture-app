@@ -1,6 +1,6 @@
 package org.dhis2.maps.extensions
 
-import com.mapbox.geojson.Feature
+import org.maplibre.geojson.Feature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection

@@ -1,6 +1,6 @@
 package org.dhis2.uicomponents.map.geometry.line
 
-import com.mapbox.geojson.LineString
+import org.maplibre.geojson.LineString
 import junit.framework.Assert.assertTrue
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.LINE_STRING
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModel

@@ -1,6 +1,6 @@
 package org.dhis2.maps.geometry.mapper
 
-import com.mapbox.geojson.Feature
+import org.maplibre.geojson.Feature
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.hisp.dhis.android.core.common.FeatureType

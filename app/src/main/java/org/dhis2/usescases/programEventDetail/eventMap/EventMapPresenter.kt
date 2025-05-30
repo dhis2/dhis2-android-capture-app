@@ -2,7 +2,7 @@ package org.dhis2.usescases.programEventDetail.eventMap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.mapbox.geojson.Feature
+import org.maplibre.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor

@@ -1,8 +1,8 @@
 package org.dhis2.maps.geometry.point
 
 import android.util.Log
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.dhis2.maps.geometry.areLngLatCorrect
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper

@@ -1,7 +1,7 @@
 package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo

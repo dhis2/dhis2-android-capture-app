@@ -1,7 +1,7 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.FeatureCollection
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.extensions.FeatureSource
 import org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.maps.geometry.bound.GetBoundingBox

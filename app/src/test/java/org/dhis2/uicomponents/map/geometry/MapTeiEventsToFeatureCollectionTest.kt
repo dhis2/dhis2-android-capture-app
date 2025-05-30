@@ -1,6 +1,6 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Point
+import org.maplibre.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID

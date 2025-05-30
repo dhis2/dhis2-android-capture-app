@@ -1,11 +1,11 @@
 package org.dhis2.maps.layer
 
 import android.graphics.Color
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.Property.VISIBILITY
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.Property.VISIBILITY
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.SymbolLayer
 import org.dhis2.maps.geometry.TEI_UID
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection

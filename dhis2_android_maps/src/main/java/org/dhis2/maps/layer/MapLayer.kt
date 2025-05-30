@@ -1,6 +1,6 @@
 package org.dhis2.maps.layer
 
-import com.mapbox.geojson.Feature
+import org.maplibre.geojson.Feature
 
 const val TYPE = "\$type"
 const val TYPE_POINT = "Point"

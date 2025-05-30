@@ -9,7 +9,7 @@ import androidx.compose.material.icons.outlined.Map
 import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
-import com.mapbox.geojson.BoundingBox
+import org.maplibre.geojson.BoundingBox
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

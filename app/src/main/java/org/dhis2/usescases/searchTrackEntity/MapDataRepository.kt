@@ -1,6 +1,6 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import com.mapbox.geojson.FeatureCollection
+import org.maplibre.geojson.FeatureCollection
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
 import org.dhis2.maps.extensions.filterTeiByLayerVisibility

@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import com.google.gson.Gson
-import com.mapbox.mapboxsdk.maps.Style
+import org.maplibre.android.maps.Style
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
 

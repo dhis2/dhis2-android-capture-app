@@ -1,6 +1,6 @@
 package org.dhis2.maps.geometry
 
-import com.mapbox.mapboxsdk.geometry.LatLng
+import org.maplibre.android.geometry.LatLng
 
 fun List<List<List<Double>>>.closestPointTo(point: List<Double>): List<Double> {
     val initPoint = point.toLatLn()

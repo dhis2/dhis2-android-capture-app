@@ -1,6 +1,6 @@
 package org.dhis2.maps.geometry.mapper.feature
 
-import com.mapbox.geojson.Feature
+import org.maplibre.geojson.Feature
 import org.dhis2.maps.extensions.FeatureSource
 import org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature

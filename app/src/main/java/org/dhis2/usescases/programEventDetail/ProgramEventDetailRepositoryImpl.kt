@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
 import androidx.paging.PagingData
-import com.mapbox.geojson.FeatureCollection
+import org.maplibre.geojson.FeatureCollection
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Single

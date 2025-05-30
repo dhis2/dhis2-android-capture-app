@@ -1,8 +1,8 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
+import org.maplibre.geojson.LineString
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature

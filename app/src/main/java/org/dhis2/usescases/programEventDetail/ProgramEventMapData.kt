@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.FeatureCollection
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.model.MapItemModel
 
 data class ProgramEventMapData(

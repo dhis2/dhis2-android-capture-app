@@ -2,7 +2,7 @@ package org.dhis2.maps.model
 
 import androidx.compose.runtime.Stable
 import androidx.recyclerview.widget.RecyclerView
-import com.mapbox.mapboxsdk.maps.MapView
+import org.maplibre.android.maps.MapView
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 
 @Stable

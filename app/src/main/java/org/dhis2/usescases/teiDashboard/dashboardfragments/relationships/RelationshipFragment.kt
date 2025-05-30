@@ -24,8 +24,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
-import com.mapbox.mapboxsdk.maps.MapView
+import org.maplibre.android.location.permissions.PermissionsManager
+import org.maplibre.android.maps.MapView
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app

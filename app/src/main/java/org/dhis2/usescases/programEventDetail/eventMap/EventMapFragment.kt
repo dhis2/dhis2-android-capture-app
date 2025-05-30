@@ -21,7 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
-import com.mapbox.mapboxsdk.maps.MapView
+import org.maplibre.android.maps.MapView
 import org.dhis2.R
 import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.data.ProgramEventViewModel

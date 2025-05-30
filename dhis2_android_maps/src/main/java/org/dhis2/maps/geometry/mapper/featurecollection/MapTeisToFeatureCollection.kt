@@ -1,8 +1,8 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.mapper.addTeiEnrollmentInfo
 import org.dhis2.maps.geometry.mapper.addTeiInfo
