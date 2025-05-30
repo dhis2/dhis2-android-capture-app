@@ -85,7 +85,6 @@ dependencies {
     api "androidx.appcompat:appcompat:${libraries.appcompat}"
     api "com.google.android.material:material:${libraries.material}"
     api "com.google.code.gson:gson:${libraries.gson}"
-    api "de.adorsys.android:securestoragelibrary:${libraries.latestSecureStorageVersion}"
     api "com.google.dagger:dagger:${libraries.dagger}"
     kapt "com.google.dagger:dagger-compiler:${libraries.dagger}"
     api "androidx.fragment:fragment-ktx:${libraries.fragmentktx}"

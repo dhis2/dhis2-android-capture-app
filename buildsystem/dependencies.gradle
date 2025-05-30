@@ -90,7 +90,7 @@ ext {
 
             //Security
             latestSecureStorageVersion: "1.2.2",
-            goldfinger                : "2.0.1",
+            goldfinger                : "2.2.0",
             root                      : "0.0.7",
             openid                    : "0.8.1",
             conscrypt                 : "2.5.2",
