@@ -71,8 +71,7 @@ class UiActionHandlerImpl(
         ) { uris ->
             if (uris.isNotEmpty()) {
                 callback?.invoke(uris.firstOrNull()?.toFile(context = context)?.path)
-            } 
-            else {
+            } else {
                 onFailure?.invoke()
             }
         }
