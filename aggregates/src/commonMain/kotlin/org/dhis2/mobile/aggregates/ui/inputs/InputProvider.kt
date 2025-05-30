@@ -86,7 +86,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
-import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.mobile.ui.designsystem.component.state.InputAgeData
@@ -352,12 +351,9 @@ internal fun InputProvider(
         }
 
         InputType.FileResource -> {
-            var uploadingState by remember(inputData.fileExtras().filePath) {
+            var uploadingState by remember(inputData.fileExtras().fileState) {
                 mutableStateOf(
-                    when (inputData.fileExtras().filePath) {
-                        null -> UploadFileState.ADD
-                        else -> UploadFileState.LOADED
-                    },
+                    inputData.fileExtras().fileState,
                 )
             }
 
@@ -366,10 +362,9 @@ internal fun InputProvider(
             InputFileResource(
                 title = inputData.label,
                 buttonText = stringResource(Res.string.add_file),
-                fileName = file?.name,
+                fileName = inputData.displayValue,
                 fileWeight = file?.length()?.let { fileSizeLabel(it) },
                 onSelectFile = {
-                    uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnSelectFile(inputData.id))
                 },
                 onUploadFile = {
