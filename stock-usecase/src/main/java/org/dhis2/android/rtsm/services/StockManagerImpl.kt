@@ -31,9 +31,8 @@ import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 import java.util.Collections
-import javax.inject.Inject
 
-class StockManagerImpl @Inject constructor(
+class StockManagerImpl(
     val d2: D2,
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,

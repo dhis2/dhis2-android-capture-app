@@ -13,7 +13,6 @@ plugins {
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
-    id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
@@ -105,9 +104,6 @@ android {
 
         manifestPlaceholders["appAuthRedirectScheme"] = ""
 
-        javaCompileOptions
-            .annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
-            "true"
     }
     packaging {
         jniLibs {
@@ -232,6 +228,14 @@ android {
 
         }
     }
+
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+        arg("room.expandProjection", "true")
+        // Enable debug logs
+        arg("ksp.logging.level", "DEBUG")
+    }
 }
 
 kotlin {
@@ -272,7 +276,6 @@ dependencies {
     implementation(libs.github.pinlock)
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
-    implementation(libs.dagger.hilt.android)
     implementation(libs.network.okhttp)
     implementation(libs.dates.jodatime)
     implementation(libs.analytics.matomo)
@@ -289,7 +292,6 @@ dependencies {
     "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
     ksp(libs.dagger.compiler)
-    ksp(libs.dagger.hilt.android.compiler)
     ksp(libs.deprecated.autoValueParcel)
 
     testImplementation(libs.test.archCoreTesting)

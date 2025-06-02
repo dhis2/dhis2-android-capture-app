@@ -10,9 +10,8 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
-import javax.inject.Inject
 
-class MetadataManagerImpl @Inject constructor(
+class MetadataManagerImpl(
     private val d2: D2,
     private val dispatcher: StockDispatcherProvider,
 ) : MetadataManager {

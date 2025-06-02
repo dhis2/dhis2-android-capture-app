@@ -214,7 +214,7 @@ private fun TextInputContent(
                             textFieldValueState,
                             it,
                             onTextChanged,
-                            textInputModel
+                            textInputModel,
                         )
                     },
                     textStyle = TextStyle.Default.copy(
@@ -274,7 +274,7 @@ fun manageOnValueChanged(
     textFieldValueState: TextFieldValue,
     newValue: TextFieldValue,
     onTextChanged: (TextInputModel) -> Unit,
-    textInputModel: TextInputModel
+    textInputModel: TextInputModel,
 ): TextFieldValue {
     return if (textInputModel.regex != null) {
         if (textInputModel.regex.matches(newValue.text)) {

@@ -9,7 +9,6 @@ buildscript {
     dependencies {
         classpath(libs.gradlePlugin)
         classpath(libs.kotlinPlugin)
-        classpath(libs.hiltPlugin)
         classpath(libs.jacoco)
         classpath(libs.kotlinSerialization)
     }

@@ -14,7 +14,8 @@ class CrashReportControllerImpl : CrashReportController {
             val sentryUser = io.sentry.protocol.User().apply {
                 user?.let { this.username = user }
                 server?.let {
-                    data?.put(SERVER_NAME, server) }
+                    data?.put(SERVER_NAME, server)
+                }
             }
             Sentry.setUser(sentryUser)
         }

@@ -3,10 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("com.android.library")
     kotlin("android")
-    kotlin("kapt")
-    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
-    id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
 }
@@ -28,12 +25,6 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         testOptions.targetSdk = libs.versions.sdk.get().toInt()
         multiDexEnabled = true
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments["dagger.hilt.disableCrossCompilationRootValidation"] = "true"
-            }
-        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -91,10 +82,13 @@ dependencies {
     implementation(project(":compose-table"))
     implementation(project(":dhis2-mobile-program-rules"))
     implementation(project(":dhis_android_analytics"))
-
+    api(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.composeVM)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.bundles.stock.implementation)
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
-    ksp(libs.dagger.hilt.compiler)
     testImplementation(libs.bundles.stock.test)
 }

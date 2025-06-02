@@ -6,7 +6,7 @@ vCode = "143"
 vName = "3.3.0-DEV"
 gradle = "8.9.3"
 kotlin = '2.1.21'
-hilt = '2.47'
+dagger = '2.56.2'
 jacoco = '0.8.10'
 designSystem = "0.6.0-SNAPSHOT"
 dhis2sdk = "1.13.0-SNAPSHOT"
@@ -81,7 +81,7 @@ rxrelay = "2.1.1"
 preference_ktx = "1.2.1"
 uiautomator = "2.3.0"
 maplibre = "11.9.0"
-maplibregeogson = "6.0.1"
+maplibregeogson = "5.9.0"
 material3WindowSize = "1.3.2"
 material3WindowSizeCompose = "1.7.3"
 material3AdaptiveAndroid = "1.1.0"
@@ -97,7 +97,6 @@ ksp = "2.1.21-2.0.1"
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinSerialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
-hiltPlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt" }
 jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
 dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine-jvm", version.ref = "ruleEngine" }
@@ -127,7 +126,7 @@ androidx-multidex = { group = "androidx.multidex", name = "multidex", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
 androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
-androidx-workgcm = { group = "androidx.work", name = "work-gcm", version.ref = "work" }
+#androidx-workgcm = { group = "androidx.work", name = "work-gcm", version.ref = "work" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exif" }
 androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
@@ -146,11 +145,8 @@ google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gs
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 network-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 dates-jodatime = { group = "joda-time", name = "joda-time", version.ref = "jodatime" }
-dagger = { group = "com.google.dagger", name = "dagger", version.ref = "hilt" }
-dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "hilt" }
-dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
-dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava" }
 rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
 rx-binding-compat = { group = "com.jakewharton.rxbinding2", name = "rxbinding-appcompat-v7", version.ref = "rxbindings" }
@@ -239,7 +235,8 @@ table-implementation = ["kotlin-serialization-json", "androidx-appcompat", "andr
 table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifest"]
 table-test = ["test-junit"]
 table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx", "test-espresso"]
-stock-implementation = ["androidx-activity-compose", "androidx-annotation", "rx-relay", "security-openId", "androidx-preferenceKtx", "androidx-work", "androidx-workgcm", "androidx-activityKtx", "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash", "dagger-hilt-android"]
+stock-implementation = ["androidx-activity-compose", "androidx-annotation", "rx-relay", "security-openId", "androidx-preferenceKtx", "androidx-work", "androidx-activityKtx", "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash"]
+#"androidx-workgcm"
 stock-core = ["desugar"]
 stock-test = ["test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker", "test-kotlinCoroutines"]
 tracker-implementation = ["androidx-lifecycle-viewmodel-compose", "androidx-activity-compose"]

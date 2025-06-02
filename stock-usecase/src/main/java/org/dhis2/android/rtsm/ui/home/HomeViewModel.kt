@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,11 +37,9 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
-import javax.inject.Inject
 
 @SuppressLint("MutableCollectionMutableState")
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val metadataManager: MetadataManager,

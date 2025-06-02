@@ -62,7 +62,6 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
-import dagger.hilt.android.HiltAndroidApp;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 import io.reactivex.Scheduler;
@@ -74,7 +73,6 @@ import io.sentry.SentryLevel;
 import io.sentry.android.core.SentryAndroid;
 import timber.log.Timber;
 
-@HiltAndroidApp
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
 
     @NonNull
