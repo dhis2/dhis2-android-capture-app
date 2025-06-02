@@ -21,7 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
-import org.maplibre.android.maps.MapView
 import org.dhis2.R
 import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.data.ProgramEventViewModel
@@ -48,6 +47,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.maplibre.android.maps.MapView
 import javax.inject.Inject
 
 class EventMapFragment :

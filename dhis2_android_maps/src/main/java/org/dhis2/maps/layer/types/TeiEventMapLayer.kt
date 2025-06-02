@@ -1,6 +1,13 @@
 package org.dhis2.maps.layer.types
 
-import org.maplibre.geojson.Feature
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.maps.layer.MapLayer
+import org.dhis2.maps.layer.MapLayerManager
+import org.dhis2.maps.layer.isPoint
+import org.dhis2.maps.layer.isPolygon
+import org.dhis2.maps.layer.withInitialVisibility
+import org.dhis2.maps.layer.withTEIMarkerProperties
+import org.hisp.dhis.android.core.common.FeatureType
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
@@ -10,14 +17,7 @@ import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
-import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.maps.layer.MapLayer
-import org.dhis2.maps.layer.MapLayerManager
-import org.dhis2.maps.layer.isPoint
-import org.dhis2.maps.layer.isPolygon
-import org.dhis2.maps.layer.withInitialVisibility
-import org.dhis2.maps.layer.withTEIMarkerProperties
-import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.geojson.Feature
 
 class TeiEventMapLayer(
     val style: Style,

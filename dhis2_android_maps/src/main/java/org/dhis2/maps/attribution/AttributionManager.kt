@@ -9,10 +9,10 @@ import android.text.style.URLSpan
 import android.widget.Toast
 import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
-import org.maplibre.android.MapStrictMode
-import org.maplibre.android.maps.AttributionDialogManager
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.maplibre.android.MapStrictMode
+import org.maplibre.android.maps.AttributionDialogManager
 import org.maplibre.android.maps.MapLibreMap
 
 class AttributionManager(

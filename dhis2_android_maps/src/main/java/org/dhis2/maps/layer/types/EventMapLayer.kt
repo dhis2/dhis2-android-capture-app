@@ -1,8 +1,11 @@
 package org.dhis2.maps.layer.types
 
 import android.graphics.Color
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.FeatureCollection
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
+import org.dhis2.maps.managers.EventMapManager
+import org.hisp.dhis.android.core.common.FeatureType
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
@@ -11,11 +14,8 @@ import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
-import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
-import org.dhis2.maps.layer.MapLayer
-import org.dhis2.maps.managers.EventMapManager
-import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class EventMapLayer(
     val style: Style,

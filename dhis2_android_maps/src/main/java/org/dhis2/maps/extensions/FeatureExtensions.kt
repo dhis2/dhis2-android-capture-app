@@ -1,6 +1,5 @@
 package org.dhis2.maps.extensions
 
-import org.maplibre.geojson.Feature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
@@ -10,6 +9,7 @@ import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_ID
 import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_SELECTED
 import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_SUBTITLE
 import org.dhis2.maps.layer.types.FEATURE_PROPERTY_PLACES_TITLE
+import org.maplibre.geojson.Feature
 import java.util.UUID
 
 fun Feature.source(): FeatureSource? {

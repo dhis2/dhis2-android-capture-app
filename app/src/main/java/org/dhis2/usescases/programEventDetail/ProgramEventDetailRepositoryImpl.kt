@@ -1,7 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
 import androidx.paging.PagingData
-import org.maplibre.geojson.FeatureCollection
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -23,6 +22,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.maplibre.geojson.FeatureCollection
 
 class ProgramEventDetailRepositoryImpl internal constructor(
     private val programUid: String,

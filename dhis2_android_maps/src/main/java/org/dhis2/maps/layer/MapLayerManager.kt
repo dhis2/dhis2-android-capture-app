@@ -2,8 +2,6 @@ package org.dhis2.maps.layer
 
 import android.graphics.Color
 import androidx.annotation.ColorRes
-import org.maplibre.geojson.Feature
-import org.maplibre.android.maps.Style
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
@@ -18,6 +16,8 @@ import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
+import org.maplibre.geojson.Feature
 
 class MapLayerManager(
     val maplibreMap: MapLibreMap,

@@ -1,10 +1,10 @@
 package org.dhis2.maps.geometry.mapper
 
-import org.maplibre.geojson.Feature
 import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.maplibre.geojson.Feature
 
 class MapGeometryToFeature(
     private val pointMapper: MapPointToFeature,

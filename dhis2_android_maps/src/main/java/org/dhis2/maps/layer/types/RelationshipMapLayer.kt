@@ -1,8 +1,18 @@
 package org.dhis2.maps.layer.types
 
 import android.graphics.Color
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.FeatureCollection
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
+import org.dhis2.maps.layer.MapLayer
+import org.dhis2.maps.layer.isBiderectional
+import org.dhis2.maps.layer.isLine
+import org.dhis2.maps.layer.isPoint
+import org.dhis2.maps.layer.isPolygon
+import org.dhis2.maps.layer.isUnidirectional
+import org.dhis2.maps.layer.withInitialVisibility
+import org.dhis2.maps.layer.withTEIMarkerProperties
+import org.dhis2.maps.managers.RelationshipMapManager
+import org.hisp.dhis.android.core.common.FeatureType
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
@@ -17,18 +27,8 @@ import org.maplibre.android.style.layers.PropertyFactory.lineWidth
 import org.maplibre.android.style.layers.PropertyFactory.visibility
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
-import org.dhis2.commons.resources.ColorUtils
-import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
-import org.dhis2.maps.layer.MapLayer
-import org.dhis2.maps.layer.isBiderectional
-import org.dhis2.maps.layer.isLine
-import org.dhis2.maps.layer.isPoint
-import org.dhis2.maps.layer.isPolygon
-import org.dhis2.maps.layer.isUnidirectional
-import org.dhis2.maps.layer.withInitialVisibility
-import org.dhis2.maps.layer.withTEIMarkerProperties
-import org.dhis2.maps.managers.RelationshipMapManager
-import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class RelationshipMapLayer(
     val style: Style,

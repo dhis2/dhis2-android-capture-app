@@ -1,11 +1,11 @@
 package org.dhis2.maps.geometry.mapper
 
-import org.maplibre.geojson.Feature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelationshipUiComponentModel
+import org.maplibre.geojson.Feature
 
 internal fun Feature?.addTeiInfo(mapItemModel: MapItemModel): Feature? {
     if (this != null) {

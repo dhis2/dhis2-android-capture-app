@@ -3,9 +3,9 @@ package org.dhis2.maps.geometry.point
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import org.maplibre.geojson.Point
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Point
 
 class PointViewModel : ViewModel() {
 

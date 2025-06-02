@@ -4,10 +4,6 @@ import android.location.Geocoder
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.Point
-import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.geometry.LatLngBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +32,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any

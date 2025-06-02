@@ -2,7 +2,6 @@ package org.dhis2.usescases.programEventDetail.eventMap
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import org.maplibre.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -17,6 +16,7 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailRepository
 import org.dhis2.usescases.programEventDetail.ProgramEventMapData
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.geojson.Feature
 import timber.log.Timber
 
 class EventMapPresenter(

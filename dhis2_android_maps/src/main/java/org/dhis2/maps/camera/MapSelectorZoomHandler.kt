@@ -1,10 +1,5 @@
 package org.dhis2.maps.camera
 
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.FeatureCollection
-import org.maplibre.android.camera.CameraUpdate
-import org.maplibre.android.camera.CameraUpdateFactory
-import org.maplibre.android.geometry.LatLng
 import org.dhis2.maps.extensions.toLatLngBounds
 import org.dhis2.maps.geometry.getCameraUpdate
 import org.dhis2.maps.geometry.getLatLng
@@ -19,7 +14,12 @@ import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_MANUAL
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_PIN_CLICKED
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_SWIPE
 import org.dhis2.maps.views.SelectedLocation
+import org.maplibre.android.camera.CameraUpdate
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 const val INITIAL_ZOOM_LEVEL = 13.0
 const val SEARCH_ZOOM_LEVEL = 15.0

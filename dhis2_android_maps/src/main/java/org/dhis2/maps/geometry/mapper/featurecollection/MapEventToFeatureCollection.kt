@@ -1,13 +1,13 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import org.maplibre.geojson.BoundingBox
-import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.extensions.FeatureSource
 import org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.hisp.dhis.android.core.event.Event
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
 
 class MapEventToFeatureCollection(
     private val mapGeometryToFeature: MapGeometryToFeature,

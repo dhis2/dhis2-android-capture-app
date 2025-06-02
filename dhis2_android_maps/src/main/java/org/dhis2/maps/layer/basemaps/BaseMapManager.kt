@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources
 import com.google.gson.Gson
-import org.maplibre.android.maps.Style
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.basemaps.BaseMapStyleBuilder.internalBaseMap
+import org.maplibre.android.maps.Style
 
 const val OSM_LIGHT = "OSM Light"
 const val OSM_DETAILED = "OSM Detailed"

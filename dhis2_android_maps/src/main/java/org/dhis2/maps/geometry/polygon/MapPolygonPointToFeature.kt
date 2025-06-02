@@ -1,9 +1,9 @@
 package org.dhis2.maps.geometry.polygon
 
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.Point
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.Geometry
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 
 class MapPolygonPointToFeature {
     fun map(geometry: Geometry): Feature? {

@@ -1,7 +1,11 @@
 package org.dhis2.maps.layer.types
 
 import android.graphics.Color
-import org.maplibre.geojson.Feature
+import org.dhis2.maps.layer.MapLayer
+import org.dhis2.maps.layer.MapLayerManager
+import org.dhis2.maps.layer.isLine
+import org.dhis2.maps.layer.isPoint
+import org.dhis2.maps.layer.isPolygon
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.FillLayer
@@ -12,11 +16,7 @@ import org.maplibre.android.style.layers.Property.ICON_ANCHOR_BOTTOM
 import org.maplibre.android.style.layers.PropertyFactory
 import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.android.style.sources.GeoJsonSource
-import org.dhis2.maps.layer.MapLayer
-import org.dhis2.maps.layer.MapLayerManager
-import org.dhis2.maps.layer.isLine
-import org.dhis2.maps.layer.isPoint
-import org.dhis2.maps.layer.isPolygon
+import org.maplibre.geojson.Feature
 
 private const val SELECTED_PLACE_LAYER_ID = "SELECTED_PLACE_LAYER_ID"
 const val PLACES_LAYER_ID = "PLACES_LAYER_ID"

@@ -1,9 +1,9 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.utils.CoordinateAttributeInfo
 import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.dhis2.maps.utils.CoordinateFieldInfo
+import org.maplibre.geojson.FeatureCollection
 
 class MapCoordinateFieldToFeatureCollection(
     private val mapDataElementToFeature: MapDataElementToFeature,

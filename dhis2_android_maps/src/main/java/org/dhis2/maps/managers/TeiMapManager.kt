@@ -10,14 +10,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.target.CustomTarget
-import org.maplibre.geojson.BoundingBox
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.FeatureCollection
-import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.location.engine.LocationEngine
-import org.maplibre.android.maps.MapView
-import org.maplibre.android.style.sources.GeoJsonSource
-import org.maplibre.android.utils.BitmapUtils
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.TeiMarkers
@@ -31,6 +23,14 @@ import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.location.engine.LocationEngine
+import org.maplibre.android.maps.MapView
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.android.utils.BitmapUtils
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class TeiMapManager(
     mapView: MapView,

@@ -1,12 +1,11 @@
 package org.dhis2.maps.utils
 
-import org.maplibre.android.gestures.MoveGestureDetector
-import org.maplibre.android.gestures.StandardScaleGestureDetector
-import org.maplibre.android.geometry.LatLng
-import org.maplibre.android.geometry.LatLngBounds
-
 import org.dhis2.maps.extensions.getSquareVertices
 import org.dhis2.maps.extensions.toLatLngBounds
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.gestures.MoveGestureDetector
+import org.maplibre.android.gestures.StandardScaleGestureDetector
 import org.maplibre.android.maps.MapLibreMap
 
 abstract class OnMoveListener : MapLibreMap.OnMoveListener {

@@ -3,11 +3,11 @@ package org.dhis2.maps.location
 import android.app.PendingIntent
 import android.content.Context
 import android.os.Looper
+import org.dhis2.commons.locationprovider.LocationProviderImpl
 import org.maplibre.android.location.engine.LocationEngine
 import org.maplibre.android.location.engine.LocationEngineCallback
 import org.maplibre.android.location.engine.LocationEngineRequest
 import org.maplibre.android.location.engine.LocationEngineResult
-import org.dhis2.commons.locationprovider.LocationProviderImpl
 import java.lang.Exception
 
 class MapLocationEngine(context: Context) : LocationProviderImpl(context), LocationEngine {

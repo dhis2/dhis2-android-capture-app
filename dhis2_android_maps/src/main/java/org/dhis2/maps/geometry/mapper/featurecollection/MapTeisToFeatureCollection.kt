@@ -1,8 +1,5 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import org.maplibre.geojson.BoundingBox
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.mapper.addTeiEnrollmentInfo
 import org.dhis2.maps.geometry.mapper.addTeiInfo
@@ -12,6 +9,9 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.model.MapItemModel
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class MapTeisToFeatureCollection(
     private val bounds: BoundsGeometry,

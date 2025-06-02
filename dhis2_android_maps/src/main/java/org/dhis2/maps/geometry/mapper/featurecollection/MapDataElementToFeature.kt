@@ -1,9 +1,9 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.FeatureCollection
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 import javax.inject.Inject
 
 class MapDataElementToFeature @Inject constructor(

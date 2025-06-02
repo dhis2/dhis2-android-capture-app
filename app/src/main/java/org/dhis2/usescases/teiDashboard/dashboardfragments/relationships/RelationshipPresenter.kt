@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import org.maplibre.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -28,6 +27,7 @@ import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.maplibre.geojson.Feature
 
 class RelationshipPresenter internal constructor(
     private val view: RelationshipView,

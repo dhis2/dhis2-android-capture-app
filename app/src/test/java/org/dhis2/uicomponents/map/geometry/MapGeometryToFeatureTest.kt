@@ -1,8 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import org.maplibre.geojson.Feature
-import org.maplibre.geojson.Point
-import org.maplibre.geojson.Polygon
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
@@ -15,6 +12,9 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever

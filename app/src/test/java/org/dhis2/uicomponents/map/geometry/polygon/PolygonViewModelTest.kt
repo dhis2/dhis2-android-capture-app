@@ -1,10 +1,10 @@
 package org.dhis2.uicomponents.map.geometry.polygon
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import org.maplibre.geojson.Point
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.maplibre.geojson.Point
 
 class PolygonViewModelTest {
 

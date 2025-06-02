@@ -1,6 +1,5 @@
 package org.dhis2.uicomponents.map.geometry.line
 
-import org.maplibre.geojson.LineString
 import junit.framework.Assert.assertTrue
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.LINE_STRING
 import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshipUiComponentModel
@@ -8,6 +7,7 @@ import org.dhis2.uicomponents.map.mocks.RelationshipUiCompomentDummy.relationshi
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
+import org.maplibre.geojson.LineString
 
 class MapLineToRelationshipFeatureTest {
 
