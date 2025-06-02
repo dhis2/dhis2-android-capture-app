@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <application>
+    <application
+        android:allowBackup="false">
         <provider
             android:name=".data.files.AggregatesProvider"
             android:authorities="${applicationId}.aggregates.data.AggregatesFileProvider"
