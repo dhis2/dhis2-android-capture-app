@@ -120,6 +120,6 @@ android {
 
 dependencies {
     debugImplementation(libs.androidx.compose.preview)
-    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.compose.uitooling)
 }
 

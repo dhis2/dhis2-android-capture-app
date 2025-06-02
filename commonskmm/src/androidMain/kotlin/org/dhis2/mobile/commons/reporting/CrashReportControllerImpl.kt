@@ -13,7 +13,8 @@ class CrashReportControllerImpl : CrashReportController {
         if (isCrashReportPermissionGranted()) {
             val sentryUser = io.sentry.protocol.User().apply {
                 user?.let { this.username = user }
-                server?.let { others?.put(SERVER_NAME, server) }
+                server?.let {
+                    data?.put(SERVER_NAME, server) }
             }
             Sentry.setUser(sentryUser)
         }

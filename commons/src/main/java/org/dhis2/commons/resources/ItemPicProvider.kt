@@ -43,7 +43,7 @@ fun ImageView.setItemPic(
             textView?.visibility = View.VISIBLE
             textView?.clipWithAllRoundedCorners(20.dp)
             setImageDrawable(null)
-            textView?.text = defaultValue.first().toString().toUpperCase(Locale.getDefault())
+            textView?.text = defaultValue.first().toString().uppercase(Locale.getDefault())
             textView?.setTextColor(colorUtils.getAlphaContrastColor(defaultColorRes))
             textView?.setBackgroundColor(defaultColorRes)
         }

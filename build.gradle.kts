@@ -19,6 +19,9 @@ plugins {
     id("org.jlleitschuh.gradle.ktlint").version("11.5.1")
     id("org.sonarqube").version("3.5.0.2730")
     id("com.github.ben-manes.versions").version("0.46.0")
+    alias(libs.plugins.compose) apply false
+    alias(libs.plugins.kotlin.compose.compiler) apply false
+    alias(libs.plugins.ksp) apply false
 }
 
 sonarqube {

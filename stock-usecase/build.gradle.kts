@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.serialization)
@@ -94,10 +95,6 @@ dependencies {
     implementation(libs.bundles.stock.implementation)
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
-    kapt(libs.bundles.stock.kapt)
+    ksp(libs.dagger.hilt.compiler)
     testImplementation(libs.bundles.stock.test)
-}
-
-kapt {
-    correctErrorTypes = true
 }

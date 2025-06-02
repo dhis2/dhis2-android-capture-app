@@ -10,6 +10,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     id("dagger.hilt.android.plugin")
@@ -287,9 +288,9 @@ dependencies {
     "dhis2PlayServicesImplementation"(libs.google.auth)
     "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.hilt.android.compiler)
-    kapt(libs.deprecated.autoValueParcel)
+    ksp(libs.dagger.compiler)
+    ksp(libs.dagger.hilt.android.compiler)
+    ksp(libs.deprecated.autoValueParcel)
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)
