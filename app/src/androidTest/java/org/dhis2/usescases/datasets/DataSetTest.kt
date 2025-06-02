@@ -699,7 +699,7 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(2, getListItemCount())
+            checkDataSetRecyclerItemsAreDisplayed(2)
         }
 
         filterRobot(composeTestRule) {

@@ -3,11 +3,9 @@ package org.dhis2.usescases.datasets
 import android.view.View
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
@@ -18,12 +16,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
@@ -32,8 +29,10 @@ import org.dhis2.utils.AdapterItemPosition
 import org.dhis2.utils.AdapterItemTitle
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.equalTo
-import org.hisp.dhis.lib.expression.ast.Tag
 import org.junit.Assert.assertTrue
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 internal fun dataSetDetailRobot(
@@ -111,6 +110,29 @@ internal class DataSetDetailRobot(
             })
         )
         return itemCount[0]
+    }
+
+    fun checkDataSetRecyclerItemsAreDisplayed(itemCount: Int) {
+        waitForView(withId(R.id.recycler))
+            .perform(waitForRecyclerViewItems(minItemCount = 2))
+        onView(withId(R.id.recycler)).check(matches(isDisplayed()))
+    }
+
+    private fun waitForRecyclerViewItems(minItemCount: Int = 1, timeoutMs: Long = 5000): ViewAction {
+        return object : ViewAction {
+            override fun getConstraints() = isAssignableFrom(RecyclerView::class.java)
+            override fun getDescription() = "Wait for RecyclerView to have at least $minItemCount items"
+            override fun perform(uiController: UiController, view: View) {
+                val recyclerView = view as RecyclerView
+                val startTime = System.currentTimeMillis()
+                while ((recyclerView.adapter?.itemCount ?: 0) < minItemCount) {
+                    if (System.currentTimeMillis() - startTime > timeoutMs) {
+                        throw AssertionError("RecyclerView did not reach $minItemCount items in $timeoutMs ms")
+                    }
+                    uiController.loopMainThreadForAtLeast(50)
+                }
+            }
+        }
     }
 
     private fun getTitleFromRecyclerViewItem(
