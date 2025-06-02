@@ -63,6 +63,7 @@ import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
+import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
@@ -486,13 +487,16 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnSelectFile -> {
+                    updateFileLoadingState(UploadFileState.UPLOADING)
                     uiActionHandler.onSelectFile(
                         uiAction.cellId,
-                    ) { result ->
-                        result?.let {
-                            uploadFile(uiAction.cellId, result)
-                        }
-                    }
+                        { result ->
+                            result?.let { uploadFile(uiAction.cellId, result) }
+                        },
+                        {
+                            updateFileLoadingState(UploadFileState.ADD)
+                        },
+                    )
                 }
 
                 is UiAction.OnShareImage -> {
@@ -518,6 +522,24 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnFetchOptions ->
                     updateSelectedCell(uiAction.cellId, true)
+            }
+        }
+    }
+
+    private fun updateFileLoadingState(state: UploadFileState) {
+        viewModelScope.launch(dispatcher.io()) {
+            _dataSetScreenState.update {
+                (it as? DataSetScreenState.Loaded)?.copy(
+                    selectedCellInfo = if (it.selectedCellInfo is CellSelectionState.InputDataUiState) {
+                        it.selectedCellInfo.copy(
+                            inputExtra = it.selectedCellInfo.fileExtras().copy(
+                                fileState = state,
+                            ),
+                        )
+                    } else {
+                        it.selectedCellInfo
+                    },
+                ) ?: it
             }
         }
     }
