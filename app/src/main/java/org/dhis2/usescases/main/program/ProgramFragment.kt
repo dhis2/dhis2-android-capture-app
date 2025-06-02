@@ -89,6 +89,11 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         programViewModel.init()
     }
 
+    override fun onPause() {
+        super.onPause()
+        programViewModel.dispose()
+    }
+
     //endregion
 
     override fun setTutorial() {
