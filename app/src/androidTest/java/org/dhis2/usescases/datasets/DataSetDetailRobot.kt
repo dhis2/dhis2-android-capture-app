@@ -114,7 +114,7 @@ internal class DataSetDetailRobot(
 
     fun checkDataSetRecyclerItemsAreDisplayed(itemCount: Int) {
         waitForView(withId(R.id.recycler))
-            .perform(waitForRecyclerViewItems(minItemCount = 2))
+            .perform(waitForRecyclerViewItems(minItemCount = itemCount))
     }
 
     private fun waitForRecyclerViewItems(minItemCount: Int = 1, timeoutMs: Long = 5000): ViewAction {
