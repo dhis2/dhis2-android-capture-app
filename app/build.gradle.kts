@@ -293,6 +293,7 @@ dependencies {
 
     ksp(libs.dagger.compiler)
     ksp(libs.deprecated.autoValueParcel)
+    ksp(libs.deprecated.autoValueParcel)
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)
