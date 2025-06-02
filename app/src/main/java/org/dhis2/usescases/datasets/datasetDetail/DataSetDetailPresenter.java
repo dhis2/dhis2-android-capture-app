@@ -58,7 +58,7 @@ public class DataSetDetailPresenter {
 
         disposable.add(
                 filterManager.asFlowable().startWith(filterManager)
-                        .flatMap(filterManager -> {
+                        .flatMap(result -> {
                             CoroutineTracker.INSTANCE.increment();
                             return Flowable.just(filterRepository.dataSetFilters(dataSetDetailRepository.getDataSetUid()));
                         })
