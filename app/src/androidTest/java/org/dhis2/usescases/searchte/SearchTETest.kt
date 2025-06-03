@@ -3,10 +3,7 @@ package org.dhis2.usescases.searchte
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import dispatch.android.espresso.IdlingDispatcherProvider
-import dispatch.android.espresso.IdlingDispatcherProviderRule
 import org.dhis2.R
-import org.dhis2.bindings.app
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_EVENTS_EMPTY_RESPONSE
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_EVENTS_PATH
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_TRACKED_ENTITY_EMPTY_RESPONSE
@@ -27,15 +24,6 @@ class SearchTETest : BaseTest() {
 
     @get:Rule
     val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
-
-    private val customDispatcherProvider =
-        context.applicationContext.app().appComponent().customDispatcherProvider()
-
-    @JvmField
-    @Rule
-    val idlingRule = IdlingDispatcherProviderRule {
-        IdlingDispatcherProvider(customDispatcherProvider)
-    }
 
     @get:Rule
     val composeTestRule = createComposeRule()

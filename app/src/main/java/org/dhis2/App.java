@@ -200,7 +200,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .workManagerController(new WorkManagerModule())
                 .sessionManagerService(new SessionManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
-                .customDispatcher(new CustomDispatcherModule())
                 .featureConfigModule(new FeatureConfigModule());
     }
 
