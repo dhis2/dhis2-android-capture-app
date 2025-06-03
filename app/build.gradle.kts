@@ -281,8 +281,8 @@ dependencies {
     implementation(libs.analytics.matomo)
     implementation(libs.analytics.rxlint)
     implementation(libs.analytics.customactivityoncrash)
-    implementation(platform(libs.dispatcher.dispatchBOM))
-    implementation(libs.dispatcher.dispatchCore)
+//    implementation(platform(libs.dispatcher.dispatchBOM))
+//    implementation(libs.dispatcher.dispatchCore)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
 
@@ -292,8 +292,8 @@ dependencies {
     "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
     ksp(libs.dagger.compiler)
-    ksp(libs.deprecated.autoValueParcel)
-    ksp(libs.deprecated.autoValueParcel)
+//    ksp(libs.deprecated.autoValueParcel)
+//    ksp(libs.deprecated.autoValueParcel)
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)
@@ -321,5 +321,5 @@ dependencies {
     androidTestImplementation(libs.test.rx2.idler)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
-    androidTestImplementation(libs.dispatcher.dispatchEspresso)
+//    androidTestImplementation(libs.dispatcher.dispatchEspresso)
 }
