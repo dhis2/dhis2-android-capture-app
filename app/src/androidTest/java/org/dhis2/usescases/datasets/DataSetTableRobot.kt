@@ -399,6 +399,11 @@ internal class DataSetTableRobot(
         }
     }
 
+    fun checkItemWithTextIsDisplayed(text: String) {
+        assertTableIsDisplayed()
+        composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true).assertIsDisplayed()
+    }
+
     fun assertTableRows(rowTestTags: List<CellData>) {
         rowTestTags.forEach { cellData ->
             scrollToItemWithTag(cellData.testTag)
