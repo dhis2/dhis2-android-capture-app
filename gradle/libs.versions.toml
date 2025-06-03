@@ -126,7 +126,6 @@ androidx-multidex = { group = "androidx.multidex", name = "multidex", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 androidx-work = { group = "androidx.work", name = "work-runtime", version.ref = "work" }
 androidx-workrx = { group = "androidx.work", name = "work-rxjava2", version.ref = "work" }
-#androidx-workgcm = { group = "androidx.work", name = "work-gcm", version.ref = "work" }
 androidx-exifinterface = { group = "androidx.exifinterface", name = "exifinterface", version.ref = "exif" }
 androidx-preferenceKtx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference_ktx" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
@@ -236,7 +235,6 @@ table-debugImplementation = ["androidx-compose-uitooling", "test-ui-test-manifes
 table-test = ["test-junit"]
 table-androidTest = ["test-compose-ui-test", "test-uiautomator", "test-junitKtx", "test-espresso"]
 stock-implementation = ["androidx-activity-compose", "androidx-annotation", "rx-relay", "security-openId", "androidx-preferenceKtx", "androidx-work", "androidx-activityKtx", "androidx-lifecycle-viewmodel-compose", "analytics-customactivityoncrash"]
-#"androidx-workgcm"
 stock-core = ["desugar"]
 stock-test = ["test-mockitoKotlin", "test-mockitoInline", "test-archCoreTesting", "test-javafaker", "test-kotlinCoroutines"]
 tracker-implementation = ["androidx-lifecycle-viewmodel-compose", "androidx-activity-compose"]
