@@ -27,7 +27,7 @@ import org.dhis2.mobile.aggregates.data.files.AggregatesFileProvider
 import org.dhis2.mobile.commons.extensions.rotateImage
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.GetFileResource
-import org.dhis2.mobile.commons.files.toFile
+import org.dhis2.mobile.commons.files.toFileOverWrite
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
@@ -70,7 +70,7 @@ class UiActionHandlerImpl(
             contract = GetFileResource(),
         ) { uris ->
             if (uris.isNotEmpty()) {
-                callback?.invoke(uris.firstOrNull()?.toFile(context = context)?.path)
+                callback?.invoke(uris.firstOrNull()?.toFileOverWrite(context = context)?.path)
             } else {
                 onFailure?.invoke()
             }

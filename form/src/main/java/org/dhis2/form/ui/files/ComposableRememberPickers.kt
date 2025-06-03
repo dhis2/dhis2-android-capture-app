@@ -8,7 +8,7 @@ import androidx.core.content.FileProvider
 import org.dhis2.commons.bindings.rotateImage
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.mobile.commons.files.GetFileResource
-import org.dhis2.mobile.commons.files.toFile
+import org.dhis2.mobile.commons.files.toFileOverWrite
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
@@ -19,7 +19,7 @@ fun rememberFilePicker(
     val launcher = rememberLauncherForActivityResult(
         contract = GetFileResource(),
         onResult = { uris ->
-            uris.firstOrNull()?.toFile(context = this)?.path?.let(onResult)
+            uris.firstOrNull()?.toFileOverWrite(context = this)?.path?.let(onResult)
         },
     )
     return@with launcher

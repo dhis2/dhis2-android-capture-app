@@ -48,7 +48,7 @@ internal fun Intent.getClipDataUris(): List<Uri> {
     return ArrayList(resultSet)
 }
 
-fun Uri.toFile(context: Context, suffix: String = ""): File? {
+fun Uri.toFileOverWrite(context: Context, suffix: String = ""): File? {
     var resultFile: File? = null
     if (ContentResolver.SCHEME_CONTENT == this.scheme) {
         val cr = context.contentResolver
@@ -65,11 +65,8 @@ fun Uri.toFile(context: Context, suffix: String = ""): File? {
 
         val mimeTypeMap = MimeTypeMap.getSingleton()
         val extensionsFile = mimeTypeMap.getExtensionFromMimeType(cr.getType(this))
-        resultFile = File.createTempFile(
-            fileName,
-            "$suffix.$extensionsFile",
-            context.cacheDir,
-        )
+        val fullName = "$fileName$suffix.${extensionsFile ?: ""}".trimEnd('.')
+        resultFile = File(context.cacheDir, fullName)
         val input = cr.openInputStream(this)
         resultFile.outputStream().use { stream ->
             input?.copyTo(stream)
