@@ -171,7 +171,9 @@ open class BaseTest {
     }
 
     private fun cleanPreferences() {
-        preferencesRobot.cleanPreferences()
+        if(::preferencesRobot.isInitialized){
+            preferencesRobot.cleanPreferences()
+        }
     }
 
     private fun cleanKeystore() {
@@ -182,7 +184,9 @@ open class BaseTest {
     }
 
     private fun stopMockServer() {
-        mockWebServerRobot.shutdown()
+        if(::mockWebServerRobot.isInitialized) {
+            mockWebServerRobot.shutdown()
+        }
     }
 
     fun cleanLocalDatabase() {
