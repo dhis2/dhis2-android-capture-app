@@ -177,9 +177,11 @@ open class BaseTest {
     }
 
     private fun cleanKeystore() {
-        keyStoreRobot.apply {
-            removeData(KEYSTORE_USERNAME)
-            removeData(KEYSTORE_PASSWORD)
+        if(::keyStoreRobot.isInitialized) {
+            keyStoreRobot.apply {
+                removeData(KEYSTORE_USERNAME)
+                removeData(KEYSTORE_PASSWORD)
+            }
         }
     }
 
