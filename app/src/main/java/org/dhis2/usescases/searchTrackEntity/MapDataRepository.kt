@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import com.mapbox.geojson.FeatureCollection
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.maps.extensions.filterRelationshipsByLayerVisibility
 import org.dhis2.maps.extensions.filterTeiByLayerVisibility
@@ -11,6 +10,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollecti
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.utils.DhisMapUtils
 import org.hisp.dhis.android.core.program.Program
+import org.maplibre.geojson.FeatureCollection
 
 class MapDataRepository(
     private val searchRepositoryKt: SearchRepositoryKt,

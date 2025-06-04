@@ -1,8 +1,5 @@
 package org.dhis2.maps.utils
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
 import org.dhis2.maps.extensions.withPlacesProperties
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
@@ -10,6 +7,9 @@ import org.dhis2.maps.geometry.getPolygonPoints
 import org.dhis2.maps.model.MapData
 import org.dhis2.maps.views.MapSelectorViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
+import org.maplibre.geojson.Point
 
 object GetMapData {
 

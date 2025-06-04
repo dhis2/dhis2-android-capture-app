@@ -1,13 +1,13 @@
 package org.dhis2.maps.utils
 
 import com.google.gson.Gson
-import com.mapbox.geojson.Geometry
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.extensions.toLatLng
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.geojson.Geometry
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 
 typealias GeometryCoordinate = String
 

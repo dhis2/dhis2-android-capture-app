@@ -365,7 +365,7 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                         R.drawable.ic_heatmap_icon,
                     )
                 } else {
-                    mapManager?.mapLayerManager?.mapBoxMap?.style?.getImage(item.image)
+                    mapManager?.mapLayerManager?.maplibreMap?.style?.getImage(item.image)
                 }
 
                 bitmap?.let { bmp ->

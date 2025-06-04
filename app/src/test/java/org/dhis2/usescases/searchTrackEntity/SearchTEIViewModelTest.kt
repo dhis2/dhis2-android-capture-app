@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.Map
 import androidx.paging.PagingData
 import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
-import com.mapbox.geojson.BoundingBox
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -42,6 +41,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.maplibre.geojson.BoundingBox
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock

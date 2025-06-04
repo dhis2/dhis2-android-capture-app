@@ -1,10 +1,10 @@
 package org.dhis2.maps.extensions
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Point
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin

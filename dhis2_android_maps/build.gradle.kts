@@ -60,12 +60,8 @@ dependencies {
     api(libs.maps.geojson) {
         exclude("com.google.android.gms")
     }
-    implementation(libs.maps.markerViewPlugin) {
-        exclude("com.mapbox.mapboxsdk", "mapbox-android-sdk")
-    }
-    implementation(libs.maps.annotationPlugin) {
-        exclude("com.mapbox.mapboxsdk", "mapbox-android-sdk")
-    }
+    implementation(libs.maps.markerViewPlugin)
+    implementation(libs.maps.annotationPlugin)
 
     testImplementation(libs.bundles.map.test)
     coreLibraryDesugaring(libs.desugar)

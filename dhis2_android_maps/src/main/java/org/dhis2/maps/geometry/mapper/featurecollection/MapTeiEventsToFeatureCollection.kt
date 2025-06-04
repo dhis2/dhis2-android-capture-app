@@ -1,7 +1,5 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.FeatureCollection
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
@@ -10,6 +8,8 @@ import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.model.MapItemModel
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
 
 class MapTeiEventsToFeatureCollection(
     private val mapPointToFeature: MapPointToFeature,

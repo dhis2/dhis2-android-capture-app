@@ -2,13 +2,6 @@ package org.dhis2.maps.managers
 
 import android.graphics.RectF
 import androidx.appcompat.content.res.AppCompatResources
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.engine.LocationEngine
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.MapLayerManager
@@ -16,6 +9,13 @@ import org.dhis2.maps.layer.types.PLACES_LAYER_ID
 import org.dhis2.maps.layer.types.PLACES_SOURCE_ID
 import org.dhis2.maps.layer.types.PlacesMapLayer
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.location.engine.LocationEngine
+import org.maplibre.android.maps.MapView
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class DefaultMapManager(
     mapView: MapView,

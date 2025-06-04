@@ -1,11 +1,5 @@
 package org.dhis2.maps.camera
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.camera.CameraUpdate
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.maps.extensions.toLatLngBounds
 import org.dhis2.maps.geometry.getCameraUpdate
 import org.dhis2.maps.geometry.getLatLng
@@ -20,6 +14,12 @@ import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_MANUAL
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_PIN_CLICKED
 import org.dhis2.maps.views.MapSelectorViewModel.CaptureMode.SEARCH_SWIPE
 import org.dhis2.maps.views.SelectedLocation
+import org.maplibre.android.camera.CameraUpdate
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 const val INITIAL_ZOOM_LEVEL = 13.0
 const val SEARCH_ZOOM_LEVEL = 15.0
@@ -30,7 +30,7 @@ const val PADDING = 50
 object MapSelectorZoomHandler {
 
     operator fun invoke(
-        map: MapboxMap?,
+        map: MapLibreMap?,
         captureMode: MapSelectorViewModel.CaptureMode,
         featureCollection: FeatureCollection,
         lastGPSLocation: SelectedLocation.GPSResult?,
@@ -50,12 +50,12 @@ object MapSelectorZoomHandler {
             SEARCH_SWIPE, SEARCH_MANUAL -> null
         }
 
-        map?.let { mapboxMap ->
+        map?.let { mapLibreMap ->
             cameraUpdate?.let { update ->
-                mapboxMap.easeCamera(
+                mapLibreMap.easeCamera(
                     update,
                     CalculateCameraAnimationDuration(
-                        mapboxMap.cameraPosition.target ?: LatLng(),
+                        mapLibreMap.cameraPosition.target ?: LatLng(),
                         selectedFeature?.getLatLng() ?: LatLng(),
                     ),
                 )

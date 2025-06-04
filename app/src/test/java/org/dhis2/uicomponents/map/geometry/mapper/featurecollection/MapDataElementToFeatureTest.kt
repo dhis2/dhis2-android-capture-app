@@ -1,7 +1,5 @@
 package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo
@@ -15,6 +13,8 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
