@@ -10,7 +10,7 @@ private const val TYPE_PROGRAM_STAGE = "ProgramStageWorkingList"
 private const val TYPE_TRACKED_ENTITY = "TrackedEntityInstanceWorkingList"
 private const val TYPE_EVENT = "EventWorkingList"
 
-val WorkingListItemSaver = Saver<WorkingListItem?, Map<String, String>>(
+internal val WorkingListItemSaver = Saver<WorkingListItem?, Map<String, String>>(
     save = { workingListItem ->
         workingListItem?.let {
             val map = mutableMapOf(
