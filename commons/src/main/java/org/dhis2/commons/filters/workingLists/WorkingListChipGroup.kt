@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.databinding.Observable
@@ -79,7 +79,7 @@ fun WorkingListChipGroup(
     workingListViewModel: WorkingListViewModel,
 ) {
     val workingListFilterState = workingListViewModel.workingListFilter.observeAsState()
-    var selectedWorkingList by remember {
+    var selectedWorkingList by rememberSaveable(stateSaver = WorkingListItemSaver) {
         mutableStateOf(
             FilterManager.getInstance().currentWorkingList(),
         )
