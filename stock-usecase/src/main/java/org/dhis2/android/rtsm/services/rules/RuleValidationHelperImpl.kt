@@ -36,9 +36,8 @@ import timber.log.Timber
 import java.util.Date
 import java.util.Objects
 import java.util.UUID
-import javax.inject.Inject
 
-class RuleValidationHelperImpl @Inject constructor(
+class RuleValidationHelperImpl(
     private val d2: D2,
 ) : RuleValidationHelper {
 

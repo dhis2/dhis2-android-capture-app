@@ -29,7 +29,6 @@ tasks.register("jacocoReport", JacocoReport::class) {
         "**/*Companion*.*",
         "**/*Module*.*",
         "**/*Dagger*.*",
-        "**/*Hilt*.*",
         "**/*MembersInjector*.*",
         "**/*_MembersInjector.class",
         "**/*_Factory*.*",

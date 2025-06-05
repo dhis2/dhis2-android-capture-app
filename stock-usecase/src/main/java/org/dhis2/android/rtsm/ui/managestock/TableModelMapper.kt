@@ -13,12 +13,10 @@ import org.dhis2.composetable.model.TableRowModel
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZeroOrPositiveFailure
-import javax.inject.Inject
 
 const val STOCK_TABLE_ID = "STOCK"
-class TableModelMapper @Inject constructor(
-    private val resources: ResourceManager,
-) {
+
+class TableModelMapper(private val resources: ResourceManager) {
     fun map(entries: List<StockEntry>, stockLabel: String, qtdLabel: String): List<TableModel> {
         val tableRowModels = mutableListOf<TableRowModel>()
 
@@ -84,6 +82,7 @@ class TableModelMapper @Inject constructor(
         is Result.Failure -> getIntegerZeroOrPositiveErrorMessage(
             result.failure as IntegerZeroOrPositiveFailure,
         )
+
         else -> null
     }
 
@@ -91,10 +90,13 @@ class TableModelMapper @Inject constructor(
         when (error) {
             IntegerZeroOrPositiveFailure.IntegerOverflow ->
                 resources.getString(R.string.formatting_error)
+
             IntegerZeroOrPositiveFailure.NumberFormatException ->
                 resources.getString(R.string.formatting_error)
+
             IntegerZeroOrPositiveFailure.ValueIsNegative ->
                 resources.getString(R.string.invalid_possitive_zero)
+
             IntegerZeroOrPositiveFailure.LeadingZeroException ->
                 resources.getString(R.string.leading_zero_error)
         }

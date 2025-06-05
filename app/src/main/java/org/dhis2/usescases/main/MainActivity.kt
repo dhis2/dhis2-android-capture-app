@@ -31,7 +31,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import dispatch.core.dispatcherProvider
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.R

@@ -99,13 +99,13 @@ class SyncPresenterTest {
 
     private fun metaWorkInfo(state: WorkInfo.State, message: String? = null): WorkInfo {
         return WorkInfo(
-            UUID.randomUUID(),
-            state,
-            Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
-            arrayListOf(Constants.META_NOW),
-            Data.EMPTY,
-            0,
-            0,
+            id = UUID.randomUUID(),
+            state = state,
+            outputData = Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
+            tags = setOf(Constants.META_NOW),
+            progress = Data.EMPTY,
+            runAttemptCount = 0,
+            generation = 0,
         )
     }
 }

@@ -16,6 +16,7 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -28,7 +29,7 @@ class ProgramEventMapperTest {
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(any(), anyOrNull()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before

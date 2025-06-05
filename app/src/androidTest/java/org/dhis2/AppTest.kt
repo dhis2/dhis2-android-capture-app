@@ -80,8 +80,6 @@ class AppTest : App() {
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
-            //.coroutineDispatchers(DispatcherTestingModule())
-            .customDispatcher(CustomDispatcherModule())
             .workManagerController(
                 MockedWorkManagerModule(
                     MockedWorkManagerController(

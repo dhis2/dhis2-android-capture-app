@@ -3,17 +3,14 @@ package org.dhis2.android.rtsm.ui.base
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.Disposable
 import org.dhis2.android.rtsm.data.RowAction
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
-import javax.inject.Inject
 
-@HiltViewModel
-open class BaseViewModel @Inject constructor(
+open class BaseViewModel(
     private val schedulerProvider: BaseSchedulerProvider,
 ) : ViewModel() {
     private val _showGuide: MutableLiveData<Boolean> = MutableLiveData(false)

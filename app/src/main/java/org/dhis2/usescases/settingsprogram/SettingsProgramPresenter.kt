@@ -32,7 +32,7 @@ class SettingsProgramPresenter(
                 .toList()
                 .map { programSettings ->
                     programSettings.sortBy {
-                        it.programSettings.name()?.toLowerCase(Locale.getDefault())
+                        it.programSettings.name()?.lowercase(Locale.getDefault())
                     }
                     programSettings
                 }

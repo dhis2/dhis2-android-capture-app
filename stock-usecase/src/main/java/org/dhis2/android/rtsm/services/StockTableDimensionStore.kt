@@ -2,11 +2,8 @@ package org.dhis2.android.rtsm.services
 
 import org.dhis2.composetable.model.TableModel
 import org.hisp.dhis.android.core.D2
-import javax.inject.Inject
 
-class StockTableDimensionStore @Inject constructor(
-    val d2: D2,
-) {
+class StockTableDimensionStore(val d2: D2) {
     private var programUid: String = ""
     private var sectionUid: String = ""
 

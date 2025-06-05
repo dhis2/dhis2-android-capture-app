@@ -1,7 +1,5 @@
 package org.dhis2.form.ui
 
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -128,12 +126,7 @@ fun Form(
                             section.fields.forEachIndexed { index, fieldUiModel ->
                                 fieldUiModel.setCallback(callback)
                                 FieldProvider(
-                                    modifier = Modifier.animateItemPlacement(
-                                        animationSpec = tween(
-                                            durationMillis = 500,
-                                            easing = LinearOutSlowInEasing,
-                                        ),
-                                    ),
+                                    modifier = Modifier,
                                     fieldUiModel = fieldUiModel,
                                     uiEventHandler = uiEventHandler,
                                     intentHandler = intentHandler,

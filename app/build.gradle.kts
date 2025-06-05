@@ -10,9 +10,9 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
-    id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
@@ -104,9 +104,6 @@ android {
 
         manifestPlaceholders["appAuthRedirectScheme"] = ""
 
-        javaCompileOptions
-            .annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
-            "true"
     }
     packaging {
         jniLibs {
@@ -231,6 +228,14 @@ android {
 
         }
     }
+
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+        arg("room.expandProjection", "true")
+        // Enable debug logs
+        arg("ksp.logging.level", "DEBUG")
+    }
 }
 
 kotlin {
@@ -271,14 +276,11 @@ dependencies {
     implementation(libs.github.pinlock)
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
-    implementation(libs.dagger.hilt.android)
     implementation(libs.network.okhttp)
     implementation(libs.dates.jodatime)
     implementation(libs.analytics.matomo)
     implementation(libs.analytics.rxlint)
     implementation(libs.analytics.customactivityoncrash)
-    implementation(platform(libs.dispatcher.dispatchBOM))
-    implementation(libs.dispatcher.dispatchCore)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
 
@@ -287,9 +289,7 @@ dependencies {
     "dhis2PlayServicesImplementation"(libs.google.auth)
     "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.hilt.android.compiler)
-    kapt(libs.deprecated.autoValueParcel)
+    ksp(libs.dagger.compiler)
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)
@@ -317,5 +317,4 @@ dependencies {
     androidTestImplementation(libs.test.rx2.idler)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
-    androidTestImplementation(libs.dispatcher.dispatchEspresso)
 }

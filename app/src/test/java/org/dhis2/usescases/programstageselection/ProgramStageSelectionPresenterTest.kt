@@ -57,6 +57,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -73,7 +74,7 @@ class ProgramStageSelectionPresenterTest {
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(any(), anyOrNull()) } doReturn MetadataIconData.defaultIcon()
     }
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn Dispatchers.Unconfined
