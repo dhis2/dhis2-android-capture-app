@@ -3,6 +3,7 @@ package org.dhis2.mobile.commons.extensions
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.text.capitalize
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime
@@ -59,7 +60,7 @@ suspend fun String.userFriendlyValue(
             }
 
             valueInfo.isBooleanType -> {
-                valueParser.valueFromBooleanType(this)
+                valueParser.valueFromBooleanType(this).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
             valueInfo.isCoordinate ->
