@@ -66,4 +66,5 @@
     <string name="error_invalid_program">Nemáte přístup k programu %s</string>
     <string name="error_invalid_attribute">Nemáte přístup k atributu %s</string>
     <string name="error_unsupported_aggregation_type">Nepodporovaný typ agregace %s</string>
-    </resources>
+    <string name="line_listing_max_results">Tabulka je omezena na %1$s položek. Filtrem můžete výsledky upřesnit.</string>
+</resources>

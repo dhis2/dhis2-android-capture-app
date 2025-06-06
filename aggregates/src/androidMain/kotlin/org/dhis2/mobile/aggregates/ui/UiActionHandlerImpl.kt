@@ -27,7 +27,7 @@ import org.dhis2.mobile.aggregates.data.files.AggregatesFileProvider
 import org.dhis2.mobile.commons.extensions.rotateImage
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.GetFileResource
-import org.dhis2.mobile.commons.files.toFile
+import org.dhis2.mobile.commons.files.toFileOverWrite
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
@@ -37,6 +37,7 @@ class UiActionHandlerImpl(
     private val fileHandler: FileHandler,
 ) : UiActionHandler {
     private var callback: ((String?) -> Unit)? = null
+    private var onFailure: (() -> Unit)? = null
     private var filepath: String? = null
     private var tempFile: File? = null
 
@@ -68,7 +69,11 @@ class UiActionHandlerImpl(
             key = "FILE_LAUNCHER",
             contract = GetFileResource(),
         ) { uris ->
-            callback?.invoke(uris.firstOrNull()?.toFile(context = context)?.path)
+            if (uris.isNotEmpty()) {
+                callback?.invoke(uris.firstOrNull()?.toFileOverWrite(context = context)?.path)
+            } else {
+                onFailure?.invoke()
+            }
         }
 
     private val cameraLauncher =
@@ -174,8 +179,13 @@ class UiActionHandlerImpl(
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
-    override fun onSelectFile(fieldUid: String, callback: (result: String?) -> Unit) {
+    override fun onSelectFile(
+        fieldUid: String,
+        callback: (result: String?) -> Unit,
+        onFailure: () -> Unit,
+    ) {
         this.callback = callback
+        this.onFailure = onFailure
         fileLauncher.launch("*/*")
     }
 

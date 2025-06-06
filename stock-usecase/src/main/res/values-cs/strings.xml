@@ -1,0 +1,291 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Správa zásob lékáren</string>
+    <string name="title_activity_home">Domovská strana</string>
+    <string name="title_activity_review">Posouzení</string>
+    <string name="action_settings">Nastavení</string>
+
+    <string name="distribution">Rozdělení</string>
+    <string name="discard">Vyřadit</string>
+    <string name="correction">Oprava</string>
+    <string name="select_transaction">Vyberte transakci</string>
+    <string name="transaction_date">Datum transakce</string>
+    <string name="recent_activity">Poslední aktivita</string>
+    <string name="last_synced">Poslední synchronizace:</string>
+    <string name="select_facility">Vyberte Zařízení</string>
+    <string name="distributed_to">Distribuováno do</string>
+    <string name="select_one">Vyber jeden</string>
+
+    <!-- Sign in -->
+    <string name="server">Server:</string>
+    <string name="sign_in">Přihlásit se</string>
+    <string name="sign_in_to_your_account">Přihlaste se ke svému účtu</string>
+    <string name="sign_in_to_with_oidc">Přihlaste se pomocí účtu ICRC</string>
+    <string name="non_icrc_staff_members">Pouze pro zaměstnance, kteří nejsou členy ICRC </string>
+    <string name="icrc_staff_members">Pouze pro zaměstnance ICRC</string>
+    <string name="username">Uživatelské jméno</string>
+    <string name="password">Heslo</string>
+    <string name="forgot_password">Zapomenuté heslo\?</string>
+
+    <string name="recent_activities_loading_message">Načítání nedávných aktivit&#8230;</string>
+    <string name="recent_activities_empty_message">Ještě jste nevykonali žádnou činnost</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Synchronizace metadat&#8230;</string>
+    <string name="metadata_sync_error">Synchronizaci metadat nelze dokončit</string>
+    <string name="data_sync_in_progress">Synchronizace dat&#8230;</string>
+    <string name="data_sync_error">Synchronizaci dat nelze dokončit</string>
+    <string name="metadata_sync_completed">Synchronizace metadat dokončena!</string>
+    <string name="sync_completed">Synchronizace dokončena!</string>
+
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Pokračovat</string>
+    <string name="review">Posouzení</string>
+
+    <string name="scan_barcode">Skenování čárového kódu</string>
+    <string name="scanning">Skenování&#8230;</string>
+    <string name="search">Vyhledat položku</string>
+    <string name="search_placeholder">Vyhledávání…</string>
+    <string name="delete">Smazat</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Zrušit</string>
+    <string name="confirmation">potvrzení</string>
+
+    <string name="from">Od</string>
+    <string name="to">Doručit…</string>
+    <string name="subtitle">%s</string>
+    <string name="to_arg">Komu  %s</string>
+
+    <!-- Languages -->
+    <string name="language_english">Angličtina</string>
+    <string name="language_french">Francouzština</string>
+    <string name="language_spanish">Španělština</string>
+    <string name="language_arabic">Arabština</string>
+    <string name="language_russian">Ruština</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Pro zadávání dat použijte mikrofon</string>
+    <string name="language">Jazyk</string>
+    <string name="force_data_sync">Vynutit synchronizaci dat</string>
+    <string name="logout">Odhlásit</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Položka</string>
+    <string name="stock_on_hand">Zásoby na skladě</string>
+    <string name="quantity">Množství</string>
+    <string name="items_available">položky k dispozici</string>
+    <string name="positive_value">
+         <b> Kladná hodnota </b> = \"chybějící množství\" ( <i> fyzické zásoby menší než vypočítaná hodnota </i> )
+    </string>
+    <string name="negative_value">
+         <b> <span style="color: #C81818"> Záporná hodnota </span> </b> = \"nalezeno na skladě\" ( <i> vypočítaná hodnota fyzické zásoby je více než 800</i>)
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+        Než budete moci pokračovat, musíte vybrat typ transakce a vyplnit všechna pole
+    </string>
+    <string name="mandatory_facility_selection">
+        Než budete moci pokračovat, musí být vyplněno pole zařízení
+    </string>
+    <string name="mandatory_distributed_to_selection">
+        Než budete moci pokračovat, musí být vyplněno pole „Distribuováno do“.
+    </string>
+    <string name="mandatory_transaction_date_selection">
+        Než budete moci pokračovat, musí být vyplněno pole „Distribuováno do“.
+    </string>
+    <string name="previous_page_lose_data_warning">
+        Opravdu se chcete vrátit na předchozí obrazovku\?
+        Pokud se rozhodnete pokračovat, ztratíte právě zadaná data.
+    </string>
+    <string name="transaction_completed">
+        Transakce byla úspěšně dokončena!
+    </string>
+    <string name="transaction_cancelled">
+        Transakce byla úspěšně zrušena!
+    </string>
+    <string name="force_sync_confirmation_message">
+        Opravdu chcete vynutit synchronizaci\?
+    </string>
+    <string name="logout_confirmation_message">Opravdu se chcete odhlásit\?</string>
+
+    <string name="remove_correction_item_confirmation_message">
+        Opravdu chcete trvale smazat záznam pro opravu \"%1$s\"\?
+        Tuto akci nelze vrátit zpět.
+    </string>
+    <string name="remove_distribution_item_confirmation_message">
+        Opravdu chcete trvale smazat záznam pro distribuci \"%1$s\"\?
+        Tuto akci nelze vrátit zpět.
+    </string>
+    <string name="remove_discard_item_confirmation_message">
+        Opravdu chcete trvale smazat záznam pro zahození \"%1$s\"\?
+        Tuto akci nelze vrátit zpět.
+    </string>
+
+    <plurals name="items_found">
+        <item quantity="one">%d položka</item>
+        <item quantity="few">%d položky</item>
+        <item quantity="many">%d položek</item>
+        <item quantity="other">%d položek</item>
+    </plurals>
+    <string name="no_items_found">Nenalezeny žádné položky</string>
+    <string name="loading_items_message">Načítání skladových položek &#8230;</string>
+    <string name="prompt_email">E-mail</string>
+    <string name="prompt_password">Heslo</string>
+    <string name="action_sign_in">Přihlaste se nebo se zaregistrujte</string>
+    <string name="action_sign_in_short">Přihlásit se</string>
+    <string name="welcome">Vítejte !</string>
+    <string name="invalid_username">Neplatné uživatelské jméno</string>
+    <string name="invalid_password">Heslo musí mít >5 znaků</string>
+    <string name="login_failed">Přihlášení selhalo</string>
+    <string name="resync">Znovu synchronizovat</string>
+
+    <!-- Errors -->
+    <string name="login_error">Nelze se přihlásit</string>
+    <string name="config_file_error">Nelze načíst konfigurační soubor</string>
+    <string name="config_file_program_error">
+        ID skladového programu nebylo v konfiguračním souboru nastaveno
+    </string>
+    <string name="recent_activities_load_error">Nelze načíst vaše nedávné aktivity</string>
+    <string name="facilities_load_error">Nelze načíst seznam dostupných zařízení</string>
+    <string name="destinations_load_error">
+        Nelze načíst seznam dostupných cílů
+    </string>
+    <string name="distribution_data_element_load_error">
+        Nelze načíst distribuční datový prvek
+    </string>
+    <string name="correction_data_element_load_error">
+        Nelze načíst opravný datový prvek
+    </string>
+    <string name="discard_data_element_load_error">
+        Nelze načíst datový prvek discard
+    </string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">Synchronizovat informace</string>
+    <string name="content_desc_search">Hledat</string>
+    <string name="content_desc_clear_text">Jasný text</string>
+    <string name="content_desc_transaction_date">Zobrazit nástroj pro výběr dat</string>
+    <string name="content_desc_distributed_to">Distribuováno do</string>
+    <string name="content_desc_last_sync">Naposledy synchronizováno</string>
+    <string name="content_desc_quantity_info">Více informací o množství</string>
+    <string name="content_desc_remove">Odebrat položku</string>
+    <string name="content_desc_recent_activity">Směrová šipka</string>
+    <string name="content_desc_recent_activity_status">Stav nedávné aktivity</string>
+    <string name="content_desc_close_info_guide">Informační průvodce</string>
+
+    <string name="confirm_transaction_label">Potvrdit</string>
+    <string name="missing_configuration">
+        V konfiguračním souboru chybí jedno nebo více požadovaných polí.
+    </string>
+    <string name="select_language">Vyberte požadovaný jazyk</string>
+
+    <string name="restart_later">Restartovat později</string>
+    <string name="confirm_app_restart_message">
+        Aby se změny projevily, je třeba aplikaci restartovat,
+        všechny neuložené změny budou ztraceny.\n\nChcete pokračovat v restartu\?
+    </string>
+    <string name="language_change_dialog_title">Potvrdit restart</string>
+    <string name="scan_canceled">Skenování zrušeno!</string>
+    <string name="logout_error_message">
+        Při odhlašování došlo k chybě. Prosím zkuste to znovu později.
+    </string>
+    <string name="logout_success_message">Úspěšně odhlášeno</string>
+
+    <string name="invalid_quantity">Neplatný</string>
+    <string name="stock_on_hand_exceeded_message">
+        Dostupné skladové zásoby nelze překročit
+    </string>
+    <string name="reviewed_item_cannot_be_empty_message">
+        Akcie pod kontrolou nemohou být prázdné. Pokud si to nepřejete, můžete položku odstranit
+    </string>
+
+    <string name="permission_granted">Přístup udělen</string>
+    <string name="permission_denied">Přístup odepřen</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">
+        Nedostatečná oprávnění. Vyžádejte si android.permission.RECORD_AUDIO
+    </string>
+    <string name="speech_audio_error">Chyba nahrávání zvuku</string>
+    <string name="speech_client_error">
+        Chyba na straně klienta. Zkontrolujte prosím své internetové připojení!
+    </string>
+    <string name="speech_network_error">Chyba sítě</string>
+    <string name="speech_network_timeout_error">Časový limit provozu sítě vypršel</string>
+    <string name="no_speech_match_error">Žádný výsledek rozpoznání neodpovídá.</string>
+    <string name="speech_recognition_service_busy_error">Rozpoznávací služba je zaneprázdněna</string>
+    <string name="speech_server_error">Na řečovém serveru došlo k chybě</string>
+    <string name="speech_timeout_error">Nebyl zjištěn žádný hlasový vstup</string>
+    <string name="unknown_speech_error">Nastala neznámá chyba.</string>
+    <string name="non_numeric_speech_input_error">Nenumerický vstup není povolen: \"%s\"</string>
+    <string name="negative_number_speech_input_error">
+        Zadání záporného čísla není povoleno: \"%s\"
+    </string>
+
+    <string name="openid_config_load_error">Nelze načíst konfiguraci OpenID</string>
+    <string name="unexpected_openid_authentication_error">
+        Při ověřování pomocí OpenID došlo k neočekávané chybě
+    </string>
+    <string name="no_network_available">Není k dispozici připojení k síti</string>
+    <string name="unable_to_sync_data_no_network_available">
+        Nelze synchronizovat data, protože není k dispozici připojení k síti
+    </string>
+    <string name="openid_authentication_not_successful">
+        Nelze se ověřit pomocí vašeho účtu ICRC
+    </string>
+
+    <string name="contact_service_desk_message">
+        V případě problémů \nkontaktujte prosím servis ICRC
+    </string>
+
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Něco se pokazilo. Zkontrolujte prosím správnost adresy URL serveru, uživatelského jména a hesla a zkuste to znovu.</string>
+    <string name="login_error_error_response">Jejda! Něco se pokazilo na straně serveru.</string>
+    <string name="login_error_no_dhis_instance">Zadaná adresa URL není server DHIS2.</string>
+    <string name="login_error_bad_credentials">Uživatelské jméno a/nebo heslo jsou nesprávné</string>
+    <string name="login_error_unknown_host">Neznámý server</string>
+    <string name="online_search_parsing_error">Chyba při analýze výsledků</string>
+    <string name="error_unexpected">Něco neočekávaného se pokazilo.</string>
+    <string name="error_many_requests">Server je v tuto chvíli trochu zaneprázdněn. Zkuste to o něco později.</string>
+    <string name="error_already_authenticated">Uživatel je již přihlášen.</string>
+    <string name="error_already_executed">Požadavek již byl proveden.</string>
+    <string name="error_api_invalid_query">Požadavek serveru je neplatný.</string>
+    <string name="error_create_existing_error">Vytváření přerušeno. Objekt již existuje.</string>
+    <string name="error_export_login">Pro export databáze se prosím přihlaste.</string>
+    <string name="error_export_encrypted">Export šifrované databáze není podporován.</string>
+    <string name="error_import_exist">Importujete již existující databázi.</string>
+    <string name="error_import_logout">Chcete-li importovat novou databázi, odhlaste se.</string>
+    <string name="error_import_version">Verze importované databáze je vyšší než podporovaná.</string>
+    <string name="error_user_no_authenticated">Není ověřen žádný uživatel.</string>
+    <string name="error_user_no_authenticated_offline">Neexistuje žádný uživatel ověřený offline.</string>
+    <string name="error_different_offline_user">Pokoušíte se přihlásit offline s jiným uživatelem.</string>
+    <string name="error_object_update">Objekt nelze aktualizovat.</string>
+    <string name="error_object_insert">Objekt nelze vložit.</string>
+    <string name="error_ownership_access">Nemáte přístup.</string>
+    <string name="error_null_url">Chybí adresa URL serveru. Zadejte prosím URL.</string>
+    <string name="error_server_malformed">Adresa URL serveru není správně vytvořena. Prosím zkontrolujte to.</string>
+    <string name="error_settings_app_not_supported">Tato verze webové aplikace Settings není podporována.</string>
+    <string name="error_settings_app_not_intalled">Webová aplikace Nastavení není na serveru nainstalována.</string>
+    <string name="error_socket_timeout">Serveru trvalo příliš dlouho, než odpověděl. Žádost jsme zrušili.</string>
+    <string name="error_url_not_found">Adresu URL jsme nenašli. Prosím ověřte to.</string>
+    <string name="error_account_disabled">Váš uživatelský účet byl deaktivován. Pokud se jedná o chybu, kontaktujte svého správce.</string>
+    <string name="error_account_locked">Váš uživatelský účet je uzamčen. Pokud se jedná o chybu, kontaktujte svého správce.</string>
+    <string name="error_set_value">Hodnotu nelze nastavit.</string>
+    <string name="error_ssl">Došlo k problému s certifikáty serveru. Kontaktujte prosím svého správce.</string>
+    <string name="done_task">Domovská strana</string>
+    <string name="back">Zpět</string>
+    <string name="no_conflicts_message">U tohoto programu nejsou žádné konflikty</string>
+    <string name="action_sync">Odeslat</string>
+    <string name="from_facility">Ze zařízení</string>
+    <string name="to_facility">Do zařízení</string>
+    <string name="stock">Sklad</string>
+    <string name="not_saved">Neuloženo</string>
+    <string name="transaction_not_confirmed">Transakce nebyla potvrzena. Pokud nyní odejdete, zadaná data budou vymazána.</string>
+    <string name="transaction_discarted">Tato transakce nebyla potvrzena. Pokud nastavení změníte, zadaná data budou zahozena.</string>
+    <string name="count">Počet</string>
+    <string name="under_review">Probíhá kontrola</string>
+    <string name="formatting_error">Chyba formátování</string>
+    <string name="invalid_possitive_zero">Povolena pouze kladná čísla nebo nula</string>
+    <string name="leading_zero_error">Čísla s úvodní nulou nejsou povolena</string>
+</resources>

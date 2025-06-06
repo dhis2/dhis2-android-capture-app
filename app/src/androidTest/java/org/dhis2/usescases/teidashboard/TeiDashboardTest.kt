@@ -51,6 +51,7 @@ class TeiDashboardTest : BaseTest() {
 
     @Test
     fun shouldSuccessfullyCreateANoteWhenClickCreateNote() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -68,14 +69,17 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
+            verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_VALID)
             clickOnSaveButton()
             checkNewNoteWasCreated(NOTE_VALID)
         }
+
     }
 
     @Test
     fun shouldNotCreateANoteWhenClickClear() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -91,6 +95,7 @@ class TeiDashboardTest : BaseTest() {
 
         noteRobot {
             clickOnFabAddNewNote()
+            verifyNoteDetailActivityIsLaunched()
             typeNote(NOTE_INVALID)
             clickOnClearButton()
             clickYesOnAlertDialog()
@@ -178,20 +183,9 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("next button is sometimes not reached. Review feature.")
-    @Test
-    fun shouldShowQRWhenClickOnShare() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
-
-        teiDashboardRobot(composeTestRule) {
-            clickOnMenuMoreOptions()
-            clickOnShareButton()
-            clickOnNextQR()
-        }
-    }
-
     @Test
     fun shouldMakeAReferral() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_TB_IDENTIFIER_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,
@@ -212,6 +206,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnTimelineEvents()
             clickOnFab()
             clickOnReferral()
+            checkProgramStageSelectionActivityIsLaunched()
             clickOnFirstReferralEvent()
             clickOnReferralNextButton()
             checkEventWasCreated(LAB_MONITORING)
@@ -277,18 +272,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("This is checking xml instead of compose. Update mobile library with test tags.")
-    @Test
-    fun shouldShowCorrectInfoWhenOpenTEI() {
-        prepareTeiCompletedProgrammeAndLaunchActivity(rule)
-
-        val upperInformation = createExpectedUpperInformation()
-
-        teiDashboardRobot(composeTestRule) {
-            checkUpperInfo(upperInformation)
-        }
-    }
-
     @Test
     fun shouldShowTEIDetailsWhenClickOnSeeDetails() {
         //This test is only valid for portrait mode given that landscape is showing details
@@ -331,33 +314,9 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @SuppressLint("IgnoreWithoutReason")
-    @Ignore
-    @Test
-    fun shouldOpenEventEditAndSaveSuccessfully() {
-        prepareTeiOpenedToEditAndLaunchActivity(rule)
-
-        teiDashboardRobot(composeTestRule) {
-            clickOnMenuMoreOptions()
-            clickOnTimelineEvents()
-            clickOnEventWith(LAB_MONITORING)
-            waitToDebounce(600)
-        }
-
-        eventRobot(composeTestRule) {
-            waitToDebounce(600)
-            clickOnFormFabButton()
-            clickOnCompleteButton()
-            waitToDebounce(600)
-        }
-
-        teiDashboardRobot(composeTestRule) {
-            checkEventWasCreatedAndClosed(LAB_MONITORING)
-        }
-    }
-
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             method = ResponseController.GET,
             path = API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_PATH,

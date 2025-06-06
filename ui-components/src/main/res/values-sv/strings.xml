@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Färdigt</string>
+    <string name="discard_changes">Ignorera ändringar</string>
+    <string name="keep_editing">Fortsätt redigera</string>
+    <string name="cancel">Avbryt</string>
+    <string name="save">Spara</string>
+    <string name="clear">Klar</string>
+    <string name="action_cancel">Avbryt</string>
+    <string name="action_close">Stänga</string>
+    <string name="hint_search">Sök</string>
+    <string name="action_clear_all">Rensa alla</string>
+    </resources>

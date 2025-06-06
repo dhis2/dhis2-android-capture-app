@@ -1,0 +1,7 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="discard">त्याग गर्नुहोस्</string>
+    <string name="cancel">रद्द गर्नुहोस्</string>
+    <string name="content_desc_search">खोज</string>
+    <string name="invalid_quantity">अमान्य</string>
+    <string name="action_sync">पठाउनुहोस्</string>
+    </resources>

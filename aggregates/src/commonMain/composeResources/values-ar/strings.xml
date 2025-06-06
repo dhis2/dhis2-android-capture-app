@@ -1,16 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">كل شيء يبدو جيدا!</string>
+    <string name="default_column_label">القيم</string>
+    <string name="total_header_label">الإجماليات</string>
+    <string name="input_age_date_of_birth">تاريخ الميلاد</string>
+    <string name="input_age">عُمر</string>
+    <string name="input_age_or">أو</string>
+    <string name="input_action_accept">قبول</string>
+    <string name="input_action_cancel">إلغاء</string>
+    <string name="no_results_found">لم يتم العثور على أي نتائج</string>
+    <string name="search_to_find_more">ابحث للعثور على المزيد</string>
+    <string name="action_done">تم</string>
+    <string name="input_coordinate_latitude">خط العرض</string>
+    <string name="input_coordinate_longitude">خط الطول</string>
+    <string name="input_coordinate_add_location">إضافة موقع</string>
+    <string name="input_date_out_of_range">خارج النطاق</string>
+    <string name="format_error">تنسيق غير صحيح</string>
+    <string name="input_not_supported">غير مدعوم</string>
+    <string name="completion_dialog_title">كل شيء يبدو جيدا</string>
+    <string name="completion_dialog_description">هل تريد أيضاً إكمال مجموعة البيانات؟</string>
+    <string name="validation_success_title">كل شيء يبدو جيدا</string>
     <string name="mark_dataset_complete">هل تريد أيضاً تعيين حزمة البيانات كمكتملة؟</string>
+    <string name="not_now">ليس الان</string>
     <string name="complete">مكتمل</string>
     <string name="saved">تم الحفظ!</string>
     <string name="field_mandatory">هناك حقول إلزامية مفقودة. من فضلك قم بملؤها لإكمال حزمة البيانات.</string>
     <string name="field_required">إذا قمت بتعيين قيمة ، فإن الصف بأكمله يحتاج إلى كل القيم لإكمال مجموعة البيانات.</string>
     <string name="ok">موافق</string>
     <string name="dataset_saved_completed">محفوظ ومكتمل</string>
+    <string name="error_on_complete_dataset">حدث خطأ في إكمال مجموعة البيانات</string>
     <string name="run_validation_rules">هل تريد التحقق من جودة البيانات؟</string>
+    <string name="no">لا</string>
+    <string name="yes">نعم</string>
     <string name="error">خطأ</string>
+    <string name="errors">أخطاء</string>
     <string name="complete_anyway">إكمال على أية حال</string>
+    <string name="review">المراجعة</string>
     <string name="validation_rules_data_to_review">بيانات للمراجعة</string>
-
-</resources>
+    <string name="action_can_not_be_performed">لا يمكن تنفيذ هذا الإجراء</string>
+    <string name="action_next">التالي</string>
+    <string name="add_file">إضافة ملف</string>
+    <string name="file_downloaded">تم تنزيل الملف بنجاح</string>
+    <string name="file_download_error">تعذر تنزيل الملف</string>
+    <string name="add_image">إضافة صورة</string>
+    <string name="take_photo">التقط صورة</string>
+    <string name="from_gallery">إضافة من المعرض</string>
+    <string name="indicators_label">المؤشرات</string>
+    <string name="no_data_write_access">ليس لديك إذن لتعديل هذه البيانات</string>
+    </resources>

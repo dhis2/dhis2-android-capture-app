@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_done">ହୋଇଗଲା</string>
+    <string name="input_coordinate_latitude">ଅକ୍ଷାଂଶ</string>
+    <string name="input_coordinate_longitude">ଦ୍ରାଘିମା</string>
+    <string name="no">ନାହିଁ</string>
+    <string name="yes">ହଁ</string>
+    </resources>

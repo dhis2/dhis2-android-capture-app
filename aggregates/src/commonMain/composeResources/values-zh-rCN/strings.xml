@@ -1,15 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">一切都很好</string>
+    <string name="default_column_label">值</string>
+    <string name="total_header_label">总共</string>
+    <string name="input_age_date_of_birth">生日</string>
+    <string name="input_age">年龄</string>
+    <string name="input_age_or">或</string>
+    <string name="input_action_accept">接受</string>
+    <string name="input_action_cancel">取消</string>
+    <string name="no_results_found">没有结果</string>
+    <string name="action_done">完成</string>
+    <string name="input_coordinate_latitude">纬度</string>
+    <string name="input_coordinate_longitude">经度</string>
+    <string name="input_coordinate_add_location">添加位置</string>
     <string name="mark_dataset_complete">你要完成数据集？</string>
+    <string name="not_now">现在不要</string>
     <string name="complete">完成</string>
     <string name="saved">已经保存！</string>
     <string name="field_mandatory">有强制字段请填充后完成数据集</string>
     <string name="field_required">如果你设置值，整行的值需要设置才能完成数据集。</string>
-    <string name="ok">好</string>
+    <string name="ok">OK</string>
     <string name="dataset_saved_completed">保存并完成！</string>
     <string name="run_validation_rules">你要检查数据质量？</string>
+    <string name="no">否</string>
+    <string name="yes">是</string>
+    <string name="error">错误</string>
+    <string name="errors">错误</string>
     <string name="complete_anyway">任何都要完成</string>
+    <string name="review">审查</string>
     <string name="validation_rules_data_to_review">复查的数据</string>
-
-</resources>
+    <string name="action_next">下一个</string>
+    <string name="add_file">添加文件</string>
+    <string name="add_image">添加图片</string>
+    <string name="take_photo">拍照</string>
+    <string name="indicators_label">指标</string>
+    <string name="no_data_write_access">您无权编辑此数据</string>
+    </resources>

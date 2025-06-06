@@ -1,0 +1,15 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">ပင်မစာမျက်နှာ</string>
+    <string name="action_settings">တည်ဆောက်ထားသည့်အနေအထား</string>
+
+    <string name="username">အသုံးပြုသူအမည်</string>
+    <string name="password">လျှို့ဝှက်နံပါတ်</string>
+    <string name="delete">ဖျက်ဆီးသည်</string>
+    <string name="ok">လက်ခံသည်</string>
+    <string name="cancel">ပယ်ဖျက်သည်</string>
+    <string name="prompt_password">လျှို့ဝှက်နံပါတ်</string>
+    <string name="done_task">ပင်မစာမျက်နှာ</string>
+    <string name="back">‌နောက်သို့ပြန်သွားသည်</string>
+    <string name="action_sync">ပို့သည်</string>
+    <string name="count">အရေအတွက်</string>
+    </resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="default_column_label">අගයන්</string>
+    <string name="total_header_label">එකතු</string>
+    <string name="input_age_or">හෝ</string>
+    <string name="input_action_accept">පිළිගන්න</string>
+    <string name="action_done">නිම කළා</string>
+    <string name="no">නැත</string>
+    <string name="yes">ඔව්</string>
+    <string name="error">දෝෂය</string>
+    </resources>

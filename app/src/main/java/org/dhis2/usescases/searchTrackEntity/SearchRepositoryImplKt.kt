@@ -323,7 +323,7 @@ class SearchRepositoryImplKt(
                         OptionSetConfiguration(
                             searchEmitter = searchFlow,
                             optionFlow = searchFlow.debounce(300).flatMapLatest {
-                                d2.optionModule().options()
+                                d2.optionModule().options().orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                     .getPagingData(10)
                                     .map { pagingData ->
@@ -370,7 +370,7 @@ class SearchRepositoryImplKt(
                         OptionSetConfiguration(
                             searchEmitter = searchEmitter,
                             optionFlow = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                                .byOptionSetUid().eq(attribute.optionSet()!!.uid()).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .getPagingData(10)
                                 .map { pagingData ->
                                     pagingData.map { option ->

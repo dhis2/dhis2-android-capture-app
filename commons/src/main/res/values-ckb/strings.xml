@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">پەسندکردن</string>
+    <string name="next">داهاتوو</string>
+    <string name="cancel">لابردن</string>
+    <string name="yes">بەڵێ</string>
+    <string name="no">نەخێر</string>
+    <string name="navigation_programs">بةرنامةكان</string>
+    <string name="navigation_relationships">پەیوەندیەکان</string>
+    <string name="search">گەڕان</string>
+    <string name="done">تةواو كرا</string>
+
+    <string name="filters_title_period">ماوة</string>
+    <string name="filters_title_status">پێگە</string>
+    <string name="filters_title_date">بەروار</string>
+    <string name="state_error">هەڵە</string>
+    <string name="filter_event_status_completed">تەواوبوو</string>
+    <string name="active">چاڵاک</string>
+    <string name="enrollment_status_completed">تەواوبکە</string>
+    <!-- Periods -->
+    <string name="filter_period_today">ئەمڕۆ</string>
+    <string name="filter_period_this_week">ئەم هەفتەیە</string>
+    <string name="filter_period_last_week">هەفتەی ڕابردوو</string>
+    <string name="filter_period_this_month">ئەم مانگە</string>
+    <string name="filter_period_last_month">مانگی ڕابردوو</string>
+    <string name="period">ماوة</string>
+    <string name="filter_sync_error">هەڵە لە هاوکاتگەری</string>
+    <!-- Sections -->
+    <string name="section_feedback">ڕاووبۆچون</string>
+    <string name="section_indicators">نیشاندەر</string>
+    <string name="complete">تەواوبکە</string>
+    <string name="default_table_header_label">بةها</string>
+    <string name="overdue_today">ئەمڕۆ</string>
+    <string name="remove">لابردن</string>
+    </resources>

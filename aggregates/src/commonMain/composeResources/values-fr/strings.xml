@@ -1,17 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Tout a l\'air bien!</string>
-    <string name="mark_dataset_complete">Voulez-vous également compléter l\'ensemble de données?</string>
+    <string name="default_column_label">Valeurs</string>
+    <string name="total_header_label">Totaux</string>
+    <string name="input_age_date_of_birth">Date de naissance</string>
+    <string name="input_age">Âge</string>
+    <string name="input_age_or">ou</string>
+    <string name="input_action_accept">Accepter</string>
+    <string name="input_action_cancel">Annuler</string>
+    <string name="no_results_found">Aucun résultat trouvé</string>
+    <string name="action_done">Terminé</string>
+    <string name="input_coordinate_latitude">Latitude</string>
+    <string name="input_coordinate_longitude">Longitude</string>
+    <string name="input_coordinate_add_location">Ajouter un lieu</string>
+    <string name="input_not_supported">Non supporté</string>
+    <string name="mark_dataset_complete">Voulez-vous également compléter l\'ensemble de données\?</string>
+    <string name="not_now">Pas maintenant</string>
     <string name="complete">Terminer</string>
     <string name="saved">Enregistré!</string>
     <string name="field_mandatory">Il manque des champs obligatoires. Veuillez les remplir pour compléter l\'ensemble de données.</string>
     <string name="field_required">Si vous saisissez une valeur, la ligne entière doit être remplie pour compléter l\'ensemble de données.</string>
     <string name="ok">Ok</string>
     <string name="dataset_saved_completed">Enregistré et terminé!</string>
-    <string name="run_validation_rules">Voulez-vous vérifier la qualité des données?</string>
+    <string name="run_validation_rules">Voulez-vous vérifier la qualité des données\?</string>
+    <string name="no">Non</string>
+    <string name="yes">Oui</string>
     <string name="error">Erreur</string>
+    <string name="errors">Erreurs</string>
     <string name="complete_anyway">Terminer quand même</string>
     <string name="review">Vérifier</string>
     <string name="validation_rules_data_to_review">Données à examiner</string>
-
-</resources>
+    <string name="action_next">Suivant</string>
+    <string name="add_file">Ajouter un fichier</string>
+    <string name="add_image">Ajouter une image</string>
+    <string name="take_photo">Prendre une photo</string>
+    <string name="indicators_label">Indicateurs</string>
+    <string name="no_data_write_access">Vous n\'êtes pas autorisé à modifier ces données</string>
+    </resources>

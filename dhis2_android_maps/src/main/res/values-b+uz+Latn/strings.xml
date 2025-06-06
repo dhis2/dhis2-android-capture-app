@@ -2,9 +2,18 @@
 <resources>
     <string name="select_location">Joyni tanlang</string>
     <string name="map_layers">Xarita qavatlari</string>
+    <string name="dialog_layer_base_map_osm_light">OSM manba</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM Batafsil</string>
+    <string name="dialog_layer_base_map_bing_road">Yoʼl</string>
+    <string name="dialog_layer_base_map_bing_dark">Toʼq rangli moʼyqalam</string>
+    <string name="dialog_layer_base_map_bing_aerial">Gibrid koʼrinish</string>
+    <string name="dialog_layer_base_map_bing_aerial_label">Belgilar</string>
     <string name="action_apply">Murojaat qilish</string>
     <string name="dialog_layer_satellite">Suniy yoʼldosh koʼrinishini koʼrsatish</string>
     <string name="dialog_layer_event">Hodisa/tadbirlarni koʼrsatish</string>
     <string name="dialog_layer_tei_coordinates">TEI koordinatalarini koʼrsatish</string>
     <string name="dialog_layer_heatmap">Issiqlik xaritasi qatlamini koʼrsatish</string>
+    <string name="accuracy_low">Kam</string>
+    <string name="accuracy_medium">Oʼrta</string>
+    <string name="select_location_title">Joyni tanlang</string>
     </resources>

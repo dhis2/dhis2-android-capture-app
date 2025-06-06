@@ -75,7 +75,7 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
         d2.fileResourceModule().fileResources()
             .uid(value)
             .blockingGet()
-            ?.path()?.split("/")?.last() ?: value
+            ?.name() ?: value
 
     private fun getValueTypeAndOptionSetUid(uid: String) =
         trackedEntityAttribute(uid)

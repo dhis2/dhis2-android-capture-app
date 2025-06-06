@@ -66,19 +66,6 @@ class TextInputUiTest {
         }
     }
 
-    @Ignore("Flaky test, to be resolved in a separate ticket")
-    @Test
-    fun shouldClearFocusWhenKeyboardIsHidden() {
-        tableRobot(composeTestRule) {
-            val fakeModels = initTableAppScreen(
-                FakeModelType.MANDATORY_TABLE
-            )
-            clickOnCell(fakeModels.first().id!!, 0, 0)
-            assertInputComponentIsDisplayed()
-            assertClickOnBackClearsFocus()
-        }
-    }
-
     @Test
     fun shouldDisplayHelperText() {
         val helperText = "This is a helper Text"

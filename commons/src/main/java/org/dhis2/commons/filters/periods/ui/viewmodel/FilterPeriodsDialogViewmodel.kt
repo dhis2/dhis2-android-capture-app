@@ -19,6 +19,7 @@ import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FilterDialogLaun
 import org.dhis2.commons.filters.periods.ui.state.FilterPeriodsScreenState
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.hisp.dhis.android.core.period.DatePeriod
 import java.util.Calendar
 
@@ -87,80 +88,92 @@ class FilterPeriodsDialogViewmodel(
     }
 
     fun onPeriodSelected(period: Period) {
-        when (launchMode) {
-            is FilterDialogLaunchMode.NewPeriodDialog -> {
-                if (launchMode.filterType == Filters.PERIOD) {
-                    FilterManager.getInstance().addPeriod(
-                        listOf(
-                            DatePeriod.create(
-                                period.startDate,
-                                period.endDate,
+        viewModelScope.launch {
+            CoroutineTracker.increment()
+            when (launchMode) {
+                is FilterDialogLaunchMode.NewPeriodDialog -> {
+                    if (launchMode.filterType == Filters.PERIOD) {
+                        FilterManager.getInstance().addPeriod(
+                            listOf(
+                                DatePeriod.create(
+                                    period.startDate,
+                                    period.endDate,
+                                ),
                             ),
-                        ),
-                    )
-                } else {
-                    FilterManager.getInstance().addEnrollmentPeriod(
-                        listOf(
-                            DatePeriod.create(
-                                period.startDate,
-                                period.endDate,
+                        )
+                    } else {
+                        FilterManager.getInstance().addEnrollmentPeriod(
+                            listOf(
+                                DatePeriod.create(
+                                    period.startDate,
+                                    period.endDate,
+                                ),
                             ),
-                        ),
-                    )
+                        )
+                    }
+                }
+
+                is FilterDialogLaunchMode.NewDataSetPeriodDialog -> {
+                    FilterManager.getInstance()
+                        .addPeriod(listOf(DatePeriod.create(period.startDate, period.endDate)))
                 }
             }
-
-            is FilterDialogLaunchMode.NewDataSetPeriodDialog -> {
-                FilterManager.getInstance()
-                    .addPeriod(listOf(DatePeriod.create(period.startDate, period.endDate)))
-            }
+            CoroutineTracker.decrement()
         }
     }
 
     fun setDailyPeriodFilter(selectedDateMillis: Long?) {
-        val selectedDate = Calendar.getInstance()
-        selectedDateMillis?.let {
-            selectedDate.timeInMillis = selectedDateMillis
-        }
-        val datePeriods = mutableListOf(DatePeriod.create(selectedDate.time, selectedDate.time))
-        when (launchMode) {
-            is FilterDialogLaunchMode.NewPeriodDialog -> {
-                if (launchMode.filterType == Filters.ENROLLMENT_DATE) {
-                    FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
-                } else {
+        viewModelScope.launch {
+            CoroutineTracker.increment()
+            val selectedDate = Calendar.getInstance()
+            selectedDateMillis?.let {
+                selectedDate.timeInMillis = selectedDateMillis
+            }
+            val datePeriods = mutableListOf(DatePeriod.create(selectedDate.time, selectedDate.time))
+            when (launchMode) {
+                is FilterDialogLaunchMode.NewPeriodDialog -> {
+                    if (launchMode.filterType == Filters.ENROLLMENT_DATE) {
+                        FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
+                    } else {
+                        FilterManager.getInstance().addPeriod(datePeriods)
+                    }
+                }
+
+                else -> {
                     FilterManager.getInstance().addPeriod(datePeriods)
                 }
             }
-
-            else -> {
-                FilterManager.getInstance().addPeriod(datePeriods)
-            }
+            CoroutineTracker.decrement()
         }
     }
 
     fun setFromToFilter(fromSelectedDateMillis: Long?, toSelectedDateMillis: Long?) {
-        val fromSelectedDate = Calendar.getInstance()
-        fromSelectedDateMillis?.let {
-            fromSelectedDate.timeInMillis = it
-        }
-        val toSelectedDate = Calendar.getInstance()
-        toSelectedDateMillis?.let {
-            toSelectedDate.timeInMillis = it
-        }
-        val datePeriods =
-            mutableListOf(DatePeriod.create(fromSelectedDate.time, toSelectedDate.time))
-        when (launchMode) {
-            is FilterDialogLaunchMode.NewPeriodDialog -> {
-                if (launchMode.filterType == Filters.ENROLLMENT_DATE) {
-                    FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
-                } else {
+        viewModelScope.launch {
+            CoroutineTracker.increment()
+            val fromSelectedDate = Calendar.getInstance()
+            fromSelectedDateMillis?.let {
+                fromSelectedDate.timeInMillis = it
+            }
+            val toSelectedDate = Calendar.getInstance()
+            toSelectedDateMillis?.let {
+                toSelectedDate.timeInMillis = it
+            }
+            val datePeriods =
+                mutableListOf(DatePeriod.create(fromSelectedDate.time, toSelectedDate.time))
+            when (launchMode) {
+                is FilterDialogLaunchMode.NewPeriodDialog -> {
+                    if (launchMode.filterType == Filters.ENROLLMENT_DATE) {
+                        FilterManager.getInstance().addEnrollmentPeriod(datePeriods)
+                    } else {
+                        FilterManager.getInstance().addPeriod(datePeriods)
+                    }
+                }
+
+                else -> {
                     FilterManager.getInstance().addPeriod(datePeriods)
                 }
             }
-
-            else -> {
-                FilterManager.getInstance().addPeriod(datePeriods)
-            }
+            CoroutineTracker.decrement()
         }
     }
 

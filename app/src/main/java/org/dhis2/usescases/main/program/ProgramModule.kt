@@ -64,10 +64,4 @@ class ProgramModule(private val view: ProgramView) {
             schedulerProvider,
         )
     }
-
-    @Provides
-    @PerFragment
-    fun provideAnimations(): ProgramAnimation {
-        return ProgramAnimation()
-    }
 }

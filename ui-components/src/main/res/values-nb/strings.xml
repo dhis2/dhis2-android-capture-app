@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Fullfør</string>
+    <string name="discard_changes">Forkast endringer</string>
+    <string name="keep_editing">Fortsett å rediger</string>
+    <string name="cancel">Avbryt</string>
+    <string name="save">Lagre</string>
+    <string name="clear">Fjern</string>
+    <string name="action_done">Fullfør</string>
+    <string name="action_cancel">Avbryt</string>
+    <string name="action_close">Lukk</string>
+    <string name="hint_search">Søk</string>
+    <string name="action_clear_all">Fjern alt</string>
+    </resources>

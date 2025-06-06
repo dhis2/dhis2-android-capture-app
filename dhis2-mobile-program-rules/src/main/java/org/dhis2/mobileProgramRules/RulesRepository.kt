@@ -123,7 +123,7 @@ class RulesRepository(private val d2: D2) {
                                 event,
                                 d2.dataElementModule().dataElements(),
                                 d2.programModule().programRuleVariables(),
-                                d2.optionModule().options(),
+                                d2.optionModule().options().orderBySortOrder(RepositoryScope.OrderByDirection.ASC),
                             ) ?: emptyList(),
                         )
                     }
@@ -217,7 +217,7 @@ class RulesRepository(private val d2: D2) {
                         event,
                         d2.dataElementModule().dataElements(),
                         d2.programModule().programRuleVariables(),
-                        d2.optionModule().options(),
+                        d2.optionModule().options().orderBySortOrder(RepositoryScope.OrderByDirection.ASC),
                     ) ?: emptyList(),
                 )
             }.toList()
@@ -285,7 +285,7 @@ class RulesRepository(private val d2: D2) {
                         event,
                         d2.dataElementModule().dataElements(),
                         d2.programModule().programRuleVariables(),
-                        d2.optionModule().options(),
+                        d2.optionModule().options().orderBySortOrder(RepositoryScope.OrderByDirection.ASC),
                     )
             } ?: emptyList()
     }

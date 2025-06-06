@@ -86,6 +86,7 @@
     <string name="program_inactive">Programmet er inaktivt</string>
 
     <string name="event_open">Åpne</string>
+    <string name="event_completed">Hendelse fullført</string>
     <string name="read_only">Skrivebeskyttet</string>
     <string name="finish_and_complete">Gjør ferdig og fullfør</string>
     <string name="completed">Fullført</string>
@@ -135,6 +136,8 @@
     <string name="delete">Slett</string>
     <string name="total">Totalt</string>
     <string name="most_recent_event_date">Siste hendelsesdato</string>
+    <string name="no_options">Ingen alternativer er tilgjengelige</string>
+
     <string name="active_programs">Aktive programmer</string>
     <string name="to_enroll_programs">Programmer å registrere</string>
     <string name="enroll">Registrere</string>
@@ -144,12 +147,15 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VIS MER</string>
+    <string name="edit">Rediger</string>
     <string name="follow_up">Oppfølging</string>
     <string name="follow_up_enabled">Oppfølging er aktivert</string>
     <string name="follow_up_disabled">Oppfølging er deaktivert</string>
     <string name="deactivate">Deaktiver</string>
     <string name="program_not_allow_events">Dette programmet tillater ikke flere hendelser</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Ingen data</string>
     <string name="events">hendelser</string>
     <string name="done_task">Hjem</string>
     <string name="app_info">App Info</string>
@@ -355,6 +361,7 @@
     <string name="date_dialog_tigle">Velg datoer for å filtrere</string>
     <string name="select_option">Velg et alternativ</string>
     <string name="issue_reported">Problemer rapportert</string>
+    <string name="dialog_generate_new_event">Generer en ny hendelse</string>
     <string name="message_generate_new_event">Vil du opprette en ny hendelse?</string>
     <string name="event_completed_title">Hendelser er fullført</string>
     <string name="event_completed_message">Alle hendelser i dette programmet er fullført. Vil du lukke programmet også?</string>
@@ -659,6 +666,7 @@
     <string name="download_tei_error">Den valgte %s kunne ikke lastes ned</string>
     <string name="completed_by">Fullført av %s: %s</string>
     <string name="updated_time">Oppdatert: %s</string>
+    <string name="action_done">Fullfør</string>
     <string name="validation_internal_error_datasets">Vi kunne ikke sjekke datakvaliteten. Kontakt administratoren din</string>
     <string name="are_you_sure">Er du sikker?</string>
     <string name="reopen_question">Vil du åpne datasettet på nytt?</string>
@@ -683,10 +691,13 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Informasjon om feil</string>
     <string name="enrollment_date_edition_warning">Det er planlagte arrangementer som ikke vil bli planlagt på nytt</string>
     <string name="section_charts">Diagrammer</string>
+    <string name="navigation_list_view">Vis</string>
     <string name="navigation_table_view">Tabellvisning</string>
+    <string name="navigation_map_view">Kart</string>
     <string name="navigation_analytics">Analyser</string>
     <string name="navigation_tasks">Oppgaver</string>
     <string name="navigation_programs">Programmer</string>
+    <string name="navigation_charts">Diagrammer</string>
     <string name="navigation_notes">Notater</string>
     <string name="navigation_data_entry">Dataregistrering</string>
     <string name="navigation_tei_data">Detaljer</string>
@@ -708,6 +719,7 @@
     <string name="section_indicators">Indikatorer</string>
     <string name="value">Verdi</string>
     <string name="data_set_quality_check_done">Fullført!</string>
+    <string name="break_glass_dialog_title">Dette programmet er beskyttet</string>
     <string name="login_error_bad_credentials">Feil opplysninger</string>
     <string name="invalid_integer">Verdien må være et heltall</string>
     <string name="dataset_column_default">Verdier</string>
@@ -717,4 +729,26 @@
     <string name="search_too_many_results">For mange resultat</string>
     <string name="search_create_new">Opprett ny</string>
     <string name="action_ok">Ok</string>
+    <string name="sync_dialog_title_synced">Synkronisert</string>
+    <string name="sync_dialog_title_syncing">Synkroniserer</string>
+    <string name="sync_dialog_action_send">Send</string>
+    <string name="sync_dialog_action_refresh">Oppdater</string>
+    <string name="skipped">Hoppet over</string>
+    <string name="programs">Programmer</string>
+    <string name="sync_error">Synkroniseringsfeil</string>
+    <string name="mark_follow_up">Merk for oppfølging</string>
+    <string name="coordinates">Koordinater</string>
+    <string name="schedule">Planlegg</string>
+    <string name="refer">Henvis</string>
+    <string name="scheduled_enter_event">Planlagt</string>
+    <string name="program_stage">Programfase</string>
+    <string name="event">hendelse</string>
+    <string name="timeline">Tidslinje</string>
+    <string name="optional">Valgfri</string>
+    <string name="show_more">Vis mer</string>
+    <string name="show_less">Vis mindre</string>
+    <string name="sync">Synk</string>
+    <string name="show_description">Vis beskrivelse</string>
+    <string name="hide_description">Skjul beskrivelse</string>
+    <string name="transfer">Overfør </string>
     </resources>

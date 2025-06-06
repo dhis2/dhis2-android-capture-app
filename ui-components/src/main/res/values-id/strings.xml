@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Lengkap</string>
+    <string name="discard_changes">Hapus perubahan</string>
+    <string name="cancel">Batal</string>
+    <string name="save">Simpan</string>
+    <string name="clear">Hapus</string>
+    <string name="action_done">Selesai</string>
+    <string name="action_cancel">Batal</string>
+    <string name="action_close">Tutup</string>
+    <string name="hint_search">Pencarian</string>
+    </resources>

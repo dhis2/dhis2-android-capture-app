@@ -850,6 +850,7 @@
     <string name="sms_sync_opening_app">Відкриття програми SMS. Будь ласка, не змінюйте повідомлення.</string>
     <string name="sms_sync_sms_app_chooser_title">Надіслати SMS за допомогою</string>
     <string name="sms_sync_manual_confirmation">Очікується підтвердження вручну</string>
+    <string name="syncing_events">Синхронізація подій</string>
     <string name="sync_dialog_title_synced">Синхронізовано</string>
     <string name="sync_dialog_action_send">Надіслати</string>
     <string name="sync_dialog_action_not_now">Не зараз</string>
@@ -868,6 +869,7 @@
     <string name="schedule">Запланувати</string>
     <string name="scheduled_enter_event">Заплановано</string>
     <string name="program_stage">Етап програми</string>
+    <string name="event">подія</string>
     <string name="clear_search">Очистити пошук</string>
     <string name="optional">Необов\'язково</string>
     <string name="show_more">Показати більше</string>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">ပြည့်စုံသည်။</string>
+    <string name="cancel">ပယ်ဖျက်သည်</string>
+    <string name="save">သိမ်းဆည်းသည်</string>
+    <string name="clear">ရှင်းလင်းသည်</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">ပယ်ဖျက်သည်</string>
+    <string name="action_close">ပိတ်သည်</string>
+    </resources>

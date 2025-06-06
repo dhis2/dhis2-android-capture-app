@@ -23,7 +23,6 @@
     <string name="conf_error_value_option_set">El valor del campo %s no pertenece al conjunto de opciones en %s</string>
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="missing_warning_fields_completed_events">Tienes algunos mensajes de aviso.</string>
-    <string name="missing_warning_fields_events">Tienes algunos mensajes de alerta.\n¿Desea marcar el formulario como Completo?</string>
     <string name="required">Necesario</string>
     <string name="date">Fecha</string>
     <string name="hint_year">Años</string>
@@ -34,11 +33,11 @@
     <string name="latitude">Latitud</string>
     <string name="longitude">Longitud</string>
     <string name="coordinates_error">El valor de las coordenadas no es válido</string>
-    <string name="polygon_captured">Polígono guardado</string>
+    <string name="polygon_captured">Polígono capturado</string>
     <string name="enter_value">Introduzca valor</string>
     <string name="enter_url">Introduzca url</string>
     <string name="enter_email">Introduzca email</string>
-    <string name="enter_phone_number">Introduzca número de teléfono</string>
+    <string name="enter_phone_number">Ingrese número de teléfono</string>
     <string name="enter_positive_integer_or_zero">Introducir entero o cero</string>
     <string name="enter_negative_integer">Introducir entero negativo</string>
     <string name="enter_positive_integer">Introducir entero positivo</string>
@@ -57,20 +56,14 @@
     <string name="complete">Completar</string>
     <string name="discard_changes">Descartar los cambios</string>
     <string name="saved">¡Guardado!</string>
-    <string name="event_error_on_complete">Tiene algunos mensajes de error. \n¿Desea revisarlos?</string>
-    <string name="missing_error_fields_events">Algunos campos tienen errores y no serán guardados. \n¿Desea revisar el formulario?</string>
-    <string name="review_message">Algunos campos necesitan su atención.\n¿Desea revisar el formulario?</string>
     <string name="not_now">Ahora no</string>
     <string name="save_anyway">Guardar de todos modos</string>
     <string name="keep_editing">Seguir editando</string>
-    <string name="event_can_be_completed">¿Desea marcar este formulario como completo?</string>
+    <string name="event_can_be_completed">¿Desea marcar este formulario como completo\?</string>
     <string name="discard_go_back">Si sale toda la información del formulario será descartada.</string>
-    <string name="field_errors_not_saved_discard">Algunos campos tienen errores y no serán guardados. \nSi sale, los cambios serán descartados.</string>
     <string name="field_errors_not_saved">Algunos campos tienen errores y no serán guardados.</string>
     <string name="fields_mandatory_missing">Algunos campos obligatorios faltan llenarse, el formulario no puede ser guardado</string>
-    <string name="fields_mandatory_missing_discard">Algunos campos obligatorios faltan llenarse, el formulario no puede guardarse. \nSi sale, los cambios serán descartados.</string>
     <string name="share">Compartir</string>
-    <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebe habilitarlo para usar esta función.</string>
     <string name="action_close">Cerrar</string>
     <string name="program_rules_loop_warning_title">Advertencia de reglas del programa</string>
     <string name="program_rules_loop_warning_message">Hay un problema de configuración que provoca un bucle en las reglas. Póngase en contacto con su administrador.</string>
@@ -106,7 +99,7 @@
     <string name="scan">Escanear</string>
     <string name="qr_code">Código QR</string>
     <string name="bar_code">Código de barras</string>
-    <string name="add_location">Añadir ubicación</string>
+    <string name="add_location">Agregar ubicación</string>
     <string name="form_without_fields">Este formulario no tiene campos configurados</string>
     <string name="event_details_section_title">%s detalles</string>
     <string name="event_data_section_title">%s datos</string>
@@ -115,5 +108,7 @@
     <string name="category_combo">Combo de categoría</string>
     <string name="no_options">No hay opciones disponibles</string>
     <string name="cat_combo">Cat Combo</string>
+    <string name="yes">sí</string>
+    <string name="no">no</string>
     <string name="re_open_to_edit">Reabrir el formulario para editar</string>
 </resources>

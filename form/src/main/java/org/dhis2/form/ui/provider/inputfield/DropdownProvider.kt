@@ -1,6 +1,7 @@
 package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,18 +30,15 @@ fun ProvideDropdownInput(
         mutableStateOf(DropdownItem(fieldUiModel.displayName ?: ""))
     }
 
-    val optionSetConfiguration by remember(fieldUiModel) {
-        mutableStateOf(fieldUiModel.optionSetConfiguration)
-    }
+    val optionSetConfiguration = fieldUiModel.optionSetConfiguration
 
     val optionsData = optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()
+        ?.also { LaunchedEffect(optionSetConfiguration) { it.refresh() } }
 
     val useDropdown by remember {
         derivedStateOf {
-            optionSetConfiguration?.searchEmitter?.value?.isEmpty() == true && (
-                optionsData?.itemCount
-                    ?: 0
-                ) < 15
+            optionSetConfiguration?.searchEmitter?.value?.isEmpty() == true &&
+                (optionsData?.itemCount ?: 0) < 15
         }
     }
 

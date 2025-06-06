@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">အချက်အလက်မရှိပါ။</string>
+    <string name="next">ရှေ့သို့</string>
+    <string name="cancel">ပယ်ဖျက်သည်</string>
+    <string name="yes">မှန်</string>
+    <string name="no">No</string>
+    <string name="navigation_programs">Programs</string>
+    <string name="navigation_notes">မှတ်စု</string>
+    <string name="navigation_tei_data">အသေးစိတ်များ</string>
+    <string name="event_overview">အသေးစိတ်များ</string>
+    <string name="data_sets">စီမံချက်</string>
+    <string name="done">Done</string>
+
+    <string name="filters_title_period">အချိန်ကာလ</string>
+    <string name="filters_title_status">အခြေအနေ</string>
+    <string name="filters_title_date">ရက်စွဲ</string>
+    <string name="daily_period">နေ့စဉ်</string>
+    <string name="weekly">အပတ်စဉ်</string>
+    <string name="monthly">လစဉ်</string>
+    <string name="bi_monthly">နှစ်လတစ်ကြိမ်</string>
+    <string name="quarterly">သုံးလတစ်ကြိမ်</string>
+    <string name="six_monthly">ခြောက်လတစ်ကြိမ်</string>
+    <string name="yearly">နှစ်စဉ်</string>
+    <string name="state_error">အမှား</string>
+    <string name="state_warning">သတိ</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">Open</string>
+    <string name="active">လုပ်ဆောင်နိုင်သည်</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">ပြည့်စုံသည်။</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_period_last_month">ယခင်လ</string>
+    <string name="filter_period_other">အခြား</string>
+    <string name="filter_period_this_year">ဒီနှစ်</string>
+    <string name="filter_period_last_quarter">လွန်ခဲ့သော ၃လက</string>
+    <string name="filter_period_quarters_this_year">Quarters this year</string>
+    <string name="filter_period_last_year">ယခင်နှစ်</string>
+    <string name="period">အချိန်ကာလ</string>
+    <string name="DAILY">နေ့စဉ်</string>
+    <string name="WEEKLY">အပတ်စဉ်</string>
+    <string name="MONTHLY">လစဉ်</string>
+    <string name="YEARLY">နှစ်စဉ်</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">အကြောင်းပြန်ကြားချက်</string>
+    <string name="section_indicators">အညွှန်းများ</string>
+    <string name="section_charts">ဂရပ် ပုံစံများ</string>
+    <string name="complete">ပြည့်စုံသည်။</string>
+    <string name="default_table_header_label">တန်ဖိုး</string>
+    <string name="default_empty_dataset_section_label">အချက်အလက်</string>
+    <string name="remove">ဖယ်ရှားခြင်း</string>
+    <string name="period_daily_title">နေ့စဉ်</string>
+    <string name="period_yearly_title">ခုနှစ်</string>
+    </resources>

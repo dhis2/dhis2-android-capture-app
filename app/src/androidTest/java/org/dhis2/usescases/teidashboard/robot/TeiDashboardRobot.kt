@@ -19,6 +19,8 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.hasSibling
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -34,6 +36,7 @@ import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.usescases.event.entity.EventStatusUIModel
 import org.dhis2.usescases.event.entity.TEIProgramStagesUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.DateRegistrationUIModel
+import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.EventViewHolder
 import org.dhis2.usescases.teiDashboard.ui.INFO_BAR_TEST_TAG
@@ -122,10 +125,20 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnFirstReferralEvent() {
-        onView(withId(R.id.recycler_view))
-            .check(matches(allOf(atPosition(0, hasDescendant(withText("Lab monitoring"))))))
-            .perform(actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click()))
+        waitForView(
+            allOf(
+                withId(R.id.recycler_view),
+                hasDescendant(withText("Lab monitoring"))
+            )
+        ).perform(
+            actionOnItemAtPosition<ProgramStageSelectionViewHolder>(0, click())
+        )
     }
+
+    fun checkProgramStageSelectionActivityIsLaunched() {
+        Intents.intended(allOf(IntentMatchers.hasComponent(ProgramStageSelectionActivity::class.java.name)))
+   }
+
 
     fun clickOnReferralOption(oneTime: String) {
         composeTestRule.onNodeWithText(oneTime).performClick()
@@ -136,7 +149,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEventWasCreated(eventName: String) {
-        onView(withId(R.id.tei_recycler))
+        waitForView(withId(R.id.tei_recycler))
             .check(
                 matches(
                     allOf(

@@ -86,6 +86,7 @@ class EventMapFragment :
 
                     val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
                     val locationState = eventMapManager?.locationState?.collectAsState()
+                    val mapDataFinishedLoading = eventMapManager?.dataFinishedLoading?.collectAsState()
 
                     LaunchedEffect(key1 = clickedItem) {
                         clickedItem?.let {
@@ -100,7 +101,9 @@ class EventMapFragment :
                             eventMapManager?.takeIf { it.isMapReady() }?.update(
                                 data.featureCollectionMap,
                                 data.boundingBox,
-                            )
+                            ).also {
+                                presenter.mapManager = eventMapManager
+                            }
                         }
                     }
 
@@ -122,22 +125,29 @@ class EventMapFragment :
                             }
                         },
                         actionButtons = {
-                            IconButton(
-                                style = IconButtonStyle.TONAL,
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_layers),
-                                        contentDescription = "",
-                                        tint = TextColor.OnPrimaryContainer,
-                                    )
-                                },
-                            ) {
-                                MapLayerDialog(eventMapManager!!, presenter.programUid()) { layersVisibility ->
-                                    presenter.filterVisibleMapItems(layersVisibility)
-                                }.show(
-                                    childFragmentManager,
-                                    MapLayerDialog::class.java.name,
-                                )
+                            mapDataFinishedLoading?.let {
+                                if (it.value) {
+                                    IconButton(
+                                        style = IconButtonStyle.TONAL,
+                                        icon = {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_layers),
+                                                contentDescription = "",
+                                                tint = TextColor.OnPrimaryContainer,
+                                            )
+                                        },
+                                    ) {
+                                        val mapLayerDialog =
+                                            MapLayerDialog.newInstance(presenter.programUid())
+                                        mapLayerDialog.mapManager = presenter.mapManager
+                                        mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
+                                            presenter.filterVisibleMapItems(layersVisibility)
+                                        }.show(
+                                            childFragmentManager,
+                                            MapLayerDialog::class.java.name,
+                                        )
+                                    }
+                                }
                             }
                             locationState?.let {
                                 LocationIcon(
@@ -218,6 +228,9 @@ class EventMapFragment :
             programEventsViewModel.setProgress(true)
             presenter.getEventInfo(eventUid)
         }
+        val exists = childFragmentManager
+            .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
+        exists?.dismiss()
     }
 
     override fun onDestroy() {

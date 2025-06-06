@@ -6,6 +6,7 @@
     <string name="choose_date">Sanani tanlang</string>
     <string name="choose_ou">Tashkiliy boʼlimni tanlang</string>
     <string name="field_is_mandatory">Maydon toʼldirilishi majburiy</string>
+    <string name="required">Majburiy</string>
     <string name="date">Sana</string>
     <string name="hint_year">Yillar</string>
     <string name="hint_month">Oylar</string>
@@ -32,6 +33,7 @@
     <string name="complete">Bajarildi</string>
     <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
     <string name="saved">Saqlandi!</string>
+    <string name="save_anyway">Nima boʼlganda ham saqlash</string>
     <string name="keep_editing">Tahrirni davom eting</string>
     <string name="share">Улашиш</string>
     <string name="action_close">Yopmoq</string>
@@ -42,4 +44,10 @@
     <string name="tei_coordinates">Uchun koordinatalar</string>
     <string name="no_reserved_values">Saqlangan boshqa qiymatlar yoʼq. Tizim administratoriga murojaat qiling.</string>
     <string name="incident_date">Hodisa sanasi</string>
+    <string name="download">Юклаш</string>
+    <string name="org_unit">Tashkiliy birlik</string>
+    <string name="coordinates">Координаталар</string>
+    <string name="category_combo">Kategoriya Kombo</string>
+    <string name="no_options">Variantlar mavjud emas</string>
+    <string name="cat_combo">Kategoriya kombinatsiyasi</string>
     </resources>

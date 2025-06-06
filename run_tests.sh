@@ -1,4 +1,6 @@
 #!/bin/bash
+# This will make exit immediately if any command fails
+set -e
 
 echo "Running Ktlint check..."
 ./gradlew ktlintCheck

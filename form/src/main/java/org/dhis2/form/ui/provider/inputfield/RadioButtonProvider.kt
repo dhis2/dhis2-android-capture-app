@@ -53,14 +53,18 @@ internal fun ProvideRadioButtonInput(
         isRequired = fieldUiModel.mandatory,
         itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            val selectedIndex = data.indexOf(item)
-            intentHandler(
-                FormIntent.OnSave(
-                    fieldUiModel.uid,
-                    codeList[selectedIndex],
-                    fieldUiModel.valueType,
-                ),
-            )
+            if (item != null) {
+                val selectedIndex = data.indexOf(item)
+                intentHandler(
+                    FormIntent.OnSave(
+                        fieldUiModel.uid,
+                        codeList[selectedIndex],
+                        fieldUiModel.valueType,
+                    ),
+                )
+            } else {
+                intentHandler(FormIntent.ClearValue(fieldUiModel.uid))
+            }
         },
     )
 }

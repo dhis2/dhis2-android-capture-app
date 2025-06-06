@@ -1,0 +1,70 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_review">审查</string>
+    <string name="action_settings">设置</string>
+
+    <string name="discard">放弃</string>
+    <string name="sign_in">登记</string>
+    <string name="username">用户名</string>
+    <string name="password">口令</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">处理</string>
+    <string name="review">审查</string>
+
+    <string name="delete">删除</string>
+    <string name="ok">OK</string>
+    <string name="cancel">取消</string>
+    <string name="from">从</string>
+    <string name="language">语言</string>
+    <string name="logout">退出</string>
+
+
+    <!-- Stock table -->
+    <string name="item">条目</string>
+    <string name="prompt_email">邮件</string>
+    <string name="prompt_password">口令</string>
+    <string name="action_sign_in">注册</string>
+    <string name="action_sign_in_short">登记</string>
+    <string name="content_desc_search">搜索</string>
+    <string name="confirm_transaction_label">确认</string>
+    <string name="invalid_quantity">无效</string>
+    <string name="speech_network_error">网络错误</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">出了些问题。请检查服务器 URL、用户名和密码是否正确，然后重试。</string>
+    <string name="login_error_unknown_host">未知服务器</string>
+    <string name="online_search_parsing_error">解析结果发生错误</string>
+    <string name="error_many_requests">服务器此时有点忙。请稍后再试。</string>
+    <string name="error_already_authenticated">用户已经登录。</string>
+    <string name="error_already_executed">请求已被执行。</string>
+    <string name="error_api_invalid_query">服务器请求无效。</string>
+    <string name="error_create_existing_error">创作中止。对象已经存在。</string>
+    <string name="error_export_login">请登录以导出数据库。</string>
+    <string name="error_export_encrypted">不支持导出加密数据库。</string>
+    <string name="error_import_exist">您正在导入一个已经存在的数据库。</string>
+    <string name="error_import_logout">请注销以导入新数据库。</string>
+    <string name="error_import_version">导入的数据库版本高于支持的版本。</string>
+    <string name="error_user_no_authenticated">没有经过身份验证的用户。</string>
+    <string name="error_user_no_authenticated_offline">没有经过离线身份验证的用户。</string>
+    <string name="error_different_offline_user">您正在尝试使用其他用户离线登录。</string>
+    <string name="error_object_update">无法更新对象。</string>
+    <string name="error_object_insert">无法插入对象。</string>
+    <string name="error_null_url">缺少服务器 URL。请输入网址。</string>
+    <string name="error_server_malformed">服务器 URL 格式不正确。请检查一下。</string>
+    <string name="error_settings_app_not_supported">不支持此版本的设置 Web 应用程序。</string>
+    <string name="error_settings_app_not_intalled">设置 Web 应用程序未安装在服务器中。</string>
+    <string name="error_socket_timeout">服务器花费了太多时间来响应。我们取消了请求。</string>
+    <string name="error_url_not_found">我们找不到 URL。请验证一下。</string>
+    <string name="error_account_disabled">您的用户帐户已被禁用。如果这是错误，请联系您的管理员。</string>
+    <string name="error_account_locked">您的用户帐户被锁定。如果这是错误，请联系您的管理员。</string>
+    <string name="error_set_value">无法设置该值。</string>
+    <string name="error_ssl">服务器证书有问题。请联系您的管理员。</string>
+    <string name="done_task">Home</string>
+    <string name="back">后退</string>
+    <string name="no_conflicts_message">该项目没有冲突。</string>
+    <string name="action_sync">发送</string>
+    <string name="not_saved">未保存</string>
+    <string name="count">计数</string>
+    <string name="formatting_error">格式化错误</string>
+    <string name="invalid_possitive_zero">仅仅允许正整数和零</string>
+    <string name="leading_zero_error">不允许前导零数字</string>
+</resources>

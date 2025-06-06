@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="total_header_label">Totais</string>
+    <string name="input_action_cancel">Kansela</string>
+    <string name="complete">Kompletu</string>
+    <string name="ok">OK</string>
+    <string name="no">Lae</string>
+    <string name="yes">Sim</string>
+    <string name="error">Erru</string>
+    <string name="action_next">Próximu</string>
+    <string name="indicators_label">Indikadores</string>
+    </resources>

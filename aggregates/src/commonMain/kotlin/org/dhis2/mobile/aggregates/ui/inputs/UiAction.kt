@@ -5,6 +5,10 @@ sealed class UiAction(open val cellId: String) {
         override val cellId: String,
     ) : UiAction(cellId)
 
+    data class OnDoneClick(
+        override val cellId: String,
+    ) : UiAction(cellId)
+
     data class OnFocusChanged(
         override val cellId: String,
         val hasFocus: Boolean,

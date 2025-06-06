@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">د منلو وړ</string>
+    <string name="period">معیاد</string>
+    <string name="none">هېڅ یو</string>
+    <string name="daily">ورځني [ د مودې ډول ]</string>
+    <string name="today">نن ورځ</string>
+    <string name="other">نور</string>
+    <string name="yesterday">پرونۍ ورځ</string>
+    <string name="weekly">اوونیز</string>
+    <string name="monthly">میاشتنۍ</string>
+    <string name="yearly">کلنۍ</string>
+    <string name="all">ټول</string>
+    </resources>

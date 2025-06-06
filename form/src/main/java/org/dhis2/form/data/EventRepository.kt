@@ -19,6 +19,7 @@ import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
 import org.dhis2.form.data.metadata.FormBaseConfiguration
 import org.dhis2.form.model.EventCategory
@@ -57,7 +58,8 @@ class EventRepository(
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val eventMode: EventMode,
-) : DataEntryBaseRepository(FormBaseConfiguration(d2), fieldFactory, metadataIconProvider) {
+    dispatcherProvider: DispatcherProvider,
+) : DataEntryBaseRepository(FormBaseConfiguration(d2, dispatcherProvider), fieldFactory, metadataIconProvider) {
 
     private val getEventPeriods = GetEventPeriods(
         EventPeriodRepository(d2),

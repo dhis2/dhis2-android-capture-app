@@ -27,6 +27,10 @@ kotlin {
     }
 
     sourceSets {
+        commonMain{
+            resources.srcDirs("src/commonMain/composeResources")
+        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -46,9 +50,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
         }
-        commonTest{
-            resources.srcDirs("aggregates/src/commonMain/composeResources")
-        }
+        
         commonTest.dependencies {
             implementation(kotlin("test"))
             // Koin Test features
@@ -92,8 +94,7 @@ android {
     compileSdk = libs.versions.sdk.get().toInt()
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res", "aggregates/src/commonMain/composeResources")
-    sourceSets["main"].resources.srcDirs("aggregates/src/commonMain/composeResources")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()

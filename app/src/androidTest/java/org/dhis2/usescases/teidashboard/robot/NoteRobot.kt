@@ -1,11 +1,12 @@
 package org.dhis2.usescases.teidashboard.robot
 
-import android.util.Log
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -15,6 +16,7 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
 import org.dhis2.usescases.notes.NotesViewHolder
+import org.dhis2.usescases.notes.noteDetail.NoteDetailActivity
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 
@@ -28,6 +30,10 @@ class NoteRobot : BaseRobot() {
 
     fun clickOnFabAddNewNote() {
         onView(withId(R.id.addNoteButton)).check(matches(isDisplayed())).perform(click())
+    }
+
+    fun verifyNoteDetailActivityIsLaunched() {
+        Intents.intended(allOf(hasComponent(NoteDetailActivity::class.java.name)))
     }
 
     fun clickOnNoteWithPosition(position: Int) {

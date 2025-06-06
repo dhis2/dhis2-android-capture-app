@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">مکمل</string>
+    <string name="cancel">منسوخ</string>
+    <string name="save">محفوظ</string>
+    <string name="clear">کلیئر</string>
+    <string name="action_done">ہو گیا</string>
+    <string name="action_cancel">منسوخ</string>
+    <string name="action_close">بند</string>
+    <string name="hint_search">تلاش کریں</string>
+    </resources>

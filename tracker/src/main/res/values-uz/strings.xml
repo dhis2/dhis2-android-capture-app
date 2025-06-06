@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="empty_relationships">Ўзаро алоқалар мавжуд эмас, янгисини қўшиш учун \"+\" тугмасини босинг.</string>
+    <string name="relation_creation_date">Муносабат яратилган сана</string>
+    <string name="relationship">Ўзаро алоқа</string>
 </resources>

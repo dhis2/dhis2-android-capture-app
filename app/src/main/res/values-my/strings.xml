@@ -1,0 +1,122 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Warnings and error messages -->
+    <string name="error">အမှား</string>
+    <string name="sync_events">Events</string>
+    <string name="sync_complete_title">ပြီးဆုံးသည်</string>
+    <string name="add_new">အသစ်ထည့်ခြင်း</string>
+    <string name="add">ထပ်ထည့်သည်</string>
+    <string name="schedule_new">အသစ်ချိန်းဆိုခြင်း</string>
+    <string name="referral">ညွှန်းပို့ခြင်း</string>
+
+    <string name="user_hint">အသုံးပြုသူအမည်</string>
+    <string name="password_hint">လျှို့ဝှက်နံပါတ်</string>
+    <string name="account_recovery">ပြန်လည်အသုံးပြုနိုင်ရန်သိမ်းဆည်းခြင်း</string>
+    <!--PERIOD-->
+    <string name="DAILY">နေ့စဉ်</string>
+    <string name="WEEKLY">အပတ်စဉ်</string>
+    <string name="MONTHLY">လစဉ်</string>
+    <string name="YEARLY">နှစ်စဉ်</string>
+    <string name="choose_date">ရက်စွဲ ကိုရွေးချယ်ပါ</string>
+    <string name="event_open">Open</string>
+    <string name="read_only">ဖတ်ရန်အတွက်သာ</string>
+    <string name="finish_and_complete">ပြီးဆုံးသည်</string>
+    <string name="active">လုပ်ဆောင်နိုင်သည်</string>
+
+    <string name="state_error">အမှား</string>
+    <!--Event initial-->
+    <string name="create">ဖန်တီးသည်</string>
+    <string name="update">‌နောက်ဆုံးသတင်းကိုရစေခြင်း</string>
+    <string name="date">ရက်စွဲ</string>
+    <string name="org_unit">ဖွဲ့စည်းပုံယူနစ်</string>
+    <string name="category_option">category option</string>
+    <!--DataSet initial-->
+    <string name="report_period">အစီရင်ခံစာကာလအပိုင်းအခြား</string>
+    <!--Event Detail-->
+    <string name="due_date">Дата выполнения</string>
+    <string name="date_default">နေ့/လ/နှစ်</string>
+    <string name="cancel">ပယ်ဖျက်သည်</string>
+    <string name="delete">ဖျက်ဆီးသည်</string>
+    <!--TEI DASHBOARD-->
+    <string name="see_details">အသေးစိတ်ကြည့်ရန်</string>
+    <string name="edit">တည်းဖြတ်သည်</string>
+    <!--DONE TASKS-->
+    <string name="events_no_data">အချက်အလက်မရှိပါ။</string>
+    <string name="done_task">ပင်မစာမျက်နှာ</string>
+    <string name="log_out">ထွက်ရန်</string>
+    <string name="wipe_data_no">ပယ်ဖျက်သည်</string>
+    <string name="SYNC_MANAGER">တည်ဆောက်ထားသည့်အနေအထား</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Дата зачисления</string>
+
+    <string name="write_new_note">မှတ်စုအသစ်ရေးရန်</string>
+    <string name="hint_month">လများ</string>
+    <string name="hint_year">နှစ်များ</string>
+    <string name="incident_date">Incident date</string>
+    <string name="date_dialog_clear">ရှင်းလင်းသည်</string>
+    <string name="period">အချိန်ကာလ</string>
+    <string name="next">ရှေ့သို့</string>
+    <string name="SAVE">သိမ်းဆည်းသည်</string>
+    <string name="button_ok">လက်ခံသည်</string>
+    <string name="qr_events">Events</string>
+    <string name="about">အကြောင်းအရာ</string>
+    <string name="max">အများဆုံး</string>
+    <string name="current">လက်ရှိ</string>
+    <string name="warning_on_complete_title">သတိ</string>
+    <string name="error_on_complete_title">အမှား</string>
+    <string name="save">သိမ်းဆည်းသည်</string>
+    <string name="menu_home">ပင်မစာမျက်နှာ</string>
+    <string name="showHelp">အကူအညီ</string>
+    <string name="qr_data_values">data တန်ဖိုးများ</string>
+    <string name="dashboard_overview">အကျဥ်း</string>
+    <string name="dashboard_indicators">အညွှန်းများ</string>
+    <string name="dashboard_notes">မှတ်စု</string>
+    <string name="event_overview">အသေးစိတ်များ</string>
+    <string name="event_indicators">အညွှန်းများ</string>
+    <string name="event_notes">မှတ်စု</string>
+    <string name="finish">မှတ်သားမည်</string>
+    <string name="please_wait">‌ကျေးဇူးပြု၍စောင့်ပါ</string>
+    <string name="state_warning">သတိ</string>
+    <string name="action_close">ပိတ်သည်</string>
+    <string name="data_set_complete">ပြည့်စုံသည်။</string>
+    <string name="data_set_open">Open</string>
+    <string name="data_every_day">နေ့စဉ်</string>
+    <string name="data_every_week">အပတ်စဉ်</string>
+    <string name="filters_title_period">အချိန်ကာလ</string>
+    <string name="filters_title_status">အခြေအနေ</string>
+    <string name="filter_period_last_week">Last week</string>
+    <string name="filter_period_last_month">ယခင်လ</string>
+    <string name="filter_period_other">အခြား</string>
+    <string name="filter_event_status_open">Open</string>
+    <string name="go_back">ပြန်သွားပါ</string>
+    <string name="data_sets">စီမံချက်</string>
+    <string name="dataset_overview">အသေးစိတ်များ</string>
+    <string name="name">အမည်</string>
+    <string name="enrollment_date">Дата зачисления</string>
+    <string name="enrollment_status_active">Open</string>
+    <string name="enrollment_status_completed">ပြည့်စုံသည်။</string>
+    <string name="event_data">အချက်အလက်</string>
+    <string name="action_done">Done</string>
+    <string name="are_you_sure">သေချာပါသလား။</string>
+    <string name="filters_title_date">ရက်စွဲ</string>
+    <string name="customactivityoncrash_error_activity_restart_app">ပြန်သွားပါ</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">ပိတ်သည်</string>
+    <string name="section_charts">ဂရပ် ပုံစံများ</string>
+    <string name="navigation_programs">Programs</string>
+    <string name="navigation_charts">ဂရပ် ပုံစံများ</string>
+    <string name="navigation_notes">မှတ်စု</string>
+    <string name="navigation_tei_data">အသေးစိတ်များ</string>
+    <string name="filter_period_this_year">ဒီနှစ်</string>
+    <string name="filter_period_last_quarter">လွန်ခဲ့သော ၃လက</string>
+    <string name="filter_period_quarters_this_year">Quarters this year</string>
+    <string name="filter_period_last_year">ယခင်နှစ်</string>
+    <string name="section_feedback">အကြောင်းပြန်ကြားချက်</string>
+    <string name="section_indicators">အညွှန်းများ</string>
+    <string name="value">တန်ဖိုး</string>
+    <string name="invalid_integer">တန်ဖိုးသည် ကိန်းဂဏန်းသာ ဖြစ်ရမည်။</string>
+    <string name="available">ရနိုင်သည်</string>
+    <string name="unknown_date">မသိပါ</string>
+    <string name="sync_dialog_action_send">ပို့သည်</string>
+    <string name="programs">Programs</string>
+    <string name="optional">မဖြစ်မနေလုပ်ရန်မလိုပါ။</string>
+    </resources>
