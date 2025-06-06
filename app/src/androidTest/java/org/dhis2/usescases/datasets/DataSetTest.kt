@@ -863,6 +863,14 @@ class DataSetTest : BaseTest() {
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
+
+        dataSetInitialRobot(composeTestRule) {
+            catCombo?.let {
+                clickOnInputCatCombo()
+                selectCatCombo(catCombo)
+            }
+        }
+
         dataSetInitialRobot (composeTestRule) {
             checkActionInputIsNotDisplayed()
             clickOnInputOrgUnit()
@@ -879,12 +887,6 @@ class DataSetTest : BaseTest() {
             chooseDate(date)
         }
 
-        dataSetInitialRobot(composeTestRule) {
-            catCombo?.let {
-                clickOnInputCatCombo()
-                selectCatCombo(catCombo)
-            }
-        }
 
         dataSetInitialRobot(composeTestRule) {
             checkActionInputIsDisplayed()
