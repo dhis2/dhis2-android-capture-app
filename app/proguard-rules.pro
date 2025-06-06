@@ -239,8 +239,10 @@
 -dontwarn java.beans.Transient
 
 #-keep class org.dhis2.usescases.login.auth.AuthServiceModel
--dontwarn org.hisp.dhis.android.core.**
--keep class org.hisp.dhis.android.core.** {*;}
+-dontwarn org.hisp.dhis.**
+-keep class org.hisp.dhis.** {*;}
+-dontwarn org.cache2k.**
+-keep class org.cache2k.** {*;}
 
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
