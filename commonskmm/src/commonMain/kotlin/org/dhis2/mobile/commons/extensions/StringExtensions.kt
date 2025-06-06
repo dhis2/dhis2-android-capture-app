@@ -59,7 +59,7 @@ suspend fun String.userFriendlyValue(
             }
 
             valueInfo.isBooleanType -> {
-                valueParser.valueFromBooleanType(this)
+                valueParser.valueFromBooleanType(this).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
             valueInfo.isCoordinate ->
