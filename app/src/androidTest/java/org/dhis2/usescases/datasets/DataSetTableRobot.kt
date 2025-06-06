@@ -101,6 +101,8 @@ internal class DataSetTableRobot(
     }
 
     private fun scrollToItemWithTag(tag: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("TABLE_SCROLLABLE_COLUMN"))
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(tag))
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
             .performScrollToNode(hasTestTag(tag))
     }
