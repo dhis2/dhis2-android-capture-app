@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="required">आवश्यकता है</string>
-    <string name="hint_day">दिन</string>
-    <string name="not_now">अभी नहीं</string>
-    <string name="share">साझा करें</string>
-    <string name="action_close">बंद करें</string>
-    <string name="download">डाउनलोड</string>
-    </resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_column_label">Qiymatlar</string>
     <string name="total_header_label">Жами</string>
@@ -27,4 +27,4 @@
     <string name="add_file">Fayl qoʼshish</string>
     <string name="add_image">Rasm qoʼshish</string>
     <string name="indicators_label">Koʼrsatgichlar</string>
-    </resources>
+</resources>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="default_column_label">Valores</string>
     <string name="input_action_accept">Aceptar</string>
@@ -29,4 +29,4 @@
     <string name="take_photo">Tomar foto</string>
     <string name="indicators_label">Indicadores</string>
     <string name="no_data_write_access">No tiene permisos de edición para estos datos.</string>
-    </resources>
+</resources>
