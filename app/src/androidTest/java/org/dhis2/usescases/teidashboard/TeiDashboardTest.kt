@@ -346,13 +346,11 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
-        }
 
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
+            orgUnitSelectorRobot(composeTestRule) {
+                selectTreeOrgUnit(orgUnit)
+            }
 
-        enrollmentRobot(composeTestRule) {
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()
