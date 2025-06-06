@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_column_label">Valores</string>
+    <string name="input_action_accept">Aceptar</string>
+    <string name="input_action_cancel">Cancelar</string>
+    <string name="no_results_found">No se han encontrado resultados</string>
+    <string name="action_done">Terminado</string>
+    <string name="input_coordinate_latitude">Latitud</string>
+    <string name="input_coordinate_longitude">Longitud</string>
+    <string name="mark_dataset_complete">¿Quiere completar también el set de datos\?</string>
+    <string name="not_now">Ahora no</string>
+    <string name="complete">Completar</string>
+    <string name="saved">¡Guardado!</string>
+    <string name="field_mandatory">Hay campos obligatorios vacíos. Por favor, rellénelos para poder completar el set de datos.</string>
+    <string name="field_required">Si introduce un valor, tendrá que completar toda la fila para poder marcar como Completado el Data Set.</string>
+    <string name="ok">Correcto</string>
+    <string name="dataset_saved_completed">¡Guardado y completado!</string>
+    <string name="run_validation_rules">¿Quieree validar la calidad de los datos\?</string>
+    <string name="no">No</string>
+    <string name="yes">Sí</string>
+    <string name="error">Error</string>
+    <string name="errors">Errores</string>
+    <string name="complete_anyway">Completar de todas formas</string>
+    <string name="review">Revisar</string>
+    <string name="validation_rules_data_to_review">Datos a revisar</string>
+    <string name="action_next">Siguiente</string>
+    <string name="add_file">Añadir archivo</string>
+    <string name="add_image">Añadir imagen</string>
+    <string name="take_photo">Tomar foto</string>
+    <string name="indicators_label">Indicadores</string>
+    <string name="no_data_write_access">No tiene permisos de edición para estos datos.</string>
+</resources>

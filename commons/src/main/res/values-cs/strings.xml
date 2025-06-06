@@ -17,6 +17,7 @@
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
     <string name="navigation_relationships">Vztahy</string>
+    <string name="navigation_relations">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
     <string name="navigation_tei_data">Detaily</string>
@@ -260,7 +261,8 @@
 
     <string name="enrollment_data_section_label_V2">%s data</string>
     <string name="new_enrollment">Nový %s</string>
-    <string name="enrolling_ou">Zapsáno v:</string> <string name="new_event_label">Nový %s</string>
+    <string name="enrolling_ou">Zapsáno v:</string>
+    <string name="new_event_label">Nový %s</string>
     <string name="delete_event_label">Smazat %s</string>
     <string name="week_period_span_default_label">Týden %d %s až %s</string>
     <string name="enrollment_reopen">znovu otevřít</string>

@@ -203,6 +203,7 @@
     <string name="error_invalid_characters">У запиті є недійсні символи. Попросіть адміністратора перевірити конфігурацію сервера (relaxedQueryChars,...).</string>
     <string name="unsupported_field_description">Це поле недоступне в мобільній версії</string>
     <string name="add_image">Додати зображення</string>
+    <string name="add_signature">Додати підпис</string>
     <string name="add_file">Додати файл</string>
     <string name="action_ok">OK</string>
     <string name="enable_location_message">Розташування Вашого пристрою відключено. Будь ласка, увімкніть його для отримання координат</string>
@@ -233,7 +234,8 @@
         <item quantity="other">%d років прострочено</item>
     </plurals>
 
-    <string name="enrolling_ou">Зареєстровано в:</string> <!-- Event -->
+    <string name="enrolling_ou">Зареєстровано в:</string>
+    <!-- Event -->
     <plurals name="event_label">
         <item quantity="one">подія</item>
         <item quantity="few">події</item>

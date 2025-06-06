@@ -91,11 +91,12 @@
     <string name="no_reserved_values">Більше немає зарезервованих значень. Зверніться до свого системного адміністратора</string>
     <string name="incident_date">Дата інциденту</string>
     <string name="download">Завантажити</string>
+    <string name="qr_code">QR-код</string>
+    <string name="add_location">Додати місцезнаходження</string>
     <string name="org_unit">Організаційний підрозділ</string>
     <string name="category_combo">Комбінація категорій</string>
     <string name="no_options">Немає доступних опцій</string>
     <string name="cat_combo">Комбінація категорій</string>
     <string name="yes">так</string>
     <string name="no">ні</string>
-
-</resources>
+    </resources>

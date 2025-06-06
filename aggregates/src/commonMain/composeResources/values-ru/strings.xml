@@ -44,6 +44,35 @@
     <string name="add_image">Добавить изображение</string>
     <string name="take_photo">Сделать фото</string>
     <string name="from_gallery">Добавить из галереи</string>
+    <string name="empty_section_message">Неверная конфигурация раздела. Обратитесь администратору</string>
+    <string name="empty_dataset_message">Не верная конфигурация набора данных. Обратитесь администратору</string>
+
     <string name="indicators_label">Индикаторы</string>
     <string name="no_data_write_access">У Вас нет прав на редактирование этих данных</string>
-    </resources>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">У вас нет прав редактировать данные %1$s</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">Вы не можете редактировать данные %1$s</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">Вы не можете редактировать данные %1$sв %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">Вы не можете редактировать данные %1$sв %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">Вы не можете редактировать данные  за период %1$s в %2$s</string>
+    <string name="dataset_closed">Не возможно редактировать данные, т.к. они отмечены как завершенные</string>
+    <string name="dataset_expired">Не возможно редактировать данные в связи с истечением времени</string>
+
+</resources>

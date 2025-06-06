@@ -104,6 +104,7 @@
     <string name="finish_and_complete">Hotovo a dokončit</string>
     <string name="completed">Dokončeno</string>
     <string name="cancelled">Zrušeno</string>
+    <string name="re_open">Znovu otevřít</string>
     <string name="re_open_form">Znovu otevřít formulář</string>
     <string name="activate">Aktivovat</string>
     <string name="active">Aktivní</string>
@@ -144,6 +145,7 @@
     <string name="there_is_no_available_period">Nejsou k dispozici žádná období k výběru.</string>
     <!--Event Detail-->
     <string name="due_date">Poslední termín</string>
+    <string name="next_event">Další %1$s</string>
     <string name="cat_combo">Kombinace kategorií</string>
     <string name="date_default">DD/MM/RRRR</string>
     <string name="cancel">Zrušit</string>
@@ -243,6 +245,7 @@
     <string name="settingsCheckVersion">Aktualizace softwaru</string>
     <string name="settingsCheckVersionMessage">Software</string>
     <string name="settingsExportDB">Export databáze</string>
+    <string name="settingsExportDBMessage">Export databáze a její sdílení se správcem</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Datum zápisu</string>
@@ -477,6 +480,8 @@
     <string name="biometrics_dialog_title">Prázdné pověření</string>
     <string name="biometrics_first_use_text">Abyste se mohli přihlásit pomocí snímače otisků prstů, musíte nejprve použít výchozí způsob</string>
     <string name="biometrics_security_title">Biometrické zabezpečení</string>
+    <string name="biometrics_login_title">Rychlé přihlášení</string>
+    <string name="biometrics_login_text">Chcete se přihlásit pomocí otisku prstu nebo jiné biometrické metody?</string>
     <string name="tab_tables">Tabulky</string>
     <string name="table">Tabulka</string>
     <string name="login_https">https://</string>
@@ -737,8 +742,10 @@
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
     <string name="navigation_charts">Grafy</string>
+    <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
+    <string name="navigation_form">Formulář</string>
     <string name="navigation_tei_data">Detaily</string>
     <string name="show_bar_graph">Zobrazit jako lištu</string>
     <string name="show_line_graph">Zobrazit jako čáru</string>
@@ -842,6 +849,7 @@
     <string name="action_ok">Ok</string>
     <string name="init_search">Spusťte vyhledávání a najděte jakýkoli %s</string>
     <string name="search_or_create">Můžete vyhledat nebo vytvořit nový %s</string>
+    <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
     <string name="missing_warning_fields_events">Máte nějaké varovné zprávy.\nChcete tento formulář označit jako dokončený?</string>
     <string name="missing_error_fields_events">Některá pole obsahují chyby a neuloží se. \nChcete zkontrolovat formulář?</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
@@ -878,6 +886,7 @@
     <string name="program_description">Popis programu</string>
     <string name="wrong_pin">Špatný pin</string>
     <string name="enrolledIn">Zapsáno v</string>
+    <string name="ownedBy">Ve vlastnictví</string>
     <string name="sync_dialog_title_not_synced">Je nutná synchronizace</string>
     <string name="sync_dialog_title_error">Chyba synchronizace</string>
     <string name="sync_dialog_title_synced">Synchronizováno</string>
@@ -907,6 +916,7 @@
         <item quantity="many">%s varování</item>
         <item quantity="other">%s varování</item>
     </plurals>
+    <string name="new_version_message">Nyní je k dispozici verze aplikace <b>%s </b> . Chcete si ji stáhnout?</string>
     <string name="software_update">Aktualizace softwaru</string>
     <string name="remind_me_later">Později</string>
     <string name="download_now">Stáhnout teď</string>
@@ -946,6 +956,7 @@
     <string name="refer">Odkazovat</string>
     <string name="scheduled_enter_event">Naplánováno</string>
     <string name="enter_event">Zadat %1$s</string>
+    <string name="cancel_event">Zrušit %1$s</string>
     <string name="program_stage">Programová fáze</string>
     <string name="event">událost</string>
     <string name="timeline">Časová osa</string>
@@ -953,13 +964,21 @@
     <string name="optional">Volitelný</string>
     <string name="database_export_downloaded">Databáze stažena</string>
     <string name="importing_database">Importování databáze</string>
+    <string name="empty_search_attributes_message">Nejsou nakonfigurována žádná pole pro vyhledávání.\nObraťte se na správce.</string>
     <string name="show_more">Zobrazit více</string>
     <string name="show_less">Zobrazit méně</string>
     <string name="sync">Synchronizace</string>
     <string name="show_fields">Zobrazit pole</string>
     <string name="hide_fields">Skrýt pole</string>
+    <string name="importing_successful">Import byl úspěšný</string>
+    <string name="section_misconfigured">Tato část je špatně nakonfigurovaná.\nObraťte se na správce.</string>
+    <string name="successful_sync">Úspěšná synchronizace</string>
     <string name="syncing_something">Synchronizace %s…</string>
+    <string name="file_resources">zdroje souborů</string>
     <string name="show_description">Ukázat popis</string>
     <string name="hide_description">Skrýt popis</string>
+    <string name="biometric_title">Ověřte, že jste to vy</string>
+    <string name="use_password">Použití hesla</string>
     <string name="transfer">Převod</string>
+    <string name="successfully_transferred">Úspěšně přeneseno</string>
     </resources>

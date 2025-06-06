@@ -1,6 +1,6 @@
 [main]
 host     = https://www.transifex.com
-lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: b+es+419, ar_IQ: ar-rIQ
+lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: b+uz+Latn, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: b+es+419, ar_IQ: ar-rIQ, hi_IN: hi-rIN
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:stock-strings-xml]
 file_filter  = stock-usecase/src/main/res/values-<lang>/strings.xml
@@ -73,6 +73,14 @@ type         = ANDROID
 minimum_perc = 0
 resource_name = Aggregates
 
+[o:hisp-uio:p:dhis2-android-capture-app:r:aggregates-android-locales]
+file_filter  = aggregates/src/androidMain/res/values-<lang>/strings.xml
+source_file  = aggregates/src/androidMain/res/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
+lang_map     = uz@Latn: b+uz+Latn, es_419: b+es+419
+
 [o:hisp-uio:p:dhis2-android-capture-app:r:commonskmm-strings-xml]
 file_filter  = commonskmm/src/commonMain/composeResources/values-<lang>/strings.xml
 source_file  = commonskmm/src/commonMain/composeResources/values/strings.xml
@@ -80,3 +88,11 @@ source_lang  = en
 type         = ANDROID
 minimum_perc = 0
 resource_name = CommonsKMM
+
+[o:hisp-uio:p:dhis2-android-capture-app:r:commonskmm-android-locales]
+file_filter  = commonskmm/src/androidMain/res/values-<lang>/strings.xml
+source_file  = commonskmm/src/androidMain/res/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
+lang_map     = uz@Latn: b+uz+Latn, es_419: b+es+419
