@@ -113,17 +113,14 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             )
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun typeOnDateParameterWithLabel(label: String, dateValue: String) {
-        composeTestRule.waitForIdle()
-        val nodeSemanticMatcher =
-            hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label))
-        composeTestRule.waitUntilAtLeastOneExists(nodeSemanticMatcher, TIMEOUT)
         composeTestRule.apply {
-            with(onNode(nodeSemanticMatcher, true)) {
-                performTextReplacement(dateValue)
-                performImeAction()
-            }
+            val dateTextFieldNode = onNode(
+                hasTestTag("INPUT_DATE_TIME_TEXT_FIELD") and hasAnySibling(hasText(label)),
+                useUnmergedTree = true,
+            )
+            dateTextFieldNode.performTextReplacement(dateValue)
+            dateTextFieldNode.performImeAction()
         }
     }
 
