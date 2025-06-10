@@ -22,6 +22,7 @@
     <string name="conf_error_value_to_assign_option_set">Pravidlo programu %s se snaží přiřadit hodnotu %s, která nepatří do sady možností %s</string>
     <string name="conf_error_value_option_set">Hodnota pole %s nepatří do možnosti nastavené v položce %s</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
+    <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
     <string name="required">Vyžadováno</string>
     <string name="date">datum</string>
     <string name="hint_year">Let</string>
@@ -69,6 +70,7 @@
     <string name="copied_text">Zkopírováno</string>
     <string name="empty_description">Žádné informace pro toto pole</string>
     <string name="take_photo">Vyfotit</string>
+    <string name="from_gallery_v2">Z galerie</string>
     <string name="warning_error_on_complete_title">Zkontrolovat to!</string>
     <string name="action_do_not_show_again">Znovu nezobrazovat</string>
     <string name="validation_error_message">zadaná hodnota není pro toto pole přípustná</string>
