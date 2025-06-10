@@ -1,16 +1,12 @@
 package org.dhis2.usescases.flow.teiFlow
 
 import androidx.compose.ui.test.junit4.ComposeTestRule
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.filters.filterRobotCommon
-import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.flow.teiFlow.entity.RegisterTEIUIModel
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
@@ -54,11 +50,8 @@ class TeiFlowRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             selectTreeOrgUnit(orgUnit)
         }
 
-        // Wait for EnrollmentActivity to launch
-        Intents.intended(hasComponent(EnrollmentActivity::class.java.name))
-
-        // Additional wait to ensure view is ready
-        Espresso.onView(withId(R.id.enrollment_root)).check(matches(isDisplayed()))
+        waitForView(withId(R.id.enrollment_root))
+            .check(matches(isDisplayed()))
 
         enrollmentRobot(composeTestRule) {
             typeOnDateParameterWithLabel("LMP Date *", incidentDate)
