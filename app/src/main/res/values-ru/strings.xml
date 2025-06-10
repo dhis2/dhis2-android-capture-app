@@ -330,6 +330,7 @@
     <string name="teiType_search_online">Поиск по типу невозможен для онлайн-поиска.Пожалуйста, выберите программу из списка.</string>
     <string name="max">Макс</string>
     <string name="current">Текущий</string>
+    <string name="tei">TEI</string>
     <string name="programs_list">Список программ</string>
     <string name="wipe_data">Сброс данных приложения &amp; конфигурации</string>
     <string name="add_relationship_error">Невозможно добавить эту связь </string>

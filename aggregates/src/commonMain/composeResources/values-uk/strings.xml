@@ -10,6 +10,7 @@
     <string name="action_done">Обрати</string>
     <string name="input_coordinate_latitude">Широта</string>
     <string name="input_coordinate_longitude">Довгота</string>
+    <string name="input_coordinate_add_location">Додати місцезнаходження</string>
     <string name="input_not_supported">Не підтримується</string>
     <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних\?</string>
     <string name="not_now">Не зараз</string>
