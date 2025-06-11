@@ -1,7 +1,7 @@
 build_time_average_short=60
 build_time_average_long=180
 polling_interval=10
-browserstack_device_list="\"Pixel 7-13.0\""
+browserstack_device_list="\"Google Pixel 7-13.0\""
 browserstack_device_list_landscape="\"Samsung Galaxy Tab S6-9.0\""
 browserstack_video=true
 browserstack_local=false
