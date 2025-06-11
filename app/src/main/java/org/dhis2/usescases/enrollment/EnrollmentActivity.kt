@@ -18,6 +18,8 @@ import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.EnrollmentActivityBinding
 import org.dhis2.form.data.GeometryController
@@ -50,6 +52,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var dateEditionWarningHandler: DateEditionWarningHandler
+
+    @Inject
+    lateinit var featureConfig: FeatureConfigRepository
 
     @Inject
     lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
@@ -126,6 +131,7 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
                 containerId = R.id.formViewContainer,
                 loadingView = binding.toolbarProgress,
                 saveButton = binding.save,
+                hasCustomIntents = featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS),
             ),
             locationProvider = locationProvider,
             dateEditionWarningHandler = dateEditionWarningHandler,

@@ -21,6 +21,7 @@ class FormViewFragmentFactory(
     private val actionIconsActivate: Boolean = true,
     private val openErrorLocation: Boolean = false,
     private val programUid: String? = null,
+    private val hasCustomIntent: Boolean = false,
 ) : FragmentFactory() {
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
         return when (className) {
@@ -41,6 +42,7 @@ class FormViewFragmentFactory(
                     openErrorLocation = openErrorLocation,
                     eventResultDialogUiProvider = formResultDialogProvider,
                     programUid = programUid,
+                    hasCustomIntent = hasCustomIntent,
                 )
             }
 

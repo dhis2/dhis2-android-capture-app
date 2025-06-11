@@ -86,7 +86,7 @@ class EnrollmentRepository(
         return Flowable.just(sectionUids)
     }
 
-    override fun list(): Flowable<List<FieldUiModel>> {
+    override fun list(addCustomIntent: Boolean): Flowable<List<FieldUiModel>> {
         return Single.just(conf.sections())
             .flatMap { programSections ->
                 if (programSections.isEmpty()) {
@@ -94,6 +94,11 @@ class EnrollmentRepository(
                         .map { singleSectionList ->
                             val list = getSingleSectionList()
                             list.addAll(singleSectionList)
+                            if (addCustomIntent) {
+                                list.add(
+                                    fieldFactory.createCustomIntentItem(),
+                                )
+                            }
                             list
                         }
                 } else {

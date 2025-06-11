@@ -38,6 +38,7 @@ class FormRepositoryImpl(
     private val legendValueProvider: LegendValueProvider,
     private val useCompose: Boolean,
     private val preferenceProvider: PreferenceProvider,
+    private val hasCustomIntent: Boolean,
 ) : FormRepository {
 
     private var completionPercentage: Float = 0f
@@ -57,7 +58,7 @@ class FormRepositoryImpl(
         dataEntryRepository.disableCollapsableSections()
 
     override suspend fun fetchFormItems(shouldOpenErrorLocation: Boolean): List<FieldUiModel> {
-        itemList = dataEntryRepository.list().blockingFirst() ?: emptyList()
+        itemList = dataEntryRepository.list(hasCustomIntent).blockingFirst() ?: emptyList()
         openedSectionUid = getInitialOpenedSection(shouldOpenErrorLocation)
         backupList = itemList
         return composeList()

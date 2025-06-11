@@ -21,6 +21,7 @@ data class EnrollmentFormBuilderConfig(
     @IdRes val containerId: Int,
     val loadingView: ContentLoadingProgressBar,
     val saveButton: FloatingActionButton,
+    val hasCustomIntents: Boolean = false,
 )
 
 fun AppCompatActivity.buildEnrollmentForm(
@@ -37,7 +38,7 @@ fun AppCompatActivity.buildEnrollmentForm(
                 fieldUid = action.id,
                 showWarning = ::showDateEditionWarning,
             )
-        }
+        }.setCustomIntent(hasCustomIntent = config.hasCustomIntents)
         .onLoadingListener { loading ->
             runOnUiThread {
                 handleLoading(

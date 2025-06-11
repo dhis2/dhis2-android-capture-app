@@ -53,12 +53,14 @@ object Injector {
         repositoryRecords: FormRepositoryRecords,
         openErrorLocation: Boolean,
         useCompose: Boolean,
+        hasCustomIntent: Boolean = false,
     ): FormViewModelFactory {
         return FormViewModelFactory(
             provideFormRepository(
                 context,
                 repositoryRecords,
                 useCompose,
+                hasCustomIntent = hasCustomIntent,
             ),
             provideDispatchers(),
             openErrorLocation,
@@ -84,6 +86,7 @@ object Injector {
         context: Context,
         repositoryRecords: FormRepositoryRecords,
         useCompose: Boolean,
+        hasCustomIntent: Boolean,
     ): FormRepository {
         return FormRepositoryImpl(
             formValueStore = provideFormValueStore(
@@ -107,6 +110,7 @@ object Injector {
             legendValueProvider = provideLegendValueProvider(context),
             useCompose = useCompose,
             preferenceProvider = providePreferencesProvider(context),
+            hasCustomIntent = hasCustomIntent,
         )
     }
 
