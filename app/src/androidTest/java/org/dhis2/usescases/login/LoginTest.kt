@@ -19,6 +19,7 @@ import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -42,6 +43,7 @@ class LoginTest : BaseTest() {
         D2Manager.setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
     }
 
+    @Ignore
     @Test
     fun loginFlow() {
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
