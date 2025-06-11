@@ -1,6 +1,5 @@
 package org.dhis2.form.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,7 +42,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Form(
     sections: List<FormSection> = emptyList(),

@@ -50,4 +50,6 @@ interface FieldViewModelFactory {
     ): FieldUiModel
 
     fun createClosingSection(): FieldUiModel
+
+    fun createCustomIntentItem(): FieldUiModel
 }

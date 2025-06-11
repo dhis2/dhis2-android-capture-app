@@ -90,6 +90,7 @@ class FormView : Fragment() {
 
     private var actionIconsActivate: Boolean = true
     private var openErrorLocation: Boolean = false
+    private var hasCustomIntent: Boolean = false
     private var useCompose = false
     private var programUid: String? = null
 
@@ -145,9 +146,9 @@ class FormView : Fragment() {
                 ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation,
             useCompose = useCompose,
+            hasCustomIntent = hasCustomIntent,
         )
     }
-
     private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
@@ -452,6 +453,7 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
             is RecyclerViewUiEvents.SelectPeriod -> showPeriodDialog(uiEvent)
+            else -> Timber.w("Unhandled UI event: $uiEvent")
         }
     }
 
@@ -693,6 +695,7 @@ class FormView : Fragment() {
         actionIconsActivate: Boolean,
         openErrorLocation: Boolean,
         programUid: String?,
+        hasCustomIntent: Boolean,
     ) {
         this.locationProvider = locationProvider
         this.completionListener = completionListener
@@ -700,6 +703,7 @@ class FormView : Fragment() {
         this.actionIconsActivate = actionIconsActivate
         this.openErrorLocation = openErrorLocation
         this.programUid = programUid
+        this.hasCustomIntent = hasCustomIntent
     }
 
     internal fun setCallbackConfiguration(
@@ -736,6 +740,7 @@ class FormView : Fragment() {
         private var actionIconsActive: Boolean = true
         private var openErrorLocation: Boolean = false
         private var programUid: String? = null
+        private var hasCustomIntent: Boolean = false
 
         /**
          * If you want to handle the behaviour of the form and be notified when any item is updated,
@@ -774,6 +779,8 @@ class FormView : Fragment() {
 
         fun onFinishDataEntry(callback: () -> Unit) = apply { this.onFinishDataEntry = callback }
 
+        fun setCustomIntent(hasCustomIntent: Boolean) = apply { this.hasCustomIntent = hasCustomIntent }
+
         fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
             apply { this.onPercentageUpdate = callback }
 
@@ -809,6 +816,7 @@ class FormView : Fragment() {
                     actionIconsActive,
                     openErrorLocation,
                     programUid,
+                    hasCustomIntent,
                 )
 
             val fragment = fragmentManager!!.fragmentFactory.instantiate(
