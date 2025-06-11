@@ -11,7 +11,7 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.hisp.dhis.android.core.common.ValidationStrategy
 
 interface DataEntryRepository {
-    fun list(): Flowable<List<FieldUiModel>>
+    fun list(addCustomIntent: Boolean = false): Flowable<List<FieldUiModel>>
     fun firstSectionToOpen(): String?
     fun sectionUids(): Flowable<List<String>>
     fun updateSection(
