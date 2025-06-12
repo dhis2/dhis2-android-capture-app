@@ -22,6 +22,7 @@
     <string name="error">Xatolik</string>
     <string name="errors">Xatoliklar</string>
     <string name="complete_anyway">Baribir toʼldiring</string>
+    <string name="review">Ko‘rib chiqish</string>
     <string name="validation_rules_data_to_review">Koʼrib chiqiladigan maʼlumotlar</string>
     <string name="action_next">Кейинги</string>
     <string name="add_file">Fayl qoʼshish</string>

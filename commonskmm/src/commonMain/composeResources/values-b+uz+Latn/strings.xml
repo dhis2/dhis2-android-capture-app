@@ -41,6 +41,7 @@
     <string name="enter_long_text">Uzun matn kiriting</string>
     <string name="enter_text">Matn kiriting</string>
     <string name="due_date">Muddati</string>
+    <string name="review">Ko‘rib chiqish</string>
     <string name="complete">Bajarildi</string>
     <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
     <string name="saved">Saqlandi!</string>
