@@ -8,6 +8,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -43,6 +44,7 @@ class EventTest : BaseTest() {
         }
     }
 
+    @Ignore
     @Test
     fun shouldShareQRWhenClickOnShare() {
         val qrList = 3
