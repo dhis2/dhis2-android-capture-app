@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard;
 
+import androidx.annotation.Nullable;
 import androidx.databinding.BaseObservable;
 
 import org.dhis2.commons.data.tuples.Pair;
@@ -19,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 /**
  * QUADRAM. Created by ppajuelo on 04/12/2017.
@@ -132,7 +131,7 @@ public class DashboardProgramModel extends BaseObservable {
         return selectedProgram;
     }
 
-    public List<TrackedEntityAttributeValue>  getTrackedEntityAttributeValues() {
+    public List<TrackedEntityAttributeValue> getTrackedEntityAttributeValues() {
         return trackedEntityAttributeValues;
     }
 
@@ -165,6 +164,7 @@ public class DashboardProgramModel extends BaseObservable {
     public void setTeiHeader(@Nullable String header) {
         teiHeader = header;
     }
+
     public String getTeiHeader() {
         return teiHeader;
     }
@@ -173,12 +173,14 @@ public class DashboardProgramModel extends BaseObservable {
         avatarPath = path;
     }
 
-    public String getAvatarPath() { return avatarPath; }
+    public String getAvatarPath() {
+        return avatarPath;
+    }
 
-    public List<Program> getEnrollmentActivePrograms(){
+    public List<Program> getEnrollmentActivePrograms() {
         Collections.sort(enrollmentPrograms, (program1, program2) -> program1.displayName().compareToIgnoreCase(program2.displayName()));
         List<Program> programs = new ArrayList<>();
-        for(Program program: enrollmentPrograms) {
+        for (Program program : enrollmentPrograms) {
             if (!Objects.equals(currentEnrollment.program(), program.uid())) {
                 programs.add(program);
             }
@@ -186,7 +188,7 @@ public class DashboardProgramModel extends BaseObservable {
         return programs;
     }
 
-    public void setCurrentEnrollmentStatus(EnrollmentStatus status){
+    public void setCurrentEnrollmentStatus(EnrollmentStatus status) {
         currentEnrollmentStatus = status;
     }
 
@@ -194,7 +196,7 @@ public class DashboardProgramModel extends BaseObservable {
         return currentEnrollmentStatus;
     }
 
-    public void setEnrollmentState(State state){
+    public void setEnrollmentState(State state) {
         enrollmentState = state;
     }
 
