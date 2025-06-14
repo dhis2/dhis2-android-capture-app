@@ -96,6 +96,7 @@
     <string name="download">Télécharger</string>
     <string name="scan">Scanner</string>
     <string name="qr_code">Code QR</string>
+    <string name="bar_code">Code-barre</string>
     <string name="add_location">Ajouter un lieu</string>
     <string name="form_without_fields">Ce formulaire n\'a pas de champs configurés</string>
     <string name="event_details_section_title">%s détails</string>
