@@ -15,5 +15,6 @@
     <string name="dialog_layer_heatmap">Afficher la couche de carte thermique</string>
     <string name="accuracy_low">Faible</string>
     <string name="accuracy_medium">Moyen</string>
+    <string name="accuracy_minimun_set_allow">Voulez-vous le sauvegarder?</string>
     <string name="select_location_title">Sélectionnez l\'emplacement</string>
     </resources>

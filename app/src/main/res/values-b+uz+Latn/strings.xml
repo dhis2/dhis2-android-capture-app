@@ -701,6 +701,7 @@
     <string name="dataset_column_default">Qiymatlar</string>
     <string name="available">Mavjud</string>
     <string name="unknown_date">Nomaʼlum</string>
+    <string name="troubleshooting_language_title">Til</string>
     <string name="search_too_many_results">Natija juda koʼp</string>
     <string name="search_create_new">Yangisini yaratish</string>
     <string name="sync_dialog_title_synced">Sinxronizatsiyalangan</string>

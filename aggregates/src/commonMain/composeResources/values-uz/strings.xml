@@ -14,6 +14,7 @@
     <string name="input_coordinate_add_location">Локация қўшинг</string>
     <string name="input_not_supported">Қўллаб қувватланмайди</string>
     <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми\?</string>
+    <string name="not_now">Hozir emas</string>
     <string name="complete">Тўлдириш</string>
     <string name="saved">Сақланди!</string>
     <string name="field_mandatory">Шарт бўлган маълумотлар етишмаяпти. Маълумотлар тўпламини шакллантириш учун уларни тўлдиринг.</string>

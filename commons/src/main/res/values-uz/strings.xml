@@ -150,13 +150,15 @@
     <string name="action_ok">Яхши</string>
     <string name="enable_location_message">Сизнинг қўрилмангиз интернет алоқаси узилди. Илтимос, координаталарни олиш учун уни ёқинг</string>
     <string name="keep_editing">Таҳрирни давом этинг</string>
+    <string name="not_now">Hozir emas</string>
     <string name="review">Кўриб чиқиш</string>
     <string name="complete">Тўлдириш</string>
     <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
     <string name="default_empty_dataset_section_label">Маълумот</string>
     <string name="overdue_today">Бугун</string>
-    <string name="enrolling_ou">Қайд этилган:</string> <string name="enrollment_reopen">қайта очиш</string>
+    <string name="enrolling_ou">Қайд этилган:</string>
+    <string name="enrollment_reopen">қайта очиш</string>
 
     <string name="syncing">Синхронизацияланмоқда...</string>
     <string name="remove">Олиб ташлаш</string>

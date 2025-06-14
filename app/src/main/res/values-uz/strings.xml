@@ -756,6 +756,13 @@
     <string name="sync_dialog_title_syncing">Синхронлашмоқда</string>
     <string name="sync_dialog_action_send">Юбориш</string>
     <string name="sync_dialog_action_refresh">Янгилаш</string>
+    <string name="sync_dialog_action_not_now">Hozir emas</string>
+    <plurals name="error_count_label">
+        <item quantity="other">%s da xatoliklar</item>
+    </plurals>
+    <plurals name="warning_count_label">
+        <item quantity="other">%s da ogohlantirishlar</item>
+    </plurals>
     <string name="marked_follow_up">Кузатув учун белгиланган</string>
     <string name="view_only">Фақат кўриш учун</string>
     <string name="skipped">Ўтказиб юборилди</string>
