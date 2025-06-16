@@ -26,7 +26,7 @@ internal data class DataSetInstanceConfiguration(
     fun isMandatory(rowId: String, columnId: String) =
         compulsoryDataElements.find {
             it.categoryOptionComboUid == columnId &&
-                it.uid == rowId
+                it.uid == "$rowId.$columnId"
         } != null
 }
 
