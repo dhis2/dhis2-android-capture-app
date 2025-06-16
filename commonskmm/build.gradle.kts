@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.compose)
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
-    id("org.jetbrains.kotlinx.atomicfu") version "0.27.0"
+    id("org.jetbrains.kotlinx.atomicfu") version "0.28.0"
 }
 
 

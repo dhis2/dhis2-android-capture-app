@@ -186,15 +186,15 @@ android {
         resolutionStrategy {
             preferProjectModules()
             force(
-                "junit:junit:4.12",
-                "com.squareup.okhttp3:okhttp:4.9.3",
-                "com.squareup.okhttp3:mockwebserver:4.9.3",
-                "com.squareup.okhttp3:logging-interceptor:4.9.3"
+                "junit:junit:4.13.2",
+                "com.squareup.okhttp3:okhttp:4.12.0",
+                "com.squareup.okhttp3:mockwebserver:4.12.0",
+                "com.squareup.okhttp3:logging-interceptor:4.12.0"
             )
             setForcedModules(
-                "com.squareup.okhttp3:okhttp:4.9.3",
-                "com.squareup.okhttp3:mockwebserver:4.9.3",
-                "com.squareup.okhttp3:logging-interceptor:4.9.3"
+                "com.squareup.okhttp3:okhttp:4.12.0",
+                "com.squareup.okhttp3:mockwebserver:4.12.0",
+                "com.squareup.okhttp3:logging-interceptor:4.12.0"
             )
             cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
         }
