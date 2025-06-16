@@ -932,6 +932,7 @@ internal fun InputProvider(
         -> {
             InputNotSupported(
                 title = inputData.label,
+                modifier = modifierWithFocus,
                 notSupportedString = stringResource(Res.string.input_not_supported),
                 inputStyle = inputData.inputStyle,
             )
