@@ -1,28 +1,195 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Dorixona fondini boshqarish</string>
     <string name="title_activity_home">Бош саҳифа</string>
+    <string name="title_activity_review">Ko‘rib chiqish</string>
     <string name="action_settings">Sozlamalar</string>
 
+    <string name="distribution">Tarqatish</string>
     <string name="discard">Bekor qilish</string>
+    <string name="correction">Tuzatish</string>
+    <string name="select_transaction">Tranzaksiyani tanlang</string>
+    <string name="transaction_date">Tranzaksiya sanasi</string>
+    <string name="recent_activity">Oxirgi faoliyat</string>
+    <string name="last_synced">Oxirgi sinxronlangan:</string>
+    <string name="select_facility">Tashkilotni tanlang</string>
+    <string name="distributed_to">ga tarqatiladi</string>
+    <string name="select_one">Birini tanlang</string>
+
+    <!-- Sign in -->
+    <string name="server">Server:</string>
     <string name="sign_in">Tizimga kirish</string>
+    <string name="sign_in_to_your_account">Akkauntingizga kiring</string>
+    <string name="sign_in_to_with_oidc">ICRC akkaunti orqali bilan tizimga kiring</string>
+    <string name="non_icrc_staff_members">Faqat ICRC bo\'lmagan xodimlar uchun</string>
+    <string name="icrc_staff_members">Faqat ICRC xodimlar uchun</string>
     <string name="username">Фойдаланувчи исми</string>
     <string name="password">Parol</string>
+    <string name="forgot_password">Parolni unutdingizmi?</string>
+
+    <string name="recent_activities_loading_message">Oxirgi harakatlar yuklanmoqda &amp; # 8230;</string>
+    <string name="recent_activities_empty_message">Siz hali hech qanday faoliyatni amalga oshirmayapsiz</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Metadata sinxronlanmoqda &amp; # 8230;</string>
+    <string name="metadata_sync_error">Meta-maʼlumotlarni sinxronlash tugallanmadi</string>
+    <string name="data_sync_in_progress">Ma\'lumotlarni sinxronlash &amp; # 8230;</string>
+    <string name="data_sync_error">Maʼlumotlarni sinxronlash tugallanmadi</string>
+    <string name="metadata_sync_completed">Metadata sinxronlash tugallandi!</string>
+    <string name="sync_completed">Sinxronlash tugallandi!</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">Davom eting</string>
+    <string name="review">Ko‘rib chiqish</string>
+
+    <string name="scan_barcode">Shtrix-kodni skanerlash</string>
+    <string name="scanning">Skanerlash &amp; # 8230;</string>
+    <string name="search">Elementni qidirish</string>
+    <string name="search_placeholder">Излаш...</string>
     <string name="delete">Oʼchirib tashlash</string>
     <string name="ok">OK</string>
     <string name="cancel">Бекор қилиш</string>
+    <string name="confirmation">Тасдиқлаш</string>
+
     <string name="from">Dan</string>
+    <string name="to">Етказиб бериш ... га</string>
+    <string name="subtitle">%s</string>
+    <string name="to_arg"> %s ga</string>
+
+    <!-- Languages -->
+    <string name="language_english">Inglizcha</string>
+    <string name="language_french">Fransuzcha</string>
+    <string name="language_spanish">Ispancha</string>
+    <string name="language_arabic">Arabcha</string>
+    <string name="language_russian">Ruscha</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Ma\'lumotlarni kiritish uchun mikrofondan foydalaning</string>
+    <string name="language">Til</string>
+    <string name="force_data_sync">Маълумотларни мажбурий синхронлаш</string>
     <string name="logout">Chiqib ketish</string>
 
 
     <!-- Stock table -->
     <string name="item">Element</string>
+    <string name="stock_on_hand">Захирада бор</string>
+    <string name="quantity">Миқдори</string>
+    <string name="items_available">мавжуд нарсалар</string>
+    <string name="positive_value">
+        <b>Позитив қиймат</b>  = \"етмаган қиймат\" (<i>жисмоний захира ҳисобдаги қийматдан кам</i>)
+    </string>
+    <string name="negative_value">
+        <b><span style="color: #C81818">Манфий қиймат</span></b> = \"захирада мавжуд\"     (<i>жисмоний захирада ҳисобдаги қийматдан кўп</i>)
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+Жараён давом этишидан олдин, Транзакция тури танланган бўлиши ва барча катаклар тўлдирилган бўлиши шарт
+</string>
+    <string name="mandatory_facility_selection">Davom etishdan oldin tashkilot maydoni to\'ldirilishi kerak</string>
+    <string name="mandatory_distributed_to_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
+    <string name="mandatory_transaction_date_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
+    <string name="previous_page_lose_data_warning">Oldingi ekranga qaytmoqchimisiz\? 
+Davom etishga qaror qilsangiz, kiritilgan ma\'lumotlarni yo\'qotasiz.</string>
+    <string name="transaction_completed">Tranzaksiya muvaffaqiyatli yakunlandi!</string>
+    <string name="transaction_cancelled">Tranzaksiya muvaffaqiyatli bekor qilindi!</string>
+    <string name="force_sync_confirmation_message">Haqiqatan ham sinxronlashni majbur qilmoqchimisiz\?</string>
+    <string name="logout_confirmation_message">Haqiqatan ham tizimdan chiqmoqchimisiz\?</string>
+
+    <string name="remove_correction_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tuzatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
+Bu amalni ortga qaytarib bo‘lmaydi..
+    </string>
+    <string name="remove_distribution_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tarqatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
+Bu amalni ortga qaytarib bo‘lmaydi..
+    </string>
+    <string name="remove_discard_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tanlangan yozuvni butunlay oʻchirib tashlamoqchimisiz? 
+Bu amalni ortga qaytarib bo‘lmaydi..
+    </string>
+
+    <plurals name="items_found">
+        <item quantity="other">%d нарсалар</item>
+    </plurals>
+    <string name="no_items_found">Бирор нарса топилмади</string>
+    <string name="loading_items_message">Нарсалар захираси юкланмоқда &#8230;</string>
     <string name="prompt_email">ye-Pochta</string>
     <string name="prompt_password">Parol</string>
+    <string name="action_sign_in">Киринг ёки рўйхатдан ўтинг</string>
     <string name="action_sign_in_short">Tizimga kirish</string>
+    <string name="welcome">Хуш келибсиз!</string>
+    <string name="invalid_username">Яроқсиз исм</string>
+    <string name="invalid_password">Пароль 5 та белгидан кўп бўлиши керак</string>
+    <string name="login_failed">Логин хато</string>
+    <string name="resync">Қайта синхронлаш</string>
+
+    <!-- Errors -->
+    <string name="login_error">Мавжуд бўлмаган логин</string>
+    <string name="config_file_error">Konfiguratsiya faylini yuklab bo‘lmadi</string>
+    <string name="config_file_program_error">Birja dasturi identifikatori konfiguratsiya faylida o\'rnatilmagan</string>
+    <string name="recent_activities_load_error">Oxirgi harakatlaringiz yuklanmadi</string>
+    <string name="facilities_load_error">Mavjud imkoniyatlar roʻyxatini yuklab boʻlmadi</string>
+    <string name="destinations_load_error">Mavjud manzillar roʻyxatini yuklab boʻlmadi</string>
+    <string name="distribution_data_element_load_error">Tarqatish maʼlumotlari elementini yuklab boʻlmadi</string>
+    <string name="correction_data_element_load_error">Tuzatish maʼlumotlari elementini yuklab boʻlmadi</string>
+    <string name="discard_data_element_load_error">Yo‘qotilgan ma’lumotlar elementini yuklab bo‘lmadi</string>
+
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">Ma\'lumotni sinxronlash</string>
     <string name="content_desc_search">Izlash</string>
+    <string name="content_desc_clear_text">Matnni tozalash</string>
+    <string name="content_desc_transaction_date">Sana tanlagichni ko\'rsatish</string>
+    <string name="content_desc_distributed_to">ga tarqatiladi</string>
+    <string name="content_desc_last_sync">Oxirgi sinxronlangan</string>
+    <string name="content_desc_quantity_info">Miqdori haqida ko\'proq ma\'lumot</string>
+    <string name="content_desc_remove">Elementni olib tashlang</string>
+    <string name="content_desc_recent_activity">Yo\'nalish o\'qi</string>
+    <string name="content_desc_recent_activity_status">Oxirgi faoliyat holati</string>
+    <string name="content_desc_close_info_guide">Ma\'lumot yo\'riqnomasini yoping</string>
+
     <string name="confirm_transaction_label">Tasdiqlang</string>
+    <string name="missing_configuration">Konfiguratsiya faylida bir yoki bir nechta talab qilinadigan maydonlar mavjud emas</string>
+    <string name="select_language">O\'zingiz xohlagan tilni tanlang</string>
+
+    <string name="restart_later">Keyinroq qayta ishga tushirish</string>
+    <string name="confirm_app_restart_message">O\'zgarishlar amalga oshirilishi uchun ilovani qayta ishga tushirish kerak, ammo, 
+saqlanmagan oʻzgarishlar yoʻqoladi.\n\n Qayta ishga tushirishni davom ettirmoqchimisiz\?</string>
+    <string name="language_change_dialog_title">Qayta ishga tushirishni tasdiqlang</string>
+    <string name="scan_canceled">Skanerlash bekor qilindi!</string>
+    <string name="logout_error_message">Chiqish paytida xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.</string>
+    <string name="logout_success_message">Akkauntdan muvaffaqiyatli chiqdi</string>
+
     <string name="invalid_quantity">Yaroqsiz</string>
+    <string name="stock_on_hand_exceeded_message">Qo\'ldagi mavjud zaxiradan oshib bo\'lmaydi</string>
+    <string name="reviewed_item_cannot_be_empty_message">Ko\'rib chiqilayotgan aktsiya bo\'sh bo\'lishi mumkin emas. Agar xohlamasangiz, elementni olib tashlashingiz mumkin</string>
+
+    <string name="permission_granted">Ruxsat berilgan</string>
+    <string name="permission_denied">Ruxsat berilmadi</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">Ruxsatlar yetarli emas. android.permission.RECORD_AUDIO soʻrovi</string>
+    <string name="speech_audio_error">Ovoz yozishda xato</string>
+    <string name="speech_client_error">Mijoz tomoni xatosi. Iltimos, internet aloqangizni tekshiring!</string>
+    <string name="speech_network_error">Тармоқда хатолик</string>
+    <string name="speech_network_timeout_error">Tarmoq ish vaqti chegaradan oshdi</string>
+    <string name="no_speech_match_error">Hech qanday tan olingan natija topilmadi.</string>
+    <string name="speech_recognition_service_busy_error">Tan olish xizmati band</string>
+    <string name="speech_server_error">Matnni aniqlash serverida xatolik yuz berdi</string>
+    <string name="speech_timeout_error">Ovozli matn aniqlanmadi</string>
+    <string name="unknown_speech_error">Номаълум хатолик юз берди</string>
+    <string name="non_numeric_speech_input_error">Raqamsiz kiritishga ruxsat berilmagan: \"%s\"</string>
+    <string name="negative_number_speech_input_error">Raqamni salbiy kiritish mumkin emas: \"%s\"
+    </string>
+
+    <string name="openid_config_load_error">OpenID konfiguratsiyasini yuklab boʻlmadi</string>
+    <string name="unexpected_openid_authentication_error">OpenID bilan autentifikatsiya qilishda kutilmagan xatolik yuz berdi</string>
+    <string name="no_network_available">Tarmoq ulanishi mavjud emas</string>
+    <string name="unable_to_sync_data_no_network_available">Maʼlumotlarni sinxronlash imkonsiz, chunki tarmoq ulanishi mavjud emas</string>
+    <string name="openid_authentication_not_successful">ICRC akkauntingiz bilan autentifikatsiya qilish imkonsiz</string>
+
+    <string name="contact_service_desk_message">Muammolar bo\'lsa, \nIltimos, ICRC  xizmat ko\'rsatish markaziga murojaat qiling</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Nimadir notoʼgʼri bajarildi. Server URL manzili, foydalanuvchi nomi va parol toʼgʼri ekanligini tekshiring va qaytadan urining.</string>
+    <string name="login_error_error_response">Server tomonida nimadir xato ketdi.</string>
+    <string name="login_error_no_dhis_instance">Taqdim etilgan URL DHIS2 serveri emas.</string>
     <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
     <string name="done_task">Бош саҳифа</string>
     <string name="back">Orqaga</string>

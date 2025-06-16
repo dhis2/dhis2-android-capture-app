@@ -79,6 +79,7 @@ source_file  = aggregates/src/androidMain/res/values/strings.xml
 source_lang  = en
 type         = ANDROID
 minimum_perc = 0
+resource_name = Aggregates-Android
 lang_map     = uz@Latn: b+uz+Latn, es_419: b+es+419
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:commonskmm-strings-xml]
@@ -95,4 +96,5 @@ source_file  = commonskmm/src/androidMain/res/values/strings.xml
 source_lang  = en
 type         = ANDROID
 minimum_perc = 0
+resource_name = CommonsKMM-Android
 lang_map     = uz@Latn: b+uz+Latn, es_419: b+es+419
