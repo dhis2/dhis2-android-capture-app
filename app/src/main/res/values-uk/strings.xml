@@ -875,6 +875,8 @@
     <string name="show_more">Показати більше</string>
     <string name="show_less">Показати менше</string>
     <string name="sync">Синхронізація</string>
+    <string name="show_fields">Показати поля</string>
+    <string name="hide_fields">Приховати поля</string>
     <string name="syncing_something">Синхронізація %s…</string>
     <string name="show_description">Показати опис</string>
     <string name="hide_description">Приховати опис</string>

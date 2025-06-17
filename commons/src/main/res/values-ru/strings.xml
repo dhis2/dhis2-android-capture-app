@@ -25,6 +25,7 @@
     <string name="search">Поиск</string>
     <string name="events">события/й</string>
     <string name="data_sets">Наборы данных</string>
+    <string name="tei">TEI</string>
     <string name="info">Информация</string>
     <string name="done">Готово</string>
 

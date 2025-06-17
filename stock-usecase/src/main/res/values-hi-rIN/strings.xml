@@ -1,0 +1,10 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="action_settings">सेटिंग्स</string>
+
+    <string name="discard">छोड़ें</string>
+    <string name="delete">हटाएं</string>
+    <string name="ok">ठीक है</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="language">भाषा</string>
+    <string name="back">वापस जाएँ</string>
+    </resources>

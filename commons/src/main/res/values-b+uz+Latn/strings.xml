@@ -117,11 +117,13 @@
     <string name="section_indicators">Koʼrsatgichlar</string>
     <string name="section_charts">Diagrammalar</string>
     <string name="login_error_dhis_version">Ushbu server 2.29 dan farqli versiyani ishlatmoqda. Server versiyasini yangilang yoki davom etish uchun sinov muddatidan foydalaning.</string>
+    <string name="login_error_unsuccessful_response">Nimadir notoʼgʼri bajarildi. Server URL manzili, foydalanuvchi nomi va parol toʼgʼri ekanligini tekshiring va qaytadan urining.</string>
     <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
     <string name="add_image">Rasm qoʼshish</string>
     <string name="add_file">Fayl qoʼshish</string>
     <string name="enable_location_message">Sizning qoʼrilmangiz internet aloqasi uzildi. Iltimos, koordinatalarni olish uchun uni yoqing</string>
     <string name="keep_editing">Tahrirni davom eting</string>
+    <string name="review">Ko‘rib chiqish</string>
     <string name="complete">Bajarildi</string>
     <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>

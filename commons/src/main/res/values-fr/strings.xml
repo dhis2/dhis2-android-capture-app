@@ -156,10 +156,13 @@
     <string name="login_error_null_username">Le nom d\'utilisateur est manquant. Veuillez entrer le nom d\'utilisateur.</string>
     <string name="login_error_dhis_version">Ce serveur a une version différente de 2.29. Mettre à jour la version ou utiliser un environnement d\'essai pour continuer</string>
     <string name="login_error_no_dhis_instance">L\'URL fournie n\'est pas un serveur DHIS2.</string>
+    <string name="login_error_bad_credentials">Nom d\'utilisateur ou le mot de passe sont incorrects</string>
     <string name="login_error_unknown_host">Serveur inconnu</string>
     <string name="online_search_parsing_error">Erreur lors de l\'analyse des résultats</string>
+    <string name="error_unexpected">Un probème inattendu s\'est produit</string>
     <string name="error_too_manu_org_units">Votre utilisateur possède plusieurs unités d\'organisation . Vérifiez votre configuration ou contactez votre administrateur.</string>
     <string name="error_many_requests">Le serveur est un peu occupé en ce moment. Veuillez essayer un peu plus tard.</string>
+    <string name="error_already_authenticated">L\'utilisateur est déjà connecté</string>
     <string name="error_api_invalid_query">La requête du serveur n\'est pas valide.</string>
     <string name="error_reserve_value_on_server">Nous ne pouvions pas réserver de valeurs pour ces enregistrements. Veuillez contacter votre administrateur.</string>
     <string name="error_import_logout">Veuillez vous déconnecter pour importer une nouvelle base de données.</string>
@@ -177,6 +180,7 @@
     <string name="error_ssl">Il y a un problème avec les certificats du serveur. Veuillez contacter votre administrateur.</string>
     <string name="error_min_attributes">Il n\'y a pas assez d\'attributs pour effectuer la recherche. Veuillez affiner votre recherche avec plus d\'attributs.</string>
     <string name="error_org_unit_scope">La recherche en ligne n\'est disponible que pour vos unités organisationnelles de recherche d\'utilisateurs.</string>
+    <string name="error_no_internet_connection">Vous n\'êtes pas connecté. Veuillez-vous connecter et réssayer.</string>
     <string name="unsupported_field_description">Ce champ n\'est pas disponible pour la capture mobile</string>
     <string name="add_image">Ajouter une image</string>
     <string name="add_signature">Ajouter une signature</string>
@@ -202,10 +206,12 @@
     <string name="open_with">Ouvrir avec</string>
 
     <string name="enrollment_data_section_label_V2">%s donnée</string>
-    <string name="enrolling_ou">Inscrire à:</string> <string name="delete_event_label">Supprimer 1%s</string>
+    <string name="enrolling_ou">Inscrire à:</string>
+    <string name="delete_event_label">Supprimer 1%s</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
     <string name="enrollment_reopen">rouvrir</string>
 
+    <string name="sync_retry">Réessayer la synchronisation</string>
     <string name="syncing">Synchronisation...</string>
     <string name="remove">Supprimer</string>
     <string name="period_daily_title">Quotidien</string>
