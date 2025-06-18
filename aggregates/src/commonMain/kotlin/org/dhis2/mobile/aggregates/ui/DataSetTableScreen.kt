@@ -830,16 +830,12 @@ private fun DataSetTable(
             )
         },
     ) {
-        val sectionId by remember(dataSetSectionTable) {
-            derivedStateOf { dataSetSectionTable.id }
-        }
-
         DataTable(
             tableList = dataSetSectionTable.tableModels,
             currentSelection = currentSelection,
             onResizedActions = object : TableResizeActions {
                 override fun onRowHeaderResize(tableId: String, newValue: Float) {
-                    sectionId?.let { sectionId ->
+                    dataSetSectionTable.id?.let { sectionId ->
                         onTableResize(
                             ResizeAction.RowHeaderChanged(tableId, sectionId, newValue),
                         )
@@ -847,7 +843,7 @@ private fun DataSetTable(
                 }
 
                 override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
-                    sectionId?.let { sectionId ->
+                    dataSetSectionTable.id?.let { sectionId ->
                         onTableResize(
                             ResizeAction.ColumnHeaderChanged(
                                 tableId,
@@ -860,7 +856,7 @@ private fun DataSetTable(
                 }
 
                 override fun onTableDimensionResize(tableId: String, newValue: Float) {
-                    sectionId?.let { sectionId ->
+                    dataSetSectionTable.id?.let { sectionId ->
                         onTableResize(
                             ResizeAction.TableDimension(tableId, sectionId, newValue),
                         )
@@ -868,7 +864,7 @@ private fun DataSetTable(
                 }
 
                 override fun onTableDimensionReset(tableId: String) {
-                    sectionId?.let { sectionId ->
+                    dataSetSectionTable.id?.let { sectionId ->
                         onTableResize(
                             ResizeAction.Reset(tableId, sectionId),
                         )
