@@ -38,8 +38,8 @@
     <application
         android:name=".App"
         android:allowBackup="false"
-        android:fullBackupContent="@xml/old_backup_config"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/old_backup_config"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -48,7 +48,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:replace="allowBackup"
+        tools:replace="allowBackup,fullBackupContent"
         tools:targetApi="s">
         <uses-library
             android:name="org.apache.http.legacy"
@@ -76,8 +76,7 @@
         <activity
             android:name=".usescases.searchTrackEntity.SearchTEActivity"
             android:configChanges="keyboardHidden|screenSize"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            />
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".usescases.teiDashboard.TeiDashboardMobileActivity" />
         <activity android:name=".usescases.qrScanner.ScanActivity" />
         <activity android:name=".usescases.teiDashboard.teiProgramList.TeiProgramListActivity" />
@@ -151,9 +150,9 @@
                 <action android:name="cat.ereza.customactivityoncrash.ERROR" />
             </intent-filter>
         </activity>
-        <activity android:name="org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity"
-            android:windowSoftInputMode="adjustResize"
-            />
+        <activity
+            android:name="org.dhis2.usescases.datasets.dataSetTable.DataSetInstanceActivity"
+            android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
