@@ -4,8 +4,6 @@ object Constants {
     const val DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss"
     const val DATE_FORMAT = "yyyy-MM-dd"
 
-    const val ITEM_PAGE_SIZE = 20
-
     const val SEARCH_QUERY_DEBOUNCE = 300L
     const val QUANTITY_ENTRY_DEBOUNCE = 500L
 
