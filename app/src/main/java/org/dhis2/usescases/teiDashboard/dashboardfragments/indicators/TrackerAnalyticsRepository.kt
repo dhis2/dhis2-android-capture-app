@@ -48,7 +48,7 @@ class TrackerAnalyticsRepository(
                     .programIndicatorEngine().getEnrollmentProgramIndicatorValue(
                         enrollmentUid,
                         indicatorUid,
-                    )
+                    ) ?: ""
             },
             getRulesIndicators(),
             Flowable.just(
