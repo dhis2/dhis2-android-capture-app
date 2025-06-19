@@ -63,6 +63,7 @@ dependencies {
     }
     implementation(libs.maps.markerViewPlugin)
     implementation(libs.maps.annotationPlugin)
+    implementation(libs.androidx.activity.compose)
 
     testImplementation(libs.bundles.map.test)
     coreLibraryDesugaring(libs.desugar)

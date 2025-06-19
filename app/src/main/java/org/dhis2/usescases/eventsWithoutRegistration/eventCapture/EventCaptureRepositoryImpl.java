@@ -1,5 +1,7 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import androidx.annotation.Nullable;
+
 import org.dhis2.commons.bindings.SdkExtensionsKt;
 import org.dhis2.data.dhislogic.AuthoritiesKt;
 import org.hisp.dhis.android.core.D2;
@@ -21,8 +23,6 @@ import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
