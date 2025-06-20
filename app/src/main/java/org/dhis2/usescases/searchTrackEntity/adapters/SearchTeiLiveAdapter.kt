@@ -14,12 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import org.dhis2.R
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.ui.ListCardProvider
 import org.dhis2.databinding.ItemSearchErrorBinding
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 class SearchTeiLiveAdapter(
@@ -121,16 +120,8 @@ class SearchTeiLiveAdapter(
                             if (position == 0) {
                                 Spacer(modifier = Modifier.size(Spacing.Spacing8))
                             }
-                            ListCard(
-                                listAvatar = card.avatar,
-                                title = ListCardTitleModel(text = card.title),
-                                lastUpdated = card.lastUpdated,
-                                additionalInfoList = card.additionalInfo,
-                                actionButton = card.actionButton,
-                                expandLabelText = card.expandLabelText,
-                                shrinkLabelText = card.shrinkLabelText,
-                                onCardClick = card.onCardCLick,
-                            )
+
+                            ListCardProvider(card, R.string.syncing)
                         }
                     }
                 }

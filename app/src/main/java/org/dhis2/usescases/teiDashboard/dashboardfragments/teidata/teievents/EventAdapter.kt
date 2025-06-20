@@ -7,11 +7,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
@@ -28,19 +25,16 @@ import org.dhis2.commons.data.EventViewModelType.STAGE
 import org.dhis2.commons.data.EventViewModelType.TOGGLE_BUTTON
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.ui.ListCardProvider
 import org.dhis2.databinding.ItemEventBinding
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataPresenter
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.utils.isLandscape
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
-import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class EventAdapter(
     val presenter: TEIDataPresenter,
@@ -185,27 +179,8 @@ class EventAdapter(
                                     bottom = bottomSpacing,
                                 ),
                         ) {
-                            ListCard(
-                                listAvatar = card.avatar,
-                                title = ListCardTitleModel(
-                                    text = card.title,
-                                    style = LocalTextStyle.current.copy(
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight(500),
-                                        lineHeight = 20.sp,
-                                    ),
-                                    color = TextColor.OnSurface,
-                                ),
-                                description = ListCardDescriptionModel(
-                                    text = card.description,
-                                ),
-                                lastUpdated = card.lastUpdated,
-                                additionalInfoList = card.additionalInfo,
-                                actionButton = card.actionButton,
-                                expandLabelText = card.expandLabelText,
-                                shrinkLabelText = card.shrinkLabelText,
-                                onCardClick = card.onCardCLick,
-                            )
+                            ListCardProvider(card, R.string.syncing)
+
                             if (it.isClicked) {
                                 Box(
                                     modifier = Modifier
