@@ -209,7 +209,8 @@
     <string name="discard_changes">Descartar los cambios</string>
     <string name="default_empty_dataset_section_label">Datos</string>
     <string name="overdue_today">Hoy</string>
-    <string name="enrolling_ou">Inscrito en:</string> <string name="delete_event_label">Eliminar %s</string>
+    <string name="enrolling_ou">Inscrito en:</string>
+    <string name="delete_event_label">Eliminar %s</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
     <string name="enrollment_reopen">Reabrir</string>
 
