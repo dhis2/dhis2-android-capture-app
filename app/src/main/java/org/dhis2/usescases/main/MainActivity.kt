@@ -15,8 +15,7 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
-import android.window.OnBackInvokedDispatcher
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -267,15 +266,11 @@ class MainActivity :
     }
 
     private fun registerOnBackPressedCallback() {
-        if (Build.VERSION.SDK_INT >= 33) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
                 backPressed()
             }
-        } else {
-            onBackPressedDispatcher.addCallback(this) {
-                backPressed()
-            }
-        }
+        })
     }
 
     private fun setUpNavigationBar() {
@@ -421,9 +416,11 @@ class MainActivity :
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true)
+                .show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD)
+                .show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
@@ -507,6 +504,7 @@ class MainActivity :
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
             isPinLayoutVisible -> isPinLayoutVisible = false
+            else -> back()
         }
     }
 
@@ -671,6 +669,7 @@ class MainActivity :
                     Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                         .setData(String.format("package:%s", packageName).toUri()),
                 )
+
             !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) && Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
                 requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
 

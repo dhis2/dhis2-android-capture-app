@@ -30,11 +30,11 @@ fun homeRobot(robotBody: MainRobot.() -> Unit) {
 class MainRobot : BaseRobot() {
 
     fun clickOnNavigationDrawerMenu() = apply {
-        onView(withId(R.id.menu)).perform(click())
+        waitForView(withId(R.id.menu)).perform(click())
     }
 
     fun clickOnSettings() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.sync_manager))
+        waitForView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.sync_manager))
         waitToDebounce(FRAGMENT_TRANSITION)
     }
 
@@ -67,7 +67,7 @@ class MainRobot : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun checkHomeIsDisplayed(composeTestRule: ComposeTestRule) {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(HOME_ITEMS))
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(HOME_ITEMS), TIMEOUT)
         composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
     }
 
