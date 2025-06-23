@@ -43,18 +43,4 @@ class EventTest : BaseTest() {
             checkEventDataEntryIsOpened(completion, orgUnit)
         }
     }
-
-    @Ignore
-    @Test
-    fun shouldShareQRWhenClickOnShare() {
-        val qrList = 3
-
-        prepareEventToShareIntentAndLaunchActivity(ruleEventDetail)
-
-        eventRegistrationRobot(composeTestRule) {
-            openMenuMoreOptions()
-            clickOnShare()
-            clickOnAllQR(qrList)
-        }
-    }
 }
