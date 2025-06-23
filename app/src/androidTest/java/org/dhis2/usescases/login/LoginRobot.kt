@@ -97,7 +97,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
 
     fun checkAuthErrorAlertIsVisible() {
-        onView(withText(LOGIN_ERROR_TITLE)).check(matches(isDisplayed()))
+        waitForView(withText(LOGIN_ERROR_TITLE)).check(matches(isDisplayed()))
     }
 
     fun clickOKAuthErrorAlert() {
