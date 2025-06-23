@@ -319,12 +319,15 @@ class LoginViewModel(
 
     @VisibleForTesting
     fun handleResponse(userResponse: Result<*>) {
+        Timber.tag(LoginViewModel::class.java.simpleName).d("Login finished")
         if (userResponse.isSuccess) {
+            Timber.tag(LoginViewModel::class.java.simpleName).d("Login finished successfully")
             updateServerUrls()
             updateLoginUsers()
             val displayTrackingMessage = hasToDisplayTrackingMessage()
             val isInitialSyncDone = syncIsPerformedInteractor.execute()
             view.saveUsersData(displayTrackingMessage, isInitialSyncDone)
+            Timber.tag(LoginViewModel::class.java.simpleName).d("User data saved")
         }
     }
 
@@ -351,7 +354,7 @@ class LoginViewModel(
     }
 
     private fun handleError(throwable: Throwable) {
-        Timber.e(throwable)
+        Timber.tag(LoginViewModel::class.java.simpleName).e(throwable, "Login error")
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             userManager?.d2?.userModule()?.blockingLogOut()
             logIn()
