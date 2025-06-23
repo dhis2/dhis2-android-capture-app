@@ -184,6 +184,8 @@ class DataSetTest : BaseTest() {
 
         checkMandatoryDialogIsDisplayedAndAcceptStep()
 
+        checkMandatoryIconOnCell(tableId = tableId, cellId = cellMandatoryId)
+
         enterDataStep(
             tableId = tableId,
             cellId = cellMandatoryId,
@@ -774,6 +776,15 @@ class DataSetTest : BaseTest() {
         dataSetInitialRobot {
             checkActionInputIsDisplayed()
             clickOnActionButton()
+        }
+    }
+
+    private fun checkMandatoryIconOnCell(
+        tableId: String,
+        cellId: String,
+    ) {
+        dataSetTableRobot(composeTestRule) {
+            assertCellHasMandatoryIcon(tableId, cellId)
         }
     }
 }

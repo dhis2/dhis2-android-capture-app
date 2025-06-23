@@ -346,7 +346,7 @@ internal class DataSetInstanceRepositoryImpl(
         val compulsoryDataElements = dataSet?.compulsoryDataElementOperands()
             ?.mapNotNull { dataElementOperand ->
                 MandatoryCellElements(
-                    uid = dataElementOperand.uid(),
+                    uid = dataElementOperand.dataElement()?.uid(),
                     categoryOptionComboUid = dataElementOperand.categoryOptionCombo()?.uid(),
                 )
             }
