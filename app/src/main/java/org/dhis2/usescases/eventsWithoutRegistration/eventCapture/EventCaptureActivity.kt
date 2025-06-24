@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +54,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.Even
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.injection.EventDetailsModule
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
+import org.dhis2.usescases.qrCodes.eventsworegistration.QrEventsWORegistrationActivity
 import org.dhis2.usescases.teiDashboard.DashboardViewModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.relationships.MapButtonObservable
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataActivityContract
@@ -395,6 +397,7 @@ class EventCaptureActivity :
                     }
 
                     EventCaptureMenuItem.DELETE -> confirmDeleteEvent()
+                    EventCaptureMenuItem.SHARE -> openShareEvent()
                 }
             }
         }
@@ -408,6 +411,13 @@ class EventCaptureActivity :
                     label = getString(R.string.showHelp),
                     leadingElement = MenuLeadingElement.Icon(icon = Icons.AutoMirrored.Outlined.HelpOutline),
                 ),
+            )
+            add(
+                MenuItemData(
+                    id = EventCaptureMenuItem.SHARE,
+                    label = getString(R.string.share),
+                    leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
+                )
             )
             if (presenter.canWrite() && presenter.isEnrollmentOpen()) {
                 add(
@@ -455,6 +465,15 @@ class EventCaptureActivity :
                 },
             ).show()
         }
+    }
+
+    private fun openShareEvent() {
+        val intent = Intent(
+            this,
+            QrEventsWORegistrationActivity::class.java,
+        )
+        intent.putExtra(Constants.EVENT_UID, eventUid)
+        startActivity(intent)
     }
 
     override fun showEventIntegrityAlert() {
@@ -619,4 +638,5 @@ class EventCaptureActivity :
 enum class EventCaptureMenuItem {
     SHOW_HELP,
     DELETE,
+    SHARE,
 }
