@@ -19,7 +19,6 @@ import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -32,6 +31,7 @@ class LoginTest : BaseTest() {
     val composeTestRule = createComposeRule()
 
     override fun setUp() {
+        restoreDataBaseOnBeforeAction = false
         super.setUp()
         setupMockServer()
         D2Manager.removeCredentials()
@@ -39,6 +39,7 @@ class LoginTest : BaseTest() {
 
 
     override fun teardown() {
+        restoreDataBaseOnBeforeAction = true
         super.teardown()
         D2Manager.setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
     }
