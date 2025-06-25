@@ -83,7 +83,6 @@ class LoginTest : BaseTest() {
             selectUsernameField()
             typeUsername(USERNAME)
             typePassword(PASSWORD)
-            waitToDebounce(5000)
             clickLoginButton()
             checkAuthErrorAlertIsVisible()
             clickOKAuthErrorAlert()
@@ -92,7 +91,6 @@ class LoginTest : BaseTest() {
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
             clearPasswordField()
             typePassword(PASSWORD)
-            waitToDebounce(5000)
             clickLoginButton()
 
             //Test case - [ANDROAPP-5184](https://dhis2.atlassian.net/browse/ANDROAPP-5184)
