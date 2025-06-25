@@ -460,17 +460,21 @@ class LoginViewModel(
     }
 
     fun onUserChanged(userName: CharSequence, start: Int, before: Int, count: Int) {
+        LoginIdlingResource.increment()
         if (userName.toString() != this.userName.value) {
             this.userName.value = userName.toString()
             checkData()
         }
+        LoginIdlingResource.decrement()
     }
 
     fun onPassChanged(password: CharSequence, start: Int, before: Int, count: Int) {
+        LoginIdlingResource.increment()
         if (password.toString() != this.password.value) {
             this.password.value = password.toString()
             checkData()
         }
+        LoginIdlingResource.decrement()
     }
 
     private fun checkData() {
