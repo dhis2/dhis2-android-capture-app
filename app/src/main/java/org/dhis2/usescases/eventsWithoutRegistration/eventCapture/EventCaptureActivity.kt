@@ -417,7 +417,7 @@ class EventCaptureActivity :
                     id = EventCaptureMenuItem.SHARE,
                     label = getString(R.string.share),
                     leadingElement = MenuLeadingElement.Icon(icon = Icons.Outlined.Share),
-                )
+                ),
             )
             if (presenter.canWrite() && presenter.isEnrollmentOpen()) {
                 add(
