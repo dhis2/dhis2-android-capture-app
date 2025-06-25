@@ -9,6 +9,7 @@ import org.dhis2.android.rtsm.data.models.Transaction
 import org.dhis2.android.rtsm.services.rules.RuleValidationHelper
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
+import timber.log.Timber
 
 open class BaseViewModel(
     private val schedulerProvider: BaseSchedulerProvider,
@@ -36,7 +37,7 @@ open class BaseViewModel(
             transaction = transaction,
             stockUseCase = stockUseCase,
         )
-            .doOnError { it.printStackTrace() }
+            .doOnError { Timber.e(it)}
             .observeOn(schedulerProvider.io())
             .subscribeOn(schedulerProvider.ui())
             .subscribe { ruleEffects ->
