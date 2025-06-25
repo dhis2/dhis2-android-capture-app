@@ -80,7 +80,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickLoginButton() {
-        onView(withId(R.id.login)).perform(click())
+        waitForView(withId(R.id.login)).perform(click())
     }
 
     fun clickQRButton() {
