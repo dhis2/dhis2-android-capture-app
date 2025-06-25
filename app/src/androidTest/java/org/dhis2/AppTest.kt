@@ -24,7 +24,7 @@ class AppTest : App() {
 
     @Override
     override fun onCreate() {
-        populateDBIfNeeded()
+//        populateDBIfNeeded()
         super.onCreate()
     }
 
