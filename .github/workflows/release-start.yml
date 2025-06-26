@@ -15,6 +15,16 @@ on:
         required: true
         type: string
 
+      dev_sdk_version_name:
+        description: 'SDK version name to use in develop'
+        required: true
+        type: string
+
+      dev_design_system_version_name:
+        description: 'Design system version name to use in develop'
+        required: true
+        type: string
+
 jobs:
   create_branch:
     runs-on: ubuntu-latest
@@ -67,6 +77,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DEVELOPMENT_VERSION: ${{ inputs.development_version_name }}
+      DEVELOPMENT_SDK_VERSION: ${{ inputs.dev_sdk_version_name }}
+      DEVELOPMENT_DESIGN_VERSION: ${{ inputs.dev_design_system_version_name }}
       DEVELOPMENT_BRANCH: 'update_version_to${{ inputs.development_version_name }}'
 
     steps:
@@ -87,6 +99,9 @@ jobs:
 
       - name: Run Python script to update base branch version
         run: python scripts/updateVersionName.py ${{ env.DEVELOPMENT_VERSION }}
+
+      - name: Run Python script to update sdk and design system version name
+        run: python scripts/updateDependencyVersions.py ${{ env.DEVELOPMENT_SDK_VERSION }} ${{ env.DEVELOPMENT_DESIGN_VERSION }}
 
       - name: Commit and Push Changes
         uses: flex-development/gh-commit@1.0.0
