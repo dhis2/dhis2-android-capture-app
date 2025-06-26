@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -807,6 +808,53 @@ private fun DataSetTable(
 ) {
     val density = LocalDensity.current
 
+    val screenWidth = with(density) { getScreenWidth().roundToPx() - Spacing.Spacing32.roundToPx() }
+    val sectionTableId = remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(dataSetSectionTable) {
+        sectionTableId.value = dataSetSectionTable.id
+    }
+
+    val tableResizeActions = remember {
+        object : TableResizeActions {
+            override fun onRowHeaderResize(tableId: String, newValue: Float) {
+                sectionTableId.value?.let {
+                    onTableResize(
+                        ResizeAction.RowHeaderChanged(tableId, sectionTableId.value ?: "", newValue),
+                    )
+                }
+            }
+
+            override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
+                sectionTableId.value?.let {
+                    onTableResize(
+                        ResizeAction.ColumnHeaderChanged(
+                            tableId,
+                            sectionTableId.value ?: "",
+                            column,
+                            newValue,
+                        ),
+                    )
+                }
+            }
+
+            override fun onTableDimensionResize(tableId: String, newValue: Float) {
+                sectionTableId.value?.let {
+                    onTableResize(
+                        ResizeAction.TableDimension(tableId, sectionTableId.value ?: "", newValue),
+                    )
+                }
+            }
+
+            override fun onTableDimensionReset(tableId: String) {
+                sectionTableId.value?.let {
+                    onTableResize(
+                        ResizeAction.Reset(tableId, sectionTableId.value ?: ""),
+                    )
+                }
+            }
+        }
+    }
     TableTheme(
         tableDimensions = dataSetSectionTable.overridingDimensions.let { overwrittenDimension ->
             TableDimensions(
@@ -827,54 +875,14 @@ private fun DataSetTable(
                         }
                     }
                 },
+                totalWidth = screenWidth,
             )
         },
     ) {
-        val sectionId by remember(dataSetSectionTable) {
-            derivedStateOf { dataSetSectionTable.id }
-        }
-
         DataTable(
             tableList = dataSetSectionTable.tableModels,
             currentSelection = currentSelection,
-            onResizedActions = object : TableResizeActions {
-                override fun onRowHeaderResize(tableId: String, newValue: Float) {
-                    sectionId?.let { sectionId ->
-                        onTableResize(
-                            ResizeAction.RowHeaderChanged(tableId, sectionId, newValue),
-                        )
-                    }
-                }
-
-                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
-                    sectionId?.let { sectionId ->
-                        onTableResize(
-                            ResizeAction.ColumnHeaderChanged(
-                                tableId,
-                                sectionId,
-                                column,
-                                newValue,
-                            ),
-                        )
-                    }
-                }
-
-                override fun onTableDimensionResize(tableId: String, newValue: Float) {
-                    sectionId?.let { sectionId ->
-                        onTableResize(
-                            ResizeAction.TableDimension(tableId, sectionId, newValue),
-                        )
-                    }
-                }
-
-                override fun onTableDimensionReset(tableId: String) {
-                    sectionId?.let { sectionId ->
-                        onTableResize(
-                            ResizeAction.Reset(tableId, sectionId),
-                        )
-                    }
-                }
-            },
+            onResizedActions = tableResizeActions,
             tableInteractions = object : TableInteractions {
                 override fun onClick(tableCell: TableCell) {
                     super.onClick(tableCell)

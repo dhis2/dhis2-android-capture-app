@@ -128,9 +128,9 @@ internal class DataSetTableViewModel(
                 dataSetSections = dataSetInstanceData.dataSetSections,
                 renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
                 dataSetSectionTable = DataSetSectionTable(
-                    null,
+                    sectionToLoad,
                     emptyList(),
-                    overridingDimensions = OverwrittenDimension(),
+                    overridingDimensions = overwrittenWidths(sectionToLoad),
                     loading = true,
                 ),
                 initialSection = dataSetInstanceData.initialSectionToLoad,
@@ -204,7 +204,7 @@ internal class DataSetTableViewModel(
                         dataSetSectionTable = it.dataSetSectionTable.copy(
                             id = sectionUid,
                             tableModels = emptyList(),
-                            overridingDimensions = OverwrittenDimension(),
+                            overridingDimensions = overwrittenWidths(sectionUid),
                             loading = true,
                         ),
                         selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
