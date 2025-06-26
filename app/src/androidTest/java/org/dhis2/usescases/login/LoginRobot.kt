@@ -80,7 +80,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickLoginButton() {
-        onView(withId(R.id.login)).perform(click())
+        waitForView(withId(R.id.login)).perform(click())
     }
 
     fun clickQRButton() {
@@ -97,7 +97,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
 
     fun checkAuthErrorAlertIsVisible() {
-        onView(withText(LOGIN_ERROR_TITLE)).check(matches(isDisplayed()))
+        waitForView(withText(LOGIN_ERROR_TITLE)).check(matches(isDisplayed()))
     }
 
     fun clickOKAuthErrorAlert() {
