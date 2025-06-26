@@ -378,7 +378,7 @@ class LoginViewModel(
 
     fun authenticateWithBiometric() {
         biometricController.authenticate {
-            password.value = preferenceProvider.getString(SECURE_PASS)
+            password.value = preferenceProvider.getSecureValue(SECURE_PASS)
             logIn()
         }
     }
