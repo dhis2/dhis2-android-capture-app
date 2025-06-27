@@ -193,7 +193,6 @@ internal fun InputProvider(
                         acceptText = stringResource(Res.string.input_action_accept),
                         cancelText = stringResource(Res.string.input_action_cancel),
                         is24hourFormat = true,
-                        selectableDates = inputData.ageExtras().selectableDates,
                     ),
                     inputType = inputType,
                     inputState = inputData.inputShellState,
