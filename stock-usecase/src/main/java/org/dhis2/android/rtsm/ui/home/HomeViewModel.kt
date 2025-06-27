@@ -37,6 +37,7 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
+import timber.log.Timber
 
 @SuppressLint("MutableCollectionMutableState")
 class HomeViewModel(
@@ -118,7 +119,7 @@ class HomeViewModel(
                 .subscribe(
                     { _destinations.value = (OperationState.Success<List<Option>>(it)) },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                         _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
                             )
@@ -140,7 +141,7 @@ class HomeViewModel(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -157,7 +158,7 @@ class HomeViewModel(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -173,7 +174,7 @@ class HomeViewModel(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -188,7 +189,7 @@ class HomeViewModel(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -210,7 +211,7 @@ class HomeViewModel(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                         _facilities.value = (OperationState.Error(R.string.facilities_load_error))
                     },
                 ),

@@ -16,6 +16,7 @@ import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
+import timber.log.Timber
 
 const val MIN_SIZE_TO_SHOW = 2
 
@@ -153,7 +154,7 @@ class GroupAnalyticsViewModel(
             try {
                 _analytics.value = Result.success(result.await())
             } catch (e: Exception) {
-                e.printStackTrace()
+                Timber.e(e)
                 _analytics.value = Result.failure(e)
             }
         }

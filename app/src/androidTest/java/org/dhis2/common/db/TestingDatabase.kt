@@ -10,6 +10,7 @@ import org.hisp.dhis.android.core.D2Manager
 import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
+import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -54,7 +55,7 @@ class TestingDatabase : BaseTest() {
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Timber.e(e)
         }
     }
 }

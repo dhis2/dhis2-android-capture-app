@@ -234,7 +234,6 @@ class ChartsRepositoryImpl(
                     }
                 },
                 { analyticException ->
-                    analyticException.printStackTrace()
                     visualization?.let {
                         graphList.add(
                             visualizationToGraph.addErrorGraph(
@@ -346,7 +345,6 @@ class ChartsRepositoryImpl(
                     )
                 },
             ) { analyticException ->
-                analyticException.printStackTrace()
                 trackerVisualization?.let {
                     graphList.add(
                         visualizationToGraph.addErrorGraph(

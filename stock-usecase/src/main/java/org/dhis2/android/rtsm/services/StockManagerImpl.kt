@@ -195,10 +195,10 @@ class StockManagerImpl(
             )
         } catch (e: Exception) {
             if (e is D2Error) {
-                e.originalException()?.printStackTrace()
+                Timber.e(e.originalException())
                 Timber.e("Unable to save event: %s", e.errorCode().toString())
             } else {
-                e.printStackTrace()
+                Timber.e(e)
             }
             null
         }
@@ -208,10 +208,10 @@ class StockManagerImpl(
                 d2.eventModule().events().uid(eventUid).setEventDate(item.date)
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
+                    Timber.e(e.originalException())
                     Timber.e("Unable to set event date: %s", e.errorCode().toString())
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
 
@@ -225,10 +225,10 @@ class StockManagerImpl(
                 ).blockingSet(item.qty.toString())
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
+                    Timber.e(e.originalException())
                     Timber.e("Unable to set value for event: %s\n", e.errorCode().toString())
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
 
@@ -246,10 +246,10 @@ class StockManagerImpl(
                 }
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
+                    Timber.e(e.originalException())
                     Timber.e("Unable to set destination for event: %s", e.errorCode().toString())
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
 
@@ -257,10 +257,10 @@ class StockManagerImpl(
                 updateStockOnHand(item, stockUseCase.programUid, transaction, eventUid, stockUseCase)
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
-                    Timber.e("Unable to update", e.errorCode().toString())
+                    Timber.e(e.originalException())
+                    Timber.e("Unable to update")
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
         }
@@ -275,7 +275,7 @@ class StockManagerImpl(
     ) {
         disposable.add(
             ruleValidationHelper.evaluate(entry, program, transaction, eventUid, stockUseCase)
-                .doOnError { it.printStackTrace() }
+                .doOnError { e -> Timber.e(e) }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())
                 .subscribe { ruleEffects -> performRuleActions(ruleEffects, eventUid) },
@@ -291,7 +291,7 @@ class StockManagerImpl(
                 val value = ruleEffect.data
                 if (de.isNotEmpty() && !value.isNullOrEmpty()) {
                     Timber.d("++++      Assigning rule actions:")
-                    println("Event uid: $eventUid, dvUid: $de, value: $value")
+                    Timber.d("Event uid: $eventUid, dvUid: $de, value: $value")
 
                     if (NumberUtils.isCreatable(value)) {
                         try {
@@ -300,9 +300,9 @@ class StockManagerImpl(
                                 .value(eventUid, de)
                                 .blockingSet(value)
 
-                            println("Added data value '$value' to DE $de - Event($eventUid)")
+                            Timber.d("Added data value '$value' to DE $de - Event($eventUid)")
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            Timber.e(e)
 
                             if (e is D2Error) {
                                 Timber.e(
