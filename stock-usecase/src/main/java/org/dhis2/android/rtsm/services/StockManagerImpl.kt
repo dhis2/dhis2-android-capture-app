@@ -275,7 +275,7 @@ class StockManagerImpl(
     ) {
         disposable.add(
             ruleValidationHelper.evaluate(entry, program, transaction, eventUid, stockUseCase)
-                .doOnError { e -> Timber.e(e)}
+                .doOnError { e -> Timber.e(e) }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())
                 .subscribe { ruleEffects -> performRuleActions(ruleEffects, eventUid) },

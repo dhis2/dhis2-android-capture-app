@@ -37,7 +37,7 @@ open class BaseViewModel(
             transaction = transaction,
             stockUseCase = stockUseCase,
         )
-            .doOnError { Timber.e(it)}
+            .doOnError { Timber.e(it) }
             .observeOn(schedulerProvider.io())
             .subscribeOn(schedulerProvider.ui())
             .subscribe { ruleEffects ->

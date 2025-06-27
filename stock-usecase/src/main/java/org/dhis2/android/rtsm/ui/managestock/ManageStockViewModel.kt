@@ -142,8 +142,8 @@ class ManageStockViewModel(
     private fun didTransactionParamsChange(transaction: Transaction): Boolean {
         return if (_transaction.value != null) {
             _transaction.value!!.transactionType != transaction.transactionType ||
-                    _transaction.value!!.facility != transaction.facility ||
-                    _transaction.value!!.distributedTo != transaction.distributedTo
+                _transaction.value!!.facility != transaction.facility ||
+                _transaction.value!!.distributedTo != transaction.distributedTo
         } else {
             true
         }
@@ -229,8 +229,8 @@ class ManageStockViewModel(
                 .debounce(QUANTITY_ENTRY_DEBOUNCE, TimeUnit.MILLISECONDS)
                 .distinctUntilChanged { t1, t2 ->
                     t1.entry.item.id == t2.entry.item.id &&
-                            t1.position == t2.position &&
-                            t1.entry.qty == t2.entry.qty
+                        t1.position == t2.position &&
+                        t1.entry.qty == t2.entry.qty
                 }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -257,7 +257,7 @@ class ManageStockViewModel(
         val items = when (dataEntryUiState.value.step) {
             DataEntryStep.REVIEWING,
             DataEntryStep.EDITING_REVIEWING,
-                ->
+            ->
                 _stockItems.value?.filter {
                     itemsCache[it.id] != null
                 }
