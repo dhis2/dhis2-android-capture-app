@@ -8,6 +8,7 @@ import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import java.util.Date
+import androidx.core.content.edit
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
@@ -19,6 +20,10 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
     private val asc = AndroidSecureStore(context)
     private val css = ChunkedSecureStore(asc)
+
+    init {
+        sharedPreferences.edit { remove(SECURE_PASS) }
+    }
 
     override fun sharedPreferences(): SharedPreferences {
         return sharedPreferences
