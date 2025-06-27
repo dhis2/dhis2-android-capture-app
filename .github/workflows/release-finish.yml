@@ -1,0 +1,63 @@
+# This is a basic workflow that is manually triggered
+
+name: Release finish
+
+on:
+  workflow_dispatch:
+    inputs:
+      sdk_version_name:
+        description: 'SDK version name for release'
+        required: true
+        type: string
+
+      design_system_version_name:
+        description: 'Design system version name for release'
+        required: true
+        type: string
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_SDK_VERSION: ${{ inputs.sdk_version_name }}
+      RELEASE_DESIGN_SYSTEM_VERSION: ${{ inputs.design_system_version_name }}
+      RELEASE_BRANCH_NAME: 'release/${{ github.ref_name }}'
+      TEMP_BRANCH: 'tmp_release'
+
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12.1
+
+      # Creates an auxiliary branch. This branch will be used to create the signed commit using the GH API.
+      # It is required to use an auxiliary branch because the RELEASE_BRANCH is protected and the GH API
+      # rejects the commit even though the user identified by the token is included in the bypass list.
+    - name: Create auxiliary branch
+      run: |
+        git checkout -b ${{ env.TEMP_BRANCH }}
+        git push origin ${{ env.TEMP_BRANCH }}
+
+    - name: Run Python script to update release branch version
+      run: python scripts/updateDependencyVersions.py ${{ env.RELEASE_SDK_VERSION }} ${{ env.RELEASE_DESIGN_SYSTEM_VERSION }}
+
+    - name: Run Python script to update release branch version
+      run: python scripts/updateVersionCode.py
+
+      # Uses the GH API to create the signed commit.
+    - name: Commit and Push Changes to auxiliary branch
+      uses: flex-development/gh-commit@1.0.0
+      with:
+        message: 'Update version code, sdk, and design system release version'
+        ref: ${{ env.TEMP_BRANCH }}
+        token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
+
+    - name: Create pull request
+      run: gh pr create -B ${{ env.RELEASE_BRANCH_NAME }} -H ${{ env.TEMP_BRANCH }} --title 'Update Sdk, Design System, and Version Code' --body 'Created by Github action'
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
