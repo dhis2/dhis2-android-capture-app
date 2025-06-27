@@ -91,10 +91,16 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
     }
 
     private fun hasPermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
+        val finePermissionGranted = ActivityCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION,
         ) == PackageManager.PERMISSION_GRANTED
+        val coarsePermissionGranted = ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+        ) == PackageManager.PERMISSION_GRANTED
+
+        return finePermissionGranted || coarsePermissionGranted
     }
 
     override fun hasLocationEnabled(): Boolean {
