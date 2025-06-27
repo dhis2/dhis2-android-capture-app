@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.semantics.semantics
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.google.android.material.card.MaterialCardView
@@ -17,6 +18,8 @@ import org.dhis2.commons.ui.ListCardProvider
 import org.dhis2.databinding.ItemDatasetBinding
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailModel
 import org.dhis2.usescases.datasets.datasetDetail.datasetList.mapper.DatasetCardMapper
+import org.dhis2.utils.adapterItemPosition
+import org.dhis2.utils.adapterItemTitle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 class DataSetListAdapter(
@@ -64,7 +67,14 @@ class DataSetListAdapter(
                     if (position == 0) {
                         Spacer(modifier = Modifier.size(Spacing.Spacing8))
                     }
-                    ListCardProvider(card, R.string.syncing)
+                    ListCardProvider(
+                        modifier = Modifier.semantics {
+                            adapterItemPosition = position
+                            adapterItemTitle = card.title
+                        },
+                        card = card,
+                        syncingResourceId = R.string.syncing,
+                    )
                 }
             }
 

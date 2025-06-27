@@ -3,6 +3,7 @@ package org.dhis2.commons.ui
 import androidx.annotation.StringRes
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -17,10 +18,12 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun ListCardProvider(
+    modifier: Modifier = Modifier,
     card: ListCardUiModel,
     @StringRes syncingResourceId: Int,
 ) {
     ListCard(
+        modifier = modifier,
         listCardState = rememberListCardState(
             title = ListCardTitleModel(
                 text = card.title,
