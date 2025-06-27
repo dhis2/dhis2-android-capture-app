@@ -2,13 +2,13 @@ package org.dhis2.commons.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import java.util.Date
-import androidx.core.content.edit
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
@@ -125,7 +125,7 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
     override fun areSameCredentials(serverUrl: String?, userName: String?): Boolean {
         return getString(SECURE_SERVER_URL, "") == serverUrl &&
-                getString(SECURE_USER_NAME, "") == userName
+            getString(SECURE_USER_NAME, "") == userName
     }
 
     override fun clear() {
