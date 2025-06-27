@@ -54,9 +54,7 @@ internal class InputDataUiStateMapper(
                 else -> InputShellState.FOCUSED
             },
             inputExtra = when (cellInfo.inputType) {
-                InputType.Age -> InputExtra.Age(
-                    selectableDates = SelectableDates("01011940", "12312300"),
-                )
+                InputType.Age -> InputExtra.Age
 
                 InputType.Date, InputType.Time, InputType.DateTime ->
                     InputExtra.Date(

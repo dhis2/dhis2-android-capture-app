@@ -65,9 +65,7 @@ internal sealed class InputExtra {
         val coordinateValue: Coordinates?,
     ) : InputExtra()
 
-    data class Age(
-        val selectableDates: SelectableDates,
-    ) : InputExtra()
+    data object Age : InputExtra()
 
     data class MultiText(
         val numberOfOptions: Int,
