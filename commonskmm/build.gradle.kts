@@ -12,7 +12,7 @@ plugins {
 
 
 repositories{
-    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
     mavenCentral()
     google()
 }
@@ -54,6 +54,7 @@ kotlin {
 
             // Atomicfu
             implementation(libs.atomicfu)
+
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -67,6 +68,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
             implementation(libs.test.espresso.idlingresource)
+            api(libs.analytics.timber)
+            // Sentry
+            api(libs.analytics.sentry)
         }
 
         androidUnitTest.dependencies {

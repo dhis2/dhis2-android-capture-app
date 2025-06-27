@@ -165,10 +165,17 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
         }
     }
 
-    fun finishDownloadingDataSets() {
+    fun finishDownloadingDataSets(dataSetUids: List<String>) {
+        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
+            if (!dataSetUids.contains(entry.key) || entry.value.isComplete) {
+                entry.value
+            } else {
+                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+            }
+        }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
-                downloadStatus.value.copy(downloadingDataSetValues = false),
+                downloadStatus.value.copy(downloadingDataSetValues = false, programSyncStatusMap = progressStatusMap),
             )
         }
     }

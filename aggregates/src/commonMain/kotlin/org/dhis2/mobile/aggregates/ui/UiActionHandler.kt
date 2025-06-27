@@ -20,6 +20,7 @@ interface UiActionHandler {
     fun onSelectFile(
         fieldUid: String,
         callback: (result: String?) -> Unit,
+        onFailure: () -> Unit,
     )
     fun onDownloadFile(
         fieldUid: String,

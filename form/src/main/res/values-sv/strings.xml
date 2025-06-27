@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error">Fel</string>
+    <string name="choose_date">Välj datum</string>
+    <string name="required">Nödvändig</string>
+    <string name="date">Datum</string>
+    <string name="hint_year">År</string>
+    <string name="hint_month">Månader</string>
+    <string name="hint_day">Dagar</string>
+    <string name="latitude">Latitud</string>
+    <string name="longitude">Longitud</string>
+    <string name="enter_positive_integer_or_zero">Ange ett positivt heltal eller noll.</string>
+    <string name="enter_negative_integer">Ange ett negativt heltal</string>
+    <string name="enter_positive_integer">Ange ett positivt heltal</string>
+    <string name="enter_number">Ange ett nummer</string>
+    <string name="enter_long_text">Ange långtext</string>
+    <string name="enter_text">Ange text</string>
+    <string name="due_date">Förfallodatum</string>
+    <string name="complete">Färdigt</string>
+    <string name="discard_changes">Ignorera ändringar</string>
+    <string name="keep_editing">Fortsätt redigera</string>
+    <string name="share">Dela med sig</string>
     <string name="action_close">Stänga</string>
     <string name="warning_error_on_complete_title">Kolla detta!</string>
-</resources>
+    <string name="incident_date">infall datum</string>
+    <string name="download">Ladda ner</string>
+    <string name="org_unit">Organisationsenhet</string>
+    <string name="coordinates">koordinater</string>
+    <string name="cat_combo">Kategori kombination</string>
+    </resources>

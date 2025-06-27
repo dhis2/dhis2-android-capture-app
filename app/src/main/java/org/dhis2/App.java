@@ -28,7 +28,6 @@ import org.dhis2.commons.orgunitselector.OUTreeComponent;
 import org.dhis2.commons.orgunitselector.OUTreeModule;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceModule;
-import org.dhis2.commons.reporting.CrashReportModule;
 import org.dhis2.commons.schedulers.SchedulerModule;
 import org.dhis2.commons.schedulers.SchedulersProviderImpl;
 import org.dhis2.commons.service.SessionManagerModule;
@@ -203,7 +202,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .workManagerController(new WorkManagerModule())
                 .sessionManagerService(new SessionManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
-                .crashReportModule(new CrashReportModule())
                 .customDispatcher(new CustomDispatcherModule())
                 .featureConfigModule(new FeatureConfigModule());
     }

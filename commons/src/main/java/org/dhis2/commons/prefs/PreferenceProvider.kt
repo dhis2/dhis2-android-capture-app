@@ -14,6 +14,8 @@ interface PreferenceProvider {
     fun areSameCredentials(serverUrl: String?, userName: String?): Boolean
     fun clear()
     fun setValue(key: String, value: Any? = null)
+    fun secureValue(key: String, value: Any? = null)
+    fun getSecureValue(key: String, default: String? = null): String?
     fun removeValue(key: String)
     fun contains(vararg keys: String): Boolean
     fun getString(key: String, default: String? = null): String?

@@ -173,7 +173,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean showCompletionPercentage() {
-        if (d2.settingModule().appearanceSettings().blockingExists()) {
+        if (getCurrentEvent() != null && d2.settingModule().appearanceSettings().blockingExists()) {
             ProgramConfigurationSetting programConfigurationSetting = d2.settingModule()
                     .appearanceSettings()
                     .getProgramConfigurationByUid(getCurrentEvent().program());
@@ -223,7 +223,12 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     @Override
     @Nullable
     public String getEnrollmentUid() {
-        return getCurrentEvent().enrollment();
+        Event currentEvent = getCurrentEvent();
+        if (currentEvent == null) {
+            return null;
+        }else{
+            return currentEvent.enrollment();
+        }
     }
 
     @Override

@@ -40,9 +40,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         programViewModelFactory
     }
 
-    @Inject
-    lateinit var animation: ProgramAnimation
-
     private val getActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         }
@@ -90,6 +87,11 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     override fun onResume() {
         super.onResume()
         programViewModel.init()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        programViewModel.dispose()
     }
 
     //endregion

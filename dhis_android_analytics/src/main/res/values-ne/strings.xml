@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">स्वीकार</string>
+    <string name="period">अबधि</string>
+    <string name="daily">दैनिक</string>
+    <string name="today">आज</string>
+    <string name="other">अरु</string>
+    <string name="yesterday">हिजो</string>
+    <string name="last3Days">अघिलो ३ दिन</string>
+    <string name="last7Days">अघिल्लो ७ दिन</string>
+    <string name="last14Days">अघिलो १४ दिन</string>
+    <string name="last30Days">अघिलो ३ दिन</string>
+    <string name="thisweek">यो </string>
+    <string name="lastweek">अघिलो </string>
+    <string name="last4weeks">अघिलो ५ </string>
+    <string name="last12weeks">अफ्हिलो १२ हप्ता</string>
+    </resources>

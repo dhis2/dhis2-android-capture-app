@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">Accept</string>
+    <string name="today">Astăzi</string>
+    <string name="yesterday">Ieri</string>
+    <string name="thisyear">Anul acesta</string>
+    <string name="monthly">Lunar</string>
+    <string name="yearly">Anual</string>
+    </resources>

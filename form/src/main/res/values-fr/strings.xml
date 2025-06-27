@@ -10,10 +10,13 @@
     <string name="conf_error_value_option_set">La valeur du champ 1%s n\'appartient pas à l\'option définie dans 1%s</string>
     <string name="field_is_mandatory">Ce champ est obligatoire</string>
     <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
+    <string name="missing_warning_fields_events">Vous avez des messages d\'avertissement.\nVoulez-vous marquer ce formulaire comme terminé ?</string>
+    <string name="required">Requis</string>
     <string name="date">Date</string>
     <string name="hint_year">Années</string>
     <string name="hint_month">Mois</string>
     <string name="hint_day">Jours</string>
+    <string name="wrong_date_format"> %s ne peut pas être analysé comme une date</string>
     <string name="polygon">Polygone</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
@@ -39,9 +42,13 @@
     <string name="complete">Terminer</string>
     <string name="discard_changes">Annuler les modifications</string>
     <string name="saved">Enregistré!</string>
+    <string name="event_error_on_complete">Vous avez des messages d\'erreur.\nVoulez-vous les consulter ?</string>
+    <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
     <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
     <string name="not_now">Pas maintenant</string>
+    <string name="save_anyway">Enregistrer quand même</string>
     <string name="keep_editing">Continuer l’édition</string>
+    <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
     <string name="discard_go_back">Si vous quittez maintenant, toutes les informations du formulaire seront supprimées.</string>
     <string name="field_errors_not_saved_discard">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nSi vous quittez maintenant, les modifications seront ignorées.</string>
     <string name="field_errors_not_saved">Certains champs contiennent des erreurs et ils ne sont pas enregistrés.</string>
@@ -51,15 +58,33 @@
     <string name="camera_permission_denied">L\'autorisation de la caméra est refusée. \nVous devez l\'activer pour utiliser cette fonctionnalité.</string>
     <string name="action_close">Fermer</string>
     <string name="program_rules_loop_warning_title">Avertissement relatif aux règles du programme</string>
+    <string name="program_rules_loop_warning_message">Il y a un problème de configuration provoquant une boucle dans les règles. Contactez votre administrateur.</string>
     <string name="copied_text">Copié</string>
     <string name="empty_description">Pas d\'information pour ce champ</string>
     <string name="take_photo">Prendre une photo</string>
     <string name="warning_error_on_complete_title">Attention. Vérifiez ceci!</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
+    <string name="data_values_save_error">Les DataValues ne peuvent pas être enregistrées à l\'aide de ces arguments. Utilisez l\'autre.</string>
     <string name="enrollment_single_section_label">Attributs - %s</string>
     <string name="tei_coordinates">Coordonnées pour</string>
     <string name="no_reserved_values">Il n\'y a plus de valeurs réservées. Veuillez contacter votre administrateur système.</string>
     <string name="incident_date">Date de l´incident</string>
+    <string name="location_permission_denied">L\'autorisation de localisation est nécessaire pour capturer les coordonnées. Veuillez les activer dans les paramètres de l\'application</string>
     <string name="open_with">Ouvrir avec</string>
+    <string name="no_option_found">Aucune option trouvée</string>
+    <string name="download">Télécharger</string>
+    <string name="scan">Scanner</string>
+    <string name="qr_code">Code QR</string>
+    <string name="bar_code">Code-barre</string>
+    <string name="add_location">Ajouter un lieu</string>
+    <string name="form_without_fields">Ce formulaire n\'a pas de champs configurés</string>
     <string name="event_details_section_title">%s détails</string>
-    </resources>
+    <string name="event_data_section_title">%s donnée</string>
+    <string name="org_unit">Unité d\'organisation</string>
+    <string name="coordinates">Coordonnées</string>
+    <string name="category_combo">La combo de catégories</string>
+    <string name="no_options">Aucune option disponible</string>
+    <string name="cat_combo">Combinaison de catégories</string>
+    <string name="storage_permission_denied">L\'autorisation de stockage n\'est pas accordée.\n Vous devez l\'activer pour utiliser cette fonctionnalité.</string>
+
+</resources>

@@ -9,6 +9,7 @@ class OUTreeViewModelFactory(
     private val dispatchers: DispatcherProvider,
     private val selectedOrgUnits: MutableList<String>,
     private val singleSelection: Boolean,
+    private val model: OUTreeModel,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return OUTreeViewModel(
@@ -16,6 +17,7 @@ class OUTreeViewModelFactory(
             dispatchers = dispatchers,
             selectedOrgUnits = selectedOrgUnits,
             singleSelection = singleSelection,
+            model = model,
         ) as T
     }
 }

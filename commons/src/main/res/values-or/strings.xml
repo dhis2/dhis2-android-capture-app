@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yes">ହଁ</string>
+    <string name="no">ନାହିଁ</string>
+    <string name="navigation_tei_data">ବିବରଣୀ</string>
+    <string name="event_overview">ବିବରଣୀ</string>
+    <string name="info">ସୂଚନା</string>
+    <string name="done">ହୋଇଗଲା</string>
+
+    <string name="filters_title_sorting">ସଜାଣି</string>
+    <string name="weekly">ସାପ୍ତାହିକ</string>
+    <string name="monthly">ମାସିକ</string>
+    <string name="yearly">ବାର୍ଷିକ</string>
+    <!-- Periods -->
+    <string name="filter_period_today">ଆଜି</string>
+    <string name="filter_period_yesterday">ଗତକାଲି</string>
+    <string name="filter_period_tomorrow">ଆସନ୍ତାକାଲି</string>
+    <string name="filter_period_this_week">ଚଳିତ ସପ୍ତାହ</string>
+    <string name="filter_period_last_week">ଗତ ସପ୍ତାହ</string>
+    <string name="filter_period_this_month">ଚଳିତ ମାସ</string>
+    <string name="filter_period_last_month">ଗତ ମାସ</string>
+    <string name="WEEKLY">ସାପ୍ତାହିକ</string>
+    <string name="MONTHLY">ମାସିକ</string>
+    <string name="YEARLY">ବାର୍ଷିକ</string>
+
+    <!-- Intervals -->
+    <string name="interval_now">ଏବେ</string>
+    <string name="interval_yesterday">ଗତକାଲି</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">ମତାମତ</string>
+    <string name="overdue_today">ଆଜି</string>
+    </resources>

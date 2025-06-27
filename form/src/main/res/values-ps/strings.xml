@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="error">تېروته</string>
+    <string name="required">اړین دي</string>
+    <string name="date">نېټه</string>
+    <string name="hint_year">کلونه</string>
+    <string name="hint_month">میاشت</string>
+    <string name="hint_day">ورځې</string>
+    <string name="latitude">لېټېټيوډ</string>
+    <string name="longitude">لانګېټيوډ</string>
+    <string name="due_date">ټاکلې نېټه</string>
+    <string name="complete">بشپړ یې کړئ</string>
+    <string name="share">شریک یې کړئ</string>
     <string name="action_close">بند یې کړئ</string>
-</resources>
+    <string name="incident_date">د پېښې نېټه</string>
+    <string name="download">بارگیری</string>
+    <string name="coordinates">مختصات</string>
+    <string name="no_options">هېڅ انتخاب شتون نه لري</string>
+    </resources>

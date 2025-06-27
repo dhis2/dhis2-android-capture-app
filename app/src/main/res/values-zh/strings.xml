@@ -101,6 +101,7 @@
     <string name="finish_and_complete">完成</string>
     <string name="completed">已完成</string>
     <string name="cancelled">已取消</string>
+    <string name="re_open">重新打开</string>
     <string name="re_open_form">重新打开表单</string>
     <string name="activate">激活</string>
     <string name="active">活跃的</string>
@@ -141,6 +142,7 @@
     <string name="there_is_no_available_period">没有可用期间可选</string>
     <!--Event Detail-->
     <string name="due_date">到期日期</string>
+    <string name="next_event">下一页%1$s</string>
     <string name="cat_combo">分类选择框</string>
     <string name="date_default">DD/MM/YYYY</string>
     <string name="cancel">取消</string>
@@ -150,7 +152,7 @@
     <string name="no_options">无可用选项</string>
 
     <!--TEI Enrollment list-->
-    <string name="enrollment_list">登记清单</string>
+    <string name="enrollment_list">报名名单</string>
     <string name="active_programs">活动项目</string>
     <string name="to_enroll_programs">加入的项目</string>
     <string name="enroll">加入</string>
@@ -274,7 +276,7 @@
     <string name="hint_month">月</string>
     <string name="hint_year">岁</string>
     <string name="week">星期</string>
-    <string name="incident_date">事故日期</string>
+    <string name="incident_date">发生日期</string>
     <string name="local_results">本地结果</string>
     <string name="online_results">在线结果</string>
     <string name="past_programs">过去的项目</string>
@@ -727,7 +729,9 @@
     <string name="error_init_session">我们无法与您的用户发起会话</string>
     <string name="enrollment_date_edition_warning">还有计划的事件，不能重新安排</string>
     <string name="section_charts">图表</string>
+    <string name="navigation_list_view">列表</string>
     <string name="navigation_table_view">表格显示</string>
+    <string name="navigation_map_view">地图</string>
     <string name="navigation_analytics">分析工具</string>
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
@@ -735,6 +739,7 @@
     <string name="navigation_relationships">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
+    <string name="navigation_form">表单</string>
     <string name="navigation_tei_data">详情</string>
     <string name="show_bar_graph">查看柱状图</string>
     <string name="show_line_graph">查看折线图</string>
@@ -936,6 +941,11 @@
     <string name="remove_enrollment_dialog_message">%s 中的数据将被删除。此操作无法撤消。</string>
     <string name="schedule_next">安排下一个</string>
     <string name="schedule">调度</string>
+    <string name="enter">输入</string>
+    <string name="refer">流转</string>
+    <string name="scheduled_enter_event">已经调度</string>
+    <string name="enter_event">进入%1$s</string>
+    <string name="cancel_event">取消%1$s</string>
     <string name="program_stage">项目阶段</string>
     <string name="event">事件</string>
     <string name="timeline">时间线</string>
@@ -958,4 +968,13 @@
     <string name="hide_description">隐藏说明</string>
     <string name="biometric_title">确认是您</string>
     <string name="use_password">使用密码</string>
-    </resources>
+    <string name="transfer">流转</string>
+    <string name="transfer_tei_org_sheet_title">转到%s</string>
+    <string name="transfer_tei_org_sheet_description">从%s 到...</string>
+    <string name="successfully_transferred">成功流转</string>
+    <string name="event_cancelled">%1$s 已取消</string>
+    <string name="due_date_updated">更新到期日</string>
+    <string name="complete_enrollment_label">完整%s</string>
+    <string name="deactivate_enrollment_label">停用%s</string>
+    <string name="reopen_enrollment_label">重新打开%s</string>
+</resources>

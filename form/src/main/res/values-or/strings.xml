@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="choose_date">ତାରିଖ ବାଛନ୍ତୁ</string>
+    <string name="polygon">ବହୁଭୂଜ</string>
+    <string name="latitude">ଅକ୍ଷାଂଶ</string>
+    <string name="longitude">ଦ୍ରାଘିମା</string>
+    <string name="enter_positive_integer_or_zero">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା କିମ୍ବା ଶୂନ ପ୍ରବେଶ କରନ୍ତୁ</string>
+    <string name="enter_negative_integer">ଋଣାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ</string>
+    <string name="enter_positive_integer">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ</string>
+    </resources>

@@ -1,10 +1,12 @@
 package org.dhis2.form.data
 
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.hisp.dhis.android.core.D2
@@ -56,6 +58,10 @@ class EventRepositoryTest {
 
     private val mockedSecondSection: ProgramStageSection = mock {
         on { uid() } doReturn secondSectionUid
+    }
+
+    private val dispatchers: DispatcherProvider = mock {
+        on { io() } doReturn Dispatchers.IO
     }
 
     @Before
@@ -147,6 +153,7 @@ class EventRepositoryTest {
         resources = resources,
         eventResourcesProvider = eventResourcesProvider,
         eventMode = eventMode,
+        dispatcherProvider = dispatchers,
     )
 
     private val mockedStage = mock<ProgramStage> {

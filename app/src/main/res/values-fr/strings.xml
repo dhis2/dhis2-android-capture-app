@@ -90,6 +90,7 @@
     <string name="program_inactive">Programme inactif</string>
 
     <string name="event_open">Ouvrir</string>
+    <string name="event_completed">Événement terminé</string>
     <string name="read_only">Lecture seule</string>
     <string name="finish_and_complete">Terminer et Compléter</string>
     <string name="completed">Terminé</string>
@@ -139,6 +140,8 @@
     <string name="delete">Supprimer</string>
     <string name="total">Total</string>
     <string name="most_recent_event_date">Date de l\'événement le plus récent</string>
+    <string name="no_options">Aucune option disponible</string>
+
     <string name="active_programs">Programmes en cours</string>
     <string name="to_enroll_programs">Programmes disponibles pour l´admission</string>
     <string name="enroll">Inscrire</string>
@@ -148,12 +151,15 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Voir les détails</string>
     <string name="view_more">Afficher plus</string>
+    <string name="edit">Modifier</string>
     <string name="follow_up">Suivi</string>
     <string name="follow_up_enabled">Suivi activé</string>
     <string name="follow_up_disabled">Suivi désactivé</string>
     <string name="deactivate">Désactiver</string>
     <string name="program_not_allow_events">Ce programme ne permet pas plus d\'événements</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Aucune donnée</string>
     <string name="events">événements</string>
     <string name="done_task">Accueil</string>
     <string name="app_info">Information de l´Appli</string>
@@ -217,6 +223,9 @@
     <string name="settingsReset_descr">Votre configuration et les données de l\'application enregistrées sur l\'appareil seront supprimées. Vous devrez vous connecter de nouveau et les données non synchronisées avec le serveur seront perdues.</string>
     <string name="settingsSms">Paramètres SMS</string>
     <string name="settingsSms_descr">Cliquez et éditez les paramètres de la passerelle SMS</string>
+    <string name="settingsCheckVersion">Mise à jour du logiciel</string>
+    <string name="settingsExportDB">Exportation de la base des données</string>
+    <string name="settingsExportDBMessage">Exporter votre base de données et le partager avec l\'administrateur</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Date d\'enrôlement</string>
@@ -361,6 +370,7 @@
     <string name="date_dialog_tigle">sélectionner des dates pour filtrer</string>
     <string name="select_option">Sélectionnez une option</string>
     <string name="issue_reported">Problème signalé</string>
+    <string name="dialog_generate_new_event">Générer un nouvel événement</string>
     <string name="message_generate_new_event">Voulez-vous créer un nouvel événement</string>
     <string name="event_completed_title">événements terminés</string>
     <string name="event_completed_message">Tous les événements de ce programme sont terminés. Voulez-vous fermer le programme aussi?</string>
@@ -448,6 +458,7 @@
     <string name="biometrics_dialog_title">Références vides</string>
     <string name="biometrics_first_use_text">Afin d\'utiliser la connexion par le scanner d\'empreinte digitale vous devez d\'abord vous connecter normalement</string>
     <string name="biometrics_security_title">Sécurité biométrique</string>
+    <string name="biometrics_login_text">Voudriez-vous utiliser l\'empreinte digitale ou autre méthode biométrique pour se connecter</string>
     <string name="tab_tables">Tables</string>
     <string name="table">Tableau</string>
     <string name="login_https">https://</string>
@@ -458,6 +469,9 @@
     <string name="org_unit_selection_warning">Au moins une unité d\'organisation doit être sélectionnée</string>
     <string name="send_user_name_title">Envoyer les données</string>
     <string name="send_user_name_mesage">Aidez DHIS2 à améliorer cette appli en partageant les registres d\'erreurs associés avec votre identifiant utilisateur. </string>
+    <string name="improve_app_msg_title">Voudriez-vous nous aider à améliorer cette application?</string>
+    <string name="improve_app_msg_text">Si vous selectionnez oui, l\'application envoyera des statistiques annonymes et journaux des erreurs qui permettront d\'améliorer l\'experience et la performance de l\'utilisation. Pour plus de détails, veuillez-vous référer à notre politique de confidentialité.</string>
+    <string name="improve_app_msg_clickable_word">Politique de confidentialité</string>
     <string name="check_mandatory_field">Vérifier les champs</string>
     <string name="error_no_network_during_sync">Vous avez perdu la connexion lors de la synchronisation de la configuration. Veuillez ressayer plus tard.</string>
     <string name="action_agree">Accord</string>
@@ -670,6 +684,7 @@
     <string name="download_tei_error">La sélection %s n\'a pas pu être téléchargé.</string>
     <string name="completed_by">Terminé par %s: %s</string>
     <string name="updated_time">Mis à jour: %s</string>
+    <string name="action_done">Terminé</string>
     <string name="validation_internal_error_datasets">Nous n\'avons pas pu vérifier la qualité des données. Contactez votre administrateur</string>
     <string name="are_you_sure">Etes-vous sûre ?</string>
     <string name="reopen_question">Voulez-vous rouvrir l\'ensemble de données?</string>
@@ -696,10 +711,13 @@
     <string name="error_init_session">Nous n\'avons pas pu connecter la session avec votre nom d\'utilisateur</string>
     <string name="enrollment_date_edition_warning">Il y a des événements planifiés qui ne seront pas reprogrammés</string>
     <string name="section_charts">Graphiques</string>
+    <string name="navigation_list_view">Lister</string>
     <string name="navigation_table_view">Vue de tableau</string>
+    <string name="navigation_map_view">Carte</string>
     <string name="navigation_analytics">Analytiques</string>
     <string name="navigation_tasks">Tâches</string>
     <string name="navigation_programs">Programmes</string>
+    <string name="navigation_charts">Graphiques</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Saisie de données</string>
     <string name="navigation_tei_data">Details</string>
@@ -755,19 +773,24 @@
     <string name="dataset_column_default">Valeurs</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
+    <string name="wrong_date_format"> 1%s ne peut pas être analysé comme une date</string>
     <string name="update_field_error">Ce champ n\'a pas pu être mis à jour. Veuillez réessayer</string>
     <string name="available">Disponible</string>
     <string name="blocked_by_completion">Ces données ne sont pas modifiables car elles sont marquées comme terminées</string>
+    <string name="edition_expired">Cette donnée n\'est pas modifiable car son heure d\'édition est expirée</string>
     <string name="edition_no_write_access">Vous n\'êtes pas autorisé à modifier ces données</string>
     <string name="edition_no_catcombo_access">Vous n\'êtes pas autorisé à modifier ces données</string>
+    <string name="edition_orgunit_capture_scope">Vous ne pouvez pas modifier les données de cette unité organisationnelle</string>
     <string name="reload_list">Réinitialiser la recherche</string>
     <string name="error_tei_online_search_title">La recherche en ligne a renvoyé le message suivant :</string>
     <string name="program_rules_loop_warning_title">Avertissement relatif aux règles du programme</string>
+    <string name="program_rules_loop_warning_message">Il y a un problème de configuration provoquant une boucle dans les règles. Contactez votre administrateur.</string>
     <string name="granular_sync_refresh">Actualiser</string>
     <string name="unknown_date">Inconnu</string>
     <string name="granular_sync_refresh_title">Actualiser toutes les données</string>
     <string name="add_accout">Ajouter une compte</string>
     <string name="delete_account">Supprimer compte</string>
+    <string name="manage_accounts">Gérer les comptes</string>
     <string name="troubleshooting_language_title">Langue</string>
     <string name="not_saved">Non enregistré!</string>
     <string name="review_message">Certains champs nécessitent votre attention. \n Voulez-vous revoir le formulaire ?</string>
@@ -777,6 +800,7 @@
     <string name="action_ok">Ok</string>
     <string name="init_search">Lancez une recherche pour trouver 1%s</string>
     <string name="search_or_create">Vous pouvez rechercher ou créer un nouveau 1%s</string>
+    <string name="missing_warning_fields_completed_events">Vous avez des messages d\'avertissement.</string>
     <string name="missing_warning_fields_events">Vous avez des messages d\'avertissement.\nVoulez-vous marquer ce formulaire comme terminé ?</string>
     <string name="missing_error_fields_events">Certains champs contiennent des erreurs et ils ne sont pas enregistrés. \ nVoulez-vous revoir le formulaire ?</string>
     <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
@@ -784,5 +808,66 @@
     <string name="changes_will_be_discarted">Si vous quittez maintenant, les modifications seront ignorées.</string>
     <string name="re_opened">Réouvert</string>
     <string name="account_disable_title">Compte désactivé</string>
+    <string name="account_disable_message">Votre compte a été désactivé par votre administrateur.</string>
     <string name="search_unable_search_outside">Pour rechercher en dehors de ce programme, ouvrez le formulaire de recherche et remplissez l\'un des champs 1%s suivants :</string>
+    <string name="open_details">Ouvrir détails %s </string>
+    <string name="tracked_entity_type_details">%s détails</string>
+    <string name="sms_sync_sms_reached_server">SMS confirmé pour atteindre le serveur. Mise à jour du statut</string>
+    <string name="sms_sync_sent">SMS envoyé. Mise à jour du statut.</string>
+    <string name="sms_sync_not_sent">SMS non envoyé.</string>
+    <string name="sms_sync_sms_app_chooser_title">Envoyer des SMS avec</string>
+    <string name="syncing_events">Synchroniser les événements</string>
+    <string name="syncing_teis">Synchronisation des entités suivies</string>
+    <string name="syncing_data_sets">Synchronisation des ensembles de données</string>
+    <string name="downloading_image_resources">Téléchargement d\'images ...</string>
+    <string name="sync_dialog_title_not_synced">Synchronisation nécessaire</string>
+    <string name="sync_dialog_title_error">Erreur de synchronisation</string>
+    <string name="sync_dialog_title_synced">Synchronisé</string>
+    <string name="sync_dialog_title_warning">Alerte de synchronisation</string>
+    <string name="sync_dialog_title_syncing">Synchronisation</string>
+    <string name="sync_dialog_message_synced_all">Voulez-vous vérfier les mises à jours?</string>
+    <string name="sync_dialog_action_send">Envoyer</string>
+    <string name="sync_dialog_action_refresh">Actualiser</string>
+    <string name="sync_dialog_action_not_now">Pas maintenant</string>
+    <plurals name="error_count_label">
+        <item quantity="one">%s erreur</item>
+        <item quantity="many">%s erreurs</item>
+        <item quantity="other">%s erreurs</item>
+    </plurals>
+    <plurals name="warning_count_label">
+        <item quantity="one">%s avertissement</item>
+        <item quantity="many">%s avertissements</item>
+        <item quantity="other">%s avertissements</item>
+    </plurals>
+    <string name="software_update">Mise à jour du logiciel</string>
+    <string name="check_for_updates">Vérifier les mises à jour</string>
+    <string name="no_updates">Pas de nouvelles mises à jour</string>
+    <string name="app_version">Version de l\'application</string>
+    <string name="not_synced">Non synchronisé</string>
+    <string name="sync_retry">Réessayer la synchronisation</string>
+    <string name="marked_follow_up">Marqué pour suivi</string>
+    <string name="skipped">Ignoré</string>
+    <string name="programs">Programmes</string>
+    <string name="sync_successful">Synchronisation réussie</string>
+    <string name="sync_warning">Alerte de synchronisation</string>
+    <string name="sync_error">Erreur de synchronisation</string>
+    <string name="mark_follow_up">Marquer pour suivi</string>
+    <string name="coordinates">Coordonnées</string>
+    <string name="sync_offline_check_connection">Il semble que vous n\'êtes pas connecté. Vérifier votre connexion.</string>
+    <string name="delete_tei_dialog_message">Ce %s et toutes ses données dans tous les programmes seront supprimés. Cette action ne peut pas être annulée.</string>
+    <string name="schedule">Planifier</string>
+    <string name="refer">Référer</string>
+    <string name="scheduled_enter_event">Planifié</string>
+    <string name="program_stage">Étape du programme</string>
+    <string name="event">événement</string>
+    <string name="timeline">Chronologie</string>
+    <string name="optional">Optional</string>
+    <string name="show_more">Afficher plus</string>
+    <string name="show_less">Afficher moins</string>
+    <string name="sync">Synchronisation</string>
+    <string name="show_fields">Afficher les champs</string>
+    <string name="hide_fields">Masquer les champs</string>
+    <string name="successful_sync">Synchronisation réussie</string>
+    <string name="show_description">Afficher la description</string>
+    <string name="hide_description">Masquer la description</string>
     </resources>

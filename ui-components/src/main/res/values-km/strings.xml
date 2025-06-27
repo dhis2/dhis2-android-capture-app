@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">បញ្ចប់</string>
+    <string name="discard_changes">លុបការកែប្រែ</string>
+    <string name="keep_editing">រក្សាទុកការកែប្រែ</string>
+    <string name="cancel">បោះបង់</string>
+    <string name="save">រក្សាទុក​</string>
+    <string name="clear">សម្អាត</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">បោះបង់</string>
+    <string name="action_close">បិទ</string>
+    <string name="hint_search">ស្វែងរក</string>
+    </resources>

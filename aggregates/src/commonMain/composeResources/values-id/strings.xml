@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Semuanya terlihat bagus!</string>
-    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
+    <string name="default_column_label">Nilai</string>
+    <string name="total_header_label">Total</string>
+    <string name="input_age_date_of_birth">Tanggal lahir</string>
+    <string name="input_age">Usia(tahun)</string>
+    <string name="input_age_or">atau</string>
+    <string name="input_action_accept">Terima</string>
+    <string name="input_action_cancel">Batal</string>
+    <string name="no_results_found">Tidak ada hasil ditemukan</string>
+    <string name="action_done">Selesai</string>
+    <string name="input_coordinate_latitude">Garis lintang</string>
+    <string name="input_coordinate_longitude">Garis bujur</string>
+    <string name="input_not_supported">Tidak didukung</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set\?</string>
     <string name="complete">Lengkap</string>
     <string name="saved">Tersimpan!</string>
     <string name="field_mandatory">Terdapat hal penting yang hilang. Harap mengisinya untuk melengkapi data.set</string>
     <string name="field_required">Jika Anda mengisi, semua baris harus terisi untuk menyelesaikan data set</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="dataset_saved_completed">Tersimpan dan selesai!</string>
-    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data\?</string>
+    <string name="no">Tidak</string>
+    <string name="yes">Iya</string>
     <string name="error">Kesalahan</string>
+    <string name="errors">Kesalahan</string>
     <string name="complete_anyway">Lengkap</string>
     <string name="validation_rules_data_to_review">Data untuk ditinjau</string>
-
-</resources>
+    <string name="action_next">Selanjutnya</string>
+    <string name="add_file">Tambahkan berkas</string>
+    <string name="add_image">Tambahkan gambar</string>
+    <string name="take_photo">Ambil gambar</string>
+    <string name="indicators_label">Indikator</string>
+    </resources>

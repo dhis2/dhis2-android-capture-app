@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Completo</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Salvar</string>
+    <string name="clear">Limpar</string>
+    <string name="action_done">Concluído</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_close">Fechar</string>
+    <string name="hint_search">Pesquisar</string>
+    <string name="action_clear_all">Limpar tudo</string>
+    </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_table_graph">عرض كجدول</string>
+    <string name="action_accept">قبول</string>
+    <string name="none">لا شيء</string>
+    <string name="daily">يومي</string>
+    <string name="today">اليوم</string>
+    <string name="yesterday">الأمس</string>
+    <string name="thisyear">العام الحالي</string>
+    <string name="weekly">أسبوعي</string>
+    <string name="monthly">شهري</string>
+    <string name="yearly">سنوي</string>
+    <string name="all">الجميع</string>
+    </resources>

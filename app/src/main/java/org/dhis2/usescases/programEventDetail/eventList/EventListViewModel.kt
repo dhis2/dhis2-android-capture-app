@@ -7,9 +7,11 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.ui.model.ListCardUiModel
@@ -71,6 +73,12 @@ class EventListViewModel(
                         }
                     }.flowOn(dispatchers.io())
             }.flowOn(dispatchers.io())
+            .onEach {
+                EventListIdlingResourceSingleton.decrement()
+            }
+            .catch {
+                EventListIdlingResourceSingleton.decrement()
+            }
 
     val eventList = _eventList
 

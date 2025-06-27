@@ -53,6 +53,7 @@ internal fun ValidationBottomSheet(dataSetUIState: DataSetModalDialogUIState) {
                 onPrimaryButtonClick = dataSetUIState.onPrimaryButtonClick,
                 onSecondaryButtonClick = dataSetUIState.onSecondaryButtonClick,
                 mandatory = dataSetUIState.mandatory,
+                canComplete = dataSetUIState.canComplete,
             )
         },
         onDismiss = dataSetUIState.onDismiss,
@@ -105,6 +106,7 @@ private fun provideButtonBlock(
     onPrimaryButtonClick: () -> Unit,
     onSecondaryButtonClick: () -> Unit,
     mandatory: Boolean,
+    canComplete: Boolean,
 ) {
     when (type) {
         COMPLETION -> {
@@ -121,14 +123,16 @@ private fun provideButtonBlock(
                     )
                 },
                 secondaryButton = {
-                    Button(
-                        style = ButtonStyle.FILLED,
-                        text = stringResource(Res.string.complete),
-                        modifier = Modifier
-                            .testTag(COMPLETION_DIALOG_BUTTON_TEST_TAG)
-                            .fillMaxWidth(),
-                        onClick = onSecondaryButtonClick,
-                    )
+                    if (canComplete) {
+                        Button(
+                            style = ButtonStyle.FILLED,
+                            text = stringResource(Res.string.complete),
+                            modifier = Modifier
+                                .testTag(COMPLETION_DIALOG_BUTTON_TEST_TAG)
+                                .fillMaxWidth(),
+                            onClick = onSecondaryButtonClick,
+                        )
+                    }
                 },
             )
         }
@@ -181,7 +185,7 @@ private fun provideButtonBlock(
                     BottomSheetShellDefaults.buttonBlockPaddings(),
                 ),
                 primaryButton = {
-                    if (!mandatory) {
+                    if (!mandatory && canComplete) {
                         Button(
                             modifier = Modifier.fillMaxWidth()
                                 .testTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG),

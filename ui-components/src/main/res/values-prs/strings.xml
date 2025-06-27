@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">تکمیل</string>
+    <string name="cancel">انصراف</string>
+    <string name="save">ذخیره</string>
+    <string name="clear">پاک کردن</string>
+    <string name="action_done">انجام شد</string>
+    <string name="action_cancel">انصراف</string>
+    <string name="action_close">بستن</string>
+    <string name="hint_search">جستجو</string>
+    </resources>

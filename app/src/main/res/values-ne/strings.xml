@@ -1,0 +1,32 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="add">थप्नुहोस्</string>
+    <!--PERIOD-->
+    <string name="DAILY">दैनिक</string>
+    <string name="action_accept">स्वीकार</string>
+    <!-- Input hints -->
+    <string name="search">खोज</string>
+    <string name="event_open">खोल्नुहोस्</string>
+    <!--Event initial-->
+    <string name="create">सिर्जना गर्नुहोस्</string>
+    <string name="date">मिति</string>
+    <string name="cancel">रद्द गर्नुहोस्</string>
+    <string name="wipe_data_ok">स्वीकार</string>
+    <string name="wipe_data_no">रद्द गर्नुहोस्</string>
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">खोज</string>
+    <string name="period">अबधि</string>
+    <string name="local_data_accept">स्वीकार</string>
+    <string name="data_set_open">खोल्नुहोस्</string>
+    <string name="data_every_day">दैनिक</string>
+    <string name="filters_title_period">अबधि</string>
+    <string name="filters_title_status">स्थिती</string>
+    <string name="filters_title_assigned">मलाई निर्दिष्ट गरिएको	</string>
+    <string name="filter_period_today">आज</string>
+    <string name="filter_period_yesterday">हिजो</string>
+    <string name="filter_period_other">अरु</string>
+    <string name="filter_event_status_open">खोल्नुहोस्</string>
+    <string name="interval_yesterday">हिजो</string>
+    <string name="enrollment_status_active">खोल्नुहोस्</string>
+    <string name="filters_title_date">मिति</string>
+    <string name="sync_dialog_action_send">पठाउनुहोस्</string>
+    </resources>

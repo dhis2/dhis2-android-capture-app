@@ -61,7 +61,8 @@ class TeiDashboardModule(
     @PerActivity
     fun provideEnrollmentConfiguration(
         d2: D2,
-    ) = enrollmentUid?.let { EnrollmentConfiguration(d2, it) }
+        dispatcher: DispatcherProvider,
+    ) = enrollmentUid?.let { EnrollmentConfiguration(d2, it, dispatcher) }
 
     @Provides
     @PerActivity

@@ -1,0 +1,118 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Дорихона фондини бошқариш</string>
+    <string name="title_activity_home">Бош саҳифа</string>
+    <string name="title_activity_review">Кўриб чиқиш</string>
+    <string name="action_settings">Созламалар</string>
+
+    <string name="distribution">Тарқатиш</string>
+    <string name="discard">Бекор қилиш</string>
+    <string name="correction">Тузатиш</string>
+    <string name="select_transaction">Транзакцияни танлаш</string>
+    <string name="transaction_date">Транзакция санаси</string>
+    <string name="recent_activity">Охирги фаолият</string>
+    <string name="last_synced">Охирги марта синхронланган:</string>
+    <string name="select_facility">Ташкилотни танлаш</string>
+    <string name="distributed_to">... га тарқатиш</string>
+    <string name="select_one">Биртасини танлаш</string>
+
+    <!-- Sign in -->
+    <string name="server">Сервер:</string>
+    <string name="sign_in">Тизимга кириш</string>
+    <string name="sign_in_to_your_account">Ўз аккаунтингизга киринг</string>
+    <string name="sign_in_to_with_oidc">CRC аккаунти орқали киринг</string>
+    <string name="non_icrc_staff_members">ICRC ходимлари бўлмаганлар учун</string>
+    <string name="icrc_staff_members">ICRC ходимлари учун</string>
+    <string name="username">Фойдаланувчи исми</string>
+    <string name="password">Пароль</string>
+    <string name="forgot_password">Паролни унутдингизми?</string>
+
+    <string name="recent_activities_loading_message">Охирги фаоллик юкланмоқда &#8230;</string>
+    <string name="recent_activities_empty_message">Ҳозирда ҳеч қандай фаоллик амалга оширилмаган</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Метамаълумотлар синхронизацияси&#8230;</string>
+    <string name="metadata_sync_error">Метамаълумотлар синхронизациясини якунлаш имконсиз</string>
+    <string name="data_sync_in_progress">Маълумотлар синхронизацияси&#8230;</string>
+    <string name="data_sync_error">Маълумотлар синхронизациясини якунлаш имконсиз</string>
+    <string name="metadata_sync_completed">Метамаълумотлар синхронизацияси якунланди</string>
+    <string name="sync_completed">Синхронлаш якунланди!</string>
+
+    <!-- FloatingActionButtons -->
+    <string name="proceed">Давом этинг</string>
+    <string name="review">Кўриб чиқиш</string>
+
+    <string name="scan_barcode">Баркодни сканерлаш</string>
+    <string name="scanning">Сканерлаш&#8230;</string>
+    <string name="search">Элементни излаш</string>
+    <string name="search_placeholder">Излаш...</string>
+    <string name="delete">Ўчириб ташлаш</string>
+    <string name="ok">ОК</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="confirmation">Тасдиқлаш</string>
+
+    <string name="from">Кимдан</string>
+    <string name="to">Етказиб бериш ... га</string>
+    <string name="subtitle">%s</string>
+    <string name="to_arg"> %s га</string>
+
+    <!-- Languages -->
+    <string name="language_english">Инглиз</string>
+    <string name="language_french">Француз</string>
+    <string name="language_spanish">Испан</string>
+    <string name="language_arabic">Арабча</string>
+    <string name="language_russian">Русча</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Маълумотларни киритиш учун микрофондан фойдаланиш</string>
+    <string name="language">Тил</string>
+    <string name="force_data_sync">Маълумотларни мажбурий синхронлаш</string>
+    <string name="logout">Чиқиб кетиш</string>
+
+
+    <!-- Stock table -->
+    <string name="item">Элемент</string>
+    <string name="stock_on_hand">Захирада бор</string>
+    <string name="quantity">Миқдори</string>
+    <string name="items_available">мавжуд нарсалар</string>
+    <string name="positive_value">
+        <b>Позитив қиймат</b>  = \"етмаган қиймат\" (<i>жисмоний захира ҳисобдаги қийматдан кам</i>)
+    </string>
+    <string name="negative_value">
+        <b><span style="color: #C81818">Манфий қиймат</span></b> = \"захирада мавжуд\"     (<i>жисмоний захирада ҳисобдаги қийматдан кўп</i>)
+    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">
+Жараён давом этишидан олдин, Транзакция тури танланган бўлиши ва барча катаклар тўлдирилган бўлиши шарт
+</string>
+    <plurals name="items_found">
+        <item quantity="other">%d нарсалар</item>
+    </plurals>
+    <string name="no_items_found">Бирор нарса топилмади</string>
+    <string name="loading_items_message">Нарсалар захираси юкланмоқда &#8230;</string>
+    <string name="prompt_email">е-Почта</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Киринг ёки рўйхатдан ўтинг</string>
+    <string name="action_sign_in_short">Тизимга кириш</string>
+    <string name="welcome">Хуш келибсиз!</string>
+    <string name="invalid_username">Яроқсиз исм</string>
+    <string name="invalid_password">Пароль 5 та белгидан кўп бўлиши керак</string>
+    <string name="login_failed">Логин хато</string>
+    <string name="resync">Қайта синхронлаш</string>
+
+    <!-- Errors -->
+    <string name="login_error">Мавжуд бўлмаган логин</string>
+    <string name="content_desc_search">Қидириш</string>
+    <string name="content_desc_distributed_to">... га тарқатиш</string>
+    <string name="confirm_transaction_label">Тасдиқланг</string>
+    <string name="invalid_quantity">Яроқсиз</string>
+    <string name="speech_network_error">Тармоқда хатолик</string>
+    <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
+    <string name="done_task">Бош саҳифа</string>
+    <string name="back">Орқага</string>
+    <string name="no_conflicts_message">Ушбу дастур учун ҳеч қандай низолар мавжуд эмас</string>
+    <string name="action_sync">Юбориш</string>
+    <string name="count">Ҳисоблаш</string>
+    <string name="formatting_error">Форматлашда хатолик</string>
+    <string name="invalid_possitive_zero">Фақат мусбат рақамлар ёки нолга рухсат берилади</string>
+    </resources>

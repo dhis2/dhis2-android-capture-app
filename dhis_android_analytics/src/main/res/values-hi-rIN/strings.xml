@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="none">कोई नहीं</string>
+    <string name="today">आज</string>
+    <string name="yesterday">कल (बिता हुआ)</string>
+    <string name="reset">रीसेट करें</string>
+    </resources>

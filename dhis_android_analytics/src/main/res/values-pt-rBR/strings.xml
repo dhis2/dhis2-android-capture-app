@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="period">Período</string>
+    <string name="none">Nenhum</string>
+    <string name="daily">Diário</string>
+    <string name="today">Hoje</string>
+    <string name="other">Outro</string>
+    <string name="yesterday">Ontém</string>
+    <string name="weekly">Semanal</string>
+    <string name="monthly">Mensal</string>
+    <string name="yearly">Anual</string>
+    <string name="all">Tudo</string>
+    <string name="reset">Refazer</string>
+    </resources>

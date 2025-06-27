@@ -1,0 +1,18 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Саҳифаи асосӣ</string>
+    <string name="action_settings">Танзимот</string>
+
+    <string name="username">Номи корбар</string>
+    <string name="password">Парол</string>
+    <string name="delete">Нест кардан</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Бекор кардан</string>
+    <string name="prompt_email">Почтаи электронӣ</string>
+    <string name="prompt_password">Парол</string>
+    <string name="content_desc_search">Ҷустуҷӯ</string>
+    <string name="confirm_transaction_label">Тасдиқ</string>
+    <string name="done_task">Саҳифаи асосӣ</string>
+    <string name="back">Ба қафо</string>
+    <string name="action_sync">Фиристодан</string>
+    <string name="count">Шумора</string>
+    </resources>

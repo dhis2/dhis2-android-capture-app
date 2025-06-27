@@ -1,5 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.android.build.api.variant.impl.VariantOutputImpl
-import com.android.build.gradle.internal.scope.ProjectInfo.Companion.getBaseName
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
@@ -17,7 +18,7 @@ plugins {
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 repositories {
-    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
     mavenCentral()
 }
 
@@ -48,6 +49,14 @@ android {
                 storeFile = file(path)
             }
             storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+        }
+        create("training") {
+            keyAlias = System.getenv("TRAINING_KEY_ALIAS")
+            keyPassword = System.getenv("TRAINING_KEY_PASSWORD")
+            System.getenv("TRAINING_STORE_FILE")?.let { path ->
+                storeFile = file(path)
+            }
+            storePassword = System.getenv("TRAINING_STORE_PASSWORD")
         }
     }
 
@@ -135,9 +144,6 @@ android {
             // install debug and release builds at the same time
             applicationIdSuffix = ".debug"
 
-            // Using dataentry.jks to sign debug build type.
-            signingConfig = signingConfigs.getByName("debug")
-
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -148,7 +154,7 @@ android {
                 getDefaultProguardFile("proguard-android.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+
             buildConfigField("int", "MATOMO_ID", "1")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
@@ -157,25 +163,14 @@ android {
     flavorDimensions += listOf("default")
 
     productFlavors {
-        create("dhis") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
+        create("dhis2") {
+            signingConfig = signingConfigs.getByName("release")
         }
-
-        create("dhisPlayServices") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
+        create("dhis2PlayServices") {
+            signingConfig = signingConfigs.getByName("release")
         }
-
-        create("dhisUITesting") {
-            applicationId = "com.dhis2"
-            dimension = "default"
-            versionCode = libs.versions.vCode.get().toInt()
-            versionName = libs.versions.vName.get()
+        create("dhis2Training") {
+            signingConfig = signingConfigs.getByName("training")
         }
     }
 
@@ -219,11 +214,17 @@ android {
         onVariants { variant ->
             val buildType = variant.buildType
             val flavorName = variant.flavorName
+
+            // Apply suffix only for training flavor in release buildType
+            if (buildType == "release" && flavorName == "dhis2Training") {
+                variant.applicationId.set("${variant.applicationId.get()}.training")
+            }
+
             variant.outputs.forEach { output ->
                 if (output is VariantOutputImpl) {
                     val suffix = when {
-                        buildType == "debug" && flavorName == "dhis" -> "-training"
-                        buildType == "release" && flavorName == "dhisPlayServices" -> "-googlePlay"
+                        buildType == "release" && flavorName == "dhis2Training" -> "-training"
+                        buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
                         else -> ""
                     }
 
@@ -286,8 +287,8 @@ dependencies {
 
     coreLibraryDesugaring(libs.desugar)
 
-    "dhisPlayServicesImplementation"(libs.google.auth)
-    "dhisPlayServicesImplementation"(libs.google.auth.apiphone)
+    "dhis2PlayServicesImplementation"(libs.google.auth)
+    "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)
@@ -301,7 +302,7 @@ dependencies {
     testImplementation(libs.test.truth)
     testImplementation(libs.test.kotlinCoroutines)
     testImplementation(libs.test.turbine)
-
+    testImplementation(libs.test.androidx.paging)
     androidTestUtil(libs.test.orchestrator)
 
     androidTestImplementation(libs.test.testRunner)

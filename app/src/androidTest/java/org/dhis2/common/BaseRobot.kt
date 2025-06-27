@@ -25,8 +25,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
-import org.dhis2.R
-import org.dhis2.usescases.main.MainActivity
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import java.lang.Thread.sleep
@@ -46,10 +44,15 @@ open class BaseRobot {
         onView(isRoot()).perform(closeSoftKeyboard())
     }
 
-    fun itemWithTextIsDisplayed(text: String, substring: Boolean, composeTestRule: ComposeContentTestRule) {
+    fun itemWithTextIsDisplayed(
+        text: String,
+        substring: Boolean,
+        composeTestRule: ComposeContentTestRule
+    ) {
         composeTestRule.onNodeWithText(text, substring)
             .assertIsDisplayed()
     }
+
     fun pressImeActionButton(@IdRes editTextId: Int? = null) {
         if (editTextId != null) {
             onView(withId(editTextId)).perform(ViewActions.pressImeActionButton())
@@ -74,7 +77,7 @@ open class BaseRobot {
             if (System.currentTimeMillis() - startTime >= TIMEOUT) {
                 throw AssertionError(
                     "Activity ${T::class.java.simpleName} " +
-                        "not visible after $TIMEOUT milliseconds"
+                            "not visible after $TIMEOUT milliseconds"
                 )
             }
         }
@@ -167,7 +170,7 @@ open class BaseRobot {
         return visibleActivityName == T::class.java.name
     }
 
-     fun <T : Activity> checkActivityIsFinishing(rule : ActivityTestRule<T>){
+    fun <T : Activity> checkActivityIsFinishing(rule: ActivityTestRule<T>) {
         assert(rule.activity.isFinishing)
     }
 

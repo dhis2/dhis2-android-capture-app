@@ -89,9 +89,22 @@ class StockManagerImpl @Inject constructor(
     }
 
     private fun transform(tei: TrackedEntityInstance, config: StockUseCase): StockItem {
+        val optionSet =
+            d2.trackedEntityModule().trackedEntityAttributes().uid(config.itemDescription)
+                .blockingGet()
+                ?.optionSet()
+
         return StockItem(
             tei.uid(),
-            AttributeHelper.teiAttributeValueByAttributeUid(tei, config.itemDescription) ?: "",
+            AttributeHelper.teiAttributeValueByAttributeUid(
+                tei,
+                config.itemDescription,
+                optionSet != null,
+            ) { code ->
+                d2.optionModule().options()
+                    .byOptionSetUid().eq(optionSet?.uid())
+                    .byCode().eq(code).one().blockingGet()?.displayName() ?: ""
+            } ?: "",
             getStockOnHand(tei, config.stockOnHand) ?: "",
         )
     }

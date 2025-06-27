@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="total_header_label">Ҳамагӣ</string>
+    <string name="input_age_date_of_birth">Санаи таваллуд</string>
+    <string name="input_age">Синну сол</string>
+    <string name="input_age_or">ё</string>
+    <string name="input_action_cancel">Бекор кардан</string>
+    <string name="action_done">Иҷро шуд</string>
+    <string name="input_coordinate_latitude">Тӯл</string>
+    <string name="input_coordinate_longitude">Арз</string>
+    <string name="complete">Анҷом ёфт</string>
+    <string name="ok">OK</string>
+    <string name="no">Не</string>
+    <string name="yes">Ҳа</string>
+    <string name="error">Хатогӣ</string>
+    <string name="action_next">Навбатӣ</string>
+    <string name="indicators_label">Индикаторҳо</string>
+    </resources>

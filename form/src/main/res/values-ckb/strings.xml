@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">هەڵە</string>
+    <string name="required">ثيويست</string>
+    <string name="date">بەروار</string>
+    <string name="hint_year">ساڵەکان</string>
+    <string name="hint_month">مانگەکان</string>
+    <string name="hint_day">رۆژەکان</string>
+    <string name="complete">تەواوبکە</string>
+    <string name="save_anyway">بەهەرحاڵ تۆماری بکە</string>
+    <string name="action_close">داخستن</string>
+    <string name="no_reserved_values">هیچ نرخێکی دیکەی تەرخانکراو نەما. پەیوەندی بە بەڕێوەبەری سیستەمەکەتەوە بکە</string>
+    </resources>

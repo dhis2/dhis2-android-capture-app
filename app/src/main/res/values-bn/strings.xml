@@ -1,7 +1,16 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Warnings and error messages -->
+    <string name="error">ভুল</string>
+    <plurals name="error_message">
+        <item quantity="one">ভুলগুলো</item>
+        <item quantity="other">ভুলগুলো</item>
+    </plurals>
+    <string name="error_wrong_server_url">ভুল সার্ভার</string>
     <string name="add">যোগ করুন</string>
     <string name="completed">সম্পন্ন</string>
+    <string name="state_error">ভুল</string>
     <string name="date">তারিখ</string>
+    <!--Event Detail-->
     <string name="due_date">নির্ধারিত তারিখ</string>
     <!--endregion-->
 
@@ -9,8 +18,15 @@
 
     <!--FORM FRAGMENT-->
     <string name="report_date">পরিদর্শনের তারিখ</string>
+    <string name="error_on_complete_title">ভুল</string>
     <string name="dashboard_notes">মন্তব্য</string>
     <string name="event_notes">মন্তব্য</string>
     <string name="sms_completed">সম্পন্ন</string>
     <string name="filters_title_status">অবস্থা</string>
+    <string name="filter_event_status_completed">সম্পন্ন</string>
+    <string name="enrollment_date">নিবন্ধনের তারিখ</string>
+    <string name="filters_title_date">তারিখ</string>
+    <string name="navigation_notes">মন্তব্য</string>
+    <string name="navigation_data_entry">তথ্যের অন্তর্ভুক্তি</string>
+    <string name="invalid_integer">অবশ্যই সংখ্যা হতে হবে</string>
     </resources>

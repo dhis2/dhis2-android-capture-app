@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel">Anulare</string>
+    <string name="save">salva</string>
+    <string name="action_done">Terminat</string>
+    <string name="action_cancel">Anulare</string>
+    <string name="action_close">Închidere</string>
+    <string name="hint_search">Căutare</string>
+    </resources>

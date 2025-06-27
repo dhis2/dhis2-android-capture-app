@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="complete">Terminer</string>
+    <string name="discard_changes">Annuler les modifications</string>
     <string name="not_now">Pas maintenant</string>
+    <string name="keep_editing">Continuer l’édition</string>
+    <string name="review">Vérifier</string>
     <string name="cancel">Annuler</string>
+    <string name="save">Sauvegarder</string>
     <string name="clear">Effacer</string>
+    <string name="action_done">Terminé</string>
+    <string name="action_cancel">Annuler</string>
     <string name="action_close">Fermer</string>
     <string name="hint_search">Rechercher</string>
+    <string name="action_clear_all">Tout effacer</string>
     <plurals name="error_count">
         <item quantity="one">%s erreur</item>
         <item quantity="many">%s erreurs</item>

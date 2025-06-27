@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_column_label">Qiymatlar</string>
+    <string name="total_header_label">Жами</string>
+    <string name="input_age_date_of_birth">Tugʼilgan sana</string>
+    <string name="input_age_or">yoki</string>
+    <string name="input_action_accept">Qabul qiling</string>
+    <string name="input_action_cancel">Бекор қилиш</string>
+    <string name="no_results_found">Hech qanday natija topilmadi</string>
+    <string name="input_coordinate_latitude">Kenglik</string>
+    <string name="input_coordinate_longitude">Kenglik</string>
+    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi\?</string>
+    <string name="complete">Bajarildi</string>
+    <string name="saved">Saqlandi!</string>
+    <string name="field_mandatory">Shart boʼlgan maʼlumotlar yetishmayapti. Maʼlumotlar toʼplamini shakllantirish uchun ularni toʼldiring.</string>
+    <string name="field_required">Аgar siz qiymatni oʼrnatgan boʼlsangiz, maʼlumotlar toʼplamini toʼldirish uchun qatordagi barcha qiymatlar boʼlishi lozim.</string>
+    <string name="ok">OK</string>
+    <string name="dataset_saved_completed">Yakunlandi va saqlandi!</string>
+    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi\?</string>
+    <string name="no">Йўқ</string>
+    <string name="yes">Ҳа</string>
+    <string name="error">Xatolik</string>
+    <string name="errors">Xatoliklar</string>
+    <string name="complete_anyway">Baribir toʼldiring</string>
+    <string name="review">Ko‘rib chiqish</string>
+    <string name="validation_rules_data_to_review">Koʼrib chiqiladigan maʼlumotlar</string>
+    <string name="action_next">Кейинги</string>
+    <string name="add_file">Fayl qoʼshish</string>
+    <string name="add_image">Rasm qoʼshish</string>
+    <string name="indicators_label">Koʼrsatgichlar</string>
+</resources>

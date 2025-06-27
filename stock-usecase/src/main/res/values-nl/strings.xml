@@ -1,31 +1,181 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">Voorraadbeheer apotheek</string>
     <string name="title_activity_home">Thuis</string>
     <string name="title_activity_review">Beoordeling</string>
     <string name="action_settings">Instellingen</string>
 
+    <string name="distribution">Verdeling</string>
+    <string name="discard">Weggooien</string>
+    <string name="correction">Correctie</string>
+    <string name="select_transaction">Selecteer transactie</string>
+    <string name="transaction_date">Datum van transactie</string>
+    <string name="recent_activity">Recente activiteit</string>
+    <string name="last_synced">Laatst gesynchroniseerd:</string>
+    <string name="select_facility">Selecteer Faciliteit</string>
+    <string name="distributed_to">Gedistribueerd naar</string>
+    <string name="select_one">Kies een</string>
+
+    <!-- Sign in -->
+    <string name="server">Server:</string>
+    <string name="sign_in">Aanmelden</string>
+    <string name="sign_in_to_your_account">Meld u aan bij uw account</string>
+    <string name="sign_in_to_with_oidc">Log in met ICRC-account</string>
+    <string name="non_icrc_staff_members">Alleen voor niet-ICRC-personeelsleden</string>
+    <string name="icrc_staff_members">Alleen voor ICRC-personeelsleden</string>
     <string name="username">Gebruikersnaam</string>
     <string name="password">Wachtwoord</string>
+    <string name="forgot_password">Wachtwoord vergeten\?</string>
+
+    <string name="recent_activities_loading_message">Recente activiteiten laden&#8230;</string>
+    <string name="recent_activities_empty_message">U moet nog enige activiteit uitvoeren</string>
+
+    <!-- Sync -->
+    <string name="metadata_sync_in_progress">Metagegevens synchroniseren&#8230;</string>
+    <string name="metadata_sync_error">Kan metadatasynchronisatie niet voltooien</string>
+    <string name="data_sync_in_progress">Gegevens synchroniseren&#8230;</string>
+    <string name="data_sync_error">Gegevenssynchronisatie kan niet worden voltooid</string>
+    <string name="metadata_sync_completed">Metadatasynchronisatie voltooid!</string>
+    <string name="sync_completed">Synchronisatie voltooid!</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">Ga door</string>
     <string name="review">Beoordeling</string>
 
+    <string name="scan_barcode">Streepjescode scannen</string>
+    <string name="scanning">Scannen&#8230;</string>
+    <string name="search">Zoek item</string>
+    <string name="search_placeholder">Zoekopdracht…</string>
     <string name="delete">Verwijder</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuleren</string>
+    <string name="confirmation">Bevestiging</string>
+
     <string name="from">Van</string>
+    <string name="to">Leveren aan…</string>
+    <string name="subtitle">%s</string>
+    <string name="to_arg">Naar %s</string>
+
+    <!-- Languages -->
+    <string name="language_english">Engels</string>
+    <string name="language_french">Frans</string>
+    <string name="language_spanish">Spaans</string>
+    <string name="language_arabic">Arabisch</string>
+    <string name="language_russian">Russisch</string>
+
+    <!-- Settings -->
+    <string name="use_microphone_for_data_entry">Gebruik microfoon voor gegevensinvoer</string>
     <string name="language">Taal</string>
+    <string name="force_data_sync">Forceer gegevenssynchronisatie</string>
     <string name="logout">Uitloggen</string>
 
 
+    <!-- Stock table -->
+    <string name="item">Item</string>
+    <string name="stock_on_hand">Voorraad bij de hand</string>
+    <string name="quantity">Hoeveelheid</string>
+    <string name="items_available">artikelen beschikbaar</string>
+    <string name="positive_value">         <b> Positieve waarde </b>   = \"ontbrekende hoeveelheid\" ( <i> fysieke voorraad kleiner dan de berekende waarde </i> )    </string>
+    <string name="negative_value">         <b>  <span style="color: #C81818"> Negatieve waarde </span>  </b>  = \"op voorraad gevonden\" ( <i> fysieke voorraad is meer dan de berekende waarde </i> )    </string>
+
+    <!-- Messages -->
+    <string name="mandatory_transaction_selection">        Er moet een transactietype worden geselecteerd en alle velden moeten zijn ingevuld voordat u verder kunt gaan    </string>
+    <string name="mandatory_facility_selection">        Het faciliteitsveld moet worden ingevuld voordat u verder kunt gaan    </string>
+    <string name="mandatory_distributed_to_selection">        Het veld \"Gedistribueerd naar\" moet zijn ingevuld voordat u verder kunt gaan    </string>
+    <string name="mandatory_transaction_date_selection">        Het veld \"Gedistribueerd naar\" moet zijn ingevuld voordat u verder kunt gaan    </string>
+    <string name="previous_page_lose_data_warning">        Weet u zeker dat u terug wilt naar het vorige scherm\?        U verliest de zojuist ingevoerde gegevens als u besluit door te gaan.    </string>
+    <string name="transaction_completed">        De transactie is succesvol afgerond!    </string>
+    <string name="transaction_cancelled">        De transactie is succesvol geannuleerd!    </string>
+    <string name="force_sync_confirmation_message">        Weet u zeker dat u synchronisatie wilt forceren\?    </string>
+    <string name="logout_confirmation_message">Weet u zeker dat u wilt uitloggen\?</string>
+
+    <string name="remove_correction_item_confirmation_message">        Weet u zeker dat u de invoer voor de correctie van \"%1$s permanent wilt verwijderen\"\?        Deze actie kan niet ongedaan gemaakt worden.    </string>
+    <string name="remove_distribution_item_confirmation_message">        Weet u zeker dat u het item voor de distributie van \"%1$s permanent wilt verwijderen\"\?        Deze actie kan niet ongedaan gemaakt worden.    </string>
+    <string name="remove_discard_item_confirmation_message">        Weet u zeker dat u de invoer voor het weggooien van \"%1$s permanent wilt verwijderen\"\?        Deze actie kan niet ongedaan gemaakt worden.    </string>
+
+    <plurals name="items_found">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d artikelen</item>
+    </plurals>
+    <string name="no_items_found">Geen items gevonden</string>
+    <string name="loading_items_message">Voorraadartikelen laden &#8230;</string>
     <string name="prompt_email">Emailadres</string>
     <string name="prompt_password">Wachtwoord</string>
+    <string name="action_sign_in">Log in of registreer</string>
+    <string name="action_sign_in_short">Aanmelden</string>
+    <string name="welcome">Welkom !</string>
+    <string name="invalid_username">Geen geldige gebruikersnaam</string>
+    <string name="invalid_password">Wachtwoord moet >5 tekens zijn</string>
+    <string name="login_failed">Aanmelden mislukt</string>
+    <string name="resync">Opnieuw synchroniseren</string>
+
+    <!-- Errors -->
+    <string name="login_error">Niet mogelijk om in te loggen</string>
+    <string name="config_file_error">Kan het configuratiebestand niet laden</string>
+    <string name="config_file_program_error">        Stock-programma-ID is niet ingesteld in het configuratiebestand    </string>
+    <string name="recent_activities_load_error">Kan uw recente activiteiten niet laden</string>
+    <string name="facilities_load_error">Kan de lijst met beschikbare faciliteiten niet laden</string>
+    <string name="destinations_load_error">        Kan de lijst met beschikbare bestemmingen niet laden    </string>
+    <!-- Content descriptions for accessibility -->
+    <string name="content_desc_sync_info">Synchroniseer informatie</string>
     <string name="content_desc_search">Zoek</string>
+    <string name="content_desc_clear_text">Duidelijke tekst</string>
+    <string name="content_desc_transaction_date">Toon datumkiezer</string>
+    <string name="content_desc_distributed_to">Gedistribueerd naar</string>
+    <string name="content_desc_last_sync">Laatst gesynchroniseerd</string>
+    <string name="content_desc_quantity_info">Meer informatie over hoeveelheid</string>
+    <string name="content_desc_remove">Verwijder voorwerp</string>
+    <string name="content_desc_recent_activity">Richtingspijl</string>
+    <string name="content_desc_recent_activity_status">Recente activiteitsstatus</string>
+    <string name="content_desc_close_info_guide">Informatiegids sluiten</string>
+
     <string name="confirm_transaction_label">Bevestigen</string>
+    <string name="missing_configuration">        Een of meer verplichte velden ontbreken in het configuratiebestand    </string>
+    <string name="select_language">Selecteer uw gewenste taal</string>
+
+    <string name="restart_later">Later opnieuw opstarten</string>
+    <string name="confirm_app_restart_message">        De toepassing moet opnieuw worden gestart om de wijzigingen door te voeren, maar        alle niet-opgeslagen wijzigingen gaan verloren.\n\nWilt u doorgaan met de herstart\?    </string>
+    <string name="language_change_dialog_title">Bevestig opnieuw opstarten</string>
+    <string name="scan_canceled">Scan geannuleerd!</string>
+    <string name="logout_error_message">        Er is een fout opgetreden tijdens het uitloggen. Probeer het later opnieuw.    </string>
+    <string name="logout_success_message">Succesvol uitgelogd</string>
+
     <string name="invalid_quantity">Ongeldig</string>
+    <string name="stock_on_hand_exceeded_message">        De beschikbare voorraad kan niet worden overschreden    </string>
+    <string name="reviewed_item_cannot_be_empty_message">        Een voorraad die wordt beoordeeld, kan niet leeg zijn. U kunt het item verwijderen als u dit niet wilt    </string>
+
+    <string name="permission_granted">Toestemming verleend</string>
+    <string name="permission_denied">Geen toestemming</string>
+
+    <!-- Speech error messages -->
+    <string name="insufficient_speech_permissions_error">        Onvoldoende machtigingen. Verzoek android.permission.RECORD_AUDIO    </string>
+    <string name="speech_audio_error">Audio-opnamefout</string>
+    <string name="speech_client_error">        Fout aan clientzijde. Controleer uw internetverbinding!    </string>
+    <string name="speech_network_error">Netwerkfout</string>
+    <string name="speech_network_timeout_error">Netwerkwerking time-out</string>
+    <string name="no_speech_match_error">Er komt geen herkenningsresultaat overeen.</string>
+    <string name="speech_recognition_service_busy_error">Erkenningsdienst is bezet</string>
+    <string name="speech_server_error">Er is een fout opgetreden op de spraakserver</string>
+    <string name="speech_timeout_error">Geen spraakinvoer gedetecteerd</string>
+    <string name="unknown_speech_error">Een onbekende fout is opgetreden.</string>
+    <string name="non_numeric_speech_input_error">Niet-numerieke invoer is niet toegestaan: \"%s\"</string>
+    <string name="negative_number_speech_input_error">        Negatieve getalinvoer is niet toegestaan: \"%s\"    </string>
+
+    <string name="openid_config_load_error">Kan OpenID-configuratie niet laden</string>
+    <string name="unexpected_openid_authentication_error">        Er is een onverwachte fout opgetreden tijdens het verifiëren met OpenID    </string>
+    <string name="no_network_available">Geen netwerkverbinding beschikbaar</string>
+    <string name="unable_to_sync_data_no_network_available">        Kan gegevens niet synchroniseren omdat er geen netwerkverbinding beschikbaar is    </string>
+    <string name="openid_authentication_not_successful">        Kan niet verifiëren met uw ICRC-account    </string>
+
+    <string name="contact_service_desk_message">        Neem bij problemen \ncontact op met de ICRC-servicedesk    </string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Er is iets fout gegaan. Controleer of de server-URL, gebruikersnaam en wachtwoord juist zijn en probeer het opnieuw.</string>
+    <string name="login_error_error_response">Oeps! Er is iets misgegaan aan de serverkant.</string>
+    <string name="login_error_no_dhis_instance">De verstrekte URL is geen DHIS2-server.</string>
+    <string name="login_error_bad_credentials">De gebruikersnaam en/of het wachtwoord zijn onjuist</string>
     <string name="login_error_unknown_host">Onbekende server</string>
     <string name="online_search_parsing_error">Fout bij het parseren van resultaten</string>
+    <string name="error_unexpected">Er ging iets onverwachts mis.</string>
     <string name="error_many_requests">De server is op dit moment een beetje druk. Probeer het later nog eens.</string>
     <string name="error_already_authenticated">De gebruiker is al ingelogd.</string>
     <string name="error_already_executed">Het verzoek is al uitgevoerd.</string>
@@ -41,6 +191,7 @@
     <string name="error_different_offline_user">U probeert offline in te loggen met een andere gebruiker.</string>
     <string name="error_object_update">Het object kan niet worden bijgewerkt.</string>
     <string name="error_object_insert">Het object kon niet worden ingevoegd.</string>
+    <string name="error_ownership_access">U heeft geen toegang.</string>
     <string name="error_null_url">De server-URL ontbreekt. Voer de URL in.</string>
     <string name="error_server_malformed">De server-URL is niet goed gevormd. Controleer het alstublieft.</string>
     <string name="error_settings_app_not_supported">Deze versie van de Instellingen-webapp wordt niet ondersteund.</string>
@@ -55,8 +206,14 @@
     <string name="back">Terug</string>
     <string name="no_conflicts_message">Er zijn geen conflicten voor dit programma</string>
     <string name="action_sync">Versturen</string>
+    <string name="from_facility">Van faciliteit</string>
+    <string name="to_facility">Naar faciliteit</string>
+    <string name="stock">Voorraad</string>
     <string name="not_saved">Niet opgeslagen</string>
+    <string name="transaction_not_confirmed">De transactie is niet bevestigd. Als u nu afsluit, worden de ingevoerde gegevens verwijderd.</string>
+    <string name="transaction_discarted">Deze transactie is niet bevestigd. Als u de instellingen wijzigt, worden de ingevoerde gegevens verwijderd.</string>
     <string name="count">Tel</string>
+    <string name="under_review">Onder beoordeling</string>
     <string name="formatting_error">Formatteringsfout</string>
     <string name="invalid_possitive_zero">Alleen positieve getallen of nul toegestaan</string>
     <string name="leading_zero_error">Voorloopnullen zijn niet toegestaan</string>

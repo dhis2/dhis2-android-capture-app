@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">ສຳເລັດແລ້ວ</string>
+    <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
+    <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
+    <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
+    <string name="review">ທົບທວນຄືນ</string>
+    <string name="cancel">ຍົກເລີກ</string>
+    <string name="save">ບັນທຶກ</string>
+    <string name="clear">ລຶບ</string>
+    <string name="action_done">ສຳເລັດ</string>
+    <string name="action_cancel">ຍົກເລີກ</string>
+    <string name="action_close">ປິດ</string>
+    <string name="hint_search">ຄົ້ນຫາ</string>
+    <plurals name="error_count">
+        <item quantity="other">%s ຂໍ້ຜິດພາດ</item>
+    </plurals>
+    </resources>

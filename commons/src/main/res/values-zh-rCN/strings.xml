@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_data">无数据</string>
+    <string name="feature_configuration">特征配置</string>
     <string name="change_calendar_view">改变日历视图。</string>
     <string name="clear">清除</string>
     <string name="action_accept">接受</string>
@@ -16,6 +17,7 @@
     <string name="navigation_tasks">任务</string>
     <string name="navigation_programs">项目</string>
     <string name="navigation_relationships">关系</string>
+    <string name="navigation_relations">关系</string>
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
     <string name="navigation_tei_data">详情</string>
@@ -38,6 +40,34 @@
     <string name="filters_title_state">同步</string>
     <string name="filters_title_assigned">指派给我</string>
     <string name="filters_title_date">日期</string>
+    <string name="filters_title_event_label_date">%s 日期</string>
+    <string name="filters_title_event_label_status">%s 状态</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
+    <string name="filter_follow_up_label">跟进%s</string>
+    <string name="select_period">请选择周期类型</string>
+    <string name="daily_period">每日</string>
+    <string name="weekly">每周</string>
+    <string name="bi_weekly">双周</string>
+    <string name="weekly_start_wednesday">开始于周三的周报</string>
+    <string name="weekly_start_thursday">开始于周四的周报</string>
+    <string name="weekly_start_saturday">开始于周六的周报</string>
+    <string name="weekly_start_sunday">开始于周日的周报</string>
+    <string name="monthly">每月</string>
+    <string name="bi_monthly">每两月</string>
+    <string name="quarterly">季度</string>
+    <string name="quarterly_nov">每季度 11 月</string>
+    <string name="six_monthly">六个月</string>
+    <string name="six_monthly_april">开始于四月的每六个月</string>
+    <string name="six_monthly_july">从 7 月开始，每 6 个月一次</string>
+    <string name="six_monthly_nov">开始于11月的半年</string>
+    <string name="yearly">每年</string>
+    <string name="financial_year_april">开始于四月的财政年</string>
+    <string name="financial_year_july">开始于六月的财政年</string>
+    <string name="financial_year_october">开始于十月的财政年</string>
+    <string name="financial_year_november">开始于11月的财政年</string>
+
+
+
     <!-- State -->
     <string name="state_synced">同步</string>
     <string name="state_to_post">发送</string>
@@ -45,7 +75,9 @@
     <string name="state_to_delete">删除</string>
     <string name="state_error">错误</string>
     <string name="state_warning">警告</string>
+    <string name="state_uploading">上传</string>
     <string name="state_relationship">关系</string>
+    <string name="sent_by_sms">通过短信发送</string>
     <string name="sync_by_sms">通过短信同步。</string>
 
     <!-- Status -->
@@ -75,19 +107,34 @@
     <string name="filter_period_form_to">从——到</string>
     <string name="filter_period_other">其它</string>
     <string name="filter_period_any">任何时候</string>
+    <string name="working_list_default_label">工作清单 %s</string>
+    <string name="filter_period_last_n_days">最近 %d 天</string>
     <string name="filter_period_this_year">今年</string>
     <string name="filter_period_this_bimonth">本俩月</string>
     <string name="filter_period_last_bimonth">最近俩月</string>
     <string name="filter_period_this_quarter">本季</string>
     <string name="filter_period_last_quarter">最近一季</string>
+    <string name="filter_period_six_months">这六个月</string>
+    <string name="filter_period_last_six_months">过去六个月</string>
+    <string name="filter_period_last_n_years">最近 %d 年</string>
+    <string name="filter_period_last_n_months">最近 %d 个月</string>
+    <string name="filter_period__last_n_weeks">过去 %d 周</string>
     <string name="filter_period_weeks_this_year">今年的星期</string>
     <string name="filter_period_months_this_year">今年的月份</string>
     <string name="filter_period_bimonths_this_year">今年的俩月</string>
     <string name="filter_period_quarters_this_year">今年的季度</string>
     <string name="filter_period_months_last_year">去年的月份</string>
+    <string name="filter_period_quarters_last_year">去年的季度</string>
     <string name="filter_period_last_year">去年</string>
+    <string name="filter_period_this_biweek">这个双周</string>
+    <string name="filter_period_last_biweek">上两周</string>
+    <string name="filter_period_last_n_bimonths">最后一个 %d 双月</string>
+    <string name="filter_period_last_n_quarters">最后一个 %d 季度</string>
+    <string name="last_n_months">最近 %d 个月</string>
     <string name="filter_period_this_financial_year">本财政年</string>
     <string name="filter_period_last_financial_year">上一财政年</string>
+    <string name="filter_period_last_n_financial_years">最近的 %d 财政年度</string>
+    <string name="filter_period_last_n_biweeks">最后一个 %d 双周</string>
     <string name="period">周期</string>
     <string name="DAILY">每日</string>
     <string name="WEEKLY">每周</string>
@@ -110,12 +157,176 @@
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
     <string name="section_charts">图表</string>
+    <string name="section_charts_indicators">图表和指标</string>
+
+    <!-- Enrollment -->
+    <string name="enrolled_in">已加入</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">密码丢失。请输入密码。</string>
+    <string name="login_error_null_username">缺少用户名。请输入用户名。</string>
     <string name="login_error_dhis_version">服务器运行版本不是2.29，请更新服务器版本或使用测试环境继续</string>
+    <string name="login_error_dhis_version_v2">此服务器正在运行与 %s 不同的 DHIS2 版本。更新您的服务器版本或联系您的管理员。</string>
+    <string name="login_error_unsuccessful_response">出了些问题。请检查服务器 URL、用户名和密码是否正确，然后重试。</string>
+    <string name="login_error_error_response">对不起！服务器端出现问题。</string>
+    <string name="login_error_no_dhis_instance">提供的 URL 不是 DHIS2 服务器。</string>
+    <string name="login_error_bad_credentials">用户名或密码不正确</string>
+    <string name="login_error_unknown_host">未知服务器</string>
     <string name="online_search_parsing_error">解析结果发生错误</string>
+    <string name="error_unexpected">出乎意料的事情发生了。</string>
+    <string name="error_too_manu_org_units">您的用户拥有多个根组织单位。检查您的配置或联系您的管理员。</string>
+    <string name="error_max_tei_count_reached">在线结果超过了可以显示的最大跟踪器实例数。请细化您的搜索。</string>
+    <string name="error_many_requests">服务器此时有点忙。请稍后再试。</string>
+    <string name="error_already_authenticated">用户已经登录。</string>
+    <string name="error_already_executed">请求已被执行。</string>
+    <string name="error_api_invalid_query">服务器请求无效。</string>
+    <string name="error_app_name_not_set">尚未设置应用程序名称。</string>
+    <string name="error_app_version_not_set">尚未设置应用程序版本。</string>
+    <string name="error_access_keystore">无法访问设备密钥库。</string>
+    <string name="error_create_existing_error">创作中止。对象已经存在。</string>
+    <string name="error_delete_non_existing_object">删除已中止。对象不存在。</string>
+    <string name="error_instance_keystore">无法实例化密钥库。</string>
+    <string name="error_reserve_value_on_server">我们无法为这些记录保留值。请联系您的管理员。</string>
+    <string name="error_export_login">请登录以导出数据库。</string>
+    <string name="error_export_encrypted">不支持导出加密数据库。</string>
+    <string name="error_import_exist">您正在导入一个已经存在的数据库。</string>
+    <string name="error_import_logout">请注销以导入新数据库。</string>
+    <string name="error_import_version">导入的数据库版本高于支持的版本。</string>
+    <string name="error_file_not_found">未找到该文件。</string>
+    <string name="error_file_resize">调整图像大小时出错。</string>
+    <string name="error_generate_coordinate">无法生成坐标。</string>
+    <string name="error_job">工作报告不可用。</string>
+    <string name="error_low_on_available_values">您的可用值可能不足。</string>
+    <string name="error_user_no_authenticated">没有经过身份验证的用户。</string>
+    <string name="error_user_no_authenticated_offline">没有经过离线身份验证的用户。</string>
+    <string name="error_no_values_left_on_server">没有足够的值可以在服务器上保留。请联系您的管理员。</string>
+    <string name="error_different_offline_user">您正在尝试使用其他用户离线登录。</string>
+    <string name="error_invalid_geometry">几何值无效。</string>
+    <string name="error_no_reserved_values">没有可用的保留值。当您有互联网连接时，转到设置并重新填充值。</string>
+    <string name="error_object_update">无法更新对象。</string>
+    <string name="error_object_insert">无法插入对象。</string>
+    <string name="error_ownership_access">您无权访问。</string>
+    <string name="error_null_url">缺少服务器 URL。请输入网址。</string>
+    <string name="error_server_malformed">服务器 URL 格式不正确。请检查一下。</string>
+    <string name="error_settings_app_not_supported">不支持此版本的设置 Web 应用程序。</string>
+    <string name="error_settings_app_not_intalled">设置 Web 应用程序未安装在服务器中。</string>
+    <string name="error_socket_timeout">服务器花费了太多时间来响应。我们取消了请求。</string>
+    <string name="error_relationship_updated">关系无法更新。</string>
+    <string name="error_too_many_periods">期间太多了。</string>
+    <string name="error_url_not_found">我们找不到 URL。请验证一下。</string>
+    <string name="error_account_disabled">您的用户帐户已被禁用。如果这是错误，请联系您的管理员。</string>
+    <string name="error_account_locked">您的用户帐户被锁定。如果这是错误，请联系您的管理员。</string>
+    <string name="error_set_value">无法设置该值。</string>
+    <string name="error_value_reservation_time">保留值的请求花费了太多时间。请重试。</string>
+    <string name="error_ssl">服务器证书有问题。请联系您的管理员。</string>
+    <string name="error_sms_not_supported">不支持短信。</string>
+    <string name="error_min_attributes">没有足够的属性来执行搜索。请使用更多属性优化您的搜索。</string>
+    <string name="error_org_unit_scope">在线搜索仅适用于您的用户搜索组织单位。</string>
+    <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
+    <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
+    <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
+    <string name="unsupported_field_description">该字段不可用于移动采集</string>
     <string name="add_image">添加图片</string>
+    <string name="add_signature">添加签名</string>
+    <string name="add_file">添加文件</string>
     <string name="action_ok">Ok!</string>
     <string name="enable_location_message">您的设备位置已断开。请启用它以捕获坐标</string>
+    <string name="keep_editing">继续编辑</string>
+    <string name="not_now">现在不要</string>
+    <string name="review">审查</string>
     <string name="complete">完成</string>
     <string name="default_table_header_label">值</string>
+    <string name="discard_changes">忽略修改</string>
     <string name="default_empty_dataset_section_label">数据</string>
-    </resources>
+    <string name="title_network_connection_unavailable">网络连接不可用</string>
+    <string name="msg_network_connection_maps">需要互联网连接才能使用地图。</string>
+
+    <string name="overdue_today">今天</string>
+    <string name="overdue_due_today">今天到期</string>
+    <plurals name="overdue_days">
+        <item quantity="other">逾期 %d 天</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="other">逾期 %d 个月</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="other">逾期 %d 年</item>
+    </plurals>
+
+    <plurals name="schedule_days">
+        <item quantity="other">%d 天</item>
+    </plurals>
+    <plurals name="schedule_months">
+        <item quantity="other">%d 个月</item>
+    </plurals>
+    <plurals name="schedule_years">
+        <item quantity="other">%d 年</item>
+    </plurals>
+
+    <string name="open_with">打开用</string>
+
+    <string name="file_downloaded">文件下载成功</string>
+
+
+    <!--Enrollment labels-->
+    <plurals name="enrollment">
+        <item quantity="other">注册人数</item>
+    </plurals>
+    <string name="dialog_layer_enrollment_coordinates_v2">显示%s 坐标</string>
+    <string name="enrollment_data_section_label_V2">%s 数据</string>
+    <string name="enrollment_coordinates_V2">%s 坐标</string>
+    <string name="enrollment_date_V2">%s 日期</string>
+    <string name="enrollment_status">%s 地位</string>
+    <string name="break_glass_dialog_description_V2">在这个受保护的程序中，您必须提供检查%s 的理由。所有活动都将记录在案。</string>
+    <string name="break_glass_reason_V2">检查原因%s</string>
+    <string name="edition_enrollment_is_no_open_V2">该数据不可编辑，因为%s 已完成或取消</string>
+    <string name="enrollment_completed_V2">%s 完成</string>
+    <string name="enrollment_cancelled_V2">%s 已取消</string>
+    <string name="new_enrollment">新%s</string>
+    <string name="enrolling_ou">加入：</string>
+    <string name="program_selector_V2">计划%s</string>
+    <string name="more_enrollments">更多注册人数</string>
+    <string name="remove_from">从</string>
+    <string name="refresh_this_record">刷新此记录</string>
+    <string name="view_timeline">查看时间表</string>
+    <string name="group_by_stage">按阶段分组</string>
+
+
+    <!-- Event -->
+    <plurals name="event_label">
+        <item quantity="other">活动</item>
+    </plurals>
+    <string name="event_label_completed">%s 完成</string>
+    <string name="event_label_created">%s 创建</string>
+    <string name="new_event_label">新%s</string>
+    <string name="event_label_date">%s 日期</string>
+    <string name="delete_event_label">删除 %s</string>
+    <string name="event_label_was_deleted">%s 已成功删除</string>
+    <string name="delete_event_label_error">%s 尚未创建</string>
+    <string name="event_label_was_skipped">%s 被标记为跳过</string>
+    <string name="confirm_delete_event_label">您确定要删除%s 吗？</string>
+    <string name="event_label_updated">%s 最新的</string>
+    <string name="event_label_date_in_future_message">%s 的日期不能是未来。请更改。</string>
+    <string name="failed_insert_event_label">插入新%s</string>
+    <string name="week_period_span_default_label">星期%d %s到%s</string>
+    <string name="group_event_label_by_stage">按阶段划分的组别%s </string>
+    <string name="show_event_label_timeline">显示%s 时间轴</string>
+    <string name="empty_tei_event_label_add">没有注册%s ，点击 \"+\"可添加新的 。</string>
+    <string name="empty_tei_event_label_no_add">%s 。</string>
+    <string name="enrollment_date_edition_warning_event_label">计划中的%s 不会改期</string>
+    <string name="enrollment_reopen">重新打开</string>
+
+    <string name="sync_retry">重试同步</string>
+    <string name="syncing">同步</string>
+    <string name="remove">移除</string>
+    <string name="period_daily_title">每日</string>
+    <string name="period_weekly_title">周</string>
+    <string name="period_biweekly_title">每两周</string>
+    <string name="period_monthly_title">月份</string>
+    <string name="period_bi_monthly_title">每两个月</string>
+    <string name="period_quarter_title">季度</string>
+    <string name="period_six_monthly_title">每月六次</string>
+    <string name="period_yearly_title">年</string>
+    <string name="period_financial_year_title">财政年度</string>
+    <string name="no_periods">无可用时段</string>
+</resources>

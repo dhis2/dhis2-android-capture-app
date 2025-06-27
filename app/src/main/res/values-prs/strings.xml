@@ -22,6 +22,9 @@
     <string name="event_open">باز کردن</string>
     <string name="read_only">تنها قابل مطالعه میباشد</string>
     <string name="completed">تکمیل شد</string>
+    <string name="activate">فعال</string>
+    <string name="active">فعال</string>
+
     <string name="state_error">خطا</string>
     <!--Event initial-->
     <string name="create">ایجاد</string>
@@ -38,9 +41,14 @@
     <string name="cancel">انصراف</string>
     <string name="delete">حذف</string>
     <string name="total">مجموع</string>
+    <string name="no_options">هیچ گزینه موجود نیست</string>
+
     <string name="active_programs">برنامه های فعال</string>
     <string name="enroll">ثبت نام</string>
+    <string name="edit">تجدید</string>
     <string name="deactivate">غیر فعال</string>
+    <!--DONE TASKS-->
+    <string name="events_no_data">معلوماتی وجود ندارد</string>
     <string name="done_task">صفحه اصلی</string>
     <string name="wipe_data_ok">پذیرش</string>
     <string name="wipe_data_no">انصراف</string>
@@ -80,6 +88,7 @@
     <string name="qr_data_values">مجموعه های اطلاعات</string>
     <string name="dashboard_relationships">وابستگی ها</string>
     <string name="dashboard_indicators">شاخص ها</string>
+    <string name="dashboard_analytics">تجزیه و تحلیل</string>
     <string name="dashboard_notes">یاداشت ها</string>
     <string name="event_overview">جزئیات</string>
     <string name="event_indicators">شاخص ها</string>
@@ -90,8 +99,12 @@
     <string name="event_overdue">گذشته از موعد</string>
     <string name="table">جدول</string>
     <string name="local_data_accept">پذیرش</string>
+    <string name="action_continue">ادامه</string>
     <string name="state_warning">اخطاریه</string>
+    <string name="state_relationship">رابطه/ وابستگی</string>
     <string name="action_close">بستن</string>
+    <string name="data_set_complete">تکمیل</string>
+    <string name="data_set_open">باز کردن</string>
     <string name="unsupported_value_type">نوع پرونده پشتیبانی نمی‌شود.</string>
     <string name="data_every_day">روزنه</string>
     <string name="data_every_week">هفته وار</string>
@@ -103,6 +116,7 @@
 
     <string name="polygon">چند ضلعی</string>
     <string name="filters_title_period">دوره</string>
+    <string name="filters_title_sorting">تنظیم کردن</string>
     <string name="filters_title_status">وضعیت</string>
     <string name="filter_period_today">امروز</string>
     <string name="filter_period_yesterday">دیروز</string>
@@ -111,4 +125,64 @@
     <string name="filter_period_this_month">ماه جاری</string>
     <string name="filter_period_last_month">ماه گذشته</string>
     <string name="filter_period_other">دیگر</string>
+    <string name="filter_event_status_open">باز کردن</string>
+    <string name="filter_event_status_schedule">تقسیم اوقات</string>
+    <string name="filter_event_status_overdue">گذشته از موعد</string>
+    <string name="filter_event_status_completed">تکمیل شد</string>
+    <string name="filter_event_status_skipped">اسکیپ شده</string>
+    <string name="go_back">برگشتن</string>
+    <string name="data_sets">دیتا سیت ها</string>
+    <string name="interval_yesterday">دیروز</string>
+    <string name="dataset_overview">جزئیات</string>
+    <string name="dataset_comments">نظرات</string>
+    <string name="name">نام</string>
+    <string name="formula">فورمول</string>
+    <string name="enrollment_date">تاریخ شمولیت</string>
+    <string name="enrollment_status_active">باز کردن</string>
+    <string name="enrollment_status_completed">تکمیل</string>
+    <string name="event_data">دیتا</string>
+    <string name="action_done">انجام شد</string>
+    <string name="are_you_sure">آیا ډاډه یاست؟</string>
+    <string name="filters_title_date">تاریخ</string>
+    <string name="filters_title_event_date">تاریخ واقعه</string>
+    <string name="customactivityoncrash_error_activity_restart_app">برگشتن</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">بستن</string>
+    <string name="section_charts">چارت ها</string>
+    <string name="navigation_list_view">لیست</string>
+    <string name="navigation_map_view">نقشه</string>
+    <string name="navigation_analytics">تجزیه و تحلیل</string>
+    <string name="navigation_programs">برنامه ها</string>
+    <string name="navigation_charts">چارت ها</string>
+    <string name="navigation_notes">یاداشت ها</string>
+    <string name="navigation_data_entry">وارد کردن معلومات</string>
+    <string name="navigation_tei_data">جزئیات</string>
+    <string name="filter_period_this_year">سال جاری</string>
+    <string name="filter_period_this_quarter">سه ماهه جاری</string>
+    <string name="filter_period_last_quarter">سه ماهه آخیر</string>
+    <string name="filter_period_months_this_year">ماه های سال هذا</string>
+    <string name="filter_period_quarters_this_year">ربع های سال هذا</string>
+    <string name="filter_period_months_last_year">ماه های سال گذشته</string>
+    <string name="filter_period_last_year">سال گذشته</string>
+    <string name="filter_period_this_financial_year">سال مالی جاری</string>
+    <string name="filter_period_last_financial_year">سال گذشته مالی</string>
+    <string name="section_feedback">نظرات/فیدبک</string>
+    <string name="section_indicators">شاخص ها</string>
+    <string name="value">مقدار</string>
+    <string name="invalid_integer">رقم باید کامل باشد</string>
+    <string name="available">موجود</string>
+    <string name="unknown_date">نا معلوم</string>
+    <string name="troubleshooting_language_title">زبان</string>
+    <string name="action_ok">او کی\!</string>
+    <string name="sync_dialog_action_send">فرستادن</string>
+    <string name="sync_dialog_action_refresh">تازه کردن</string>
+    <string name="skipped">اسکیپ شده</string>
+    <string name="programs">برنامه ها</string>
+    <string name="mark_follow_up">نشانی برای پیگیری</string>
+    <string name="coordinates">ځانګړتیاوې</string>
+    <string name="schedule">تقسیم اوقات</string>
+    <string name="scheduled_enter_event">زمان بندی شده</string>
+    <string name="program_stage">مراحل برنامه</string>
+    <string name="optional">گزینه ها</string>
+    <string name="show_more">نمایش دادن بیشتر</string>
+    <string name="show_less">نمایش دادن کم</string>
     </resources>

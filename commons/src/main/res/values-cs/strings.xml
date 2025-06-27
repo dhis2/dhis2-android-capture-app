@@ -17,6 +17,7 @@
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
     <string name="navigation_relationships">Vztahy</string>
+    <string name="navigation_relations">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
     <string name="navigation_tei_data">Detaily</string>
@@ -39,7 +40,30 @@
     <string name="filters_title_state">Synchronizace</string>
     <string name="filters_title_assigned">Přiděleno mně</string>
     <string name="filters_title_date">datum</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Navázalo na %s</string>
+    <string name="select_period">Vybrat typ období</string>
+    <string name="daily_period">Denně</string>
+    <string name="weekly">Týdně</string>
+    <string name="bi_weekly">po 14ti dnech</string>
+    <string name="weekly_start_wednesday">Týdně od středy</string>
+    <string name="weekly_start_thursday">Týdně od čtvrtka</string>
+    <string name="weekly_start_saturday">Týdně od soboty</string>
+    <string name="weekly_start_sunday">Týdně od neděle</string>
+    <string name="monthly">Měsíčně</string>
+    <string name="bi_monthly">Dva měsíce</string>
+    <string name="quarterly">Čtvrtletně</string>
+    <string name="six_monthly">Šestiměsíční</string>
+    <string name="six_monthly_april">Od dubna každých šest měsíců</string>
+    <string name="six_monthly_nov">Počínaje listopadem šest měsíců</string>
+    <string name="yearly">Ročně</string>
+    <string name="financial_year_april">Finanční rok začínající v dubnu</string>
+    <string name="financial_year_july">Rozpočtový rok začínající v červenci</string>
+    <string name="financial_year_october">Finanční rok začínající v říjnu</string>
+    <string name="financial_year_november">Finanční rok začínající v listopadu</string>
+
+
+
     <!-- State -->
     <string name="state_synced">Synchronizace</string>
     <string name="state_to_post">Poslat</string>
@@ -131,6 +155,9 @@
     <string name="section_charts">Grafy</string>
     <string name="section_charts_indicators">Grafy a indikátory</string>
 
+    <!-- Enrollment -->
+    <string name="enrolled_in">Zapsáno v</string>
+
     <!--SDK error codes-->
     <string name="login_error_null_pass">Chybí heslo. Prosím vložte heslo.</string>
     <string name="login_error_null_username">Chybí uživatelské jméno. Zadejte uživatelské jméno.</string>
@@ -192,8 +219,12 @@
     <string name="error_min_attributes">K provedení vyhledávání není k dispozici dostatek atributů. Upřesněte vyhledávání pomocí dalších atributů.</string>
     <string name="error_org_unit_scope">Online vyhledávání je dostupné pouze pro vaše organizační jednotky vyhledávání uživatelů.</string>
     <string name="error_invalid_characters">V dotazu jsou neplatné znaky. Požádejte správce o ověření konfigurace serveru (relaxedQueryChars,...).</string>
+    <string name="error_server_unavailable">Server je momentálně nedostupný. Zkuste to později.</string>
+    <string name="error_no_internet_connection">Jste offline. Připojte se k internetu a zkuste to znovu.</string>
     <string name="unsupported_field_description">Toto pole není k dispozici pro mobilní zachycení</string>
     <string name="add_image">Přidat obrázek</string>
+    <string name="add_signature">Přidat podpis</string>
+    <string name="add_file">Přidat soubor</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Poloha vašeho zařízení je odpojena. Povolte jej k zachycení souřadnic</string>
     <string name="keep_editing">Pokračovat v úpravách</string>
@@ -202,4 +233,47 @@
     <string name="complete">Dokončit</string>
     <string name="default_table_header_label">Hodnota</string>
     <string name="discard_changes">Zrušit změny</string>
+    <string name="default_empty_dataset_section_label">Data</string>
+    <string name="title_network_connection_unavailable">Síťové připojení není k dispozici</string>
+    <string name="msg_network_connection_maps">K používání map je nutné připojení k internetu.</string>
+
+    <string name="overdue_today">Dnes</string>
+    <plurals name="overdue_days">
+        <item quantity="one">%d den po vypršení</item>
+        <item quantity="few">%d dny po vypršení</item>
+        <item quantity="many">%d dnů po vypršení</item>
+        <item quantity="other">%d dnů po vypršení</item>
+    </plurals>
+    <plurals name="overdue_months">
+        <item quantity="one">%d měsíc po vypršení</item>
+        <item quantity="few">%d měsíce po vypršení</item>
+        <item quantity="many">%d měsíců po vypršení</item>
+        <item quantity="other">%d měsíců po vypršení</item>
+    </plurals>
+    <plurals name="overdue_years">
+        <item quantity="one">%d rok po vypršení</item>
+        <item quantity="few">%d roky po vypršení</item>
+        <item quantity="many">%d roků po vypršení</item>
+        <item quantity="other">%d roků po vypršení</item>
+    </plurals>
+
+    <string name="open_with">Otevřít s</string>
+
+    <string name="enrollment_data_section_label_V2">%s data</string>
+    <string name="new_enrollment">Nový %s</string>
+    <string name="enrolling_ou">Zapsáno v:</string>
+    <string name="new_event_label">Nový %s</string>
+    <string name="delete_event_label">Smazat %s</string>
+    <string name="week_period_span_default_label">Týden %d %s až %s</string>
+    <string name="enrollment_reopen">znovu otevřít</string>
+
+    <string name="sync_retry">Opakování synchronizace</string>
+    <string name="syncing">Probíhá synchronizace ...</string>
+    <string name="remove">Odstranit</string>
+    <string name="period_daily_title">Denně</string>
+    <string name="period_weekly_title">Týden</string>
+    <string name="period_biweekly_title">Dvoutýdenní</string>
+    <string name="period_monthly_title">Měsíc</string>
+    <string name="period_quarter_title">Čtvrtletí</string>
+    <string name="period_yearly_title">Rok</string>
     </resources>

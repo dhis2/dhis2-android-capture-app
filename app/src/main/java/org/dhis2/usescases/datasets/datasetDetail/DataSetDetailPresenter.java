@@ -7,12 +7,13 @@ import static org.dhis2.commons.matomo.Labels.CLICK;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp;
 import org.dhis2.commons.filters.FilterItem;
 import org.dhis2.commons.filters.FilterManager;
+import org.dhis2.commons.filters.data.FilterRepository;
 import org.dhis2.commons.matomo.MatomoAnalyticsController;
+import org.dhis2.commons.schedulers.SchedulerProvider;
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 
 import java.util.List;
@@ -57,7 +58,10 @@ public class DataSetDetailPresenter {
 
         disposable.add(
                 filterManager.asFlowable().startWith(filterManager)
-                        .flatMap(filterManager -> Flowable.just(filterRepository.dataSetFilters(dataSetDetailRepository.getDataSetUid())))
+                        .flatMap(result -> {
+                            CoroutineTracker.INSTANCE.increment();
+                            return Flowable.just(filterRepository.dataSetFilters(dataSetDetailRepository.getDataSetUid()));
+                        })
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
                         .subscribe(filterItems -> {
@@ -67,8 +71,12 @@ public class DataSetDetailPresenter {
                                         view.setFilters(filterItems);
                                     }
                                     view.updateFilters(filterManager.getTotalFilters());
+                                    CoroutineTracker.INSTANCE.decrement();
                                 },
-                                Timber::d
+                                throwable -> {
+                                    Timber.d(throwable);
+                                    CoroutineTracker.INSTANCE.decrement();
+                                }
                         )
         );
 

@@ -40,6 +40,7 @@ class TeiFlowTest : BaseTest() {
 
     @Test
     fun shouldEnrollToSameProgramAfterClosingIt() {
+        enableIntents()
         mockWebServerRobot.addResponse(
             ResponseController.GET,
             API_TRACKED_ENTITY_PATH,
@@ -57,6 +58,7 @@ class TeiFlowTest : BaseTest() {
         teiFlowRobot(composeTestRule) {
             registerTEI(registerTeiDetails)
             closeEnrollmentAndCheckEvents()
+            composeTestRule.waitForIdle()
             enrollToProgram(ADULT_WOMAN_PROGRAM, enrollmentListDetails)
             checkActiveAndPastEnrollmentDetails(enrollmentListDetails)
             checkPastEventsAreClosed(totalEventsPerEnrollment)
@@ -81,13 +83,13 @@ class TeiFlowTest : BaseTest() {
     private fun createFirstSpecificDate() = DateRegistrationUIModel(
         2016,
         6,
-        30
+        9
     )
 
     private fun createEnrollmentDate() = DateRegistrationUIModel(
         2017,
         6,
-        30
+        9
     )
 
     private fun getCurrentDate(): String {
@@ -118,7 +120,5 @@ class TeiFlowTest : BaseTest() {
         const val ORG_UNIT = "Ngelehun CHC"
         const val NAME = "Marta"
         const val LASTNAME = "Stuart"
-
-        const val DATE_FORMAT = "dd/M/yyyy"
     }
 }

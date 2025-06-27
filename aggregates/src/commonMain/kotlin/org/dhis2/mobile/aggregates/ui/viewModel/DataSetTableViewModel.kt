@@ -2,6 +2,7 @@ package org.dhis2.mobile.aggregates.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,8 @@ import org.dhis2.mobile.aggregates.domain.RunValidationRules
 import org.dhis2.mobile.aggregates.domain.SetDataValue
 import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
-import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_EDITABLE
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_NOT_EDITABLE
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
@@ -53,6 +55,7 @@ import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarEvent
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
@@ -60,6 +63,7 @@ import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
+import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
@@ -87,6 +91,8 @@ internal class DataSetTableViewModel(
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
 ) : ViewModel() {
 
+    private var sectionChangeJob: Job? = null
+
     private val _dataSetScreenState =
         MutableStateFlow<DataSetScreenState>(DataSetScreenState.Loading)
     val dataSetScreenState = _dataSetScreenState
@@ -100,14 +106,6 @@ internal class DataSetTableViewModel(
     fun loadDataSet() {
         viewModelScope.launch(dispatcher.io()) {
             val dataSetInstanceData = getDataSetInstanceData(this)
-
-            _dataSetScreenState.value = DataSetScreenState.Loaded(
-                dataSetDetails = dataSetInstanceData.dataSetDetails,
-                dataSetSections = dataSetInstanceData.dataSetSections,
-                renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
-                dataSetSectionTable = DataSetSectionTable.Loading,
-                initialSection = dataSetInstanceData.initialSectionToLoad,
-            )
             val initialSection = dataSetInstanceData.initialSectionToLoad
 
             val dataSetSectionTitle =
@@ -121,6 +119,24 @@ internal class DataSetTableViewModel(
             } else {
                 dataSetInstanceData.dataSetSections.firstOrNull()?.uid ?: NO_SECTION_UID
             }
+            _dataSetScreenState.value = DataSetScreenState.Loaded(
+                dataSetDetails = dataSetInstanceData.dataSetDetails.copy(
+                    customTitle = dataSetInstanceData.dataSetDetails.customTitle.copy(
+                        header = dataSetSectionTitle,
+                    ),
+                ),
+                dataSetSections = dataSetInstanceData.dataSetSections,
+                renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
+                dataSetSectionTable = DataSetSectionTable(
+                    sectionToLoad,
+                    emptyList(),
+                    overridingDimensions = overwrittenWidths(sectionToLoad),
+                    loading = true,
+                ),
+                initialSection = dataSetInstanceData.initialSectionToLoad,
+                selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
+            )
+
             val sectionTable = async { sectionData(sectionToLoad) }
 
             _dataSetScreenState.update {
@@ -132,10 +148,11 @@ internal class DataSetTableViewModel(
                                     header = dataSetSectionTitle,
                                 ),
                             ),
-                            dataSetSectionTable = DataSetSectionTable.Loaded(
-                                id = sectionToLoad,
-                                tableModels = sectionTable.await(),
+                            dataSetSectionTable = DataSetSectionTable(
+                                sectionToLoad,
+                                sectionTable.await(),
                                 overridingDimensions = overwrittenWidths(sectionToLoad),
+                                loading = false,
                             ),
                         )
 
@@ -144,12 +161,14 @@ internal class DataSetTableViewModel(
                             dataSetDetails = dataSetInstanceData.dataSetDetails,
                             dataSetSections = dataSetInstanceData.dataSetSections,
                             renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
-                            dataSetSectionTable = DataSetSectionTable.Loaded(
-                                id = sectionToLoad,
-                                tableModels = sectionTable.await(),
+                            dataSetSectionTable = DataSetSectionTable(
+                                sectionToLoad,
+                                sectionTable.await(),
                                 overridingDimensions = overwrittenWidths(sectionToLoad),
+                                loading = true,
                             ),
                             initialSection = initialSection,
+                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
                         )
                 }
             }
@@ -157,48 +176,62 @@ internal class DataSetTableViewModel(
     }
 
     fun onSectionSelected(sectionUid: String) {
-        viewModelScope.launch((dispatcher.io())) {
-            if (dataSetScreenState.value.currentSection() != sectionUid) {
-                _dataSetScreenState.update {
-                    if (it is DataSetScreenState.Loaded) {
-                        it.copy(
-                            dataSetSectionTable = DataSetSectionTable.Loading,
-                            selectedCellInfo = null,
-                        )
-                    } else {
-                        it
-                    }
-                }
+        if (_dataSetScreenState.value.currentSection() == sectionUid) return
+        sectionChangeJob?.takeIf { it.isActive }?.cancel()
+        sectionChangeJob = viewModelScope.launch(dispatcher.io()) {
+            val selectedSectionIndex = (dataSetScreenState.value as? DataSetScreenState.Loaded)
+                ?.dataSetSections
+                ?.indexOfFirst { it.uid == sectionUid }
+            CoroutineTracker.increment()
 
-                val sectionData = async { sectionData(sectionUid) }
-                _dataSetScreenState.update {
-                    if (it is DataSetScreenState.Loaded) {
-                        val dataSetSectionTitle =
-                            if (it.dataSetDetails.customTitle.isConfiguredTitle) {
-                                it.dataSetDetails.customTitle.header
-                            } else {
-                                it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
-                            }
-                        it.copy(
-                            dataSetDetails = it.dataSetDetails.copy(
-                                customTitle = DataSetCustomTitle(
-                                    header = dataSetSectionTitle,
-                                    subHeader = it.dataSetDetails.customTitle.subHeader,
-                                    textAlignment = it.dataSetDetails.customTitle.textAlignment,
-                                    isConfiguredTitle = it.dataSetDetails.customTitle.isConfiguredTitle,
-                                ),
+            _dataSetScreenState.update {
+                if (it is DataSetScreenState.Loaded) {
+                    val dataSetSectionTitle =
+                        if (it.dataSetDetails.customTitle.isConfiguredTitle) {
+                            it.dataSetDetails.customTitle.header
+                        } else {
+                            it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
+                        }
+                    it.copy(
+                        dataSetDetails = it.dataSetDetails.copy(
+                            customTitle = DataSetCustomTitle(
+                                header = dataSetSectionTitle,
+                                subHeader = it.dataSetDetails.customTitle.subHeader,
+                                textAlignment = it.dataSetDetails.customTitle.textAlignment,
+                                isConfiguredTitle = it.dataSetDetails.customTitle.isConfiguredTitle,
                             ),
-                            dataSetSectionTable = DataSetSectionTable.Loaded(
-                                id = sectionUid,
-                                tableModels = sectionData.await(),
-                                overridingDimensions = overwrittenWidths(sectionUid),
-                            ),
-                        )
-                    } else {
-                        it
-                    }
+                        ),
+                        dataSetSectionTable = it.dataSetSectionTable.copy(
+                            id = sectionUid,
+                            tableModels = emptyList(),
+                            overridingDimensions = overwrittenWidths(sectionUid),
+                            loading = true,
+                        ),
+                        selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
+                        initialSection = selectedSectionIndex ?: 0,
+                    )
+                } else {
+                    it
                 }
             }
+
+            val sectionData = async { sectionData(sectionUid) }
+            _dataSetScreenState.update {
+                if (it is DataSetScreenState.Loaded) {
+                    it.copy(
+                        dataSetSectionTable = it.dataSetSectionTable.copy(
+                            id = sectionUid,
+                            tableModels = sectionData.await(),
+                            overridingDimensions = overwrittenWidths(sectionUid),
+                            loading = false,
+                        ),
+                        initialSection = selectedSectionIndex ?: 0,
+                    )
+                } else {
+                    it
+                }
+            }
+            CoroutineTracker.decrement()
         }
     }
 
@@ -253,60 +286,70 @@ internal class DataSetTableViewModel(
             tables + indicators
         }
 
-    fun updateSelectedCell(
+    suspend fun updateSelectedCell(
         cellId: String?,
         fetchOptions: Boolean = false,
         newValue: String? = null,
         validationError: String? = null,
     ) {
-        viewModelScope.launch {
-            CoroutineTracker.increment()
-            val inputData = if (cellId != null) {
-                val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
-                val dataElementUid = getDataElementUid(rowIds, columnIds)
-                val categoryOptionComboUidData = getCategoryOptionCombo(
-                    rowIds,
-                    columnIds,
+        CoroutineTracker.increment()
+        val inputData = if (cellId != null) {
+            val (rowIds, columnIds) = CellIdGenerator.getIdInfo(cellId)
+            val dataElementUid = getDataElementUid(rowIds, columnIds)
+            val categoryOptionComboUidData = getCategoryOptionCombo(
+                rowIds,
+                columnIds,
+            )
+
+            withContext(dispatcher.io()) {
+                val cellInfo = getDataValueInput(
+                    dataElementUid,
+                    categoryOptionComboUidData,
+                    fetchOptions,
                 )
-
-                withContext(dispatcher.io()) {
-                    val cellInfo = getDataValueInput(
-                        dataElementUid,
-                        categoryOptionComboUidData,
-                        fetchOptions,
-                    )
-                    inputDataUiStateMapper.map(
-                        cellId = cellId,
-                        cellInfo = cellInfo,
-                        validationError = validationError,
-                        valueWithError = newValue,
-                        isLastCell = isLastCell(cellId),
-                        onDone = { updateSelectedCell(null) },
-                        onNext = { onUiAction(UiAction.OnNextClick(cellId)) },
-                    )
-                }
-            } else {
-                null
+                inputDataUiStateMapper.map(
+                    cellId = cellId,
+                    cellInfo = cellInfo,
+                    validationError = validationError,
+                    valueWithError = newValue,
+                    currentCell = findCell(cellId)?.let { (tableId, cell) ->
+                        TableSelection.CellSelection(
+                            tableId = tableId,
+                            rowIndex = requireNotNull(cell.row),
+                            columnIndex = cell.column,
+                            globalIndex = 0,
+                        )
+                    },
+                    isLastCell = isLastCell(cellId),
+                )
             }
+        } else {
+            CellSelectionState.Default(TableSelection.Unselected())
+        }
 
-            _dataSetScreenState.update {
-                (it as? DataSetScreenState.Loaded)?.copy(
-                    dataSetSectionTable = (it.dataSetSectionTable as? DataSetSectionTable.Loaded)?.copy(
-                        tableModels = it.dataSetSectionTable.tables().map { table ->
+        _dataSetScreenState.update {
+            (it as? DataSetScreenState.Loaded)?.copy(
+                dataSetSectionTable = if (inputData !is CellSelectionState.Default) {
+                    require(inputData is CellSelectionState.InputDataUiState)
+                    it.dataSetSectionTable.copy(
+                        tableModels = it.dataSetSectionTable.tableModels.map { table ->
                             table.updateValue(
                                 cellId = cellId,
-                                updatedValue = inputData?.displayValue,
-                                legendData = inputData?.legendData,
+                                updatedValue = inputData.displayValue,
+                                legendData = inputData.legendData,
                                 error = validationError,
                                 resourceManager = resourceManager,
                             )
                         },
-                    ) ?: it.dataSetSectionTable,
-                    selectedCellInfo = inputData,
-                ) ?: it
-            }
-            CoroutineTracker.decrement()
+
+                    )
+                } else {
+                    it.dataSetSectionTable
+                },
+                selectedCellInfo = inputData,
+            ) ?: it
         }
+        CoroutineTracker.decrement()
     }
 
     fun onUiAction(uiAction: UiAction) {
@@ -316,19 +359,21 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnNextClick -> {
-                    findNextEditableCell(uiAction.cellId)?.let { (tableId, nextCell) ->
-                        _dataSetScreenState.update {
-                            (it as? DataSetScreenState.Loaded)?.copy(
-                                nextCellSelection = TableSelection.CellSelection(
-                                    tableId = tableId,
-                                    rowIndex = nextCell.row ?: return@update it,
-                                    columnIndex = nextCell.column,
-                                    globalIndex = 0, // TODO: Check if this is needed in the mobile UI
-                                ),
-                            ) ?: it
-                        }
+                    findCell(
+                        cellId = uiAction.cellId,
+                        findNextEditable = true,
+                    )?.let { (_, nextCell) ->
                         updateSelectedCell(nextCell.id)
                     }
+                }
+
+                is UiAction.OnDoneClick -> {
+                    _dataSetScreenState.update {
+                        (it as? DataSetScreenState.Loaded)?.copy(
+                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
+                        ) ?: it
+                    }
+                    updateSelectedCell(null)
                 }
 
                 is UiAction.OnValueChanged -> {
@@ -344,12 +389,15 @@ internal class DataSetTableViewModel(
                     }
                     result.fold(
                         onSuccess = {
+                            val selectedCellInfo =
+                                (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                                    ?.selectedCellInfo
+
+                            require(selectedCellInfo is CellSelectionState.InputDataUiState)
+
                             val fetchOptions =
-                                if ((_dataSetScreenState.value as? DataSetScreenState.Loaded)
-                                        ?.selectedCellInfo?.inputType is InputType.MultiText
-                                ) {
-                                    (_dataSetScreenState.value as? DataSetScreenState.Loaded)
-                                        ?.selectedCellInfo?.multiTextExtras()?.optionsFetched != true
+                                if (selectedCellInfo.inputType is InputType.MultiText) {
+                                    selectedCellInfo.multiTextExtras().optionsFetched != true
                                 } else {
                                     false
                                 }
@@ -439,13 +487,16 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnSelectFile -> {
+                    updateFileLoadingState(UploadFileState.UPLOADING)
                     uiActionHandler.onSelectFile(
                         uiAction.cellId,
-                    ) { result ->
-                        result?.let {
-                            uploadFile(uiAction.cellId, result)
-                        }
-                    }
+                        { result ->
+                            result?.let { uploadFile(uiAction.cellId, result) }
+                        },
+                        {
+                            updateFileLoadingState(UploadFileState.ADD)
+                        },
+                    )
                 }
 
                 is UiAction.OnShareImage -> {
@@ -475,6 +526,24 @@ internal class DataSetTableViewModel(
         }
     }
 
+    private fun updateFileLoadingState(state: UploadFileState) {
+        viewModelScope.launch(dispatcher.io()) {
+            _dataSetScreenState.update {
+                (it as? DataSetScreenState.Loaded)?.copy(
+                    selectedCellInfo = if (it.selectedCellInfo is CellSelectionState.InputDataUiState) {
+                        it.selectedCellInfo.copy(
+                            inputExtra = it.selectedCellInfo.fileExtras().copy(
+                                fileState = state,
+                            ),
+                        )
+                    } else {
+                        it.selectedCellInfo
+                    },
+                ) ?: it
+            }
+        }
+    }
+
     fun onReopenDataSet() {
         viewModelScope.launch(dispatcher.io()) {
             reopenDataSet()
@@ -495,19 +564,27 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun findNextEditableCell(cellId: String): Pair<String, TableCell>? {
-        val tables =
-            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tables()
-        var currentCell: TableCell? = null
+    private fun findCell(
+        cellId: String,
+        findNextEditable: Boolean = false,
+    ): Pair<String, TableCell>? {
+        val tables = (dataSetScreenState.value as DataSetScreenState.Loaded)
+            .dataSetSectionTable.tableModels
+
+        var currentCellFound = !findNextEditable
 
         for (table in tables) {
             for (row in table.tableRows) {
                 for (cell in row.values.values) {
-                    if (currentCell != null && cell.editable) {
-                        return Pair(table.id, cell)
-                    }
-                    if (cell.id == cellId) {
-                        currentCell = cell
+                    when {
+                        findNextEditable && !currentCellFound && cell.id == cellId ->
+                            currentCellFound = true
+
+                        findNextEditable && currentCellFound && cell.editable ->
+                            return Pair(table.id, cell)
+
+                        !findNextEditable && cell.id == cellId ->
+                            return Pair(table.id, cell)
                     }
                 }
             }
@@ -517,7 +594,7 @@ internal class DataSetTableViewModel(
 
     private fun isLastCell(cellId: String): Boolean {
         val tables =
-            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tables()
+            (dataSetScreenState.value as DataSetScreenState.Loaded).dataSetSectionTable.tableModels
 
         for (table in tables.asReversed()) {
             val lastEditableCell = getLastEditableCellFromTable(table)
@@ -557,13 +634,14 @@ internal class DataSetTableViewModel(
     fun onSaveClicked() {
         viewModelScope.launch {
             CoroutineTracker.increment()
-
             val result = withContext(dispatcher.io()) {
                 checkValidationRulesConfiguration()
             }
+            CoroutineTracker.decrement()
+
             when (result) {
                 NONE -> {
-                    attemptToFinnish()
+                    attemptToFinish()
                 }
 
                 MANDATORY -> {
@@ -574,7 +652,6 @@ internal class DataSetTableViewModel(
                     askRunValidationRules()
                 }
             }
-            CoroutineTracker.decrement()
         }
     }
 
@@ -585,7 +662,7 @@ internal class DataSetTableViewModel(
                     it.copy(
                         modalDialog = datasetModalDialogProvider.provideAskRunValidationsDialog(
                             onDismiss = { onModalDialogDismissed() },
-                            onDeny = { attemptToComplete() },
+                            onDeny = { attemptToFinish() },
                             onAccept = { checkValidationRules() },
                         ),
                     )
@@ -593,6 +670,7 @@ internal class DataSetTableViewModel(
                     it
                 }
             }
+            CoroutineTracker.decrement()
         }
     }
 
@@ -603,6 +681,7 @@ internal class DataSetTableViewModel(
             val rules = withContext(dispatcher.io()) {
                 runValidationRules()
             }
+
             when (rules.validationResultStatus) {
                 ValidationResultStatus.OK -> {
                     _dataSetScreenState.update {
@@ -612,11 +691,14 @@ internal class DataSetTableViewModel(
                             it
                         }
                     }
-                    attemptToFinnish()
+                    attemptToFinish()
                 }
 
                 ValidationResultStatus.ERROR -> {
                     onModalDialogDismissed()
+                    val completionStatus = withContext(dispatcher.io()) {
+                        checkCompletionStatus()
+                    }
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
@@ -629,6 +711,7 @@ internal class DataSetTableViewModel(
                                         expandValidationErrors(
                                             violations = rules.violations,
                                             mandatory = rules.mandatory,
+                                            canComplete = completionStatus == NOT_COMPLETED_EDITABLE,
                                         )
                                     },
                                 ),
@@ -643,7 +726,11 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun expandValidationErrors(violations: List<Violation>, mandatory: Boolean) {
+    private fun expandValidationErrors(
+        violations: List<Violation>,
+        mandatory: Boolean,
+        canComplete: Boolean,
+    ) {
         viewModelScope.launch {
             _dataSetScreenState.update {
                 if (it is DataSetScreenState.Loaded) {
@@ -653,6 +740,7 @@ internal class DataSetTableViewModel(
                             mandatory = mandatory,
                             onDismiss = { onModalDialogDismissed() },
                             onMarkAsComplete = { attemptToComplete() },
+                            canComplete = canComplete,
                         ),
                     )
                 } else {
@@ -662,7 +750,7 @@ internal class DataSetTableViewModel(
         }
     }
 
-    private fun attemptToFinnish() {
+    private fun attemptToFinish() {
         viewModelScope.launch {
             CoroutineTracker.increment()
             val onSavedMessage = resourceManager.provideSaved()
@@ -672,8 +760,8 @@ internal class DataSetTableViewModel(
             }
 
             when (result) {
-                COMPLETED -> onExit(onSavedMessage)
-                NOT_COMPLETED -> {
+                COMPLETED, NOT_COMPLETED_NOT_EDITABLE -> onExit(onSavedMessage)
+                NOT_COMPLETED_EDITABLE -> {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
                             it.copy(
@@ -772,6 +860,26 @@ internal class DataSetTableViewModel(
                     message = message,
                 ),
             )
+        }
+    }
+
+    fun onInputAction(cellId: String, isActionDone: Boolean) {
+        if (isActionDone) {
+            onUiAction(UiAction.OnDoneClick(cellId))
+        } else {
+            onUiAction(UiAction.OnNextClick(cellId))
+        }
+    }
+
+    fun onResizingStatusChanged(selection: TableSelection) {
+        _dataSetScreenState.update {
+            if (it is DataSetScreenState.Loaded) {
+                it.copy(
+                    selectedCellInfo = CellSelectionState.Default(selection),
+                )
+            } else {
+                it
+            }
         }
     }
 }
