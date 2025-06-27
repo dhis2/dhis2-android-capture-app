@@ -122,11 +122,13 @@ class EventAdapter(
         when (holder) {
             is EventViewHolder -> {
                 getItem(position)?.let {
-                    val materialView = holder.itemView.findViewById<ConstraintLayout>(R.id.materialView)
+                    val materialView =
+                        holder.itemView.findViewById<ConstraintLayout>(R.id.materialView)
                     materialView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
-                        val leftSpacing = if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
+                        val leftSpacing =
+                            if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
                         val bottomSpacing = if (it.showBottomShadow) {
                             Spacing.Spacing16
                         } else {
@@ -154,7 +156,8 @@ class EventAdapter(
 
                                             if (isLandscape()) {
                                                 if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                                    currentList[previousSelectedPosition].isClicked = false
+                                                    currentList[previousSelectedPosition].isClicked =
+                                                        false
                                                     notifyItemChanged(previousSelectedPosition)
                                                 }
                                                 previousSelectedPosition = position
@@ -179,13 +182,19 @@ class EventAdapter(
                                     bottom = bottomSpacing,
                                 ),
                         ) {
-                            ListCardProvider(card, R.string.syncing)
+                            ListCardProvider(
+                                card = card,
+                                syncingResourceId = R.string.syncing,
+                            )
 
                             if (it.isClicked) {
                                 Box(
                                     modifier = Modifier
                                         .matchParentSize()
-                                        .background(color = SurfaceColor.Primary.copy(alpha = 0.1f), shape = RoundedCornerShape(Radius.S)),
+                                        .background(
+                                            color = SurfaceColor.Primary.copy(alpha = 0.1f),
+                                            shape = RoundedCornerShape(Radius.S),
+                                        ),
                                 )
                             }
                         }

@@ -47,6 +47,7 @@ fun EventListScreen(
             is LoadState.Error -> {
                 // no-op
             }
+
             LoadState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -79,7 +80,10 @@ fun EventListScreen(
                         verticalArrangement = Arrangement.Absolute.spacedBy(4.dp),
                     ) {
                         items(count = events.itemCount) { index ->
-                            ListCardProvider(card = events[index]!!, R.string.syncing)
+                            ListCardProvider(
+                                card = events[index]!!,
+                                syncingResourceId = R.string.syncing,
+                            )
 
                             if (index == events.itemCount - 1) {
                                 Spacer(modifier = Modifier.padding(100.dp))

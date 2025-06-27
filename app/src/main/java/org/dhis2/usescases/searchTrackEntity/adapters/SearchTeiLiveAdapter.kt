@@ -121,7 +121,10 @@ class SearchTeiLiveAdapter(
                                 Spacer(modifier = Modifier.size(Spacing.Spacing8))
                             }
 
-                            ListCardProvider(card, R.string.syncing)
+                            ListCardProvider(
+                                card = card,
+                                syncingResourceId = R.string.syncing,
+                            )
                         }
                     }
                 }
