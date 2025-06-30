@@ -2,14 +2,11 @@ package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.delay
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.test.runTest
-import okhttp3.internal.wait
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
@@ -279,7 +276,14 @@ class DataSetTest : BaseTest() {
         tableIsVisible()
         dataSetTableRobot(composeTestRule) {
             checkItemWithTextIsDisplayed("Re-open form to edit")
+            tapOnReopenButton()
+            checkItemWithTextIsNotDisplayed("Re-open form to edit")
             tapOnSaveButton()
+            tapOnNotNowButton()
+        }
+
+        dataSetDetailRobot(composeTestRule){
+            checkDataSetIsNotCompletedAndModified(catCombo, orgUnit)
         }
 
 

@@ -3,11 +3,9 @@ package org.dhis2.usescases.datasets
 import android.view.View
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
@@ -32,7 +30,7 @@ import org.dhis2.utils.AdapterItemPosition
 import org.dhis2.utils.AdapterItemTitle
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.equalTo
-import org.hisp.dhis.lib.expression.ast.Tag
+import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertTrue
 
 
@@ -76,6 +74,21 @@ internal class DataSetDetailRobot(
                             hasDescendant(withText(orgUnit)),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete))),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_sync_problem_grey)))
+                        )
+                    )
+                )
+            )
+    }
+
+    fun checkDataSetIsNotCompletedAndModified(catCombo: String, orgUnit: String ) {
+        onView(withId(R.id.recycler))
+            .check(
+                matches(
+                    hasItem(
+                        allOf(
+                            hasDescendant(withText(catCombo)),
+                            hasDescendant(withText(orgUnit)),
+                            not(hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete)))),
                         )
                     )
                 )
