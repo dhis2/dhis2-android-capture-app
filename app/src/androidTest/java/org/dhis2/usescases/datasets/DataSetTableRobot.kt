@@ -255,6 +255,15 @@ internal class DataSetTableRobot(
         composeTestRule.waitForIdle()
     }
 
+    fun tapOnNotNowButton() {
+        composeTestRule.waitUntilExactlyOneExists(
+            matcher = hasText("Not now", substring = true),
+            timeoutMillis = TIMEOUT
+        )
+        composeTestRule.onNodeWithText("Not now", substring = true).performClick()
+        composeTestRule.waitForIdle()
+    }
+
     @OptIn(ExperimentalTestApi::class)
     fun checkCompleteDialogIsDisplayed() {
         composeTestRule.waitUntilExactlyOneExists(
@@ -268,6 +277,12 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(COMPLETION_DIALOG_BUTTON_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
     }
+
+    fun tapOnReopenButton() {
+        composeTestRule.onNodeWithText("Re-open form to edit").performClick()
+        composeTestRule.waitForIdle()
+    }
+
 
     @OptIn(ExperimentalTestApi::class)
     fun checkMandatoryDialogIsDisplayed() {
@@ -376,6 +391,11 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
         composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
             .assertIsDisplayed()
+    }
+    fun checkItemWithTextIsNotDisplayed(text: String) {
+        assertTableIsDisplayed()
+        composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
+            .assertDoesNotExist()
     }
 
     fun assertTableRows(rowTestTags: List<CellData>) {
