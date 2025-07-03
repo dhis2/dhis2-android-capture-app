@@ -206,36 +206,4 @@ class FieldViewModelFactoryImpl(
             currentSection,
         )
     }
-
-    override fun createCustomIntentItem(): FieldUiModel {
-        return FieldUiModelImpl(
-            uid = "customIntentId",
-            value = null,
-            focused = false,
-            error = null,
-            editable = true,
-            warning = null,
-            mandatory = false,
-            label = "Custom intent test",
-            programStageSection = "ENROLLMENT_DATA_SECTION_UID",
-            hint = null,
-            description = null,
-            valueType = ValueType.TEXT,
-            legend = null,
-            optionSet = null,
-            allowFutureDates = null,
-            uiEventFactory = null,
-            displayName = null,
-            renderingType = null,
-            keyboardActionType = null,
-            fieldMask = null,
-            isLoadingData = false,
-            optionSetConfiguration = null,
-            autocompleteList = emptyList(),
-            orgUnitSelectorScope = null,
-            selectableDates = null,
-            eventCategories = null,
-            periodSelector = null,
-        )
-    }
 }
