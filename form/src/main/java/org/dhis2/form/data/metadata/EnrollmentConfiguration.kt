@@ -7,6 +7,7 @@ import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.tei
 import org.dhis2.commons.bindings.teiAttribute
 import org.dhis2.commons.bindings.trackedEntityType
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -17,7 +18,8 @@ class EnrollmentConfiguration(
     private val d2: D2,
     private val enrollmentUid: String,
     dispatcher: DispatcherProvider,
-) : FormBaseConfiguration(d2, dispatcher) {
+    featureConfig: FeatureConfigRepository,
+) : FormBaseConfiguration(d2, dispatcher, featureConfig) {
     private val _enrollment: Enrollment? by lazy {
         d2.enrollment(enrollmentUid)
     }

@@ -4,6 +4,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
@@ -48,6 +49,8 @@ interface FieldUiModel {
     val renderingType: UiRenderType?
 
     var optionSetConfiguration: OptionSetConfiguration?
+
+    var customIntent: CustomIntentModel?
 
     val keyboardActionType: KeyboardActionType?
 
