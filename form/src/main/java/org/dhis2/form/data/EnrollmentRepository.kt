@@ -102,6 +102,7 @@ class EnrollmentRepository(
                             list
                         }
                 } else {
+                    // will have to adapt custom intent for multiple sections
                     getFieldsForMultipleSections()
                 }
             }.map { list ->
@@ -166,6 +167,7 @@ class EnrollmentRepository(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute,
         sectionUid: String? = SINGLE_SECTION_UID,
     ): FieldUiModel {
+        // check custom intent here and return custom intent
         val attribute = programTrackedEntityAttribute.trackedEntityAttribute()?.uid()?.let {
             conf.trackedEntityAttribute(it)
         } ?: throw IllegalStateException(
