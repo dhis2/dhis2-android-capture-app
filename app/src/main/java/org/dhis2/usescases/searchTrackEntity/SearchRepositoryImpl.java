@@ -665,7 +665,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                     .organisationUnits()
                     .uid(orgUnitUid)
                     .blockingGet();
-            orgUnitNameCache.put(orgUnitUid, organisationUnit.displayName());
+            if (organisationUnit != null) {
+                orgUnitNameCache.put(orgUnitUid, organisationUnit.displayName());
+            }
         }
         return orgUnitNameCache.get(orgUnitUid);
     }
