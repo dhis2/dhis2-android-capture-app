@@ -1,8 +1,9 @@
-This new version includes the following features:
-- Period picker in datasets and filters
-- Quick actions in TEI dashboard
-- GPS accuracy display
-- Revamped dataset screen with legends, sync, multi-header rows, table layout, and support features
-- Input dialog improvements
+This is a patch version that fixes:
 
-You can find all details in Jira and Github.
+- ANDROAPP-6867 Make whole data set table screen scrollable
+- ANDROAPP-6899 Implement persist table resizing layout
+- ANDROAPP-6909 Wrong border color in selected cells with error or warning
+- ANDROAPP-6912 Incorrect render of rowHeader total
+- ANDROAPP-6920  Incorrect selection when tapping on first row header
+....
+You can find all the details on Jira and Github.
