@@ -185,7 +185,8 @@ class SyncPresenterImpl(
     }
 
     override fun syncAndDownloadDataValues() {
-        if (!d2.dataSetModule().dataSets().blockingIsEmpty()) {
+        val dataSetUids = d2.dataSetModule().dataSets().blockingGetUids()
+        if (dataSetUids.isNotEmpty()) {
             syncStatusController.startDownloadingDataSets()
             Completable.fromObservable(d2.dataValueModule().dataValues().upload())
                 .andThen(
@@ -198,10 +199,14 @@ class SyncPresenterImpl(
                         d2.aggregatedModule().data().download()
                             .doOnNext {
                                 syncStatusController.updateDownloadProcess(it.dataSets())
-                            }.doOnComplete {
-                                syncStatusController.finishDownloadingDataSets()
                             },
-                    ),
+                    ).doOnError { Timber.d("error while downloading TEIs") }
+                        .onErrorComplete()
+                        .doOnComplete {
+                            syncStatusController.finishDownloadingTracker(
+                                dataSetUids,
+                            )
+                        },
                 ).blockingAwait()
         }
     }
@@ -217,15 +222,19 @@ class SyncPresenterImpl(
                     updateProyectAnalytics()
                     setUpSMS()
                 },
-        ).andThen(
-            d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-        ).andThen(
-            Completable.fromObservable(
-                d2.fileResourceModule().fileResourceDownloader()
-                    .byDomainType().eq(FileResourceDomainType.ICON)
-                    .download(),
-            ),
-        ).blockingAwait()
+        ).doOnError {
+            Timber.d("error while downloading Metadata")
+        }
+            .onErrorComplete()
+            .andThen(
+                d2.mapsModule().mapLayersDownloader().downloadMetadata(),
+            ).andThen(
+                Completable.fromObservable(
+                    d2.fileResourceModule().fileResourceDownloader()
+                        .byDomainType().eq(FileResourceDomainType.ICON)
+                        .download(),
+                ),
+            ).blockingAwait()
     }
 
     private fun setUpSMS() {

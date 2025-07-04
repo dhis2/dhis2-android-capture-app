@@ -20,32 +20,36 @@ on:
         type: string
 
 jobs:
+
   Build-Apk:
     runs-on: ubuntu-latest
+
     steps:
+
     - uses: actions/checkout@v4
+
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
-    - name: Read version name from file
-      working-directory: ./gradle
-      id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+
     - name: Set Up JDK
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu' # See 'Supported distributions' for available options
         java-version: '17'
         cache: 'gradle'
+
     - name: Change wrapper permissions
       run: chmod +x ./gradlew
+
     - name: Decode Keystore
       id: decode_keystore
       uses: timheuer/base64-to-file@v1
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
-    - name: Build release apk
-      run: ./gradlew app:assembleRelease app:assembleDhisDebug
+
+    - name: Build Release APKs
+      run: ./gradlew app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -53,13 +57,34 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         SIGNING_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
+    - name: Decode Training Keystore
+      id: decode_training_keystore
+      uses: timheuer/base64-to-file@v1
+      with:
+        fileName: 'dhis_training_keystore.jks'
+        encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
+
+    - name: Build Training APK
+      env:
+        SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        TRAINING_KEY_ALIAS: ${{ secrets.TRAINING_KEY_ALIAS }}
+        TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
+        TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
+        TRAINING_STORE_FILE: ${{ steps.decode_training_keystore.outputs.filePath }}
+      run: ./gradlew app:assembleDhis2TrainingRelease
+
+    - name: Read version name from file
+      working-directory: ./gradle
+      id: read-version
+      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+
     - name: Upload to Play Store
       if: ${{ inputs.google_play_release }}
       uses: r0adkll/upload-google-play@v1
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
-        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
+        releaseFiles: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
         track: production
         status: inProgress
         whatsNewDirectory: whatsnew
@@ -74,4 +99,4 @@ jobs:
         bodyFile: "RELEASE.md"
         name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
         tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhisPlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis/debug/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

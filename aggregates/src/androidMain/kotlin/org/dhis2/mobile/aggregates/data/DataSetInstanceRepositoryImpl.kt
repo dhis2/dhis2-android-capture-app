@@ -39,7 +39,6 @@ import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.dataelement.DataElementOperand
 import org.hisp.dhis.android.core.dataset.DataSetEditableStatus
 import org.hisp.dhis.android.core.dataset.DataSetNonEditableReason
-import org.hisp.dhis.android.core.dataset.Section
 import org.hisp.dhis.android.core.dataset.SectionPivotMode
 import org.hisp.dhis.android.core.dataset.TabsDirection
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -72,17 +71,17 @@ internal class DataSetInstanceRepositoryImpl(
         val dataSetDTOCustomTitle = dataSet?.displayOptions()?.customText()
 
         val period = d2.periodModule().periods().byPeriodId().eq(periodId)
-            .one().blockingGet()
+            .one().blockingGet() ?: d2.periodModule().periodHelper()
+            .blockingGetPeriodForPeriodId(periodId)
 
-        val periodLabel = period?.let {
-            periodLabelProvider(
-                periodType = period.periodType(),
-                periodId = period.periodId()!!,
-                periodStartDate = period.startDate()!!,
-                periodEndDate = period.endDate()!!,
-                locale = Locale.getDefault(),
-            )
-        } ?: periodId
+        val periodLabel = periodLabelProvider(
+            periodType = period.periodType(),
+            periodId = period.periodId()!!,
+            periodStartDate = period.startDate()!!,
+            periodEndDate = period.endDate()!!,
+            locale = Locale.getDefault(),
+            forTags = true,
+        )
 
         val edition = d2.dataSetModule().dataSetInstanceService().blockingGetEditableStatus(
             dataSetUid,
@@ -163,7 +162,7 @@ internal class DataSetInstanceRepositoryImpl(
             ) ?: DataSetDetails(
             customTitle = dataSetDTOCustomTitle.toCustomTitle(),
             dataSetTitle = dataSet?.displayName()!!,
-            dateLabel = periodId,
+            dateLabel = periodLabel,
             orgUnitLabel = d2.organisationUnitModule().organisationUnits()
                 .uid(orgUnitUid)
                 .blockingGet()
@@ -171,7 +170,7 @@ internal class DataSetInstanceRepositoryImpl(
             catOptionComboLabel = d2.categoryModule().categoryOptionCombos()
                 .uid(attrOptionComboUid)
                 .blockingGet()
-                ?.displayName(),
+                ?.displayName()?.takeIf { isDefaultCatCombo != true },
             isCompleted = isComplete(dataSetUid, periodId, orgUnitUid, attrOptionComboUid),
             edition = edition,
         )
@@ -181,7 +180,35 @@ internal class DataSetInstanceRepositoryImpl(
         dataSetUid: String,
     ) = d2.dataSetModule().sections()
         .byDataSetUid().eq(dataSetUid)
-        .blockingGet().map(Section::toDataSetSection)
+        .blockingGet().map { section ->
+            section.toDataSetSection(
+                misconfiguredRows(dataSetUid, section.uid()),
+            )
+        }
+
+    private fun misconfiguredRows(dataSetUid: String, sectionUid: String): List<String> {
+        val dataSetElements = d2.dataSetModule().dataSets()
+            .withDataSetElements()
+            .uid(dataSetUid)
+            .blockingGet()?.dataSetElements()?.associate {
+                it.dataElement().uid() to it.categoryCombo()?.uid()
+            } ?: emptyMap()
+
+        return d2.dataSetModule().sections().withDataElements()
+            .uid(sectionUid)
+            .blockingGet()?.dataElements()?.mapNotNull {
+                val catComboUid = dataSetElements[it.uid()] ?: it.categoryComboUid()
+                val emptyCategory = d2.categoryModule().categoryCombos().withCategories()
+                    .uid(catComboUid)
+                    .blockingGet()
+                    ?.categories().isNullOrEmpty()
+                if (emptyCategory) {
+                    it.displayFormName()
+                } else {
+                    null
+                }
+            } ?: emptyList()
+    }
 
     override suspend fun isComplete(
         dataSetUid: String,
@@ -189,14 +216,24 @@ internal class DataSetInstanceRepositoryImpl(
         orgUnitUid: String,
         attrOptionComboUid: String,
     ): Boolean {
-        return d2.dataSetModule().dataSetCompleteRegistrations()
+        return !d2.dataSetModule().dataSetCompleteRegistrations()
             .byDataSetUid().eq(dataSetUid)
             .byPeriod().eq(periodId)
             .byOrganisationUnitUid().eq(orgUnitUid)
             .byAttributeOptionComboUid().eq(attrOptionComboUid)
             .byDeleted().isFalse
-            .isEmpty()
-            .map { isEmpty -> !isEmpty }.blockingGet()
+            .blockingIsEmpty()
+    }
+
+    override suspend fun isEditable(
+        dataSetUid: String,
+        periodId: String,
+        orgUnitUid: String,
+        attrOptionComboUid: String,
+    ): Boolean {
+        return d2.dataSetModule()
+            .dataSetInstanceService()
+            .getEditableStatus(dataSetUid, periodId, orgUnitUid, attrOptionComboUid).blockingGet() == DataSetEditableStatus.Editable
     }
 
     override suspend fun areValidationRulesMandatory(dataSetUid: String): Boolean {
@@ -309,7 +346,7 @@ internal class DataSetInstanceRepositoryImpl(
         val compulsoryDataElements = dataSet?.compulsoryDataElementOperands()
             ?.mapNotNull { dataElementOperand ->
                 MandatoryCellElements(
-                    uid = dataElementOperand.uid(),
+                    uid = dataElementOperand.dataElement()?.uid(),
                     categoryOptionComboUid = dataElementOperand.categoryOptionCombo()?.uid(),
                 )
             }
@@ -430,7 +467,7 @@ internal class DataSetInstanceRepositoryImpl(
                             ?: dataElementCategoryComboUid(it.uid),
                     )
                 },
-            ).mapIndexed { index, noGroupingDataSetElements ->
+            ).mapIndexedNotNull { index, noGroupingDataSetElements ->
                 val mainCellElement = noGroupingDataSetElements.first()
                 val catComboUid = mainCellElement.categoryComboUid ?: dataElementCategoryComboUid(
                     mainCellElement.uid,
@@ -439,6 +476,8 @@ internal class DataSetInstanceRepositoryImpl(
                     .withCategories()
                     .uid(catComboUid)
                     .blockingGet()!!
+
+                if (catCombo.categories()?.isEmpty() == true) return@mapIndexedNotNull null
 
                 val catComboHasPivotedCategory =
                     catCombo.categories()?.any { it.uid() == pivotedCategoryUid } ?: false
@@ -482,9 +521,10 @@ internal class DataSetInstanceRepositoryImpl(
                 .byUid().`in`(catComboUids)
                 .withCategories()
                 .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet().map { catCombo ->
-
-                    val subGroups = catCombo.categories()?.mapNotNull { it.uid() } ?: emptyList()
+                .blockingGet().mapNotNull { catCombo ->
+                    if (catCombo.categories()?.isEmpty() == true) return@mapNotNull null
+                    val subGroups =
+                        catCombo.categories()?.mapNotNull { it.uid() } ?: return@mapNotNull null
                     val cellElements = dataSetElementsInSection.filter { dataSetElement ->
                         val catComboUid =
                             dataSetElement.categoryComboUid ?: dataElementCategoryComboUid(
@@ -791,6 +831,7 @@ internal class DataSetInstanceRepositoryImpl(
             .uid(dataElementUid)
             .blockingGet()
         val categoryOptionCombo = d2.categoryModule().categoryOptionCombos()
+            .withCategoryOptions()
             .uid(categoryOptionComboUid)
             .blockingGet()
         val isMandatory = d2.dataSetModule().dataSets().withCompulsoryDataElementOperands()
@@ -1082,14 +1123,19 @@ internal class DataSetInstanceRepositoryImpl(
         val isDefaultCategoryCombo = d2.categoryModule().categoryCombos()
             .uid(coc?.categoryCombo()?.uid())
             .blockingGet()
-            ?.isDefault ?: false
+            ?.isDefault == true
+
+        val categoryOptionNames = coc?.categoryOptions()?.mapNotNull {
+            it.displayName() ?: d2.categoryModule().categories().uid(it.uid()).blockingGet()
+                ?.displayName()
+        } ?: emptyList()
 
         val dataElementLabel = dataElement.run { displayFormName() ?: displayName() ?: uid() }
 
         return if (isDefaultCategoryCombo) {
             dataElementLabel
         } else {
-            "$dataElementLabel / ${coc?.displayName()}"
+            (listOf(dataElementLabel) + categoryOptionNames).joinToString(" / ")
         }
     }
 }

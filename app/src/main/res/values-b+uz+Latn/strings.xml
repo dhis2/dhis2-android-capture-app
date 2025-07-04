@@ -128,6 +128,8 @@
     <string name="delete">Oʼchirib tashlash</string>
     <string name="total">Jami</string>
     <string name="most_recent_event_date">Oxirgi tadbir sanasi</string>
+    <string name="no_options">Variantlar mavjud emas</string>
+
     <string name="active_programs">Faol dasturlar</string>
     <string name="to_enroll_programs">Roʼyxatga olish dasturlari</string>
     <string name="enroll">Roʼyxatga kiritish</string>
@@ -135,12 +137,15 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Tafsilotlarni koʼring</string>
     <string name="view_more">KOʼPROQ KOʼRISh</string>
+    <string name="edit">Tahrirlash</string>
     <string name="follow_up">Kuzatib borish</string>
     <string name="follow_up_enabled">Kuzatuv yoqilgan</string>
     <string name="follow_up_disabled">Kuzatuv oʼchirilgan</string>
     <string name="deactivate">Faolsizlantirish</string>
     <string name="program_not_allow_events">Ushbu dastur yana koʼproq tadbirlarni qabul qilmaydi</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Maʼlumot yoʼq</string>
     <string name="done_task">Бош саҳифа</string>
     <string name="app_info">Ilova haqida maʼlumot</string>
     <string name="block_session">Sessiyani bloklash</string>
@@ -340,6 +345,7 @@
     <string name="date_dialog_tigle">Filtrlash uchun sanalarni tanlang</string>
     <string name="select_option">Variant tanlang</string>
     <string name="issue_reported">Muammo haqida xabar berildi</string>
+    <string name="dialog_generate_new_event">Yangi hodisa/tadbir yaratish</string>
     <string name="message_generate_new_event">Haqiqatdan ham boshqa hodisa/tadbir yaratmoqchimisiz?</string>
     <string name="event_completed_title">Hodisa/Tadbir Tugallandi</string>
     <string name="event_completed_message">Ushbu dasturdagi barcha hodisa/tadbirlar yakunlandi. Haqiqatdan ham ushbu dasturni yopishni xoxlaysizmi?</string>
@@ -662,10 +668,13 @@
     <string name="customactivityoncrash_error_activity_error_details_clipboard_label">Xatto haqida maʼlumot</string>
     <string name="enrollment_date_edition_warning">Rejalashtirila olinmaydigan hodisa/tadbir rejalari mavjud</string>
     <string name="section_charts">Diagrammalar</string>
+    <string name="navigation_list_view">Patsientlar Roʼyxati</string>
     <string name="navigation_table_view">Jadval koʼrinishi</string>
+    <string name="navigation_map_view">Харита</string>
     <string name="navigation_analytics">Аnalitika</string>
     <string name="navigation_tasks">Vazifalar</string>
     <string name="navigation_programs">Dasturlar</string>
+    <string name="navigation_charts">Diagrammalar</string>
     <string name="navigation_notes">Izohlar</string>
     <string name="navigation_data_entry">Maʼlumot kiritish</string>
     <string name="navigation_tei_data">Тафсилотлари</string>
@@ -692,6 +701,26 @@
     <string name="dataset_column_default">Qiymatlar</string>
     <string name="available">Mavjud</string>
     <string name="unknown_date">Nomaʼlum</string>
+    <string name="troubleshooting_language_title">Til</string>
     <string name="search_too_many_results">Natija juda koʼp</string>
     <string name="search_create_new">Yangisini yaratish</string>
+    <string name="sync_dialog_title_synced">Sinxronizatsiyalangan</string>
+    <string name="sync_dialog_title_syncing">Sinxronlashmoqda</string>
+    <string name="sync_dialog_action_send">Yuborish</string>
+    <string name="marked_follow_up">Kuzatuv uchun belgilangan</string>
+    <string name="skipped">Oʼtkazib yuborildi</string>
+    <string name="programs">Dasturlar</string>
+    <string name="sync_error">Sinxronlashda xatolik</string>
+    <string name="mark_follow_up">Kuzatuv uchun belgilang</string>
+    <string name="coordinates">Координаталар</string>
+    <string name="schedule">Reja</string>
+    <string name="scheduled_enter_event">Reja boʼyicha</string>
+    <string name="program_stage">Dastur bosqichi</string>
+    <string name="timeline">Xronologiya</string>
+    <string name="optional">Ixtiyoriy</string>
+    <string name="show_more">Koʼproq koʼrsatish</string>
+    <string name="show_less">Kamroq koʼrsatish</string>
+    <string name="sync">Sinxronlash</string>
+    <string name="show_description">Tavsifni koʼrsatish</string>
+    <string name="hide_description">Tavsifni berkitish</string>
     </resources>

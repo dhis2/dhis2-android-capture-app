@@ -1,0 +1,26 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">کور پاڼه</string>
+    <string name="action_settings">تنظیمات</string>
+
+    <string name="discard">رد یې کړئ</string>
+    <string name="sign_in">سیسټم ته داخلېدل</string>
+    <string name="username">کارېدونکی نوم</string>
+    <string name="password">پټنوم</string>
+    <!-- FloatingActionButtons -->
+    <string name="proceed">دوام ورکول</string>
+    <string name="delete">خذف یې کړئ</string>
+    <string name="ok">سم دی</string>
+    <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="from">څخه</string>
+    <!-- Stock table -->
+    <string name="item">مورد</string>
+    <string name="prompt_email">ایمیل</string>
+    <string name="prompt_password">پټنوم</string>
+    <string name="action_sign_in_short">سیسټم ته داخلېدل</string>
+    <string name="content_desc_search">جستجو</string>
+    <string name="invalid_quantity">د اعتبار وړ نه دي</string>
+    <string name="done_task">کور پاڼه</string>
+    <string name="back">شا ته کېدل</string>
+    <string name="action_sync">لېږل</string>
+    <string name="count">شمېرل</string>
+    </resources>

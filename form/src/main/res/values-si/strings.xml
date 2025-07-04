@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">දෝෂය</string>
+    <string name="date">දිනය</string>
+    <string name="hint_year">අවුරුදු</string>
+    <string name="hint_month">මාස</string>
+    <string name="hint_day">දින</string>
+    <string name="discard_changes">වෙනස් කිරීම් ඉවතලන්න</string>
+    <string name="action_close">වසන්න</string>
+    <string name="download">බාගත කරන්න</string>
+    </resources>

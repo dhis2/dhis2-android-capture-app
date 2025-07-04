@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="select_location">ເລືອກສະຖານທີ່</string>
+    <string name="dialog_layer_base_map_osm_light">ແຜນທີ່ແບບ OSM</string>
+    <string name="dialog_layer_base_map_osm_detailed">OSM ລາຍລະອຽດ</string>
     <string name="action_apply">ນຳໃຊ້</string>
     <string name="dialog_layer_event">ສະແດງເຫດການ</string>
+    <string name="accuracy_low">ຕ່ຳ</string>
+    <string name="accuracy_medium">ກາງ</string>
+    <string name="select_location_title">ເລືອກສະຖານທີ່</string>
     </resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Compleet</string>
+    <string name="discard_changes">Veranderingen ongedaan maken</string>
+    <string name="not_now">Niet nu</string>
+    <string name="keep_editing">Blijf bewerken</string>
+    <string name="review">Beoordeling</string>
+    <string name="cancel">Annuleren</string>
+    <string name="save">Sla op</string>
+    <string name="clear">Verwijder</string>
+    <string name="action_done">Klaar</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_close">Sluit</string>
+    <string name="hint_search">Zoek</string>
+    <plurals name="error_count">
+        <item quantity="one">%s-fout</item>
+        <item quantity="other">%s fouten</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="one">%s waarschuwing</item>
+        <item quantity="other">%s waarschuwingen</item>
+    </plurals>
+</resources>

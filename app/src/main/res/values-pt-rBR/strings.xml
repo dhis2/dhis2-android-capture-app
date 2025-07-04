@@ -1,8 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">Erro</string>
+    <plurals name="error_message">
+        <item quantity="one">Erros</item>
+        <item quantity="many">Erros</item>
+        <item quantity="other">Erros</item>
+    </plurals>
+    <string name="error_wrong_server_url">Url do servidor errado</string>
+    <string name="error_wrong_credentials">Credenciais erradas</string>
+    <string name="error_unexpected_error">Erro inesperado</string>
+    <string name="error_internal_server_error">Erro interno do servidor</string>
+    <string name="no_value">sem valor</string>
+    <string name="sync_metadata">Metadados</string>
     <string name="add_new">Adicionar novo</string>
     <string name="add">Adicionar</string>
+    <string name="schedule_new">Novo agendamento</string>
+    <string name="referral">Transferência</string>
+
     <string name="user_hint">Utilizador</string>
     <string name="password_hint">Password</string>
     <string name="account_recovery">Recuperar Conta</string>
@@ -11,10 +25,18 @@
     <string name="WEEKLY">Semanal</string>
     <string name="MONTHLY">Mensal</string>
     <string name="YEARLY">Anual</string>
+    <string name="clear_filters">Limpar filtros</string>
     <string name="action_share_zero_items">Partilhar</string>
     <!-- Input hints -->
     <string name="search">Pesquisar</string>
+    <string name="filter_options">Opções de filtro</string>
+    <string name="event_open">Abrir</string>
     <string name="read_only">Apenas leitura</string>
+    <string name="completed">Concluído</string>
+    <string name="cancelled">Cancelado</string>
+    <string name="activate">Ativar</string>
+    <string name="active">Activo</string>
+
     <string name="state_error">Erro</string>
     <!--Event initial-->
     <string name="create">Criar</string>
@@ -23,27 +45,44 @@
     <string name="category_option">Opcções de categorias</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+    <string name="new_event">Novo evento</string>
     <!--DataSet initial-->
     <string name="report_period">Período de relatório</string>
     <!--Event Detail-->
     <string name="due_date">Data de vencimento</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Apagar</string>
+    <string name="total">Total</string>
+    <string name="active_programs">Programas ativos</string>
+    <string name="enroll">Registrar</string>
+    <string name="edit">Editar</string>
+    <string name="deactivate">Desativar</string>
+    <!--DONE TASKS-->
+    <string name="events_no_data">Não ha dados</string>
     <string name="done_task">Origem</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_MANAGER">Configurações</string>
+    <!--endregion-->
+
+    <string name="enrollmment_date">Data de inscrição</string>
+
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">Pesquisar</string>
     <!--FORM FRAGMENT-->
     <string name="report_date">Data do relatório</string>
+    <string name="add_note">Adicionar uma nota</string>
+    <!--AGE CUSTOM VIEW-->
+    <string name="hint_day">Dias</string>
     <string name="hint_month">Meses</string>
     <string name="hint_year">Anos</string>
+    <string name="incident_date">Data do incidente</string>
     <string name="date_dialog_clear">Limpar</string>
     <string name="period">Período</string>
     <string name="next">Próximo</string>
     <string name="SAVE">Salvar</string>
     <string name="button_ok">Aprovado</string>
     <string name="qr_attributes">Atributos</string>
+    <string name="qr_relationships">Relacionamentos</string>
     <string name="about">Acerca</string>
     <string name="share">Partilhar</string>
     <string name="max">Máx</string>
@@ -53,16 +92,33 @@
     <string name="save">Salvar</string>
     <string name="menu_home">Origem</string>
     <string name="qr_data_values">Valor de Dados</string>
+    <string name="dashboard_overview">Visão geral</string>
+    <string name="dashboard_relationships">Relacionamentos</string>
     <string name="dashboard_indicators">Indicadores</string>
+    <string name="dashboard_notes">Notas</string>
     <string name="event_overview">Detalhes</string>
     <string name="event_indicators">Indicadores</string>
+    <string name="event_notes">Notas</string>
     <string name="please_wait">Por favor aguarde...</string>
+    <string name="skip">Pular</string>
+    <string name="reschedule">Reprogramar</string>
+    <string name="event_overdue">Atrasado</string>
+    <string name="action_continue">Continuar</string>
     <string name="state_warning">Advertência</string>
+    <string name="state_relationship">Relação</string>
     <string name="action_close">Fechar</string>
+    <string name="data_set_complete">Completo</string>
+    <string name="data_set_open">Abrir</string>
+    <string name="unsupported_value_type">Tipo de valor não suportado</string>
     <string name="data_every_day">Diário</string>
     <string name="data_every_week">Semanal</string>
+    <string name="period_week">Semana</string>
+    <string name="sms_completed">Concluído</string>
+    <string name="sms_bar_state_sending">Em andamento</string>
     <string name="sms_bar_state_sent">Enviar</string>
+    <string name="polygon_captured">Polígono capturado</string>
     <string name="polygon">Poligono</string>
+    <string name="security_title">Segurança</string>
     <string name="filters_title_period">Período</string>
     <string name="filters_title_status">Estado</string>
     <string name="filter_period_today">Hoje</string>
@@ -70,4 +126,58 @@
     <string name="filter_period_last_week">Última semana</string>
     <string name="filter_period_last_month">Mês passado</string>
     <string name="filter_period_other">Outro</string>
+    <string name="filter_event_status_open">Abrir</string>
+    <string name="filter_event_status_schedule">Programar</string>
+    <string name="filter_event_status_overdue">Atrasado</string>
+    <string name="filter_event_status_completed">Concluído</string>
+    <string name="filter_event_status_skipped">Ignorado</string>
+    <string name="go_back">Voltar</string>
+    <string name="data_sets">Agregação de Dados</string>
+    <string name="interval_yesterday">Ontém</string>
+    <string name="dataset_overview">Detalhes</string>
+    <string name="name">Nome</string>
+    <string name="formula">Fórmula</string>
+    <string name="enrollment_date">Data de inscrição</string>
+    <string name="enrollment_status_active">Abrir</string>
+    <string name="enrollment_status_completed">Completo</string>
+    <string name="enrollment_status_cancelled">Cancelado</string>
+    <string name="event_data">Dados</string>
+    <string name="action_done">Concluído</string>
+    <string name="are_you_sure">Tem certeza?</string>
+    <string name="filters_title_date">Data</string>
+    <string name="filters_title_event_date">Data do evento</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Voltar</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Fechar</string>
+    <string name="customactivityoncrash_error_activity_error_details_copy">Copiar para área de transferência</string>
+    <string name="navigation_list_view">Lista</string>
+    <string name="navigation_map_view">Mapa</string>
+    <string name="navigation_programs">Programas</string>
+    <string name="navigation_notes">Notas</string>
+    <string name="navigation_data_entry">Entrada de dados</string>
+    <string name="navigation_tei_data">Detalhes</string>
+    <string name="filter_period_this_year">Este ano</string>
+    <string name="filter_period_last_quarter">Último trimestre</string>
+    <string name="filter_period_months_this_year">Meses deste ano</string>
+    <string name="filter_period_quarters_this_year">Trimestres deste ano</string>
+    <string name="filter_period_months_last_year">Meses do ano passado</string>
+    <string name="filter_period_last_year">Ano passado</string>
+    <string name="filter_period_last_financial_year">último ano financeiro</string>
+    <string name="section_feedback">Retroinformacão</string>
+    <string name="section_indicators">Indicadores</string>
+    <string name="value">Valor</string>
+    <string name="login_error_bad_credentials">Credenciais erradas</string>
+    <string name="invalid_integer">Valor deve ser um número inteiro</string>
+    <string name="available">Disponível</string>
+    <string name="unknown_date">Desconhecido</string>
+    <string name="action_ok">Esta bem</string>
+    <string name="sync_dialog_action_send">Enviar</string>
+    <string name="sync_dialog_action_refresh">Actualizar</string>
+    <string name="skipped">Ignorado</string>
+    <string name="programs">Programas</string>
+    <string name="mark_follow_up">Marcar para acompanhamento</string>
+    <string name="coordinates">Coordenadas</string>
+    <string name="schedule">Programar</string>
+    <string name="scheduled_enter_event">Agendado</string>
+    <string name="program_stage">Estágio do programa</string>
+    <string name="optional">Opcional</string>
     </resources>

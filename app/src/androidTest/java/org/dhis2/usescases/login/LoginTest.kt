@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.commons.Constants.EXTRA_DATA
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -18,7 +19,6 @@ import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
@@ -34,6 +34,12 @@ class LoginTest : BaseTest() {
         super.setUp()
         setupMockServer()
         D2Manager.removeCredentials()
+    }
+
+
+    override fun teardown() {
+        super.teardown()
+        D2Manager.setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
     }
 
     @Test

@@ -2,6 +2,7 @@
     <!--GENERAL-->
     <string name="app_name">DHIS2</string>
     <string name="logo_text">DHIS</string>
+    <string name="logo_number">2</string>
     <!-- Warnings and error messages -->
     <string name="error">Fel</string>
     <string name="error_wrong_server_url">Fel serveradress</string>
@@ -9,11 +10,13 @@
     <string name="error_unexpected_error">Oväntat fel</string>
     <string name="error_internal_server_error">Internt serverfel</string>
     <string name="no_value">inget värde</string>
+    <string name="something_wrong">Något gick fel</string>
     <!-- SyncService strings: -->
     <string name="sync_now">Synkronisera nu</string>
     <string name="sync_text">Synkroniserar med server</string>
     <string name="sync_title">Synkronisera nu</string>
 
+    <string name="sync_metadata">Metadata</string>
     <string name="sync_events">Händelser</string>
     <string name="sync_tei">Tracked entities</string>
 
@@ -69,6 +72,8 @@
     <string name="read_only">read only</string>
     <string name="completed">Avklarad</string>
     <string name="cancelled">Avbruten</string>
+    <string name="active">Aktiva</string>
+
     <!-- State -->
     <string name="state_synced">Synkronisera</string>
     <string name="state_to_update">Att uppdatera</string>
@@ -88,6 +93,8 @@
     <string name="longitude">Longitud</string>
     <string name="new_event">Ny händelse</string>
     <string name="one_time">En gång</string>
+    <string name="permanent">Permanent</string>
+
     <!--Event Detail-->
     <string name="due_date">Förfallodatum</string>
     <string name="cat_combo">Kategori kombination</string>
@@ -104,6 +111,7 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Se detaljer</string>
     <string name="view_more">VISA MER</string>
+    <string name="edit">Redigera</string>
     <string name="follow_up">Följ upp</string>
     <string name="follow_up_enabled">Uppföljning aktiverad</string>
     <string name="follow_up_disabled">Uppföljning avaktiverad</string>
@@ -112,6 +120,7 @@
 
     <string name="events">händelser</string>
     <string name="done_task">Hem</string>
+    <string name="app_info">App Info</string>
     <string name="log_out">Logga ut</string>
     <string name="block_session">Blockera sessionen</string>
     <!-- SYNC -->
@@ -214,6 +223,7 @@
     <string name="teiType_search_online">Sök efter typ är inte möjlig för online-sökning\nVälj ett program från listan.</string>
     <string name="max">max</string>
     <string name="current">AKTUELL</string>
+    <string name="tei">TEI</string>
     <string name="limit_by_organisation_unit">Begränsa per organisationsenhet</string>
     <string name="programs_list">Programlista</string>
     <string name="wipe_data">Återställ app</string>
@@ -226,6 +236,7 @@
 
     <!--ABOUT-->
     <string name="about_app">App version: %s</string>
+    <string name="about_sdk">SDK Version: %s</string>
     <string name="about_connected">Ansluten till: %s</string>
     <string name="about_user">Aktuell användare: %s</string>
     <string name="login_error_null_pass">Lösenordet saknas. Vänligen fyll i detta fält.</string>
@@ -255,6 +266,7 @@
     <string name="date_dialog_tigle">Välj datum för att filtrera</string>
     <string name="select_option">Välj alternativ</string>
     <string name="issue_reported">Problem rapporterat</string>
+    <string name="dialog_generate_new_event">Skapa ny händelse</string>
     <string name="message_generate_new_event">Vill du skapa en annan händelse?</string>
     <string name="event_completed_title">Avslutade händelser</string>
     <string name="event_completed_message">Alla händelser i detta program är avslutade. Vill du stänga programmet också?</string>
@@ -272,14 +284,65 @@
     <string name="login_server_info_title">Server URL</string>
     <string name="state_warning">Varning</string>
     <string name="action_close">Stänga</string>
+    <string name="data_set_complete">Färdigt</string>
+    <string name="data_set_open">Öppen</string>
     <string name="data_every_day">Dagligen</string>
     <string name="data_every_week">Varje vecka</string>
     <string name="sms_completed">Avklarad</string>
     <string name="filters_title_period">Period</string>
     <string name="filters_title_status">Status</string>
+    <string name="filters_title_state">Synkronisera</string>
     <string name="filter_period_this_week">Denna vecka</string>
     <string name="filter_period_last_week">Förra veckan</string>
     <string name="filter_period_this_month">Den här månaden</string>
     <string name="filter_period_last_month">Förra månaden</string>
     <string name="filter_period_other">Övrig</string>
+    <string name="filter_event_status_open">Öppen</string>
+    <string name="filter_event_status_completed">Avklarad</string>
+    <string name="go_back">Gå tillbaka</string>
+    <string name="data_sets">dataset</string>
+    <string name="filter_sync_error">Synkroniseringsfel</string>
+    <string name="dataset_overview">detaljer</string>
+    <string name="name">Namn</string>
+    <string name="filters_title_event_status">Händelsestatus</string>
+    <string name="enrollment_date">inskrivning datum</string>
+    <string name="enrollment_status_active">Öppen</string>
+    <string name="enrollment_status_completed">Färdigt</string>
+    <string name="enrollment_status_cancelled">Avbruten</string>
+    <string name="event_data">Data</string>
+    <string name="filters_title_date">Datum</string>
+    <string name="filters_title_event_date">Händelse datum</string>
+    <string name="customactivityoncrash_error_activity_restart_app">Gå tillbaka</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">Stänga</string>
+    <string name="section_charts">diagram</string>
+    <string name="navigation_map_view">Karta</string>
+    <string name="navigation_programs">program</string>
+    <string name="navigation_charts">diagram</string>
+    <string name="navigation_tei_data">detaljer</string>
+    <string name="filter_period_this_year">Det här året</string>
+    <string name="filter_period_this_quarter">detta kvartal</string>
+    <string name="filter_period_last_quarter">Förra kvartalet</string>
+    <string name="filter_period_months_this_year">Månader i år</string>
+    <string name="filter_period_quarters_this_year">Kvartalen i år</string>
+    <string name="filter_period_months_last_year">Månader förra året</string>
+    <string name="filter_period_last_year">Förra året</string>
+    <string name="filter_period_this_financial_year">Detta räkenskapsår</string>
+    <string name="filter_period_last_financial_year">Föregående räkenskapsår</string>
+    <string name="section_feedback">Återkoppling</string>
+    <string name="section_indicators">indikatorer</string>
+    <string name="value">Värde</string>
+    <string name="login_error_bad_credentials">Felaktiga uppgifter</string>
+    <string name="invalid_integer">Värdet måste vara ett heltal</string>
+    <string name="available">Tillgängliga</string>
+    <string name="unknown_date">Okänd</string>
+    <string name="search_create_new">Skapa ny</string>
+    <string name="sync_dialog_action_send">Skicka</string>
+    <string name="programs">program</string>
+    <string name="sync_error">Synkroniseringsfel</string>
+    <string name="coordinates">koordinater</string>
+    <string name="scheduled_enter_event">Schemalagd</string>
+    <string name="optional">Frivillig</string>
+    <string name="show_more">Visa mer</string>
+    <string name="show_less">Visa mindre</string>
+    <string name="sync">Synkronisera</string>
     </resources>

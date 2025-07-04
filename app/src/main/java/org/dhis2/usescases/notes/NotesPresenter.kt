@@ -58,9 +58,14 @@ class NotesPresenter(
         compositeDisposable.add(
             noteProcessor.startWith(true)
                 .flatMapSingle {
+                    NotesIdlingResource.increment()
                     when (noteType) {
                         NoteType.EVENT -> notesRepository.getEventNotes(uid)
+                            .doOnSuccess { NotesIdlingResource.decrement() }
+                            .doOnError { NotesIdlingResource.decrement() }
                         NoteType.ENROLLMENT -> notesRepository.getEnrollmentNotes(uid)
+                            .doOnSuccess { NotesIdlingResource.decrement() }
+                            .doOnError { NotesIdlingResource.decrement() }
                     }
                 }
                 .subscribeOn(schedulerProvider.io())

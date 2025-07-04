@@ -18,7 +18,9 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.ConcatAdapter
@@ -30,9 +32,9 @@ import org.dhis2.bindings.dp
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
-import org.dhis2.commons.idlingresource.SearchIdlingResourceSingleton
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.FragmentSearchListBinding
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
@@ -169,9 +171,9 @@ class SearchTEList : FragmentGlobalAbstract() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
                     if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        SearchIdlingResourceSingleton.decrement()
+                        CoroutineTracker.decrement()
                     } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        SearchIdlingResourceSingleton.increment()
+                        CoroutineTracker.increment()
                     }
                     if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
                         viewModel.isScrollingDown.value = false
@@ -286,9 +288,9 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun observeNewData() {
+        initData()
         viewModel.refreshData.observe(viewLifecycleOwner) {
             restoreAdapters()
-            initData()
         }
 
         viewModel.dataResult.observe(viewLifecycleOwner) {
@@ -348,14 +350,15 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun initData() {
         displayLoadingData()
 
-        viewModel.fetchListResults {
-            lifecycleScope.launch {
-                it?.takeIf { view != null }?.collectLatest {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchPagingData.collect { data ->
                     liveAdapter.addOnPagesUpdatedListener {
                         onInitDataLoaded()
+                        CoroutineTracker.decrement()
                     }
-                    liveAdapter.submitData(lifecycle, it)
-                } ?: onInitDataLoaded()
+                    liveAdapter.submitData(lifecycle, data)
+                }
             }
         }
     }

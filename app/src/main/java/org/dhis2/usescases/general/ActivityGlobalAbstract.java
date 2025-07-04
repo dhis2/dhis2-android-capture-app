@@ -17,7 +17,7 @@ import org.dhis2.commons.ActivityResultObservable;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.dhis2.commons.popupmenu.AppMenuHelper;
-import org.dhis2.commons.reporting.CrashReportController;
+import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.utils.HelpManager;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;

@@ -1,3 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_data">د مالوماتو (ډاټا) نشتوالۍ</string>
+    <string name="action_accept">د منلو وړ</string>
+    <string name="next">راتلونکی</string>
+    <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="yes">هو</string>
+    <string name="no">نه</string>
+    <string name="navigation_analytics">تحلیلي</string>
+    <string name="navigation_programs">پروګرامونه</string>
+    <string name="navigation_relationships">اړیکې</string>
+    <string name="navigation_notes">یادداښتونه</string>
+    <string name="navigation_data_entry">د ډاټا یا مالوماتو داخلول</string>
+    <string name="navigation_tei_data">جزیات [ ژباړه ـ جزیات ]</string>
+    <string name="event_overview">جزیات [ ژباړه ـ جزیات ]</string>
+    <string name="search">جستجو</string>
+    <string name="data_sets">د مالوماتو یا ډاټا ټولګې</string>
+    <string name="done">ترسره شو</string>
+
+    <string name="filters_title_period">معیاد</string>
+    <string name="filters_title_status">وضعیت</string>
+    <string name="filters_title_date">نېټه</string>
+    <string name="select_period">د مودې ډول غوره کړئ.</string>
+    <string name="daily_period">ورځني [ د مودې ډول ]</string>
+    <string name="weekly">اوونیز</string>
+    <string name="monthly">میاشتنۍ</string>
+    <string name="bi_monthly">دوه میاشتنۍ</string>
+    <string name="quarterly">درې میاشتنۍ</string>
+    <string name="six_monthly">شپږ- میاشتنۍ</string>
+    <string name="yearly">کلنۍ</string>
+    <string name="state_error">تېروته</string>
+    <string name="state_warning">خبرداری</string>
+    <string name="state_relationship">اړیکه</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">خلاص یې کړئ</string>
+    <string name="filter_event_status_schedule">مهالوېش یې وټاکئ</string>
+    <string name="filter_event_status_overdue">ځنډول</string>
+    <string name="filter_event_status_completed">بشپړ شوی</string>
+    <string name="filter_event_status_skipped">له پامه غورځول شوی</string>
+    <string name="active">فعال</string>
+    <string name="cancelled">لغوه شوی</string>
+    <string name="enrollment_status_active">خلاص یې کړئ</string>
+    <string name="enrollment_status_completed">بشپړ یې کړئ</string>
+    <string name="enrollment_status_cancelled">لغوه شوی</string>
+    <!-- Periods -->
+    <string name="filter_period_today">نن ورځ</string>
+    <string name="filter_period_yesterday">پرونۍ ورځ</string>
+    <string name="filter_period_this_week">هفته هذا</string>
+    <string name="filter_period_last_week">تېره اونۍ</string>
+    <string name="filter_period_this_month">ماه هذا</string>
+    <string name="filter_period_last_month">تېره میاشت</string>
+    <string name="filter_period_other">نور</string>
+    <string name="filter_period_this_year">روان کال</string>
+    <string name="filter_period_this_quarter">ربع هذا</string>
+    <string name="filter_period_last_quarter">تېره ربعه</string>
+    <string name="filter_period_weeks_this_year">په روان کال کې اونۍ</string>
+    <string name="filter_period_months_this_year">د روان کال میاشتې</string>
+    <string name="filter_period_quarters_this_year">د سږ کال ربعې</string>
+    <string name="filter_period_months_last_year">د تېر کال میاشتې</string>
+    <string name="filter_period_last_year">تېر کال</string>
+    <string name="filter_period_this_financial_year">سږنۍ مالي کال</string>
+    <string name="filter_period_last_financial_year">تېر مالي کال</string>
+    <string name="period">معیاد</string>
+    <string name="DAILY">ورځني [ د مودې ډول ]</string>
+    <string name="WEEKLY">اوونیز</string>
+    <string name="MONTHLY">میاشتنۍ</string>
+    <string name="YEARLY">کلنۍ</string>
+
+    <string name="interval_yesterday">پرونۍ ورځ</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">د فیډبک یا نظر ورکول</string>
+    <string name="section_indicators">شاخصونه</string>
+    <string name="section_charts">چارټونه</string>
+    <string name="complete">بشپړ یې کړئ</string>
+    <string name="default_table_header_label">ارزښت یا رقم</string>
+    <string name="default_empty_dataset_section_label">مالومات (ډاټا)</string>
+    <string name="overdue_today">نن ورځ</string>
+    <string name="remove">لرې کول</string>
+    <string name="period_daily_title">ورځني [ د مودې ډول ]</string>
+    <string name="period_weekly_title">اونۍ</string>
+    <string name="period_monthly_title">میاشت</string>
+    <string name="period_yearly_title">کال</string>
     </resources>

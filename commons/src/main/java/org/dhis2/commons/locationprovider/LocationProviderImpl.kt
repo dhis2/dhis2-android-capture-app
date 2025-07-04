@@ -10,6 +10,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
 import androidx.core.location.LocationListenerCompat
+import okhttp3.internal.toImmutableList
 
 private const val FUSED_LOCATION_PROVIDER = "fused"
 
@@ -68,19 +69,23 @@ open class LocationProviderImpl(val context: Context) : LocationProvider {
                     onLocationProviderChanged()
                 }
             }
-            locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER,
-                500,
-                0f,
-                requireNotNull(locationListener),
-            )
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                500,
-                0f,
-                requireNotNull(locationListener),
-            )
-
+            val deviceProviders = locationManager.allProviders.toImmutableList()
+            if (deviceProviders.contains(LocationManager.NETWORK_PROVIDER)) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER,
+                    500,
+                    0f,
+                    requireNotNull(locationListener),
+                )
+            }
+            if (deviceProviders.contains(LocationManager.GPS_PROVIDER)) {
+                locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER,
+                    500,
+                    0f,
+                    requireNotNull(locationListener),
+                )
+            }
             updatesEnabled = true
         }
     }

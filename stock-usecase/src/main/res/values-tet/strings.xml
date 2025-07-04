@@ -1,0 +1,18 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_home">Pájina inisial</string>
+    <string name="action_settings">Konfigurasaun</string>
+
+    <string name="discard">Soe</string>
+    <string name="sign_in">Tama</string>
+    <string name="username">Utilizador nia Naran</string>
+    <string name="password">Seña</string>
+    <string name="delete">Soe</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Kansela</string>
+    <string name="prompt_password">Seña</string>
+    <string name="action_sign_in_short">Tama</string>
+    <string name="done_task">Pájina inisial</string>
+    <string name="back">Ba kotuk</string>
+    <string name="action_sync">Haruka</string>
+    <string name="count">Konta</string>
+    </resources>

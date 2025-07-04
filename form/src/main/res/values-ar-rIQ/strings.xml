@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error">خطأ</string>
+    <string name="date">التاريخ</string>
+    <string name="hint_year">السنوات</string>
+    <string name="hint_month">الأشهر</string>
+    <string name="hint_day">‏‏الأيام</string>
+    <string name="due_date">تاريخ الاستحقاق</string>
+    <string name="complete">مكتمل</string>
+    <string name="save_anyway">حفظ على اية حال</string>
+    <string name="share">مشاركة</string>
+    <string name="action_close">إغلاق</string>
+    <string name="incident_date">تاريخ الواقعة</string>
+    <string name="download">تنزيل</string>
+    </resources>

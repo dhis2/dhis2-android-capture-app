@@ -3,11 +3,9 @@ package org.dhis2.usescases.datasets
 import android.view.View
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
@@ -18,12 +16,11 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
@@ -32,8 +29,10 @@ import org.dhis2.utils.AdapterItemPosition
 import org.dhis2.utils.AdapterItemTitle
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.equalTo
-import org.hisp.dhis.lib.expression.ast.Tag
 import org.junit.Assert.assertTrue
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 internal fun dataSetDetailRobot(
@@ -66,28 +65,14 @@ internal class DataSetDetailRobot(
         itemWithTextIsDisplayed(text, substring, composeTestRule)
     }
 
-
-    fun checkDataSetInList(period: String, orgUnit: String) {
+    fun checkDataSetIsCompletedAndModified(period: String, orgUnit: String ) {
         onView(withId(R.id.recycler))
             .check(
                 matches(
                     hasItem(
                         allOf(
                             hasDescendant(withText(period)),
-                            hasDescendant(withText(orgUnit))
-                        )
-                    )
-                )
-            )
-    }
-
-    fun checkDataSetIsCompleteAndModified(period: String) {
-        onView(withId(R.id.recycler))
-            .check(
-                matches(
-                    hasItem(
-                        allOf(
-                            hasDescendant(withText(period)),
+                            hasDescendant(withText(orgUnit)),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete))),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_sync_problem_grey)))
                         )
@@ -101,7 +86,7 @@ internal class DataSetDetailRobot(
         val dateList = mutableListOf<Date>()
 
         for (i in 0 until itemCount) {
-            onView(withId(R.id.recycler)).perform(scrollToPosition<RecyclerView.ViewHolder>(i))
+            waitForView(withId(R.id.recycler)).perform(scrollToPosition<RecyclerView.ViewHolder>(i))
             val itemTitle = getTitleFromRecyclerViewItem(i)
             val date = SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(itemTitle)
             dateList.add(date)
@@ -115,7 +100,7 @@ internal class DataSetDetailRobot(
 
     fun getListItemCount(): Int {
         val itemCount = intArrayOf(0)
-        onView(withId(R.id.recycler)).perform(
+        waitForView(withId(R.id.recycler)).perform(
             actionOnItemAtPosition<DataSetListViewHolder>(0, object : ViewAction {
                 override fun getConstraints() = null
                 override fun getDescription() = "Get item count"
@@ -125,6 +110,28 @@ internal class DataSetDetailRobot(
             })
         )
         return itemCount[0]
+    }
+
+    fun checkDataSetRecyclerItemsAreDisplayed(itemCount: Int) {
+        waitForView(withId(R.id.recycler))
+            .perform(waitForRecyclerViewItems(minItemCount = itemCount))
+    }
+
+    private fun waitForRecyclerViewItems(minItemCount: Int = 1, timeoutMs: Long = 5000): ViewAction {
+        return object : ViewAction {
+            override fun getConstraints() = isAssignableFrom(RecyclerView::class.java)
+            override fun getDescription() = "Wait for RecyclerView to have at least $minItemCount items"
+            override fun perform(uiController: UiController, view: View) {
+                val recyclerView = view as RecyclerView
+                val startTime = System.currentTimeMillis()
+                while ((recyclerView.adapter?.itemCount ?: 0) < minItemCount) {
+                    if (System.currentTimeMillis() - startTime > timeoutMs) {
+                        throw AssertionError("RecyclerView did not reach $minItemCount items in $timeoutMs ms")
+                    }
+                    uiController.loopMainThreadForAtLeast(50)
+                }
+            }
+        }
     }
 
     private fun getTitleFromRecyclerViewItem(

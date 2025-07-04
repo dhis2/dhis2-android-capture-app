@@ -7,6 +7,7 @@ import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.hisp.dhis.android.core.category.CategoryOption
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
@@ -65,6 +66,7 @@ class DataSetInitialPresenter(
     }
 
     override fun onCatOptionClick(catOptionUid: String) {
+        CoroutineTracker.increment()
         compositeDisposable.add(
             dataSetInitialRepository.catCombo(catOptionUid)
                 .subscribeOn(schedulerProvider.io())
@@ -79,6 +81,7 @@ class DataSetInitialPresenter(
                                     it.inOrgUnit(view.selectedOrgUnit?.uid())
                             },
                         )
+                        CoroutineTracker.decrement()
                     },
                     Timber::d,
                 ),

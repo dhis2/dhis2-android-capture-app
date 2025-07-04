@@ -32,7 +32,7 @@ import org.dhis2.mobile.aggregates.domain.UploadFile
 import org.dhis2.mobile.aggregates.model.CellElement
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.COMPLETED
-import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED
+import org.dhis2.mobile.aggregates.model.DataSetCompletionStatus.NOT_COMPLETED_EDITABLE
 import org.dhis2.mobile.aggregates.model.DataSetCustomTitle
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetEdition
@@ -62,15 +62,17 @@ import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
-import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
+import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -126,6 +128,8 @@ internal class DataSetTableViewModelTest : KoinTest {
         Dispatchers.setMain(testDispatcher)
         startKoin {
             modules(aggregatesModule)
+            modules(commonsModule)
+            modules()
             MockProvider.register {
                 mock(it.java)
             }
@@ -174,7 +178,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList(),
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -280,11 +288,11 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loading)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
+                assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
         }
     }
@@ -305,11 +313,11 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.onSectionSelected("section_uid2")
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loading)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable is DataSetSectionTable.Loaded)
+                assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
             }
         }
     }
@@ -367,10 +375,16 @@ internal class DataSetTableViewModelTest : KoinTest {
                 } else {
                     null
                 },
-                buttonAction = ButtonAction.Done(
+                currentSelectedCell = TableSelection.CellSelection(
+                    tableId = "tableId",
+                    columnIndex = 0,
+                    rowIndex = 0,
+                    globalIndex = 0,
+                ),
+                buttonAction = ButtonAction(
                     buttonText = "done",
                     icon = Icons.Default.Done,
-                    action = {},
+                    isDoneAction = true,
                 ),
             )
         }
@@ -384,17 +398,17 @@ internal class DataSetTableViewModelTest : KoinTest {
                     cellInfo = any(),
                     validationError = anyOrNull(),
                     valueWithError = anyOrNull(),
+                    currentCell = anyOrNull(),
                     isLastCell = any(),
-                    onDone = any(),
-                    onNext = any(),
                 ),
             ) doReturnConsecutively inputData
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
-                    assertTrue(this.selectedCellInfo != null)
-                    assertEquals("Legend label 1", this.selectedCellInfo?.legendData?.title)
-                    assertEquals("#90EE90".toColor(), this.selectedCellInfo?.legendData?.color)
+                    assertTrue(this.selectedCellInfo is InputDataUiState)
+                    require(this.selectedCellInfo is InputDataUiState)
+                    assertEquals("Legend label 1", this.selectedCellInfo.legendData?.title)
+                    assertEquals("#90EE90".toColor(), this.selectedCellInfo.legendData?.color)
                 } else {
                     assertTrue(false)
                 }
@@ -402,7 +416,8 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(testingId)
             with(awaitItem()) {
                 if (this is DataSetScreenState.Loaded) {
-                    assertTrue(this.selectedCellInfo != null)
+                    assertTrue(this.selectedCellInfo is InputDataUiState)
+                    require(this.selectedCellInfo is InputDataUiState)
                     assertEquals("Legend label 2", this.selectedCellInfo?.legendData?.title)
                     assertEquals("#CD5C5C".toColor(), this.selectedCellInfo?.legendData?.color)
                 } else {
@@ -412,7 +427,7 @@ internal class DataSetTableViewModelTest : KoinTest {
             viewModel.updateSelectedCell(null)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo == null)
+                assertTrue((this as DataSetScreenState.Loaded).selectedCellInfo is CellSelectionState.Default)
             }
         }
     }
@@ -437,7 +452,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         // Given there are no validation rules
         whenever(checkValidationRulesConfiguration()) doReturn NONE
         // And data set is not completed
-        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED
+        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED_EDITABLE
 
         whenever(
             dataSetModalDialogProvider.provideCompletionDialog(
@@ -470,7 +485,7 @@ internal class DataSetTableViewModelTest : KoinTest {
         )
         whenever(runValidationRules()) doReturn validationRulesResult
         // And data set is not completed
-        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED
+        whenever(checkCompletionStatus()) doReturn NOT_COMPLETED_EDITABLE
 
         whenever(
             dataSetModalDialogProvider.provideCompletionDialog(
@@ -554,10 +569,16 @@ internal class DataSetTableViewModelTest : KoinTest {
             } else {
                 null
             },
-            buttonAction = ButtonAction.Done(
+            currentSelectedCell = TableSelection.CellSelection(
+                tableId = "tableId",
+                columnIndex = 0,
+                rowIndex = 0,
+                globalIndex = 0,
+            ),
+            buttonAction = ButtonAction(
                 buttonText = "done",
                 icon = Icons.Default.Done,
-                action = {},
+                isDoneAction = true,
             ),
         )
 
@@ -568,9 +589,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                 cellInfo = any(),
                 validationError = anyOrNull(),
                 valueWithError = anyOrNull(),
+                currentCell = anyOrNull(),
                 isLastCell = any(),
-                onDone = any(),
-                onNext = any(),
             ),
         ) doReturn inputData
 
@@ -758,7 +778,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList(),
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -770,7 +794,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertEquals(TextAlignment.LEFT, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals(
+                    TextAlignment.LEFT,
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment,
+                )
                 assertEquals("Title", this.dataSetDetails.customTitle.header)
                 assertEquals("Subtitle", this.dataSetDetails.customTitle.subHeader)
             }
@@ -796,7 +823,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList(),
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -808,7 +839,10 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertEquals(TextAlignment.RIGHT, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals(
+                    TextAlignment.RIGHT,
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment,
+                )
             }
         }
     }
@@ -832,7 +866,11 @@ internal class DataSetTableViewModelTest : KoinTest {
                     edition = DataSetEdition(editable = true, NonEditableReason.None),
                 ),
                 dataSetSections = listOf(
-                    DataSetSection(uid = "sectionUid", title = "sectionTitle"),
+                    DataSetSection(
+                        uid = "sectionUid",
+                        title = "sectionTitle",
+                        misconfiguredRows = emptyList(),
+                    ),
                 ),
                 dataSetRenderingConfig = DataSetRenderingConfig(useVerticalTabs = true),
                 initialSectionToLoad = 0,
@@ -844,8 +882,42 @@ internal class DataSetTableViewModelTest : KoinTest {
             assertTrue(awaitItem() is DataSetScreenState.Loading)
             with(awaitItem()) {
                 assertTrue(this is DataSetScreenState.Loaded)
-                assertEquals(TextAlignment.CENTER, (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment)
+                assertEquals(
+                    TextAlignment.CENTER,
+                    (this as DataSetScreenState.Loaded).dataSetDetails.customTitle.textAlignment,
+                )
             }
+        }
+    }
+
+    @Test
+    fun shouldKeepFirstSection() = runTest {
+        viewModel.dataSetScreenState.test {
+            awaitInitialization()
+            viewModel.onSectionSelected("section_uid1")
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid1")
+            }
+            viewModel.onSectionSelected("section_uid2")
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid2")
+            }
+            viewModel.onSectionSelected("section_uid1")
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid1")
+            }
+            with(awaitItem()) {
+                assertTrue(this is DataSetScreenState.Loaded)
+                assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                assertTrue(this.currentSection() == "section_uid1")
+            }
+            expectNoEvents()
         }
     }
 

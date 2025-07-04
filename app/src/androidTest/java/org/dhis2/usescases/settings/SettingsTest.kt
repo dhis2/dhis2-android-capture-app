@@ -6,16 +6,12 @@ import org.dhis2.common.rules.DataBindingIdlingResourceRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class SettingsTest : BaseTest() {
-
-    val KEY_GATEWAY = "gateway"
-    val GATEWAY_NUMER = "+34923030005"
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
@@ -96,43 +92,6 @@ class SettingsTest : BaseTest() {
         settingsRobot {
             clickOnOpenSyncErrorLog()
             checkLogViewIsDisplayed()
-        }
-    }
-
-    @Ignore("Adding composeTestRule makes all tests in this file not execute")
-    @Test
-    fun shouldSuccessfullyDeleteLocalData() {
-        startActivity()
-
-        homeRobot {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
-        settingsRobot {
-            clickOnDeleteLocalData()
-            clickOnAcceptDelete()
-            clickOnAcceptDialog()
-            checkSnackBarIsShown()
-        }
-        cleanLocalDatabase()
-    }
-
-    @Ignore("SDK related")
-    @Test
-    fun shouldShowGatewayNumberDisableWhenClickOnSMSSettings() {
-        preferencesRobot.saveValueToSDKPreferences(KEY_GATEWAY, GATEWAY_NUMER)
-        startActivity()
-
-        homeRobot {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
-        }
-
-        settingsRobot {
-            clickOnSMSSettings()
-            checkGatewayNumberFieldIsNotEnabled()
-            checkGatewayNumberFieldIs(GATEWAY_NUMER)
         }
     }
 

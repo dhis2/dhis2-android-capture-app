@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">تەواوبکە</string>
+    <string name="cancel">لابردن</string>
+    <string name="save">تۆمارکردن</string>
+    <string name="clear">پاککردنەوە</string>
+    <string name="action_done">تةواو كرا</string>
+    <string name="action_cancel">لابردن</string>
+    <string name="action_close">داخستن</string>
+    <string name="hint_search">گەڕان</string>
+    </resources>

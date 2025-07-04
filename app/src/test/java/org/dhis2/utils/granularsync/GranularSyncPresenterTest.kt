@@ -22,7 +22,6 @@ import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.dataset.DataSet
@@ -434,8 +433,8 @@ class GranularSyncPresenterTest {
             )
         }
         whenever(
-            d2.dataSetModule().dataSets().withDataSetElements().uid(any()).get(),
-        ) doReturn Single.just(mockedDataSet)
+            d2.dataSetModule().dataSets().withDataSetElements().uid(any()).blockingGet(),
+        ) doReturn mockedDataSet
         whenever(
             d2.categoryModule().categoryOptionCombos().byCategoryComboUid(),
         ) doReturn mock()
@@ -443,10 +442,9 @@ class GranularSyncPresenterTest {
             d2.categoryModule().categoryOptionCombos().byCategoryComboUid().`in`(anyList()),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().byCategoryComboUid().`in`(anyList()).get(),
-        ) doReturn Single.just(
-            listOf(CategoryOptionCombo.builder().uid("catComboUid").build()),
-        )
+            d2.categoryModule().categoryOptionCombos().byCategoryComboUid().`in`(anyList())
+                .blockingGetUids(),
+        ) doReturn listOf("catComboUid")
 
         val workInfoList = MutableLiveData<List<WorkInfo>>(emptyList())
         whenever(workManager.getWorkInfosForUniqueWorkLiveData(any())) doReturn workInfoList

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="validation_success_title">Alles ziet er goed uit!</string>
-    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken?</string>
+    <string name="default_column_label">Waarden</string>
+    <string name="total_header_label">Totalen</string>
+    <string name="input_age_date_of_birth">Geboortedatum</string>
+    <string name="input_age_or">of</string>
+    <string name="input_action_accept">Aanvaarden</string>
+    <string name="input_action_cancel">Annuleren</string>
+    <string name="no_results_found">Geen resultaten gevonden</string>
+    <string name="action_done">Klaar</string>
+    <string name="input_coordinate_latitude">Breedtegraad</string>
+    <string name="input_coordinate_longitude">Lengtegraad</string>
+    <string name="input_not_supported">Niet ondersteund</string>
+    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken\?</string>
     <string name="not_now">Niet nu</string>
     <string name="complete">Compleet</string>
     <string name="saved">Opgeslagen!</string>
@@ -9,10 +19,18 @@
     <string name="field_required">Als u een waarde instelt, heeft de hele rij alle waarden nodig om de gegevensset te voltooien.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Opgeslagen en voltooid!</string>
-    <string name="run_validation_rules">Wilt u de datakwaliteit controleren?</string>
+    <string name="run_validation_rules">Wilt u de datakwaliteit controleren\?</string>
+    <string name="no">Nee</string>
+    <string name="yes">Ja</string>
     <string name="error">Fout</string>
+    <string name="errors">Fouten</string>
     <string name="complete_anyway">In ieder geval compleet</string>
     <string name="review">Beoordeling</string>
     <string name="validation_rules_data_to_review">Gegevens om te bekijken</string>
-
-</resources>
+    <string name="action_next">Volgende</string>
+    <string name="add_file">Bestand toevoegen</string>
+    <string name="add_image">Voeg afbeelding toe</string>
+    <string name="take_photo">Neem foto</string>
+    <string name="indicators_label">Indicatoren</string>
+    <string name="no_data_write_access">U heeft geen toestemming om deze gegevens te bewerken</string>
+    </resources>

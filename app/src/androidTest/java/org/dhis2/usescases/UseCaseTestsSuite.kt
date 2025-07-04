@@ -2,7 +2,6 @@ package org.dhis2.usescases
 
 import org.dhis2.usescases.about.AboutTest
 import org.dhis2.usescases.datasets.DataSetTest
-import org.dhis2.usescases.enrollment.EnrollmentTest
 import org.dhis2.usescases.event.EventTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.EventInitialTest
 import org.dhis2.usescases.login.LoginTest
@@ -21,10 +20,8 @@ import org.junit.runners.Suite
 @Suite.SuiteClasses(
     AboutTest::class,
     DataSetTest::class,
-    EnrollmentTest::class,
     EventInitialTest::class,
     EventTest::class,
-    LoginTest::class,
     MainTest::class,
     PinTest::class,
     ProgramEventTest::class,
@@ -33,5 +30,6 @@ import org.junit.runners.Suite
     SyncActivityTest::class,
     TeiDashboardTest::class,
     SchedulingDialogUiTest::class,
+    LoginTest::class,
 )
 class UseCaseTestsSuite

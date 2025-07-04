@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_accept">قبول</string>
+    <string name="next">التالي</string>
+    <string name="cancel">إلغاء</string>
+    <string name="yes">نعم</string>
+    <string name="no">لا</string>
+    <string name="navigation_relationships">علاقات</string>
+    <string name="navigation_tei_data">التفاصيل</string>
+    <string name="event_overview">التفاصيل</string>
+    <string name="search">البحث</string>
+    <string name="data_sets">حزم البيانات</string>
+    <string name="filters_title_status">الحالة</string>
+    <string name="filters_title_date">التاريخ</string>
+    <string name="select_period">تحديد نوع الفترة الزمنية</string>
+    <string name="daily_period">يومي</string>
+    <string name="weekly">أسبوعي</string>
+    <string name="bi_weekly">كل اسبوعين</string>
+    <string name="monthly">شهري</string>
+    <string name="bi_monthly">أشهر مزدوجة</string>
+    <string name="quarterly">ربع سنوي</string>
+    <string name="six_monthly">ستة أشهر</string>
+    <string name="yearly">سنوي</string>
+    <string name="state_error">خطأ</string>
+    <string name="state_warning">تحذير</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">فتح</string>
+    <string name="filter_event_status_overdue">متأخر</string>
+    <string name="filter_event_status_completed">مكتمل</string>
+    <string name="filter_event_status_skipped">تم التخطي</string>
+    <string name="active">فعال</string>
+    <string name="cancelled">تم الإلغاء</string>
+    <string name="enrollment_status_active">فتح</string>
+    <string name="enrollment_status_completed">مكتمل</string>
+    <string name="enrollment_status_cancelled">تم الإلغاء</string>
+    <!-- Periods -->
+    <string name="filter_period_today">اليوم</string>
+    <string name="filter_period_yesterday">الأمس</string>
+    <string name="filter_period_this_week">الأسبوع الحالي</string>
+    <string name="filter_period_last_week">الأسبوع الماضي</string>
+    <string name="filter_period_this_month">الشهر الحالي</string>
+    <string name="filter_period_last_month">الشهر الماضي</string>
+    <string name="filter_period_this_year">السنة الحالية</string>
+    <string name="filter_period_this_quarter">ربع السنة الحالي</string>
+    <string name="filter_period_last_quarter">ربع السنة الماضي</string>
+    <string name="filter_period_weeks_this_year">أسابيع السنة الحالية</string>
+    <string name="filter_period_months_this_year">أشهر السنة الحالية</string>
+    <string name="filter_period_quarters_this_year">أرباع السنة الحالية</string>
+    <string name="filter_period_last_year">السنة الماضية</string>
+    <string name="filter_period_this_financial_year">السنة المالية الحالية</string>
+    <string name="filter_period_last_financial_year">السنة المالية الماضية</string>
+    <string name="DAILY">يومي</string>
+    <string name="WEEKLY">أسبوعي</string>
+    <string name="MONTHLY">شهري</string>
+    <string name="YEARLY">سنوي</string>
+
+    <string name="interval_yesterday">الأمس</string>
+
+    <!-- Sections -->
+    <string name="section_feedback">التغذية الراجعة</string>
+    <string name="section_indicators">المؤشرات</string>
+    <string name="section_charts">المخططات البيانية</string>
+    <string name="complete">مكتمل</string>
+    <string name="default_table_header_label">القيمة</string>
+    <string name="default_empty_dataset_section_label">البيانات</string>
+    <string name="overdue_today">اليوم</string>
+    <string name="remove">إزالة</string>
+    <string name="period_daily_title">يومي</string>
+    </resources>

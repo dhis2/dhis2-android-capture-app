@@ -8,7 +8,6 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import org.dhis2.commons.filters.FilterManager
 import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import java.util.UUID
@@ -35,6 +34,7 @@ class SearchNavigator(
                     activity.setResult(Activity.RESULT_OK, it.data())
                     activity.finish()
                 }
+
                 is EnrollmentResult.Success ->
                     if (searchNavigationConfiguration.refreshDataOnBackFromEnrollment()) {
                         activity.refreshData()
@@ -62,7 +62,6 @@ class SearchNavigator(
 
     fun openDashboard(teiUid: String?, programUid: String?, enrollmentUid: String?) {
         teiUid?.let { searchNavigationConfiguration.openingTEI(it) }
-        FilterManager.getInstance().clearWorkingList(true)
         dashboardLauncher.launch(
             TeiDashboardMobileActivity.intent(
                 activity,
@@ -99,6 +98,7 @@ class SearchNavigator(
         } ?: Bundle()
     }
 }
+
 fun <I, O> ComponentActivity.registerActivityResultLauncher(
     key: String = UUID.randomUUID().toString(),
     contract: ActivityResultContract<I, O>,

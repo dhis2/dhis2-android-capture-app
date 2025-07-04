@@ -87,6 +87,7 @@
     <string name="program_inactive">Дастур нофаол</string>
 
     <string name="event_open">Очиш</string>
+    <string name="event_completed">Ҳодиса/тадбир якунланди</string>
     <string name="read_only">Фақат ўқиш учун</string>
     <string name="finish_and_complete">Якунлаш ва тўлдириш</string>
     <string name="completed">Тўлдирилди</string>
@@ -136,6 +137,8 @@
     <string name="delete">Ўчириб ташлаш</string>
     <string name="total">Жами</string>
     <string name="most_recent_event_date">Охирги тадбир санаси</string>
+    <string name="no_options">Вариантлар мавжуд эмас</string>
+
     <string name="active_programs">Фаол дастурлар</string>
     <string name="to_enroll_programs">Рўйхатга олиш дастурлари</string>
     <string name="enroll">Рўйхатга киритиш</string>
@@ -145,12 +148,15 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Тафсилотларни кўринг</string>
     <string name="view_more">КЎПРОҚ КЎРИШ</string>
+    <string name="edit">Таҳрирлаш</string>
     <string name="follow_up">Кузатиб бориш</string>
     <string name="follow_up_enabled">Кузатув ёқилган</string>
     <string name="follow_up_disabled">Кузатув ўчирилган</string>
     <string name="deactivate">Фаолсизлантириш</string>
     <string name="program_not_allow_events">Ушбу дастур яна кўпроқ тадбирларни қабул қилмайди</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Маълумот йўқ</string>
     <string name="events">ҳодиса/тадбирлар</string>
     <string name="done_task">Бош саҳифа</string>
     <string name="app_info">Илова ҳақида маълумот</string>
@@ -355,6 +361,7 @@
     <string name="date_dialog_tigle">Фильтрлаш учун саналарни танланг</string>
     <string name="select_option">Вариант танланг</string>
     <string name="issue_reported">Муаммо ҳақида хабар берилди</string>
+    <string name="dialog_generate_new_event">Янги ҳодиса/тадбир яратиш</string>
     <string name="message_generate_new_event">Ҳақиқатдан ҳам бошқа ҳодиса/тадбир яратмоқчимисиз?</string>
     <string name="event_completed_title">Ҳодиса/Тадбир Тугалланди</string>
     <string name="event_completed_message">Ушбу дастурдаги барча ҳодиса/тадбирлар якунланди. Ҳақиқатдан ҳам ушбу дастурни ёпишни хохлайсизми?</string>
@@ -661,6 +668,7 @@
     <string name="download_tei_error">Танланган %s  юкланмади.</string>
     <string name="completed_by">%s  томонидан бажарилган: %s</string>
     <string name="updated_time">Янгиланган: %s</string>
+    <string name="action_done">Бажарилди</string>
     <string name="validation_internal_error_datasets">Маълумотлар сифатини текшириб бўлмади. Администраторингизга мурожаат қилинг</string>
     <string name="are_you_sure">Ишончинигиз комилми?</string>
     <string name="reopen_question">Маълумотлар тўпламини қайта очиб кўрмоқчимисиз?</string>
@@ -687,10 +695,13 @@
     <string name="error_init_session">Сизнинг фойдаланувчингиз билан сеанс ташкиллаштира олмадик</string>
     <string name="enrollment_date_edition_warning">Режалаштирила олинмайдиган ҳодиса/тадбир режалари мавжуд</string>
     <string name="section_charts">Диаграммалар</string>
+    <string name="navigation_list_view">Пациентлар Рўйхати</string>
     <string name="navigation_table_view">Жадвал кўриниши</string>
+    <string name="navigation_map_view">Харита</string>
     <string name="navigation_analytics">Аналитика</string>
     <string name="navigation_tasks">Вазифалар</string>
     <string name="navigation_programs">Дастурлар</string>
+    <string name="navigation_charts">Диаграммалар</string>
     <string name="navigation_notes">Изоҳлар</string>
     <string name="navigation_data_entry">Маълумот киритиш</string>
     <string name="navigation_tei_data">Тафсилотлари</string>
@@ -698,6 +709,7 @@
     <string name="show_line_graph">Қатор сифатида кўриш</string>
     <string name="show_table_graph">Жадвал сифатида кўриш</string>
     <string name="show_table_value">Қиймат сифатида кўриш</string>
+    <string name="show_pie_value">Айлана диаграмма сифатида кўриш</string>
     <string name="filter_period_this_year">Ушбу йил</string>
     <string name="filter_period_this_bimonth">Ушбу жуфт ойлик</string>
     <string name="filter_period_last_bimonth">Охирги жуфт ойлик</string>
@@ -733,10 +745,43 @@
     <string name="openid_session_expired">Сессия муддати тугаган</string>
     <string name="openid_session_expired_message">Сизнинг жорий сессиянгиз муддати тугаган. Хавфсизлик нуқтаи назаридан, сиз қайтадан аккаунт маълумотларини тақдим этишингиз лозим.</string>
     <string name="dataset_column_default">Қийматлар</string>
+    <string name="show_radar_graph">Радар (тўрсимон) сифатда кўриш</string>
     <string name="available">Мавжуд</string>
     <string name="unknown_date">Номаълум</string>
     <string name="troubleshooting_language_title">Тил</string>
     <string name="search_too_many_results">Натижа жуда кўп</string>
     <string name="search_create_new">Янгисини яратиш</string>
     <string name="action_ok">Яхши</string>
+    <string name="sync_dialog_title_synced">Синхронизацияланган</string>
+    <string name="sync_dialog_title_syncing">Синхронлашмоқда</string>
+    <string name="sync_dialog_action_send">Юбориш</string>
+    <string name="sync_dialog_action_refresh">Янгилаш</string>
+    <string name="sync_dialog_action_not_now">Hozir emas</string>
+    <plurals name="error_count_label">
+        <item quantity="other">%s da xatoliklar</item>
+    </plurals>
+    <plurals name="warning_count_label">
+        <item quantity="other">%s da ogohlantirishlar</item>
+    </plurals>
+    <string name="marked_follow_up">Кузатув учун белгиланган</string>
+    <string name="view_only">Фақат кўриш учун</string>
+    <string name="skipped">Ўтказиб юборилди</string>
+    <string name="programs">Дастурлар</string>
+    <string name="sync_error">Синхронлашда хатолик</string>
+    <string name="mark_follow_up">Кузатув учун белгиланг</string>
+    <string name="coordinates">Координаталар</string>
+    <string name="schedule">Режа</string>
+    <string name="scheduled_enter_event">Режа бўйича</string>
+    <string name="program_stage">Дастур босқичи</string>
+    <string name="event">ҳодиса/тадбир</string>
+    <string name="timeline">Хронология</string>
+    <string name="optional">Ихтиёрий</string>
+    <string name="show_more">Кўпроқ кўрсатиш</string>
+    <string name="show_less">Камроқ кўрсатиш</string>
+    <string name="sync">Синх</string>
+    <string name="show_fields">Қаторларни кўрсатиш</string>
+    <string name="hide_fields">Қаторларни беркитиш</string>
+    <string name="show_description">Тавсифни кўрсатиш</string>
+    <string name="hide_description">Тавсифни беркитиш</string>
+    <string name="transfer">Ўтказиш</string>
     </resources>

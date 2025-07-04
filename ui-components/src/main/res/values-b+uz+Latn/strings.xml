@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Bajarildi</string>
+    <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
+    <string name="keep_editing">Tahrirni davom eting</string>
+    <string name="review">Ko‘rib chiqish</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="save">Saqlash</string>
+    <string name="clear">Аниқ</string>
+    <string name="action_cancel">Бекор қилиш</string>
+    <string name="action_close">Yopmoq</string>
+    <string name="hint_search">Izlash</string>
+    <string name="action_clear_all">Barchasini tozalash</string>
+    </resources>

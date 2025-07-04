@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
@@ -18,13 +19,13 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.prefs.SECURE_PASS
 import org.dhis2.commons.prefs.SECURE_SERVER_URL
 import org.dhis2.commons.prefs.SECURE_USER_NAME
-import org.dhis2.commons.reporting.CrashReportController
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.biometric.BiometricController
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.TestingCredential
@@ -89,6 +90,7 @@ class LoginViewModelTest {
             return testingDispatcher
         }
     }
+    private val repository: LoginRepository = mock()
 
     private fun instantiateLoginViewModel() {
         loginViewModel = LoginViewModel(
@@ -102,6 +104,7 @@ class LoginViewModelTest {
             crashReportController,
             network,
             userManager,
+            repository,
         )
     }
 
@@ -117,8 +120,15 @@ class LoginViewModelTest {
             crashReportController,
             network,
             null,
+            repository,
         )
     }
+
+    val testingCredentials = listOf(
+        TestingCredential("testing_server_1", "testing_user1", "psw", ""),
+        TestingCredential("testing_server_2", "testing_user2", "psw", ""),
+        TestingCredential("testing_server_3", "testing_user3", "psw", ""),
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -286,27 +296,27 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should load testing servers and users`() {
+    fun `Should load testing servers and users`() = runTest {
+        whenever(repository.getTestingCredentials()) doReturn testingCredentials
+
         instantiateLoginViewModel()
         val urlSet = hashSetOf("url1", "url2", "url3")
         val userSet = hashSetOf("user1", "user2")
-        val testingCredentials = listOf(
-            TestingCredential("testing_server_1", "testing_user1", "psw", ""),
-            TestingCredential("testing_server_2", "testing_user2", "psw", ""),
-            TestingCredential("testing_server_3", "testing_user3", "psw", ""),
-        )
+
         whenever(preferenceProvider.getSet(PREFS_URLS, emptySet())) doReturn urlSet
         whenever(preferenceProvider.getSet(PREFS_USERS, emptySet())) doReturn userSet
-        val (urls, users) = loginViewModel.getAutocompleteData(testingCredentials)
-        urlSet.forEach {
-            assertTrue(urls.contains(it))
-        }
-        userSet.forEach {
-            assertTrue(users.contains(it))
-        }
-        assertTrue(users.contains(USER_TEST_ANDROID))
-        testingCredentials.forEach {
-            assertTrue(urls.contains(it.server_url))
+        loginViewModel.autoCompleteData.observeForever { autocompleteData ->
+            val (urls, users) = autocompleteData
+            urlSet.forEach {
+                assertTrue(urls.contains(it))
+            }
+            userSet.forEach {
+                assertTrue(users.contains(it))
+            }
+            assertTrue(users.contains(USER_TEST_ANDROID))
+            testingCredentials.forEach {
+                assertTrue(urls.contains(it.server_url))
+            }
         }
     }
 
@@ -345,20 +355,20 @@ class LoginViewModelTest {
 
         whenever(
             userManager.d2.userModule(),
-        )doReturn mock()
+        ) doReturn mock()
         whenever(
             userManager.d2.userModule().user(),
-        )doReturn mock()
+        ) doReturn mock()
         whenever(
             userManager.d2.userModule().user().blockingGet(),
-        )doReturn null
+        ) doReturn null
         whenever(
             userManager.d2.userModule().accountManager(),
-        )doReturn mock()
+        ) doReturn mock()
 
         whenever(
             userManager.d2.userModule().accountManager().getAccounts(),
-        )doReturn listOf()
+        ) doReturn listOf()
 
         loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
@@ -419,8 +429,9 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should import database`() {
+    fun `Should import database`() = runTest {
         val mockedDatabase: File = mock()
+        whenever(repository.getTestingCredentials()) doReturn testingCredentials
 
         instantiateLoginViewModel()
         whenever(resourceManager.getString(any())) doReturn "Import successful"
@@ -457,20 +468,20 @@ class LoginViewModelTest {
     private fun mockAccounts(accounts: Int = 1) {
         whenever(
             userManager.d2.userModule(),
-        )doReturn mock()
+        ) doReturn mock()
         whenever(
             userManager.d2.userModule().user(),
-        )doReturn mock()
+        ) doReturn mock()
         whenever(
             userManager.d2.userModule().user().blockingGet(),
-        )doReturn null
+        ) doReturn null
         whenever(
             userManager.d2.userModule().accountManager(),
-        )doReturn mock()
+        ) doReturn mock()
 
         whenever(
             userManager.d2.userModule().accountManager().getAccounts(),
-        )doReturn mutableListOf<DatabaseAccount>().apply {
+        ) doReturn mutableListOf<DatabaseAccount>().apply {
             repeat(accounts) { this.add(dummyDatabaseAccount) }
         }
     }

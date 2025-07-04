@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accuracy_low">न्यून</string>
+    <string name="accuracy_medium">मध्यम</string>
+    </resources>

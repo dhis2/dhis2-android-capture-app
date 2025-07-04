@@ -47,7 +47,6 @@ class LoginContracts {
         fun alreadyAuthenticated()
         fun showCredentialsData(vararg args: String)
         fun showEmptyCredentialsMessage()
-        fun setTestingCredentials()
         fun getDefaultServerProtocol(): String
         fun isNetworkAvailable(): Boolean
         fun openOpenIDActivity(it: IntentWithRequestCode?)

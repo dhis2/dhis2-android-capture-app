@@ -1,7 +1,6 @@
 package org.dhis2.usescases.reservedValue;
 
 import android.os.Bundle;
-
 import org.dhis2.App;
 import org.dhis2.BR;
 import org.dhis2.R;
@@ -10,12 +9,10 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.dialogs.CustomDialog;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.List;
-
 import javax.inject.Inject;
-
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 public class ReservedValueActivity extends ActivityGlobalAbstract implements ReservedValueView {
 
@@ -46,6 +43,7 @@ public class ReservedValueActivity extends ActivityGlobalAbstract implements Res
     @Override
     protected void onResume() {
         super.onResume();
+        reservedBinding.recycler.setLayoutManager(new LinearLayoutManager(this));
         presenter.init();
     }
 

@@ -45,6 +45,8 @@
     <string name="search_result_text">Nalezeno %s výsledků</string>
     <string name="add_new">Přidat nový</string>
     <string name="add">Přidat</string>
+    <string name="enter_event_data">Zadat %s</string>
+    <string name="enter_cancel_event_data">Zadat / přeskočit %s</string>
     <string name="schedule_new">Naplánovat nový</string>
     <string name="referral">Doporučení</string>
 
@@ -77,6 +79,9 @@
 
     <!-- Input hints -->
     <string name="search">Hledat</string>
+    <string name="search_add_new_te_type">Hledat / Přidat nové %s</string>
+    <string name="search_te_type">Vyhledat %s</string>
+    <string name="add_te_type">Přidat nový %s</string>
     <string name="enter_text">Zadejte text</string>
     <string name="enter_long_text">Zadejte dlouhý text</string>
     <string name="enter_number">Zadejte číslo</string>
@@ -93,10 +98,14 @@
     <string name="program_inactive">Program neaktivní</string>
 
     <string name="event_open">Otevřít</string>
+    <string name="event_not_completed">Není dokončeno</string>
+    <string name="event_completed">Událost dokončena</string>
     <string name="read_only">Pouze ke čtení</string>
     <string name="finish_and_complete">Hotovo a dokončit</string>
     <string name="completed">Dokončeno</string>
     <string name="cancelled">Zrušeno</string>
+    <string name="re_open">Znovu otevřít</string>
+    <string name="re_open_form">Znovu otevřít formulář</string>
     <string name="activate">Aktivovat</string>
     <string name="active">Aktivní</string>
 
@@ -136,12 +145,17 @@
     <string name="there_is_no_available_period">Nejsou k dispozici žádná období k výběru.</string>
     <!--Event Detail-->
     <string name="due_date">Poslední termín</string>
+    <string name="next_event">Další %1$s</string>
     <string name="cat_combo">Kombinace kategorií</string>
     <string name="date_default">DD/MM/RRRR</string>
     <string name="cancel">Zrušit</string>
     <string name="delete">Smazat</string>
     <string name="total">Celkem</string>
     <string name="most_recent_event_date">Datum poslední události</string>
+    <string name="no_options">K dispozici nejsou žádné možnosti</string>
+
+    <!--TEI Enrollment list-->
+    <string name="enrollment_list">Seznam zápisů</string>
     <string name="active_programs">Aktivní programy</string>
     <string name="to_enroll_programs">Programy k zápisu</string>
     <string name="enroll">Zapsat</string>
@@ -151,17 +165,23 @@
     <!--TEI DASHBOARD-->
     <string name="see_details">Prohlednout detaily</string>
     <string name="view_more">UKÁZAT VÍCE</string>
+    <string name="edit">Upravit</string>
     <string name="follow_up">Následovat</string>
     <string name="follow_up_enabled">Sledování povoleno</string>
     <string name="follow_up_disabled">Sledování zakázáno</string>
     <string name="deactivate">Deaktivovat</string>
     <string name="program_not_allow_events">Tento program neumožňuje více událostí</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">Nejsou data</string>
     <string name="events">události</string>
     <string name="done_task">Úvodní strana</string>
     <string name="app_info">Info o aplikaci</string>
     <string name="log_out">Odhlášení</string>
     <string name="block_session">Blokovat relaci</string>
+    <string name="show_more_events">Zobrazit %s dalších...</string>
+    <string name="show_less_events">Zobrazit méně...</string>
+
     <!-- SYNC -->
     <string name="a_minute">1 minuta</string>
     <string name="fifteen_minute">15 minut</string>
@@ -188,6 +208,7 @@
     <string name="settings_sms_module_title">SMS modul:</string>
     <string name="settings_sms_receiver_number">SMS brána</string>
     <string name="settings_sms_result_sender_number">Odesílatel výsledků SMS</string>
+    <string name="settings_sms_result_timeout">Časový limit výsledku SMS (s)</string>
     <string name="settings_sms_result_timeout_hint">vteřin</string>
     <string name="settings_sms_result_sender_hint">číslo</string>
     <string name="settings_sms_receiver_number_hint">číslo</string>
@@ -221,6 +242,10 @@
     <string name="settingsReset_descr">Vaše konfigurace a data aplikace uložená v zařízení budou smazána. Budete požádáni o opětovné přihlášení a data, která nejsou synchronizována se serverem, budou ztracena.</string>
     <string name="settingsSms">SMS nastavení</string>
     <string name="settingsSms_descr">Zkontrolujte a upravte parametry týkající se brány SMS</string>
+    <string name="settingsCheckVersion">Aktualizace softwaru</string>
+    <string name="settingsCheckVersionMessage">Software</string>
+    <string name="settingsExportDB">Export databáze</string>
+    <string name="settingsExportDBMessage">Export databáze a její sdílení se správcem</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Datum zápisu</string>
@@ -365,10 +390,12 @@
     <string name="date_dialog_tigle">Vyberte data, která chcete filtrovat</string>
     <string name="select_option">Vyberte možnost</string>
     <string name="issue_reported">Problém byl nahlášen</string>
+    <string name="dialog_generate_new_event">Generovat novou událost</string>
     <string name="message_generate_new_event">Chcete vytvořit další událost?</string>
     <string name="event_completed_title">Události byly dokončeny</string>
     <string name="event_completed_message">Všechny události v tomto programu jsou dokončeny. Chcete také ukončit program?</string>
     <string name="complete_enrollment_message">Chcete také dokončit zápis?</string>
+    <string name="complete_enrollment_message_V2">Chtěli byste také vyplnit stránku %s?</string>
     <string name="check_event">Zkontrolovat</string>
 
     <string name="menu_home">Úvodní strana</string>
@@ -453,6 +480,8 @@
     <string name="biometrics_dialog_title">Prázdné pověření</string>
     <string name="biometrics_first_use_text">Abyste se mohli přihlásit pomocí snímače otisků prstů, musíte nejprve použít výchozí způsob</string>
     <string name="biometrics_security_title">Biometrické zabezpečení</string>
+    <string name="biometrics_login_title">Rychlé přihlášení</string>
+    <string name="biometrics_login_text">Chcete se přihlásit pomocí otisku prstu nebo jiné biometrické metody?</string>
     <string name="tab_tables">Tabulky</string>
     <string name="table">Tabulka</string>
     <string name="login_https">https://</string>
@@ -463,6 +492,9 @@
     <string name="org_unit_selection_warning">Musí být vybrána alespoň jedna organizační jednotka</string>
     <string name="send_user_name_title">Odeslat data</string>
     <string name="send_user_name_mesage">Pomozte DHIS2 vylepšit tuto aplikaci sdílením protokolů chyb spojených s vaším ID uživatele.</string>
+    <string name="improve_app_msg_title">Chcete nám pomoci vylepšit tuto aplikaci?</string>
+    <string name="improve_app_msg_text">Pokud řeknete ano, aplikace odešle anonymní statistiky a protokoly chyb, které nám pomohou zlepšit uživatelský dojem a výkon.\n\nDalší podrobnosti naleznete v našich zásadách ochrany osobních údajů.</string>
+    <string name="improve_app_msg_clickable_word">Zásady ochrany osobních údajů</string>
     <string name="check_mandatory_field">Zkontrolujte pole</string>
     <string name="error_no_network_during_sync">Při synchronizaci konfigurace jste ztratili připojení k internetu. Prosím zkuste to znovu později</string>
     <string name="action_agree">Souhlasit</string>
@@ -675,6 +707,7 @@
     <string name="download_tei_error">Vybraný %s nelze stáhnout.</string>
     <string name="completed_by">Dokončeno %s : %s</string>
     <string name="updated_time">Aktualizováno: %s</string>
+    <string name="action_done">Hotovo</string>
     <string name="validation_internal_error_datasets">Nemohli jsme zkontrolovat kvalitu dat. Kontaktujte svého správce</string>
     <string name="are_you_sure">Jste si jist?</string>
     <string name="reopen_question">Chcete znovu otevřít soubor dat?</string>
@@ -702,12 +735,17 @@
     <string name="error_init_session">Nemohli jsme zahájit relaci s vaším uživatelem</string>
     <string name="enrollment_date_edition_warning">Jsou plánované události, které nebudou znovu naplánovány</string>
     <string name="section_charts">Grafy</string>
+    <string name="navigation_list_view">Seznam</string>
     <string name="navigation_table_view">Zobrazení tabulky</string>
+    <string name="navigation_map_view">Mapa</string>
     <string name="navigation_analytics">Analýza</string>
     <string name="navigation_tasks">Úkoly</string>
     <string name="navigation_programs">Programy</string>
+    <string name="navigation_charts">Grafy</string>
+    <string name="navigation_relationships">Vztahy</string>
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
+    <string name="navigation_form">Formulář</string>
     <string name="navigation_tei_data">Detaily</string>
     <string name="show_bar_graph">Zobrazit jako lištu</string>
     <string name="show_line_graph">Zobrazit jako čáru</string>
@@ -806,10 +844,12 @@
     <string name="search_too_many_results">Příliš mnoho výsledků</string>
     <string name="search_too_many_results_message">Zkuste změnit vyhledávání a zúžit výsledky.</string>
     <string name="search_create_new">Vytvořit nový</string>
+    <string name="search_new_te_type">Nový %s</string>
     <string name="search_min_attributes_message">Pro vyhledávání je nutné zadat alespoň atributy %s</string>
     <string name="action_ok">Ok</string>
     <string name="init_search">Spusťte vyhledávání a najděte jakýkoli %s</string>
     <string name="search_or_create">Můžete vyhledat nebo vytvořit nový %s</string>
+    <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
     <string name="missing_warning_fields_events">Máte nějaké varovné zprávy.\nChcete tento formulář označit jako dokončený?</string>
     <string name="missing_error_fields_events">Některá pole obsahují chyby a neuloží se. \nChcete zkontrolovat formulář?</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
@@ -825,6 +865,7 @@
     <string name="customactivityoncrash_error_activity_device">Zařízení: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Verze OS: %s</string>
     <string name="open_details">Otevřete podrobnosti %s</string>
+    <string name="tracked_entity_type_details">Podrobnosti %s</string>
     <string name="syncing_resource">Synchronizace %s…</string>
     <string name="sms_sync_waiting_for_response">SMS odeslána. Čekání na odpověď serveru.</string>
     <string name="sms_sync_sms_reached_server">SMS potvrzena pro spojení se serverem. Aktualizace stavu</string>
@@ -833,5 +874,111 @@
     <string name="sms_sync_not_sent">SMS nebyla odeslána.</string>
     <string name="sms_sync_opening_app">Otevření aplikace SMS. Zprávu prosím neupravujte.</string>
     <string name="sms_sync_sms_app_chooser_title">Poslat SMS s</string>
+    <string name="sms_sync_is_sms_sent">Poslal jste sms?</string>
     <string name="sms_sync_manual_confirmation">Čeká se na ruční potvrzení</string>
+    <string name="syncing_events">Synchronizace událostí</string>
+    <string name="syncing_teis">Synchronizace trasovaných entit</string>
+    <string name="syncing_data_sets">Synchronizace datových sad</string>
+    <string name="syncing_resources">Synchronizace zdrojů</string>
+    <string name="syncing_done">Synchronizace dokončena</string>
+    <string name="sms_available_for_individual_records">Synchronizace SMS je k dispozici, ale musí být přístupná pro každý jednotlivý záznam</string>
+    <string name="downloading_image_resources">Stahování obrázků...</string>
+    <string name="program_description">Popis programu</string>
+    <string name="wrong_pin">Špatný pin</string>
+    <string name="enrolledIn">Zapsáno v</string>
+    <string name="ownedBy">Ve vlastnictví</string>
+    <string name="sync_dialog_title_not_synced">Je nutná synchronizace</string>
+    <string name="sync_dialog_title_error">Chyba synchronizace</string>
+    <string name="sync_dialog_title_synced">Synchronizováno</string>
+    <string name="sync_dialog_title_warning">Upozornění na synchronizaci</string>
+    <string name="sync_dialog_title_syncing">Probíhá synchronizace</string>
+    <string name="sync_dialog_title_sms_syced">SMS odeslána</string>
+    <string name="sync_dialog_message_not_synced_all">Chcete odeslat všechny své změny?</string>
+    <string name="sync_dialog_message_not_synced_program">Chcete odeslat změny pro %s?</string>
+    <string name="sync_dialog_message_not_synced_tei">Chcete odeslat změny pro tento %s</string>
+    <string name="sync_dialog_message_synced_all">Chcete zkontrolovat aktualizace?</string>
+    <string name="sync_dialog_message_synced_program">Chcete zkontrolovat aktualizace na %s?</string>
+    <string name="sync_dialog_message_synced_tei">Chcete zkontrolovat aktualizace pro tento %s?</string>
+    <string name="sync_dialog_message_sms_synced">Chcete odeslat SMS znovu?</string>
+    <string name="sync_dialog_action_send">Odeslat</string>
+    <string name="sync_dialog_action_refresh">Obnovit</string>
+    <string name="sync_dialog_action_not_now">Teď ne</string>
+    <string name="tap_to_explore_action">Klepnutím sem prozkoumejte</string>
+    <plurals name="error_count_label">
+        <item quantity="one">%s chyba</item>
+        <item quantity="few">%s chyby</item>
+        <item quantity="many">%s chyb</item>
+        <item quantity="other">%s chyb</item>
+    </plurals>
+    <plurals name="warning_count_label">
+        <item quantity="one">%s varování</item>
+        <item quantity="few">%s varování</item>
+        <item quantity="many">%s varování</item>
+        <item quantity="other">%s varování</item>
+    </plurals>
+    <string name="new_version_message">Nyní je k dispozici verze aplikace <b>%s </b> . Chcete si ji stáhnout?</string>
+    <string name="software_update">Aktualizace softwaru</string>
+    <string name="remind_me_later">Později</string>
+    <string name="download_now">Stáhnout teď</string>
+    <string name="check_for_updates">Kontrola aktualizací</string>
+    <string name="checking_for_updates">Kontrola aktualizací</string>
+    <string name="no_updates">Nejsou žádné nové aktualizace</string>
+    <string name="unknow_sources_denied">Oprávnění k neznámým zdrojům je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
+    <string name="storage_denied">Oprávnění úložiště je odepřeno.\nAbyste mohli nainstalovat verzi, musíte jej povolit.</string>
+    <string name="app_version">Verze aplikace</string>
+    <string name="error_applying_rule_effects">Něco se pokazilo v konfiguraci programu, tuto událost nelze načíst. Obraťte se prosím na správce systému.</string>
+    <string name="dashboard_menu_delete_person">Odstranit osobu</string>
+    <string name="permission_notification_denied">Oprávnění k oznámení je zamítnuto.</string>
+    <string name="permission_notification_granted">Oprávnění k oznámení uděleno.</string>
+    <string name="not_synced">Není synchronizováno</string>
+    <string name="sync_retry">Opakování synchronizace</string>
+    <string name="marked_follow_up">Označeno pro další sledování</string>
+    <string name="overdue">Zpoždění %s</string>
+    <string name="registered_in">Registrováno v</string>
+    <string name="view_only">Pouze zobrazení</string>
+    <string name="scheduled">Plánováno: %s</string>
+    <string name="scheduled_for">Naplánováno na %s</string>
+    <string name="skipped">Přeskočeno</string>
+    <string name="programs">Programy</string>
+    <string name="sync_successful">Synchronizace úspěšná</string>
+    <string name="sync_warning">Upozornění na synchronizaci</string>
+    <string name="sync_error">Chyba synchronizace</string>
+    <string name="mark_follow_up">Označit pro další sledování</string>
+    <string name="coordinates">Souřadnice</string>
+    <string name="no_data_access">Nemáte přístup k datům.\nObraťte se na správce.</string>
+    <string name="sync_offline_check_connection">Vypadá to, že jste offline. Zkontrolujte prosím své připojení</string>
+    <string name="delete_tei_dialog_title">Smazat tuto stránku %s?</string>
+    <string name="delete_tei_dialog_message">Tato stránka %s a všechna její data ve všech programech budou odstraněna. Tuto akci nelze vrátit zpět.</string>
+    <string name="remove_enrollment_dialog_title">Odstranit z %s?</string>
+    <string name="remove_enrollment_dialog_message">Data z %s budou smazána. Tuto akci nelze vzít zpět.</string>
+    <string name="schedule_next">Další plán</string>
+    <string name="schedule">Plán</string>
+    <string name="refer">Odkazovat</string>
+    <string name="scheduled_enter_event">Naplánováno</string>
+    <string name="enter_event">Zadat %1$s</string>
+    <string name="cancel_event">Zrušit %1$s</string>
+    <string name="program_stage">Programová fáze</string>
+    <string name="event">událost</string>
+    <string name="timeline">Časová osa</string>
+    <string name="clear_search">Vymazat hledání</string>
+    <string name="optional">Volitelný</string>
+    <string name="database_export_downloaded">Databáze stažena</string>
+    <string name="importing_database">Importování databáze</string>
+    <string name="empty_search_attributes_message">Nejsou nakonfigurována žádná pole pro vyhledávání.\nObraťte se na správce.</string>
+    <string name="show_more">Zobrazit více</string>
+    <string name="show_less">Zobrazit méně</string>
+    <string name="sync">Synchronizace</string>
+    <string name="show_fields">Zobrazit pole</string>
+    <string name="hide_fields">Skrýt pole</string>
+    <string name="importing_successful">Import byl úspěšný</string>
+    <string name="section_misconfigured">Tato část je špatně nakonfigurovaná.\nObraťte se na správce.</string>
+    <string name="successful_sync">Úspěšná synchronizace</string>
+    <string name="syncing_something">Synchronizace %s…</string>
+    <string name="file_resources">zdroje souborů</string>
+    <string name="show_description">Ukázat popis</string>
+    <string name="hide_description">Skrýt popis</string>
+    <string name="biometric_title">Ověřte, že jste to vy</string>
+    <string name="use_password">Použití hesla</string>
+    <string name="transfer">Převod</string>
+    <string name="successfully_transferred">Úspěšně přeneseno</string>
     </resources>

@@ -5,4 +5,7 @@
     <string name="remove_relationship_title">Bỏ %s\?</string>
     <string name="remove_relationship_desc">%ssẽ bị xóa. Hành động này không thể hoàn lại. </string>
     <string name="remove_some_relationships_title">Bỏ %d mối quan hệ được chọn\?</string>
-    </resources>
+    <string name="remove_some_relationships_desc">%dmối quan hệ được chọn sẽ bị xóa. Hành động này không thể hoàn tác.</string>
+    <string name="show_number_more">Hiển thị thêm %d...</string>
+    <string name="relationship">Mối quan hệ</string>
+</resources>

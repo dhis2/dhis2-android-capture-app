@@ -1,19 +1,13 @@
 package org.dhis2.usescases.datasets
 
-import android.app.Instrumentation
-import android.os.Bundle
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.datasets.dataSetTable.period.reportPeriodSelectorRobot
 import org.dhis2.usescases.datasets.dataSetTable.pivotTestingData
 import org.dhis2.usescases.datasets.datasetDetail.DataSetDetailActivity
-import org.dhis2.usescases.flow.syncFlow.robot.dataSetRobot
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchte.robot.filterRobot
 import org.hisp.dhis.android.core.D2Manager
@@ -25,8 +19,6 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
-
-    private val instrumentation: Instrumentation = InstrumentationRegistry.getInstrumentation()
 
     @get:Rule
     val ruleDataSetDetail = lazyActivityScenarioRule<DataSetDetailActivity>(launchActivity = false)
@@ -52,6 +44,7 @@ class DataSetTest : BaseTest() {
         createDataSetInstanceStep(
             period = period,
             orgUnit = orgUnit,
+            openFuturePeriods = 9,
         )
 
         tableIsVisible()
@@ -71,19 +64,14 @@ class DataSetTest : BaseTest() {
             rowIndex = 0,
             value = "12.0",
         )
+        checkGreyFields()
         reenterDataSetToCheckValueSavedStep()
 
-
-        // Step - Test combination of filters - TODO Move the step after creating dataset instance
-        // ORG unit add some dataset instance out of Ngelahun CHC to filter by Ngelahun CHC
-        // Period filter from - to specific period where instances exist
-        // Sync move after create dataset instance and check the filter afterwards
-        // checkFilterCombination(orgUnit)
+        checkFilterCombination(orgUnit)
     }
 
     @Test
     fun formConfigurationTestAutomate() = runTest {
-        // Start Activity
         enterDataSetStep("DMicXfEri6s", "Form configuration options")
         waitForTableToBeVisible()
 
@@ -113,12 +101,13 @@ class DataSetTest : BaseTest() {
     }
 
     private fun checkCustomTitleIsDisplayed() {
-        logStep("Starting check custom title is displayed")
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("Line end: Custom Title", true)
-            assertItemWithTextIsDisplayed("Line end: Custom Subtitle test a very long subtitle", true)
+            assertItemWithTextIsDisplayed(
+                "Line end: Custom Subtitle test a very long subtitle",
+                true
+            )
         }
-        logStep("Finish check custom title is displayed")
     }
 
     private suspend fun waitForTableToBeVisible() {
@@ -131,7 +120,6 @@ class DataSetTest : BaseTest() {
 
     private suspend fun checkContentBoxesAreDisplayed() {
         tableIsVisible()
-        logStep("Starting Check content boxes above and below the table")
         // Check top and bottom content is displayed in initial section
         dataSetDetailRobot(composeTestRule) {
             assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
@@ -152,9 +140,8 @@ class DataSetTest : BaseTest() {
         dataSetTableRobot(composeTestRule) {
             scrollToItemWithText("CONTENT AFTER 2:")
             assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
+            scrollToTop()
         }
-        logStep("Finish Check content boxes above and below the table")
-
     }
 
     @Test
@@ -197,6 +184,8 @@ class DataSetTest : BaseTest() {
 
         checkMandatoryDialogIsDisplayedAndAcceptStep()
 
+        checkMandatoryIconOnCell(tableId = tableId, cellId = cellMandatoryId)
+
         enterDataStep(
             tableId = tableId,
             cellId = cellMandatoryId,
@@ -208,7 +197,7 @@ class DataSetTest : BaseTest() {
 
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
-        checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
+        checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
     }
 
     @Test
@@ -269,8 +258,8 @@ class DataSetTest : BaseTest() {
         runOptionalValidationRules()
 
         checkValidationBarIsDisplayedAndCompleteAnyway()
+        checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
 
-        checkDataSetInstanceHasBeenCreated(periodListLabel, orgUnit)
     }
 
     private fun checkLegendsStep(
@@ -278,9 +267,6 @@ class DataSetTest : BaseTest() {
         cellId: String,
         legendData: List<LegendTestingData>
     ) {
-
-        logStep("Starting checking legends")
-
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, cellId)
             assertInputDialogIsDisplayed()
@@ -306,12 +292,71 @@ class DataSetTest : BaseTest() {
             pressOnInputDialogDismiss()
             closeKeyboard()
         }
-
-        logStep("Finished checking legends")
     }
 
-    private fun checkCategoryIsMovedToRow() {
-        logStep("Starting Check category is moved to row")
+    private suspend fun checkCategoryIsMovedToRow() {
+        val cellIdSection8 = "PGRlPlAzakpINVR1NVZDLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
+        val cellId2Section8 = "PGRlPkZRMm84VUJsY3JTLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
+        val cellIdSection16 = "PGRlPkFyUzdWeXVMOTVmLCA8Y28+RmJMWlMzdWVXYlE6PGNvPg=="
+        val cellId2Section16 = "PGRlPkFyUzdWeXVMOTVmLCA8Y28+Wlp4WXVvVENjRGQ6PGNvPg=="
+        val cellIdSection24 = "PGRlPnpnZUFkbnBTWTVLLCA8Y28+WjhhWDNBa3JETVM6PGNvPg=="
+        val cellId2Section24 = "PGRlPnpnZUFkbnBTWTVLLCA8Y28+c05yMXk1UXExWVE6PGNvPg=="
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(categoryToRowList[0].sectionIndex, categoryToRowList[0].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellIdSection8,
+            value = "10",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellId2Section8,
+            value = "7",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(categoryToRowList[1].sectionIndex, categoryToRowList[1].sectionName)
+        }
+        tableIsVisible()
+        dataSetTableRobot(composeTestRule) {
+            scrollToTop()
+        }
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellIdSection16,
+            value = "11",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = "t3aNCvHsoSn",
+            cellId = cellId2Section16,
+            value = "24",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(categoryToRowList[2].sectionIndex, categoryToRowList[2].sectionName)
+        }
+        tableIsVisible()
+
+        enterDataStep(
+            tableId = "aN8uN5b15YG_1",
+            cellId = cellIdSection24,
+            value = "4",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = "aN8uN5b15YG_1",
+            cellId = cellId2Section24,
+            value = "14",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
         dataSetTableRobot(composeTestRule) {
             categoryToRowList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -321,62 +366,116 @@ class DataSetTest : BaseTest() {
                 assertCategoryHeaderIsDisplayed(data.headerTestTags)
             }
         }
-        logStep("Finish Check category is moved to row")
-
     }
 
     private fun runOptionalValidationRules() {
-        logStep("Starting Run Optional Validation Rules")
         dataSetTableRobot(composeTestRule) {
             acceptOptionalValidationRule()
         }
-        logStep("Finished Run Optional Validation Rules")
     }
 
     private fun checkValidationBarIsDisplayedAndReview() {
-        logStep("Starting Check Validation Rule errors and review")
-
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
             tapOnReview()
         }
-        logStep("Finished Check Validation Rule errors and review")
     }
 
     private fun checkValidationBarIsDisplayedAndCompleteAnyway() {
-        logStep("Starting Check Validation Rule errors and complete anyway")
-
         dataSetTableRobot(composeTestRule) {
             assertValidationBarIsDisplayed()
             expandValidationRulesErrorDialog()
             tapOnCompleteAnyway()
         }
-        logStep("Finished Check Validation Rule errors and complete anyway")
     }
 
-    private fun checkDataSetInstanceHasBeenCreated(
+    private fun checkDataSetInstanceHasBeenCreatedAndIsCompleted(
         period: String,
         orgUnit: String,
     ) {
-        logStep("Starting Check dataset instance has been created")
         dataSetDetailRobot(composeTestRule) {
-            checkDataSetInList(period, orgUnit)
+            checkDataSetIsCompletedAndModified(period, orgUnit)
         }
-        logStep("Finished Check dataset instance has been created")
     }
 
     private fun checkMandatoryDialogIsDisplayedAndAcceptStep() {
-        logStep("Starting Checking Mandatory Dialog")
         dataSetTableRobot(composeTestRule) {
             checkMandatoryDialogIsDisplayed()
             acceptMandatoryDialog()
         }
-        logStep("Finished Checking Mandatory Dialog")
     }
 
-    private fun checkAutomaticGroupingDisabled() {
-        logStep("Starting Check Automatic Grouping")
+    private suspend fun checkAutomaticGroupingDisabled() {
+        val table19 = "t3aNCvHsoSn_0"
+        val table219 = "aN8uN5b15YG_1"
+        val table20 = "ck7mRNwGDjP_1"
+        val table220 = "ck7mRNwGDjP_3"
+        val table22 = "t3aNCvHsoSn_0"
+        val table222 = "aN8uN5b15YG_1"
+        val cellIdSection19 = "PGNvYz5TMzRVTE1jSE1jYTo8ZGU+Q2o1clRjOW5Fdmw="
+        val cellId2Section19 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+RXpSNVkyVjBKRjk="
+        val cellIdSection20 = "PGRlPnlxQmtuOUNXS2loOjxjb2M+bzJneEV0NkVrMkM="
+        val cellId2Section20 = "PGRlPmxhWkxRZG51Y1YxOjxjb2M+bzJneEV0NkVrMkM="
+        val cellIdSection22 = "PGRlPndjd2JOMWpSMGFyOjxjb2M+U2RPVUkyeVQ0Nkg="
+        val cellId2Section22 = "PGRlPk9LajZ2VjhobVRQOjxjb2M+RE9DN2VtTHp5Umk="
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(
+                disableAutomaticGroupingList[0].sectionIndex,
+                disableAutomaticGroupingList[0].sectionName
+            )
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table19,
+            cellId = cellIdSection19,
+            value = "4",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = table219,
+            cellId = cellId2Section19,
+            value = "14",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(
+                disableAutomaticGroupingList[1].sectionIndex,
+                disableAutomaticGroupingList[1].sectionName
+            )
+        }
+        tableIsVisible()
+
+        enterDataStep(
+            tableId = table20,
+            cellId = cellIdSection20,
+            value = "7",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        enterDataStep(
+            tableId = table220,
+            cellId = cellId2Section20,
+            value = "11",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(
+                disableAutomaticGroupingList[2].sectionIndex,
+                disableAutomaticGroupingList[2].sectionName
+            )
+        }
+        tableIsVisible()
+
+        enterDataStep(
+            tableId = table22,
+            cellId = cellIdSection22,
+            value = "7",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        composeTestRule.waitForIdle()
+
         dataSetTableRobot(composeTestRule) {
             disableAutomaticGroupingList.forEach { data ->
                 clickOnSection(data.sectionIndex, data.sectionName)
@@ -384,57 +483,86 @@ class DataSetTest : BaseTest() {
                 assertTablesAreDisplayedInOrder(data.tableIdTestTags)
             }
         }
-        logStep("Finish Check Automatic Grouping")
-
     }
 
-    private fun checkPivotOptions() {
-        logStep("Starting check Pivot Options")
+    private suspend fun checkPivotOptions() {
+        val table5 = "aN8uN5b15YG"
+        val table13 = "UnNIOt1uB0J"
+        val table23 = "aN8uN5b15YG_1"
+        val cellIdSection5 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+TFNKNW1LcHlFdjE="
+        val cellIdSection13 = "PGNvYz5wY0tqRUVscHZxZDo8ZGU+V0hCdHNDTVpWQUU="
+        val cellIdSection23 = "PGNvYz5SMjNoOVFaUmJSdDo8ZGU+ZElxeDdyZG5WYzk="
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(pivotTestingData[0].sectionIndex, pivotTestingData[0].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table5,
+            cellId = cellIdSection5,
+            value = "4",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
+        /*dataSetTableRobot(composeTestRule) {
+            clickOnSection(pivotTestingData[1].sectionIndex, pivotTestingData[1].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table13,
+            cellId = cellIdSection13,
+            value = "4",
+            inputTestTag = "INPUT_INTEGER_FIELD"
+        )*/
+
+        dataSetTableRobot(composeTestRule) {
+            clickOnSection(pivotTestingData[2].sectionIndex, pivotTestingData[2].sectionName)
+        }
+        tableIsVisible()
+        enterDataStep(
+            tableId = table23,
+            cellId = cellIdSection23,
+            value = "15",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+
         dataSetTableRobot(composeTestRule) {
             pivotTestingData.forEach { data ->
+                scrollToTop()
                 clickOnSection(data.sectionIndex, data.sectionName)
                 assertTableIsDisplayed()
                 assertTableHeaders(data.headerTestTags)
                 assertTableRows(data.rowTestTags)
             }
         }
-        logStep("Finish check Pivot Options")
     }
 
     private fun checkCompleteDialogIsDisplayedAndAttemptToCompleteStep() {
-        logStep("Starting Trying to complete dataset")
-
         dataSetTableRobot(composeTestRule) {
             checkCompleteDialogIsDisplayed()
             tapOnCompleteButton()
         }
-        logStep("Finished Trying to complete dataset")
     }
 
     private fun tapOnSaveButtonStep() {
-        logStep("Starting Tap on Done button")
-
         dataSetTableRobot(composeTestRule) {
             tapOnSaveButton()
         }
-        logStep("Finished Tap on Done button")
     }
 
     private fun enterDataSetStep(
         uid: String,
         name: String,
     ) {
-        logStep("Starting Entering dataset $name")
         startDataSetDetailActivity(
             dataSetUid = uid,
             dataSetName = name,
             rule = ruleDataSetDetail
         )
-        logStep("Finished Entering dataset $name")
     }
 
     private fun dataSetInstanceInChronologicalOrderStep() {
         dataSetDetailRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             checkDatasetListIsSortedChronologically()
         }
     }
@@ -479,8 +607,6 @@ class DataSetTest : BaseTest() {
         value: String,
         inputTestTag: String,
     ) {
-        logStep("Starting Enter value: $value into cell ${dataElementDescription ?: cellId}")
-
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, cellId)
             assertInputDialogIsDisplayed()
@@ -492,7 +618,6 @@ class DataSetTest : BaseTest() {
             assertCellHasValue(tableId, cellId, value)
         }
 
-        logStep("Finished Enter value: $value into cell ${dataElementDescription ?: cellId}")
     }
 
     private fun enterTwoSequentialSteps(
@@ -503,7 +628,6 @@ class DataSetTest : BaseTest() {
         inputTestTag: String,
 
         ) {
-        logStep("Starting Enter value: $firstValue into cell $firstCellId")
         dataSetTableRobot(composeTestRule) {
             clickOnCell(tableId, firstCellId)
             typeOnInputDialog(firstValue, inputTestTag)
@@ -511,7 +635,6 @@ class DataSetTest : BaseTest() {
             typeOnInputDialog(secondValue, inputTestTag)
             pressOnInputDialogDismiss()
         }
-        logStep("Finished Enter value")
     }
 
     private fun checkTotalsUpdated(
@@ -550,33 +673,68 @@ class DataSetTest : BaseTest() {
     private fun checkFilterCombination(
         orgUnit: String,
     ) {
-        filterRobot(composeTestRule) {
-            //Open filter
-            openFilters()
 
-            //Filter by org unit Ngelehun CHC
-            clickOnFilterBy(filter = "ORG. UNIT")
-//            clickOnSortByField(orgUnitFilter) this icons are not visible but can b e pressed do we need them in dataset?
-            typeOrgUnitField(orgUnit)
-            checkFilterCounter("1")
+        dataSetTableRobot(composeTestRule) {
+            returnToDataSetInstanceList()
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(11, getListItemCount())
+            assertEquals(6, getListItemCount())
+            filterRobot(composeTestRule) {
+                //Open filter
+                openFilters()
+
+                clickOnFilterBy(filter = "ORG. UNIT")
+                typeOrgUnitField(orgUnit)
+                checkFilterCounter("1")
+            }
+            assertEquals(5, getListItemCount())
         }
 
         filterRobot(composeTestRule) {
-            //Filter by period Last Month
+            //Filter by peiod
             clickOnFilterBy(filter = "Period")
-            clickOnLastMonthPeriodFilter()
+            clickOnFromToDate()
+            chooseDate("08082024")
+            chooseDate("09092025")
             checkFilterCounter("2")
-
-            clickOnAnytimePeriodFilter()
-            checkFilterCounter("1")
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(11, getListItemCount())
+            checkDataSetRecyclerItemsAreDisplayed(2)
+        }
+
+        filterRobot(composeTestRule) {
+            clickOnFilterBy(filter = "Sync")
+            clickOnNotSync()
+            checkFilterCounter("3")
+        }
+
+        dataSetDetailRobot(composeTestRule) {
+            assertEquals(1, getListItemCount())
+        }
+
+        filterRobot(composeTestRule) {
+            resetFilters()
+        }
+    }
+
+    private fun checkGreyFields() {
+        dataSetTableRobot(composeTestRule) {
+            val tableId = "dzjKKQq0cSO"
+            val firstCell = "PGRlPnBpa096aXlDWGJNOjxjb2M+UHJsdDBDMVJGMHM="
+            val greyCell1 = "PGRlPnBpa096aXlDWGJNOjxjb2M+cHNid3AzQ1FFaHM="
+            val nextCell = "PGRlPnBpa096aXlDWGJNOjxjb2M+VjZMNDI1cFQzQTA="
+            val greyCell2 = "PGRlPnBpa096aXlDWGJNOjxjb2M+aEVGS1NzUFY1ZXQ="
+            val nextLineCell = "PGRlPk8wNW1BQnlPZ0F2Ojxjb2M+UHJsdDBDMVJGMHM="
+            clickOnCell(tableId, firstCell)
+            assertInputDialogIsDisplayed()
+            pressOnInputDialogNext()
+            assertCellDisabled(tableId, greyCell1)
+            assertCellSelected(tableId, nextCell)
+            pressOnInputDialogNext()
+            assertCellDisabled(tableId, greyCell2)
+            assertCellSelected(tableId, nextLineCell)
         }
     }
 
@@ -584,13 +742,13 @@ class DataSetTest : BaseTest() {
         orgUnit: String,
         period: String,
         catCombo: String? = null,
+        openFuturePeriods: Int? = null,
     ) {
-        logStep("Starting Creating dataset instance $period")
-
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
         dataSetInitialRobot {
+            checkActionInputIsNotDisplayed()
             clickOnInputOrgUnit()
         }
 
@@ -599,10 +757,12 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetInitialRobot {
+            checkActionInputIsNotDisplayed()
             clickOnInputPeriod()
         }
 
         reportPeriodSelectorRobot(composeTestRule) {
+            openFuturePeriods?.let { checkFuturePeriodAvailable(it) }
             selectReportPeriod(period)
         }
 
@@ -614,14 +774,17 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetInitialRobot {
+            checkActionInputIsDisplayed()
             clickOnActionButton()
         }
-        logStep("Finished Creating dataset instance $period")
     }
 
-    private fun logStep(message: String) {
-        val bundle = Bundle()
-        bundle.putString("Step", message)
-        instrumentation.sendStatus(0, bundle)
+    private fun checkMandatoryIconOnCell(
+        tableId: String,
+        cellId: String,
+    ) {
+        dataSetTableRobot(composeTestRule) {
+            assertCellHasMandatoryIcon(tableId, cellId)
+        }
     }
 }

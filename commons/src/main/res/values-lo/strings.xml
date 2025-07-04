@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
+    <string name="feature_configuration">ການຕັ້ງຄ່າຄຸນສົມບັດ</string>
     <string name="change_calendar_view">ປ່ຽນຮູບແບບປະຕິທິນ</string>
     <string name="clear">ຈັດມ້ຽນ</string>
     <string name="action_accept">ຍອມຮັບ</string>
@@ -11,7 +12,9 @@
     <string name="clear_all">ລຶບການເລືອກ</string>
     <string name="navigation_list_view">ສະແດງຮູບແບບລາຍການ</string>
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
+    <string name="navigation_map_view">ເບີ່ງແຜ່ນທີ່</string>
     <string name="navigation_analytics">ການວິເຄາະ</string>
+    <string name="navigation_tasks">ວຽກ</string>
     <string name="navigation_programs">ສາຍງານ</string>
     <string name="navigation_relationships">ສາຍພົວພັນ</string>
     <string name="navigation_notes">ຂໍ້ຄວາມ</string>
@@ -37,6 +40,15 @@
     <string name="filters_title_assigned">ມອບໝາຍໃຫ້ຂ້ອຍ</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
+    <string name="select_period">​ເລືອກ​ໄລ​ຍະ​ເວ​ລາ​ປະ​ເພດ​ຕ່າງໆ</string>
+    <string name="daily_period">ທຸກໆມື້</string>
+    <string name="weekly">ລາຍອາທິດ</string>
+    <string name="bi_weekly">ສອງອາທິດຕໍ່ຄັ້ງ</string>
+    <string name="monthly">ລາຍເດືອນ</string>
+    <string name="bi_monthly">ທຸກໆສອງເດືອນ</string>
+    <string name="quarterly">ໄຕມາດ</string>
+    <string name="six_monthly">ແຕ່ລະ 6 ເດືອນ</string>
+    <string name="yearly">ລາຍປີ</string>
     <!-- State -->
     <string name="state_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="state_to_post">ສົ່ງ</string>
@@ -46,6 +58,9 @@
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="state_uploading">ກຳລັງອັບໂຫຼດ</string>
     <string name="state_relationship">ຄວາມສໍາພັນ</string>
+    <string name="sent_by_sms">ສົ່ງຂໍ້ຄວາມ</string>
+    <string name="sync_by_sms">ຊິ້ງຂໍ້ມູນດ້ວຍຂໍ້ຄວາມ</string>
+
     <!-- Status -->
     <string name="filter_event_status_open">ເປີດ</string>
     <string name="filter_event_status_schedule">ກຳນົດເວລາ</string>
@@ -58,6 +73,8 @@
     <string name="enrollment_status_active">ເປີດ</string>
     <string name="enrollment_status_completed">ສຳເລັດແລ້ວ</string>
     <string name="enrollment_status_cancelled">ຍົກເລີກແລ້ວ</string>
+    <string name="record_marked_for_deletion">ບັນທຶກນີ້ຖືກໝາຍໄວ້ເພື່ອການລຶບ. ທ່ານບໍ່ສາມາດເຂົ້າເຖິງມັນໄດ້.</string>
+
     <!-- Periods -->
     <string name="filter_period_today">ມື້ນີ້</string>
     <string name="filter_period_yesterday">ມື້ວານນີ</string>
@@ -71,6 +88,7 @@
     <string name="filter_period_form_to">ຈາກ - ເຖິງ</string>
     <string name="filter_period_other">ອື່ນໆ</string>
     <string name="filter_period_any">ທຸກເວລາ</string>
+    <string name="working_list_default_label">ລາຍຊື່ການເຮັດວຽກ%s</string>
     <string name="filter_period_last_n_days">%dມື້ຜ່ານມາ</string>
     <string name="filter_period_this_year">ປີນີ້</string>
     <string name="filter_period_this_bimonth">ສອງເດືອນນີ້</string>
@@ -80,16 +98,24 @@
     <string name="filter_period_six_months">6 ເດືອນນີ້</string>
     <string name="filter_period_last_six_months">6 ເດືອນຜ່ານມາ</string>
     <string name="filter_period_last_n_years">%dປີຜ່ານມາ</string>
+    <string name="filter_period_last_n_months">%dເດືອນຜ່ານມາ</string>
+    <string name="filter_period__last_n_weeks">%dອາທິດຜ່ານມາ</string>
     <string name="filter_period_weeks_this_year">ອາທິດ ຂອງປີນີ້</string>
     <string name="filter_period_months_this_year">​ເດືອນ​ໃນ​ປີ</string>
+    <string name="filter_period_bimonths_this_year">ສອງເດືອນ ຂອງປີນີ້</string>
     <string name="filter_period_quarters_this_year">​ໄຕຼມາດ​ໃນ​ປີ</string>
     <string name="filter_period_months_last_year">​ເດືອນ​ໃນປີ​ຜ່ານ​ມາ</string>
+    <string name="filter_period_quarters_last_year">ໄຕຼມາດ​ໃນ​ປີ​ຜ່ານ​ມາ</string>
     <string name="filter_period_last_year">ປີກາຍ</string>
     <string name="filter_period_this_biweek">ສອງອາທິດນີ້</string>
     <string name="filter_period_last_biweek">ສອງອາທິດທີ່ຜ່ານມາ</string>
+    <string name="filter_period_last_n_bimonths">%dສອງເດືອນທີ່ຜ່ານມາ</string>
+    <string name="filter_period_last_n_quarters">%dໄຕມາດຜ່ານມາ</string>
     <string name="last_n_months">%dເດືອນຜ່ານມາ</string>
     <string name="filter_period_this_financial_year">ສົກປີງົບປະມານຂອງປິນີ້</string>
     <string name="filter_period_last_financial_year">​ສົກ​ປີ​ງົບ​ປະ​ມານ​ປີ​ກາຍ</string>
+    <string name="filter_period_last_n_financial_years">ສົກປີງົບປະມານ%dທີ່ຜ່ານມາ</string>
+    <string name="filter_period_last_n_biweeks">%dສອງອາທິດຜ່ານມາ</string>
     <string name="period">ຊ່ວງເວລາ</string>
     <string name="DAILY">ທຸກໆມື້</string>
     <string name="WEEKLY">ເປັນອາທິດ</string>
@@ -100,21 +126,85 @@
     <string name="filter_sync_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນແລ້ວ</string>
     <string name="filter_sync_not_synced">ບໍ່ໄດ້ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="filter_sync_error">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
+    <string name="filter_sync_sms">ຂໍ້ຄວາມອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
+
     <!-- Intervals -->
     <string name="interval_now">ດຽວນີ້</string>
+    <string name="interval_minute_ago">%dນາທີທີ່ຜ່ານມາ</string>
+    <string name="interval_hour_ago">%dຊົ່ວໂມງທີ່ຜ່ານມາ</string>
     <string name="interval_yesterday">ມື້ວານນີ</string>
 
     <!-- Sections -->
     <string name="section_feedback">ຜົນຕອບຮັບ</string>
     <string name="section_indicators">ຕົວຊີ້ວັດ</string>
     <string name="section_charts">ແຜນວາດຂໍ້ມູນ</string>
+    <string name="section_charts_indicators">ແຜນວາດ ແລະ ຕົວຊີ້ວັດ</string>
+
+    <!--SDK error codes-->
+    <string name="login_error_null_pass">ບໍ່ມີລະຫັດຜ່ານ. ກະລຸນາໃສ່ລະຫັດຜ່ານ.</string>
+    <string name="login_error_null_username">ບໍ່ມີຊື່ຜູ້ໃຊ້. ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້</string>
     <string name="login_error_dhis_version">ຄອມພີວເຕີໜ່ວຍແມ່ກໍາລັງທໍາງານກັບລະບົບ DHIS2 ລຸ້ນສູງກ່ວາ 2.29. ກະລຸນາ ນໍາໃຊ້ລຸນທີ່ສູງກ່ວາ ຫຼື ນໍາໃຊ້ລະບົບທົດລອງແທນ</string>
+    <string name="login_error_dhis_version_v2">ຄອມພິວເຕີໜ່ວຍແມ່ເຄື່ອງນີ້ກຳລັງໃຊ້ເວີຊັນ DHIS2 ທີ່ແຕກຕ່າງຈາກ%s . ອັບເດດລຸ່ນຂອງຄອມພິວເຕີເຄື່ອງແມ່ຂອງທ່ານ ຫຼື ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="login_error_unsuccessful_response">ມີບາງສິ່ງບາງຢ່າງຜິດພາດ. ກະລຸນາກວດເບິ່ງທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່, ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານວ່າຖືກຕ້ອງແລ້ວ ແລ້ວລອງໃໝ່ອີກຄັ້ງ.</string>
+    <string name="login_error_error_response">ຂໍອາໄພ! ມີບາງຢ່າງລົ້ມເຫຼວໃນເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່.</string>
+    <string name="login_error_no_dhis_instance">URL ທີ່ສະໜອງໃຫ້ບໍ່ແມ່ນຄອມພິວເຕີໜ່ວຍແມ່ຂອງ DHIS2.</string>
     <string name="login_error_bad_credentials">ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານບໍ່ຖຶກຕ້ອງ</string>
+    <string name="login_error_unknown_host">ບໍ່ຮູ້ເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່</string>
     <string name="online_search_parsing_error">ມີຄໍາຜິດໃນຂະນະທີ່ສົ່ງຜົນໄດ້ຮັບ</string>
+    <string name="error_unexpected">ມີບາງຢ່າງທີ່ບໍ່ຄາດຄິດເກີດຂຶ້ນ.</string>
+    <string name="error_too_manu_org_units">ຜູ້ໃຊ້ຂອງທ່ານມີຫຼາຍກວ່າຫນຶ່ງຫົວໜ່ວຍການຈັດຕັ້ງ. ກວດເບິ່ງການຕັ້ງຄ່າຂອງທ່ານ ຫຼື ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_max_tei_count_reached">ຜົນໄດ້ຮັບອອນລາຍເກີນຈໍານວນຕົວຕິດຕາມສູງສຸດທີ່ສາມາດສະແດງໃຫ້ເຫັນໄດ້. ກະລຸນາປັບປຸງການຄົ້ນຫາຂອງທ່ານ.</string>
+    <string name="error_many_requests">ຄອມພິວເຕິ້ໜ່ວຍແມ່ຍັງບໍ່ຫວ່າງໃນເວລານີ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</string>
     <string name="error_already_authenticated">ຜູ້ໃຊ້ໄດ້ເຂົ້າສູ່ລະບົບແລ້ວ.</string>
+    <string name="error_already_executed">ການຮ້ອງຂໍໄດ້ດຳເນີນການແລ້ວ</string>
+    <string name="error_api_invalid_query">ການຮ້ອງຂໍນຳເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍຖືກຕ້ອງ</string>
+    <string name="error_app_name_not_set">ຍັງບໍໄດ້ຕັ້ງຊື່ແອັບພລິເຄຊັນ</string>
+    <string name="error_app_version_not_set">ຍັງບໍ່ໄດ້ຕັ້ງຄ່າລຸ່ນຂອງແອັບພິເຄຊັ່ນ</string>
+    <string name="error_access_keystore">ບໍ່ສາມາດເຂົ້າເຖິງທີ່ເກັບຂອງອຸປະກອນໄດ້.</string>
+    <string name="error_create_existing_error">ການສ້າງຖືກຍົກເລີກ. ມີວັດຖຸຢູ່ແລ້ວ.</string>
+    <string name="error_delete_non_existing_object">ຍົກເລິກການລົບແລ້ວ. ບໍ່ມີວັດຖຸຢູ່</string>
+    <string name="error_reserve_value_on_server">ພວກເຮົາບໍ່ສາມາດຈອງຄ່າສໍາລັບບັນທຶກເຫຼົ່ານີ້. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_export_login">ກະລຸນາເຂົ້າສູ່ລະບົບເພື່ອສົ່ງອອກຖານຂໍ້ມູນ.</string>
+    <string name="error_export_encrypted">ບໍ່ຮອງຮັບການສົ່ງອອກຖານຂໍ້ມູນທີ່ຖືກເຂົ້າລະຫັດ.</string>
+    <string name="error_import_exist">ທ່ານກໍາລັງນໍາເຂົ້າຖານຂໍ້ມູນທີ່ມີຢູ່ແລ້ວ.</string>
+    <string name="error_import_logout">ກະລຸນາອອກຈາກລະບົບເພື່ອເຂົ້າຖານຂໍ້ມູນໃຫມ່.</string>
+    <string name="error_import_version">ລຸ່ນຂອງຖານຂໍ້ມູນທີ່ນຳເຂົ້າສູງກ່ວາທີ່ຮອງຮັບ</string>
+    <string name="error_file_not_found">ບໍ່ພົບຟາຍ</string>
+    <string name="error_file_resize">ເກີດຄວາມຜິດພາດໃນການປັບຂະໜາດຮູບ.</string>
+    <string name="error_generate_coordinate">ບໍ່ສາມາດສ້າງຈຸດພິກັດໄດ້</string>
+    <string name="error_job">ບໍ່ມີລາຍງານວຽກ.</string>
+    <string name="error_low_on_available_values">ທ່ານອາດຕ້ອງໃຊ້ຄ່າທີ່ມີຢູ່ໜ້ອຍລົງ</string>
+    <string name="error_user_no_authenticated">ບໍ່ມີຜູ້ໃຊ້ຮັບຮອງຄວາມຖືກຕ້ອງ</string>
+    <string name="error_user_no_authenticated_offline">ບໍ່ມີຜູ້ໃຊ້ຮັບຮອງຄວາມຖືກຕ້ອງແບບອອບລາຍ</string>
+    <string name="error_no_values_left_on_server">ບໍ່ມີຄ່າພຽງພໍທີ່ຈະສະຫງວນໃວ້ຢູ່ໃນເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_different_offline_user">ທ່ານກຳລັງພະຍາຍາມເຂົ້າສູ່ລະບົບແບບອອບລາຍກັບຜູ້ໃຊ້ອື່ນ.</string>
+    <string name="error_no_reserved_values">ບໍ່ມີຄ່າລິຂະສິດ. ໄປທີ່ການຕັ້ງຄ່າ ແລະຕື່ມຄ່າເມື່ອທ່ານເຊື່ອມຕໍ່ອິນເຕີເນັດ.</string>
+    <string name="error_object_update">ບໍ່ສາມາດອັບເດດວັດຖຸໄດ້</string>
+    <string name="error_object_insert">ບໍ່ສາມາດໃສ່ວັດຖຸໄດ້.</string>
     <string name="error_ownership_access">ທ່ານບໍ່ມີການເຂົ້າເຖິງ.</string>
+    <string name="error_null_url">ບໍ່ມີທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່. ກະລຸນາປ້ອນທີ່ຢູ່</string>
+    <string name="error_server_malformed">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍ່ຄ່ອຍດີ. ກະລຸນາກວດສອບ</string>
+    <string name="error_settings_app_not_supported">ການຕັ້ງຄ່າເວັບແອັບລຸ່ນນີ້ບໍໄດ້ຮອງຮັບ</string>
+    <string name="error_settings_app_not_intalled">ການຕັ້ງຄ່າເວັບແອັບພິເຄຊັ່ນບໍ່ໄດ້ຕິດຕັ້ງໃນເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່</string>
+    <string name="error_socket_timeout">ເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່ໃຊ້ເວລາຕອບສະໜອງດົນເກີນໄປ. ພວກເຮົາຍົກເລິກການຮ້ອງຂໍ</string>
+    <string name="error_relationship_updated">ບໍ່ສາມາດອັບເດດຄວາມສຳພັນໄດ້.</string>
     <string name="error_too_many_periods">ຊ່ວງເວລາມີຫຼາຍເກີນໄປ</string>
+    <string name="error_url_not_found">ພວກເຮົາບໍ່ສາມາດຊອກຫາ URL ໄດ້. ກະລຸນາກວດສອບມັນ.</string>
+    <string name="error_account_disabled">ບັນຊີຂອງທ່ານຖືກປິດການນຳໃຊ້ແລ້ວ. ຖ້ານີ້ແມ່ນຄວາມຜິດພາດ, ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_account_locked">ບັນຊີຜູ້ໃຊ້ຂອງທ່ານຖືກລັອກ. ຖ້າຫາກນີ້ແມ່ນຂໍ້ຜິດພາດ, ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_set_value">ບໍ່ສາມາດຕັ້ງຄ່າໄດ້.</string>
+    <string name="error_value_reservation_time">ຄຳຮ້ອງຂໍສະຫງວນຄ່າໄດ້ໃຊ້ເວລາຫຼາຍເກີນໄປ. ກະລຸນາລອງໃໝ່.</string>
+    <string name="error_ssl">ມີບັນຫາກັບໃບຮັບຮອງເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
+    <string name="error_sms_not_supported">ບໍ່ມີຂໍ້ຄວາມຮອງຮັບ</string>
+    <string name="error_min_attributes">ຄຸນລັກສະນະບໍ່ພຽງພໍທີ່ຈະດໍາເນີນການຄົ້ນຫາ. ກະລຸນາປັບປຸງການຄົ້ນຫາຂອງທ່ານດ້ວຍຄຸນລັກສະນະເພີ່ມເຕີມ.</string>
+    <string name="error_org_unit_scope">ການຄົ້ນຫາອອນລາຍໃຊ້ໄດ້ກັບຫົວຫນ່ວຍການຈັດຕັ້ງທີ່ຄົ້ນຫາຜູ້ໃຊ້ຂອງທ່ານເທົ່ານັ້ນ.</string>
+    <string name="error_no_internet_connection">ທ່ານອອຟລາຍຢູ່. ເຊື່ອມຕໍ່ອິນເຕີເນັດ ແລະ ລອງໃໝ່ອີກຄັ້ງ</string>
+    <string name="unsupported_field_description">ຫ້ອງນີ້ຂໍ້ມູນບໍ່ສາມາດໃຊ້ໄດ້ສໍາລັບການຈັບພາບມືຖື</string>
     <string name="add_image">ເພີ່ມຮູບພາບ</string>
+    <string name="add_signature">ເພີ່ມລາຍເຊັນ</string>
+    <string name="add_file">ເອົາຟາຍຂໍ້ມູນເຂົ້າ</string>
+    <string name="action_ok">ຕົກລົງ</string>
+    <string name="enable_location_message">ສະຖານທີ່ອຸປະກອນຂອງທ່ານຖືກຕັດການເຊື່ອມຕໍ່. ກະລຸນາເປີດໃຊ້ມັນເພື່ອບັນທຶກພິກັດ</string>
     <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="review">ທົບທວນຄືນ</string>
@@ -122,4 +212,18 @@
     <string name="default_table_header_label">Value</string>
     <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
     <string name="default_empty_dataset_section_label">ຂໍ້ມູນ</string>
+    <string name="title_network_connection_unavailable">ການເຊື່ອມຕໍ່ເຄືອຂ່າຍບໍ່ສາມາດໃຊ້ໄດ້</string>
+    <string name="msg_network_connection_maps">ຈຳເປັນຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດເພື່ອໃຊ້ແຜນທີ່.</string>
+
+    <string name="overdue_today">ມື້ນີ້</string>
+    <string name="enrolling_ou">ລົງທະບຽນໃນ:</string> <string name="delete_event_label">ລົບ%s</string>
+    <string name="week_period_span_default_label">ອາທິດ%d%sຫາ%s</string>
+    <string name="enrollment_reopen">ເປີດຄືນໃໝ່</string>
+
+    <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
+    <string name="remove">ລົບອອກ</string>
+    <string name="period_daily_title">ທຸກໆມື້</string>
+    <string name="period_weekly_title">ອາທິດ</string>
+    <string name="period_monthly_title">ເດືອນ</string>
+    <string name="period_yearly_title">ປີ</string>
     </resources>

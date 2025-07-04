@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="select_location">Выберите местоположение</string>
     <string name="action_apply">Применить</string>
+    <string name="dialog_layer_event">Показать события</string>
+    <string name="accuracy_good">Хорошо</string>
     <string name="accuracy_low">Низкий</string>
     <string name="accuracy_medium">Средний</string>
+    <string name="accuracy_verygood">Очень хорошо</string>
+    <string name="accuracy_minimun_set_allow">Вы хотите сохранить его?</string>
+    <string name="swipe_to_change_location">Проведите пальцем, чтобы изменить местоположение</string>
+    <string name="select_location_title">Выберите местоположение</string>
+    <string name="selet_location_subtitle">нажав на него</string>
+    <string name="selected_location">Выбранная локация</string>
     </resources>

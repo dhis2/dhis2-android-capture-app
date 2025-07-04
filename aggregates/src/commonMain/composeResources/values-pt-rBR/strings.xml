@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="total_header_label">Totais</string>
+    <string name="input_age_date_of_birth">Data de nascimento</string>
+    <string name="input_age">Idade</string>
+    <string name="input_age_or">ou</string>
+    <string name="input_action_cancel">Cancelar</string>
+    <string name="no_results_found">Nenhum resultado encontrado</string>
+    <string name="action_done">Concluído</string>
+    <string name="input_coordinate_latitude">Latitude</string>
+    <string name="input_coordinate_longitude">Longitude</string>
+    <string name="complete">Completo</string>
+    <string name="ok">Aprovado</string>
+    <string name="no">Não</string>
+    <string name="yes">Sim</string>
+    <string name="error">Erro</string>
+    <string name="errors">Erros</string>
+    <string name="action_next">Próximo</string>
+    <string name="indicators_label">Indicadores</string>
+    </resources>

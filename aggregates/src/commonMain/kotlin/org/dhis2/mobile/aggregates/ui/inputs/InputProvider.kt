@@ -46,9 +46,10 @@ import org.dhis2.mobile.aggregates.resources.input_not_supported
 import org.dhis2.mobile.aggregates.resources.no_results_found
 import org.dhis2.mobile.aggregates.resources.search_to_find_more
 import org.dhis2.mobile.aggregates.resources.take_photo
-import org.dhis2.mobile.aggregates.ui.states.InputDataUiState
+import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
+import org.dhis2.mobile.commons.extensions.hasDateFormat
 import org.dhis2.mobile.commons.extensions.toImageBitmap
 import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
@@ -85,7 +86,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
-import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.mobile.ui.designsystem.component.state.InputAgeData
@@ -193,7 +193,6 @@ internal fun InputProvider(
                         acceptText = stringResource(Res.string.input_action_accept),
                         cancelText = stringResource(Res.string.input_action_cancel),
                         is24hourFormat = true,
-                        selectableDates = inputData.ageExtras().selectableDates,
                     ),
                     inputType = inputType,
                     inputState = inputData.inputShellState,
@@ -212,7 +211,9 @@ internal fun InputProvider(
                         is AgeInputType.DateOfBirth -> type.value.text
                         else -> null
                     }
-                    onAction(UiAction.OnValueChanged(inputData.id, value))
+                    if (value == null || value.hasDateFormat()) {
+                        onAction(UiAction.OnValueChanged(inputData.id, value))
+                    }
                 },
                 onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 modifier = modifierWithFocus,
@@ -349,12 +350,9 @@ internal fun InputProvider(
         }
 
         InputType.FileResource -> {
-            var uploadingState by remember(inputData.fileExtras().filePath) {
+            var uploadingState by remember(inputData.fileExtras().fileState) {
                 mutableStateOf(
-                    when (inputData.fileExtras().filePath) {
-                        null -> UploadFileState.ADD
-                        else -> UploadFileState.LOADED
-                    },
+                    inputData.fileExtras().fileState,
                 )
             }
 
@@ -363,10 +361,9 @@ internal fun InputProvider(
             InputFileResource(
                 title = inputData.label,
                 buttonText = stringResource(Res.string.add_file),
-                fileName = file?.name,
+                fileName = inputData.displayValue,
                 fileWeight = file?.length()?.let { fileSizeLabel(it) },
                 onSelectFile = {
-                    uploadingState = UploadFileState.UPLOADING
                     onAction(UiAction.OnSelectFile(inputData.id))
                 },
                 onUploadFile = {
@@ -524,8 +521,10 @@ internal fun InputProvider(
                 isRequiredField = inputData.isRequired,
                 onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
-                    textValue = it ?: TextFieldValue()
-                    onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
+                    if (textValue.text != it?.text) {
+                        textValue = it ?: TextFieldValue()
+                        onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
+                    }
                 },
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 imeAction = imeAction,
@@ -932,6 +931,7 @@ internal fun InputProvider(
         -> {
             InputNotSupported(
                 title = inputData.label,
+                modifier = modifierWithFocus,
                 notSupportedString = stringResource(Res.string.input_not_supported),
                 inputStyle = inputData.inputStyle,
             )

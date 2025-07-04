@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Тўлдириш</string>
+    <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
+    <string name="not_now">Hozir emas</string>
+    <string name="keep_editing">Таҳрирни давом этинг</string>
+    <string name="review">Кўриб чиқиш</string>
+    <string name="cancel">Рад этиш</string>
+    <string name="save">Сақлаш</string>
+    <string name="clear">Тозалаш</string>
+    <string name="draw_here">Шу ерда чизинг</string>
+    <string name="action_done">Бўлди</string>
+    <string name="action_cancel">Рад этиш</string>
+    <string name="action_close">Ёпмоқ</string>
+    <string name="hint_search">Излаш</string>
+    <string name="action_clear_all">Барчасини тозалаш</string>
+    <plurals name="error_count">
+        <item quantity="other">%s da xatoliklar</item>
+    </plurals>
+    <plurals name="warning_count">
+        <item quantity="other">%s da ogohlantirishlar</item>
+    </plurals>
+</resources>

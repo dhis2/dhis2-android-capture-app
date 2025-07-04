@@ -18,12 +18,13 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTime
-import org.hisp.dhis.mobile.ui.designsystem.component.InputDateTimeModel
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
+import org.hisp.dhis.mobile.ui.designsystem.component.state.InputDateTimeData
+import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputDateTimeState
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -60,42 +61,46 @@ fun ProvideInputDate(
         )
     }
 
-    InputDateTime(
-        InputDateTimeModel(
+    val inputState = rememberInputDateTimeState(
+        InputDateTimeData(
             title = fieldUiModel.label,
-            inputTextFieldValue = value,
             actionType = actionType,
-            state = fieldUiModel.inputState(),
-            legendData = fieldUiModel.legend(),
-            supportingText = fieldUiModel.supportingText(),
-            isRequired = fieldUiModel.mandatory,
             visualTransformation = visualTransformation,
-            onNextClicked = onNextClicked,
-            onValueChanged = {
-                value = it ?: TextFieldValue()
-                val formIntent = if (value.text.length == 8) {
-                    FormIntent.OnSave(
-                        uid = fieldUiModel.uid,
-                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
-                        valueType = fieldUiModel.valueType,
-                        allowFutureDates = fieldUiModel.allowFutureDates,
-                    )
-                } else {
-                    FormIntent.OnTextChange(
-                        uid = fieldUiModel.uid,
-                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
-                        valueType = fieldUiModel.valueType,
-                    )
-                }
-                intentHandler.invoke(formIntent)
-            },
+            isRequired = fieldUiModel.mandatory,
             selectableDates = selectableDates,
             yearRange = yearIntRange,
             inputStyle = inputStyle,
         ),
+        inputTextFieldValue = value,
+        inputState = fieldUiModel.inputState(),
+        legendData = fieldUiModel.legend(),
+        supportingText = fieldUiModel.supportingText(),
+    )
+
+    InputDateTime(
+        state = inputState,
         modifier = modifier.semantics {
             contentDescription = formatStoredDateToUI(value.text, fieldUiModel.valueType)
         },
+        onValueChanged = {
+            value = it ?: TextFieldValue()
+            val formIntent = if (value.text.length == 8) {
+                FormIntent.OnSave(
+                    uid = fieldUiModel.uid,
+                    value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
+                    valueType = fieldUiModel.valueType,
+                    allowFutureDates = fieldUiModel.allowFutureDates,
+                )
+            } else {
+                FormIntent.OnTextChange(
+                    uid = fieldUiModel.uid,
+                    value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
+                    valueType = fieldUiModel.valueType,
+                )
+            }
+            intentHandler.invoke(formIntent)
+        },
+        onNextClicked = onNextClicked,
     )
 }
 
