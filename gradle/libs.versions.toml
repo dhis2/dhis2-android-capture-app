@@ -2,14 +2,14 @@
 kotlinxDatetime = "0.6.2"
 sdk = "36"
 minSdk = "21"
-vCode = "143"
+vCode = "144"
 vName = "3.2.1-RC"
 gradle = "8.8.0"
 kotlin = '2.0.21'
 hilt = '2.47'
 jacoco = '0.8.10'
-designSystem = "0.5.1-SNAPSHOT"
-dhis2sdk = "1.12.1-SNAPSHOT"
+designSystem = "0.5.1"
+dhis2sdk = "1.12.1"
 ruleEngine = "3.3.9"
 expressionParser = "1.1.10"
 appcompat = "1.6.1"
