@@ -16,6 +16,7 @@ import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
+import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType
@@ -55,6 +56,7 @@ class FieldViewModelFactoryImpl(
         selectableDates: SelectableDates?,
         eventCategories: List<EventCategory>?,
         periodSelector: PeriodSelector?,
+        customIntentModel: CustomIntentModel?,
     ): FieldUiModel {
         isNull(valueType, "type must be supplied")
         return FieldUiModelImpl(
@@ -100,6 +102,7 @@ class FieldViewModelFactoryImpl(
             selectableDates = selectableDates,
             eventCategories = eventCategories,
             periodSelector = periodSelector,
+            customIntent = customIntentModel,
         )
     }
 

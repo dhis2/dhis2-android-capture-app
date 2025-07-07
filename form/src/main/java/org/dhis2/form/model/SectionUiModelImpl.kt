@@ -5,6 +5,7 @@ import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.intent.FormIntent.OnFocus
+import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
@@ -43,6 +44,7 @@ data class SectionUiModelImpl(
     override val selectableDates: SelectableDates? = null,
     override val eventCategories: List<EventCategory>? = null,
     override val periodSelector: PeriodSelector? = null,
+    override var customIntent: CustomIntentModel? = null,
 ) : FieldUiModel {
 
     private var sectionNumber: Int = 0

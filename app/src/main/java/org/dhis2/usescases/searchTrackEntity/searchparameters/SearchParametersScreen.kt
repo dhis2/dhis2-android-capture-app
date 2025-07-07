@@ -309,6 +309,7 @@ fun SearchFormPreview() {
                     autocompleteList = emptyList(),
                     optionSetConfiguration = null,
                     valueType = ValueType.TEXT,
+                    customIntent = null,
                 ),
                 FieldUiModelImpl(
                     uid = "uid2",
@@ -316,6 +317,7 @@ fun SearchFormPreview() {
                     autocompleteList = emptyList(),
                     optionSetConfiguration = null,
                     valueType = ValueType.TEXT,
+                    customIntent = null,
                 ),
             ),
         ),
