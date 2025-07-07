@@ -149,7 +149,7 @@ class EventRepository(
         return Flowable.just(sectionUIDs)
     }
 
-    override fun list(addCustomIntent: Boolean): Flowable<List<FieldUiModel>> {
+    override fun list(): Flowable<List<FieldUiModel>> {
         return d2.programModule().programStageSections()
             .byProgramStageUid().eq(programStage?.uid())
             .withDataElements()

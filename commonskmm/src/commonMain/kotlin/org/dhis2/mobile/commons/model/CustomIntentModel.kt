@@ -2,22 +2,16 @@ package org.dhis2.mobile.commons.model
 
 data class CustomIntentModel(
     val uid: String,
-    val name: String,
+    val name: String?,
     val packageName: String,
     val customIntentRequest: List<CustomIntentRequestArgumentModel>,
     val customIntentResponse: CustomIntentResponseDataModel,
-    val customIntentActionType: CustomIntentActionType,
 )
 
 data class CustomIntentTriggerModel(
     val dataElements: List<String>,
     val attributes: List<String>,
 )
-
-enum class CustomIntentActionType {
-    DATA_ENTRY,
-    SEARCH,
-}
 
 data class CustomIntentRequestArgumentModel(
     val key: String,
@@ -26,7 +20,7 @@ data class CustomIntentRequestArgumentModel(
 
 data class CustomIntentResponseDataModel(
     val extra: String,
-    val extraType: String,
+    val extraType: CustomIntentResponseExtraType,
     val keys: List<String>?,
 )
 

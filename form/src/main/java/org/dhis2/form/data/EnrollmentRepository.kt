@@ -19,6 +19,10 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
+import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
+import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
+import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
@@ -29,6 +33,7 @@ import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -50,6 +55,8 @@ class EnrollmentRepository(
     private val programSections by lazy {
         conf.sections()
     }
+
+    private val customIntents = conf.customIntents()
 
     override val defaultStyleColor by lazy {
         conf.program()?.style()?.color()?.toColor() ?: SurfaceColor.Primary
@@ -170,7 +177,13 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
             ),
         )
-
+        val attributeCustomIntent = if (attributeIsACustomIntentTrigger(programTrackedEntityAttribute.trackedEntityAttribute()?.uid())) {
+            programTrackedEntityAttribute.trackedEntityAttribute()?.uid()?.let {
+                getAttributeCustomIntent(it)
+            }
+        } else {
+            null
+        }
         val valueType = attribute.valueType()
         var mandatory = programTrackedEntityAttribute.mandatory() ?: false
         val optionSet = attribute.optionSet()?.uid()
@@ -242,6 +255,7 @@ class EnrollmentRepository(
             attribute.fieldMask(),
             optionSetConfig,
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null,
+            customIntentModel = attributeCustomIntent,
         )
 
         if (!error.isNullOrEmpty()) {
@@ -253,6 +267,41 @@ class EnrollmentRepository(
         }
 
         return fieldViewModel
+    }
+
+    private fun attributeIsACustomIntentTrigger(trackedEntityAttributeUid: String?): Boolean {
+        return customIntents.any { customIntent ->
+            customIntent?.trigger()?.attributes()?.any {
+                it.uid() == trackedEntityAttributeUid
+            } == true
+        }
+    }
+
+    private fun getAttributeCustomIntent(trackedEntityAttributeUid: String): CustomIntentModel? {
+        val customIntentDTO = customIntents.firstOrNull { customIntent ->
+            customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true &&
+                customIntent.trigger()?.attributes()?.any { it.uid() == trackedEntityAttributeUid } == true
+        }
+
+        // TODO modify object when SDK has adapted the payload
+        return customIntentDTO?.let {
+            CustomIntentModel(
+                uid = it.uid(),
+                name = it.name(),
+                customIntentRequest = it.request()?.arguments()?.map { arg ->
+                    CustomIntentRequestArgumentModel(
+                        key = arg.key(),
+                        value = arg.value(),
+                    )
+                } ?: emptyList(),
+                customIntentResponse = CustomIntentResponseDataModel(
+                    extra = it.response()?.data()?.argument() ?: "",
+                    extraType = CustomIntentResponseExtraType.STRING,
+                    keys = null,
+                ),
+                packageName = it.packageName() ?: "", // Adding required parameter
+            )
+        }
     }
 
     private fun getConflictErrorsAndWarnings(
