@@ -100,15 +100,6 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
     private FragmentSettingsBinding binding;
     private Context context;
-
-    private final BroadcastReceiver networkReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            presenter.checkData();
-            checkSyncDataButtonStatus();
-            checkSyncMetaButtonStatus();
-        }
-    };
     private boolean dataInit;
     private boolean metadataInit;
     private boolean scopeLimitInit;
@@ -151,6 +142,12 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
 
         });
 
+        networkUtils.getConnectionStatus().observe(getViewLifecycleOwner(), isConnected -> {
+            presenter.checkData();
+            checkSyncDataButtonStatus();
+            checkSyncMetaButtonStatus();
+        });
+
         ExportOptionKt.setExportOption(
                 binding.exportShare,
                 () -> {
@@ -161,7 +158,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                     presenter.onExportAndShareDB();
                     return null;
                 },
-                ()-> presenter.getExporting()
+                () -> presenter.getExporting()
         );
         return binding.getRoot();
     }
@@ -180,7 +177,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
                 startActivity(chooser);
             } catch (Exception e) {
                 Timber.e(e);
-            }finally {
+            } finally {
                 presenter.onExportEnd();
             }
             return null;
@@ -198,7 +195,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
     @Override
     public void onResume() {
         super.onResume();
-        context.registerReceiver(networkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        networkUtils.registerNetworkCallback();
         workManagerController.getWorkInfosByTagLiveData(META_NOW).observe(this, workStatuses -> {
             WorkInfo.State workState = null;
             if (workStatuses != null && !workStatuses.isEmpty()) {
@@ -229,7 +226,7 @@ public class SyncManagerFragment extends FragmentGlobalAbstract implements SyncM
         if (deleteLocalDataDialog != null && deleteLocalDataDialog.isVisible()) {
             deleteLocalDataDialog.dismiss();
         }
-        context.unregisterReceiver(networkReceiver);
+        networkUtils.unregisterNetworkCallback();
         presenter.dispose();
     }
 
