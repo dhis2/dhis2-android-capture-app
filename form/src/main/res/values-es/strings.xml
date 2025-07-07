@@ -64,6 +64,7 @@
     <string name="copied_text">Copiado</string>
     <string name="empty_description">No hay información para este campo</string>
     <string name="take_photo">Tomar foto</string>
+    <string name="from_gallery_v2">Desde la galería</string>
     <string name="warning_error_on_complete_title">¡Importante!</string>
     <string name="action_do_not_show_again">No volver a mostrar</string>
     <string name="data_values_save_error">Los DataValues no pueden guardarse con estos argumentos. Use el otro método.</string>
@@ -87,4 +88,6 @@
     <string name="category_combo">Combo de categoría</string>
     <string name="no_options">No hay opciones disponibles</string>
     <string name="cat_combo">Cat Combo</string>
-    </resources>
+    <string name="storage_permission_denied">No se ha concedido el permiso de almacenamiento.\nDebes activarlo para usar esta función.</string>
+
+</resources>

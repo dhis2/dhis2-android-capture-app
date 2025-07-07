@@ -40,18 +40,34 @@
     <string name="filters_title_state">Sincronizado</string>
     <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filters_title_date">Fecha</string>
+    <string name="filters_title_event_label_date">%s fecha</string>
+    <string name="filters_title_event_label_status">%s estado</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Seguido %s</string>
     <string name="select_period">Seleccionar tipo de periodo</string>
     <string name="daily_period">Diario</string>
     <string name="weekly">Semanal</string>
     <string name="bi_weekly">Quincenal</string>
+    <string name="weekly_start_wednesday">Semanal con inicio el miércoles</string>
     <string name="weekly_start_thursday">Semanal a partir del jueves</string>
+    <string name="weekly_start_saturday">Semanal con inicio el sábado</string>
+    <string name="weekly_start_sunday">Semanal con inicio el domingo</string>
     <string name="monthly">Mensual</string>
     <string name="bi_monthly">Bimestral</string>
     <string name="quarterly">Trimestral</string>
+    <string name="quarterly_nov">Trimestral con inicio en noviembre</string>
     <string name="six_monthly">Semestral</string>
     <string name="six_monthly_april">Semestral a partir de abril</string>
+    <string name="six_monthly_july">Semestral con inicio en julio</string>
+    <string name="six_monthly_nov">Semestral con inicio en noviembre</string>
     <string name="yearly">Anual</string>
+    <string name="financial_year_april">Año fiscal con inicio en abril</string>
+    <string name="financial_year_july">Año fiscal con inicio en julio</string>
+    <string name="financial_year_october">Año fiscal con inicio en octubre</string>
+    <string name="financial_year_november">Año fiscal con inicio en noviembre</string>
+
+
+
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
     <string name="state_to_post">Por enviar</string>
@@ -226,6 +242,7 @@
     <string name="msg_network_connection_maps">Se requiere una conexión a Internet para poder utilizar los mapas.</string>
 
     <string name="overdue_today">Hoy</string>
+    <string name="overdue_due_today">Programado para hoy</string>
     <plurals name="overdue_days">
         <item quantity="one">%d día de retraso</item>
         <item quantity="many">%d días de retraso</item>
@@ -242,13 +259,77 @@
         <item quantity="other">%d años de retraso</item>
     </plurals>
 
+    <plurals name="schedule_days">
+        <item quantity="one">En %d día</item>
+        <item quantity="many">En %d días</item>
+        <item quantity="other">En %d días</item>
+    </plurals>
+    <plurals name="schedule_months">
+        <item quantity="one">En %d mes</item>
+        <item quantity="many">En %d meses</item>
+        <item quantity="other">En %d meses</item>
+    </plurals>
+    <plurals name="schedule_years">
+        <item quantity="one">En %d año</item>
+        <item quantity="many">En %d años</item>
+        <item quantity="other">En %d años</item>
+    </plurals>
+
     <string name="open_with">Abrir con</string>
 
+    <string name="file_downloaded">Archivo descargado correctamente</string>
+
+
+    <!--Enrollment labels-->
+    <plurals name="enrollment">
+        <item quantity="one">Registro</item>
+        <item quantity="many">Registros</item>
+        <item quantity="other">Registros</item>
+    </plurals>
+    <string name="dialog_layer_enrollment_coordinates_v2">Mostrar %s coordenadas</string>
     <string name="enrollment_data_section_label_V2">%s datos</string>
+    <string name="enrollment_coordinates_V2">%s coordenadas</string>
+    <string name="enrollment_date_V2">%s fecha</string>
+    <string name="enrollment_status">%s estado</string>
+    <string name="break_glass_dialog_description_V2">Debes proporcionar un motivo para consultar %s en este programa protegido. Toda la actividad será registrada.</string>
+    <string name="break_glass_reason_V2">Motivo para consultar %s</string>
+    <string name="edition_enrollment_is_no_open_V2">Estos datos no se pueden editar porque %s está completado o cancelado.</string>
+    <string name="enrollment_completed_V2">%s se ha completado</string>
+    <string name="enrollment_cancelled_V2">%s se ha cancelado</string>
     <string name="new_enrollment">Nuevo %s</string>
-    <string name="enrolling_ou">Inscrito en:</string> <string name="new_event_label">Nuevo %s</string>
+    <string name="enrolling_ou">Inscrito en:</string>
+    <string name="program_selector_V2">Programa %s</string>
+    <string name="more_enrollments">Más inscripciones</string>
+    <string name="remove_from">Eliminar de</string>
+    <string name="refresh_this_record">Actualizar este registro</string>
+    <string name="view_timeline">Ver como línea de tiempo</string>
+    <string name="group_by_stage">Ver por etapa</string>
+
+
+    <!-- Event -->
+    <plurals name="event_label">
+        <item quantity="one">evento</item>
+        <item quantity="many">eventos</item>
+        <item quantity="other">eventos</item>
+    </plurals>
+    <string name="event_label_completed">%s se ha completado</string>
+    <string name="event_label_created">%s se ha creado</string>
+    <string name="new_event_label">Nuevo %s</string>
+    <string name="event_label_date">%s fecha</string>
     <string name="delete_event_label">Eliminar %s</string>
+    <string name="event_label_was_deleted">%s se ha eliminado con éxito</string>
+    <string name="delete_event_label_error">%s aún no ha sido creado</string>
+    <string name="event_label_was_skipped">%s fue marcado como omitido</string>
+    <string name="confirm_delete_event_label">¿Estás seguro de que quieres eliminar este %s?</string>
+    <string name="event_label_updated">%s se ha actualizado</string>
+    <string name="event_label_date_in_future_message">%s no puede tener una fecha en el futuro. Por favor, modifíquela.</string>
+    <string name="failed_insert_event_label">No fue posible insertar %s</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
+    <string name="group_event_label_by_stage">Agrupar %s por etapa </string>
+    <string name="show_event_label_timeline">Mostrar línea de tiempo de %s</string>
+    <string name="empty_tei_event_label_add">No hay %s registrados. Haz clic en “+” para agregar uno nuevo.</string>
+    <string name="empty_tei_event_label_no_add">No hay %s registrados. </string>
+    <string name="enrollment_date_edition_warning_event_label">Hay %s programados que no serán reprogramados</string>
     <string name="enrollment_reopen">Reabrir</string>
 
     <string name="sync_retry">Reintentar sincronización</string>
@@ -256,6 +337,12 @@
     <string name="remove">Eliminar</string>
     <string name="period_daily_title">Diario</string>
     <string name="period_weekly_title">Semana</string>
+    <string name="period_biweekly_title">Quincenal</string>
     <string name="period_monthly_title">Mes</string>
+    <string name="period_bi_monthly_title">Bimestral</string>
+    <string name="period_quarter_title">Trimestre</string>
+    <string name="period_six_monthly_title">Semestral</string>
     <string name="period_yearly_title">Año</string>
-    </resources>
+    <string name="period_financial_year_title">Año fiscal</string>
+    <string name="no_periods">No hay periodos disponibles\n</string>
+</resources>
