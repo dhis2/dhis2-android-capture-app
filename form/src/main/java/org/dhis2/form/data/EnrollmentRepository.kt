@@ -283,8 +283,26 @@ class EnrollmentRepository(
                 customIntent.trigger()?.attributes()?.any { it.uid() == trackedEntityAttributeUid } == true
         }
 
-        // TODO modify object when SDK has adapted the payload
+        // TODO modify object when SDK has adapted the payload and feature config is removed
         return customIntentDTO?.let {
+            val customIntentResponse = if (trackedEntityAttributeUid == "bYZCH0o9l8W") {
+                listOf(
+                    CustomIntentResponseDataModel(
+                        name = it.response()?.data()?.argument() ?: "",
+                        extraType = CustomIntentResponseExtraType.OBJECT,
+                        keys = listOf(it.response()?.data()?.path().toString()),
+                    ),
+                )
+            } else {
+                listOf(
+                    CustomIntentResponseDataModel(
+                        name = it.response()?.data()?.argument() ?: "",
+                        extraType = CustomIntentResponseExtraType.LIST_OF_OBJECTS,
+                        keys = listOf(it.response()?.data()?.path().toString(), it.response()?.data()?.path().toString(), it.response()?.data()?.path().toString()),
+                    ),
+                )
+            }
+
             CustomIntentModel(
                 uid = it.uid(),
                 name = it.name(),
@@ -294,11 +312,7 @@ class EnrollmentRepository(
                         value = arg.value(),
                     )
                 } ?: emptyList(),
-                customIntentResponse = CustomIntentResponseDataModel(
-                    extra = it.response()?.data()?.argument() ?: "",
-                    extraType = CustomIntentResponseExtraType.STRING,
-                    keys = null,
-                ),
+                customIntentResponse = customIntentResponse,
                 packageName = it.packageName() ?: "", // Adding required parameter
             )
         }

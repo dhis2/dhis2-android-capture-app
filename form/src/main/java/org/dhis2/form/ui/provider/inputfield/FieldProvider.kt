@@ -120,13 +120,8 @@ fun FieldProvider(
 
         fieldUiModel.customIntent != null -> {
             ProvideCustomIntentInput(
-                modifier = modifierWithFocus,
-                inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
-                uiEventHandler = uiEventHandler,
-                focusManager = focusManager,
-                onNextClicked = onNextClicked,
             )
         }
 

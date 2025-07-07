@@ -33,7 +33,7 @@ open class FormBaseConfiguration(
         .blockingGet()
 
     fun customIntents(): List<CustomIntent?> {
-        return if (!featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
+        return if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
             getMockedCustomIntents()
         } else {
             d2.settingModule().customIntents()
@@ -75,7 +75,6 @@ open class FormBaseConfiguration(
                             CustomIntentRequestArgument.builder().key("projectId").value("eYupeFCbvI4wYitmjJNy").build(),
                             CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
                             CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
-                            CustomIntentRequestArgument.builder().key("versionName").value("20250102").build(),
                         ),
                     ).build(),
                 )

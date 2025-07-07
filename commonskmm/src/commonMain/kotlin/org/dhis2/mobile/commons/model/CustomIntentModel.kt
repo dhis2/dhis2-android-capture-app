@@ -5,7 +5,7 @@ data class CustomIntentModel(
     val name: String?,
     val packageName: String,
     val customIntentRequest: List<CustomIntentRequestArgumentModel>,
-    val customIntentResponse: CustomIntentResponseDataModel,
+    val customIntentResponse: List<CustomIntentResponseDataModel>,
 )
 
 data class CustomIntentTriggerModel(
@@ -19,7 +19,7 @@ data class CustomIntentRequestArgumentModel(
 )
 
 data class CustomIntentResponseDataModel(
-    val extra: String,
+    val name: String,
     val extraType: CustomIntentResponseExtraType,
     val keys: List<String>?,
 )
