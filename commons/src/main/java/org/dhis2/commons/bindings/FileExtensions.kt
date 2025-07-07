@@ -1,17 +1,10 @@
 package org.dhis2.commons.bindings
 
-import android.content.ContentUris
 import android.content.Context
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
-import android.net.Uri
-import android.os.Environment
-import android.provider.DocumentsContract
-import android.provider.MediaStore
-import org.apache.commons.io.FileUtils
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
@@ -57,31 +50,6 @@ fun File.rotateImage(context: Context): File {
     return file
 }
 
-fun Bitmap.rotateImageAndSave(context: Context): File {
-    val file = File(
-        FileResourceDirectoryHelper.getFileCacheResourceDirectory(context),
-        "tempFile.png",
-    )
-
-    file.writeBitmap(this, Bitmap.CompressFormat.JPEG, 100)
-
-    val ei = ExifInterface(file.path)
-
-    val orientation =
-        ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
-
-    val bitmap = when (orientation) {
-        ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(this, 90F)
-        ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(this, 180F)
-        ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(this, 270F)
-        else -> this
-    }
-
-    file.writeBitmap(bitmap!!, Bitmap.CompressFormat.JPEG, 100)
-
-    return file
-}
-
 private fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
     val matrix = Matrix()
     matrix.postRotate(angle)
@@ -93,111 +61,4 @@ private fun File.writeBitmap(bitmap: Bitmap, format: Bitmap.CompressFormat, qual
         bitmap.compress(format, quality, out)
         out.flush()
     }
-}
-
-fun getFileFromGallery(context: Context, imageUri: Uri?): File? {
-    val projection = arrayOf(MediaStore.Images.Media.DATA)
-    val cursor = imageUri?.let { context.contentResolver.query(it, projection, null, null, null) }
-        ?: return null
-    val column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-    cursor.moveToFirst()
-    val s = cursor.getString(column_index)
-    cursor.close()
-    return File(s)
-}
-
-fun getFileFrom(context: Context, fileUri: Uri): File? {
-    val file = getFilePath(context, fileUri)?.let { File(it) }
-    val tempFile = File(
-        FileResourceDirectoryHelper.getFileResourceDirectory(context),
-        file?.name ?: "temp",
-    )
-    context.contentResolver.openInputStream(fileUri)?.let { inputStream ->
-        FileUtils.copyToFile(inputStream, tempFile)
-    }
-    return tempFile
-}
-
-private fun getFilePath(context: Context, uri: Uri): String? {
-    var copy = uri
-    var selection: String? = null
-    var selectionArgs: Array<String>? = null
-    if (DocumentsContract.isDocumentUri(context, copy)) {
-        val id = DocumentsContract.getDocumentId(copy)
-        val split = id.split(":").toTypedArray()
-        when {
-            isDownloadsDocument(copy) -> {
-                if (id.startsWith("raw:")) {
-                    return id.replaceFirst("raw:", "")
-                }
-                val splitIndex = if (split.size > 1) 1 else 0
-                copy = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"),
-                    split[splitIndex].toLong(),
-                )
-            }
-
-            isExternalStorageDocument(copy) -> {
-                return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
-            }
-
-            isMediaDocument(copy) -> {
-                copy = when (split[0]) {
-                    "image" -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                    "video" -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-                    "audio" -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                    else -> MediaStore.Files.getContentUri("external")
-                }
-
-                selection = "_id=?"
-                selectionArgs = arrayOf(split[1])
-            }
-        }
-    }
-
-    if ("content".equals(copy.scheme, true)) {
-        if (isGooglePhotosUri(copy)) {
-            return copy.lastPathSegment
-        }
-
-        var cursor: Cursor? = null
-        try {
-            val projection = arrayOf(MediaStore.MediaColumns.DATA)
-            cursor = context.contentResolver?.query(
-                copy,
-                projection,
-                selection,
-                selectionArgs,
-                null,
-            )
-            if (cursor != null && cursor.moveToFirst()) {
-                return cursor.getString(0)
-            }
-
-            return null
-        } catch (ignore: Exception) {
-        } finally {
-            cursor?.close()
-        }
-    } else if ("file".equals(copy.scheme, true)) {
-        return copy.path
-    }
-
-    return null
-}
-
-private fun isExternalStorageDocument(uri: Uri): Boolean {
-    return "com.android.externalstorage.documents" == uri.authority
-}
-
-private fun isDownloadsDocument(uri: Uri): Boolean {
-    return "com.android.providers.downloads.documents" == uri.authority
-}
-
-private fun isMediaDocument(uri: Uri): Boolean {
-    return "com.android.providers.media.documents" == uri.authority
-}
-
-private fun isGooglePhotosUri(uri: Uri): Boolean {
-    return "com.google.android.apps.photos.content" == uri.authority
 }
