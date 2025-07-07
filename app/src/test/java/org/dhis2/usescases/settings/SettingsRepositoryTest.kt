@@ -79,7 +79,7 @@ class SettingsRepositoryTest {
     @Test
     fun `Should return metadata period from general settings if exist`() {
         configureGeneralSettings(true)
-        val testObserver = settingsRepository.metaSync(userManager).test()
+        val testObserver = settingsRepository.metaSync().test()
         testObserver
             .assertNoErrors()
             .assertValue { metadataSettings ->
@@ -90,7 +90,7 @@ class SettingsRepositoryTest {
     @Test
     fun `Should return metadata period from preferences if general settings does not exist`() {
         configureGeneralSettings(false)
-        val testObserver = settingsRepository.metaSync(userManager).test()
+        val testObserver = settingsRepository.metaSync().test()
         testObserver
             .assertNoErrors()
             .assertValue { metadataSettings ->

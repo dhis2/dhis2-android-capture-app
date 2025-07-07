@@ -5,6 +5,7 @@ enum class SettingItem {
     META_SYNC,
     SYNC_PARAMETERS,
     RESERVED_VALUES,
+    ERROR_LOG,
     EXPORT_DB,
     DELETE_LOCAL_DATA,
     SMS,

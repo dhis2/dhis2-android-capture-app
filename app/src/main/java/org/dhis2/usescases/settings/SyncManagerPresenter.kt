@@ -1,372 +1,382 @@
 package org.dhis2.usescases.settings
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
+import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
-import com.google.common.annotations.VisibleForTesting
-import io.reactivex.Single
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.processors.FlowableProcessor
-import io.reactivex.processors.PublishProcessor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
-import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
-import org.dhis2.ui.model.ButtonUiModel
-import org.dhis2.usescases.reservedValue.ReservedValueActivity
-import org.dhis2.usescases.settings.GatewayValidator.Companion.max_size
-import org.dhis2.usescases.settings.models.DataSettingsViewModel
+import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
-import org.dhis2.usescases.settings.models.ExportDbModel
-import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
-import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
-import org.dhis2.usescases.settings.models.SettingsViewModel
-import org.dhis2.usescases.settings.models.SyncParametersViewModel
+import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
+import org.dhis2.utils.analytics.CONFIRM_DELETE_LOCAL_DATA
 import org.dhis2.utils.analytics.SYNC_DATA_NOW
 import org.dhis2.utils.analytics.SYNC_METADATA_NOW
-import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.settings.LimitScope
 import timber.log.Timber
-import java.util.Locale
-import kotlin.coroutines.CoroutineContext
+import java.io.File
 
-class SyncManagerPresenter internal constructor(
-    private val d2: D2,
-    private val schedulerProvider: SchedulerProvider,
+class SyncManagerPresenter(
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val settingsRepository: SettingsRepository,
-    private val userManager: UserManager,
-    private val view: SyncManagerContracts.View,
     private val analyticsHelper: AnalyticsHelper,
     private val errorMapper: ErrorModelMapper,
-    private val matomoAnalyticsController: MatomoAnalyticsController,
     private val resourceManager: ResourceManager,
     private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
-) : CoroutineScope {
-
-    private var job = Job()
-    override val coroutineContext: CoroutineContext
-        get() = job + dispatcherProvider.io()
-
-    private val compositeDisposable: CompositeDisposable
-    private val checkData: FlowableProcessor<Boolean>
-    private var smsSettingsViewModel: SMSSettingsViewModel? = null
-
-    private val _syncDataButton = MutableLiveData<ButtonUiModel>()
-    val syncDataButton: LiveData<ButtonUiModel> = _syncDataButton
-    private val _syncMetaDataButton = MutableLiveData<ButtonUiModel>()
-    val syncMetaDataButton: LiveData<ButtonUiModel> = _syncMetaDataButton
-    private val _checkVersionsButton = MutableLiveData<ButtonUiModel?>()
-    val checkVersionsButton: LiveData<ButtonUiModel?> = _checkVersionsButton
+    private val networkUtils: NetworkUtils,
+    private val fileHandler: FileHandler,
+) : ViewModel() {
     private val _updatesLoading = MutableLiveData<Boolean>()
-    val updatesLoading: LiveData<Boolean> = _updatesLoading
-    val versionToUpdate: LiveData<String?> =
-        versionRepository.newAppVersion.asLiveData(coroutineContext)
-
-    private val _exportedDb = MutableLiveData<ExportDbModel>()
-    val exportedDb: LiveData<ExportDbModel> = _exportedDb
-
     private val _exporting = MutableLiveData(false)
     val exporting: LiveData<Boolean> = _exporting
 
-    init {
-        checkData = PublishProcessor.create()
-        compositeDisposable = CompositeDisposable()
+    private val connectionStatus = networkUtils.connectionStatus
+
+    private val _settingsState = MutableStateFlow<SettingsState?>(null)
+    val settingsState = _settingsState
+        .onStart {
+            loadData()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(),
+            null,
+        )
+
+    private val _messageChannel = Channel<String>(Channel.BUFFERED)
+    val messageChannel = _messageChannel.receiveAsFlow()
+
+    private val _errorLogChannel = Channel<List<ErrorViewModel>>(Channel.RENDEZVOUS)
+    val errorLogChannel = _errorLogChannel.receiveAsFlow()
+
+    private val _fileToShareChannel = Channel<File>()
+    val fileToShareChannel = _fileToShareChannel.receiveAsFlow()
+
+    enum class SyncStatusProgress {
+        NONE,
+        SYNC_DATA_IN_PROGRESS,
+        SYNC_DATA_FINISHED,
+        SYNC_METADATA_IN_PROGRESS,
+        SYNC_METADATA_FINISHED,
     }
 
-    fun onItemClick(settingsItem: SettingItem?) {
-        view.openItem(settingsItem)
+    private val _metadataWorkInfo =
+        workManagerController.getWorkInfosByTagLiveData(Constants.META_NOW)
+            .asFlow()
+            .map { workStatuses ->
+                var workState: WorkInfo.State? = workStatuses.getOrNull(0)?.state
+                onWorkStatusesUpdate(workState, Constants.META_NOW)
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                SyncStatusProgress.NONE,
+            )
+
+    private val _dataWorkInfo =
+        workManagerController.getWorkInfosByTagLiveData(Constants.DATA_NOW)
+            .asFlow()
+            .map { workStatuses ->
+                var workState: WorkInfo.State? = workStatuses.getOrNull(0)?.state
+                onWorkStatusesUpdate(workState, Constants.DATA_NOW)
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                SyncStatusProgress.NONE,
+            )
+
+    private val _startWorkInfo = MutableStateFlow(SyncStatusProgress.NONE)
+
+    private val syncWorkInfo = merge(_metadataWorkInfo, _dataWorkInfo, _startWorkInfo)
+
+    init {
+        connectionStatus
+            .onEach { hasConnection ->
+                _settingsState.update { it?.copy(hasConnection = hasConnection) }
+            }
+            .launchIn(viewModelScope)
+
+        syncWorkInfo
+            .onEach { syncStatusProgress ->
+                when (syncStatusProgress) {
+                    SyncStatusProgress.NONE -> {}
+                    SyncStatusProgress.SYNC_DATA_IN_PROGRESS ->
+                        _settingsState.update {
+                            it?.copy(
+                                dataSettingsViewModel = it.dataSettingsViewModel.copy(
+                                    syncInProgress = true,
+                                ),
+                            )
+                        }
+
+                    SyncStatusProgress.SYNC_METADATA_IN_PROGRESS ->
+                        _settingsState.update {
+                            it?.copy(
+                                metadataSettingsViewModel = it.metadataSettingsViewModel.copy(
+                                    syncInProgress = true,
+                                ),
+                            )
+                        }
+
+                    SyncStatusProgress.SYNC_DATA_FINISHED,
+                    SyncStatusProgress.SYNC_METADATA_FINISHED,
+                    ->
+                        loadData()
+                }
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private fun loadData() {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val settingsState = SettingsState(
+                openedItem = _settingsState.value?.openedItem,
+                hasConnection = connectionStatus.value,
+                metadataSettingsViewModel = settingsRepository.metaSync().blockingGet().copy(
+                    syncInProgress = _metadataWorkInfo.value == SyncStatusProgress.SYNC_METADATA_IN_PROGRESS,
+                ),
+                dataSettingsViewModel = settingsRepository.dataSync().blockingGet().copy(
+                    syncInProgress = _metadataWorkInfo.value == SyncStatusProgress.SYNC_METADATA_IN_PROGRESS,
+                ),
+                syncParametersViewModel = settingsRepository.syncParameters().blockingGet(),
+                reservedValueSettingsViewModel = settingsRepository.reservedValues().blockingGet(),
+                smsSettingsViewModel = with(settingsRepository.sms().blockingGet()) {
+                    copy(
+                        gatewayValidationResult = gatewayValidator(this.gatewayNumber),
+                    )
+                },
+            )
+            _settingsState.update { settingsState }
+        }
+    }
+
+    fun onItemClick(settingsItem: SettingItem) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            _settingsState.update {
+                it?.copy(
+                    openedItem = if (settingsItem == it.openedItem) null else settingsItem,
+                )
+            }
+        }
     }
 
     fun init() {
-        compositeDisposable.add(
-            checkData.startWith(true)
-                .flatMapSingle {
-                    Single.zip(
-                        settingsRepository.metaSync(userManager),
-                        settingsRepository.dataSync(),
-                        settingsRepository.syncParameters(),
-                        settingsRepository.reservedValues(),
-                        settingsRepository.sms(),
-                    ) {
-                            metadataSettingsViewModel: MetadataSettingsViewModel?,
-                            dataSettingsViewModel: DataSettingsViewModel?,
-                            syncParametersViewModel: SyncParametersViewModel?,
-                            reservedValueSettingsViewModel: ReservedValueSettingsViewModel?,
-                            smsSettingsViewModel: SMSSettingsViewModel?,
-                        ->
-                        SettingsViewModel(
-                            metadataSettingsViewModel!!,
-                            dataSettingsViewModel!!,
-                            syncParametersViewModel!!,
-                            reservedValueSettingsViewModel!!,
-                            smsSettingsViewModel!!,
-                        )
-                    }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                            (
-                                metadataSettingsViewModel,
-                                dataSettingsViewModel,
-                                syncParametersViewModel,
-                                reservedValueSettingsViewModel,
-                                smsSettingsViewModel1,
-                            ): SettingsViewModel,
-                        ->
-                        view.setMetadataSettings(
-                            metadataSettingsViewModel,
-                        )
-                        view.setDataSettings(dataSettingsViewModel)
-                        view.setParameterSettings(syncParametersViewModel)
-                        view.setReservedValuesSettings(reservedValueSettingsViewModel)
-                        view.setSMSSettings(smsSettingsViewModel1)
-                        smsSettingsViewModel = smsSettingsViewModel1
-                    },
-                ) { t: Throwable? -> Timber.e(t) },
-        )
-
-        _syncDataButton.postValue(
-            ButtonUiModel(
-                resourceManager.getString(R.string.SYNC_DATA).uppercase(Locale.getDefault()),
-                true,
-            ) {
-                syncData()
-            },
-        )
-        _syncMetaDataButton.postValue(
-            ButtonUiModel(
-                resourceManager.getString(R.string.SYNC_META).uppercase(Locale.getDefault()),
-                true,
-            ) { syncMeta() },
-        )
-        _checkVersionsButton.postValue(
-            ButtonUiModel(
-                resourceManager.getString(R.string.check_for_updates),
-                true,
-            ) {
-                _updatesLoading.value = true
-                launch {
-                    versionRepository.downloadLatestVersionInfo()
-                }
-            },
-        )
+        networkUtils.registerNetworkCallback()
     }
 
-    val metadataPeriodSetting: Int
-        get() = settingsRepository.metaSync(userManager)
-            .blockingGet()
-            .metadataSyncPeriod
-    val dataPeriodSetting: Int
-        get() = settingsRepository.dataSync()
-            .blockingGet()
-            .dataSyncPeriod
-
-    fun validateGatewayObservable(gateway: String) {
-        if (plusIsMissingOrIsTooLong(gateway)) {
-            view.showInvalidGatewayError()
-        } else if (gateway.isEmpty()) {
-            view.requestNoEmptySMSGateway()
-        } else if (isValidGateway(gateway)) {
-            view.hideGatewayError()
+    fun checkVersionUpdate() {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            _updatesLoading.postValue(true)
+            val newVersion = versionRepository.getLatestVersionInfo()
+            if (newVersion != null) {
+                versionRepository.checkVersionUpdates()
+            } else {
+                _messageChannel.send(resourceManager.getString(R.string.no_updates))
+            }
+            _updatesLoading.postValue(false)
         }
-    }
-
-    private fun isValidGateway(gateway: String): Boolean =
-        (gatewayValidator.validate(gateway) || gateway.startsWith("+")) && gateway.length == 1
-
-    private fun plusIsMissingOrIsTooLong(gateway: String): Boolean {
-        return !gateway.startsWith("+") && gateway.length == 1 || gateway.length >= max_size
-    }
-
-    fun isGatewaySetAndValid(gateway: String): Boolean {
-        if (gateway.isEmpty()) {
-            view.requestNoEmptySMSGateway()
-            return false
-        } else if (!gatewayValidator.validate(gateway)) {
-            view.showInvalidGatewayError()
-            return false
-        }
-        view.hideGatewayError()
-        return true
     }
 
     fun saveLimitScope(limitScope: LimitScope?) {
         val syncParam = "sync_limitScope_save"
-        matomoAnalyticsController.trackEvent(Categories.SETTINGS, syncParam, CLICK)
+        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
         settingsRepository.saveLimitScope(limitScope!!)
-        checkData.onNext(true)
+        loadData()
     }
 
     fun saveEventMaxCount(eventsNumber: Int?) {
         val syncParam = "sync_eventMaxCount_save"
-        matomoAnalyticsController.trackEvent(Categories.SETTINGS, syncParam, CLICK)
+        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
         settingsRepository.saveEventsToDownload(eventsNumber!!)
-        checkData.onNext(true)
+        loadData()
     }
 
     fun saveTeiMaxCount(teiNumber: Int?) {
         val syncParam = "sync_teiMaxCoung_save"
-        matomoAnalyticsController.trackEvent(Categories.SETTINGS, syncParam, CLICK)
+        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
         settingsRepository.saveTeiToDownload(teiNumber!!)
-        checkData.onNext(true)
+        loadData()
     }
 
     fun saveReservedValues(reservedValuesCount: Int?) {
         val syncParam = "sync_reservedValues_save"
-        matomoAnalyticsController.trackEvent(Categories.SETTINGS, syncParam, CLICK)
+        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
         settingsRepository.saveReservedValuesToDownload(reservedValuesCount!!)
-        checkData.onNext(true)
+        loadData()
     }
 
-    fun saveGatewayNumber(gatewayNumber: String) {
-        if (isGatewaySetAndValid(gatewayNumber)) {
-            settingsRepository.saveGatewayNumber(gatewayNumber)
+    fun saveWaitForSmsResponse(shouldWait: Boolean, resultSender: String) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            if (shouldWait) {
+                when (val validation = gatewayValidator(resultSender)) {
+                    GatewayValidator.GatewayValidationResult.Empty,
+                    GatewayValidator.GatewayValidationResult.Invalid,
+                    ->
+                        _settingsState.update {
+                            it?.copy(
+                                smsSettingsViewModel = it.smsSettingsViewModel.copy(
+                                    gatewayValidationResult = validation,
+                                ),
+                            )
+                        }
+
+                    GatewayValidator.GatewayValidationResult.Valid -> {
+                        settingsRepository.saveSmsResultSender(resultSender)
+                    }
+                }
+            }
+            settingsRepository.saveWaitForSmsResponse(shouldWait)
+
+            loadData()
         }
     }
 
-    fun saveSmsResultSender(smsResultSender: String?) {
-        settingsRepository.saveSmsResultSender(smsResultSender!!)
-    }
+    fun enableSmsModule(enableSms: Boolean, smsGateway: String, timeout: Int) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            if (enableSms) {
+                when (val validation = gatewayValidator(smsGateway)) {
+                    GatewayValidator.GatewayValidationResult.Empty,
+                    GatewayValidator.GatewayValidationResult.Invalid,
+                    ->
+                        _settingsState.update {
+                            it?.copy(
+                                smsSettingsViewModel = it.smsSettingsViewModel.copy(
+                                    gatewayValidationResult = validation,
+                                ),
+                            )
+                        }
 
-    fun saveSmsResponseTimeout(smsResponseTimeout: Int?) {
-        settingsRepository.saveSmsResponseTimeout(smsResponseTimeout!!)
-    }
-
-    fun saveWaitForSmsResponse(shouldWait: Boolean) {
-        settingsRepository.saveWaitForSmsResponse(shouldWait)
-    }
-
-    fun enableSmsModule(enableSms: Boolean) {
-        if (enableSms) {
-            view.displaySMSRefreshingData()
+                    GatewayValidator.GatewayValidationResult.Valid -> {
+                        _messageChannel.send(resourceManager.getString(R.string.sms_downloading_data))
+                        settingsRepository.saveGatewayNumber(smsGateway)
+                        settingsRepository.saveSmsResponseTimeout(timeout)
+                        updateSmsModule(true)
+                    }
+                }
+            } else {
+                updateSmsModule(false)
+            }
         }
-        compositeDisposable.add(
-            settingsRepository.enableSmsModule(enableSms)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.displaySMSEnabled(enableSms) },
-                ) { error: Throwable? ->
-                    Timber.e(error)
-                    view.displaySmsEnableError()
+    }
+
+    private suspend fun updateSmsModule(enableSms: Boolean) {
+        try {
+            settingsRepository.enableSmsModule(enableSms).blockingAwait()
+            _messageChannel.send(
+                if (enableSms) {
+                    resourceManager.getString(R.string.sms_enabled)
+                } else {
+                    resourceManager.getString(R.string.sms_disabled)
                 },
-        )
+            )
+        } catch (e: Exception) {
+            Timber.e(e)
+            _messageChannel.send(resourceManager.getString(R.string.sms_disabled))
+        } finally {
+            loadData()
+        }
     }
 
-    fun onWorkStatusesUpdate(workState: WorkInfo.State?, workerTag: String) {
-        if (workState != null) {
+    private fun onWorkStatusesUpdate(
+        workState: WorkInfo.State?,
+        workerTag: String,
+    ): SyncStatusProgress {
+        return if (workState != null) {
             when (workState) {
                 WorkInfo.State.ENQUEUED,
                 WorkInfo.State.RUNNING,
                 WorkInfo.State.BLOCKED,
                 -> when (workerTag) {
-                    Constants.META_NOW -> view.onMetadataSyncInProgress()
-                    Constants.DATA_NOW -> view.onDataSyncInProgress()
+                    Constants.META_NOW -> SyncStatusProgress.SYNC_METADATA_IN_PROGRESS
+                    Constants.DATA_NOW -> SyncStatusProgress.SYNC_DATA_IN_PROGRESS
+                    else -> SyncStatusProgress.NONE
                 }
 
                 else -> when (workerTag) {
-                    Constants.META_NOW -> view.onMetadataFinished()
-                    Constants.DATA_NOW -> view.onDataFinished()
+                    Constants.META_NOW -> SyncStatusProgress.SYNC_METADATA_FINISHED
+                    Constants.DATA_NOW -> SyncStatusProgress.SYNC_DATA_FINISHED
+                    else -> SyncStatusProgress.NONE
                 }
             }
         } else {
             when (workerTag) {
-                Constants.META_NOW -> view.onMetadataFinished()
-                Constants.DATA_NOW -> view.onDataFinished()
+                Constants.META_NOW -> SyncStatusProgress.SYNC_METADATA_FINISHED
+                Constants.DATA_NOW -> SyncStatusProgress.SYNC_DATA_FINISHED
+                else -> SyncStatusProgress.NONE
             }
         }
     }
 
-    fun syncData(seconds: Int, scheduleTag: String) {
-        preferenceProvider.setValue(Constants.TIME_DATA, seconds)
-        workManagerController.cancelUniqueWork(scheduleTag)
-        val workerItem = WorkerItem(
-            scheduleTag,
-            WorkerType.DATA,
-            seconds.toLong(),
-            null,
-            null,
-            ExistingPeriodicWorkPolicy.REPLACE,
-        )
-        workManagerController.enqueuePeriodicWork(workerItem)
-        checkData()
-    }
-
-    fun syncMeta(seconds: Int, scheduleTag: String) {
-        matomoAnalyticsController.trackEvent(Categories.SETTINGS, Actions.SYNC_DATA, CLICK)
-        preferenceProvider.setValue(Constants.TIME_META, seconds)
-        workManagerController.cancelUniqueWork(scheduleTag)
-        val workerItem = WorkerItem(
-            scheduleTag,
-            WorkerType.METADATA,
-            seconds.toLong(),
-            null,
-            null,
-            ExistingPeriodicWorkPolicy.REPLACE,
-        )
-        workManagerController.enqueuePeriodicWork(workerItem)
-        checkData()
-    }
-
     fun syncData() {
-        matomoAnalyticsController.trackEvent(Categories.SETTINGS, Actions.SYNC_CONFIG, CLICK)
-        view.syncData()
-        analyticsHelper.setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW)
-        val workerItem = WorkerItem(
-            Constants.DATA_NOW,
-            WorkerType.DATA,
-            null,
-            null,
-            ExistingWorkPolicy.KEEP,
-            null,
-        )
-        workManagerController.syncDataForWorker(workerItem)
-        checkData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            _startWorkInfo.value = SyncStatusProgress.SYNC_DATA_IN_PROGRESS
+            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_CONFIG, CLICK)
+            analyticsHelper.setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW)
+            val workerItem = WorkerItem(
+                Constants.DATA_NOW,
+                WorkerType.DATA,
+                null,
+                null,
+                ExistingWorkPolicy.KEEP,
+                null,
+            )
+            workManagerController.syncDataForWorker(workerItem)
+            loadData()
+        }
     }
 
     fun syncMeta() {
-        view.syncMeta()
-        analyticsHelper.setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW)
-        val workerItem = WorkerItem(
-            Constants.META_NOW,
-            WorkerType.METADATA,
-            null,
-            null,
-            ExistingWorkPolicy.KEEP,
-            null,
-        )
-        workManagerController.syncDataForWorker(workerItem)
+        viewModelScope.launch(dispatcherProvider.io()) {
+            _startWorkInfo.value = SyncStatusProgress.SYNC_DATA_IN_PROGRESS
+            analyticsHelper.setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW)
+            val workerItem = WorkerItem(
+                Constants.META_NOW,
+                WorkerType.METADATA,
+                null,
+                null,
+                ExistingWorkPolicy.KEEP,
+                null,
+            )
+            workManagerController.syncDataForWorker(workerItem)
+        }
     }
 
-    fun cancelPendingWork(tag: String) {
+    private fun cancelPendingWork(tag: String) {
         preferenceProvider.setValue(
             when (tag) {
                 Constants.DATA -> Constants.TIME_DATA
@@ -375,11 +385,13 @@ class SyncManagerPresenter internal constructor(
             0,
         )
         workManagerController.cancelUniqueWork(tag)
-        checkData()
+        loadData()
     }
 
     fun dispose() {
-        compositeDisposable.clear()
+        networkUtils.unregisterNetworkCallback()
+        _messageChannel.close()
+        _errorLogChannel.close()
     }
 
     fun resetSyncParameters() {
@@ -387,93 +399,60 @@ class SyncManagerPresenter internal constructor(
         preferenceProvider.setValue(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT)
         preferenceProvider.setValue(Constants.LIMIT_BY_ORG_UNIT, false)
         preferenceProvider.setValue(Constants.LIMIT_BY_PROGRAM, false)
-        checkData.onNext(true)
-    }
-
-    fun onDeleteLocalData() {
-        view.deleteLocalData()
+        loadData()
     }
 
     fun deleteLocalData() {
-        var error = false
-        try {
-            d2.wipeModule().wipeData()
-        } catch (e: D2Error) {
-            Timber.e(e)
-            error = true
-        }
-        view.showLocalDataDeleted(error)
-    }
+        viewModelScope.launch(dispatcherProvider.io()) {
+            analyticsHelper.setEvent(
+                CONFIRM_DELETE_LOCAL_DATA,
+                CLICK,
+                CONFIRM_DELETE_LOCAL_DATA,
+            )
+            var error = false
+            try {
+                settingsRepository.deleteLocalData()
+            } catch (e: D2Error) {
+                Timber.e(e)
+                error = true
+            }
+            if (error) {
+                _messageChannel.send(
+                    resourceManager.getString(
+                        R.string.delete_local_data_error,
+                    ),
+                )
+            } else {
+                _messageChannel.send(
+                    resourceManager.getString(
+                        R.string.delete_local_data_done,
+                    ),
+                )
+            }
 
-    fun onReservedValues() {
-        view.startActivity(ReservedValueActivity::class.java, null, false, false, null)
+            loadData()
+        }
     }
 
     fun checkSyncErrors() {
-        compositeDisposable.add(
-            Single.fromCallable<List<ErrorViewModel>> {
-                val errors: MutableList<ErrorViewModel> = ArrayList()
-                errors.addAll(
-                    errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()),
-                )
-                errors.addAll(
-                    errorMapper.mapConflict(
-                        d2.importModule().trackerImportConflicts().blockingGet(),
-                    ),
-                )
-                errors.addAll(
-                    errorMapper.mapFKViolation(
-                        d2.maintenanceModule().foreignKeyViolations().blockingGet(),
-                    ),
-                )
-                errors
-            }
-                .map { errors: List<ErrorViewModel> ->
-                    errors.sortedBy { it.creationDate }
-                }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { data: List<ErrorViewModel> -> view.showSyncErrors(data) },
-                ) { t: Throwable? -> Timber.e(t) },
-        )
-    }
-
-    fun checkData() {
-        checkData.onNext(true)
-    }
-
-    fun checkGatewayAndTimeoutAreValid() {
-        if (view.isGatewayValid && view.isResultTimeoutValid) {
-            view.enabledSMSSwitchAndSender(smsSettingsViewModel)
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val errors: MutableList<ErrorViewModel> = ArrayList()
+            errors.addAll(
+                errorMapper.mapD2Error(settingsRepository.d2Errors()),
+            )
+            errors.addAll(
+                errorMapper.mapConflict(settingsRepository.trackerImportConflicts()),
+            )
+            errors.addAll(
+                errorMapper.mapFKViolation(settingsRepository.foreignKeyViolations()),
+            )
+            _errorLogChannel.send(errors.sortedBy { it.creationDate })
         }
     }
 
-    @VisibleForTesting
-    fun setSmsSettingsViewModel(settingsViewModel: SMSSettingsViewModel?) {
-        smsSettingsViewModel = settingsViewModel
-    }
-
-    fun updateSyncDataButton(canBeClicked: Boolean) {
-        _syncDataButton.postValue(
-            ButtonUiModel(
-                resourceManager.getString(R.string.SYNC_DATA).uppercase(Locale.getDefault()),
-                canBeClicked,
-            ) {
-                syncData()
-            },
-        )
-    }
-
-    fun updateSyncMetaDataButton(canBeClicked: Boolean) {
-        _syncMetaDataButton.postValue(
-            ButtonUiModel(
-                resourceManager.getString(R.string.SYNC_META).uppercase(Locale.getDefault()),
-                canBeClicked,
-            ) {
-                syncMeta()
-            },
-        )
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun setSmsSettingsViewModel(settingsViewModel: SMSSettingsViewModel) {
+        _settingsState.update { it?.copy(smsSettingsViewModel = settingsViewModel) }
     }
 
     fun onExportAndShareDB() {
@@ -486,21 +465,67 @@ class SyncManagerPresenter internal constructor(
 
     private fun exportDB(download: Boolean, share: Boolean) {
         _exporting.value = true
-        launch(context = dispatcherProvider.ui()) {
+        viewModelScope.launch(context = dispatcherProvider.ui()) {
             try {
                 val db = async(dispatcherProvider.io()) {
-                    d2.maintenanceModule().databaseImportExport()
-                        .exportLoggedUserDatabase()
+                    settingsRepository.exportDatabase()
                 }.await()
-                _exportedDb.postValue(ExportDbModel(file = db, share = share, download = download))
+                fileHandler.copyAndOpen(db) {}
+                if (download) {
+                    _messageChannel.send(resourceManager.getString(R.string.database_export_downloaded))
+                } else {
+                    _fileToShareChannel.send(db)
+                }
             } catch (e: Exception) {
-                view.displayMessage(resourceManager.parseD2Error(e))
-                onExportEnd()
+                _messageChannel.send(resourceManager.parseD2Error(e) ?: "")
+            } finally {
+                _exporting.postValue(false)
             }
         }
     }
 
-    fun onExportEnd() {
-        _exporting.postValue(false)
+    fun onSyncDataPeriodChanged(period: Int) {
+        if (period != Constants.TIME_MANUAL) {
+            syncData(period)
+        } else {
+            cancelPendingWork(Constants.DATA)
+        }
+    }
+
+    private fun syncData(seconds: Int) {
+        preferenceProvider.setValue(Constants.TIME_DATA, seconds)
+        workManagerController.cancelUniqueWork(Constants.DATA)
+        val workerItem = WorkerItem(
+            Constants.DATA,
+            WorkerType.DATA,
+            seconds.toLong(),
+            null,
+            null,
+            ExistingPeriodicWorkPolicy.REPLACE,
+        )
+        workManagerController.enqueuePeriodicWork(workerItem)
+    }
+
+    fun onSyncMetaPeriodChanged(period: Int) {
+        if (period != Constants.TIME_MANUAL) {
+            syncMeta(period)
+        } else {
+            cancelPendingWork(Constants.META)
+        }
+    }
+
+    private fun syncMeta(seconds: Int) {
+        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_DATA, CLICK)
+        preferenceProvider.setValue(Constants.TIME_META, seconds)
+        workManagerController.cancelUniqueWork(Constants.META)
+        val workerItem = WorkerItem(
+            Constants.META,
+            WorkerType.METADATA,
+            seconds.toLong(),
+            null,
+            null,
+            ExistingPeriodicWorkPolicy.REPLACE,
+        )
+        workManagerController.enqueuePeriodicWork(workerItem)
     }
 }

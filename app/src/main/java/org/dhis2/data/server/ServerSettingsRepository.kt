@@ -5,10 +5,7 @@ import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.SystemSetting
 
-class ServerSettingsRepository(
-    private val d2: D2,
-    private val systemStyleMapper: SystemStyleMapper,
-) {
+class ServerSettingsRepository(private val d2: D2) {
 
     fun getTheme(): Single<Pair<String?, Int>> {
         return d2.settingModule().systemSetting().get()
@@ -21,7 +18,7 @@ class ServerSettingsRepository(
                     systemSettings.firstOrNull {
                         it.key() == SystemSetting.SystemSettingKey.FLAG
                     }?.value()
-                Pair(flag, systemStyleMapper.map(style))
+                Pair(flag, SystemStyleMapper(style))
             }
     }
 
