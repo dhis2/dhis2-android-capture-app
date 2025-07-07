@@ -25,7 +25,7 @@ public class HelpManager {
     private NestedScrollView scrollView;
 
     public enum TutorialName {
-        SETTINGS_FRAGMENT, PROGRAM_FRAGMENT, TEI_DASHBOARD,
+        PROGRAM_FRAGMENT, TEI_DASHBOARD,
         EVENT_INITIAL
     }
 
@@ -65,7 +65,6 @@ public class HelpManager {
         help = new ArrayList<>();
         switch (name) {
             case PROGRAM_FRAGMENT -> help = programFragmentTutorial(activity, stepCondition);
-            case SETTINGS_FRAGMENT -> help = settingsFragmentTutorial(activity);
             case TEI_DASHBOARD -> help = teiDashboardTutorial(activity);
             case EVENT_INITIAL -> help = eventInitialTutorial(activity, stepCondition);
         }
@@ -137,84 +136,6 @@ public class HelpManager {
         if (tuto2 != null) steps.add(tuto2);
         steps.add(tuto3);
         steps.add(tuto4);
-        return steps;
-    }
-
-    private List<FancyShowCaseView> settingsFragmentTutorial(ActivityGlobalAbstract activity) {
-        if (scrollView == null)
-            throw new NullPointerException("ScrollView must be provided");
-
-        FancyShowCaseView tuto1 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsItemData))
-                .title(activity.getString(R.string.tuto_settings_1))
-                .enableAutoTextPosition()
-                .closeOnTouch(true)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .build();
-
-        FancyShowCaseView tuto2 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsItemMeta))
-                .title(activity.getString(R.string.tuto_settings_2))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .closeOnTouch(true)
-                .build();
-
-        FancyShowCaseView tuto3 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsItemParams))
-                .title(activity.getString(R.string.tuto_settings_3))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .closeOnTouch(true)
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        if (scrollView != null) {
-                            scrollView.scrollTo((int) activity.findViewById(R.id.settingsItemValues).getX(),
-                                    (int) activity.findViewById(R.id.settingsItemValues).getY());
-                        }
-                    }
-
-                    @Override
-                    public void onSkipped(String id) {
-                        // unused
-                    }
-                })
-                .build();
-
-        FancyShowCaseView tuto4 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsItemValues))
-                .title(activity.getString(R.string.tuto_settings_reserved))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .closeOnTouch(true)
-                .build();
-
-        FancyShowCaseView tuto5 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsItemLog))
-                .title(activity.getString(R.string.tuto_settings_errors))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .closeOnTouch(true)
-                .build();
-
-        FancyShowCaseView tuto6 = new FancyShowCaseView.Builder(activity)
-                .focusOn(activity.findViewById(R.id.settingsItemDeleteData))
-                .title(activity.getString(R.string.tuto_settings_reset))
-                .enableAutoTextPosition()
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .closeOnTouch(true)
-                .build();
-
-
-        ArrayList<FancyShowCaseView> steps = new ArrayList<>();
-        steps.add(tuto1);
-        steps.add(tuto2);
-        steps.add(tuto3);
-        steps.add(tuto4);
-        steps.add(tuto5);
-        steps.add(tuto6);
-
         return steps;
     }
 

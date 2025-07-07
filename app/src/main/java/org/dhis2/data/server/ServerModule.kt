@@ -103,8 +103,8 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesRepository(d2: D2, systemStyleMapper: SystemStyleMapper): ServerSettingsRepository {
-        return ServerSettingsRepository(d2, systemStyleMapper)
+    fun providesRepository(d2: D2): ServerSettingsRepository {
+        return ServerSettingsRepository(d2)
     }
 
     @Provides
