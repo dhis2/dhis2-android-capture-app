@@ -211,6 +211,20 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             }
         }
 
+        binding.loginOauth.setOnClickListener {
+
+            val oauthAuthUrl =
+                "https://dev.im.dhis2.org/oauth2-android-test/oauth2/authorize?" +
+                        "response_type=code" +
+                        "&client_id=dhis2-client" +
+                        "&redirect_uri=http://localhost:9090/oauth2/code/dhis2-client" +
+                        "&scope=openid%20email" +
+                        "&state=abc123"
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra(WEB_VIEW_URL, oauthAuthUrl)
+            startActivity(intent)
+        }
+
         provideBiometricButton()
 
         binding.presenter = presenter
@@ -300,7 +314,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun onPause() {
