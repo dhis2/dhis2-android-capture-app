@@ -44,7 +44,6 @@ class NetworkUtils(val context: Context) {
         manager?.unregisterNetworkCallback(networkCallback)
     }
 
-
     fun isOnline(): Boolean {
         var isOnline = false
         try {
