@@ -107,8 +107,6 @@ fun mapIntentData(customIntent: CustomIntentModel): Intent {
         customIntent.customIntentRequest.forEach { argument ->
             putExtra(argument.key, argument.value)
         }
-        // TODO : Remove this hardcoded value after testing
-        putExtra("versionCode", 202501020)
     }
 }
 
