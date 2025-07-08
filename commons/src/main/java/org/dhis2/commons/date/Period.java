@@ -10,9 +10,6 @@ public enum Period {
     MONTHLY(R.string.MONTHLY),
     YEARLY(R.string.YEARLY);
 
-    /**
-     * QUADRAM. Created by ppajuelo on 16/01/2018.
-     */
     private final int name;
 
     Period(int id){

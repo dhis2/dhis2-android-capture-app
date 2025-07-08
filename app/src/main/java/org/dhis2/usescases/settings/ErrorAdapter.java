@@ -18,10 +18,6 @@ import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
 import kotlin.Pair;
 
-/**
- * QUADRAM. Created by ppajuelo on 25/10/2018.
- */
-
 public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
 
     private final List<ErrorViewModel> data;
