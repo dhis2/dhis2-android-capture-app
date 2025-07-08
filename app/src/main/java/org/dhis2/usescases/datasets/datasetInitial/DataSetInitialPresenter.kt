@@ -43,8 +43,8 @@ class DataSetInitialPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { dataSetInitialModel: DataSetInitialModel ->
-                        catCombo = dataSetInitialModel.categoryCombo()
-                        openFuturePeriods = dataSetInitialModel.openFuturePeriods()
+                        catCombo = dataSetInitialModel.categoryCombo
+                        openFuturePeriods = dataSetInitialModel.openFuturePeriods
                         view.setData(dataSetInitialModel)
                     },
                     Timber::d,
