@@ -32,6 +32,7 @@ import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
+import org.dhis2.composetable.ui.semantics.MANDATORY_ICON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_DISMISS_TAG
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
@@ -431,5 +432,11 @@ internal class DataSetTableRobot(
     fun assertInputLegendDescription(expectedLabel: String) {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(expectedLabel).assertIsDisplayed()
+    }
+
+    fun assertCellHasMandatoryIcon(tableId: String, cellId: String) {
+        composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId), useUnmergedTree = true)
+            .assert(hasAnyChild(hasTestTag(MANDATORY_ICON_TEST_TAG)))
+            .assertIsDisplayed()
     }
 }

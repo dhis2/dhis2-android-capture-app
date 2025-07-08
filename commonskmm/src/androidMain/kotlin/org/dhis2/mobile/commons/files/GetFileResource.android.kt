@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import androidx.activity.result.contract.ActivityResultContract
 import java.io.File
@@ -47,17 +48,25 @@ internal fun Intent.getClipDataUris(): List<Uri> {
     return ArrayList(resultSet)
 }
 
-fun Uri.toFile(context: Context, suffix: String = ""): File? {
+fun Uri.toFileOverWrite(context: Context, suffix: String = ""): File? {
     var resultFile: File? = null
     if (ContentResolver.SCHEME_CONTENT == this.scheme) {
         val cr = context.contentResolver
+
+        var fileName = "tempFile"
+        cr.query(this, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    fileName = cursor.getString(nameIndex).substringBeforeLast('.')
+                }
+            }
+        }
+
         val mimeTypeMap = MimeTypeMap.getSingleton()
         val extensionsFile = mimeTypeMap.getExtensionFromMimeType(cr.getType(this))
-        resultFile = File.createTempFile(
-            "tempFile",
-            "$suffix.$extensionsFile",
-            context.cacheDir,
-        )
+        val fullName = "$fileName$suffix.${extensionsFile ?: ""}".trimEnd('.')
+        resultFile = File(context.cacheDir, fullName)
         val input = cr.openInputStream(this)
         resultFile.outputStream().use { stream ->
             input?.copyTo(stream)

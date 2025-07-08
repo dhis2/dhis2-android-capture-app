@@ -2,6 +2,7 @@ package org.dhis2.mobile.aggregates.ui.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +63,7 @@ import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
+import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
@@ -88,6 +90,8 @@ internal class DataSetTableViewModel(
     private val inputDataUiStateMapper: InputDataUiStateMapper,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
 ) : ViewModel() {
+
+    private var sectionChangeJob: Job? = null
 
     private val _dataSetScreenState =
         MutableStateFlow<DataSetScreenState>(DataSetScreenState.Loading)
@@ -124,9 +128,9 @@ internal class DataSetTableViewModel(
                 dataSetSections = dataSetInstanceData.dataSetSections,
                 renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
                 dataSetSectionTable = DataSetSectionTable(
-                    null,
+                    sectionToLoad,
                     emptyList(),
-                    overridingDimensions = OverwrittenDimension(),
+                    overridingDimensions = overwrittenWidths(sectionToLoad),
                     loading = true,
                 ),
                 initialSection = dataSetInstanceData.initialSectionToLoad,
@@ -172,61 +176,62 @@ internal class DataSetTableViewModel(
     }
 
     fun onSectionSelected(sectionUid: String) {
-        viewModelScope.launch((dispatcher.io())) {
-            if (dataSetScreenState.value.currentSection() != sectionUid) {
-                val selectedSectionIndex = (dataSetScreenState.value as? DataSetScreenState.Loaded)
-                    ?.dataSetSections
-                    ?.indexOfFirst { it.uid == sectionUid }
-                CoroutineTracker.increment()
-                _dataSetScreenState.update {
-                    if (it is DataSetScreenState.Loaded) {
-                        it.copy(
-                            dataSetSectionTable = it.dataSetSectionTable.copy(
-                                id = it.dataSetSectionTable.id,
-                                tableModels = it.dataSetSectionTable.tableModels,
-                                overridingDimensions = it.dataSetSectionTable.overridingDimensions,
-                                loading = true,
-                            ),
-                            selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
-                            initialSection = selectedSectionIndex ?: 0,
-                        )
-                    } else {
-                        it
-                    }
-                }
+        if (_dataSetScreenState.value.currentSection() == sectionUid) return
+        sectionChangeJob?.takeIf { it.isActive }?.cancel()
+        sectionChangeJob = viewModelScope.launch(dispatcher.io()) {
+            val selectedSectionIndex = (dataSetScreenState.value as? DataSetScreenState.Loaded)
+                ?.dataSetSections
+                ?.indexOfFirst { it.uid == sectionUid }
+            CoroutineTracker.increment()
 
-                val sectionData = async { sectionData(sectionUid) }
-                _dataSetScreenState.update {
-                    if (it is DataSetScreenState.Loaded) {
-                        val dataSetSectionTitle =
-                            if (it.dataSetDetails.customTitle.isConfiguredTitle) {
-                                it.dataSetDetails.customTitle.header
-                            } else {
-                                it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
-                            }
-                        it.copy(
-                            dataSetDetails = it.dataSetDetails.copy(
-                                customTitle = DataSetCustomTitle(
-                                    header = dataSetSectionTitle,
-                                    subHeader = it.dataSetDetails.customTitle.subHeader,
-                                    textAlignment = it.dataSetDetails.customTitle.textAlignment,
-                                    isConfiguredTitle = it.dataSetDetails.customTitle.isConfiguredTitle,
-                                ),
+            _dataSetScreenState.update {
+                if (it is DataSetScreenState.Loaded) {
+                    val dataSetSectionTitle =
+                        if (it.dataSetDetails.customTitle.isConfiguredTitle) {
+                            it.dataSetDetails.customTitle.header
+                        } else {
+                            it.dataSetSections.firstOrNull { section -> section.uid == sectionUid }?.title
+                        }
+                    it.copy(
+                        dataSetDetails = it.dataSetDetails.copy(
+                            customTitle = DataSetCustomTitle(
+                                header = dataSetSectionTitle,
+                                subHeader = it.dataSetDetails.customTitle.subHeader,
+                                textAlignment = it.dataSetDetails.customTitle.textAlignment,
+                                isConfiguredTitle = it.dataSetDetails.customTitle.isConfiguredTitle,
                             ),
-                            dataSetSectionTable = it.dataSetSectionTable.copy(
-                                id = sectionUid,
-                                tableModels = sectionData.await(),
-                                overridingDimensions = overwrittenWidths(sectionUid),
-                                loading = false,
-                            ),
-                            initialSection = selectedSectionIndex ?: 0,
-                        )
-                    } else {
-                        it
-                    }
+                        ),
+                        dataSetSectionTable = it.dataSetSectionTable.copy(
+                            id = sectionUid,
+                            tableModels = emptyList(),
+                            overridingDimensions = overwrittenWidths(sectionUid),
+                            loading = true,
+                        ),
+                        selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
+                        initialSection = selectedSectionIndex ?: 0,
+                    )
+                } else {
+                    it
                 }
-                CoroutineTracker.decrement()
             }
+
+            val sectionData = async { sectionData(sectionUid) }
+            _dataSetScreenState.update {
+                if (it is DataSetScreenState.Loaded) {
+                    it.copy(
+                        dataSetSectionTable = it.dataSetSectionTable.copy(
+                            id = sectionUid,
+                            tableModels = sectionData.await(),
+                            overridingDimensions = overwrittenWidths(sectionUid),
+                            loading = false,
+                        ),
+                        initialSection = selectedSectionIndex ?: 0,
+                    )
+                } else {
+                    it
+                }
+            }
+            CoroutineTracker.decrement()
         }
     }
 
@@ -482,13 +487,16 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnSelectFile -> {
+                    updateFileLoadingState(UploadFileState.UPLOADING)
                     uiActionHandler.onSelectFile(
                         uiAction.cellId,
-                    ) { result ->
-                        result?.let {
-                            uploadFile(uiAction.cellId, result)
-                        }
-                    }
+                        { result ->
+                            result?.let { uploadFile(uiAction.cellId, result) }
+                        },
+                        {
+                            updateFileLoadingState(UploadFileState.ADD)
+                        },
+                    )
                 }
 
                 is UiAction.OnShareImage -> {
@@ -514,6 +522,24 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnFetchOptions ->
                     updateSelectedCell(uiAction.cellId, true)
+            }
+        }
+    }
+
+    private fun updateFileLoadingState(state: UploadFileState) {
+        viewModelScope.launch(dispatcher.io()) {
+            _dataSetScreenState.update {
+                (it as? DataSetScreenState.Loaded)?.copy(
+                    selectedCellInfo = if (it.selectedCellInfo is CellSelectionState.InputDataUiState) {
+                        it.selectedCellInfo.copy(
+                            inputExtra = it.selectedCellInfo.fileExtras().copy(
+                                fileState = state,
+                            ),
+                        )
+                    } else {
+                        it.selectedCellInfo
+                    },
+                ) ?: it
             }
         }
     }

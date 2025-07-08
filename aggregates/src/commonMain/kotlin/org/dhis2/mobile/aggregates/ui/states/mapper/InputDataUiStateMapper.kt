@@ -23,6 +23,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.model.TimeTransformation
@@ -53,9 +54,7 @@ internal class InputDataUiStateMapper(
                 else -> InputShellState.FOCUSED
             },
             inputExtra = when (cellInfo.inputType) {
-                InputType.Age -> InputExtra.Age(
-                    selectableDates = SelectableDates("01011940", "12312300"),
-                )
+                InputType.Age -> InputExtra.Age
 
                 InputType.Date, InputType.Time, InputType.DateTime ->
                     InputExtra.Date(
@@ -84,10 +83,14 @@ internal class InputDataUiStateMapper(
                 InputType.Image,
                 -> (cellInfo.inputExtra as? CellValueExtra.FileResource)?.let {
                     InputExtra.File(
+                        fileState = when (cellInfo.value) {
+                            null -> UploadFileState.ADD
+                            else -> UploadFileState.LOADED
+                        },
                         filePath = it.filePath,
                         fileWeight = it.fileWeight,
                     )
-                } ?: InputExtra.File(null, null)
+                } ?: InputExtra.File(UploadFileState.ADD, null, null)
 
                 InputType.MultiText -> (cellInfo.inputExtra as? CellValueExtra.Options)?.let {
                     InputExtra.MultiText(

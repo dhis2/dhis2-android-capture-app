@@ -147,6 +147,8 @@ class DataSetTest : BaseTest() {
 
         checkMandatoryDialogIsDisplayedAndAcceptStep()
 
+        checkMandatoryIconOnCell(tableId = tableId, cellId = cellMandatoryId)
+
         enterDataStep(
             tableId = tableId,
             cellId = cellMandatoryId,
@@ -781,7 +783,7 @@ class DataSetTest : BaseTest() {
         }
 
         dataSetDetailRobot(composeTestRule) {
-            assertEquals(2, getListItemCount())
+            checkDataSetRecyclerItemsAreDisplayed(2)
         }
 
         filterRobot(composeTestRule) {
@@ -895,6 +897,15 @@ class DataSetTest : BaseTest() {
         dataSetInitialRobot(composeTestRule) {
             checkActionInputIsDisplayed()
             clickOnActionButton()
+        }
+    }
+
+    private fun checkMandatoryIconOnCell(
+        tableId: String,
+        cellId: String,
+    ) {
+        dataSetTableRobot(composeTestRule) {
+            assertCellHasMandatoryIcon(tableId, cellId)
         }
     }
 }

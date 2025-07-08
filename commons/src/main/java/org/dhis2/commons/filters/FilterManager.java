@@ -13,6 +13,7 @@ import org.dhis2.commons.filters.data.WorkingListScope;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.filters.sorting.SortingStatus;
 import org.dhis2.commons.filters.workingLists.WorkingListItem;
+import org.dhis2.commons.idlingresource.CountingIdlingResourceSingleton;
 import org.dhis2.commons.resources.ResourceManager;
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper;
 import org.hisp.dhis.android.core.category.CategoryOptionCombo;
@@ -42,10 +43,12 @@ import timber.log.Timber;
 public class FilterManager implements Serializable {
 
     public void publishData() {
+        CountingIdlingResourceSingleton.INSTANCE.increment();
         filterProcessor.onNext(this);
         if (scope != null) {
             FilterManagerExtensionsKt.emit(this, scope, filterFlow);
         }
+        CountingIdlingResourceSingleton.INSTANCE.decrement();
     }
 
     public void setCatComboAdapter(CatOptCombFilterAdapter adapter) {
@@ -287,17 +290,20 @@ public class FilterManager implements Serializable {
     }
 
     public void addPeriod(List<DatePeriod> datePeriod) {
+        CountingIdlingResourceSingleton.INSTANCE.increment();
         this.periodFilters = datePeriod;
         observablePeriodFilters.set(datePeriod);
         periodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
         publishData();
+        CountingIdlingResourceSingleton.INSTANCE.decrement();
     }
 
     public void addEnrollmentPeriod(List<DatePeriod> datePeriod) {
+        CountingIdlingResourceSingleton.INSTANCE.increment();
         this.enrollmentPeriodFilters = datePeriod;
-
         enrollmentPeriodFiltersApplied.set(datePeriod != null && !datePeriod.isEmpty() ? 1 : 0);
         publishData();
+        CountingIdlingResourceSingleton.INSTANCE.decrement();
     }
 
     public void addOrgUnit(OrganisationUnit ou) {

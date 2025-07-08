@@ -36,7 +36,6 @@ internal sealed class InputType {
         LongText,
         Letter,
         Time,
-        Username,
         Url,
         PhoneNumber,
         Email,

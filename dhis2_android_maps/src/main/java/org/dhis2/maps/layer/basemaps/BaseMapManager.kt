@@ -14,6 +14,11 @@ const val BING_ROAD = "Bing Road"
 const val BING_DARK = "Bing Dark"
 const val BING_AERIAL = "Bing Aerial"
 const val BING_AERIAL_LABELS = "Bing Aerial Labels"
+const val AZURE_ROAD = "Azure Road"
+const val AZURE_DARK = "Azure Dark"
+const val AZURE_AERIAL = "Azure Aerial"
+const val AZURE_AERIAL_LABELS = "Azure Aerial Labels"
+
 const val DEFAULT_TILE_URL =
     "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png"
 const val DEFAULT_GLYPH_URL =
@@ -42,6 +47,10 @@ class BaseMapManager(
             BING_DARK -> R.string.dialog_layer_base_map_bing_dark
             BING_AERIAL -> R.string.dialog_layer_base_map_bing_aerial
             BING_AERIAL_LABELS -> R.string.dialog_layer_base_map_bing_aerial_label
+            AZURE_ROAD -> R.string.dialog_layer_base_map_azure_road
+            AZURE_DARK -> R.string.dialog_layer_base_map_azure_dark
+            AZURE_AERIAL -> R.string.dialog_layer_base_map_azure_aerial
+            AZURE_AERIAL_LABELS -> R.string.dialog_layer_base_map_azure_aerial_label
             else -> null
         }
         return id?.let {
@@ -57,6 +66,10 @@ class BaseMapManager(
             BING_DARK -> R.drawable.basemap_bing_dark
             BING_AERIAL -> R.drawable.basemap_bing_aerial
             BING_AERIAL_LABELS -> R.drawable.basemap_bing_aerial_labels
+            AZURE_ROAD -> R.drawable.basemap_azure_road
+            AZURE_DARK -> R.drawable.basemap_azure_dark
+            AZURE_AERIAL -> R.drawable.basemap_azure_aerial
+            AZURE_AERIAL_LABELS -> R.drawable.basemap_azure_hybrid
             else -> null
         }
         return id?.let {

@@ -12,6 +12,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
+import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
@@ -55,6 +56,7 @@ internal sealed class InputExtra {
     ) : InputExtra()
 
     data class File(
+        val fileState: UploadFileState,
         val filePath: String?,
         val fileWeight: String?,
     ) : InputExtra()
@@ -63,9 +65,7 @@ internal sealed class InputExtra {
         val coordinateValue: Coordinates?,
     ) : InputExtra()
 
-    data class Age(
-        val selectableDates: SelectableDates,
-    ) : InputExtra()
+    data object Age : InputExtra()
 
     data class MultiText(
         val numberOfOptions: Int,

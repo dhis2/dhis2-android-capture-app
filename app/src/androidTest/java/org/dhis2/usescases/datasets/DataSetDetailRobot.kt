@@ -16,6 +16,8 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -124,6 +126,28 @@ internal class DataSetDetailRobot(
             })
         )
         return itemCount[0]
+    }
+
+    fun checkDataSetRecyclerItemsAreDisplayed(itemCount: Int) {
+        waitForView(withId(R.id.recycler))
+            .perform(waitForRecyclerViewItems(minItemCount = itemCount))
+    }
+
+    private fun waitForRecyclerViewItems(minItemCount: Int = 1, timeoutMs: Long = 5000): ViewAction {
+        return object : ViewAction {
+            override fun getConstraints() = isAssignableFrom(RecyclerView::class.java)
+            override fun getDescription() = "Wait for RecyclerView to have at least $minItemCount items"
+            override fun perform(uiController: UiController, view: View) {
+                val recyclerView = view as RecyclerView
+                val startTime = System.currentTimeMillis()
+                while ((recyclerView.adapter?.itemCount ?: 0) < minItemCount) {
+                    if (System.currentTimeMillis() - startTime > timeoutMs) {
+                        throw AssertionError("RecyclerView did not reach $minItemCount items in $timeoutMs ms")
+                    }
+                    uiController.loopMainThreadForAtLeast(50)
+                }
+            }
+        }
     }
 
     private fun getTitleFromRecyclerViewItem(
