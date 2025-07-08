@@ -2,7 +2,6 @@ package org.dhis2.form.data
 
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
