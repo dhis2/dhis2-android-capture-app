@@ -14,6 +14,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
+import org.dhis2.form.extensions.inputState
+import org.dhis2.form.extensions.supportingText
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.model.CustomIntentModel
@@ -21,10 +25,14 @@ import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
 import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.mobile.ui.designsystem.component.CustomIntentState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCustomIntent
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
 @Composable
 fun ProvideCustomIntentInput(
     fieldUiModel: FieldUiModel,
+    resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
 ) {
     var values = remember(fieldUiModel) {
@@ -32,9 +40,15 @@ fun ProvideCustomIntentInput(
             mutableStateListOf(*value.split(",").toTypedArray())
         } ?: mutableStateListOf()
     }
-    var state by remember(values) {
+    var customIntentState by remember(values) {
         mutableStateOf(getCustomIntentState(values))
     }
+    val errorGettingDataMessage = SupportingTextData(
+        state = SupportingTextState.ERROR,
+        text = resources.getString(R.string.custom_intent_error),
+    )
+    val supportingTextList = remember { fieldUiModel.supportingText()?.toMutableList() ?: mutableListOf() }
+    var inputShellState = fieldUiModel.inputState()
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -56,21 +70,26 @@ fun ProvideCustomIntentInput(
                         fieldUiModel.valueType,
                     ),
                 )
-                state = getCustomIntentState(values)
+                customIntentState = getCustomIntentState(values)
             } else {
-                state = CustomIntentState.LAUNCH
+                customIntentState = CustomIntentState.LAUNCH
+                inputShellState = InputShellState.ERROR
+                supportingTextList.add(
+                    errorGettingDataMessage,
+                )
             }
         }
-    //TODO remove hardcoded strings
     InputCustomIntent(
         title = fieldUiModel.label,
-        buttonText = "launch",
+        buttonText = resources.getString(R.string.custom_intent_launch),
+        supportingText = supportingTextList.toList(),
+        inputShellState = inputShellState,
         onLaunch = {
-            state = CustomIntentState.LOADING
+            customIntentState = CustomIntentState.LOADING
             val intentData = fieldUiModel.customIntent?.let { mapIntentData(it) }
             val intent = Intent.createChooser(
                 intentData,
-                fieldUiModel.customIntent?.name ?: "Select an app to launch intent",
+                fieldUiModel.customIntent?.name ?: resources.getString(R.string.select_app_intent),
             )
             launcher.launch(intent)
         },
@@ -78,7 +97,7 @@ fun ProvideCustomIntentInput(
             values.clear()
             intentHandler(FormIntent.ClearValue(fieldUiModel.uid))
         },
-        customIntentState = state,
+        customIntentState = customIntentState,
         values = values.toList(),
     )
 }
@@ -88,7 +107,7 @@ fun mapIntentData(customIntent: CustomIntentModel): Intent {
         customIntent.customIntentRequest.forEach { argument ->
             putExtra(argument.key, argument.value)
         }
-        // TODO : Remove this hardcoded value when the versionName is not needed
+        // TODO : Remove this hardcoded value after testing
         putExtra("versionCode", 202501020)
     }
 }
