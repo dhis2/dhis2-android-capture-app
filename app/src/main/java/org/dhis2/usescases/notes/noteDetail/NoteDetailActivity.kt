@@ -13,7 +13,6 @@ import org.dhis2.bindings.initials
 import org.dhis2.bindings.placeHolder
 import org.dhis2.bindings.toDateSpan
 import org.dhis2.commons.Constants
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NoteType
@@ -82,8 +81,8 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         binding.executePendingBindings()
     }
 
-    override fun getNewNote(): Trio<NoteType, String, String> {
-        return Trio.create(noteType, uid, binding.noteText.text.toString())
+    override fun getNewNote(): Triple<NoteType, String, String> {
+        return Triple(noteType, uid, binding.noteText.text.toString())
     }
 
     override fun noteSaved() {

@@ -3,7 +3,6 @@ package org.dhis2.usescases.qrReader;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,6 +10,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import kotlin.Pair;
+import kotlin.Triple;
 
 /**
  * QUADRAM. Created by ppajuelo on 22/05/2018.
@@ -31,11 +31,11 @@ public class QrReaderContracts {
 
         void promtForEventWORegistrationMoreQr();
 
-        void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValue, String, Boolean>> data);
+        void renderEventDataInfo(@NonNull List<Triple<TrackedEntityDataValue, String, Boolean>> data);
 
-        void renderTeiEventDataInfo(@NonNull List<Trio<TrackedEntityDataValue, String, Boolean>> data);
+        void renderTeiEventDataInfo(@NonNull List<Triple<TrackedEntityDataValue, String, Boolean>> data);
 
-        void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes);
+        void renderAttrInfo(@NonNull List<Triple<String, String, Boolean>> attributes);
 
         void renderEnrollmentInfo(@NonNull List<Pair<String, Boolean>> enrollments);
 

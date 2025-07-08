@@ -14,7 +14,6 @@ import org.dhis2.R
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -67,7 +66,7 @@ class LoginViewModel(
     val userName = MutableLiveData<String>()
     val password = MutableLiveData<String>()
     val isDataComplete = MutableLiveData<Boolean>()
-    val isTestingEnvironment = MutableLiveData<Trio<String, String, String>>()
+    val isTestingEnvironment = MutableLiveData<Triple<String, String, String>>()
     private var testingCredentials: List<TestingCredential> = emptyList()
     private val _loginProgressVisible = MutableLiveData(false)
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
@@ -489,7 +488,7 @@ class LoginViewModel(
 
     private fun checkTestingEnvironment(serverUrl: String) {
         testingCredentials.find { it.server_url == serverUrl }?.let { credentials ->
-            isTestingEnvironment.value = Trio.create(
+            isTestingEnvironment.value = Triple(
                 serverUrl,
                 credentials.user_name,
                 credentials.user_pass,

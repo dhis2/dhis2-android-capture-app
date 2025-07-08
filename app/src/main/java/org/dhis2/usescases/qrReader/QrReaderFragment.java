@@ -26,7 +26,6 @@ import com.google.zxing.Result;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.qr.QRjson;
-import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FragmentQrBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
 import org.dhis2.usescases.general.FragmentGlobalAbstract;
@@ -44,6 +43,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import kotlin.Pair;
+import kotlin.Triple;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
@@ -65,11 +65,11 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     @Inject
     QrReaderContracts.Presenter presenter;
     private String eventUid;
-    private List<Trio<TrackedEntityDataValue, String, Boolean>> eventData = new ArrayList<>();
-    private List<Trio<TrackedEntityDataValue, String, Boolean>> teiEventData = new ArrayList<>();
+    private List<Triple<TrackedEntityDataValue, String, Boolean>> eventData = new ArrayList<>();
+    private List<Triple<TrackedEntityDataValue, String, Boolean>> teiEventData = new ArrayList<>();
 
     private String teiUid;
-    private List<Trio<String, String, Boolean>> attributes = new ArrayList<>();
+    private List<Triple<String, String, Boolean>> attributes = new ArrayList<>();
     private List<Pair<String, Boolean>> enrollments = new ArrayList<>();
     private List<Pair<String, Boolean>> events = new ArrayList<>();
     private List<Pair<String, Boolean>> relationships = new ArrayList<>();
@@ -250,9 +250,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
 
     @Override
-    public void renderEventDataInfo(@NonNull List<Trio<TrackedEntityDataValue, String, Boolean>> data) {
-        for (Trio<TrackedEntityDataValue, String, Boolean> dataValue : data) {
-            if (!dataValue.val2()) {
+    public void renderEventDataInfo(@NonNull List<Triple<TrackedEntityDataValue, String, Boolean>> data) {
+        for (Triple<TrackedEntityDataValue, String, Boolean> dataValue : data) {
+            if (!dataValue.getThird()) {
                 showError(getString(R.string.qr_error_attr));
             } else if (!this.eventData.contains(dataValue)) {
                 this.eventData.add(dataValue);
@@ -262,9 +262,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
-    public void renderTeiEventDataInfo(@NonNull List<Trio<TrackedEntityDataValue, String, Boolean>> data) {
-        for (Trio<TrackedEntityDataValue, String, Boolean> dataValue : data) {
-            if (!dataValue.val2()) {
+    public void renderTeiEventDataInfo(@NonNull List<Triple<TrackedEntityDataValue, String, Boolean>> data) {
+        for (Triple<TrackedEntityDataValue, String, Boolean> dataValue : data) {
+            if (!dataValue.getThird()) {
                 showError(getString(R.string.qr_error_attr));
             } else if (!this.teiEventData.contains(dataValue)) {
                 this.teiEventData.add(dataValue);
@@ -274,9 +274,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     @Override
-    public void renderAttrInfo(@NonNull List<Trio<String, String, Boolean>> attributes) {
-        for (Trio<String, String, Boolean> attribute : attributes) {
-            if (!attribute.val2()) {
+    public void renderAttrInfo(@NonNull List<Triple<String, String, Boolean>> attributes) {
+        for (Triple<String, String, Boolean> attribute : attributes) {
+            if (!attribute.getThird()) {
                 showError(getString(R.string.qr_error_attr));
             } else if (!this.attributes.contains(attribute)) {
                 this.attributes.add(attribute);
@@ -336,9 +336,9 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         message = message + getString(R.string.qr_attributes) + ":\n";
 
         if (attributes != null && !attributes.isEmpty()) {
-            for (Trio<String, String, Boolean> attribute : attributes) {
-                if (attribute.val2()) {
-                    message = message + attribute.val1() + "\n";
+            for (Triple<String, String, Boolean> attribute : attributes) {
+                if (attribute.getThird()) {
+                    message = message + attribute.getSecond() + "\n";
                 }
             }
             message = message + "\n";
@@ -396,8 +396,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         message = message + getString(R.string.qr_data_values) + ":\n";
 
         if (teiEventData != null && !teiEventData.isEmpty()) {
-            for (Trio<TrackedEntityDataValue, String, Boolean> attribute : teiEventData) {
-                message = message + attribute.val1() + ":\n" + attribute.val0().value() + "\n\n";
+            for (Triple<TrackedEntityDataValue, String, Boolean> attribute : teiEventData) {
+                message = message + attribute.getSecond() + ":\n" + attribute.getFirst().value() + "\n\n";
             }
             message = message + "\n";
         } else {
@@ -441,8 +441,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         message = message + getString(R.string.qr_data_values) + ":\n";
 
         if (eventData != null && !eventData.isEmpty()) {
-            for (Trio<TrackedEntityDataValue, String, Boolean> attribute : eventData) {
-                message = message + attribute.val1() + ":\n" + attribute.val0().value() + "\n\n";
+            for (Triple<TrackedEntityDataValue, String, Boolean> attribute : eventData) {
+                message = message + attribute.getSecond() + ":\n" + attribute.getFirst().value() + "\n\n";
             }
             message = message + "\n";
         } else {

@@ -27,9 +27,9 @@ class NoteDetailPresenter(
 
     fun save() {
         val data = view.getNewNote()
-        val noteType = data.val0() ?: throw IllegalArgumentException("")
-        val uid = data.val1()!!
-        val message = data.val2()!!
+        val noteType = data.first
+        val uid = data.second
+        val message = data.third
         disposable.add(
             repository.saveNote(noteType, uid, message)
                 .subscribeOn(scheduler.io())
