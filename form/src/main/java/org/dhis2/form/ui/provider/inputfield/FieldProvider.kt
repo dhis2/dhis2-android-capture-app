@@ -122,6 +122,7 @@ fun FieldProvider(
             ProvideCustomIntentInput(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
+                resources = resources,
             )
         }
 
