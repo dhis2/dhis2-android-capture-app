@@ -272,6 +272,17 @@
                     tools:text="Manage Accounts" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/loginOauth"
+                    style="@style/OpenIdLoginButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    tools:visibility="visible"
+                    app:icon="@drawable/ic_dhis"
+                    app:layout_constraintTop_toBottomOf="@id/login"
+                    android:text="Log in with DHIS2 oauth2" />
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/loginOpenId"
                     style="@style/OpenIdLoginButton"
                     android:layout_width="match_parent"
