@@ -32,7 +32,7 @@ class SyncConflictAdapter(
 
     override fun onBindViewHolder(holder: SyncConflictHolder, position: Int) {
         holder.bind(conflicts[position])
-        if (conflicts[position].openLogs()) {
+        if (conflicts[position].openLogs) {
             holder.itemView.setOnClickListener {
                 showErrorLog()
             }
