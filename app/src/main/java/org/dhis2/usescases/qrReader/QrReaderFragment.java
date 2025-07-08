@@ -26,7 +26,6 @@ import com.google.zxing.Result;
 import org.dhis2.Components;
 import org.dhis2.R;
 import org.dhis2.data.qr.QRjson;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.databinding.FragmentQrBinding;
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity;
@@ -44,6 +43,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import kotlin.Pair;
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
@@ -288,7 +288,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     @Override
     public void renderEnrollmentInfo(@NonNull List<Pair<String, Boolean>> enrollments) {
         for (Pair<String, Boolean> enrollment : enrollments) {
-            if (!enrollment.val1()) {
+            if (!enrollment.getSecond()) {
                 showError(getString(R.string.qr_error_attr));
             } else if (!this.enrollments.contains(enrollment)) {
                 this.enrollments.add(enrollment);
@@ -300,7 +300,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     @Override
     public void renderEventInfo(@NonNull List<Pair<String, Boolean>> events) {
         for (Pair<String, Boolean> event : events) {
-            if (!event.val1()) {
+            if (!event.getSecond()) {
                 showError(getString(R.string.qr_error_attr));
             } else if (!this.events.contains(event)) {
                 this.events.add(event);
@@ -312,7 +312,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     @Override
     public void renderRelationship(@NonNull List<Pair<String, Boolean>> relationships) {
         for (Pair<String, Boolean> relationship : relationships) {
-            if (!relationship.val1()) {
+            if (!relationship.getSecond()) {
                 showError(getString(R.string.qr_error_attr));
             } else if (!this.relationships.contains(relationship)) {
                 this.relationships.add(relationship);
@@ -351,8 +351,8 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
 
         if (enrollments != null && !enrollments.isEmpty()) {
             for (Pair<String, Boolean> enrollment : enrollments) {
-                if (enrollment.val1()) {
-                    message = message + enrollment.val0() + "\n";
+                if (enrollment.getSecond()) {
+                    message = message + enrollment.getFirst() + "\n";
                 }
             }
             message = message + "\n";
@@ -367,7 +367,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         if (events != null && !events.isEmpty()) {
             int count = 0;
             for (Pair<String, Boolean> event : events) {
-                if (event.val1()) {
+                if (event.getSecond()) {
                     count++;
                 }
             }
@@ -383,7 +383,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         if (relationships != null && !relationships.isEmpty()) {
             int count = 0;
             for (Pair<String, Boolean> relationship : relationships) {
-                if (relationship.val1()) {
+                if (relationship.getSecond()) {
                     count++;
                 }
             }

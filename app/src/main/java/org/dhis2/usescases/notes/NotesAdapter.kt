@@ -36,7 +36,6 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
 import java.util.ArrayList

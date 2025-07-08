@@ -8,7 +8,6 @@ import dhis2.org.analytics.charts.ui.SectionTitle
 import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
@@ -50,9 +49,9 @@ abstract class BaseIndicatorRepository(
                             Timber.e(e)
                             null
                         }
-                        Pair.create(indicator, indicatorValue ?: "")
+                        Pair(indicator, indicatorValue ?: "")
                     }.flatMap {
-                        getLegendColorForIndicator(it.val0(), it.val1())
+                        getLegendColorForIndicator(it.first, it.second)
                     }.map {
                         IndicatorModel(
                             it.val0(),

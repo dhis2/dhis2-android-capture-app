@@ -4,7 +4,6 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -182,7 +181,7 @@ class ProgramEventMapper(
                     }
                     val value = it.userFriendlyValue(d2) ?: ""
                     if (displayName != null) {
-                        data.add(Pair.create(displayName, value))
+                        data.add(Pair(displayName, value))
                     }
                 }
             }

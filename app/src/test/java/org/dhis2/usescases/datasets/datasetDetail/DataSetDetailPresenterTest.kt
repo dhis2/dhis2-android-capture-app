@@ -33,7 +33,6 @@ import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.TestScheduler
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -82,7 +81,7 @@ class DataSetDetailPresenterTest {
         val periodRequest: FlowableProcessor<kotlin.Pair<PeriodRequest, Filters?>> =
             BehaviorProcessor.create()
         val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
-        val catOptionComboPair = Pair.create(dummyCategoryCombo(), dummyListCatOptionCombo())
+        val catOptionComboPair = Pair(dummyCategoryCombo(), dummyListCatOptionCombo())
 
         whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)

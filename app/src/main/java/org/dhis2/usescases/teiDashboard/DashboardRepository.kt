@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.enrollment.Enrollment

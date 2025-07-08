@@ -12,7 +12,6 @@ import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterManager;
@@ -90,6 +89,7 @@ import dhis2.org.analytics.charts.Charts;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import kotlin.Pair;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -306,7 +306,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         .map(enrollmentUid -> {
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getStartOfDay(new Date()));
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
-                            return Pair.create(enrollmentUid, uid);
+                            return new Pair<>(enrollmentUid, uid);
                         })
         ).toObservable();
     }
