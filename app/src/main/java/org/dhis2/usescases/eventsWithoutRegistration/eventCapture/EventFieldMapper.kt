@@ -21,14 +21,14 @@ class EventFieldMapper(
     private lateinit var finalFields: MutableMap<String, Boolean>
 
     fun map(
-        fields: MutableList<FieldUiModel>,
-        sectionList: MutableList<FormSectionViewModel>,
+        fields: List<FieldUiModel>,
+        sectionList: List<FormSectionViewModel>,
         currentSection: String,
-        errors: MutableMap<String, String>,
-        warnings: MutableMap<String, String>,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
+        errors: Map<String, String>,
+        warnings: Map<String, String>,
+        emptyMandatoryFields: Map<String, FieldUiModel>,
         showErrors: Pair<Boolean, Boolean>,
-    ): Pair<MutableList<EventSectionModel>, MutableList<FieldUiModel>> {
+    ): Pair<List<EventSectionModel>, List<FieldUiModel>> {
         clearAll()
         setFieldMap(fields, sectionList, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
@@ -96,7 +96,7 @@ class EventFieldMapper(
         fields: List<FieldUiModel>,
         sectionList: List<FormSectionViewModel>,
         showMandatoryErrors: Boolean,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
+        emptyMandatoryFields: Map<String, FieldUiModel>,
     ) {
         fields.forEach { field ->
             val fieldSection = getFieldSection(field)
