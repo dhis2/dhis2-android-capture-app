@@ -28,6 +28,9 @@ abstract class DataEntryBaseRepository(
     private val metadataIconProvider: MetadataIconProvider,
 ) : DataEntryRepository {
 
+    protected val formConfiguration: FormBaseConfiguration
+        get() = conf
+
     abstract val programUid: String?
     abstract val defaultStyleColor: Color
     override fun firstSectionToOpen(): String? {

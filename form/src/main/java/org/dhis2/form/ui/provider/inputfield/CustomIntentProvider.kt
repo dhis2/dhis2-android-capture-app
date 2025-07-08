@@ -114,6 +114,10 @@ fun mapIntentData(customIntent: CustomIntentModel): Intent {
 
 fun mapIntentResponseData(customIntentResponse: List<CustomIntentResponseDataModel>, result: ActivityResult): List<String>? {
     val responseData = mutableListOf<String>()
+
+    val objectCache = mutableMapOf<String, JsonObject?>()
+    val listCache = mutableMapOf<String, List<JsonObject>?>()
+
     customIntentResponse.forEach { extra ->
         when (extra.extraType) {
             CustomIntentResponseExtraType.STRING -> {
@@ -130,26 +134,28 @@ fun mapIntentResponseData(customIntentResponse: List<CustomIntentResponseDataMod
             }
             CustomIntentResponseExtraType.OBJECT -> {
                 result.data?.getStringExtra(extra.name)?.let { jsonString ->
-                    val complexObject = getComplexObject(jsonString)
+                    val complexObject = objectCache.getOrPut(jsonString) {
+                        getComplexObject(jsonString)
+                    }
+
                     complexObject?.let { jsonObject ->
-                        extra.keys?.forEach { key ->
-                            if (jsonObject.has(key)) {
-                                val value = jsonObject.get(key).asString
-                                responseData.add(value)
-                            }
+                        if (jsonObject.has(extra.key)) {
+                            val value = jsonObject[extra.key].asString
+                            responseData.add(value)
                         }
                     }
                 }
             }
             CustomIntentResponseExtraType.LIST_OF_OBJECTS -> {
                 result.data?.getStringExtra(extra.name)?.let { jsonString ->
-                    val objectsList = getListOfObjects(jsonString)
+                    val objectsList = listCache.getOrPut(jsonString) {
+                        getListOfObjects(jsonString)
+                    }
+
                     objectsList?.forEach { jsonObject ->
-                        extra.keys?.forEach { key ->
-                            if (jsonObject.has(key)) {
-                                val value = jsonObject.get(key).asString
-                                responseData.add(value)
-                            }
+                        if (jsonObject.has(extra.key)) {
+                            val value = jsonObject[extra.key].asString
+                            responseData.add(value)
                         }
                     }
                 }
@@ -165,7 +171,7 @@ fun getComplexObject(jsonString: String): JsonObject? {
         val gson = Gson()
         gson.fromJson(jsonString, JsonObject::class.java)
     } catch (e: Exception) {
-        null // Handle parsing error
+        null
     }
 }
 
@@ -175,7 +181,7 @@ fun getListOfObjects(jsonString: String): List<JsonObject>? {
         val listType = com.google.gson.reflect.TypeToken.getParameterized(List::class.java, JsonObject::class.java).type
         gson.fromJson(jsonString, listType)
     } catch (e: Exception) {
-        null // Handle parsing error
+        null
     }
 }
 

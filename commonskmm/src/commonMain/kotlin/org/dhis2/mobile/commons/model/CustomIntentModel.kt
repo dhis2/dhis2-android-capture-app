@@ -8,11 +8,6 @@ data class CustomIntentModel(
     val customIntentResponse: List<CustomIntentResponseDataModel>,
 )
 
-data class CustomIntentTriggerModel(
-    val dataElements: List<String>,
-    val attributes: List<String>,
-)
-
 data class CustomIntentRequestArgumentModel(
     val key: String,
     val value: String,
@@ -21,7 +16,7 @@ data class CustomIntentRequestArgumentModel(
 data class CustomIntentResponseDataModel(
     val name: String,
     val extraType: CustomIntentResponseExtraType,
-    val keys: List<String>?,
+    val key: String?,
 )
 
 enum class CustomIntentResponseExtraType {
