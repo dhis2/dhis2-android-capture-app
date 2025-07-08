@@ -44,10 +44,10 @@ class DataSetListAdapter(
                 val card = cardMapper.map(
                     dataset = it,
                     editable = viewModel.isEditable(
-                        datasetUid = it.datasetUid(),
-                        periodId = it.periodId(),
-                        organisationUnitUid = it.orgUnitUid(),
-                        attributeOptionComboUid = it.catOptionComboUid(),
+                        datasetUid = it.datasetUid,
+                        periodId = it.periodId,
+                        organisationUnitUid = it.orgUnitUid,
+                        attributeOptionComboUid = it.catOptionComboUid,
                     ),
                     onSyncIconClick = {
                         viewModel.syncDataSet(it)

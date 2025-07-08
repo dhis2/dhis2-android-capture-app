@@ -81,7 +81,7 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                     boolean isCompleted = dscr != null && Boolean.FALSE.equals(dscr.deleted());
 
                     //"Category Combination Name" + "Category option selected"
-                    return DataSetDetailModel.create(
+                    return new DataSetDetailModel(
                             dataSetReport.dataSetUid(),
                             dataSetReport.organisationUnitUid(),
                             dataSetReport.attributeOptionComboUid(), //catComboUid
@@ -97,14 +97,14 @@ public class DataSetDetailRepositoryImpl implements DataSetDetailRepository {
                             getCategoryComboFromOptionCombo(dataSetReport.attributeOptionComboUid()).displayName()
                     );
                 })
-                .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.state()))
+                .filter(dataSetDetailModel -> stateFilters.isEmpty() || stateFilters.contains(dataSetDetailModel.getState()))
                 .toSortedList((dataSet1, dataSet2) -> {
                     Date startDate1 = d2.periodModule().periods()
-                            .byPeriodId().eq(dataSet1.periodId())
-                            .byPeriodType().eq(PeriodType.valueOf(dataSet1.periodType())).one().blockingGet().startDate();
+                            .byPeriodId().eq(dataSet1.getPeriodId())
+                            .byPeriodType().eq(PeriodType.valueOf(dataSet1.getPeriodType())).one().blockingGet().startDate();
                     Date startDate2 = d2.periodModule().periods()
-                            .byPeriodId().eq(dataSet2.periodId())
-                            .byPeriodType().eq(PeriodType.valueOf(dataSet2.periodType())).one().blockingGet().startDate();
+                            .byPeriodId().eq(dataSet2.getPeriodId())
+                            .byPeriodType().eq(PeriodType.valueOf(dataSet2.getPeriodType())).one().blockingGet().startDate();
                     return startDate2.compareTo(startDate1);
                 })
                 .toFlowable();

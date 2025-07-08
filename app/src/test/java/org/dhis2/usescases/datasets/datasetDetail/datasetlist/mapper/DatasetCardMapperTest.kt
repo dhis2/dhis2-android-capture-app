@@ -36,7 +36,7 @@ class DatasetCardMapperTest {
         val currentDate = Date()
 
         // Given a dataset without attributes
-        val datasetModel = DataSetDetailModel.create(
+        val datasetModel = DataSetDetailModel(
             "",
             "",
             "",
@@ -61,10 +61,10 @@ class DatasetCardMapperTest {
         )
 
         // Then all the result is displayed correctly
-        assertEquals(result.title, datasetModel.namePeriod())
+        assertEquals(result.title, datasetModel.namePeriod)
         assertEquals(result.lastUpdated, currentDate.toDateSpan(context))
-        assertEquals(result.additionalInfo[0].value, datasetModel.nameOrgUnit())
-        assertEquals(result.additionalInfo[1].value, datasetModel.nameCatCombo())
+        assertEquals(result.additionalInfo[0].value, datasetModel.nameOrgUnit)
+        assertEquals(result.additionalInfo[1].value, datasetModel.nameCatCombo)
         assertEquals(
             result.additionalInfo[2].value,
             resourceManager.getString(org.dhis2.R.string.completed),
