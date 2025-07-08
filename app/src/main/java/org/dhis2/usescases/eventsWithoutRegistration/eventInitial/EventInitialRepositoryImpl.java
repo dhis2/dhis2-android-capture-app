@@ -250,7 +250,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                     one.sortOrder().compareTo(two.sortOrder()));
 
                             for (ProgramStageSection section : stageSections)
-                                formSection.add(FormSectionViewModel.createForSection(
+                                formSection.add(new FormSectionViewModel(
                                         eventUid,
                                         section.uid(),
                                         section.displayName(),
@@ -259,7 +259,7 @@ public class EventInitialRepositoryImpl implements EventInitialRepository {
                                                 null)
                                 );
                         } else {
-                            formSection.add(FormSectionViewModel.createForSection(
+                            formSection.add(new FormSectionViewModel(
                                     eventUid,
                                     "",
                                     "",
