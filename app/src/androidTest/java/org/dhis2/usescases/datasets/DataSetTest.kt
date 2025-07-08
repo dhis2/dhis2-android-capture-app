@@ -1,7 +1,11 @@
 package org.dhis2.usescases.datasets
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.test.runTest
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -100,49 +104,8 @@ class DataSetTest : BaseTest() {
             }
     }
 
-    private fun checkCustomTitleIsDisplayed() {
-        dataSetDetailRobot(composeTestRule) {
-            assertItemWithTextIsDisplayed("Line end: Custom Title", true)
-            assertItemWithTextIsDisplayed(
-                "Line end: Custom Subtitle test a very long subtitle",
-                true
-            )
-        }
-    }
 
-    private suspend fun waitForTableToBeVisible() {
-        composeTestRule.awaitIdle()
-        dataSetRobot {
-            clickOnDataSetAtPosition(0)
-        }
-        tableIsVisible()
-    }
 
-    private suspend fun checkContentBoxesAreDisplayed() {
-        tableIsVisible()
-        // Check top and bottom content is displayed in initial section
-        dataSetDetailRobot(composeTestRule) {
-            assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
-        }
-        dataSetTableRobot(composeTestRule) {
-            scrollToItemWithText("CONTENT AFTER 1:")
-            assertItemWithTextIsDisplayed("CONTENT AFTER 1:", true)
-        }
-        // Check top and bottom content is displayed when changing sections
-        dataSetDetailRobot(composeTestRule) {
-            clickOnSection("SCROLLABLE_TAB_1")
-        }
-        tableIsVisible()
-        // Check top and bottom content is displayed when changing sections
-        dataSetDetailRobot(composeTestRule) {
-            assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
-        }
-        dataSetTableRobot(composeTestRule) {
-            scrollToItemWithText("CONTENT AFTER 2:")
-            assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
-            scrollToTop()
-        }
-    }
 
     @Test
     fun saveAndCompleteMandatoryFieldMandatoryValidationRule() = runTest {
@@ -260,6 +223,125 @@ class DataSetTest : BaseTest() {
         checkValidationBarIsDisplayedAndCompleteAnyway()
         checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
 
+    }
+
+    @Test
+    fun completeExpiryAndFutureDays() = runTest {
+        val dataSetUid = "TuL8IOPzpHh"
+        val dataSetName = "EPI Stock"
+        val catCombo = "Improve access to clean water"
+        val orgUnit = "Ngelehun CHC"
+        val formatter = DateTimeFormatter.ofPattern("MMddyyyy")
+        val today = LocalDate.now()
+        val threeDaysFromNow = today.plusDays(3)
+        val fiveDaysAgo = today.minusDays(5)
+        val tableId = "bjDvmb4bfuf"
+        val cellId = "PGRlPlhOcmpYcVpySEQ4Ojxjb2M+SGxsdlg1MGNYQzA="
+        val threeDaysFromNowStr = threeDaysFromNow.format(formatter)
+        val fiveDaysAgoStr = fiveDaysAgo.format(formatter)
+        enterDataSetStep(
+            uid = dataSetUid,
+            name = dataSetName,
+        )
+        createDailyPeriodDataSetInstanceStep(
+            date = fiveDaysAgoStr,
+            orgUnit = orgUnit,
+            catCombo = catCombo
+        )
+
+        checkTableIsNotEditable()
+        dataSetTableRobot(composeTestRule) {
+            tapOnSaveButton()
+        }
+        composeTestRule.waitForIdle()
+        createDailyPeriodDataSetInstanceStep(
+            date = threeDaysFromNowStr,
+            orgUnit = orgUnit,
+            catCombo = catCombo
+        )
+        tableIsVisible()
+        enterDataStep(
+            tableId = tableId,
+            cellId = cellId,
+            value = "10",
+            inputTestTag = "INPUT_NUMBER_FIELD"
+        )
+        tapOnSaveButtonStep()
+        dataSetTableRobot(composeTestRule) {
+            checkCompleteDialogIsDisplayed()
+            tapOnCompleteButton()
+        }
+
+        dataSetDetailRobot(composeTestRule){
+            clickOnDataSetAtPosition(0)
+        }
+        tableIsVisible()
+        dataSetTableRobot(composeTestRule) {
+            checkItemWithTextIsDisplayed("Re-open form to edit")
+            tapOnReopenButton()
+            checkItemWithTextIsNotDisplayed("Re-open form to edit")
+            tapOnSaveButton()
+            tapOnNotNowButton()
+        }
+
+        dataSetDetailRobot(composeTestRule){
+            checkDataSetIsNotCompletedAndModified(catCombo, orgUnit)
+        }
+
+
+    }
+
+    private fun checkCustomTitleIsDisplayed() {
+        dataSetDetailRobot(composeTestRule) {
+            assertItemWithTextIsDisplayed("Line end: Custom Title", true)
+            assertItemWithTextIsDisplayed(
+                "Line end: Custom Subtitle test a very long subtitle",
+                true
+            )
+        }
+    }
+
+    private suspend fun waitForTableToBeVisible() {
+        composeTestRule.awaitIdle()
+        dataSetRobot {
+            clickOnDataSetAtPosition(0)
+        }
+        tableIsVisible()
+    }
+
+    private suspend fun checkTableIsNotEditable() {
+        tableIsVisible()
+        composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").printToLog("TABLE_LOG")
+        dataSetTableRobot(composeTestRule) {
+            checkItemWithTextIsDisplayed("This data is not editable")
+        }
+        composeTestRule.waitForIdle()
+    }
+
+    private suspend fun checkContentBoxesAreDisplayed() {
+        tableIsVisible()
+        // Check top and bottom content is displayed in initial section
+        dataSetDetailRobot(composeTestRule) {
+            assertItemWithTextIsDisplayed("CONTENT BEFORE 1:", true)
+        }
+        dataSetTableRobot(composeTestRule) {
+            scrollToItemWithText("CONTENT AFTER 1:")
+            assertItemWithTextIsDisplayed("CONTENT AFTER 1:", true)
+        }
+        // Check top and bottom content is displayed when changing sections
+        dataSetDetailRobot(composeTestRule) {
+            clickOnSection("SCROLLABLE_TAB_1")
+        }
+        tableIsVisible()
+        // Check top and bottom content is displayed when changing sections
+        dataSetDetailRobot(composeTestRule) {
+            assertItemWithTextIsDisplayed("CONTENT BEFORE 2:", true)
+        }
+        dataSetTableRobot(composeTestRule) {
+            scrollToItemWithText("CONTENT AFTER 2:")
+            assertItemWithTextIsDisplayed("CONTENT AFTER 2:", true)
+            scrollToTop()
+        }
     }
 
     private fun checkLegendsStep(
@@ -692,7 +774,7 @@ class DataSetTest : BaseTest() {
         }
 
         filterRobot(composeTestRule) {
-            //Filter by peiod
+            //Filter by period
             clickOnFilterBy(filter = "Period")
             clickOnFromToDate()
             chooseDate("08082024")
@@ -747,7 +829,7 @@ class DataSetTest : BaseTest() {
         dataSetDetailRobot(composeTestRule) {
             clickOnAddDataSet()
         }
-        dataSetInitialRobot {
+        dataSetInitialRobot(composeTestRule) {
             checkActionInputIsNotDisplayed()
             clickOnInputOrgUnit()
         }
@@ -756,7 +838,7 @@ class DataSetTest : BaseTest() {
             selectTreeOrgUnit(orgUnit)
         }
 
-        dataSetInitialRobot {
+        dataSetInitialRobot(composeTestRule) {
             checkActionInputIsNotDisplayed()
             clickOnInputPeriod()
         }
@@ -766,14 +848,53 @@ class DataSetTest : BaseTest() {
             selectReportPeriod(period)
         }
 
-        dataSetInitialRobot {
+        dataSetInitialRobot(composeTestRule) {
             catCombo?.let {
                 clickOnInputCatCombo()
                 selectCatCombo(catCombo)
             }
         }
 
-        dataSetInitialRobot {
+        dataSetInitialRobot(composeTestRule) {
+            checkActionInputIsDisplayed()
+            clickOnActionButton()
+        }
+    }
+
+    private fun createDailyPeriodDataSetInstanceStep(
+        orgUnit: String,
+        date: String,
+        catCombo: String? = null,
+    ) {
+        dataSetDetailRobot(composeTestRule) {
+            clickOnAddDataSet()
+        }
+
+        dataSetInitialRobot(composeTestRule) {
+            catCombo?.let {
+                clickOnInputCatCombo()
+                selectCatCombo(catCombo)
+            }
+        }
+
+        dataSetInitialRobot (composeTestRule) {
+            checkActionInputIsNotDisplayed()
+            clickOnInputOrgUnit()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
+        dataSetInitialRobot(composeTestRule) {
+            checkActionInputIsNotDisplayed()
+            clickOnInputPeriod()
+            composeTestRule.waitForIdle()
+            chooseDate(date)
+        }
+
+
+        dataSetInitialRobot(composeTestRule) {
             checkActionInputIsDisplayed()
             clickOnActionButton()
         }

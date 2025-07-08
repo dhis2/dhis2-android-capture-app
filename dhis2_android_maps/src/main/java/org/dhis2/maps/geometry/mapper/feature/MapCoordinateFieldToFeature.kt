@@ -1,6 +1,5 @@
 package org.dhis2.maps.geometry.mapper.feature
 
-import com.mapbox.geojson.Feature
 import org.dhis2.maps.extensions.FeatureSource
 import org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
@@ -10,6 +9,7 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeat
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.TEI
 import org.dhis2.maps.utils.CoordinateAttributeInfo
 import org.dhis2.maps.utils.CoordinateDataElementInfo
+import org.maplibre.geojson.Feature
 
 class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryToFeature) {
 

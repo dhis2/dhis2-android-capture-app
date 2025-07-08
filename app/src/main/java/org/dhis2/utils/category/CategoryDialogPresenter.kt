@@ -123,8 +123,8 @@ class CategoryDialogPresenter(
                 .map { catOption -> catOptMapper.map(catOption) }
 
         return LivePagedListBuilder(
-            object : DataSource.Factory<CategoryOption, CategoryDialogItem>() {
-                override fun create(): DataSource<CategoryOption, CategoryDialogItem> {
+            object : DataSource.Factory<Int, CategoryDialogItem>() {
+                override fun create(): DataSource<Int, CategoryDialogItem> {
                     return dataSource
                 }
             },

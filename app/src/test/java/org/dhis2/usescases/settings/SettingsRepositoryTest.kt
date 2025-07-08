@@ -27,8 +27,6 @@ import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
-import org.hisp.dhis.android.core.sms.domain.repository.WebApiRepository
-import org.hisp.dhis.android.core.sms.domain.repository.internal.LocalDbRepository
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -43,8 +41,16 @@ class SettingsRepositoryTest {
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
-    private var localDbRepository: LocalDbRepository = mock()
-    private var webApiRepository: WebApiRepository = mock()
+    private val smsConfig: ConfigCase.SmsConfig = mock {
+        on { isModuleEnabled } doReturn true
+        on { gateway } doReturn "gatewaynumber"
+        on { isWaitingForResult } doReturn true
+        on { resultSender } doReturn "confirmationNumber"
+        on { resultWaitingTimeout } doReturn 120
+    }
+    private val configCase: ConfigCase = mock {
+        on { getSmsModuleConfig() } doReturn Single.just(smsConfig)
+    }
 
     private val SETTINGS_METADATA_PERIOD = MetadataSyncPeriod.EVERY_7_DAYS
     private val SETTINGS_DATA_PERIOD = DataSyncPeriod.EVERY_HOUR
@@ -370,21 +376,7 @@ class SettingsRepositoryTest {
     }
 
     private fun configureSMSConfig() {
-        whenever(localDbRepository.isModuleEnabled()) doReturn
-            Single.just(true)
-        whenever(localDbRepository.getGatewayNumber()) doReturn
-            Single.just("gatewaynumber")
-        whenever(localDbRepository.getWaitingForResultEnabled()) doReturn
-            Single.just(true)
-        whenever(localDbRepository.getConfirmationSenderNumber()) doReturn
-            Single.just("confirmationNumber")
-        whenever(localDbRepository.getWaitingResultTimeout()) doReturn
-            Single.just(120)
-        whenever(d2.smsModule().configCase()) doReturn
-            ConfigCase(
-                webApiRepository,
-                localDbRepository,
-            )
+        whenever(d2.smsModule().configCase()) doReturn configCase
     }
 
     private fun mockedGeneralSettings(): GeneralSettings {

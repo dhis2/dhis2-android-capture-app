@@ -25,7 +25,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.activityViewModels
-import com.mapbox.mapboxsdk.maps.MapView
 import org.dhis2.R
 import org.dhis2.commons.bindings.launchImageDetail
 import org.dhis2.commons.resources.ColorType
@@ -57,6 +56,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.maplibre.android.maps.MapView
 import javax.inject.Inject
 
 const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"

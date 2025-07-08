@@ -93,7 +93,7 @@ open class BaseRobot {
      */
     fun waitForView(
         viewMatcher: Matcher<View>,
-        waitMillis: Int = 5000,
+        waitMillis: Int = TIMEOUT.toInt(),
         waitMillisPerTry: Long = 100
     ): ViewInteraction {
 

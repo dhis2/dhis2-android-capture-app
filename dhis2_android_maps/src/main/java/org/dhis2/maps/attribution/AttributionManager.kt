@@ -9,17 +9,17 @@ import android.text.style.URLSpan
 import android.widget.Toast
 import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
-import com.mapbox.mapboxsdk.MapStrictMode
-import com.mapbox.mapboxsdk.maps.AttributionDialogManager
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import org.dhis2.maps.R
 import org.dhis2.maps.layer.basemaps.BaseMapStyle
+import org.maplibre.android.MapStrictMode
+import org.maplibre.android.maps.AttributionDialogManager
+import org.maplibre.android.maps.MapLibreMap
 
 class AttributionManager(
     private val context: Context,
-    mapboxMap: MapboxMap,
+    maplibreMap: MapLibreMap,
     private var currentBaseMapStyle: BaseMapStyle,
-) : AttributionDialogManager(context, mapboxMap) {
+) : AttributionDialogManager(context, maplibreMap) {
 
     override fun showAttributionDialog(attributionTitles: Array<String>) {
         val attributions: Array<String> = currentBaseMapStyle.sources.attribution.split(", ")

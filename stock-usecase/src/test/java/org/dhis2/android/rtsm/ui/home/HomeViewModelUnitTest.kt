@@ -480,7 +480,6 @@ class HomeViewModelUnitTest {
             data.distributedTo,
             ParcelUtils.distributedTo_ToIdentifiableModelParcel(destination),
         )
-        println(data)
         assertEquals(data.transactionDate, now.humanReadableDate())
     }
 

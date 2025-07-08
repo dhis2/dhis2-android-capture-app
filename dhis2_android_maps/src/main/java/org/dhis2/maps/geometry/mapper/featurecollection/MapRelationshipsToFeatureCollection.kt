@@ -1,7 +1,5 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.FeatureCollection
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.getLatLngPointList
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature
@@ -15,6 +13,8 @@ import org.dhis2.maps.model.RelationshipDirection
 import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.hisp.dhis.android.core.common.FeatureType
 import org.jetbrains.annotations.NotNull
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.FeatureCollection
 
 class MapRelationshipsToFeatureCollection(
     private val mapLineToFeature: @NotNull MapLineRelationshipToFeature,

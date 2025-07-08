@@ -133,10 +133,12 @@ fun DataSetTableScreen(
             }
         }
     }
-    bottomSheetState.bottomSheetState.progress
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-            bottomSheetState.bottomSheetState.progress == 1f,
+            bottomSheetState.bottomSheetState.progress(
+                from = bottomSheetState.bottomSheetState.currentValue,
+                to = BottomSheetValue.Expanded,
+            ) == 1f,
     ) {
         collapseBottomSheet(finish = true)
     }

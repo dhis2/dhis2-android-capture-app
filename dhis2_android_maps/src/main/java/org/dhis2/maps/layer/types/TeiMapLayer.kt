@@ -1,15 +1,5 @@
 package org.dhis2.maps.layer.types
 
-import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager.Companion.TEI_ICON_ID
@@ -19,6 +9,16 @@ import org.dhis2.maps.layer.withInitialVisibility
 import org.dhis2.maps.layer.withTEIMarkerProperties
 import org.dhis2.maps.managers.TeiMapManager.Companion.TEIS_SOURCE_ID
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
 
 class TeiMapLayer(
     var style: Style,

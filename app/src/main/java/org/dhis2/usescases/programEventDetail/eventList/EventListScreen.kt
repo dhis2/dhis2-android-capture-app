@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -22,8 +21,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.R
 import org.dhis2.commons.filters.workingLists.WorkingListChipGroup
 import org.dhis2.commons.filters.workingLists.WorkingListViewModel
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
-import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.dhis2.commons.ui.ListCardProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
@@ -49,6 +47,7 @@ fun EventListScreen(
             is LoadState.Error -> {
                 // no-op
             }
+
             LoadState.Loading -> {
                 Box(
                     modifier = Modifier
@@ -81,17 +80,9 @@ fun EventListScreen(
                         verticalArrangement = Arrangement.Absolute.spacedBy(4.dp),
                     ) {
                         items(count = events.itemCount) { index ->
-                            val card = events[index]!!
-                            ListCard(
-                                modifier = Modifier.testTag("EVENT_ITEM"),
-                                listAvatar = card.avatar,
-                                title = ListCardTitleModel(text = card.title),
-                                lastUpdated = card.lastUpdated,
-                                additionalInfoList = card.additionalInfo,
-                                actionButton = card.actionButton,
-                                expandLabelText = card.expandLabelText,
-                                shrinkLabelText = card.shrinkLabelText,
-                                onCardClick = card.onCardCLick,
+                            ListCardProvider(
+                                card = events[index]!!,
+                                syncingResourceId = R.string.syncing,
                             )
 
                             if (index == events.itemCount - 1) {

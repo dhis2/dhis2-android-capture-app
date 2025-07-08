@@ -59,8 +59,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.window.core.layout.WindowSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.commons.extensions.truncate
@@ -87,6 +85,8 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.maplibre.android.maps.MapView
+import org.maplibre.geojson.FeatureCollection
 
 @Composable
 fun MapSelectorScreen(

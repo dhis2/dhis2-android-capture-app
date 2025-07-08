@@ -9,7 +9,6 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertAny
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.filter
 import androidx.compose.ui.test.hasAnyChild
 import androidx.compose.ui.test.hasAnySibling
@@ -24,21 +23,14 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performScrollToNode
-import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.composetable.ui.INPUT_TEST_FIELD_TEST_TAG
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
 import org.dhis2.composetable.ui.semantics.MANDATORY_ICON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.COMPLETION_DIALOG_BUTTON_TEST_TAG
@@ -74,14 +66,6 @@ internal class DataSetTableRobot(
     private val composeTestRule: ComposeContentTestRule
 ) : BaseRobot() {
 
-    fun clickOnSaveButton() {
-        waitForView(withId(R.id.saveButton)).perform(click())
-    }
-
-    fun clickOnNegativeButton() {
-        onView(withId(R.id.negative)).perform(click())
-    }
-
     fun assertItemWithTextIsDisplayed(text: String, substring: Boolean) {
         itemWithTextIsDisplayed(text, substring, composeTestRule)
     }
@@ -111,7 +95,7 @@ internal class DataSetTableRobot(
             .performScrollToNode(hasText(text, substring = true))
     }
 
-    fun scrollToTop(){
+    fun scrollToTop() {
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").performScrollToIndex(0)
     }
 
@@ -123,18 +107,6 @@ internal class DataSetTableRobot(
 
     fun assertCellDisabled(tableId: String, cellId: String) {
         composeTestRule.onNodeWithTag(cellTestTag(tableId, cellId)).assertIsNotEnabled()
-    }
-
-    fun clickOnEditValue() {
-        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performClick()
-    }
-
-    fun typeInput(text: String) {
-        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performTextInput(text)
-    }
-
-    fun clickOnAccept() {
-        composeTestRule.onNodeWithTag(INPUT_TEST_FIELD_TEST_TAG).performImeAction()
     }
 
     fun syncIsAvailable() {
@@ -189,8 +161,8 @@ internal class DataSetTableRobot(
     }
 
     fun assertInputDialogIsDisplayed() {
-        composeTestRule.waitUntilExactlyOneExists(hasTestTag(INPUT_DIALOG_TAG),TIMEOUT)
-        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG,useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(INPUT_DIALOG_TAG), TIMEOUT)
+        composeTestRule.onNodeWithTag(INPUT_DIALOG_TAG, useUnmergedTree = true).assertIsDisplayed()
     }
 
     fun assertInputDescriptionIsDisplayed(description: String) {
@@ -199,8 +171,9 @@ internal class DataSetTableRobot(
     }
 
     fun typeOnInputDialog(value: String, inputTestTag: String) {
-        composeTestRule.waitUntilExactlyOneExists(hasTestTag(inputTestTag),TIMEOUT)
-        composeTestRule.onNodeWithTag(inputTestTag, useUnmergedTree = true).performTextReplacement(value)
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(inputTestTag), TIMEOUT)
+        composeTestRule.onNodeWithTag(inputTestTag, useUnmergedTree = true)
+            .performTextReplacement(value)
     }
 
     fun pressOnInputDialogNext() {
@@ -283,6 +256,15 @@ internal class DataSetTableRobot(
         composeTestRule.waitForIdle()
     }
 
+    fun tapOnNotNowButton() {
+        composeTestRule.waitUntilExactlyOneExists(
+            matcher = hasText("Not now", substring = true),
+            timeoutMillis = TIMEOUT
+        )
+        composeTestRule.onNodeWithText("Not now", substring = true).performClick()
+        composeTestRule.waitForIdle()
+    }
+
     @OptIn(ExperimentalTestApi::class)
     fun checkCompleteDialogIsDisplayed() {
         composeTestRule.waitUntilExactlyOneExists(
@@ -296,6 +278,12 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(COMPLETION_DIALOG_BUTTON_TEST_TAG).performClick()
         composeTestRule.waitForIdle()
     }
+
+    fun tapOnReopenButton() {
+        composeTestRule.onNodeWithText("Re-open form to edit").performClick()
+        composeTestRule.waitForIdle()
+    }
+
 
     @OptIn(ExperimentalTestApi::class)
     fun checkMandatoryDialogIsDisplayed() {
@@ -398,6 +386,17 @@ internal class DataSetTableRobot(
             ).assertExists()
 
         }
+    }
+
+    fun checkItemWithTextIsDisplayed(text: String) {
+        assertTableIsDisplayed()
+        composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
+            .assertIsDisplayed()
+    }
+    fun checkItemWithTextIsNotDisplayed(text: String) {
+        assertTableIsDisplayed()
+        composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
+            .assertDoesNotExist()
     }
 
     fun assertTableRows(rowTestTags: List<CellData>) {

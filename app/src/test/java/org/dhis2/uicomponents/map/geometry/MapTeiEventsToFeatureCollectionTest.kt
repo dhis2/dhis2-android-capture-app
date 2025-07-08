@@ -1,6 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
@@ -16,6 +15,7 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Point
 
 class MapTeiEventsToFeatureCollectionTest {
 

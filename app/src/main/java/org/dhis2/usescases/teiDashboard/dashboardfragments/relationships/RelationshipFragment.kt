@@ -24,8 +24,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.mapbox.mapboxsdk.location.permissions.PermissionsManager
-import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -63,6 +61,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.maplibre.android.location.permissions.PermissionsManager
+import org.maplibre.android.maps.MapView
 import javax.inject.Inject
 
 class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {

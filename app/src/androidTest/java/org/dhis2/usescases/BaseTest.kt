@@ -53,6 +53,7 @@ open class BaseTest {
     lateinit var preferencesRobot: PreferencesRobot
     lateinit var mockWebServerRobot: MockWebServerRobot
     lateinit var featureConfigRobot: FeatureConfigRobot
+    var restoreDataBaseOnBeforeAction = true
 
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
@@ -83,7 +84,9 @@ open class BaseTest {
     open fun setUp() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
-        (context.applicationContext as AppTest).restoreDB()
+        if(restoreDataBaseOnBeforeAction){
+            (context.applicationContext as AppTest).restoreDB()
+        }
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
@@ -171,18 +174,24 @@ open class BaseTest {
     }
 
     private fun cleanPreferences() {
-        preferencesRobot.cleanPreferences()
+        if(::preferencesRobot.isInitialized){
+            preferencesRobot.cleanPreferences()
+        }
     }
 
     private fun cleanKeystore() {
-        keyStoreRobot.apply {
-            removeData(KEYSTORE_USERNAME)
-            removeData(KEYSTORE_PASSWORD)
+        if(::keyStoreRobot.isInitialized) {
+            keyStoreRobot.apply {
+                removeData(KEYSTORE_USERNAME)
+                removeData(KEYSTORE_PASSWORD)
+            }
         }
     }
 
     private fun stopMockServer() {
-        mockWebServerRobot.shutdown()
+        if(::mockWebServerRobot.isInitialized) {
+            mockWebServerRobot.shutdown()
+        }
     }
 
     fun cleanLocalDatabase() {

@@ -2,9 +2,6 @@ package org.dhis2.maps.layer
 
 import android.graphics.Color
 import androidx.annotation.ColorRes
-import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
@@ -18,9 +15,12 @@ import org.dhis2.maps.layer.types.TeiEventMapLayer
 import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
+import org.maplibre.geojson.Feature
 
 class MapLayerManager(
-    val mapBoxMap: MapboxMap,
+    val maplibreMap: MapLibreMap,
     val baseMapManager: BaseMapManager,
     val colorUtils: ColorUtils,
 ) {
@@ -71,7 +71,7 @@ class MapLayerManager(
 
     fun addLayer(layerType: LayerType, featureType: FeatureType? = null, sourceId: String? = null) =
         apply {
-            val style = mapBoxMap.style!!
+            val style = maplibreMap.style!!
             mapLayers[sourceId ?: layerType.name] = when (layerType) {
                 LayerType.TEI_LAYER -> TeiMapLayer(
                     style,
@@ -200,9 +200,9 @@ class MapLayerManager(
     fun changeStyle(basemapPosition: Int) {
         currentStylePosition = basemapPosition
         val newStyle = baseMapManager.baseMapStyles[basemapPosition]
-        (mapBoxMap.uiSettings.attributionDialogManager as AttributionManager)
+        (maplibreMap.uiSettings.attributionDialogManager as AttributionManager)
             .updateCurrentBaseMap(newStyle)
-        mapBoxMap.setStyle(baseMapManager.styleJson(newStyle)) {
+        maplibreMap.setStyle(baseMapManager.styleJson(newStyle)) {
             styleChangeCallback?.invoke(it)
         }
     }

@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,12 +56,11 @@ import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
+import timber.log.Timber
 import java.util.Collections
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@HiltViewModel
-class ManageStockViewModel @Inject constructor(
+class ManageStockViewModel(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val stockManagerRepository: StockManager,
@@ -222,7 +220,7 @@ class ManageStockViewModel @Inject constructor(
                             }
                         refreshData()
                     },
-                    { it.printStackTrace() },
+                    { Timber.e(it) },
                 ),
         )
 
@@ -249,7 +247,7 @@ class ManageStockViewModel @Inject constructor(
                         )
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -322,7 +320,7 @@ class ManageStockViewModel @Inject constructor(
                         clearTransaction()
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )

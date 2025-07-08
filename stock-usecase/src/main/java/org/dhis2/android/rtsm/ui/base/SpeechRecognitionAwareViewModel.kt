@@ -3,9 +3,8 @@ package org.dhis2.android.rtsm.ui.base
 import org.dhis2.android.rtsm.data.SpeechRecognitionState
 import org.dhis2.android.rtsm.services.SpeechRecognitionManager
 import org.dhis2.android.rtsm.services.scheduler.BaseSchedulerProvider
-import javax.inject.Inject
 
-open class SpeechRecognitionAwareViewModel @Inject constructor(
+open class SpeechRecognitionAwareViewModel(
     schedulerProvider: BaseSchedulerProvider,
     private val speechRecognitionManager: SpeechRecognitionManager,
 ) : BaseViewModel(schedulerProvider) {

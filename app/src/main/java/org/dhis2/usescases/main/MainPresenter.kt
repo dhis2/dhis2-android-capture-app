@@ -68,7 +68,7 @@ class MainPresenter(
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
     private val syncStatusController: SyncStatusController,
     private val versionRepository: VersionRepository,
-    private val dispatcherProvider: DispatcherProvider,
+    val dispatcherProvider: DispatcherProvider,
     private val forceToNotSynced: Boolean,
 ) : CoroutineScope {
 

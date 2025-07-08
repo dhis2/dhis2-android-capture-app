@@ -114,5 +114,5 @@ android {
 dependencies {
     testImplementation(libs.junit.jupiter)
     debugImplementation(libs.androidx.compose.preview)
-    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.compose.uitooling)
 }

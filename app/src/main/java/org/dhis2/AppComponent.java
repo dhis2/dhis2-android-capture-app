@@ -27,7 +27,6 @@ import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import dispatch.core.DispatcherProvider;
 
 /**
  * Created by ppajuelo on 10/10/2017.
@@ -46,7 +45,6 @@ import dispatch.core.DispatcherProvider;
         DispatcherModule.class,
         FeatureConfigModule.class,
         NetworkUtilsModule.class,
-        CustomDispatcherModule.class
 })
 public  interface AppComponent {
 
@@ -72,8 +70,6 @@ public  interface AppComponent {
 
         Builder networkUtilsModule(NetworkUtilsModule networkUtilsModule);
 
-        Builder customDispatcher(CustomDispatcherModule dispatcherProvider);
-
         AppComponent build();
     }
 
@@ -92,8 +88,6 @@ public  interface AppComponent {
     LocationProvider locationProvider();
 
     NetworkUtils networkUtilsProvider();
-
-    DispatcherProvider customDispatcherProvider();
 
     //injection targets
     void inject(App app);

@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.compose)
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
-    id("org.jetbrains.kotlinx.atomicfu") version "0.27.0"
+    alias(libs.plugins.kotlin.atomicfu)
 }
 
 
@@ -120,6 +120,6 @@ android {
 
 dependencies {
     debugImplementation(libs.androidx.compose.preview)
-    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.compose.uitooling)
 }
 
