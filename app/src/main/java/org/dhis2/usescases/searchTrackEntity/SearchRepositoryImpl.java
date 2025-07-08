@@ -12,7 +12,6 @@ import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.data.EventViewModelType;
-import org.dhis2.commons.data.tuples.Trio;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
@@ -90,6 +89,7 @@ import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Pair;
+import kotlin.Triple;
 
 public class SearchRepositoryImpl implements SearchRepository {
 
@@ -344,10 +344,10 @@ public class SearchRepositoryImpl implements SearchRepository {
         }
     }
 
-    private Trio<String, String, String> getProgramInfo(Program program) {
+    private Triple<String, String, String> getProgramInfo(Program program) {
         String programColor = program.style() != null && program.style().color() != null ? program.style().color() : "";
         String programIcon = program.style() != null && program.style().icon() != null ? program.style().icon() : "";
-        return Trio.create(program.displayName(), programColor, programIcon);
+        return new Triple<>(program.displayName(), programColor, programIcon);
     }
 
     private void setAttributesInfo(SearchTeiModel searchTei, TrackedEntitySearchItem searchTeiItem) {

@@ -1,7 +1,6 @@
 package org.dhis2.usescases.notes.noteDetail
 
 import io.reactivex.Single
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.note.Note
@@ -40,7 +39,7 @@ class NoteDetailPresenterTest {
 
     @Test
     fun `Should get message from form and save the note`() {
-        val data = Trio.create(NoteType.ENROLLMENT, "enrollmentUid", "Note Message")
+        val data = Triple(NoteType.ENROLLMENT, "enrollmentUid", "Note Message")
 
         whenever(view.getNewNote()) doReturn data
         whenever(repository.saveNote(any(), any(), any())) doReturn Single.just("uid")
