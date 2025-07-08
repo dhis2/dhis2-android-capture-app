@@ -91,7 +91,7 @@ open class FormBaseConfiguration(
                         )
                     } ?: emptyList(),
                     customIntentResponse = customIntentResponse,
-                    packageName = it.packageName() ?: "", // Adding required parameter
+                    packageName = it.packageName() ?: "",
                 )
             }
         } else {
@@ -132,9 +132,7 @@ open class FormBaseConfiguration(
                 .packageName("com.simprints.id.REGISTER")
                 .request(
                     CustomIntentRequest.builder().arguments(
-                        // projectId and
                         listOf(
-                            CustomIntentRequestArgument.builder().key("projectId").value("eYupeFCbvI4wYitmjJNy").build(),
                             CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
                             CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
                         ),
