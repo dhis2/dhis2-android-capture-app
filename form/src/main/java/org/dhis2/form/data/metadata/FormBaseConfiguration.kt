@@ -63,7 +63,7 @@ open class FormBaseConfiguration(
             }
             customIntentDTO?.let {
                 // TODO: remove this when SDK has adapted the payload to the new custom intent model and map correctly
-                val customIntentResponse = if (uid == "bYZCH0o9l8W") {
+                val customIntentResponse = if (uid == "bYZCH0o9l8W" || uid == "goBca56SGgZ") {
                     listOf(
                         CustomIntentResponseDataModel(
                             name = it.response()?.data()?.argument() ?: "",
@@ -119,6 +119,10 @@ open class FormBaseConfiguration(
                                 CustomIntentDataElement.builder()
                                     .customIntentUid("customIntentRegisterUid")
                                     .uid("bYZCH0o9l8W")
+                                    .build(),
+                                CustomIntentDataElement.builder()
+                                    .customIntentUid("customIntentRegisterEventProgramUid")
+                                    .uid("goBca56SGgZ")
                                     .build(),
                             ),
                         )
