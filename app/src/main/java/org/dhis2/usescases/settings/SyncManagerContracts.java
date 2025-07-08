@@ -10,10 +10,6 @@ import org.dhis2.usescases.settings.models.SyncParametersViewModel;
 
 import java.util.List;
 
-/**
- * QUADRAM. Created by lmartin on 21/03/2018.
- */
-
 public class SyncManagerContracts {
 
     interface View extends AbstractActivityContracts.View {

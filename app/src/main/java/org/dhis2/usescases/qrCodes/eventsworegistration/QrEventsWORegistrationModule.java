@@ -9,9 +9,6 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * QUADRAM. Created by ppajuelo on 30/11/2017.
- */
 @Module
 public class QrEventsWORegistrationModule {
     @Provides
