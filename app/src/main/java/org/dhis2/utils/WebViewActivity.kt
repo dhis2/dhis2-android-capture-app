@@ -10,6 +10,7 @@ import android.webkit.WebViewClient
 import androidx.databinding.DataBindingUtil
 import org.dhis2.R
 import org.dhis2.databinding.ActivityWebviewBinding
+import timber.log.Timber
 
 class WebViewActivity : Activity() {
 
@@ -32,6 +33,7 @@ class WebViewActivity : Activity() {
                     view: WebView?,
                     request: WebResourceRequest,
                 ): Boolean {
+                    Timber.tag("WEBVIEW_CAPTURE").d("new url: ${request.url}")
                     return super.shouldOverrideUrlLoading(view, request)
                 }
 
@@ -43,6 +45,7 @@ class WebViewActivity : Activity() {
             }
 
             binding.webView.settings.javaScriptEnabled = true
+            binding.webView.settings.domStorageEnabled = true
             binding.webView.loadUrl(it)
         }
     }
