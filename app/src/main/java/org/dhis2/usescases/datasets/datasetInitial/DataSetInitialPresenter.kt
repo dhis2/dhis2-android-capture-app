@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.datasetInitial
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -97,7 +96,7 @@ class DataSetInitialPresenter(
                 ),
                 dataSetInitialRepository.getPeriodId(periodType, view.selectedPeriod),
                 BiFunction { val0: String?, val1: String? ->
-                    Pair.create(
+                    Pair(
                         val0!!,
                         val1!!,
                     )
@@ -108,8 +107,8 @@ class DataSetInitialPresenter(
                 .subscribe(
                     { response: Pair<String, String> ->
                         view.navigateToDataSetTable(
-                            response.val0(),
-                            response.val1(),
+                            response.first,
+                            response.second,
                         )
                     },
                     Timber::d,

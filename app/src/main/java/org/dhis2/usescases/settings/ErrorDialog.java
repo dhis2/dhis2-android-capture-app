@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import com.google.gson.Gson;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.ErrorDialogBinding;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +31,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Pair;
 import timber.log.Timber;
 
 /**
@@ -121,10 +121,10 @@ public class ErrorDialog extends DialogFragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         pair -> {
-                            if (pair.val0())
-                                shareData.add(pair.val1());
+                            if (pair.getFirst())
+                                shareData.add(pair.getSecond());
                             else
-                                shareData.remove(pair.val1());
+                                shareData.remove(pair.getSecond());
                         },
                         Timber::e
                 ));

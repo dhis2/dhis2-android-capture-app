@@ -329,7 +329,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
                         .subscribe(enrollmentAndTEI -> {
                                     analyticsHelper.setEvent(CREATE_ENROLL, CLICK, CREATE_ENROLL);
                                     view.goToEnrollment(
-                                            enrollmentAndTEI.val0(),
+                                            enrollmentAndTEI.getFirst(),
                                             selectedProgram.uid()
                                     );
                                 },

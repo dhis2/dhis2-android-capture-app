@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
-import org.dhis2.commons.data.tuples.Pair;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.common.State;
@@ -13,6 +12,8 @@ import org.hisp.dhis.android.core.event.EventStatus;
 
 import java.util.Date;
 import java.util.List;
+
+import kotlin.Pair;
 
 @AutoValue
 public abstract class ProgramEventViewModel implements CarouselItemModel {

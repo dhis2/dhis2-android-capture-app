@@ -4,7 +4,6 @@ import android.util.Log;
 
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
@@ -36,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.disposables.CompositeDisposable;
+import kotlin.Pair;
 import timber.log.Timber;
 
 import static org.dhis2.commons.date.DateUtils.DATABASE_FORMAT_EXPRESSION;
@@ -256,11 +256,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     // PROGRAM FOUND, ENROLLMENT CAN BE SAVED
                     if (d2.programModule().programs().uid(attrValue.getString("program")).blockingExists()) {
                         Program program = d2.programModule().programs().uid(attrValue.getString("program")).blockingGet();
-                        enrollments.add(Pair.create(program.displayName(), true));
+                        enrollments.add(new Pair<>(program.displayName(), true));
                     }
                     // PROGRAM NOT FOUND, ENROLLMENT CANNOT BE SAVED
                     else {
-                        enrollments.add(Pair.create(attrValue.getString("uid"), false));
+                        enrollments.add(new Pair<>(attrValue.getString("uid"), false));
                     }
                 }
             }
@@ -281,7 +281,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             if (jsonObject.has("enrollment") && jsonObject.getString("enrollment") != null) {
                 // ENROLLMENT FOUND, EVENT CAN BE SAVED
                 if (d2.enrollmentModule().enrollments().uid(jsonObject.getString("enrollment")).blockingExists()) {
-                    events.add(Pair.create(jsonObject.getString("enrollment"), true));
+                    events.add(new Pair<>(jsonObject.getString("enrollment"), true));
                 }
                 // ENROLLMENT NOT FOUND IN LOCAL DATABASE, CHECK IF IT WAS READ FROM A QR
                 else if (enrollmentJson != null) {
@@ -297,14 +297,14 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         }
                     }
                     if (isEnrollmentReadFromQr) {
-                        events.add(Pair.create(jsonObject.getString("uid"), true));
+                        events.add(new Pair<>(jsonObject.getString("uid"), true));
                     } else {
-                        events.add(Pair.create(jsonObject.getString("uid"), false));
+                        events.add(new Pair<>(jsonObject.getString("uid"), false));
                     }
                 }
                 // ENROLLMENT NOT FOUND, EVENT CANNOT BE SAVED
                 else {
-                    events.add(Pair.create(jsonObject.getString("uid"), false));
+                    events.add(new Pair<>(jsonObject.getString("uid"), false));
                 }
             }
         } catch (JSONException e) {
@@ -322,7 +322,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject relationship = jsonArray.getJSONObject(i);
-                relationships.add(Pair.create(relationship.getString("trackedEntityInstanceA"), true));
+                relationships.add(new Pair<>(relationship.getString("trackedEntityInstanceA"), true));
             } catch (Exception e) {
                 Timber.e(e);
             }

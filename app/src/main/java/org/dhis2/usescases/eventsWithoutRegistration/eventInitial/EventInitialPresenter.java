@@ -10,8 +10,6 @@ import android.util.ArrayMap;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.dhis2.R;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.prefs.Preference;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.schedulers.SchedulerProvider;
@@ -25,6 +23,7 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.program.Program;
+import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.rules.models.RuleEffect;
 
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import java.util.Map;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.disposables.CompositeDisposable;
+import kotlin.Pair;
 import timber.log.Timber;
 
 public class EventInitialPresenter {
@@ -98,12 +98,12 @@ public class EventInitialPresenter {
                             Flowable.zip(
                                             eventInitialRepository.getProgramWithId(programId).toFlowable(BackpressureStrategy.LATEST),
                                             eventInitialRepository.programStageForEvent(eventId),
-                                            Pair::create)
+                                            kotlin.Pair::new)
                                     .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
                                     .subscribe(septet -> {
-                                        this.program = septet.val0();
-                                        view.setProgram(septet.val0());
-                                        view.setProgramStage(septet.val1());
+                                        this.program = septet.getFirst();
+                                        view.setProgram(septet.getFirst());
+                                        view.setProgramStage(septet.getSecond());
                                     }, Timber::d));
 
         } else {
