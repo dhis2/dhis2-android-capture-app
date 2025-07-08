@@ -109,18 +109,18 @@ class ProgramEventMapper(
             }
         val state: State = if (event.state() != null) event.state()!! else State.TO_UPDATE
 
-        return ProgramEventViewModel.create(
-            event.uid(),
-            event.organisationUnit()!!,
-            orgUnitName,
-            event.eventDate()!!,
-            state,
-            data,
-            event.status()!!,
-            hasExpired || !inOrgUnitRange,
-            attrOptCombo,
-            event.geometry(),
-            d2.eventModule().eventService().blockingIsEditable(event.uid()),
+        return ProgramEventViewModel(
+            uid = event.uid(),
+            orgUnitUid = event.organisationUnit()!!,
+            orgUnitName = orgUnitName,
+            date = event.eventDate()!!,
+            eventState = state,
+            eventDisplayData = data,
+            eventStatus = event.status()!!,
+            isExpired = hasExpired || !inOrgUnitRange,
+            attributeOptionComboName = attrOptCombo,
+            geometry = event.geometry(),
+            canBeEdited = d2.eventModule().eventService().blockingIsEditable(event.uid()),
         )
     }
 
