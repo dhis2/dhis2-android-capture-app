@@ -48,7 +48,7 @@ fun ProvideCustomIntentInput(
         text = resources.getString(R.string.custom_intent_error),
     )
     val supportingTextList = remember { fieldUiModel.supportingText()?.toMutableList() ?: mutableListOf() }
-    var inputShellState = fieldUiModel.inputState()
+    var inputShellState = remember { fieldUiModel.inputState() }
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -74,9 +74,11 @@ fun ProvideCustomIntentInput(
             } else {
                 customIntentState = CustomIntentState.LAUNCH
                 inputShellState = InputShellState.ERROR
-                supportingTextList.add(
-                    errorGettingDataMessage,
-                )
+                if (!supportingTextList.contains(errorGettingDataMessage)) {
+                    supportingTextList.add(
+                        errorGettingDataMessage,
+                    )
+                }
             }
         }
     InputCustomIntent(
@@ -86,6 +88,9 @@ fun ProvideCustomIntentInput(
         inputShellState = inputShellState,
         onLaunch = {
             customIntentState = CustomIntentState.LOADING
+            if (supportingTextList.contains(errorGettingDataMessage)) {
+                supportingTextList.remove(errorGettingDataMessage)
+            }
             val intentData = fieldUiModel.customIntent?.let { mapIntentData(it) }
             val intent = Intent.createChooser(
                 intentData,
