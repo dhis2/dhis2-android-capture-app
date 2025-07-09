@@ -18,8 +18,13 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
+import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
+import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import timber.log.Timber
 
 abstract class DataEntryBaseRepository(
@@ -27,9 +32,6 @@ abstract class DataEntryBaseRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val metadataIconProvider: MetadataIconProvider,
 ) : DataEntryRepository {
-
-    protected val formConfiguration: FormBaseConfiguration
-        get() = conf
 
     abstract val programUid: String?
     abstract val defaultStyleColor: Color
@@ -76,6 +78,62 @@ abstract class DataEntryBaseRepository(
             }
         }
         return optionsFromGroups
+    }
+
+    private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
+        return conf.customIntents().any { customIntent ->
+            customIntent?.trigger()?.attributes()?.any {
+                it.uid() == uid
+            } == true ||
+                customIntent?.trigger()?.dataElements()?.any {
+                    it.uid() == uid
+                } == true
+        }
+    }
+
+    fun getCustomIntentFromUid(uid: String?): CustomIntentModel? {
+        return if (uidIsACustomIntentTrigger(uid)) {
+            val customIntentDTO = conf.customIntents().firstOrNull { customIntent ->
+                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true &&
+                    customIntent.trigger()?.attributes()?.any { it.uid() == uid } == true ||
+                    customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
+            }
+            customIntentDTO?.let {
+                // TODO: remove this when SDK has adapted the payload to the new custom intent model and map correctly
+                val customIntentResponse = if (uid == "bYZCH0o9l8W" || uid == "goBca56SGgZ") {
+                    listOf(
+                        CustomIntentResponseDataModel(
+                            name = it.response()?.data()?.argument() ?: "",
+                            extraType = CustomIntentResponseExtraType.OBJECT,
+                            key = it.response()?.data()?.path(),
+                        ),
+                    )
+                } else {
+                    listOf(
+                        CustomIntentResponseDataModel(
+                            name = it.response()?.data()?.argument() ?: "",
+                            extraType = CustomIntentResponseExtraType.LIST_OF_OBJECTS,
+                            key = it.response()?.data()?.path(),
+                        ),
+                    )
+                }
+
+                CustomIntentModel(
+                    uid = it.uid(),
+                    name = it.name(),
+                    customIntentRequest = it.request()?.arguments()?.map { arg ->
+                        CustomIntentRequestArgumentModel(
+                            key = arg.key(),
+                            value = arg.value(),
+                        )
+                    } ?: emptyList(),
+                    customIntentResponse = customIntentResponse,
+                    packageName = it.packageName() ?: "",
+                )
+            }
+        } else {
+            null
+        }
     }
 
     override fun options(

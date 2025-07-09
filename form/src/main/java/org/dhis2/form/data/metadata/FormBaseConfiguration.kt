@@ -9,10 +9,6 @@ import org.dhis2.commons.bindings.disableCollapsableSectionsInProgram
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.mobile.commons.model.CustomIntentModel
-import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
-import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
-import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.option.Option
@@ -36,67 +32,11 @@ open class FormBaseConfiguration(
         .byUid().`in`(optionGroupUids)
         .blockingGet()
 
-    private fun customIntents(): List<CustomIntent?> = if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
+    fun customIntents(): List<CustomIntent?> = if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
         getMockedCustomIntents()
     } else {
         d2.settingModule().customIntents()
             .blockingGet()
-    }
-
-    private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
-        return customIntents().any { customIntent ->
-            customIntent?.trigger()?.attributes()?.any {
-                it.uid() == uid
-            } == true ||
-                customIntent?.trigger()?.dataElements()?.any {
-                    it.uid() == uid
-                } == true
-        }
-    }
-
-    fun getCustomIntentFromUid(uid: String?): CustomIntentModel? {
-        return if (uidIsACustomIntentTrigger(uid)) {
-            val customIntentDTO = customIntents().firstOrNull { customIntent ->
-                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true &&
-                    customIntent.trigger()?.attributes()?.any { it.uid() == uid } == true ||
-                    customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
-            }
-            customIntentDTO?.let {
-                // TODO: remove this when SDK has adapted the payload to the new custom intent model and map correctly
-                val customIntentResponse = if (uid == "bYZCH0o9l8W" || uid == "goBca56SGgZ") {
-                    listOf(
-                        CustomIntentResponseDataModel(
-                            name = it.response()?.data()?.argument() ?: "",
-                            extraType = CustomIntentResponseExtraType.OBJECT,
-                            key = it.response()?.data()?.path(),
-                        ),
-                    )
-                } else {
-                    listOf(
-                        CustomIntentResponseDataModel(
-                            name = it.response()?.data()?.argument() ?: "",
-                            extraType = CustomIntentResponseExtraType.LIST_OF_OBJECTS,
-                            key = it.response()?.data()?.path(),
-                        ),
-                    )
-                }
-
-                CustomIntentModel(
-                    uid = it.uid(),
-                    name = it.name(),
-                    customIntentRequest = it.request()?.arguments()?.map { arg ->
-                        CustomIntentRequestArgumentModel(
-                            key = arg.key(),
-                            value = arg.value(),
-                        )
-                    } ?: emptyList(),
-                    customIntentResponse = customIntentResponse,
-                    packageName = it.packageName() ?: "",
-                )
-            }
-        } else {
-            null
-        }
     }
 
     private fun getMockedCustomIntents(): List<CustomIntent> {
