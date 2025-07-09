@@ -122,6 +122,7 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             dateTextFieldNode.performTextReplacement(dateValue)
             dateTextFieldNode.performImeAction()
         }
+        Espresso.closeSoftKeyboard()
     }
 
     @OptIn(ExperimentalTestApi::class)
