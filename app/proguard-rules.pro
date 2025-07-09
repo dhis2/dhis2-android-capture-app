@@ -247,3 +247,7 @@
 # Please add these rules to your existing keep rules in order to suppress warnings.
 # This is generated automatically by the Android Gradle plugin.
 -dontwarn javax.management.InstanceNotFoundException
+
+-keep class org.dhis2.maps.** { *; }
+-keep interface org.dhis2.maps.** { *; }
+-keep enum org.dhis2.maps.** { *; }
