@@ -84,7 +84,7 @@ class EventInitialPresenter(
                             this.program = program
                             view.setProgram(program)
                         },
-                        { throwable -> },
+                        Timber::d,
                     ),
             )
 
@@ -126,7 +126,7 @@ class EventInitialPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { programStage -> view.setProgramStage(programStage) },
-                    { throwable -> view.showProgramStageSelection() },
+                    { _ -> view.showProgramStageSelection() },
                 ),
         )
     }
@@ -144,7 +144,7 @@ class EventInitialPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { programStage -> view.setProgramStage(programStage) },
-                    { throwable -> view.showProgramStageSelection() },
+                    { _ -> view.showProgramStageSelection() },
                 ),
         )
     }
@@ -267,7 +267,7 @@ class EventInitialPresenter(
                         { sectionsAndFields ->
                             view.updatePercentage(eventFieldMapper.completedFieldsPercentage())
                         },
-                        { t -> Timber.d(t) },
+                        Timber::d,
                     ),
             )
         }

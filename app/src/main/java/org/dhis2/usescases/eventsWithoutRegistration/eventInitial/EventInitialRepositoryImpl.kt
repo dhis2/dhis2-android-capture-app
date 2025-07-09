@@ -33,7 +33,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 import java.util.Calendar
-import java.util.Collections
 import java.util.Date
 import java.util.concurrent.Callable
 
@@ -73,10 +72,10 @@ class EventInitialRepositoryImpl internal constructor(
     ): Observable<String> {
         val cal = Calendar.getInstance()
         cal.setTime(date)
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
+        cal[Calendar.HOUR_OF_DAY] = 0
+        cal[Calendar.MINUTE] = 0
+        cal[Calendar.SECOND] = 0
+        cal[Calendar.MILLISECOND] = 0
 
         return Observable.fromCallable(
             Callable {
@@ -93,23 +92,7 @@ class EventInitialRepositoryImpl internal constructor(
         ).map { uid ->
             val eventRepository = d2.eventModule().events().uid(uid)
             eventRepository.setEventDate(cal.getTime())
-            if (d2.programModule().programStages()
-                    .uid(eventRepository.blockingGet()!!.programStage())
-                    .blockingGet()!!.featureType() != null
-            ) {
-                when (
-                    d2.programModule().programStages().uid(
-                        eventRepository.blockingGet()!!.programStage(),
-                    )
-                        .blockingGet()!!.featureType()
-                ) {
-                    FeatureType.POINT, FeatureType.POLYGON, FeatureType.MULTI_POLYGON -> eventRepository.setGeometry(
-                        geometry,
-                    )
-
-                    else -> {}
-                }
-            }
+            updateEventGeometry(uid, geometry)
             uid
         }
     }
@@ -126,10 +109,10 @@ class EventInitialRepositoryImpl internal constructor(
     ): Observable<String> {
         val cal = Calendar.getInstance()
         cal.setTime(dueDate)
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
+        cal[Calendar.HOUR_OF_DAY] = 0
+        cal[Calendar.MINUTE] = 0
+        cal[Calendar.SECOND] = 0
+        cal[Calendar.MILLISECOND] = 0
 
         return Observable.fromCallable(
             Callable {
@@ -147,23 +130,23 @@ class EventInitialRepositoryImpl internal constructor(
             val eventRepository = d2.eventModule().events().uid(uid)
             eventRepository.setDueDate(cal.getTime())
             eventRepository.setStatus(EventStatus.SCHEDULE)
-            if (d2.programModule().programStages()
-                    .uid(eventRepository.blockingGet()!!.programStage())
-                    .blockingGet()!!.featureType() != null
-            ) {
-                when (
-                    d2.programModule().programStages().uid(
-                        eventRepository.blockingGet()!!.programStage(),
-                    )
-                        .blockingGet()!!.featureType()
-                ) {
-                    FeatureType.POINT, FeatureType.POLYGON, FeatureType.MULTI_POLYGON ->
-                        eventRepository.setGeometry(geometry)
-
-                    else -> {}
-                }
-            }
+            updateEventGeometry(uid, geometry)
             uid
+        }
+    }
+
+    private fun updateEventGeometry(eventUid: String, geometry: Geometry?) {
+        val event = d2.eventModule().events().uid(eventUid).blockingGet()
+        val stageFeatureType = d2.programModule().programStages()
+            .uid(event?.programStage())
+            .blockingGet()?.featureType()
+        when (stageFeatureType) {
+            FeatureType.POINT, FeatureType.POLYGON, FeatureType.MULTI_POLYGON ->
+                d2.eventModule().events().uid(eventUid).setGeometry(geometry)
+
+            else -> {
+                /*do nothing*/
+            }
         }
     }
 
@@ -235,116 +218,121 @@ class EventInitialRepositoryImpl internal constructor(
         return true
     }
 
-    override fun eventSections(): Flowable<MutableList<FormSectionViewModel?>?>? {
+    override fun eventSections(): Flowable<List<FormSectionViewModel>> {
         return d2.eventModule().events().uid(eventUid).get()
-            .map { eventSingle: Event? ->
-                val formSection: MutableList<FormSectionViewModel?> = mutableListOf()
-                if (eventSingle!!.deleted() == null || !eventSingle.deleted()!!) {
+            .map { eventSingle ->
+                if (eventSingle.deleted() != true) {
                     val stage = d2.programModule().programStages().uid(eventSingle.programStage())
                         .blockingGet()
                     val stageSections =
-                        d2.programModule().programStageSections().byProgramStageUid().eq(
-                            stage!!.uid(),
-                        ).blockingGet()
-                    if (stageSections.isNotEmpty()) {
-                        Collections.sort(
-                            stageSections,
-                            Comparator { one: ProgramStageSection?, two: ProgramStageSection? ->
-                                one!!.sortOrder()!!
-                                    .compareTo(two!!.sortOrder()!!)
+                        d2.programModule().programStageSections()
+                            .byProgramStageUid().eq(stage!!.uid())
+                            .blockingGet()
+
+                    return@map stageSections.takeIf { it.isNotEmpty() }?.sortedWith(
+                        Comparator { one: ProgramStageSection?, two: ProgramStageSection? ->
+                            one!!.sortOrder()!!
+                                .compareTo(two!!.sortOrder()!!)
+                        },
+                    )?.map { section ->
+                        FormSectionViewModel(
+                            eventUid!!,
+                            section.uid(),
+                            section.displayName(),
+                            if (section.renderType()!!.mobile() != null) {
+                                section.renderType()!!
+                                    .mobile()!!
+                                    .type()!!.name
+                            } else {
+                                null
                             },
                         )
-
-                        for (section in stageSections) formSection.add(
-                            FormSectionViewModel(
-                                eventUid!!,
-                                section.uid(),
-                                section.displayName(),
-                                if (section.renderType()!!.mobile() != null) {
-                                    section.renderType()!!
-                                        .mobile()!!
-                                        .type()!!.name
-                                } else {
-                                    null
-                                },
-                            ),
-                        )
-                    } else {
-                        formSection.add(
-                            FormSectionViewModel(
-                                eventUid!!,
-                                "",
-                                "",
-                                SectionRenderingType.LISTING.name,
-                            ),
-                        )
-                    }
+                    } ?: listOf(
+                        FormSectionViewModel(
+                            eventUid!!,
+                            "",
+                            "",
+                            SectionRenderingType.LISTING.name,
+                        ),
+                    )
+                } else {
+                    return@map emptyList()
                 }
-                formSection
             }.toFlowable()
     }
 
     override fun list(): Flowable<List<FieldUiModel>> {
         return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
             .map { event ->
-                buildList {
-                    val stage =
-                        d2.programModule().programStages().uid(event.programStage()).blockingGet()
-                    val sections = d2.programModule().programStageSections().withDataElements()
-                        .byProgramStageUid().eq(stage!!.uid())
-                        .blockingGet()
-                    val stageDataElements = d2.programModule().programStageDataElements()
-                        .byProgramStage().eq(stage.uid())
-                        .blockingGet()
+                val sections = d2.programModule().programStageSections().withDataElements()
+                    .byProgramStageUid().eq(event.programStage())
+                    .blockingGet()
+                val stageDataElements = d2.programModule().programStageDataElements()
+                    .byProgramStage().eq(event.programStage())
+                    .blockingGet()
 
-                    if (!sections.isEmpty()) {
-                        for (stageSection in sections) {
-                            for (programStageDataElement in stageDataElements) {
-                                if (getUidsList<DataElement>(stageSection.dataElements()!!).contains(
-                                        programStageDataElement.dataElement()!!.uid(),
-                                    )
-                                ) {
-                                    val dataElement = d2.dataElementModule().dataElements().uid(
-                                        programStageDataElement.dataElement()!!.uid(),
-                                    ).blockingGet()
-                                    add(
-                                        transform(
-                                            programStageDataElement,
-                                            dataElement!!,
-                                            searchValueDataElement(
-                                                programStageDataElement.dataElement()!!
-                                                    .uid(),
-                                                event.trackedEntityDataValues()!!,
-                                            ),
-                                            stageSection.uid(),
-                                            event.status(),
-                                        ),
-                                    )
-                                }
-                            }
-                        }
-                    } else {
-                        for (programStageDataElement in stageDataElements) {
-                            val dataElement = d2.dataElementModule().dataElements().uid(
-                                programStageDataElement.dataElement()!!.uid(),
-                            ).blockingGet()
-                            add(
-                                transform(
-                                    programStageDataElement,
-                                    dataElement!!,
-                                    searchValueDataElement(
-                                        programStageDataElement.dataElement()!!
-                                            .uid(),
-                                        event.trackedEntityDataValues()!!,
-                                    ),
-                                    null,
-                                    event.status(),
-                                ),
-                            )
-                        }
-                    }
+                if (sections.isNotEmpty()) {
+                    buildListForSections(sections, stageDataElements, event)
+                } else {
+                    buildListWithoutSection(stageDataElements, event)
                 }
             }.toFlowable()
+    }
+
+    private fun buildListForSections(
+        sections: List<ProgramStageSection>,
+        stageDataElements: List<ProgramStageDataElement>,
+        event: Event,
+    ) = buildList {
+        for (stageSection in sections) {
+            for (programStageDataElement in stageDataElements) {
+                if (getUidsList<DataElement>(stageSection.dataElements()!!).contains(
+                        programStageDataElement.dataElement()!!.uid(),
+                    )
+                ) {
+                    val dataElement = d2.dataElementModule().dataElements().uid(
+                        programStageDataElement.dataElement()!!.uid(),
+                    ).blockingGet()
+                    add(
+                        transform(
+                            programStageDataElement,
+                            dataElement!!,
+                            searchValueDataElement(
+                                programStageDataElement.dataElement()!!
+                                    .uid(),
+                                event.trackedEntityDataValues()!!,
+                            ),
+                            stageSection.uid(),
+                            event.status(),
+                        ),
+                    )
+                }
+            }
+        }
+    }
+
+    private fun buildListWithoutSection(
+        stageDataElements: List<ProgramStageDataElement>,
+        event: Event,
+    ) = buildList {
+        for (programStageDataElement in stageDataElements) {
+            val dataElement = d2.dataElementModule().dataElements().uid(
+                programStageDataElement.dataElement()!!.uid(),
+            ).blockingGet()
+            add(
+                transform(
+                    programStageDataElement,
+                    dataElement!!,
+                    searchValueDataElement(
+                        programStageDataElement.dataElement()!!
+                            .uid(),
+                        event.trackedEntityDataValues()!!,
+                    ),
+                    null,
+                    event.status(),
+                ),
+            )
+        }
     }
 
     override fun calculate(): Flowable<Result<List<RuleEffect>>> {
@@ -387,13 +375,13 @@ class EventInitialRepositoryImpl internal constructor(
                 d2.optionModule().options().byOptionSetUid().eq(optionSet)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).byCode().eq(dataValue)
                     .blockingGet()
-            if (!dataValueOptions.isEmpty()) {
+            if (dataValueOptions.isNotEmpty()) {
                 dataValue = option[0].displayName()
             }
             optionSetConfig = OptionSetConfiguration(
-                null,
-                { query: String? -> null },
-                optionDataFlow(
+                searchEmitter = null,
+                onSearch = { _ -> null },
+                optionFlow = optionDataFlow(
                     d2.optionModule().options().byOptionSetUid().eq(optionSet)
                         .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).getPagingData(10),
                 ) { option1: Option? -> metadataIconProvider.invoke(option1!!.style()) },
@@ -431,13 +419,11 @@ class EventInitialRepositoryImpl internal constructor(
 
     private fun searchValueDataElement(
         dataElement: String?,
-        dataValues: MutableList<TrackedEntityDataValue>,
+        dataValues: List<TrackedEntityDataValue>,
     ): String? {
-        for (dataValue in dataValues) if (dataValue.dataElement() == dataElement) {
-            return dataValue.value()
-        }
-
-        return ""
+        return dataValues.firstOrNull { dataValue ->
+            dataValue.dataElement() == dataElement
+        }?.value() ?: ""
     }
 
     override fun getEditableStatus(): Flowable<EventEditableStatus?>? {
