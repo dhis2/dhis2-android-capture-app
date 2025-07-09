@@ -234,7 +234,11 @@
         <item quantity="other">%d років прострочено</item>
     </plurals>
 
+    <string name="new_enrollment">Новий %s</string>
     <string name="enrolling_ou">Зареєстровано в:</string>
+    <string name="more_enrollments">Інші реєстрації</string>
+    <string name="refresh_this_record">Оновити цей запис</string>
+    <string name="view_timeline">Переглянути хронологію</string>
     <!-- Event -->
     <plurals name="event_label">
         <item quantity="one">подія</item>
@@ -242,7 +246,9 @@
         <item quantity="many">події</item>
         <item quantity="other">події</item>
     </plurals>
+    <string name="new_event_label">Новий 1%s</string>
     <string name="delete_event_label">Видалити %s</string>
+    <string name="confirm_delete_event_label">Ви впевнені, що хочете видалити %s?</string>
     <string name="week_period_span_default_label">Тиждень %d %s до %s</string>
     <string name="enrollment_reopen">повторно відкрити</string>
 

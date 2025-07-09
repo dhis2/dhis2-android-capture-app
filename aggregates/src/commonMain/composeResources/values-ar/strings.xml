@@ -46,4 +46,7 @@
     <string name="from_gallery">إضافة من المعرض</string>
     <string name="indicators_label">المؤشرات</string>
     <string name="no_data_write_access">ليس لديك إذن لتعديل هذه البيانات</string>
-    </resources>
+    <string name="dataset_closed">بيانات مغلقة وغير قابلة للتعديل</string>
+    <string name="dataset_expired">لا يمكن تعديل هذه البيانات لأن فترة التعديل قد انتهت</string>
+
+</resources>
