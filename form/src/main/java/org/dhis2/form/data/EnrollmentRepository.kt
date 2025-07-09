@@ -162,7 +162,6 @@ class EnrollmentRepository(
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute,
         sectionUid: String? = SINGLE_SECTION_UID,
     ): FieldUiModel {
-        // check custom intent here and return custom intent
         val attribute = programTrackedEntityAttribute.trackedEntityAttribute()?.uid()?.let {
             conf.trackedEntityAttribute(it)
         } ?: throw IllegalStateException(
@@ -170,7 +169,7 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
             ),
         )
-        val attributeCustomIntent = conf.getCustomIntentFromUid(programTrackedEntityAttribute.trackedEntityAttribute()?.uid())
+        val attributeCustomIntent = getCustomIntentFromUid(programTrackedEntityAttribute.trackedEntityAttribute()?.uid())
 
         val valueType = attribute.valueType()
         var mandatory = programTrackedEntityAttribute.mandatory() ?: false

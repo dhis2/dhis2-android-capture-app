@@ -67,7 +67,6 @@ class EventRepository(
         EventPeriodRepository(d2),
     )
 
-    private val config = formConfiguration
     private var event = d2.eventModule().events().uid(eventUid).blockingGet()
 
     private val programStage by lazy {
@@ -544,7 +543,7 @@ class EventRepository(
             programStageDataElement.dataElement()!!.uid(),
         ).blockingGet()
         val uid = de?.uid() ?: ""
-        val customIntent = config.getCustomIntentFromUid(uid)
+        val customIntent = getCustomIntentFromUid(uid)
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false
