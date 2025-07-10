@@ -364,8 +364,8 @@ internal class DataSetInstanceRepositoryImpl(
                             description = dataElement.displayDescription(),
                             isMultiText = dataElement.valueType() == ValueType.MULTI_TEXT,
                             cellType = when (dataElement.valueType()) {
-                                ValueType.TRUE_ONLY -> CellType.Checkbox
-                                else -> CellType.Text
+                                ValueType.TRUE_ONLY -> CellType.CHECKBOX
+                                else -> CellType.TEXT
                             },
                         )
                     }
