@@ -21,21 +21,21 @@ class EventFieldMapper(
     private lateinit var finalFields: MutableMap<String, Boolean>
 
     fun map(
-        fields: MutableList<FieldUiModel>,
-        sectionList: MutableList<FormSectionViewModel>,
+        fields: List<FieldUiModel>,
+        sectionList: List<FormSectionViewModel>,
         currentSection: String,
-        errors: MutableMap<String, String>,
-        warnings: MutableMap<String, String>,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
+        errors: Map<String, String>,
+        warnings: Map<String, String>,
+        emptyMandatoryFields: Map<String, FieldUiModel>,
         showErrors: Pair<Boolean, Boolean>,
-    ): Pair<MutableList<EventSectionModel>, MutableList<FieldUiModel>> {
+    ): Pair<List<EventSectionModel>, List<FieldUiModel>> {
         clearAll()
         setFieldMap(fields, sectionList, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
             handleSection(fields, sectionList, it, currentSection)
         }
 
-        if (eventSectionModels.first().sectionName() == "NO_SECTION") {
+        if (eventSectionModels.first().sectionName == "NO_SECTION") {
             finalFieldList.add(fieldFactory.createClosingSection())
         }
 
@@ -96,7 +96,7 @@ class EventFieldMapper(
         fields: List<FieldUiModel>,
         sectionList: List<FormSectionViewModel>,
         showMandatoryErrors: Boolean,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
+        emptyMandatoryFields: Map<String, FieldUiModel>,
     ) {
         fields.forEach { field ->
             val fieldSection = getFieldSection(field)
@@ -176,7 +176,7 @@ class EventFieldMapper(
         var cont = 0
         for (key in finalFields.keys) if (finalFields[key] == true) cont++
         eventSectionModels.add(
-            EventSectionModel.create(
+            EventSectionModel(
                 sectionModel.label!!,
                 sectionModel.sectionUid!!,
                 cont,
@@ -213,7 +213,7 @@ class EventFieldMapper(
         var cont = 0
         for (key in finalFields.keys) if (finalFields[key] == true) cont++
         eventSectionModels.add(
-            EventSectionModel.create(
+            EventSectionModel(
                 "NO_SECTION",
                 "no_section",
                 cont,
@@ -228,7 +228,7 @@ class EventFieldMapper(
     }
 
     fun completedFieldsPercentage(): Float {
-        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields() }
+        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields }
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
