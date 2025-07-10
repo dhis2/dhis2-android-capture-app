@@ -45,6 +45,8 @@
     <string name="search_result_text">%s результатів знайдено</string>
     <string name="add_new">Додати нове</string>
     <string name="add">Додати</string>
+    <string name="enter_event_data">Введіть %s</string>
+    <string name="enter_cancel_event_data">Ввести / Пропустити %s</string>
     <string name="schedule_new">Запланувати нове</string>
     <string name="referral">Направлення</string>
 
@@ -847,6 +849,7 @@
     <string name="customactivityoncrash_error_activity_device">Пристрій: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Версія ОС: %s</string>
     <string name="open_details">Відкрити деталі %s</string>
+    <string name="tracked_entity_type_details">%s Деталі</string>
     <string name="syncing_resource">Синхронізація %s…</string>
     <string name="sms_sync_waiting_for_response">SMS відправлено. Очікування відповіді серверу.</string>
     <string name="sms_sync_sms_reached_server">SMS підтверджено на сервері. Оновлення статусу</string>
@@ -857,6 +860,7 @@
     <string name="sms_sync_sms_app_chooser_title">Надіслати SMS за допомогою</string>
     <string name="sms_sync_manual_confirmation">Очікується підтвердження вручну</string>
     <string name="syncing_events">Синхронізація подій</string>
+    <string name="enrolledIn">Зареєстровано в:</string>
     <string name="ownedBy">Власник:</string>
     <string name="sync_dialog_title_not_synced">Потрібна синхронізація</string>
     <string name="sync_dialog_title_synced">Синхронізовано</string>
@@ -870,6 +874,7 @@
     <string name="app_version">Версія додатку</string>
     <string name="not_synced">Не синхронізовано</string>
     <string name="overdue">Прострочений %s</string>
+    <string name="registered_in">Зареєстровано в</string>
     <string name="view_only">Тільки перегляд</string>
     <string name="skipped">Пропущено</string>
     <string name="programs">Програми</string>
@@ -878,7 +883,10 @@
     <string name="mark_follow_up">Позначити для подальших дій</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
+    <string name="enter">Введіть</string>
+    <string name="refer">Перенаправити</string>
     <string name="scheduled_enter_event">Заплановано</string>
+    <string name="enter_event">Введіть %1$s</string>
     <string name="program_stage">Етап програми</string>
     <string name="event">подія</string>
     <string name="clear_search">Очистити пошук</string>
