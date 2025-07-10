@@ -36,12 +36,12 @@ class DatasetCardMapper(
         onCardCLick: () -> Unit,
     ): ListCardUiModel {
         return ListCardUiModel(
-            title = dataset.namePeriod(),
-            lastUpdated = dataset.lastUpdated().toDateSpan(context),
+            title = dataset.namePeriod,
+            lastUpdated = dataset.lastUpdated.toDateSpan(context),
             additionalInfo = getAdditionalInfoList(dataset, editable),
             actionButton = {
                 ProvideSyncButton(
-                    state = dataset.state(),
+                    state = dataset.state,
                     onSyncIconClick = onSyncIconClick,
                 )
             },
@@ -74,7 +74,7 @@ class DatasetCardMapper(
 
         checkSyncStatus(
             list = list,
-            state = dataset.state(),
+            state = dataset.state,
         )
 
         checkViewOnly(
@@ -111,11 +111,11 @@ class DatasetCardMapper(
         list: MutableList<AdditionalInfoItem>,
         dataset: DataSetDetailModel,
     ) {
-        if (dataset.nameCategoryOptionCombo() != "default") {
+        if (dataset.nameCategoryOptionCombo != "default") {
             list.add(
                 AdditionalInfoItem(
-                    key = "${dataset.nameCategoryOptionCombo()}:",
-                    value = dataset.nameCatCombo(),
+                    key = "${dataset.nameCategoryOptionCombo}:",
+                    value = dataset.nameCatCombo,
                     isConstantItem = true,
                 ),
             )
@@ -217,11 +217,11 @@ class DatasetCardMapper(
         list: MutableList<AdditionalInfoItem>,
         dataset: DataSetDetailModel,
     ) {
-        if (dataset.displayOrgUnitName()) {
+        if (dataset.displayOrgUnitName) {
             list.add(
                 AdditionalInfoItem(
                     key = resourceManager.getString(R.string.registered_in),
-                    value = dataset.nameOrgUnit(),
+                    value = dataset.nameOrgUnit,
                     isConstantItem = true,
                 ),
             )
