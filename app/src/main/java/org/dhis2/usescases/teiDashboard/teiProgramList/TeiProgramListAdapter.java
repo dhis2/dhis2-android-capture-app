@@ -167,7 +167,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
             found = false;
             active = false;
             for (EnrollmentViewModel enrollment : activeEnrollments) {
-                if (programModel.getTitle().equals(enrollment.programName())) {
+                if (programModel.getTitle().equals(enrollment.getProgramName())) {
                     found = true;
                     active = true;
                 }
@@ -175,7 +175,7 @@ public class TeiProgramListAdapter extends RecyclerView.Adapter<TeiProgramListEn
 
             if (!found)
                 for (EnrollmentViewModel enrollment : inactiveEnrollments) {
-                    if (programModel.getTitle().equals(enrollment.programName())) {
+                    if (programModel.getTitle().equals(enrollment.getProgramName())) {
                         found = true;
                         active = false;
                     }

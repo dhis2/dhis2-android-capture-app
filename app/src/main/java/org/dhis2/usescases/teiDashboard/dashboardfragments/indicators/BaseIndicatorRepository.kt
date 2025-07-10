@@ -10,7 +10,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -89,15 +88,15 @@ abstract class BaseIndicatorRepository(
                 }
             }
 
-    private fun applyRuleEffectForIndicators(calcResult: Result<RuleEffect>): List<IndicatorModel> {
+    private fun applyRuleEffectForIndicators(calcResult: Result<List<RuleEffect>>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
 
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             return arrayListOf()
         }
 
-        for (ruleEffect in calcResult.items()) {
+        for (ruleEffect in calcResult.getOrNull() ?: emptyList()) {
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {

@@ -49,7 +49,7 @@ class ProgramEventMapperTest {
 
         assert(!result.isExpired)
         assert(event.uid() == result.uid())
-        assert(result.eventState() == State.TO_UPDATE)
+        assert(result.eventState == State.TO_UPDATE)
     }
 
     @Test
@@ -64,7 +64,7 @@ class ProgramEventMapperTest {
 
         assert(!result.isExpired)
         assert(event.uid() == result.uid())
-        assert(result.eventState() == State.SYNCED)
+        assert(result.eventState == State.SYNCED)
     }
 
     @Test

@@ -40,7 +40,6 @@ import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
-import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
@@ -158,11 +157,11 @@ class TEIDataPresenter(
 
     private fun applyEffects(
         events: List<EventViewModel>,
-        calcResult: Result<RuleEffect>,
+        calcResult: Result<List<RuleEffect>>,
     ): List<EventViewModel> {
         Timber.d("APPLYING EFFECTS")
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             view.showProgramRuleErrorMessage()
             return emptyList()
         }
@@ -172,7 +171,7 @@ class TEIDataPresenter(
         ).applyRuleEffects(
             false,
             HashMap(),
-            calcResult.items(),
+            calcResult.getOrNull() ?: emptyList(),
             valueStore,
         )
         stagesToHide = stagesToHide1
@@ -291,6 +290,7 @@ class TEIDataPresenter(
                 )
                 view.openEventCapture(intent)
             }
+
             else -> {
                 val event = d2.event(uid)
                 val intent = Intent(view.context, EventInitialActivity::class.java)
@@ -368,7 +368,8 @@ class TEIDataPresenter(
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
                     val orgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
-                    orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) } ?: checkOrgUnitCount(program, stage.uid())
+                    orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) }
+                        ?: checkOrgUnitCount(program, stage.uid())
                 }
 
                 EventCreationType.SCHEDULE -> {
@@ -386,6 +387,7 @@ class TEIDataPresenter(
                 EventCreationType.REFERAL -> {
                     createEventInEnrollment(eventCreationType)
                 }
+
                 else -> {
                     view.displayScheduleEvent(
                         programStage = null,
@@ -399,7 +401,12 @@ class TEIDataPresenter(
 
     fun getNewEventOptionsByStages(stage: ProgramStage?): List<MenuItemData<EventCreationType>> {
         val options = programUid?.let { getNewEventCreationTypeOptions(stage, it) }
-        return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it, stage?.displayEventLabel()) } ?: emptyList()
+        return options?.let {
+            eventCreationOptionsMapper.mapToEventsByStage(
+                it,
+                stage?.displayEventLabel(),
+            )
+        } ?: emptyList()
     }
 
     fun fetchEvents() {

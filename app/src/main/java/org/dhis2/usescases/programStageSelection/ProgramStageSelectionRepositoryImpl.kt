@@ -4,7 +4,6 @@ import io.reactivex.Flowable
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
@@ -50,12 +49,12 @@ class ProgramStageSelectionRepositoryImpl internal constructor(
             }.toFlowable()
     }
 
-    override fun calculate(): Flowable<Result<RuleEffect>> {
+    override fun calculate(): Flowable<Result<List<RuleEffect>>> {
         return Flowable.just(ruleEngineHelper?.evaluate() ?: emptyList())
-            .map<Result<RuleEffect>> { items ->
-                Result.success(items)
+            .map {
+                Result.success(it)
             }
-            .onErrorReturn { Result.failure(Exception(it)) as Result<RuleEffect> }
+            .onErrorReturn { Result.failure(Exception(it)) }
     }
 
     override fun getStage(programStageUid: String): ProgramStage? {
