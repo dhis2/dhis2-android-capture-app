@@ -172,11 +172,11 @@ internal suspend fun TableGroup.toTableModel(
                                 row = rowIndex,
                                 column = columnIndex,
                                 content = when (dataElementCell.cellType) {
-                                    CellType.Text -> TableCellContent.Text(
+                                    CellType.TEXT -> TableCellContent.Text(
                                         value = dataValueData?.value ?: "",
                                     )
 
-                                    CellType.Checkbox -> TableCellContent.Checkbox(
+                                    CellType.CHECKBOX -> TableCellContent.Checkbox(
                                         isChecked = dataValueData?.value?.toBoolean() ?: false,
                                     )
                                 },

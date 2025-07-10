@@ -37,12 +37,12 @@ internal data class CellElement(
     val description: String?,
     val isMultiText: Boolean,
     val disabled: Boolean = false,
-    val cellType: CellType = CellType.Text,
+    val cellType: CellType = CellType.TEXT,
 )
 
 internal enum class CellType {
-    Text,
-    Checkbox,
+    TEXT,
+    CHECKBOX,
 }
 
 internal data class MandatoryCellElements(
