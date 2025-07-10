@@ -99,6 +99,7 @@ class SearchTETest : BaseTest() {
         prepareChildProgrammeIntentAndLaunchActivity(rule)
 
         searchTeiRobot(composeTestRule) {
+            waitUntilActivityVisible<SearchTEActivity>()
             clickOnShowMap()
             checkCarouselTEICardInfo(firstName)
         }
