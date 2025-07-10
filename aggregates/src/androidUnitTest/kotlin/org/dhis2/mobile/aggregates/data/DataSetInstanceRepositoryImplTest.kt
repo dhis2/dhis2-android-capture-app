@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.data
 
 import kotlinx.coroutines.test.runTest
+import org.dhis2.commons.periods.data.PeriodLabelProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOption
@@ -28,7 +29,7 @@ class DataSetInstanceRepositoryImplTest {
     private val repository =
         DataSetInstanceRepositoryImpl(
             d2 = d2,
-            periodLabelProvider = mock(),
+            periodLabelProvider = PeriodLabelProvider(),
             fileController = mock(),
         )
 
