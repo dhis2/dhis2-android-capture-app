@@ -113,10 +113,10 @@ class DataSetListFragment : FragmentGlobalAbstract() {
 
     private fun startDataSet(dataSet: DataSetDetailModel) {
         val activityBundle = Bundle().apply {
-            putString(INTENT_EXTRA_DATA_SET_UID, dataSet.datasetUid())
-            putString(INTENT_EXTRA_PERIOD_ID, dataSet.periodId())
-            putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, dataSet.orgUnitUid())
-            putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, dataSet.catOptionComboUid())
+            putString(INTENT_EXTRA_DATA_SET_UID, dataSet.datasetUid)
+            putString(INTENT_EXTRA_PERIOD_ID, dataSet.periodId)
+            putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, dataSet.orgUnitUid)
+            putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, dataSet.catOptionComboUid)
         }
         startActivity(DataSetInstanceActivity::class.java, activityBundle, false, false, null)
     }
@@ -127,9 +127,9 @@ class DataSetListFragment : FragmentGlobalAbstract() {
             .withSyncContext(
                 SyncContext.DataSetInstance(
                     dataSetUid = dataSetUid,
-                    periodId = dataSet.periodId(),
-                    orgUnitUid = dataSet.orgUnitUid(),
-                    attributeOptionComboUid = dataSet.catOptionComboUid(),
+                    periodId = dataSet.periodId,
+                    orgUnitUid = dataSet.orgUnitUid,
+                    attributeOptionComboUid = dataSet.catOptionComboUid,
                 ),
             ).onDismissListener(object : OnDismissListener {
                 override fun onDismiss(hasChanged: Boolean) {

@@ -99,7 +99,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
         binding.setDataSetModel(dataSetInitialModel);
         binding.catComboContainer.removeAllViews();
         selectedCatOptions = new HashMap<>();
-        if (!dataSetInitialModel.categoryComboName().equals("default"))
+        if (!dataSetInitialModel.getCategoryComboName().equals("default"))
             for (Category categories : dataSetInitialModel.getCategories()) {
                 selectedCatOptions.put(categories.uid(), null);
                 ItemCategoryComboBinding categoryComboBinding = ItemCategoryComboBinding.inflate(getLayoutInflater(), binding.catComboContainer, false);
@@ -244,7 +244,7 @@ public class DataSetInitialActivity extends ActivityGlobalAbstract implements Da
 
     @Override
     public String getPeriodType() {
-        return binding.getDataSetModel().periodType().name();
+        return binding.getDataSetModel().getPeriodType().name();
     }
 
     @Override

@@ -130,15 +130,15 @@ private fun getScheduleIcon(isActive: Boolean) = when (isActive) {
 
 @BindingAdapter("eventWithoutRegistrationStatusIcon")
 fun ImageView.setEventWithoutRegistrationStatusIcon(event: ProgramEventViewModel) {
-    val drawableResource: Int = when (event.eventStatus()) {
+    val drawableResource: Int = when (event.eventStatus) {
         EventStatus.COMPLETED ->
-            if (event.canBeEdited()) {
+            if (event.canBeEdited) {
                 R.drawable.ic_event_status_complete
             } else {
                 R.drawable.ic_event_status_complete_read
             }
         else ->
-            if (event.canBeEdited()) {
+            if (event.canBeEdited) {
                 R.drawable.ic_event_status_open
             } else {
                 R.drawable.ic_event_status_open_read

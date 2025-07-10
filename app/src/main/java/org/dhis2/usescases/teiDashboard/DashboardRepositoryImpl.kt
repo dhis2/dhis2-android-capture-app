@@ -8,7 +8,6 @@ import io.reactivex.Single
 import io.reactivex.functions.Function
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.ProgramConfigurationRepository
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -228,7 +227,7 @@ class DashboardRepositoryImpl(
                         .trackedEntityType() != null
                 ) {
                     relTypeList.add(
-                        Pair.create(
+                        Pair(
                             relationshipType,
                             relationshipType.toConstraint()!!
                                 .trackedEntityType()!!.uid(),
@@ -242,7 +241,7 @@ class DashboardRepositoryImpl(
                 relationshipType.fromConstraint()!!.trackedEntityType() != null
             ) {
                 relTypeList.add(
-                    Pair.create(
+                    Pair(
                         relationshipType,
                         relationshipType.fromConstraint()!!
                             .trackedEntityType()!!.uid(),
@@ -301,8 +300,8 @@ class DashboardRepositoryImpl(
                     d2.relationshipModule().relationshipTypes()
                         .get().toObservable()
                         .flatMapIterable<RelationshipType?> { list: List<RelationshipType?>? -> list }
-                        .map<Pair<RelationshipType?, String>> { relationshipType: RelationshipType? ->
-                            Pair.create<RelationshipType?, String>(
+                        .map { relationshipType: RelationshipType? ->
+                            Pair<RelationshipType?, String>(
                                 relationshipType!!,
                                 teType,
                             )

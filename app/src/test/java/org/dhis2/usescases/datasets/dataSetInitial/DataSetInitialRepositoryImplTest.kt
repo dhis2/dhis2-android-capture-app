@@ -48,14 +48,14 @@ class DataSetInitialRepositoryImplTest {
                 .blockingGet(),
         ) doReturn categoryCombo
 
-        val dataSetInitialModel = DataSetInitialModel.create(
-            dataSet.displayName()!!,
-            null,
-            dataSet.categoryCombo()!!.uid(),
-            categoryCombo.displayName()!!,
-            dataSet.periodType()!!,
-            categoryCombo.categories()!!,
-            dataSet.openFuturePeriods(),
+        val dataSetInitialModel = DataSetInitialModel(
+            displayName = dataSet.displayName()!!,
+            description = null,
+            categoryCombo = dataSet.categoryCombo()!!.uid(),
+            categoryComboName = categoryCombo.displayName()!!,
+            periodType = dataSet.periodType()!!,
+            categories = categoryCombo.categories()!!,
+            openFuturePeriods = dataSet.openFuturePeriods(),
         )
         val testObserver = repository.dataSet().test()
 

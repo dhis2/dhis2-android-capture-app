@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.commons.data.EventViewModel;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.data.search.SearchParametersModel;
@@ -25,6 +24,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import kotlin.Deprecated;
+import kotlin.Pair;
 
 @Deprecated(message = "Use SearchRepositoryKt instead")
 public interface SearchRepository {
