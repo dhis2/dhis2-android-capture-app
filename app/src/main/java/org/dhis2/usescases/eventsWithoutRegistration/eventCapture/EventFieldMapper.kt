@@ -35,7 +35,7 @@ class EventFieldMapper(
             handleSection(fields, sectionList, it, currentSection)
         }
 
-        if (eventSectionModels.first().sectionName() == "NO_SECTION") {
+        if (eventSectionModels.first().sectionName == "NO_SECTION") {
             finalFieldList.add(fieldFactory.createClosingSection())
         }
 
@@ -176,7 +176,7 @@ class EventFieldMapper(
         var cont = 0
         for (key in finalFields.keys) if (finalFields[key] == true) cont++
         eventSectionModels.add(
-            EventSectionModel.create(
+            EventSectionModel(
                 sectionModel.label!!,
                 sectionModel.sectionUid!!,
                 cont,
@@ -213,7 +213,7 @@ class EventFieldMapper(
         var cont = 0
         for (key in finalFields.keys) if (finalFields[key] == true) cont++
         eventSectionModels.add(
-            EventSectionModel.create(
+            EventSectionModel(
                 "NO_SECTION",
                 "no_section",
                 cont,
@@ -228,7 +228,7 @@ class EventFieldMapper(
     }
 
     fun completedFieldsPercentage(): Float {
-        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields() }
+        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields }
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
