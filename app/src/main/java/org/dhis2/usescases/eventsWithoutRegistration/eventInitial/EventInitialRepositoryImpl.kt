@@ -221,7 +221,7 @@ class EventInitialRepositoryImpl internal constructor(
     override fun eventSections(): Flowable<List<FormSectionViewModel>> {
         return d2.eventModule().events().uid(eventUid).get()
             .map { eventSingle ->
-                if (eventSingle.deleted() != true) {
+                return@map if (eventSingle.deleted() != true) {
                     val stage = d2.programModule().programStages().uid(eventSingle.programStage())
                         .blockingGet()
                     val stageSections =
@@ -229,7 +229,7 @@ class EventInitialRepositoryImpl internal constructor(
                             .byProgramStageUid().eq(stage!!.uid())
                             .blockingGet()
 
-                    return@map stageSections.takeIf { it.isNotEmpty() }?.sortedWith(
+                    stageSections.takeIf { it.isNotEmpty() }?.sortedWith(
                         Comparator { one: ProgramStageSection?, two: ProgramStageSection? ->
                             one!!.sortOrder()!!
                                 .compareTo(two!!.sortOrder()!!)
@@ -256,7 +256,7 @@ class EventInitialRepositoryImpl internal constructor(
                         ),
                     )
                 } else {
-                    return@map emptyList()
+                    emptyList()
                 }
             }.toFlowable()
     }
