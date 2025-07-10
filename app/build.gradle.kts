@@ -187,14 +187,14 @@ android {
             preferProjectModules()
             force(
                 "junit:junit:4.13.2",
-                "com.squareup.okhttp3:okhttp:4.12.0",
-                "com.squareup.okhttp3:mockwebserver:4.12.0",
-                "com.squareup.okhttp3:logging-interceptor:4.12.0"
+                "com.squareup.okhttp3:okhttp:5.1.0",
+                "com.squareup.okhttp3:mockwebserver:5.1.0",
+                "com.squareup.okhttp3:logging-interceptor:5.1.0"
             )
             setForcedModules(
-                "com.squareup.okhttp3:okhttp:4.12.0",
-                "com.squareup.okhttp3:mockwebserver:4.12.0",
-                "com.squareup.okhttp3:logging-interceptor:4.12.0"
+                "com.squareup.okhttp3:okhttp:5.1.0",
+                "com.squareup.okhttp3:mockwebserver:5.1.0",
+                "com.squareup.okhttp3:logging-interceptor:5.1.0"
             )
             cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
         }
