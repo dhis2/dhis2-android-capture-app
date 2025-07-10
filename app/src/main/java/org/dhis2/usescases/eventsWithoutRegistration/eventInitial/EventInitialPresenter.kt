@@ -3,6 +3,7 @@ package org.dhis2.usescases.eventsWithoutRegistration.eventInitial
 import androidx.annotation.VisibleForTesting
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
+import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
@@ -34,6 +35,9 @@ class EventInitialPresenter(
     private val eventFieldMapper: EventFieldMapper,
 ) {
     private var eventId: String? = null
+
+    var compositeDisposable: CompositeDisposable = CompositeDisposable()
+
     private var program: Program? = null
 
     private var programStageId: String? = null
