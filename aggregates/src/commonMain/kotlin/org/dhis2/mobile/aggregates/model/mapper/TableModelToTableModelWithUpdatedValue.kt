@@ -5,6 +5,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCellContent
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal suspend fun TableModel.updateValue(
@@ -26,7 +27,12 @@ internal suspend fun TableModel.updateValue(
         if (cell != null) {
             val updatedValues = tableRowModel.values.toMutableMap()
             updatedValues[cell.column] = cell.copy(
-                value = updatedValue,
+                content = when (cell.content) {
+                    is TableCellContent.Text -> TableCellContent.Text(updatedValue)
+                    is TableCellContent.Checkbox -> TableCellContent.Checkbox(
+                        isChecked = updatedValue?.toBoolean() ?: false,
+                    )
+                },
                 error = error,
                 legendColor = legendData?.color?.toArgb(),
             )
@@ -37,7 +43,7 @@ internal suspend fun TableModel.updateValue(
                     }
 
                 updatedValues[tableRowModel.values.size - 1] =
-                    totalCell.copy(value = totalValue.toString())
+                    totalCell.copy(content = TableCellContent.Text(totalValue.toString()))
             }
             tableRowModel.copy(values = updatedValues)
         } else {

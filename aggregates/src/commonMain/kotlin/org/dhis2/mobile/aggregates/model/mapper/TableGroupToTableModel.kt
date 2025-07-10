@@ -1,6 +1,7 @@
 package org.dhis2.mobile.aggregates.model.mapper
 
 import org.dhis2.mobile.aggregates.model.CellElement
+import org.dhis2.mobile.aggregates.model.CellType
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataValueData
 import org.dhis2.mobile.aggregates.model.PivoteMode
@@ -14,6 +15,7 @@ import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.commons.extensions.toColorInt
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCellContent
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
@@ -169,7 +171,15 @@ internal suspend fun TableGroup.toTableModel(
                                 id = cellId,
                                 row = rowIndex,
                                 column = columnIndex,
-                                value = dataValueData?.value,
+                                content = when (dataElementCell.cellType) {
+                                    CellType.Text -> TableCellContent.Text(
+                                        value = dataValueData?.value ?: "",
+                                    )
+
+                                    CellType.Checkbox -> TableCellContent.Checkbox(
+                                        isChecked = dataValueData?.value?.toBoolean() ?: false,
+                                    )
+                                },
                                 editable = isEditable,
                                 mandatory = sectionData.isMandatory(
                                     rowId = dataElementCell.uid,
@@ -195,9 +205,11 @@ internal suspend fun TableGroup.toTableModel(
                                 id = totalRow(uid, rowIndex),
                                 row = rowIndex,
                                 column = tableHeader.tableMaxColumns(),
-                                value = this.values.sumOf {
-                                    it.value?.toDoubleOrNull() ?: 0.0
-                                }.toString(),
+                                content = TableCellContent.Text(
+                                    this.values.sumOf {
+                                        it.value?.toDoubleOrNull() ?: 0.0
+                                    }.toString(),
+                                ),
                                 editable = false,
                             ),
                         )
@@ -307,7 +319,7 @@ private fun categoryOptionUids(
     columnIndex: Int,
 ): List<String>? = when (pivotMode) {
     is PivoteMode.CategoryToColumn -> buildList {
-        tableRowsHeaders.drop(1).forEachIndexed { index, cellElement ->
+        tableRowsHeaders.drop(1).forEachIndexed { _, cellElement ->
             add(cellElement.uid)
             headerCombinations[columnIndex].split("_").forEach {
                 add(it)
