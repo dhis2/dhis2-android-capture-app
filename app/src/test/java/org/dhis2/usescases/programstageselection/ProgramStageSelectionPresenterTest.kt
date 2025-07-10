@@ -43,7 +43,6 @@ import org.dhis2.usescases.programStageSelection.ProgramStageData
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.maintenance.D2Error
@@ -134,7 +133,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items()),
+                Result.success(calcResult.getOrDefault(emptyList())),
             ),
         ) doAnswer { null }
 
@@ -173,7 +172,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items()),
+                kotlin.Result.success(calcResult.getOrDefault(emptyList())),
             ),
         ) doAnswer { null }
 
@@ -208,7 +207,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items()),
+                kotlin.Result.success(calcResult.getOrDefault(emptyList())),
             ),
         ) doAnswer {
             it.getArgument<MutableMap<String, ProgramStage>>(0).remove("programStage")
@@ -222,9 +221,7 @@ class ProgramStageSelectionPresenterTest {
     fun `Should do nothing when rule effect has error`() {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
-        val calcResult: Result<RuleEffect> = Result.failure(
-            Exception("error"),
-        ) as Result<RuleEffect>
+        val calcResult: Result<List<RuleEffect>> = Result.failure(Exception("error"))
 
         Assert.assertEquals(
             presenter.applyEffects(programStages, calcResult),

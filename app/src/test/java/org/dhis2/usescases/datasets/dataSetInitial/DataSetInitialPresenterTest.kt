@@ -34,7 +34,7 @@ class DataSetInitialPresenterTest {
         presenter = DataSetInitialPresenter(view, repository, scheduler)
     }
 
-    private fun dummyDataSetInitial() = DataSetInitialModel.create(
+    private fun dummyDataSetInitial() = DataSetInitialModel(
         "name",
         "desc",
         "catComboUid",

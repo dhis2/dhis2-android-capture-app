@@ -181,7 +181,7 @@ class TeiProgramListPresenterTest {
     }
 
     private fun mockedEnrollmentViewModel(): EnrollmentViewModel {
-        return EnrollmentViewModel.create(
+        return EnrollmentViewModel(
             "uid",
             "2020-01-01",
             null,

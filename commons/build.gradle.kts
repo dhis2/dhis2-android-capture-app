@@ -78,9 +78,6 @@ dependencies {
     }
 
     api(libs.dhis2.expressionparser)
-
-    api(libs.google.autoValue)
-    ksp(libs.google.autoValue)
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
     api(libs.androidx.fragmentKtx)
