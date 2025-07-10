@@ -5,6 +5,7 @@ import org.dhis2.mobile.aggregates.ui.constants.INDICATOR_TABLE_UID
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCellContent
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderCell
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableHeaderRow
@@ -41,7 +42,7 @@ internal suspend fun IndicatorMap.toTableModel(
                     id = key,
                     row = rowIndex,
                     column = 0,
-                    value = value,
+                    content = TableCellContent.Text(value),
                     editable = false,
                     mandatory = false,
                     legendColor = null,

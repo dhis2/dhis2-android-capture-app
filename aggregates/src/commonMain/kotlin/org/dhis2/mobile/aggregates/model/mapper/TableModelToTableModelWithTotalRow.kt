@@ -5,6 +5,7 @@ import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator.totalHeaderRowId
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.RowHeader
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
+import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCellContent
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableRowModel
 
@@ -45,10 +46,12 @@ private suspend fun buildTotalsRow(
                     id = totalCellId(tableId, columnIndex),
                     row = absoluteRowIndex,
                     column = columnIndex,
-                    value = tableRows.sumOf {
-                        it.values[columnIndex]?.value?.toDoubleOrNull()
-                            ?: 0.0
-                    }.toString(),
+                    content = TableCellContent.Text(
+                        tableRows.sumOf {
+                            it.values[columnIndex]?.value?.toDoubleOrNull()
+                                ?: 0.0
+                        }.toString(),
+                    ),
                     editable = false,
                 ),
             )
