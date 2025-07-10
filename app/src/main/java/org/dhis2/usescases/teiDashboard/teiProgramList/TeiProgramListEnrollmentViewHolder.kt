@@ -27,7 +27,7 @@ class TeiProgramListEnrollmentViewHolder(
         binding.setVariable(BR.enrollment, enrollment)
         binding.setVariable(BR.program, programModel)
         binding.setVariable(BR.presenter, presenter)
-        binding.setVariable(BR.metadataIconData, enrollment?.metadataIconData())
+        binding.setVariable(BR.metadataIconData, enrollment?.metadataIconData)
         binding.executePendingBindings()
     }
 }
