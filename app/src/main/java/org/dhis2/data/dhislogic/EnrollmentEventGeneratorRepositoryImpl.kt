@@ -70,15 +70,10 @@ class EnrollmentEventGeneratorRepositoryImpl(private val d2: D2) :
             .uid(programUid)
             .blockingGet()
             ?.categoryComboUid()
-        val catCombo = d2.categoryModule().categoryCombos().uid(catComboUid).blockingGet()
-        val catOptionCombo = if (catCombo?.isDefault == true) {
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryComboUid().eq(catComboUid)
-                .blockingGet()
-                .firstOrNull()?.uid()
-        } else {
-            null
-        }
+        val catOptionCombo = d2.categoryModule().categoryOptionCombos()
+            .byCategoryComboUid().eq(catComboUid)
+            .blockingGet()
+            .firstOrNull()?.uid()
         val eventToAdd = EventCreateProjection.builder()
             .enrollment(enrollmentUid)
             .program(programUid)
