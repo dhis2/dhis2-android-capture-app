@@ -97,7 +97,6 @@ class EnrollmentRepository(
                             list
                         }
                 } else {
-                    // will have to adapt custom intent for multiple sections
                     getFieldsForMultipleSections()
                 }
             }.map { list ->

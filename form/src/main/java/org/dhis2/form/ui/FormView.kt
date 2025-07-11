@@ -451,7 +451,6 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
             is RecyclerViewUiEvents.SelectPeriod -> showPeriodDialog(uiEvent)
-            else -> Timber.w("Unhandled UI event: $uiEvent")
         }
     }
 
