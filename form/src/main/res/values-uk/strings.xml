@@ -72,6 +72,7 @@
     <string name="download">Завантажити</string>
     <string name="qr_code">QR-код</string>
     <string name="add_location">Додати місцезнаходження</string>
+    <string name="event_details_section_title">%s Деталі</string>
     <string name="org_unit">Організаційний підрозділ</string>
     <string name="category_combo">Комбінація категорій</string>
     <string name="no_options">Немає доступних опцій</string>
