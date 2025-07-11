@@ -99,7 +99,7 @@ abstract class DataEntryBaseRepository(
                     customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
             }
             customIntentDTO?.let {
-                // TODO: remove this when SDK has adapted the payload to the new custom intent model and map correctly
+                // TODO: will be mapped correctly in issue #ANDROAPP-7130
                 val customIntentResponse = if (uid == "bYZCH0o9l8W" || uid == "goBca56SGgZ") {
                     listOf(
                         CustomIntentResponseDataModel(
