@@ -18,8 +18,14 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
+import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
+import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.settings.CustomIntent
+import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import timber.log.Timber
 
 abstract class DataEntryBaseRepository(
@@ -73,6 +79,60 @@ abstract class DataEntryBaseRepository(
             }
         }
         return optionsFromGroups
+    }
+
+    private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> {
+        return conf.customIntents().filter { customIntent ->
+            customIntent?.trigger()?.attributes()?.any { it.uid() == uid } == true ||
+                customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
+        }
+    }
+    private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
+        return getFilteredCustomIntents(uid).isNotEmpty()
+    }
+
+    fun getCustomIntentFromUid(uid: String?): CustomIntentModel? {
+        return if (uidIsACustomIntentTrigger(uid)) {
+            val filteredCustomIntents = getFilteredCustomIntents(uid)
+            val customIntentDTO = filteredCustomIntents.firstOrNull { customIntent ->
+                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
+            }
+            customIntentDTO?.let {
+                // TODO: will be mapped correctly in issue #ANDROAPP-7130
+                val customIntentResponse = if (uid == "M2wNlKugVe9" || uid == "goBca56SGgZ") {
+                    listOf(
+                        CustomIntentResponseDataModel(
+                            name = it.response()?.data()?.argument() ?: "",
+                            extraType = CustomIntentResponseExtraType.OBJECT,
+                            key = it.response()?.data()?.path(),
+                        ),
+                    )
+                } else {
+                    listOf(
+                        CustomIntentResponseDataModel(
+                            name = it.response()?.data()?.argument() ?: "",
+                            extraType = CustomIntentResponseExtraType.LIST_OF_OBJECTS,
+                            key = it.response()?.data()?.path(),
+                        ),
+                    )
+                }
+
+                CustomIntentModel(
+                    uid = it.uid(),
+                    name = it.name(),
+                    customIntentRequest = it.request()?.arguments()?.map { arg ->
+                        CustomIntentRequestArgumentModel(
+                            key = arg.key(),
+                            value = arg.value(),
+                        )
+                    } ?: emptyList(),
+                    customIntentResponse = customIntentResponse,
+                    packageName = it.packageName() ?: "",
+                )
+            }
+        } else {
+            null
+        }
     }
 
     override fun options(

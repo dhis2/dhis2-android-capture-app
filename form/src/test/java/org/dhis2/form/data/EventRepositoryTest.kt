@@ -2,7 +2,7 @@ package org.dhis2.form.data
 
 import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
-import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -41,8 +41,8 @@ class EventRepositoryTest {
     private val fieldViewModelFactory: FieldViewModelFactory = mock()
     private val resources: ResourceManager = mock()
     private val eventResourcesProvider: EventResourcesProvider = mock()
-    private val dateUtil: DateUtils = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
+    private val featureConfig: FeatureConfigRepository = mock()
 
     private val mockedProgram: Program = mock {
         on { categoryComboUid() } doReturn catComboUid
@@ -154,6 +154,7 @@ class EventRepositoryTest {
         eventResourcesProvider = eventResourcesProvider,
         eventMode = eventMode,
         dispatcherProvider = dispatchers,
+        featureConfig = featureConfig,
     )
 
     private val mockedStage = mock<ProgramStage> {

@@ -3,6 +3,7 @@ package org.dhis2.form.di
 import android.content.Context
 import org.dhis2.commons.R
 import org.dhis2.commons.data.EntryMode
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepositoryImpl
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.ColorUtils
@@ -115,6 +116,7 @@ object Injector {
         context: Context,
         repositoryRecords: FormRepositoryRecords,
         metadataIconProvider: MetadataIconProvider,
+
     ): DataEntryRepository {
         return when (entryMode) {
             EntryMode.ATTR -> provideEnrollmentRepository(
@@ -141,6 +143,7 @@ object Injector {
                 provideD2(),
                 enrollmentRecords.enrollmentUid,
                 provideDispatchers(),
+                provideFeatureConfigProvider(),
             ),
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
@@ -164,6 +167,8 @@ object Injector {
             ),
             eventMode = eventRecords.eventMode,
             dispatcherProvider = provideDispatchers(),
+            featureConfig = provideFeatureConfigProvider(),
+
         )
     }
 
@@ -255,6 +260,10 @@ object Injector {
     )
 
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)
+
+    private fun provideFeatureConfigProvider() = FeatureConfigRepositoryImpl(
+        provideD2(),
+    )
 
     private fun provideRuleEngineRepository(
         entryMode: EntryMode,

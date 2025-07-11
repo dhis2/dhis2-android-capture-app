@@ -147,7 +147,6 @@ class FormView : Fragment() {
             useCompose = useCompose,
         )
     }
-
     private lateinit var formSectionMapper: FormSectionMapper
     var scrollCallback: ((Boolean) -> Unit)? = null
     private var displayConfErrors = true
