@@ -11,10 +11,6 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.splash.SplashActivity.Companion.FLAG
 import javax.inject.Named
 
-/**
- * QUADRAM. Created by ppajuelo on 07/02/2018.
- */
-
 @Module
 class SplashModule internal constructor(
     private val splashView: SplashView,

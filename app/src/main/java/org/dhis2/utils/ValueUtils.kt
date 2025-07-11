@@ -7,9 +7,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
-/**
- * QUADRAM. Created by ppajuelo on 25/09/2018.
- */
 class ValueUtils private constructor() {
     init {
         throw IllegalStateException("Utility class")

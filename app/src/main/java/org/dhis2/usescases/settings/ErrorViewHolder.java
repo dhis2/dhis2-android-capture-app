@@ -11,10 +11,6 @@ import org.dhis2.usescases.settings.models.ErrorViewModel;
 import io.reactivex.processors.FlowableProcessor;
 import kotlin.Pair;
 
-/**
- * QUADRAM. Created by ppajuelo on 25/10/2018.
- */
-
 public class ErrorViewHolder extends RecyclerView.ViewHolder {
 
     private final ItemErrorDialogBinding binding;
