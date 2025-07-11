@@ -284,6 +284,7 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
+    implementation("androidx.browser:browser:1.7.0")
 
     coreLibraryDesugaring(libs.desugar)
 
