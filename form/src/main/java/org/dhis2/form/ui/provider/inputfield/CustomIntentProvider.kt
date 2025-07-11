@@ -124,8 +124,8 @@ fun mapIntentResponseData(
     val responseData = mutableListOf<String>()
     val intent = result.data ?: return null
 
-    val objectCache = mutableMapOf<String, JsonObject?>()
-    val listCache = mutableMapOf<String, List<JsonObject>?>()
+    val objectCache = mapOf<String, JsonObject?>()
+    val listCache = mapOf<String, List<JsonObject>?>()
 
     customIntentResponse.forEach { extra ->
         if (!intent.hasExtra(extra.name)) return@forEach
