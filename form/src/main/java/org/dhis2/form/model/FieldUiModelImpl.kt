@@ -129,6 +129,7 @@ data class FieldUiModelImpl(
         if (callback != item.callback) return false
         if (selectableDates != item.selectableDates) return false
         if (eventCategories != item.eventCategories) return false
+        if (customIntent != item.customIntent) return false
         return true
     }
 }
