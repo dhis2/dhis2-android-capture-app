@@ -24,6 +24,7 @@ import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
 import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.settings.CustomIntent
 import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import timber.log.Timber
 
@@ -80,23 +81,21 @@ abstract class DataEntryBaseRepository(
         return optionsFromGroups
     }
 
-    private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
-        return conf.customIntents().any { customIntent ->
-            customIntent?.trigger()?.attributes()?.any {
-                it.uid() == uid
-            } == true ||
-                customIntent?.trigger()?.dataElements()?.any {
-                    it.uid() == uid
-                } == true
+    private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> {
+        return conf.customIntents().filter { customIntent ->
+            customIntent?.trigger()?.attributes()?.any { it.uid() == uid } == true ||
+                customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
         }
+    }
+    private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
+        return getFilteredCustomIntents(uid).isNotEmpty()
     }
 
     fun getCustomIntentFromUid(uid: String?): CustomIntentModel? {
         return if (uidIsACustomIntentTrigger(uid)) {
-            val customIntentDTO = conf.customIntents().firstOrNull { customIntent ->
-                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true &&
-                    customIntent.trigger()?.attributes()?.any { it.uid() == uid } == true ||
-                    customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
+            val filteredCustomIntents = getFilteredCustomIntents(uid)
+            val customIntentDTO = filteredCustomIntents.firstOrNull { customIntent ->
+                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
             }
             customIntentDTO?.let {
                 // TODO: will be mapped correctly in issue #ANDROAPP-7130
