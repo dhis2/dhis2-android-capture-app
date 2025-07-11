@@ -67,6 +67,8 @@ internal class DataSetDetailRobot(
     }
 
     fun checkDataSetIsCompletedAndModified(period: String, orgUnit: String ) {
+        waitForView(withId(R.id.recycler))
+            .check(matches(isDisplayed()))
         onView(withId(R.id.recycler))
             .check(
                 matches(
