@@ -57,7 +57,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnReopen() {
-        composeTestRule.onNodeWithTag("REOPEN_BUTTON").performClick()
+        composeTestRule.onNodeWithTag("REOPEN_BUTTON", useUnmergedTree = true).performClick()
     }
 
     fun acceptUpdateEventDate() {
