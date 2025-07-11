@@ -28,6 +28,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputCustomIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+import timber.log.Timber
 
 @Composable
 fun ProvideCustomIntentInput(
@@ -198,6 +199,7 @@ fun getComplexObject(jsonString: String): JsonObject? {
         val gson = Gson()
         gson.fromJson(jsonString, JsonObject::class.java)
     } catch (e: Exception) {
+        Timber.d(e.message)
         null
     }
 }
@@ -208,6 +210,7 @@ fun getListOfObjects(jsonString: String): List<JsonObject>? {
         val listType = com.google.gson.reflect.TypeToken.getParameterized(List::class.java, JsonObject::class.java).type
         gson.fromJson(jsonString, listType)
     } catch (e: Exception) {
+        Timber.d(e.message)
         null
     }
 }

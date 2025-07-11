@@ -69,7 +69,7 @@ open class FormBaseConfiguration(
                         .build(),
                 )
                 .action(listOf(CustomIntentActionType.DATA_ENTRY))
-                .packageName("com.simprints.id.REGISTER")
+                .packageName("com.packageName.id.REGISTER")
                 .request(
                     CustomIntentRequest.builder().arguments(
                         listOf(
