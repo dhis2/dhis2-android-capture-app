@@ -15,7 +15,7 @@ class FormSectionMapper {
             items.forEach { item ->
                 if (item is SectionUiModelImpl) {
                     val fields = items.filterIsInstance<FieldUiModelImpl>()
-                        .filter { it.programStageSection == item.uid || it.uid == "customIntentId" }
+                        .filter { it.programStageSection == item.uid }
                     sections.add(
                         FormSection(
                             uid = item.uid,
