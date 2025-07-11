@@ -58,18 +58,19 @@ fun ProvideCustomIntentInput(
                         result,
                     )
                 }
-                values = if (recoveredData.isNullOrEmpty()) {
-                    mutableStateListOf()
+                if (recoveredData.isNullOrEmpty()) {
+                    values = mutableStateListOf()
+                    inputShellState = InputShellState.ERROR
                 } else {
-                    mutableStateListOf(*recoveredData.toTypedArray())
+                    values = mutableStateListOf(*recoveredData.toTypedArray())
+                    intentHandler(
+                        FormIntent.OnSave(
+                            fieldUiModel.uid,
+                            recoveredData.joinToString(separator = ","),
+                            fieldUiModel.valueType,
+                        ),
+                    )
                 }
-                intentHandler(
-                    FormIntent.OnSave(
-                        fieldUiModel.uid,
-                        recoveredData?.joinToString(separator = ","),
-                        fieldUiModel.valueType,
-                    ),
-                )
                 customIntentState = getCustomIntentState(values)
             } else {
                 customIntentState = CustomIntentState.LAUNCH
