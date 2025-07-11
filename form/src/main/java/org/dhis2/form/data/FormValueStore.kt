@@ -437,7 +437,7 @@ class FormValueStore(
         teiUid: String,
         programUid: String?,
     ): Boolean {
-        if (value == null || programUid == null || uid == "customIntentId") {
+        if (value == null || programUid == null) {
             return true
         }
 
