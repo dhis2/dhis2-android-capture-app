@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils.isEmpty
@@ -15,6 +16,7 @@ import android.webkit.URLUtil
 import android.widget.ArrayAdapter
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -67,6 +69,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
@@ -96,6 +99,8 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private var skipSync = false
     private var openIDRequestCode = -1
+
+    val redirectUri = "myapp://callback"
 
     private val filePickerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -217,12 +222,15 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 "https://dev.im.dhis2.org/oauth2-android-test/oauth2/authorize?" +
                         "response_type=code" +
                         "&client_id=dhis2-client" +
-                        "&redirect_uri=http://localhost:9090/oauth2/code/dhis2-client" +
+                        "&redirect_uri=$redirectUri" +
                         "&scope=openid%20email" +
                         "&state=abc123"
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra(WEB_VIEW_URL, oauthAuthUrl)
-            startActivity(intent)
+
+            val customTabsIntent = CustomTabsIntent.Builder().build()
+            customTabsIntent.launchUrl(
+                this,
+                oauthAuthUrl.toUri()
+            )
         }
 
         provideBiometricButton()
@@ -693,5 +701,28 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             null,
         )
         dialog.show()
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleOAuthRedirect(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handleOAuthRedirect(intent)
+    }
+
+    private fun handleOAuthRedirect(intent: Intent?) {
+        val uri = intent?.data
+        if (uri != null && uri.toString().startsWith(redirectUri)) {
+            val code = uri.getQueryParameter("code")
+            if (code != null) {
+                println("✅ Got authorization code: $code")
+                // Now exchange code for token
+            } else if (uri.getQueryParameter("error") != null) {
+                println("❌ Error: ${uri.getQueryParameter("error")}")
+            }
+        }
     }
 }
