@@ -21,7 +21,7 @@ jobs:
     env:
       RELEASE_SDK_VERSION: ${{ inputs.sdk_version_name }}
       RELEASE_DESIGN_SYSTEM_VERSION: ${{ inputs.design_system_version_name }}
-      RELEASE_BRANCH_NAME: 'release/${{ github.ref_name }}'
+      RELEASE_BRANCH_NAME: '${{ github.ref_name }}'
       TEMP_BRANCH: 'tmp_release'
 
     steps:
