@@ -73,6 +73,7 @@ open class FormBaseConfiguration(
                 .request(
                     CustomIntentRequest.builder().arguments(
                         listOf(
+                            CustomIntentRequestArgument.builder().key("projectId").value("testDhisProjectId").build(),
                             CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
                             CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
                         ),
@@ -107,12 +108,10 @@ open class FormBaseConfiguration(
                 .packageName("com.simprints.id.IDENTIFY")
                 .request(
                     CustomIntentRequest.builder().arguments(
-                        // projectId and
                         listOf(
-                            CustomIntentRequestArgument.builder().key("projectId").value("eYupeFCbvI4wYitmjJNy").build(),
+                            CustomIntentRequestArgument.builder().key("projectId").value("testDhisProjectId").build(),
                             CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
                             CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
-                            CustomIntentRequestArgument.builder().key("versionName").value("20250102").build(),
                         ),
                     ).build(),
                 )

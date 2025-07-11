@@ -48,7 +48,7 @@ fun ProvideCustomIntentInput(
         text = resources.getString(R.string.custom_intent_error),
     )
     val supportingTextList = remember { fieldUiModel.supportingText()?.toMutableList() ?: mutableListOf() }
-    var inputShellState = remember { fieldUiModel.inputState() }
+    var inputShellState by remember { mutableStateOf(fieldUiModel.inputState()) }
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -115,70 +115,81 @@ fun mapIntentData(customIntent: CustomIntentModel): Intent {
     }
 }
 
-fun mapIntentResponseData(customIntentResponse: List<CustomIntentResponseDataModel>, result: ActivityResult): List<String>? {
+fun mapIntentResponseData(
+    customIntentResponse: List<CustomIntentResponseDataModel>,
+    result: ActivityResult,
+): List<String>? {
     val responseData = mutableListOf<String>()
+    val intent = result.data ?: return null
 
     val objectCache = mutableMapOf<String, JsonObject?>()
     val listCache = mutableMapOf<String, List<JsonObject>?>()
 
     customIntentResponse.forEach { extra ->
-        result.data?.let { intent ->
-            if (intent.hasExtra(extra.name)) {
-                when (extra.extraType) {
-                    CustomIntentResponseExtraType.STRING -> {
-                        result.data?.getStringExtra(extra.name)?.let { responseData.add(it) }
-                    }
+        if (!intent.hasExtra(extra.name)) return@forEach
 
-                    CustomIntentResponseExtraType.INTEGER -> {
-                        intent.getIntExtra(extra.name, 0)
-                            .let { responseData.add(it.toString()) }
-                    }
-
-                    CustomIntentResponseExtraType.BOOLEAN -> {
-                        result.data?.getBooleanExtra(extra.name, false)
-                            ?.let { responseData.add(it.toString()) }
-                    }
-
-                    CustomIntentResponseExtraType.FLOAT -> {
-                        result.data?.getFloatExtra(extra.name, 0f)
-                            ?.let { responseData.add(it.toString()) }
-                    }
-
-                    CustomIntentResponseExtraType.OBJECT -> {
-                        result.data?.getStringExtra(extra.name)?.let { jsonString ->
-                            val complexObject = objectCache.getOrPut(jsonString) {
-                                getComplexObject(jsonString)
-                            }
-
-                            complexObject?.let { jsonObject ->
-                                if (jsonObject.has(extra.key)) {
-                                    val value = jsonObject[extra.key].asString
-                                    responseData.add(value)
-                                }
-                            }
-                        }
-                    }
-
-                    CustomIntentResponseExtraType.LIST_OF_OBJECTS -> {
-                        result.data?.getStringExtra(extra.name)?.let { jsonString ->
-                            val objectsList = listCache.getOrPut(jsonString) {
-                                getListOfObjects(jsonString)
-                            }
-
-                            objectsList?.forEach { jsonObject ->
-                                if (jsonObject.has(extra.key)) {
-                                    val value = jsonObject[extra.key].asString
-                                    responseData.add(value)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        extractValue(extra, intent, objectCache, listCache)?.let {
+            responseData.addAll(it)
         }
     }
 
     return responseData.ifEmpty { null }
+}
+
+private fun extractValue(
+    extra: CustomIntentResponseDataModel,
+    intent: Intent,
+    objectCache: Map<String, JsonObject?>,
+    listCache: Map<String, List<JsonObject>?>,
+): List<String>? {
+    return when (extra.extraType) {
+        CustomIntentResponseExtraType.STRING ->
+            intent.getStringExtra(extra.name)?.let { listOf(it) }
+
+        CustomIntentResponseExtraType.INTEGER ->
+            listOf(intent.getIntExtra(extra.name, 0).toString())
+
+        CustomIntentResponseExtraType.BOOLEAN ->
+            listOf(intent.getBooleanExtra(extra.name, false).toString())
+
+        CustomIntentResponseExtraType.FLOAT ->
+            listOf(intent.getFloatExtra(extra.name, 0f).toString())
+
+        CustomIntentResponseExtraType.OBJECT ->
+            extractObjectValue(extra, intent, objectCache)
+
+        CustomIntentResponseExtraType.LIST_OF_OBJECTS ->
+            extractListValues(extra, intent, listCache)
+    }
+}
+
+private fun extractObjectValue(
+    extra: CustomIntentResponseDataModel,
+    intent: Intent,
+    objectCache: Map<String, JsonObject?>,
+): List<String>? {
+    val jsonString = intent.getStringExtra(extra.name) ?: return null
+    val jsonObject = objectCache[jsonString] ?: getComplexObject(jsonString) ?: return null
+
+    return if (jsonObject.has(extra.key)) {
+        listOf(jsonObject[extra.key].asString)
+    } else {
+        null
+    }
+}
+
+private fun extractListValues(
+    extra: CustomIntentResponseDataModel,
+    intent: Intent,
+    listCache: Map<String, List<JsonObject>?>,
+): List<String>? {
+    val jsonString = intent.getStringExtra(extra.name) ?: return null
+    val objectsList = listCache[jsonString] ?: getListOfObjects(jsonString) ?: return null
+
+    return objectsList
+        .filter { it.has(extra.key) }
+        .map { it[extra.key].asString }
+        .takeIf { it.isNotEmpty() }
 }
 
 fun getComplexObject(jsonString: String): JsonObject? {

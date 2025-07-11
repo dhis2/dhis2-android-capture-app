@@ -99,7 +99,7 @@ abstract class DataEntryBaseRepository(
             }
             customIntentDTO?.let {
                 // TODO: will be mapped correctly in issue #ANDROAPP-7130
-                val customIntentResponse = if (uid == "bYZCH0o9l8W" || uid == "goBca56SGgZ") {
+                val customIntentResponse = if (uid == "M2wNlKugVe9" || uid == "goBca56SGgZ") {
                     listOf(
                         CustomIntentResponseDataModel(
                             name = it.response()?.data()?.argument() ?: "",
