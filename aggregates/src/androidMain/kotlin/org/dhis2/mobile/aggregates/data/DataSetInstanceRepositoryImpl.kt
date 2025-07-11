@@ -7,6 +7,7 @@ import org.dhis2.mobile.aggregates.data.mappers.toDataSetDetails
 import org.dhis2.mobile.aggregates.data.mappers.toDataSetSection
 import org.dhis2.mobile.aggregates.data.mappers.toInputType
 import org.dhis2.mobile.aggregates.model.CellElement
+import org.dhis2.mobile.aggregates.model.CellType
 import org.dhis2.mobile.aggregates.model.DataElementInfo
 import org.dhis2.mobile.aggregates.model.DataSetDetails
 import org.dhis2.mobile.aggregates.model.DataSetEdition
@@ -362,6 +363,10 @@ internal class DataSetInstanceRepositoryImpl(
                             label = dataElement.displayFormName() ?: dataElement.uid(),
                             description = dataElement.displayDescription(),
                             isMultiText = dataElement.valueType() == ValueType.MULTI_TEXT,
+                            cellType = when (dataElement.valueType()) {
+                                ValueType.TRUE_ONLY -> CellType.CHECKBOX
+                                else -> CellType.TEXT
+                            },
                         )
                     }
             }
@@ -838,10 +843,10 @@ internal class DataSetInstanceRepositoryImpl(
             .uid(dataSetUid)
             .blockingGet()
             ?.compulsoryDataElementOperands()
-            ?.find {
+            ?.any {
                 it.dataElement()?.uid() == dataElementUid &&
                     it.categoryOptionCombo()?.uid() == categoryOptionComboUid
-            } != null
+            } ?: false
         val dataElementValueType = dataElement?.valueType()?.toInputType()
         val inputType = requireNotNull(dataElementValueType).takeIf {
             (it !is InputType.MultiText) && dataElement.optionSet()?.uid() == null
@@ -882,8 +887,8 @@ internal class DataSetInstanceRepositoryImpl(
             .byCategoryOptions(categoryOptions)
             .blockingGet()
 
-        if (categoryOptionCombos.isEmpty()) throw IllegalStateException("No category option combo found")
-        if (categoryOptionCombos.size > 1) throw IllegalStateException("More than one category option combo found")
+        check(categoryOptionCombos.isNotEmpty()) { "No category option combo found" }
+        check(categoryOptionCombos.size <= 1) { "More than one category option combo found" }
 
         return categoryOptionCombos.first().uid()
     }
@@ -1044,7 +1049,7 @@ internal class DataSetInstanceRepositoryImpl(
     }
 
     private fun mapDataElements(
-        dataElementUids: MutableSet<DataElementOperand>,
+        dataElementUids: Set<DataElementOperand>,
         periodId: String,
         orgUnitUid: String,
         attrOptionComboUid: String,
