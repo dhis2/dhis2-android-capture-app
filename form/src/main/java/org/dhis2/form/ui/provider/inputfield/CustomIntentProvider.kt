@@ -122,43 +122,55 @@ fun mapIntentResponseData(customIntentResponse: List<CustomIntentResponseDataMod
     val listCache = mutableMapOf<String, List<JsonObject>?>()
 
     customIntentResponse.forEach { extra ->
-        when (extra.extraType) {
-            CustomIntentResponseExtraType.STRING -> {
-                result.data?.getStringExtra(extra.name)?.let { responseData.add(it) }
-            }
-            CustomIntentResponseExtraType.INTEGER -> {
-                result.data?.getIntExtra(extra.name, 0)?.let { responseData.add(it.toString()) }
-            }
-            CustomIntentResponseExtraType.BOOLEAN -> {
-                result.data?.getBooleanExtra(extra.name, false)?.let { responseData.add(it.toString()) }
-            }
-            CustomIntentResponseExtraType.FLOAT -> {
-                result.data?.getFloatExtra(extra.name, 0f)?.let { responseData.add(it.toString()) }
-            }
-            CustomIntentResponseExtraType.OBJECT -> {
-                result.data?.getStringExtra(extra.name)?.let { jsonString ->
-                    val complexObject = objectCache.getOrPut(jsonString) {
-                        getComplexObject(jsonString)
+        result.data?.let { intent ->
+            if (intent.hasExtra(extra.name)) {
+                when (extra.extraType) {
+                    CustomIntentResponseExtraType.STRING -> {
+                        result.data?.getStringExtra(extra.name)?.let { responseData.add(it) }
                     }
 
-                    complexObject?.let { jsonObject ->
-                        if (jsonObject.has(extra.key)) {
-                            val value = jsonObject[extra.key].asString
-                            responseData.add(value)
+                    CustomIntentResponseExtraType.INTEGER -> {
+                        intent.getIntExtra(extra.name, 0)
+                            .let { responseData.add(it.toString()) }
+                    }
+
+                    CustomIntentResponseExtraType.BOOLEAN -> {
+                        result.data?.getBooleanExtra(extra.name, false)
+                            ?.let { responseData.add(it.toString()) }
+                    }
+
+                    CustomIntentResponseExtraType.FLOAT -> {
+                        result.data?.getFloatExtra(extra.name, 0f)
+                            ?.let { responseData.add(it.toString()) }
+                    }
+
+                    CustomIntentResponseExtraType.OBJECT -> {
+                        result.data?.getStringExtra(extra.name)?.let { jsonString ->
+                            val complexObject = objectCache.getOrPut(jsonString) {
+                                getComplexObject(jsonString)
+                            }
+
+                            complexObject?.let { jsonObject ->
+                                if (jsonObject.has(extra.key)) {
+                                    val value = jsonObject[extra.key].asString
+                                    responseData.add(value)
+                                }
+                            }
                         }
                     }
-                }
-            }
-            CustomIntentResponseExtraType.LIST_OF_OBJECTS -> {
-                result.data?.getStringExtra(extra.name)?.let { jsonString ->
-                    val objectsList = listCache.getOrPut(jsonString) {
-                        getListOfObjects(jsonString)
-                    }
 
-                    objectsList?.forEach { jsonObject ->
-                        if (jsonObject.has(extra.key)) {
-                            val value = jsonObject[extra.key].asString
-                            responseData.add(value)
+                    CustomIntentResponseExtraType.LIST_OF_OBJECTS -> {
+                        result.data?.getStringExtra(extra.name)?.let { jsonString ->
+                            val objectsList = listCache.getOrPut(jsonString) {
+                                getListOfObjects(jsonString)
+                            }
+
+                            objectsList?.forEach { jsonObject ->
+                                if (jsonObject.has(extra.key)) {
+                                    val value = jsonObject[extra.key].asString
+                                    responseData.add(value)
+                                }
+                            }
                         }
                     }
                 }
