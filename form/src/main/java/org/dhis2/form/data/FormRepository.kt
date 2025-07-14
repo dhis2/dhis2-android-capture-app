@@ -32,7 +32,7 @@ interface FormRepository {
     fun storeFile(id: String, filePath: String?): StoreResult?
     fun areSectionCollapsable(): Boolean
     fun hasLegendSet(dataElementUid: String): Boolean
-    fun getListFromPreferences(uid: String): MutableList<String>
+    fun getListFromPreferences(uid: String): List<String>
     fun saveListToPreferences(uid: String, list: List<String>)
     fun activateEvent()
     fun fetchPeriods(): Flow<PagingData<Period>>

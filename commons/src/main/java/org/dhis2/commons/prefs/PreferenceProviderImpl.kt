@@ -25,10 +25,6 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         sharedPreferences.edit { remove(SECURE_PASS) }
     }
 
-    override fun sharedPreferences(): SharedPreferences {
-        return sharedPreferences
-    }
-
     override fun getSecureValue(key: String, default: String?): String? {
         return css.getData(key) ?: default
     }
@@ -45,37 +41,35 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         value?.let {
             when (it) {
                 is String -> {
-                    sharedPreferences.edit().putString(key, it).apply()
+                    sharedPreferences.edit { putString(key, it) }
                 }
 
                 is Boolean -> {
-                    sharedPreferences.edit().putBoolean(key, it).apply()
+                    sharedPreferences.edit { putBoolean(key, it) }
                 }
 
                 is Int -> {
-                    sharedPreferences.edit().putInt(key, it).apply()
+                    sharedPreferences.edit { putInt(key, it) }
                 }
 
                 is Long -> {
-                    sharedPreferences.edit().putLong(key, it).apply()
+                    sharedPreferences.edit { putLong(key, it) }
                 }
 
                 is Float -> {
-                    sharedPreferences.edit().putFloat(key, it).apply()
+                    sharedPreferences.edit { putFloat(key, it) }
                 }
 
                 is Set<*> -> {
-                    sharedPreferences.edit().putStringSet(key, it as Set<String>).apply()
+                    sharedPreferences.edit { putStringSet(key, it as Set<String>) }
                 }
             }
-        } ?: run {
-            sharedPreferences.edit().clear().apply()
-        }
+        } ?: removeValue(key)
     }
 
     override fun removeValue(key: String) {
         if (contains(key)) {
-            sharedPreferences.edit().remove(key).apply()
+            sharedPreferences.edit { remove(key) }
         }
     }
 
@@ -106,9 +100,18 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         )
     }
 
+    override fun getList(key: String, default: List<String>): List<String> {
+        val json = getString(key, null)
+        return json?.let {
+            val type = object : TypeToken<List<String>>() {}.type
+            Gson().fromJson(json, type)
+        } ?: default
+    }
+
     override fun contains(vararg keys: String): Boolean {
-        return keys.all {
-            sharedPreferences.contains(it) or css.getAllKeys().any { it.startsWith(it) } == true
+        return keys.all { key ->
+            sharedPreferences.contains(key) or css.getAllKeys()
+                .any { storedKey -> storedKey.startsWith(key) }
         }
     }
 
@@ -129,7 +132,7 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     }
 
     override fun clear() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit { clear() }
     }
 
     override fun <T> saveAsJson(key: String, objectToSave: T) {

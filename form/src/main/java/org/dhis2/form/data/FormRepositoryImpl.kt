@@ -1,8 +1,6 @@
 package org.dhis2.form.data
 
 import androidx.paging.PagingData
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.dialogs.bottomsheet.IssueType
@@ -844,16 +842,11 @@ class FormRepositoryImpl(
     fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
         mapIndexed { i, existing -> if (i == index) elem else existing }
 
-    override fun getListFromPreferences(uid: String): MutableList<String> {
-        val gson = Gson()
-        val json = preferenceProvider.sharedPreferences().getString(uid, "[]")
-        val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(json, type)
+    override fun getListFromPreferences(uid: String): List<String> {
+        return preferenceProvider.getList(uid, emptyList())
     }
 
     override fun saveListToPreferences(uid: String, list: List<String>) {
-        val gson = Gson()
-        val json = gson.toJson(list)
-        preferenceProvider.sharedPreferences().edit().putString(uid, json).apply()
+        preferenceProvider.saveAsJson(uid, list)
     }
 }
