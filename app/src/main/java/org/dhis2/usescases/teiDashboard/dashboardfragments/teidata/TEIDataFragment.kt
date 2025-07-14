@@ -161,15 +161,7 @@ class TEIDataFragment : FragmentGlobalAbstract(), TEIDataContracts.View {
                     }
                 }
                 dashboardModel.observe(viewLifecycleOwner) {
-                    if (sharedPreferences.getString(PREF_COMPLETED_EVENT, null) != null) {
-                        presenter.displayGenerateEvent(
-                            sharedPreferences.getString(
-                                PREF_COMPLETED_EVENT,
-                                null,
-                            ),
-                        )
-                        sharedPreferences.edit().remove(PREF_COMPLETED_EVENT).apply()
-                    }
+                    presenter.checkIfHasToDisplayGenerateEvent()
                 }
             }
 

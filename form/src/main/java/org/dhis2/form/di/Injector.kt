@@ -107,7 +107,7 @@ object Injector {
             rulesUtilsProvider = provideRulesUtilsProvider(),
             legendValueProvider = provideLegendValueProvider(context),
             useCompose = useCompose,
-            preferenceProvider = providePreferencesProvider(context),
+            preferenceProvider = providePreferenceProvider(context),
         )
     }
 
@@ -253,10 +253,6 @@ object Injector {
             defaultWeeklyLabel = context.getString(R.string.week_period_span_default_label),
             defaultBiWeeklyLabel = context.getString(R.string.biweek_period_span_default_label),
         ),
-    )
-
-    private fun providePreferencesProvider(context: Context) = PreferenceProviderImpl(
-        context,
     )
 
     private fun providePreferenceProvider(context: Context) = PreferenceProviderImpl(context)

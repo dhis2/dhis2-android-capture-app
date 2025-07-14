@@ -32,7 +32,6 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
-import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
@@ -310,7 +309,7 @@ class ProgramEventDetailActivity :
         initSet.applyTo(binding.backdropLayout)
     }
 
-    override fun selectOrgUnitForNewEvent() {
+    override fun selectOrgUnitForNewEvent(preselectedOrgUnits: List<String>) {
         val orgUnitList = ouRepositoryConfiguration.orgUnitRepository(null)
         if (orgUnitList.size == 1) {
             presenter.stageUid?.let {
@@ -323,12 +322,8 @@ class ProgramEventDetailActivity :
         } else {
             OUTreeFragment.Builder()
                 .singleSelection()
-                .withPreselectedOrgUnits(
-                    listOf(sharedPreferences.getString(CURRENT_ORG_UNIT, "") ?: ""),
-                )
-                .orgUnitScope(
-                    OrgUnitSelectorScope.ProgramCaptureScope(programUid),
-                )
+                .withPreselectedOrgUnits(preselectedOrgUnits)
+                .orgUnitScope(OrgUnitSelectorScope.ProgramCaptureScope(programUid))
                 .onSelection { selectedOrgUnits ->
                     if (selectedOrgUnits.isNotEmpty()) {
                         presenter.stageUid?.let {
@@ -356,9 +351,11 @@ class ProgramEventDetailActivity :
 
     override fun showPeriodRequest(periodRequest: PeriodRequest) {
         if (periodRequest == PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD, isFromToFilter = true)
+                .show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(Filters.PERIOD)
+                .show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 

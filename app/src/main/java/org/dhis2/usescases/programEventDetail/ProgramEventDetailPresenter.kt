@@ -14,6 +14,8 @@ import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.get
@@ -31,6 +33,7 @@ class ProgramEventDetailPresenter(
     private val filterRepository: FilterRepository,
     private val disableHomFilters: DisableHomeFiltersFromSettingsApp,
     private val matomoAnalyticsController: MatomoAnalyticsController,
+    private val preferences: PreferenceProvider,
 ) {
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
     val program: Program?
@@ -125,7 +128,13 @@ class ProgramEventDetailPresenter(
     }
 
     fun addEvent() {
-        singleEventEnforcer.processEvent { view.selectOrgUnitForNewEvent() }
+        singleEventEnforcer.processEvent {
+            view.selectOrgUnitForNewEvent(
+                preferences.getString(CURRENT_ORG_UNIT, null)?.let {
+                    listOf(it)
+                } ?: emptyList(),
+            )
+        }
     }
 
     fun onBackClick() {

@@ -18,6 +18,7 @@ import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -56,6 +57,7 @@ class ProgramEventDetailModule(
         eventWorkingListMapper: EventFilterToWorkingListItemMapper,
         filterRepository: FilterRepository,
         matomoAnalyticsController: MatomoAnalyticsController,
+        preferences: PreferenceProvider,
     ): ProgramEventDetailPresenter {
         return ProgramEventDetailPresenter(
             view,
@@ -66,6 +68,7 @@ class ProgramEventDetailModule(
             filterRepository,
             DisableHomeFiltersFromSettingsApp(),
             matomoAnalyticsController,
+            preferences,
         )
     }
 
