@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import org.dhis2.commons.date.DateUtils
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
+import timber.log.Timber
 import java.util.Date
 
 const val LAST_META_SYNC = "last_meta_sync"
@@ -61,7 +62,13 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
                 }
 
                 is Set<*> -> {
-                    sharedPreferences.edit { putStringSet(key, it as Set<String>) }
+                    if (it.all { element -> element is String }) {
+                        @Suppress("UNCHECKED_CAST")
+                        val stringSet = it as Set<String>
+                        sharedPreferences.edit { putStringSet(key, stringSet) }
+                    } else {
+                        Timber.e("Attempted to save a Set for key '$key' that does not exclusively contain Strings. Skipping.")
+                    }
                 }
             }
         } ?: removeValue(key)
