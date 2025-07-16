@@ -13,6 +13,8 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.SettingsMessages
+import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -29,7 +31,7 @@ class SyncManagerModule {
         updateSyncSettings: UpdateSyncSettings,
         updateSmsResponse: UpdateSmsResponse,
         getSyncErrors: GetSyncErrors,
-        gatewayValidator: GatewayValidator,
+        updateSmsModule: UpdateSmsModule,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
         settingsRepository: SettingsRepository,
@@ -38,12 +40,13 @@ class SyncManagerModule {
         versionRepository: VersionRepository,
         dispatcherProvider: DispatcherProvider,
         networkUtils: NetworkUtils,
+        settingsMessages: SettingsMessages,
     ) = SettingsViewModelFactory(
         getSettingsState,
         updateSyncSettings,
         updateSmsResponse,
         getSyncErrors,
-        gatewayValidator,
+        updateSmsModule,
         preferenceProvider,
         workManagerController,
         settingsRepository,
@@ -53,6 +56,7 @@ class SyncManagerModule {
         dispatcherProvider,
         networkUtils,
         FileHandlerImpl(),
+        settingsMessages,
     )
 
     @Provides
@@ -93,6 +97,20 @@ class SyncManagerModule {
 
     @Provides
     @PerFragment
+    fun provideUpdateSmsModule(
+        settingsRepository: SettingsRepository,
+        gatewayValidator: GatewayValidator,
+        settingsMessage: SettingsMessages,
+        resourceManager: ResourceManager,
+    ) = UpdateSmsModule(
+        settingsRepository,
+        gatewayValidator,
+        settingsMessage,
+        resourceManager,
+    )
+
+    @Provides
+    @PerFragment
     fun provideRepository(
         d2: D2,
         preferenceProvider: PreferenceProvider,
@@ -107,5 +125,11 @@ class SyncManagerModule {
     @PerFragment
     fun providesGatewayValidator(): GatewayValidator {
         return GatewayValidator()
+    }
+
+    @Provides
+    @PerFragment
+    fun providesSettingsMessage(): SettingsMessages {
+        return SettingsMessages()
     }
 }

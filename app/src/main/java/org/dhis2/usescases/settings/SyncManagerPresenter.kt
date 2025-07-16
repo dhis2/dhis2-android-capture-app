@@ -35,6 +35,8 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.SettingsMessages
+import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorViewModel
@@ -53,7 +55,7 @@ class SyncManagerPresenter(
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
     private val getSyncErrors: GetSyncErrors,
-    private val gatewayValidator: GatewayValidator,
+    private val updateSmsModule: UpdateSmsModule,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val settingsRepository: SettingsRepository,
@@ -63,6 +65,7 @@ class SyncManagerPresenter(
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val fileHandler: FileHandler,
+    private val settingsMessages: SettingsMessages,
 ) : ViewModel() {
     private val _updatesLoading = MutableLiveData<Boolean>()
     private val _exporting = MutableLiveData(false)
@@ -81,8 +84,9 @@ class SyncManagerPresenter(
             null,
         )
 
-    private val _messageChannel = Channel<String>(Channel.BUFFERED)
-    val messageChannel = _messageChannel.receiveAsFlow()
+    /*    private val _messageChannel = Channel<String>(Channel.BUFFERED)
+        val messageChannel = _messageChannel.receiveAsFlow()*/
+    val messageChannel = settingsMessages.messageChannel
 
     private val _errorLogChannel = Channel<List<ErrorViewModel>>(Channel.RENDEZVOUS)
     val errorLogChannel = _errorLogChannel.receiveAsFlow()
@@ -195,7 +199,7 @@ class SyncManagerPresenter(
             if (newVersion != null) {
                 versionRepository.checkVersionUpdates()
             } else {
-                _messageChannel.send(resourceManager.getString(R.string.no_updates))
+                settingsMessages.sendMessage(resourceManager.getString(R.string.no_updates))
             }
             _updatesLoading.postValue(false)
         }
@@ -240,6 +244,7 @@ class SyncManagerPresenter(
             when (val result = updateSmsResponse(setting)) {
                 UpdateSmsResponse.UpdateSmsResponseResult.Success ->
                     loadData()
+
                 is UpdateSmsResponse.UpdateSmsResponseResult.ValidationError ->
                     _settingsState.update {
                         it?.copy(
@@ -254,47 +259,28 @@ class SyncManagerPresenter(
 
     fun enableSmsModule(enableSms: Boolean, smsGateway: String, timeout: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            if (enableSms) {
-                when (val validation = gatewayValidator(smsGateway)) {
-                    GatewayValidator.GatewayValidationResult.Empty,
-                    GatewayValidator.GatewayValidationResult.Invalid,
-                    ->
-                        _settingsState.update {
-                            it?.copy(
-                                smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                    gatewayValidationResult = validation,
-                                ),
-                            )
-                        }
-
-                    GatewayValidator.GatewayValidationResult.Valid -> {
-                        _messageChannel.send(resourceManager.getString(R.string.sms_downloading_data))
-                        settingsRepository.saveGatewayNumber(smsGateway)
-                        settingsRepository.saveSmsResponseTimeout(timeout)
-                        updateSmsModule(true)
-                    }
-                }
-            } else {
-                updateSmsModule(false)
-            }
-        }
-    }
-
-    private suspend fun updateSmsModule(enableSms: Boolean) {
-        try {
-            settingsRepository.enableSmsModule(enableSms)
-            _messageChannel.send(
+            val result = updateSmsModule(
                 if (enableSms) {
-                    resourceManager.getString(R.string.sms_enabled)
+                    UpdateSmsModule.SmsSetting.Enable(smsGateway, timeout)
                 } else {
-                    resourceManager.getString(R.string.sms_disabled)
+                    UpdateSmsModule.SmsSetting.Disable
                 },
             )
-        } catch (e: Exception) {
-            Timber.e(e)
-            _messageChannel.send(resourceManager.getString(R.string.sms_disabled))
-        } finally {
-            loadData()
+            when (result) {
+                UpdateSmsModule.EnableSmsResult.Success,
+                UpdateSmsModule.EnableSmsResult.Error,
+                ->
+                    loadData()
+
+                is UpdateSmsModule.EnableSmsResult.ValidationError ->
+                    _settingsState.update {
+                        it?.copy(
+                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
+                                gatewayValidationResult = result.validationResult,
+                            ),
+                        )
+                    }
+            }
         }
     }
 
@@ -378,7 +364,7 @@ class SyncManagerPresenter(
 
     fun dispose() {
         networkUtils.unregisterNetworkCallback()
-        _messageChannel.close()
+        settingsMessages.close()
         _errorLogChannel.close()
     }
 
@@ -407,13 +393,13 @@ class SyncManagerPresenter(
                 error = true
             }
             if (error) {
-                _messageChannel.send(
+                settingsMessages.sendMessage(
                     resourceManager.getString(
                         R.string.delete_local_data_error,
                     ),
                 )
             } else {
-                _messageChannel.send(
+                settingsMessages.sendMessage(
                     resourceManager.getString(
                         R.string.delete_local_data_done,
                     ),
@@ -445,12 +431,12 @@ class SyncManagerPresenter(
                 val db = settingsRepository.exportDatabase()
                 fileHandler.copyAndOpen(db) {}
                 if (download) {
-                    _messageChannel.send(resourceManager.getString(R.string.database_export_downloaded))
+                    settingsMessages.sendMessage(resourceManager.getString(R.string.database_export_downloaded))
                 } else {
                     _fileToShareChannel.send(db)
                 }
             } catch (e: Exception) {
-                _messageChannel.send(resourceManager.parseD2Error(e) ?: "")
+                settingsMessages.sendMessage(resourceManager.parseD2Error(e) ?: "")
             } finally {
                 _exporting.postValue(false)
             }
