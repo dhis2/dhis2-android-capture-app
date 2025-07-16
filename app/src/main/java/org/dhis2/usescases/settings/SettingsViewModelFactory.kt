@@ -10,9 +10,9 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
-import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 
 @Suppress("UNCHECKED_CAST")
@@ -20,12 +20,12 @@ class SettingsViewModelFactory(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
+    private val getSyncErrors: GetSyncErrors,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val settingsRepository: SettingsRepository,
     private val analyticsHelper: AnalyticsHelper,
-    private val errorMapper: ErrorModelMapper,
     private val resourceManager: ResourceManager,
     private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
@@ -37,12 +37,12 @@ class SettingsViewModelFactory(
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
             updateSmsResponse = updateSmsResponse,
+            getSyncErrors = getSyncErrors,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferenceProvider,
             workManagerController = workManagerController,
             settingsRepository = settingsRepository,
             analyticsHelper = analyticsHelper,
-            errorMapper = errorMapper,
             resourceManager = resourceManager,
             versionRepository = versionRepository,
             dispatcherProvider = dispatcherProvider,
