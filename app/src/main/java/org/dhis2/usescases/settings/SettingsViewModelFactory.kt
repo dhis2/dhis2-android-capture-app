@@ -10,6 +10,7 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -18,6 +19,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 class SettingsViewModelFactory(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
+    private val updateSmsResponse: UpdateSmsResponse,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -34,6 +36,7 @@ class SettingsViewModelFactory(
         return SyncManagerPresenter(
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
+            updateSmsResponse = updateSmsResponse,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferenceProvider,
             workManagerController = workManagerController,

@@ -12,6 +12,7 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -25,6 +26,7 @@ class SyncManagerModule {
     fun provideViewModelFactory(
         getSettingsState: GetSettingsState,
         updateSyncSettings: UpdateSyncSettings,
+        updateSmsResponse: UpdateSmsResponse,
         gatewayValidator: GatewayValidator,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
@@ -37,6 +39,7 @@ class SyncManagerModule {
     ) = SettingsViewModelFactory(
         getSettingsState,
         updateSyncSettings,
+        updateSmsResponse,
         gatewayValidator,
         preferenceProvider,
         workManagerController,
@@ -66,6 +69,13 @@ class SyncManagerModule {
         settingsRepository: SettingsRepository,
         analyticsHelper: AnalyticsHelper,
     ) = UpdateSyncSettings(settingsRepository, analyticsHelper)
+
+    @Provides
+    @PerFragment
+    fun provideUpdateSmsResponse(
+        settingsRepository: SettingsRepository,
+        gatewayValidator: GatewayValidator,
+    ) = UpdateSmsResponse(settingsRepository, gatewayValidator)
 
     @Provides
     @PerFragment
