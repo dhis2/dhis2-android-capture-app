@@ -210,15 +210,15 @@ class SettingsRepository(
         }
     }
 
-    fun saveEventsToDownload(numberOfEvents: Int) {
+    suspend fun saveEventsToDownload(numberOfEvents: Int) {
         prefs.setValue(Constants.EVENT_MAX, numberOfEvents)
     }
 
-    fun saveTeiToDownload(numberOfTeis: Int) {
+    suspend fun saveTeiToDownload(numberOfTeis: Int) {
         prefs.setValue(Constants.TEI_MAX, numberOfTeis)
     }
 
-    fun saveLimitScope(limitScope: LimitScope) {
+    suspend fun saveLimitScope(limitScope: LimitScope) {
         when (limitScope) {
             LimitScope.ALL_ORG_UNITS -> {
             }
@@ -245,7 +245,7 @@ class SettingsRepository(
         }
     }
 
-    fun saveReservedValuesToDownload(reservedValuesCount: Int) {
+    suspend fun saveReservedValuesToDownload(reservedValuesCount: Int) {
         prefs.setValue(NUMBER_RV, reservedValuesCount)
     }
 

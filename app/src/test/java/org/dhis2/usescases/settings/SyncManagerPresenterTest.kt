@@ -24,6 +24,8 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
+import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
@@ -75,6 +77,7 @@ class SyncManagerPresenterTest {
     }
 
     private val getSettingsState: GetSettingsState = mock()
+    private val updateSyncSettings: UpdateSyncSettings = mock()
 
     @Before
     fun setUp() {
@@ -85,6 +88,7 @@ class SyncManagerPresenterTest {
 
         presenter = SyncManagerPresenter(
             getSettingsState = getSettingsState,
+            updateSyncSettings = updateSyncSettings,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
@@ -242,27 +246,41 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should save limit scope`() {
+    fun `Should save limit scope`() = runTest {
         presenter.saveLimitScope(LimitScope.GLOBAL)
-        verify(settingsRepository, times(1)).saveLimitScope(LimitScope.GLOBAL)
+        verify(
+            updateSyncSettings,
+            times(1),
+        ).invoke(UpdateSyncSettings.SyncSettings.Scope(LimitScope.GLOBAL))
     }
 
     @Test
-    fun `Should save event max count`() {
+    fun `Should save event max count`() = runTest {
         presenter.saveEventMaxCount(200)
-        verify(settingsRepository, times(1)).saveEventsToDownload(200)
+        verify(updateSyncSettings, times(1)).invoke(
+            UpdateSyncSettings.SyncSettings.EventMaxCount(
+                200,
+            ),
+        )
     }
 
     @Test
-    fun `Should save tei max count`() {
+    fun `Should save tei max count`() = runTest {
         presenter.saveTeiMaxCount(100)
-        verify(settingsRepository, times(1)).saveTeiToDownload(100)
+        verify(
+            updateSyncSettings,
+            times(1),
+        ).invoke(UpdateSyncSettings.SyncSettings.TeiMaxCount(100))
     }
 
     @Test
-    fun `Should save reserved values to download`() {
+    fun `Should save reserved values to download`() = runTest {
         presenter.saveReservedValues(50)
-        verify(settingsRepository, times(1)).saveReservedValuesToDownload(50)
+        verify(updateSyncSettings, times(1)).invoke(
+            UpdateSyncSettings.SyncSettings.ReservedValues(
+                50,
+            ),
+        )
     }
 
     @Test

@@ -33,6 +33,8 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
+import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
@@ -47,6 +49,7 @@ import java.io.File
 
 class SyncManagerPresenter(
     private val getSettingsState: GetSettingsState,
+    private val updateSyncSettings: UpdateSyncSettings,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -198,36 +201,28 @@ class SyncManagerPresenter(
 
     fun saveLimitScope(limitScope: LimitScope?) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val syncParam = "sync_limitScope_save"
-            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-            settingsRepository.saveLimitScope(limitScope!!)
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.Scope(limitScope))
             loadData()
         }
     }
 
     fun saveEventMaxCount(eventsNumber: Int?) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val syncParam = "sync_eventMaxCount_save"
-            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-            settingsRepository.saveEventsToDownload(eventsNumber!!)
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.EventMaxCount(eventsNumber))
             loadData()
         }
     }
 
     fun saveTeiMaxCount(teiNumber: Int?) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val syncParam = "sync_teiMaxCoung_save"
-            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-            settingsRepository.saveTeiToDownload(teiNumber!!)
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.TeiMaxCount(teiNumber))
             loadData()
         }
     }
 
     fun saveReservedValues(reservedValuesCount: Int?) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val syncParam = "sync_reservedValues_save"
-            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-            settingsRepository.saveReservedValuesToDownload(reservedValuesCount!!)
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.ReservedValues(reservedValuesCount))
             loadData()
         }
     }

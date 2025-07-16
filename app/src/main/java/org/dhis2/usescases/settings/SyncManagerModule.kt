@@ -11,6 +11,8 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
@@ -22,6 +24,7 @@ class SyncManagerModule {
     @PerFragment
     fun provideViewModelFactory(
         getSettingsState: GetSettingsState,
+        updateSyncSettings: UpdateSyncSettings,
         gatewayValidator: GatewayValidator,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
@@ -33,6 +36,7 @@ class SyncManagerModule {
         networkUtils: NetworkUtils,
     ) = SettingsViewModelFactory(
         getSettingsState,
+        updateSyncSettings,
         gatewayValidator,
         preferenceProvider,
         workManagerController,
@@ -55,6 +59,13 @@ class SyncManagerModule {
         settingsRepository,
         gatewayValidator,
     )
+
+    @Provides
+    @PerFragment
+    fun provideUpdateSyncSettings(
+        settingsRepository: SettingsRepository,
+        analyticsHelper: AnalyticsHelper,
+    ) = UpdateSyncSettings(settingsRepository, analyticsHelper)
 
     @Provides
     @PerFragment
