@@ -33,6 +33,7 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
+import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -43,11 +44,9 @@ import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.CONFIRM_DELETE_LOCAL_DATA
 import org.dhis2.utils.analytics.SYNC_DATA_NOW
 import org.dhis2.utils.analytics.SYNC_METADATA_NOW
 import org.hisp.dhis.android.core.settings.LimitScope
-import timber.log.Timber
 import java.io.File
 
 class SyncManagerPresenter(
@@ -56,6 +55,7 @@ class SyncManagerPresenter(
     private val updateSmsResponse: UpdateSmsResponse,
     private val getSyncErrors: GetSyncErrors,
     private val updateSmsModule: UpdateSmsModule,
+    private val deleteLocalData: DeleteLocalData,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val settingsRepository: SettingsRepository,
@@ -380,32 +380,7 @@ class SyncManagerPresenter(
 
     fun deleteLocalData() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            analyticsHelper.setEvent(
-                CONFIRM_DELETE_LOCAL_DATA,
-                CLICK,
-                CONFIRM_DELETE_LOCAL_DATA,
-            )
-            var error = false
-            try {
-                settingsRepository.deleteLocalData()
-            } catch (e: Exception) {
-                Timber.e(e)
-                error = true
-            }
-            if (error) {
-                settingsMessages.sendMessage(
-                    resourceManager.getString(
-                        R.string.delete_local_data_error,
-                    ),
-                )
-            } else {
-                settingsMessages.sendMessage(
-                    resourceManager.getString(
-                        R.string.delete_local_data_done,
-                    ),
-                )
-            }
-
+            deleteLocalData.invoke()
             loadData()
         }
     }

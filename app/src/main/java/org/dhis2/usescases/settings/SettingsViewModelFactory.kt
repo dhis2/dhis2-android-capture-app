@@ -9,6 +9,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandler
+import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -24,6 +25,7 @@ class SettingsViewModelFactory(
     private val updateSmsResponse: UpdateSmsResponse,
     private val getSyncErrors: GetSyncErrors,
     private val updateSmsModule: UpdateSmsModule,
+    private val deleteLocalData: DeleteLocalData,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val settingsRepository: SettingsRepository,
@@ -42,6 +44,7 @@ class SettingsViewModelFactory(
             updateSmsResponse = updateSmsResponse,
             getSyncErrors = getSyncErrors,
             updateSmsModule = updateSmsModule,
+            deleteLocalData = deleteLocalData,
             preferenceProvider = preferenceProvider,
             workManagerController = workManagerController,
             settingsRepository = settingsRepository,

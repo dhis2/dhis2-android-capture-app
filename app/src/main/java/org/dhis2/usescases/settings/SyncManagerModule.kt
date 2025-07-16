@@ -11,6 +11,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -32,6 +33,7 @@ class SyncManagerModule {
         updateSmsResponse: UpdateSmsResponse,
         getSyncErrors: GetSyncErrors,
         updateSmsModule: UpdateSmsModule,
+        deleteLocalData: DeleteLocalData,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
         settingsRepository: SettingsRepository,
@@ -47,6 +49,7 @@ class SyncManagerModule {
         updateSmsResponse,
         getSyncErrors,
         updateSmsModule,
+        deleteLocalData,
         preferenceProvider,
         workManagerController,
         settingsRepository,
@@ -107,6 +110,20 @@ class SyncManagerModule {
         gatewayValidator,
         settingsMessage,
         resourceManager,
+    )
+
+    @Provides
+    @PerFragment
+    fun provideDeleteLocalData(
+        settingsRepository: SettingsRepository,
+        settingsMessages: SettingsMessages,
+        resourceManager: ResourceManager,
+        analyticsHelper: AnalyticsHelper,
+    ) = DeleteLocalData(
+        settingsRepository,
+        settingsMessages,
+        resourceManager,
+        analyticsHelper,
     )
 
     @Provides
