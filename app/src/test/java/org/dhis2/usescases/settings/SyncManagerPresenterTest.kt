@@ -25,6 +25,7 @@ import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -78,6 +79,7 @@ class SyncManagerPresenterTest {
 
     private val getSettingsState: GetSettingsState = mock()
     private val updateSyncSettings: UpdateSyncSettings = mock()
+    private val updateSmsResponse: UpdateSmsResponse = mock()
 
     @Before
     fun setUp() {
@@ -89,6 +91,7 @@ class SyncManagerPresenterTest {
         presenter = SyncManagerPresenter(
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
+            updateSmsResponse = updateSmsResponse,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
@@ -312,12 +315,16 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should save sms result sender`() {
+    fun `Should save sms result sender`() = runTest {
         val smsResultSender = "test"
-        whenever(gatewayValidator(smsResultSender)) doReturn GatewayValidator.GatewayValidationResult.Valid
+        whenever(updateSmsResponse(any())) doReturn UpdateSmsResponse.UpdateSmsResponseResult.Success
+
         presenter.saveWaitForSmsResponse(true, smsResultSender)
-        verify(settingsRepository, times(1)).saveSmsResultSender(smsResultSender)
-        verify(settingsRepository, times(1)).saveWaitForSmsResponse(any())
+        verify(updateSmsResponse, times(1)).invoke(
+            UpdateSmsResponse.ResponseSetting.Enable(
+                smsResultSender,
+            ),
+        )
     }
 
     @Test
@@ -331,14 +338,15 @@ class SyncManagerPresenterTest {
                 any(),
             ),
         ) doReturn mockedSettingState()
-        whenever(gatewayValidator(smsResultSender)) doReturn GatewayValidator.GatewayValidationResult.Invalid
+        whenever(updateSmsResponse(any())) doReturn UpdateSmsResponse.UpdateSmsResponseResult.ValidationError(
+            GatewayValidator.GatewayValidationResult.Invalid,
+        )
+
         presenter.settingsState.test {
             awaitItem()
             presenter.saveWaitForSmsResponse(true, smsResultSender)
             with(awaitItem()) {
                 assertTrue(this?.smsSettingsViewModel?.resultSenderValidationResult == GatewayValidator.GatewayValidationResult.Invalid)
-                verify(settingsRepository, times(0)).saveSmsResultSender(smsResultSender)
-                verify(settingsRepository, times(0)).saveWaitForSmsResponse(any())
             }
             cancelAndIgnoreRemainingEvents()
         }

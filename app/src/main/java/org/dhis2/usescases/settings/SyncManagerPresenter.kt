@@ -34,6 +34,7 @@ import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
@@ -50,6 +51,7 @@ import java.io.File
 class SyncManagerPresenter(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
+    private val updateSmsResponse: UpdateSmsResponse,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -229,28 +231,23 @@ class SyncManagerPresenter(
 
     fun saveWaitForSmsResponse(shouldWait: Boolean, resultSender: String) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            if (shouldWait) {
-                when (val validation = gatewayValidator(resultSender)) {
-                    GatewayValidator.GatewayValidationResult.Empty,
-                    GatewayValidator.GatewayValidationResult.Invalid,
-                    ->
-                        _settingsState.update {
-                            it?.copy(
-                                smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                    resultSenderValidationResult = validation,
-                                ),
-                            )
-                        }
-
-                    GatewayValidator.GatewayValidationResult.Valid -> {
-                        settingsRepository.saveSmsResultSender(resultSender)
-                        settingsRepository.saveWaitForSmsResponse(true)
-                        loadData()
-                    }
-                }
+            val setting = if (shouldWait) {
+                UpdateSmsResponse.ResponseSetting.Enable(resultSender)
             } else {
-                settingsRepository.saveWaitForSmsResponse(false)
-                loadData()
+                UpdateSmsResponse.ResponseSetting.Disable
+            }
+
+            when (val result = updateSmsResponse(setting)) {
+                UpdateSmsResponse.UpdateSmsResponseResult.Success ->
+                    loadData()
+                is UpdateSmsResponse.UpdateSmsResponseResult.ValidationError ->
+                    _settingsState.update {
+                        it?.copy(
+                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
+                                resultSenderValidationResult = result.validationResult,
+                            ),
+                        )
+                    }
             }
         }
     }
