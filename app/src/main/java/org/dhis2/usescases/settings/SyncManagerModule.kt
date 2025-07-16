@@ -12,6 +12,7 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorModelMapper
@@ -27,6 +28,7 @@ class SyncManagerModule {
         getSettingsState: GetSettingsState,
         updateSyncSettings: UpdateSyncSettings,
         updateSmsResponse: UpdateSmsResponse,
+        getSyncErrors: GetSyncErrors,
         gatewayValidator: GatewayValidator,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
@@ -40,12 +42,12 @@ class SyncManagerModule {
         getSettingsState,
         updateSyncSettings,
         updateSmsResponse,
+        getSyncErrors,
         gatewayValidator,
         preferenceProvider,
         workManagerController,
         settingsRepository,
         analyticsHelper,
-        ErrorModelMapper(resourceManager.getString(R.string.fk_message)),
         resourceManager,
         versionRepository,
         dispatcherProvider,
@@ -76,6 +78,18 @@ class SyncManagerModule {
         settingsRepository: SettingsRepository,
         gatewayValidator: GatewayValidator,
     ) = UpdateSmsResponse(settingsRepository, gatewayValidator)
+
+    @Provides
+    @PerFragment
+    fun provideGetSyncErrors(
+        settingsRepository: SettingsRepository,
+        resourceManager: ResourceManager,
+    ) = GetSyncErrors(
+        settingsRepository,
+        ErrorModelMapper(
+            resourceManager.getString(R.string.fk_message),
+        ),
+    )
 
     @Provides
     @PerFragment

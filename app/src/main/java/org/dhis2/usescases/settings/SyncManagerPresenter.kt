@@ -34,9 +34,9 @@ import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
-import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -52,12 +52,12 @@ class SyncManagerPresenter(
     private val getSettingsState: GetSettingsState,
     private val updateSyncSettings: UpdateSyncSettings,
     private val updateSmsResponse: UpdateSmsResponse,
+    private val getSyncErrors: GetSyncErrors,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val settingsRepository: SettingsRepository,
     private val analyticsHelper: AnalyticsHelper,
-    private val errorMapper: ErrorModelMapper,
     private val resourceManager: ResourceManager,
     private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
@@ -426,17 +426,7 @@ class SyncManagerPresenter(
 
     fun checkSyncErrors() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val errors: MutableList<ErrorViewModel> = ArrayList()
-            errors.addAll(
-                errorMapper.mapD2Error(settingsRepository.d2Errors()),
-            )
-            errors.addAll(
-                errorMapper.mapConflict(settingsRepository.trackerImportConflicts()),
-            )
-            errors.addAll(
-                errorMapper.mapFKViolation(settingsRepository.foreignKeyViolations()),
-            )
-            _errorLogChannel.send(errors.sortedBy { it.creationDate })
+            _errorLogChannel.send(getSyncErrors())
         }
     }
 

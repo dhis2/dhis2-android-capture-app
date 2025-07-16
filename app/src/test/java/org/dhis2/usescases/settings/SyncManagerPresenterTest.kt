@@ -25,6 +25,7 @@ import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
+import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
@@ -80,6 +81,7 @@ class SyncManagerPresenterTest {
     private val getSettingsState: GetSettingsState = mock()
     private val updateSyncSettings: UpdateSyncSettings = mock()
     private val updateSmsResponse: UpdateSmsResponse = mock()
+    private val getSyncErrors: GetSyncErrors = mock()
 
     @Before
     fun setUp() {
@@ -92,12 +94,12 @@ class SyncManagerPresenterTest {
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
             updateSmsResponse = updateSmsResponse,
+            getSyncErrors = getSyncErrors,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
             settingsRepository = settingsRepository,
             analyticsHelper = analyticsHelper,
-            errorMapper = errorMapper,
             resourceManager = resourcesManager,
             versionRepository = versionRepository,
             dispatcherProvider = dispatcherProvider,
@@ -479,26 +481,19 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should load sync errors`() = runTest {
-        whenever(settingsRepository.d2Errors()) doReturn mock()
-        whenever(settingsRepository.trackerImportConflicts()) doReturn mock()
-        whenever(settingsRepository.foreignKeyViolations()) doReturn mock()
-        whenever(errorMapper.mapD2Error(any())) doReturn listOf(
+        val testingList = listOf(
             ErrorViewModel(
                 creationDate = "2025-03-02T00:00:00.00Z".toDate(),
                 errorCode = "1",
                 errorDescription = "d2 error",
                 errorComponent = null,
             ),
-        )
-        whenever(errorMapper.mapConflict(any())) doReturn listOf(
             ErrorViewModel(
                 creationDate = "2025-03-05T00:00:00.00Z".toDate(),
                 errorCode = "2",
                 errorDescription = "conflict",
                 errorComponent = null,
             ),
-        )
-        whenever(errorMapper.mapFKViolation(any())) doReturn listOf(
             ErrorViewModel(
                 creationDate = "2025-03-01T00:00:00.00Z".toDate(),
                 errorCode = "3",
@@ -506,14 +501,12 @@ class SyncManagerPresenterTest {
                 errorComponent = null,
             ),
         )
+        whenever(getSyncErrors()) doReturn testingList
 
         presenter.errorLogChannel.test {
             presenter.checkSyncErrors()
             val item = awaitItem()
-            assertTrue(item.size == 3)
-            assertTrue(item[0].errorCode == "3")
-            assertTrue(item[1].errorCode == "1")
-            assertTrue(item[2].errorCode == "2")
+            assertTrue(item == testingList)
             cancelAndIgnoreRemainingEvents()
         }
     }
