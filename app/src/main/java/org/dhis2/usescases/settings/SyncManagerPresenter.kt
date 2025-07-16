@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings
 
-import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -37,19 +35,18 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
-import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CONFIRM_DELETE_LOCAL_DATA
 import org.dhis2.utils.analytics.SYNC_DATA_NOW
 import org.dhis2.utils.analytics.SYNC_METADATA_NOW
-import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.settings.LimitScope
 import timber.log.Timber
 import java.io.File
 
 class SyncManagerPresenter(
+    private val getSettingsState: GetSettingsState,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -162,27 +159,14 @@ class SyncManagerPresenter(
             .launchIn(viewModelScope)
     }
 
-    private fun loadData() {
-        viewModelScope.launch(dispatcherProvider.io()) {
-            val settingsState = SettingsState(
-                openedItem = _settingsState.value?.openedItem,
-                hasConnection = connectionStatus.value,
-                metadataSettingsViewModel = settingsRepository.metaSync().blockingGet().copy(
-                    syncInProgress = _metadataWorkInfo.value == SyncStatusProgress.SYNC_METADATA_IN_PROGRESS,
-                ),
-                dataSettingsViewModel = settingsRepository.dataSync().blockingGet().copy(
-                    syncInProgress = _metadataWorkInfo.value == SyncStatusProgress.SYNC_METADATA_IN_PROGRESS,
-                ),
-                syncParametersViewModel = settingsRepository.syncParameters().blockingGet(),
-                reservedValueSettingsViewModel = settingsRepository.reservedValues().blockingGet(),
-                smsSettingsViewModel = with(settingsRepository.sms().blockingGet()) {
-                    copy(
-                        gatewayValidationResult = gatewayValidator(this.gatewayNumber),
-                    )
-                },
-            )
-            _settingsState.update { settingsState }
-        }
+    private suspend fun loadData() {
+        val settingsState = getSettingsState(
+            openedItem = _settingsState.value?.openedItem,
+            hasConnection = connectionStatus.value,
+            metadataSyncInProgress = _metadataWorkInfo.value == SyncStatusProgress.SYNC_METADATA_IN_PROGRESS,
+            dataSyncInProgress = _dataWorkInfo.value == SyncStatusProgress.SYNC_DATA_IN_PROGRESS,
+        )
+        _settingsState.update { settingsState }
     }
 
     fun onItemClick(settingsItem: SettingItem) {
@@ -213,31 +197,39 @@ class SyncManagerPresenter(
     }
 
     fun saveLimitScope(limitScope: LimitScope?) {
-        val syncParam = "sync_limitScope_save"
-        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-        settingsRepository.saveLimitScope(limitScope!!)
-        loadData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val syncParam = "sync_limitScope_save"
+            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
+            settingsRepository.saveLimitScope(limitScope!!)
+            loadData()
+        }
     }
 
     fun saveEventMaxCount(eventsNumber: Int?) {
-        val syncParam = "sync_eventMaxCount_save"
-        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-        settingsRepository.saveEventsToDownload(eventsNumber!!)
-        loadData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val syncParam = "sync_eventMaxCount_save"
+            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
+            settingsRepository.saveEventsToDownload(eventsNumber!!)
+            loadData()
+        }
     }
 
     fun saveTeiMaxCount(teiNumber: Int?) {
-        val syncParam = "sync_teiMaxCoung_save"
-        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-        settingsRepository.saveTeiToDownload(teiNumber!!)
-        loadData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val syncParam = "sync_teiMaxCoung_save"
+            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
+            settingsRepository.saveTeiToDownload(teiNumber!!)
+            loadData()
+        }
     }
 
     fun saveReservedValues(reservedValuesCount: Int?) {
-        val syncParam = "sync_reservedValues_save"
-        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
-        settingsRepository.saveReservedValuesToDownload(reservedValuesCount!!)
-        loadData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val syncParam = "sync_reservedValues_save"
+            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
+            settingsRepository.saveReservedValuesToDownload(reservedValuesCount!!)
+            loadData()
+        }
     }
 
     fun saveWaitForSmsResponse(shouldWait: Boolean, resultSender: String) {
@@ -250,19 +242,21 @@ class SyncManagerPresenter(
                         _settingsState.update {
                             it?.copy(
                                 smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                    gatewayValidationResult = validation,
+                                    resultSenderValidationResult = validation,
                                 ),
                             )
                         }
 
                     GatewayValidator.GatewayValidationResult.Valid -> {
                         settingsRepository.saveSmsResultSender(resultSender)
+                        settingsRepository.saveWaitForSmsResponse(true)
+                        loadData()
                     }
                 }
+            } else {
+                settingsRepository.saveWaitForSmsResponse(false)
+                loadData()
             }
-            settingsRepository.saveWaitForSmsResponse(shouldWait)
-
-            loadData()
         }
     }
 
@@ -296,7 +290,7 @@ class SyncManagerPresenter(
 
     private suspend fun updateSmsModule(enableSms: Boolean) {
         try {
-            settingsRepository.enableSmsModule(enableSms).blockingAwait()
+            settingsRepository.enableSmsModule(enableSms)
             _messageChannel.send(
                 if (enableSms) {
                     resourceManager.getString(R.string.sms_enabled)
@@ -377,15 +371,17 @@ class SyncManagerPresenter(
     }
 
     private fun cancelPendingWork(tag: String) {
-        preferenceProvider.setValue(
-            when (tag) {
-                Constants.DATA -> Constants.TIME_DATA
-                else -> Constants.TIME_META
-            },
-            0,
-        )
-        workManagerController.cancelUniqueWork(tag)
-        loadData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            preferenceProvider.setValue(
+                when (tag) {
+                    Constants.DATA -> Constants.TIME_DATA
+                    else -> Constants.TIME_META
+                },
+                0,
+            )
+            workManagerController.cancelUniqueWork(tag)
+            loadData()
+        }
     }
 
     fun dispose() {
@@ -395,11 +391,13 @@ class SyncManagerPresenter(
     }
 
     fun resetSyncParameters() {
-        preferenceProvider.setValue(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)
-        preferenceProvider.setValue(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT)
-        preferenceProvider.setValue(Constants.LIMIT_BY_ORG_UNIT, false)
-        preferenceProvider.setValue(Constants.LIMIT_BY_PROGRAM, false)
-        loadData()
+        viewModelScope.launch(dispatcherProvider.io()) {
+            preferenceProvider.setValue(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)
+            preferenceProvider.setValue(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT)
+            preferenceProvider.setValue(Constants.LIMIT_BY_ORG_UNIT, false)
+            preferenceProvider.setValue(Constants.LIMIT_BY_PROGRAM, false)
+            loadData()
+        }
     }
 
     fun deleteLocalData() {
@@ -412,7 +410,7 @@ class SyncManagerPresenter(
             var error = false
             try {
                 settingsRepository.deleteLocalData()
-            } catch (e: D2Error) {
+            } catch (e: Exception) {
                 Timber.e(e)
                 error = true
             }
@@ -450,26 +448,19 @@ class SyncManagerPresenter(
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun setSmsSettingsViewModel(settingsViewModel: SMSSettingsViewModel) {
-        _settingsState.update { it?.copy(smsSettingsViewModel = settingsViewModel) }
-    }
-
     fun onExportAndShareDB() {
-        exportDB(download = true, share = false)
+        exportDB(download = true)
     }
 
     fun onExportAndDownloadDB() {
-        exportDB(download = false, share = true)
+        exportDB(download = false)
     }
 
-    private fun exportDB(download: Boolean, share: Boolean) {
+    private fun exportDB(download: Boolean) {
         _exporting.value = true
         viewModelScope.launch(context = dispatcherProvider.ui()) {
             try {
-                val db = async(dispatcherProvider.io()) {
-                    settingsRepository.exportDatabase()
-                }.await()
+                val db = settingsRepository.exportDatabase()
                 fileHandler.copyAndOpen(db) {}
                 if (download) {
                     _messageChannel.send(resourceManager.getString(R.string.database_export_downloaded))

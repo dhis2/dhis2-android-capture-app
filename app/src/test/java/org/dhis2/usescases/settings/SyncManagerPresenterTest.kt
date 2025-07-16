@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.MutableLiveData
 import androidx.work.ExistingPeriodicWorkPolicy
 import app.cash.turbine.test
-import io.reactivex.Single
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,6 +12,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.R
+import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -25,9 +26,11 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.ErrorModelMapper
+import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
+import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.settings.LimitScope
@@ -38,6 +41,8 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
@@ -69,12 +74,17 @@ class SyncManagerPresenterTest {
         on { ui() } doReturn testingDispatcher
     }
 
+    private val getSettingsState: GetSettingsState = mock()
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
         whenever(versionRepository.newAppVersion) doReturn MutableSharedFlow()
-        whenever(workManagerController.getWorkInfosByTagLiveData(any()))doReturn MutableLiveData()
+        whenever(workManagerController.getWorkInfosByTagLiveData(any())) doReturn MutableLiveData()
+        whenever(networkUtils.connectionStatus) doReturn MutableStateFlow(true)
+
         presenter = SyncManagerPresenter(
+            getSettingsState = getSettingsState,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
@@ -96,26 +106,53 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should init settings values`() {
-        whenever(resourcesManager.getString(any())) doReturn ""
-        whenever(networkUtils.connectionStatus)doReturn MutableStateFlow(true)
         presenter.init()
-        whenever(
-            settingsRepository.metaSync(),
-        ) doReturn Single.just(mockedMetaViewModel())
-        whenever(settingsRepository.dataSync()) doReturn Single.just(mockedDataViewModel())
-        whenever(settingsRepository.syncParameters()) doReturn Single.just(mockedParamsViewModel())
-        whenever(settingsRepository.reservedValues()) doReturn Single.just(
-            mockedReservecValuesViewModel(),
-        )
-        whenever(settingsRepository.sms()) doReturn Single.just(mockedSMSViewModel())
+        verify(networkUtils).registerNetworkCallback()
+    }
 
-        presenter.init()
+    @Test
+    fun `Should unregister callbacks`() {
+        presenter.dispose()
+        verify(networkUtils).unregisterNetworkCallback()
+    }
 
-       /* verify(view).setMetadataSettings(mockedMetaViewModel())
-        verify(view).setDataSettings(mockedDataViewModel())
-        verify(view).setParameterSettings(mockedParamsViewModel())
-        verify(view).setReservedValuesSettings(mockedReservecValuesViewModel())
-        verify(view).setSMSSettings(mockedSMSViewModel())*/
+    @Test
+    fun `should check version update`() = runTest {
+        whenever(versionRepository.getLatestVersionInfo()) doReturn "new.version.name"
+        presenter.checkVersionUpdate()
+        verify(versionRepository, times(1)).checkVersionUpdates()
+    }
+
+    @Test
+    fun `should send no new version message`() = runTest {
+        whenever(versionRepository.getLatestVersionInfo()) doReturn null
+        whenever(resourcesManager.getString(any())) doReturn "No updates"
+        presenter.messageChannel.test {
+            presenter.checkVersionUpdate()
+            assertTrue(awaitItem() == "No updates")
+            verify(versionRepository, times(0)).checkVersionUpdates()
+        }
+    }
+
+    @Test
+    fun `Should delete local data`() = runTest {
+        whenever(resourcesManager.getString(any())) doReturn "Local data deleted"
+        presenter.messageChannel.test {
+            presenter.deleteLocalData()
+            assertTrue(awaitItem() == "Local data deleted")
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Should display message if local data deletion fails`() = runTest {
+        whenever(resourcesManager.getString(R.string.delete_local_data_error)) doReturn "Error while deleting local data"
+        whenever(settingsRepository.deleteLocalData()) doThrow RuntimeException("Simulated error")
+        presenter.messageChannel.test {
+            presenter.deleteLocalData()
+            assertTrue(awaitItem() == "Error while deleting local data")
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Ignore
@@ -204,40 +241,6 @@ class SyncManagerPresenterTest {
         )
     }
 
-    @Ignore
-    @Test
-    fun `Should return metadata period setting`() {
-        /*whenever(settingsRepository.metaSync()) doReturn Single.just(
-            MetadataSettingsViewModel(
-                100,
-                "last date",
-                hasErrors = false,
-                canEdit = true,
-                syncInProgress = true,
-            ),
-        )
-        val period = presenter.metadataPeriodSetting
-        assert(period == 100)*/
-    }
-
-    @Ignore
-    @Test
-    fun `Should return data period setting`() {
-        /*whenever(settingsRepository.dataSync()) doReturn Single.just(
-            DataSettingsViewModel(
-                100,
-                "last date",
-                false,
-                dataHasErrors = true,
-                dataHasWarnings = true,
-                canEdit = true,
-                syncInProgress = true,
-            ),
-        )
-        val period = presenter.dataPeriodSetting
-        assert(period == 100)*/
-    }
-
     @Test
     fun `Should save limit scope`() {
         presenter.saveLimitScope(LimitScope.GLOBAL)
@@ -263,17 +266,25 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should save gateway and timeout if validation passes`() {
+    fun `Should save gateway and timeout if validation passes`() = runTest {
         val gatewayNumberTest = "+11111111111"
         whenever(gatewayValidator(gatewayNumberTest)) doReturn GatewayValidator.GatewayValidationResult.Valid
-        presenter.enableSmsModule(true, gatewayNumberTest, 1)
-        verify(settingsRepository, times(1)).saveGatewayNumber(gatewayNumberTest)
-        verify(settingsRepository, times(1)).saveSmsResponseTimeout(any())
-        verify(settingsRepository, times(1)).enableSmsModule(true)
+        whenever(resourcesManager.getString(R.string.sms_downloading_data)) doReturn "downloading data"
+        whenever(resourcesManager.getString(R.string.sms_enabled)) doReturn "SMS enabled"
+        presenter.messageChannel.test {
+            presenter.enableSmsModule(true, gatewayNumberTest, 1)
+            val msg = awaitItem()
+            assertTrue(msg == "downloading data")
+            verify(settingsRepository, times(1)).saveGatewayNumber(gatewayNumberTest)
+            verify(settingsRepository, times(1)).saveSmsResponseTimeout(any())
+            verify(settingsRepository, times(1)).enableSmsModule(true)
+            val msg2 = awaitItem()
+            assertTrue(msg2 == "SMS enabled")
+        }
     }
 
     @Test
-    fun `Should not save gateway if validation fails`() {
+    fun `Should not save gateway if validation fails`() = runTest {
         val gatewayNumberTest = "+111"
         whenever(gatewayValidator(gatewayNumberTest)) doReturn GatewayValidator.GatewayValidationResult.Invalid
         presenter.enableSmsModule(true, gatewayNumberTest, 0)
@@ -292,12 +303,36 @@ class SyncManagerPresenterTest {
     }
 
     @Test
+    fun `Should set validation error message in result sender`() = runTest {
+        val smsResultSender = "test"
+        whenever(
+            getSettingsState.invoke(
+                anyOrNull(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturn mockedSettingState()
+        whenever(gatewayValidator(smsResultSender)) doReturn GatewayValidator.GatewayValidationResult.Invalid
+        presenter.settingsState.test {
+            awaitItem()
+            presenter.saveWaitForSmsResponse(true, smsResultSender)
+            with(awaitItem()) {
+                assertTrue(this?.smsSettingsViewModel?.resultSenderValidationResult == GatewayValidator.GatewayValidationResult.Invalid)
+                verify(settingsRepository, times(0)).saveSmsResultSender(smsResultSender)
+                verify(settingsRepository, times(0)).saveWaitForSmsResponse(any())
+            }
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Should sync data`() {
         presenter.onSyncDataPeriodChanged(10)
-        verify(workManagerController, times(1)).cancelUniqueWork("tag")
+        verify(workManagerController, times(1)).cancelUniqueWork(Constants.DATA)
         verify(workManagerController, times(1)).enqueuePeriodicWork(
             WorkerItem(
-                "tag",
+                Constants.DATA,
                 WorkerType.DATA,
                 10,
                 null,
@@ -349,34 +384,121 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `Should open clicked item`() = runTest {
+        whenever(
+            getSettingsState.invoke(
+                anyOrNull(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturn mockedSettingState()
+
         presenter.settingsState.test {
             awaitItem()
             presenter.onItemClick(SettingItem.DATA_SYNC)
             val item = awaitItem()
             assertTrue(item?.openedItem == SettingItem.DATA_SYNC)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Should export database`() = runTest {
         val mockedFile: File = mock()
-        whenever(settingsRepository.exportDatabase())doReturn mockedFile
-        whenever(resourcesManager.getString(any()))doReturn "Database exported"
+        whenever(settingsRepository.exportDatabase()) doReturn mockedFile
+        whenever(resourcesManager.getString(any())) doReturn "Database exported"
         presenter.onExportAndShareDB()
         presenter.messageChannel.test {
             val item = awaitItem()
             assertTrue(item == "Database exported")
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Should display export database error`() = runTest {
-        whenever(settingsRepository.exportDatabase())doThrow RuntimeException("Testing exception")
-        whenever(resourcesManager.parseD2Error(any()))doReturn "Testing exception"
+        val errorMessage = "Database export failed!"
+        val exceptionToThrow = RuntimeException("Simulated DB export error")
+        whenever(settingsRepository.exportDatabase()) doThrow exceptionToThrow
+        whenever(resourcesManager.parseD2Error(exceptionToThrow)) doReturn errorMessage
+        whenever(resourcesManager.parseD2Error(any<Throwable>())) doAnswer { invocation ->
+            val throwable = invocation.arguments[0] as Throwable
+            if (throwable == exceptionToThrow) { // Check if it's the specific exception we threw
+                errorMessage
+            } else {
+                "Some other error occurred" // Fallback for other potential errors
+            }
+        }
+
         presenter.onExportAndShareDB()
         presenter.messageChannel.test {
-            val item = awaitItem()
-            assertTrue(item == "Testing exception")
+            val receivedMessage = awaitItem()
+            assertTrue(receivedMessage == errorMessage)
+            cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `Should share database`() = runTest {
+        val mockedFile: File = mock()
+        whenever(settingsRepository.exportDatabase()) doReturn mockedFile
+
+        presenter.onExportAndDownloadDB()
+        presenter.fileToShareChannel.test {
+            val item = awaitItem()
+            assertTrue(item == mockedFile)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Should load sync errors`() = runTest {
+        whenever(settingsRepository.d2Errors()) doReturn mock()
+        whenever(settingsRepository.trackerImportConflicts()) doReturn mock()
+        whenever(settingsRepository.foreignKeyViolations()) doReturn mock()
+        whenever(errorMapper.mapD2Error(any())) doReturn listOf(
+            ErrorViewModel(
+                creationDate = "2025-03-02T00:00:00.00Z".toDate(),
+                errorCode = "1",
+                errorDescription = "d2 error",
+                errorComponent = null,
+            ),
+        )
+        whenever(errorMapper.mapConflict(any())) doReturn listOf(
+            ErrorViewModel(
+                creationDate = "2025-03-05T00:00:00.00Z".toDate(),
+                errorCode = "2",
+                errorDescription = "conflict",
+                errorComponent = null,
+            ),
+        )
+        whenever(errorMapper.mapFKViolation(any())) doReturn listOf(
+            ErrorViewModel(
+                creationDate = "2025-03-01T00:00:00.00Z".toDate(),
+                errorCode = "3",
+                errorDescription = "fk",
+                errorComponent = null,
+            ),
+        )
+
+        presenter.errorLogChannel.test {
+            presenter.checkSyncErrors()
+            val item = awaitItem()
+            assertTrue(item.size == 3)
+            assertTrue(item[0].errorCode == "3")
+            assertTrue(item[1].errorCode == "1")
+            assertTrue(item[2].errorCode == "2")
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun mockedSettingState() = SettingsState(
+        openedItem = null,
+        hasConnection = true,
+        metadataSettingsViewModel = mockedMetaViewModel(),
+        dataSettingsViewModel = mockedDataViewModel(),
+        syncParametersViewModel = mockedParamsViewModel(),
+        reservedValueSettingsViewModel = mockedReservecValuesViewModel(),
+        smsSettingsViewModel = mockedSMSViewModel(),
+    )
 }
