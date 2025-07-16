@@ -6,8 +6,10 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -26,10 +28,11 @@ import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.SettingsMessages
+import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
-import org.dhis2.usescases.settings.models.ErrorModelMapper
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
@@ -48,6 +51,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -62,12 +66,10 @@ class SyncManagerPresenterTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var presenter: SyncManagerPresenter
-    private val gatewayValidator: GatewayValidator = mock()
     private val preferencesProvider: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
     private val settingsRepository: SettingsRepository = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val errorMapper: ErrorModelMapper = mock()
     private val fileHandler: FileHandler = mock()
     private val networkUtils: NetworkUtils = mock()
     private val resourcesManager: ResourceManager = mock()
@@ -82,6 +84,10 @@ class SyncManagerPresenterTest {
     private val updateSyncSettings: UpdateSyncSettings = mock()
     private val updateSmsResponse: UpdateSmsResponse = mock()
     private val getSyncErrors: GetSyncErrors = mock()
+    private val settingMessages: SettingsMessages = mock {
+        on { messageChannel } doReturn Channel<String>().receiveAsFlow()
+    }
+    private val updateSmsModule: UpdateSmsModule = mock()
 
     @Before
     fun setUp() {
@@ -95,7 +101,7 @@ class SyncManagerPresenterTest {
             updateSyncSettings = updateSyncSettings,
             updateSmsResponse = updateSmsResponse,
             getSyncErrors = getSyncErrors,
-            gatewayValidator = gatewayValidator,
+            updateSmsModule = updateSmsModule,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
             settingsRepository = settingsRepository,
@@ -105,6 +111,7 @@ class SyncManagerPresenterTest {
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
             fileHandler = fileHandler,
+            settingsMessages = settingMessages,
         )
     }
 
@@ -136,32 +143,24 @@ class SyncManagerPresenterTest {
     fun `should send no new version message`() = runTest {
         whenever(versionRepository.getLatestVersionInfo()) doReturn null
         whenever(resourcesManager.getString(any())) doReturn "No updates"
-        presenter.messageChannel.test {
-            presenter.checkVersionUpdate()
-            assertTrue(awaitItem() == "No updates")
-            verify(versionRepository, times(0)).checkVersionUpdates()
-        }
+        presenter.checkVersionUpdate()
+        verify(settingMessages, times(1)).sendMessage("No updates")
+        verify(versionRepository, times(0)).checkVersionUpdates()
     }
 
     @Test
     fun `Should delete local data`() = runTest {
         whenever(resourcesManager.getString(any())) doReturn "Local data deleted"
-        presenter.messageChannel.test {
-            presenter.deleteLocalData()
-            assertTrue(awaitItem() == "Local data deleted")
-            cancelAndIgnoreRemainingEvents()
-        }
+        presenter.deleteLocalData()
+        verify(settingMessages, times(1)).sendMessage("Local data deleted")
     }
 
     @Test
     fun `Should display message if local data deletion fails`() = runTest {
         whenever(resourcesManager.getString(R.string.delete_local_data_error)) doReturn "Error while deleting local data"
         whenever(settingsRepository.deleteLocalData()) doThrow RuntimeException("Simulated error")
-        presenter.messageChannel.test {
-            presenter.deleteLocalData()
-            assertTrue(awaitItem() == "Error while deleting local data")
-            cancelAndIgnoreRemainingEvents()
-        }
+        presenter.deleteLocalData()
+        verify(settingMessages, times(1)).sendMessage("Error while deleting local data")
     }
 
     @Ignore
@@ -291,29 +290,71 @@ class SyncManagerPresenterTest {
     @Test
     fun `Should save gateway and timeout if validation passes`() = runTest {
         val gatewayNumberTest = "+11111111111"
-        whenever(gatewayValidator(gatewayNumberTest)) doReturn GatewayValidator.GatewayValidationResult.Valid
-        whenever(resourcesManager.getString(R.string.sms_downloading_data)) doReturn "downloading data"
-        whenever(resourcesManager.getString(R.string.sms_enabled)) doReturn "SMS enabled"
-        presenter.messageChannel.test {
-            presenter.enableSmsModule(true, gatewayNumberTest, 1)
-            val msg = awaitItem()
-            assertTrue(msg == "downloading data")
-            verify(settingsRepository, times(1)).saveGatewayNumber(gatewayNumberTest)
-            verify(settingsRepository, times(1)).saveSmsResponseTimeout(any())
-            verify(settingsRepository, times(1)).enableSmsModule(true)
-            val msg2 = awaitItem()
-            assertTrue(msg2 == "SMS enabled")
+        val timeoutTest = 1
+        whenever(
+            getSettingsState.invoke(
+                anyOrNull(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturnConsecutively listOf(
+            mockedSettingState(),
+            mockedSettingState().copy(
+                smsSettingsViewModel = mockedSMSViewModel().copy(
+                    isEnabled = true,
+                    gatewayNumber = gatewayNumberTest,
+                    responseTimeout = timeoutTest,
+                ),
+            ),
+        )
+
+        whenever(
+            updateSmsModule(
+                UpdateSmsModule.SmsSetting.Enable(
+                    gatewayNumberTest,
+                    timeoutTest,
+                ),
+            ),
+        ) doReturn UpdateSmsModule.EnableSmsResult.Success
+
+        presenter.settingsState.test {
+            awaitItem()
+            presenter.enableSmsModule(true, gatewayNumberTest, timeoutTest)
+            awaitItem()
+            verify(getSettingsState, times(2)).invoke(anyOrNull(), any(), any(), any())
         }
     }
 
     @Test
     fun `Should not save gateway if validation fails`() = runTest {
+        whenever(
+            getSettingsState.invoke(
+                anyOrNull(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturn mockedSettingState()
+
         val gatewayNumberTest = "+111"
-        whenever(gatewayValidator(gatewayNumberTest)) doReturn GatewayValidator.GatewayValidationResult.Invalid
-        presenter.enableSmsModule(true, gatewayNumberTest, 0)
-        verify(settingsRepository, times(0)).saveGatewayNumber(gatewayNumberTest)
-        verify(settingsRepository, times(0)).saveSmsResponseTimeout(any())
-        verify(settingsRepository, times(0)).enableSmsModule(true)
+        whenever(
+            updateSmsModule(
+                UpdateSmsModule.SmsSetting.Enable(
+                    gatewayNumberTest,
+                    0,
+                ),
+            ),
+        ) doReturn UpdateSmsModule.EnableSmsResult.ValidationError(
+            GatewayValidator.GatewayValidationResult.Invalid,
+        )
+        presenter.settingsState.test {
+            awaitItem()
+            presenter.enableSmsModule(true, gatewayNumberTest, 0)
+            val updateState = awaitItem()
+            assertTrue(updateState?.smsSettingsViewModel?.gatewayValidationResult == GatewayValidator.GatewayValidationResult.Invalid)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -436,11 +477,7 @@ class SyncManagerPresenterTest {
         whenever(settingsRepository.exportDatabase()) doReturn mockedFile
         whenever(resourcesManager.getString(any())) doReturn "Database exported"
         presenter.onExportAndShareDB()
-        presenter.messageChannel.test {
-            val item = awaitItem()
-            assertTrue(item == "Database exported")
-            cancelAndIgnoreRemainingEvents()
-        }
+        verify(settingMessages, times(1)).sendMessage("Database exported")
     }
 
     @Test
@@ -459,11 +496,7 @@ class SyncManagerPresenterTest {
         }
 
         presenter.onExportAndShareDB()
-        presenter.messageChannel.test {
-            val receivedMessage = awaitItem()
-            assertTrue(receivedMessage == errorMessage)
-            cancelAndIgnoreRemainingEvents()
-        }
+        verify(settingMessages, times(1)).sendMessage(errorMessage)
     }
 
     @Test
