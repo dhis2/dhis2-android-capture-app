@@ -26,6 +26,7 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.files.FileHandler
+import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -88,6 +89,7 @@ class SyncManagerPresenterTest {
         on { messageChannel } doReturn Channel<String>().receiveAsFlow()
     }
     private val updateSmsModule: UpdateSmsModule = mock()
+    private val deleteLocalData: DeleteLocalData = mock()
 
     @Before
     fun setUp() {
@@ -102,6 +104,7 @@ class SyncManagerPresenterTest {
             updateSmsResponse = updateSmsResponse,
             getSyncErrors = getSyncErrors,
             updateSmsModule = updateSmsModule,
+            deleteLocalData = deleteLocalData,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
             settingsRepository = settingsRepository,
@@ -152,7 +155,7 @@ class SyncManagerPresenterTest {
     fun `Should delete local data`() = runTest {
         whenever(resourcesManager.getString(any())) doReturn "Local data deleted"
         presenter.deleteLocalData()
-        verify(settingMessages, times(1)).sendMessage("Local data deleted")
+        verify(deleteLocalData, times(1)).invoke()
     }
 
     @Test
