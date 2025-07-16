@@ -1,5 +1,8 @@
-package org.dhis2.usescases.settings
+package org.dhis2.usescases.settings.domain
 
+import org.dhis2.usescases.settings.GatewayValidator
+import org.dhis2.usescases.settings.SettingItem
+import org.dhis2.usescases.settings.SettingsRepository
 import org.dhis2.usescases.settings.models.SettingsState
 
 class GetSettingsState(
