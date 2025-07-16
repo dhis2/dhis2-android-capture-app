@@ -21,6 +21,7 @@ class SyncManagerModule {
     @Provides
     @PerFragment
     fun provideViewModelFactory(
+        getSettingsState: GetSettingsState,
         gatewayValidator: GatewayValidator,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
@@ -31,6 +32,7 @@ class SyncManagerModule {
         dispatcherProvider: DispatcherProvider,
         networkUtils: NetworkUtils,
     ) = SettingsViewModelFactory(
+        getSettingsState,
         gatewayValidator,
         preferenceProvider,
         workManagerController,
@@ -42,6 +44,16 @@ class SyncManagerModule {
         dispatcherProvider,
         networkUtils,
         FileHandlerImpl(),
+    )
+
+    @Provides
+    @PerFragment
+    fun provideGetSettingsState(
+        settingsRepository: SettingsRepository,
+        gatewayValidator: GatewayValidator,
+    ) = GetSettingsState(
+        settingsRepository,
+        gatewayValidator,
     )
 
     @Provides

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings
 
-import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
@@ -266,13 +265,14 @@ class SettingsRepository(
         d2.smsModule().configCase().setWaitingForResultEnabled(shouldWait).blockingAwait()
     }
 
-    fun enableSmsModule(enable: Boolean): Completable {
-        return if (enable) {
-            d2.smsModule().configCase().setModuleEnabled(enable)
+    suspend fun enableSmsModule(enable: Boolean) {
+        val job = if (enable) {
+            d2.smsModule().configCase().setModuleEnabled(true)
                 .andThen(d2.smsModule().configCase().refreshMetadataIds())
         } else {
-            d2.smsModule().configCase().setModuleEnabled(enable)
+            d2.smsModule().configCase().setModuleEnabled(false)
         }
+        job.blockingAwait()
     }
 
     suspend fun deleteLocalData() {

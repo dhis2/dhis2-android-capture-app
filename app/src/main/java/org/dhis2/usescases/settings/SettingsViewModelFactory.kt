@@ -14,6 +14,7 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 
 @Suppress("UNCHECKED_CAST")
 class SettingsViewModelFactory(
+    private val getSettingsState: GetSettingsState,
     private val gatewayValidator: GatewayValidator,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
@@ -28,6 +29,7 @@ class SettingsViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SyncManagerPresenter(
+            getSettingsState = getSettingsState,
             gatewayValidator = gatewayValidator,
             preferenceProvider = preferenceProvider,
             workManagerController = workManagerController,
