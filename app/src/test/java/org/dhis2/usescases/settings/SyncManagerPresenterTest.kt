@@ -1,8 +1,6 @@
 package org.dhis2.usescases.settings
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
-import androidx.work.ExistingPeriodicWorkPolicy
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,16 +14,13 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.data.service.workManager.WorkerItem
-import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
@@ -37,12 +32,10 @@ import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
 import org.dhis2.usescases.settings.models.SettingsState
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
-import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -62,9 +55,6 @@ class SyncManagerPresenterTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var presenter: SyncManagerPresenter
-    private val preferencesProvider: PreferenceProvider = mock()
-    private val workManagerController: WorkManagerController = mock()
-    private val analyticsHelper: AnalyticsHelper = mock()
     private val networkUtils: NetworkUtils = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
@@ -84,10 +74,17 @@ class SyncManagerPresenterTest {
     private val exportDatabase: ExportDatabase = mock()
     private val checkVersionUpdate: CheckVersionUpdate = mock()
 
+    private val launchSync: LaunchSync = mock()
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        whenever(workManagerController.getWorkInfosByTagLiveData(any())) doReturn MutableLiveData()
+        whenever(launchSync.syncWorkInfo) doReturn MutableStateFlow(
+            LaunchSync.SyncStatusProgress(
+                LaunchSync.SyncStatus.None,
+                LaunchSync.SyncStatus.None,
+            ),
+        )
         whenever(networkUtils.connectionStatus) doReturn MutableStateFlow(true)
 
         presenter = SyncManagerPresenter(
@@ -99,9 +96,7 @@ class SyncManagerPresenterTest {
             deleteLocalData = deleteLocalData,
             exportDatabase = exportDatabase,
             checkVersionUpdate = checkVersionUpdate,
-            preferenceProvider = preferencesProvider,
-            workManagerController = workManagerController,
-            analyticsHelper = analyticsHelper,
+            launchSync = launchSync,
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
             settingsMessages = settingMessages,
@@ -135,38 +130,6 @@ class SyncManagerPresenterTest {
     fun `Should delete local data`() = runTest {
         presenter.deleteLocalData()
         verify(deleteLocalData, times(1)).invoke()
-    }
-
-    @Ignore
-    @Test
-    fun `should call work in progress`() {
-        /* presenter.onWorkStatusesUpdate(WorkInfo.State.ENQUEUED, META_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.RUNNING, META_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.BLOCKED, META_NOW)
-
-        presenter.onWorkStatusesUpdate(WorkInfo.State.ENQUEUED, DATA_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.RUNNING, DATA_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.BLOCKED, DATA_NOW)
-
-       verify(view, times(3)).onMetadataSyncInProgress()
-        verify(view, times(3)).onDataSyncInProgress()*/
-    }
-
-    @Ignore
-    @Test
-    fun `should call work finished`() {
-        /*presenter.onWorkStatusesUpdate(null, META_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.SUCCEEDED, META_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.FAILED, META_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.CANCELLED, META_NOW)
-
-        presenter.onWorkStatusesUpdate(null, DATA_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.SUCCEEDED, DATA_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.FAILED, DATA_NOW)
-        presenter.onWorkStatusesUpdate(WorkInfo.State.CANCELLED, DATA_NOW)
-
-        verify(view, times(4)).onMetadataFinished()
-        verify(view, times(4)).onDataFinished()*/
     }
 
     private fun mockedMetaViewModel(): MetadataSettingsViewModel {
@@ -370,53 +333,56 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should sync data`() {
+    fun `Should sync data`() = runTest {
         presenter.onSyncDataPeriodChanged(10)
-        verify(workManagerController, times(1)).cancelUniqueWork(Constants.DATA)
-        verify(workManagerController, times(1)).enqueuePeriodicWork(
-            WorkerItem(
-                Constants.DATA,
-                WorkerType.DATA,
-                10,
-                null,
-                null,
-                ExistingPeriodicWorkPolicy.REPLACE,
-            ),
-        )
+        verify(launchSync, times(1)).invoke(LaunchSync.SyncAction.UpdateSyncDataPeriod(10))
     }
 
     @Test
-    fun `Should sync metadata`() {
+    fun `Should sync metadata`() = runTest {
         presenter.onSyncMetaPeriodChanged(10)
-        verify(workManagerController, times(1)).cancelUniqueWork(Constants.META)
-        verify(workManagerController, times(1)).enqueuePeriodicWork(
-            WorkerItem(
-                Constants.META,
-                WorkerType.METADATA,
-                10,
-                null,
-                null,
-                ExistingPeriodicWorkPolicy.REPLACE,
+        verify(launchSync, times(1)).invoke(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(10))
+    }
+
+    @Test
+    fun `Should sync metadata now`() = runTest {
+        presenter.syncMeta()
+        verify(launchSync, times(1)).invoke(LaunchSync.SyncAction.SyncMetadata)
+    }
+
+    @Test
+    fun `Should sync data now`() = runTest {
+        presenter.syncData()
+        verify(launchSync, times(1)).invoke(LaunchSync.SyncAction.SyncData)
+    }
+
+    @Test
+    fun `Should load data when setting manual trigger`() = runTest {
+        whenever(
+            getSettingsState.invoke(
+                anyOrNull(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturnConsecutively listOf(
+            mockedSettingState(),
+            mockedSettingState().copy(
+                dataSettingsViewModel = mockedDataViewModel().copy(dataSyncPeriod = 0),
             ),
         )
-    }
 
-    @Test
-    fun `Should sync metadata now`() {
-        presenter.syncMeta()
-        verify(workManagerController, times(1)).syncDataForWorker(any())
-    }
-
-    @Test
-    fun `Should sync data now`() {
-        presenter.syncData()
-        verify(workManagerController, times(1)).syncDataForWorker(any())
-    }
-
-    @Test
-    fun `Should cancel pending work`() {
-        presenter.onSyncDataPeriodChanged(Constants.TIME_MANUAL)
-        verify(workManagerController, times(1)).cancelUniqueWork(Constants.DATA)
+        presenter.settingsState.test {
+            awaitItem()
+            presenter.onSyncDataPeriodChanged(Constants.TIME_MANUAL)
+            verify(
+                launchSync,
+                times(1),
+            ).invoke(LaunchSync.SyncAction.UpdateSyncDataPeriod(Constants.TIME_MANUAL))
+            val item = awaitItem()
+            assertTrue(item?.dataSettingsViewModel?.dataSyncPeriod == 0)
+            ensureAllEventsConsumed()
+        }
     }
 
     @Test
