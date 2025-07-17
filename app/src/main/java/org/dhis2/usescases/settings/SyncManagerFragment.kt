@@ -11,8 +11,8 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.FileProvider
 import androidx.fragment.app.viewModels
-import org.dhis2.Components
 import org.dhis2.R
+import org.dhis2.bindings.app
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.data.FormFileProvider.init
 import org.dhis2.commons.resources.ColorUtils
@@ -40,8 +40,9 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (context.applicationContext as Components).userComponent()!!
-            .plus(SyncManagerModule()).inject(this)
+        app().userComponent()
+            ?.plus(SyncManagerModule())
+            ?.inject(this)
     }
 
     override fun onCreateView(

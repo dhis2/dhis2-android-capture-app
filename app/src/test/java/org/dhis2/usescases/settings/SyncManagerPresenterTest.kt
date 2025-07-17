@@ -14,7 +14,6 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.dhis2.R
 import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
@@ -25,8 +24,8 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
-import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.DeleteLocalData
+import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -50,10 +49,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -69,9 +66,7 @@ class SyncManagerPresenterTest {
     private lateinit var presenter: SyncManagerPresenter
     private val preferencesProvider: PreferenceProvider = mock()
     private val workManagerController: WorkManagerController = mock()
-    private val settingsRepository: SettingsRepository = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
-    private val fileHandler: FileHandler = mock()
     private val networkUtils: NetworkUtils = mock()
     private val resourcesManager: ResourceManager = mock()
     private val versionRepository: VersionRepository = mock()
@@ -90,6 +85,7 @@ class SyncManagerPresenterTest {
     }
     private val updateSmsModule: UpdateSmsModule = mock()
     private val deleteLocalData: DeleteLocalData = mock()
+    private val exportDatabase: ExportDatabase = mock()
 
     @Before
     fun setUp() {
@@ -105,15 +101,14 @@ class SyncManagerPresenterTest {
             getSyncErrors = getSyncErrors,
             updateSmsModule = updateSmsModule,
             deleteLocalData = deleteLocalData,
+            exportDatabase = exportDatabase,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
-            settingsRepository = settingsRepository,
             analyticsHelper = analyticsHelper,
             resourceManager = resourcesManager,
             versionRepository = versionRepository,
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
-            fileHandler = fileHandler,
             settingsMessages = settingMessages,
         )
     }
@@ -156,14 +151,6 @@ class SyncManagerPresenterTest {
         whenever(resourcesManager.getString(any())) doReturn "Local data deleted"
         presenter.deleteLocalData()
         verify(deleteLocalData, times(1)).invoke()
-    }
-
-    @Test
-    fun `Should display message if local data deletion fails`() = runTest {
-        whenever(resourcesManager.getString(R.string.delete_local_data_error)) doReturn "Error while deleting local data"
-        whenever(settingsRepository.deleteLocalData()) doThrow RuntimeException("Simulated error")
-        presenter.deleteLocalData()
-        verify(settingMessages, times(1)).sendMessage("Error while deleting local data")
     }
 
     @Ignore
@@ -475,44 +462,26 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should export database`() = runTest {
-        val mockedFile: File = mock()
-        whenever(settingsRepository.exportDatabase()) doReturn mockedFile
-        whenever(resourcesManager.getString(any())) doReturn "Database exported"
-        presenter.onExportAndShareDB()
-        verify(settingMessages, times(1)).sendMessage("Database exported")
-    }
-
-    @Test
-    fun `Should display export database error`() = runTest {
-        val errorMessage = "Database export failed!"
-        val exceptionToThrow = RuntimeException("Simulated DB export error")
-        whenever(settingsRepository.exportDatabase()) doThrow exceptionToThrow
-        whenever(resourcesManager.parseD2Error(exceptionToThrow)) doReturn errorMessage
-        whenever(resourcesManager.parseD2Error(any<Throwable>())) doAnswer { invocation ->
-            val throwable = invocation.arguments[0] as Throwable
-            if (throwable == exceptionToThrow) { // Check if it's the specific exception we threw
-                errorMessage
-            } else {
-                "Some other error occurred" // Fallback for other potential errors
-            }
-        }
-
-        presenter.onExportAndShareDB()
-        verify(settingMessages, times(1)).sendMessage(errorMessage)
-    }
-
-    @Test
     fun `Should share database`() = runTest {
         val mockedFile: File = mock()
-        whenever(settingsRepository.exportDatabase()) doReturn mockedFile
+        whenever(
+            exportDatabase(ExportDatabase.ExportType.Share),
+        ) doReturn ExportDatabase.ExportResult.Share(
+            mockedFile,
+        )
 
-        presenter.onExportAndDownloadDB()
         presenter.fileToShareChannel.test {
+            presenter.onExportAndShareDB()
             val item = awaitItem()
             assertTrue(item == mockedFile)
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `Should download database`() = runTest {
+        presenter.onExportAndDownloadDB()
+        verify(exportDatabase, times(1)).invoke()
     }
 
     @Test
