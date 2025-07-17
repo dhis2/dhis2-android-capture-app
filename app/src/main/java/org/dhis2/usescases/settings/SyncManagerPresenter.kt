@@ -1,17 +1,11 @@
 package org.dhis2.usescases.settings
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkInfo
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,29 +13,20 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
-import org.dhis2.commons.matomo.Actions
-import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.data.service.workManager.WorkerItem
-import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
-import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.SYNC_DATA_NOW
-import org.dhis2.utils.analytics.SYNC_METADATA_NOW
 import org.hisp.dhis.android.core.settings.LimitScope
 import java.io.File
 
@@ -54,9 +39,7 @@ class SyncManagerPresenter(
     private val deleteLocalData: DeleteLocalData,
     private val exportDatabase: ExportDatabase,
     private val checkVersionUpdate: CheckVersionUpdate,
-    private val preferenceProvider: PreferenceProvider,
-    private val workManagerController: WorkManagerController,
-    private val analyticsHelper: AnalyticsHelper,
+    private val launchSync: LaunchSync,
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
@@ -84,41 +67,14 @@ class SyncManagerPresenter(
     private val _fileToShareChannel = Channel<File>()
     val fileToShareChannel = _fileToShareChannel.receiveAsFlow()
 
-    enum class SyncStatusProgress {
-        NONE,
-        SYNC_DATA_IN_PROGRESS,
-        SYNC_DATA_FINISHED,
-        SYNC_METADATA_IN_PROGRESS,
-        SYNC_METADATA_FINISHED,
-    }
-
-    private val _metadataWorkInfo =
-        workManagerController.getWorkInfosByTagLiveData(Constants.META_NOW)
-            .asFlow()
-            .map { workStatuses ->
-                var workState: WorkInfo.State? = workStatuses.getOrNull(0)?.state
-                onWorkStatusesUpdate(workState, Constants.META_NOW)
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                SyncStatusProgress.NONE,
-            )
-
-    private val _dataWorkInfo =
-        workManagerController.getWorkInfosByTagLiveData(Constants.DATA_NOW)
-            .asFlow()
-            .map { workStatuses ->
-                var workState: WorkInfo.State? = workStatuses.getOrNull(0)?.state
-                onWorkStatusesUpdate(workState, Constants.DATA_NOW)
-            }.stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                SyncStatusProgress.NONE,
-            )
-
-    private val _startWorkInfo = MutableStateFlow(SyncStatusProgress.NONE)
-
-    private val syncWorkInfo = merge(_metadataWorkInfo, _dataWorkInfo, _startWorkInfo)
+    private val syncWorkInfo = launchSync.syncWorkInfo.stateIn(
+        viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = LaunchSync.SyncStatusProgress(
+            metadataSyncProgress = LaunchSync.SyncStatus.None,
+            dataSyncProgress = LaunchSync.SyncStatus.None,
+        ),
+    )
 
     init {
         connectionStatus
@@ -129,30 +85,26 @@ class SyncManagerPresenter(
 
         syncWorkInfo
             .onEach { syncStatusProgress ->
-                when (syncStatusProgress) {
-                    SyncStatusProgress.NONE -> {}
-                    SyncStatusProgress.SYNC_DATA_IN_PROGRESS ->
-                        _settingsState.update {
-                            it?.copy(
-                                dataSettingsViewModel = it.dataSettingsViewModel.copy(
-                                    syncInProgress = true,
-                                ),
-                            )
-                        }
 
-                    SyncStatusProgress.SYNC_METADATA_IN_PROGRESS ->
-                        _settingsState.update {
-                            it?.copy(
-                                metadataSettingsViewModel = it.metadataSettingsViewModel.copy(
-                                    syncInProgress = true,
-                                ),
-                            )
-                        }
+                val shouldLoadData =
+                    syncStatusProgress.hasSyncFinished(
+                        _settingsState.value?.metadataSettingsViewModel?.syncInProgress == true,
+                        _settingsState.value?.dataSettingsViewModel?.syncInProgress == true,
+                    )
 
-                    SyncStatusProgress.SYNC_DATA_FINISHED,
-                    SyncStatusProgress.SYNC_METADATA_FINISHED,
-                    ->
-                        loadData()
+                _settingsState.update {
+                    it?.copy(
+                        metadataSettingsViewModel = it.metadataSettingsViewModel.copy(
+                            syncInProgress = syncStatusProgress.metadataSyncProgress is LaunchSync.SyncStatus.InProgress,
+                        ),
+                        dataSettingsViewModel = it.dataSettingsViewModel.copy(
+                            syncInProgress = syncStatusProgress.dataSyncProgress is LaunchSync.SyncStatus.InProgress,
+                        ),
+                    )
+                }
+
+                if (shouldLoadData) {
+                    loadData()
                 }
             }
             .launchIn(viewModelScope)
@@ -162,8 +114,8 @@ class SyncManagerPresenter(
         val settingsState = getSettingsState(
             openedItem = _settingsState.value?.openedItem,
             hasConnection = connectionStatus.value,
-            metadataSyncInProgress = _metadataWorkInfo.value == SyncStatusProgress.SYNC_METADATA_IN_PROGRESS,
-            dataSyncInProgress = _dataWorkInfo.value == SyncStatusProgress.SYNC_DATA_IN_PROGRESS,
+            metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
+            dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
         )
         _settingsState.update { settingsState }
     }
@@ -267,67 +219,15 @@ class SyncManagerPresenter(
         }
     }
 
-    private fun onWorkStatusesUpdate(
-        workState: WorkInfo.State?,
-        workerTag: String,
-    ): SyncStatusProgress {
-        return if (workState != null) {
-            when (workState) {
-                WorkInfo.State.ENQUEUED,
-                WorkInfo.State.RUNNING,
-                WorkInfo.State.BLOCKED,
-                -> when (workerTag) {
-                    Constants.META_NOW -> SyncStatusProgress.SYNC_METADATA_IN_PROGRESS
-                    Constants.DATA_NOW -> SyncStatusProgress.SYNC_DATA_IN_PROGRESS
-                    else -> SyncStatusProgress.NONE
-                }
-
-                else -> when (workerTag) {
-                    Constants.META_NOW -> SyncStatusProgress.SYNC_METADATA_FINISHED
-                    Constants.DATA_NOW -> SyncStatusProgress.SYNC_DATA_FINISHED
-                    else -> SyncStatusProgress.NONE
-                }
-            }
-        } else {
-            when (workerTag) {
-                Constants.META_NOW -> SyncStatusProgress.SYNC_METADATA_FINISHED
-                Constants.DATA_NOW -> SyncStatusProgress.SYNC_DATA_FINISHED
-                else -> SyncStatusProgress.NONE
-            }
-        }
-    }
-
     fun syncData() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            _startWorkInfo.value = SyncStatusProgress.SYNC_DATA_IN_PROGRESS
-            analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_CONFIG, CLICK)
-            analyticsHelper.setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW)
-            val workerItem = WorkerItem(
-                Constants.DATA_NOW,
-                WorkerType.DATA,
-                null,
-                null,
-                ExistingWorkPolicy.KEEP,
-                null,
-            )
-            workManagerController.syncDataForWorker(workerItem)
-            loadData()
+            launchSync(LaunchSync.SyncAction.SyncData)
         }
     }
 
     fun syncMeta() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            _startWorkInfo.value = SyncStatusProgress.SYNC_DATA_IN_PROGRESS
-            analyticsHelper.setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW)
-            val workerItem = WorkerItem(
-                Constants.META_NOW,
-                WorkerType.METADATA,
-                null,
-                null,
-                ExistingWorkPolicy.KEEP,
-                null,
-            )
-            workManagerController.syncDataForWorker(workerItem)
+            launchSync(LaunchSync.SyncAction.SyncMetadata)
         }
     }
 
@@ -377,61 +277,20 @@ class SyncManagerPresenter(
     }
 
     fun onSyncDataPeriodChanged(period: Int) {
-        if (period != Constants.TIME_MANUAL) {
-            syncData(period)
-        } else {
-            cancelPendingWork(Constants.DATA)
+        viewModelScope.launch(dispatcherProvider.io()) {
+            launchSync(LaunchSync.SyncAction.UpdateSyncDataPeriod(period))
+            if (period == Constants.TIME_MANUAL) {
+                loadData()
+            }
         }
-    }
-
-    private fun syncData(seconds: Int) {
-        preferenceProvider.setValue(Constants.TIME_DATA, seconds)
-        workManagerController.cancelUniqueWork(Constants.DATA)
-        val workerItem = WorkerItem(
-            Constants.DATA,
-            WorkerType.DATA,
-            seconds.toLong(),
-            null,
-            null,
-            ExistingPeriodicWorkPolicy.REPLACE,
-        )
-        workManagerController.enqueuePeriodicWork(workerItem)
     }
 
     fun onSyncMetaPeriodChanged(period: Int) {
-        if (period != Constants.TIME_MANUAL) {
-            syncMeta(period)
-        } else {
-            cancelPendingWork(Constants.META)
-        }
-    }
-
-    private fun syncMeta(seconds: Int) {
-        analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_DATA, CLICK)
-        preferenceProvider.setValue(Constants.TIME_META, seconds)
-        workManagerController.cancelUniqueWork(Constants.META)
-        val workerItem = WorkerItem(
-            Constants.META,
-            WorkerType.METADATA,
-            seconds.toLong(),
-            null,
-            null,
-            ExistingPeriodicWorkPolicy.REPLACE,
-        )
-        workManagerController.enqueuePeriodicWork(workerItem)
-    }
-
-    private fun cancelPendingWork(tag: String) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            preferenceProvider.setValue(
-                when (tag) {
-                    Constants.DATA -> Constants.TIME_DATA
-                    else -> Constants.TIME_META
-                },
-                0,
-            )
-            workManagerController.cancelUniqueWork(tag)
-            loadData()
+            launchSync(LaunchSync.SyncAction.UpdateSyncMetadataPeriod(period))
+            if (period == Constants.TIME_MANUAL) {
+                loadData()
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
@@ -38,9 +39,7 @@ class SyncManagerModule {
         deleteLocalData: DeleteLocalData,
         exportDatabase: ExportDatabase,
         checkVersionUpdate: CheckVersionUpdate,
-        preferenceProvider: PreferenceProvider,
-        workManagerController: WorkManagerController,
-        analyticsHelper: AnalyticsHelper,
+        launchSync: LaunchSync,
         dispatcherProvider: DispatcherProvider,
         networkUtils: NetworkUtils,
         settingsMessages: SettingsMessages,
@@ -53,9 +52,7 @@ class SyncManagerModule {
         deleteLocalData,
         exportDatabase,
         checkVersionUpdate,
-        preferenceProvider,
-        workManagerController,
-        analyticsHelper,
+        launchSync,
         dispatcherProvider,
         networkUtils,
         settingsMessages,
@@ -148,6 +145,18 @@ class SyncManagerModule {
         versionRepository,
         settingsMessages,
         resourceManager,
+    )
+
+    @Provides
+    @PerFragment
+    fun provideLaunchSync(
+        workManagerController: WorkManagerController,
+        preferenceProvider: PreferenceProvider,
+        analyticsHelper: AnalyticsHelper,
+    ) = LaunchSync(
+        workManagerController,
+        preferenceProvider,
+        analyticsHelper,
     )
 
     @Provides

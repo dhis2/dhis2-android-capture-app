@@ -3,19 +3,17 @@ package org.dhis2.usescases.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
+import org.dhis2.usescases.settings.domain.LaunchSync
 import org.dhis2.usescases.settings.domain.SettingsMessages
 import org.dhis2.usescases.settings.domain.UpdateSmsModule
 import org.dhis2.usescases.settings.domain.UpdateSmsResponse
 import org.dhis2.usescases.settings.domain.UpdateSyncSettings
-import org.dhis2.utils.analytics.AnalyticsHelper
 
 @Suppress("UNCHECKED_CAST")
 class SettingsViewModelFactory(
@@ -27,9 +25,7 @@ class SettingsViewModelFactory(
     private val deleteLocalData: DeleteLocalData,
     private val exportDatabase: ExportDatabase,
     private val checkVersionUpdate: CheckVersionUpdate,
-    private val preferenceProvider: PreferenceProvider,
-    private val workManagerController: WorkManagerController,
-    private val analyticsHelper: AnalyticsHelper,
+    private val launchSync: LaunchSync,
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
@@ -44,9 +40,7 @@ class SettingsViewModelFactory(
             deleteLocalData = deleteLocalData,
             exportDatabase = exportDatabase,
             checkVersionUpdate = checkVersionUpdate,
-            preferenceProvider = preferenceProvider,
-            workManagerController = workManagerController,
-            analyticsHelper = analyticsHelper,
+            launchSync = launchSync,
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
             settingsMessages = settingsMessages,
