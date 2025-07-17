@@ -72,14 +72,15 @@
             android:name=".usescases.login.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan" >
-            <intent-filter>
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="myapp"
-                    android:host="callback" />
+                    android:scheme="https"
+                    android:host="vgarciabnz.github.io" />
             </intent-filter>
         </activity>
         <activity android:name=".usescases.main.MainActivity" />
@@ -139,7 +140,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".usescases.settingsprogram.SettingsProgramActivity" />
 
-        <activity
+        <!--<activity
             android:name="net.openid.appauth.RedirectUriReceiverActivity"
             android:exported="true"
             tools:node="replace">
@@ -151,7 +152,8 @@
 
                 <data android:scheme="*" />
             </intent-filter>
-        </activity>
+        </activity>-->
+
         <activity android:name=".usescases.login.accounts.AccountsActivity" />
         <activity
             android:name=".usescases.crash.CrashActivity"
