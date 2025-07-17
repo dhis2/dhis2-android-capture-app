@@ -7,7 +7,6 @@ import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -18,12 +17,11 @@ import org.dhis2.bindings.toDate
 import org.dhis2.commons.Constants
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
@@ -68,8 +66,6 @@ class SyncManagerPresenterTest {
     private val workManagerController: WorkManagerController = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
     private val networkUtils: NetworkUtils = mock()
-    private val resourcesManager: ResourceManager = mock()
-    private val versionRepository: VersionRepository = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn testingDispatcher
@@ -86,11 +82,11 @@ class SyncManagerPresenterTest {
     private val updateSmsModule: UpdateSmsModule = mock()
     private val deleteLocalData: DeleteLocalData = mock()
     private val exportDatabase: ExportDatabase = mock()
+    private val checkVersionUpdate: CheckVersionUpdate = mock()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        whenever(versionRepository.newAppVersion) doReturn MutableSharedFlow()
         whenever(workManagerController.getWorkInfosByTagLiveData(any())) doReturn MutableLiveData()
         whenever(networkUtils.connectionStatus) doReturn MutableStateFlow(true)
 
@@ -102,11 +98,10 @@ class SyncManagerPresenterTest {
             updateSmsModule = updateSmsModule,
             deleteLocalData = deleteLocalData,
             exportDatabase = exportDatabase,
+            checkVersionUpdate = checkVersionUpdate,
             preferenceProvider = preferencesProvider,
             workManagerController = workManagerController,
             analyticsHelper = analyticsHelper,
-            resourceManager = resourcesManager,
-            versionRepository = versionRepository,
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
             settingsMessages = settingMessages,
@@ -132,23 +127,12 @@ class SyncManagerPresenterTest {
 
     @Test
     fun `should check version update`() = runTest {
-        whenever(versionRepository.getLatestVersionInfo()) doReturn "new.version.name"
-        presenter.checkVersionUpdate()
-        verify(versionRepository, times(1)).checkVersionUpdates()
-    }
-
-    @Test
-    fun `should send no new version message`() = runTest {
-        whenever(versionRepository.getLatestVersionInfo()) doReturn null
-        whenever(resourcesManager.getString(any())) doReturn "No updates"
-        presenter.checkVersionUpdate()
-        verify(settingMessages, times(1)).sendMessage("No updates")
-        verify(versionRepository, times(0)).checkVersionUpdates()
+        presenter.onCheckVersionUpdate()
+        verify(checkVersionUpdate, times(1)).invoke()
     }
 
     @Test
     fun `Should delete local data`() = runTest {
-        whenever(resourcesManager.getString(any())) doReturn "Local data deleted"
         presenter.deleteLocalData()
         verify(deleteLocalData, times(1)).invoke()
     }
