@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings.domain
 
+import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.usescases.settings.SettingsRepository
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -16,6 +17,7 @@ class UpdateSyncSettings(
         data class EventMaxCount(val eventsNumber: Int?) : SyncSettings
         data class TeiMaxCount(val teiNumber: Int?) : SyncSettings
         data class ReservedValues(val reservedValuesCount: Int?) : SyncSettings
+        data object Reset : SyncSettings
     }
 
     suspend operator fun invoke(syncSettings: SyncSettings) {
@@ -24,6 +26,7 @@ class UpdateSyncSettings(
             is SyncSettings.Scope -> saveLimitScope(syncSettings.limitScope)
             is SyncSettings.ReservedValues -> saveReservedValues(syncSettings.reservedValuesCount)
             is SyncSettings.TeiMaxCount -> saveTeiMaxCount(syncSettings.teiNumber)
+            SyncSettings.Reset -> resetParameters()
         }
     }
 
@@ -49,5 +52,11 @@ class UpdateSyncSettings(
         val syncParam = "sync_reservedValues_save"
         analyticsHelper.trackMatomoEvent(Categories.SETTINGS, syncParam, CLICK)
         settingsRepository.saveReservedValuesToDownload(reservedValuesCount!!)
+    }
+
+    private suspend fun resetParameters() {
+        settingsRepository.saveLimitScope(LimitScope.GLOBAL)
+        settingsRepository.saveEventsToDownload(Constants.EVENT_MAX_DEFAULT)
+        settingsRepository.saveTeiToDownload(Constants.TEI_MAX_DEFAULT)
     }
 }

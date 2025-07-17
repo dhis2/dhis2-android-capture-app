@@ -420,9 +420,9 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should reset parameters to default`() {
+    fun `Should reset parameters to default`() = runTest {
         presenter.resetSyncParameters()
-        verify(preferencesProvider, times(4)).setValue(any(), any())
+        verify(updateSyncSettings, times(1)).invoke(UpdateSyncSettings.SyncSettings.Reset)
     }
 
     @Test
