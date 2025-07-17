@@ -73,18 +73,19 @@ class SyncManagerPresenterTest {
     private val deleteLocalData: DeleteLocalData = mock()
     private val exportDatabase: ExportDatabase = mock()
     private val checkVersionUpdate: CheckVersionUpdate = mock()
-
     private val launchSync: LaunchSync = mock()
+
+    private val mockedSyncedStatusProgress = MutableStateFlow(
+        LaunchSync.SyncStatusProgress(
+            LaunchSync.SyncStatus.None,
+            LaunchSync.SyncStatus.None,
+        ),
+    )
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        whenever(launchSync.syncWorkInfo) doReturn MutableStateFlow(
-            LaunchSync.SyncStatusProgress(
-                LaunchSync.SyncStatus.None,
-                LaunchSync.SyncStatus.None,
-            ),
-        )
+        whenever(launchSync.syncWorkInfo) doReturn mockedSyncedStatusProgress
         whenever(networkUtils.connectionStatus) doReturn MutableStateFlow(true)
 
         presenter = SyncManagerPresenter(
@@ -462,6 +463,36 @@ class SyncManagerPresenterTest {
             presenter.checkSyncErrors()
             val item = awaitItem()
             assertTrue(item == testingList)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldUpdateSyncStatus() = runTest {
+        whenever(
+            getSettingsState.invoke(
+                anyOrNull(),
+                any(),
+                any(),
+                any(),
+            ),
+        ) doReturn mockedSettingState()
+
+        val dataSyncStartedProgress = LaunchSync.SyncStatusProgress(
+            metadataSyncProgress = LaunchSync.SyncStatus.InProgress,
+            dataSyncProgress = LaunchSync.SyncStatus.InProgress,
+        )
+
+        presenter.settingsState.test {
+            awaitItem()
+            mockedSyncedStatusProgress.emit(dataSyncStartedProgress)
+            val item = awaitItem()
+            assertTrue(
+                item?.metadataSettingsViewModel?.syncInProgress == true,
+            )
+            assertTrue(
+                item?.dataSettingsViewModel?.syncInProgress == true,
+            )
             cancelAndIgnoreRemainingEvents()
         }
     }
