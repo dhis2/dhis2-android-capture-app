@@ -25,6 +25,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dhis2.App
@@ -69,7 +70,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
-import androidx.core.net.toUri
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
 const val EXTRA_SESSION_EXPIRED = "EXTRA_SESSION_EXPIRED"
@@ -100,7 +100,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private var skipSync = false
     private var openIDRequestCode = -1
 
-    val redirectUri = "myapp://callback"
+    val redirectUri = "https://vgarciabnz.github.io"
 
     private val filePickerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -217,19 +217,19 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
 
         binding.loginOauth.setOnClickListener {
-
             val oauthAuthUrl =
                 "https://dev.im.dhis2.org/oauth2-android-test/oauth2/authorize?" +
-                        "response_type=code" +
-                        "&client_id=dhis2-client" +
-                        "&redirect_uri=$redirectUri" +
-                        "&scope=openid%20email" +
-                        "&state=abc123"
+                    "response_type=code" +
+                    "&client_id=dhis2-client" +
+                    "&redirect_uri=$redirectUri" +
+                    "&scope=openid%20email" +
+                    "&state=abc123"
 
             val customTabsIntent = CustomTabsIntent.Builder().build()
+            customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             customTabsIntent.launchUrl(
                 this,
-                oauthAuthUrl.toUri()
+                oauthAuthUrl.toUri(),
             )
         }
 
@@ -322,7 +322,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun onPause() {
@@ -705,7 +705,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        handleOAuthRedirect(intent)
+        setIntent(intent)
     }
 
     override fun onResume() {
@@ -714,14 +714,19 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private fun handleOAuthRedirect(intent: Intent?) {
-        val uri = intent?.data
-        if (uri != null && uri.toString().startsWith(redirectUri)) {
-            val code = uri.getQueryParameter("code")
-            if (code != null) {
-                println("✅ Got authorization code: $code")
-                // Now exchange code for token
-            } else if (uri.getQueryParameter("error") != null) {
-                println("❌ Error: ${uri.getQueryParameter("error")}")
+        Timber.d("Handling OAuth redirect")
+        val appLinkAction = intent?.action
+        val appLinkData: Uri? = intent?.data
+        if (Intent.ACTION_VIEW == appLinkAction && appLinkData != null) {
+            if (appLinkData.toString().startsWith(redirectUri)) {
+                val code = appLinkData.getQueryParameter("code")
+                if (code != null) {
+                    Timber.tag("OAuth").d("OAuth Authorization code: $code")
+                } else {
+                    Timber.tag("OAuth").e("Authorization Error: ${appLinkData.getQueryParameter("error")}")
+                }
+                // Consume the intent by setting its action to null to prevent re-handling
+                getIntent()?.action = null
             }
         }
     }

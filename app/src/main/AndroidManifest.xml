@@ -72,14 +72,15 @@
             android:name=".usescases.login.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan" >
-            <intent-filter>
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="myapp"
-                    android:host="callback" />
+                    android:scheme="https"
+                    android:host="vgarciabnz.github.io" />
             </intent-filter>
         </activity>
         <activity android:name=".usescases.main.MainActivity" />
