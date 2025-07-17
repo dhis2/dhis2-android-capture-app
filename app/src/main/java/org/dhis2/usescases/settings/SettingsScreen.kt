@@ -185,7 +185,7 @@ fun SettingsScreen(
 
                         SettingsUiAction.OnDownload -> viewmodel.onExportAndDownloadDB()
                         SettingsUiAction.OnShare -> viewmodel.onExportAndShareDB()
-                        SettingsUiAction.OnCheckVersionUpdates -> viewmodel.checkVersionUpdate()
+                        SettingsUiAction.OnCheckVersionUpdates -> viewmodel.onCheckVersionUpdate()
                         SettingsUiAction.OnDeleteLocalData -> displayDeleteLocalDataWarning()
                         is SettingsUiAction.OnSyncDataPeriodChanged ->
                             viewmodel.onSyncDataPeriodChanged(uiAction.periodInSeconds)

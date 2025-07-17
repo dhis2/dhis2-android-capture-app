@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
@@ -27,11 +26,10 @@ class SettingsViewModelFactory(
     private val updateSmsModule: UpdateSmsModule,
     private val deleteLocalData: DeleteLocalData,
     private val exportDatabase: ExportDatabase,
+    private val checkVersionUpdate: CheckVersionUpdate,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val analyticsHelper: AnalyticsHelper,
-    private val resourceManager: ResourceManager,
-    private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
@@ -45,11 +43,10 @@ class SettingsViewModelFactory(
             updateSmsModule = updateSmsModule,
             deleteLocalData = deleteLocalData,
             exportDatabase = exportDatabase,
+            checkVersionUpdate = checkVersionUpdate,
             preferenceProvider = preferenceProvider,
             workManagerController = workManagerController,
             analyticsHelper = analyticsHelper,
-            resourceManager = resourceManager,
-            versionRepository = versionRepository,
             dispatcherProvider = dispatcherProvider,
             networkUtils = networkUtils,
             settingsMessages = settingsMessages,

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
@@ -19,18 +18,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
@@ -56,16 +53,14 @@ class SyncManagerPresenter(
     private val updateSmsModule: UpdateSmsModule,
     private val deleteLocalData: DeleteLocalData,
     private val exportDatabase: ExportDatabase,
+    private val checkVersionUpdate: CheckVersionUpdate,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
     private val analyticsHelper: AnalyticsHelper,
-    private val resourceManager: ResourceManager,
-    private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
 ) : ViewModel() {
-    private val _updatesLoading = MutableLiveData<Boolean>()
     val exporting = exportDatabase.exporting
 
     private val connectionStatus = networkUtils.connectionStatus
@@ -81,8 +76,6 @@ class SyncManagerPresenter(
             null,
         )
 
-    /*    private val _messageChannel = Channel<String>(Channel.BUFFERED)
-        val messageChannel = _messageChannel.receiveAsFlow()*/
     val messageChannel = settingsMessages.messageChannel
 
     private val _errorLogChannel = Channel<List<ErrorViewModel>>(Channel.RENDEZVOUS)
@@ -189,16 +182,9 @@ class SyncManagerPresenter(
         networkUtils.registerNetworkCallback()
     }
 
-    fun checkVersionUpdate() {
+    fun onCheckVersionUpdate() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            _updatesLoading.postValue(true)
-            val newVersion = versionRepository.getLatestVersionInfo()
-            if (newVersion != null) {
-                versionRepository.checkVersionUpdates()
-            } else {
-                settingsMessages.sendMessage(resourceManager.getString(R.string.no_updates))
-            }
-            _updatesLoading.postValue(false)
+            checkVersionUpdate()
         }
     }
 

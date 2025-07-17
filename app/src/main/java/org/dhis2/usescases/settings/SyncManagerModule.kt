@@ -11,6 +11,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
@@ -36,11 +37,10 @@ class SyncManagerModule {
         updateSmsModule: UpdateSmsModule,
         deleteLocalData: DeleteLocalData,
         exportDatabase: ExportDatabase,
+        checkVersionUpdate: CheckVersionUpdate,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
         analyticsHelper: AnalyticsHelper,
-        resourceManager: ResourceManager,
-        versionRepository: VersionRepository,
         dispatcherProvider: DispatcherProvider,
         networkUtils: NetworkUtils,
         settingsMessages: SettingsMessages,
@@ -52,11 +52,10 @@ class SyncManagerModule {
         updateSmsModule,
         deleteLocalData,
         exportDatabase,
+        checkVersionUpdate,
         preferenceProvider,
         workManagerController,
         analyticsHelper,
-        resourceManager,
-        versionRepository,
         dispatcherProvider,
         networkUtils,
         settingsMessages,
@@ -137,6 +136,18 @@ class SyncManagerModule {
         fileHandler = FileHandlerImpl(),
         settingsMessages = settingsMessages,
         resourceManager = resourceManager,
+    )
+
+    @Provides
+    @PerFragment
+    fun provideCheckVersionUpdate(
+        versionRepository: VersionRepository,
+        settingsMessages: SettingsMessages,
+        resourceManager: ResourceManager,
+    ) = CheckVersionUpdate(
+        versionRepository,
+        settingsMessages,
+        resourceManager,
     )
 
     @Provides
