@@ -1,6 +1,5 @@
 package org.dhis2.usescases.settings
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
@@ -32,8 +31,8 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
-import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.usescases.settings.domain.DeleteLocalData
+import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -56,20 +55,18 @@ class SyncManagerPresenter(
     private val getSyncErrors: GetSyncErrors,
     private val updateSmsModule: UpdateSmsModule,
     private val deleteLocalData: DeleteLocalData,
+    private val exportDatabase: ExportDatabase,
     private val preferenceProvider: PreferenceProvider,
     private val workManagerController: WorkManagerController,
-    private val settingsRepository: SettingsRepository,
     private val analyticsHelper: AnalyticsHelper,
     private val resourceManager: ResourceManager,
     private val versionRepository: VersionRepository,
     private val dispatcherProvider: DispatcherProvider,
     private val networkUtils: NetworkUtils,
-    private val fileHandler: FileHandler,
     private val settingsMessages: SettingsMessages,
 ) : ViewModel() {
     private val _updatesLoading = MutableLiveData<Boolean>()
-    private val _exporting = MutableLiveData(false)
-    val exporting: LiveData<Boolean> = _exporting
+    val exporting = exportDatabase.exporting
 
     private val connectionStatus = networkUtils.connectionStatus
 
@@ -392,28 +389,20 @@ class SyncManagerPresenter(
     }
 
     fun onExportAndShareDB() {
-        exportDB(download = true)
+        exportDB(ExportDatabase.ExportType.Share)
     }
 
     fun onExportAndDownloadDB() {
-        exportDB(download = false)
+        exportDB(ExportDatabase.ExportType.Download)
     }
 
-    private fun exportDB(download: Boolean) {
-        _exporting.value = true
-        viewModelScope.launch(context = dispatcherProvider.ui()) {
-            try {
-                val db = settingsRepository.exportDatabase()
-                fileHandler.copyAndOpen(db) {}
-                if (download) {
-                    settingsMessages.sendMessage(resourceManager.getString(R.string.database_export_downloaded))
-                } else {
-                    _fileToShareChannel.send(db)
+    private fun exportDB(exportType: ExportDatabase.ExportType) {
+        viewModelScope.launch(context = dispatcherProvider.io()) {
+            when (val result = exportDatabase(exportType)) {
+                is ExportDatabase.ExportResult.Share -> _fileToShareChannel.send(result.db)
+                else -> {
+                    /*do nothing*/
                 }
-            } catch (e: Exception) {
-                settingsMessages.sendMessage(resourceManager.parseD2Error(e) ?: "")
-            } finally {
-                _exporting.postValue(false)
             }
         }
     }

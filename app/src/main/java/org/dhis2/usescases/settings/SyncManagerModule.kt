@@ -12,6 +12,7 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.usescases.settings.domain.DeleteLocalData
+import org.dhis2.usescases.settings.domain.ExportDatabase
 import org.dhis2.usescases.settings.domain.GetSettingsState
 import org.dhis2.usescases.settings.domain.GetSyncErrors
 import org.dhis2.usescases.settings.domain.SettingsMessages
@@ -34,9 +35,9 @@ class SyncManagerModule {
         getSyncErrors: GetSyncErrors,
         updateSmsModule: UpdateSmsModule,
         deleteLocalData: DeleteLocalData,
+        exportDatabase: ExportDatabase,
         preferenceProvider: PreferenceProvider,
         workManagerController: WorkManagerController,
-        settingsRepository: SettingsRepository,
         analyticsHelper: AnalyticsHelper,
         resourceManager: ResourceManager,
         versionRepository: VersionRepository,
@@ -50,15 +51,14 @@ class SyncManagerModule {
         getSyncErrors,
         updateSmsModule,
         deleteLocalData,
+        exportDatabase,
         preferenceProvider,
         workManagerController,
-        settingsRepository,
         analyticsHelper,
         resourceManager,
         versionRepository,
         dispatcherProvider,
         networkUtils,
-        FileHandlerImpl(),
         settingsMessages,
     )
 
@@ -124,6 +124,19 @@ class SyncManagerModule {
         settingsMessages,
         resourceManager,
         analyticsHelper,
+    )
+
+    @Provides
+    @PerFragment
+    fun provideExportDatabase(
+        settingsRepository: SettingsRepository,
+        settingsMessages: SettingsMessages,
+        resourceManager: ResourceManager,
+    ) = ExportDatabase(
+        settingsRepository = settingsRepository,
+        fileHandler = FileHandlerImpl(),
+        settingsMessages = settingsMessages,
+        resourceManager = resourceManager,
     )
 
     @Provides
