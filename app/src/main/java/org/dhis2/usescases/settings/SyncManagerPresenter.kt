@@ -331,20 +331,6 @@ class SyncManagerPresenter(
         }
     }
 
-    private fun cancelPendingWork(tag: String) {
-        viewModelScope.launch(dispatcherProvider.io()) {
-            preferenceProvider.setValue(
-                when (tag) {
-                    Constants.DATA -> Constants.TIME_DATA
-                    else -> Constants.TIME_META
-                },
-                0,
-            )
-            workManagerController.cancelUniqueWork(tag)
-            loadData()
-        }
-    }
-
     fun dispose() {
         networkUtils.unregisterNetworkCallback()
         settingsMessages.close()
@@ -353,10 +339,7 @@ class SyncManagerPresenter(
 
     fun resetSyncParameters() {
         viewModelScope.launch(dispatcherProvider.io()) {
-            preferenceProvider.setValue(Constants.EVENT_MAX, Constants.EVENT_MAX_DEFAULT)
-            preferenceProvider.setValue(Constants.TEI_MAX, Constants.TEI_MAX_DEFAULT)
-            preferenceProvider.setValue(Constants.LIMIT_BY_ORG_UNIT, false)
-            preferenceProvider.setValue(Constants.LIMIT_BY_PROGRAM, false)
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.Reset)
             loadData()
         }
     }
@@ -436,5 +419,19 @@ class SyncManagerPresenter(
             ExistingPeriodicWorkPolicy.REPLACE,
         )
         workManagerController.enqueuePeriodicWork(workerItem)
+    }
+
+    private fun cancelPendingWork(tag: String) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            preferenceProvider.setValue(
+                when (tag) {
+                    Constants.DATA -> Constants.TIME_DATA
+                    else -> Constants.TIME_META
+                },
+                0,
+            )
+            workManagerController.cancelUniqueWork(tag)
+            loadData()
+        }
     }
 }
