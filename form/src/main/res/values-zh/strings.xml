@@ -89,5 +89,8 @@
     <string name="no_options">无可用选项</string>
     <string name="cat_combo">分类选择框</string>
     <string name="storage_permission_denied">没有授予存储权限。\n 您需要启用它才能使用此功能。</string>
+    <string name="select_app_intent">选择一个应用启动</string>
+    <string name="custom_intent_error">无法检索数据</string>
+    <string name="custom_intent_launch">启动</string>
 
 </resources>
