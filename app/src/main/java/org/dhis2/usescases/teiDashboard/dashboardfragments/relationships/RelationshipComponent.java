@@ -4,9 +4,6 @@ import org.dhis2.commons.di.dagger.PerFragment;
 
 import dagger.Subcomponent;
 
-/**
- * QUADRAM. Created by ppajuelo on 09/04/2019.
- */
 @PerFragment
 @Subcomponent(modules = RelationshipModule.class)
 public interface RelationshipComponent {

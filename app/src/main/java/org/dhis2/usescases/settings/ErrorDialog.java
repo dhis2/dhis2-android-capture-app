@@ -34,10 +34,6 @@ import io.reactivex.schedulers.Schedulers;
 import kotlin.Pair;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by frodriguez on 5/4/2018.
- */
-
 public class ErrorDialog extends DialogFragment {
 
     private String title;

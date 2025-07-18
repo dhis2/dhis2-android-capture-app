@@ -11,10 +11,6 @@ import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 
-/**
- * QUADRAM. Created by ppajuelo on 27/09/2017.
- */
-
 public class AbstractActivityContracts {
 
     public interface View {

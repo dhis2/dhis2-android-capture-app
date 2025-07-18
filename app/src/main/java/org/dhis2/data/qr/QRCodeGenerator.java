@@ -53,9 +53,6 @@ import java.util.zip.Inflater;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 22/05/2018.
- */
 /*TODO: CHANGE THIS TO GET INFO FROM SMS Library*/
 public class QRCodeGenerator implements QRInterface {
 

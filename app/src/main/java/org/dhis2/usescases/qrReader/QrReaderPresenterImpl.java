@@ -40,10 +40,6 @@ import timber.log.Timber;
 
 import static org.dhis2.commons.date.DateUtils.DATABASE_FORMAT_EXPRESSION;
 
-/**
- * QUADRAM. Created by ppajuelo on 22/05/2018.
- */
-
 class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     private final D2 d2;

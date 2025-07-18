@@ -12,10 +12,6 @@ import java.util.List;
 import kotlin.Pair;
 import kotlin.Triple;
 
-/**
- * QUADRAM. Created by ppajuelo on 22/05/2018.
- */
-
 public class QrReaderContracts {
 
     public interface View {

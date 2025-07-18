@@ -17,10 +17,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog;
 
 import javax.inject.Inject;
 
-/**
- * QUADRAM. Created by ppajuelo on 18/10/2017.
- */
-
 public abstract class FragmentGlobalAbstract extends SessionManagerFragment implements AbstractActivityContracts.View {
 
     @Inject

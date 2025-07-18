@@ -4,10 +4,6 @@ import android.util.Base64;
 
 import java.io.UnsupportedEncodingException;
 
-/**
- * QUADRAM. Created by ppajuelo on 22/05/2018.
- */
-
 public class QRjson {
 
     public static final String EVENT_JSON = "EVENT";
