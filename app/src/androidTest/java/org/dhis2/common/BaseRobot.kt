@@ -70,6 +70,8 @@ open class BaseRobot {
         Thread.sleep(millis)
     }
 
+    fun getString(stringId: Int): String = getInstrumentation().targetContext.getString(stringId)
+
     inline fun <reified T : Activity> waitUntilActivityVisible() {
         val startTime = System.currentTimeMillis()
         while (!isVisible<T>()) {

@@ -49,9 +49,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
@@ -117,6 +120,12 @@ internal sealed class SettingsUiAction {
     data class EnableWaitForResponse(val resultSender: String) : SettingsUiAction()
     object DisableWaitForResponse : SettingsUiAction()
 }
+
+const val TestTag_DataPeriod = "TestTag_DataPeriod"
+const val TestTag_MetaPeriod = "TestTag_MetaPeriod"
+const val TestTag_SyncParameters_LimitScope = "TestTag_SyncParameters_LimitScope"
+const val TestTag_SyncParameters_EventMaxCount = "TestTag_SyncParameters_EventMaxCount"
+const val TestTag_SyncParameters_TeiMaxCount = "TestTag_SyncParameters_TeiMaxCount"
 
 @Composable
 fun SettingsScreen(
@@ -377,6 +386,9 @@ private fun SyncDataSettingItem(
 ) {
     val context = LocalContext.current
     SettingItem(
+        modifier = Modifier.semantics {
+            testTag = SettingItem.DATA_SYNC.name
+        },
         title = stringResource(id = R.string.settingsSyncData),
         subtitle = buildAnnotatedString {
             val currentDataSyncPeriod = syncPeriodLabel(dataSettings.dataSyncPeriod)
@@ -469,6 +481,7 @@ private fun SyncDataSettingItem(
                         stringResource(R.string.Manual),
                     )
                     InputDropDown(
+                        modifier = Modifier.testTag(TestTag_DataPeriod),
                         title = stringResource(R.string.settings_sync_period),
                         state = InputShellState.FOCUSED,
                         itemCount = dataSyncPeriods.size,
@@ -524,6 +537,7 @@ private fun SyncMetadataSettingItem(
     onSyncMetaPeriodChanged: (Int) -> Unit,
 ) {
     SettingItem(
+        modifier = Modifier.testTag(SettingItem.META_SYNC.name),
         title = stringResource(id = R.string.settingsSyncMetadata),
         subtitle = buildAnnotatedString {
             val currentMetadataSyncPeriod = syncPeriodLabel(metadataSettings.metadataSyncPeriod)
@@ -569,6 +583,7 @@ private fun SyncMetadataSettingItem(
                     )
 
                     InputDropDown(
+                        modifier = Modifier.testTag(TestTag_MetaPeriod),
                         title = "Title",
                         state = InputShellState.FOCUSED,
                         itemCount = metaSyncPeriods.size,
@@ -631,6 +646,7 @@ private fun SyncParametersSettingItem(
         LimitScope.PER_OU_AND_PROGRAM -> stringResource(R.string.settings_limit_ou_program)
     }
     SettingItem(
+        modifier = Modifier.testTag(SettingItem.SYNC_PARAMETERS.name),
         title = stringResource(id = R.string.settingsSyncParameters),
         subtitle = stringResource(R.string.event_tei_limits_v2).format(
             limitScopeLabel,
@@ -653,6 +669,7 @@ private fun SyncParametersSettingItem(
                         stringResource(R.string.settings_limit_ou_program),
                     )
                     InputDropDown(
+                        modifier = Modifier.testTag(TestTag_SyncParameters_LimitScope),
                         title = stringResource(R.string.settings_limit_scope),
                         state = InputShellState.FOCUSED,
                         itemCount = downloadLimitScopes.size,
@@ -688,6 +705,7 @@ private fun SyncParametersSettingItem(
                     )
 
                     InputPositiveIntegerOrZero(
+                        modifier = Modifier.testTag(TestTag_SyncParameters_EventMaxCount),
                         title = stringResource(R.string.events_to_download),
                         state = InputShellState.FOCUSED,
                         inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfEventsToDownload.toString()),
@@ -700,6 +718,7 @@ private fun SyncParametersSettingItem(
                     )
 
                     InputPositiveIntegerOrZero(
+                        modifier = Modifier.testTag(TestTag_SyncParameters_TeiMaxCount),
                         title = stringResource(R.string.teis_to_download),
                         state = InputShellState.FOCUSED,
                         inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfTeiToDownload.toString()),
@@ -716,10 +735,11 @@ private fun SyncParametersSettingItem(
                 if (syncParametersViewModel.hasSpecificProgramSettings > 0) {
                     Text(
                         text = buildAnnotatedString {
-                            val specificProgramText = LocalContext.current.resources.getQuantityString(
-                                R.plurals.settings_specific_programs,
-                                syncParametersViewModel.hasSpecificProgramSettings,
-                            ).format(syncParametersViewModel.hasSpecificProgramSettings)
+                            val specificProgramText =
+                                LocalContext.current.resources.getQuantityString(
+                                    R.plurals.settings_specific_programs,
+                                    syncParametersViewModel.hasSpecificProgramSettings,
+                                ).format(syncParametersViewModel.hasSpecificProgramSettings)
                             append(
                                 LocalContext.current.resources.getQuantityString(
                                     R.plurals.settings_specific_programs,
@@ -766,6 +786,7 @@ private fun ReservedValuesSettingItem(
     onManageReservedValuesClick: () -> Unit,
 ) {
     SettingItem(
+        modifier = Modifier.testTag(SettingItem.RESERVED_VALUES.name),
         title = stringResource(id = R.string.settingsReservedValues),
         subtitle = stringResource(id = R.string.settingsReservedValues_descr),
         iconId = R.drawable.ic_reserved_values,
@@ -812,6 +833,7 @@ private fun OpenSyncErrorLogSettingItem(
     onClick: () -> Unit,
 ) {
     SettingItem(
+        modifier = Modifier.testTag(SettingItem.ERROR_LOG.name),
         title = stringResource(id = R.string.settingsErrorLog),
         subtitle = stringResource(R.string.settingsErrorLog_descr),
         iconId = R.drawable.ic_open_sync_error_log,
@@ -1058,6 +1080,7 @@ private fun AppUpdateSettingItem(
 
 @Composable
 private fun SettingItem(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: AnnotatedString,
     @DrawableRes iconId: Int,
@@ -1066,6 +1089,7 @@ private fun SettingItem(
     onClick: () -> Unit,
 ) {
     SettingItem(
+        modifier = modifier,
         title = title,
         subtitle = {
             Text(
@@ -1082,6 +1106,7 @@ private fun SettingItem(
 
 @Composable
 private fun SettingItem(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
     @DrawableRes iconId: Int,
@@ -1090,6 +1115,7 @@ private fun SettingItem(
     onClick: () -> Unit,
 ) {
     SettingItem(
+        modifier = modifier,
         title = title,
         subtitle = {
             Text(
@@ -1106,6 +1132,7 @@ private fun SettingItem(
 
 @Composable
 private fun SettingItem(
+    modifier: Modifier = Modifier,
     title: String,
     subtitle: @Composable () -> Unit,
     @DrawableRes iconId: Int,
@@ -1114,7 +1141,7 @@ private fun SettingItem(
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .wrapContentHeight()
             .background(Color.White),
     ) {
