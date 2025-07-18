@@ -1,12 +1,9 @@
 package org.dhis2.commons.prefs
 
-import android.content.SharedPreferences
 import com.google.gson.reflect.TypeToken
 import java.util.Date
 
 interface PreferenceProvider {
-
-    fun sharedPreferences(): SharedPreferences
 
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String?)
 
@@ -29,4 +26,5 @@ interface PreferenceProvider {
     fun lastMetadataSync(): Date?
     fun lastDataSync(): Date?
     fun lastSync(): Date?
+    fun getList(key: String, default: List<String>): List<String>
 }

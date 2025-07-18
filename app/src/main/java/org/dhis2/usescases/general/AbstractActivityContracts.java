@@ -1,7 +1,6 @@
 package org.dhis2.usescases.general;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -46,9 +45,6 @@ public class AbstractActivityContracts {
         void showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener);
 
         void showDescription(String description);
-
-        @Deprecated
-        SharedPreferences getSharedPreferences();
 
         @Deprecated
         void showSyncDialog(SyncStatusDialog dialog);

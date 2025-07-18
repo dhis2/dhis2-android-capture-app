@@ -388,6 +388,7 @@ class FormViewModel(
             ) {
                 val autoCompleteValues =
                     repository.getListFromPreferences(fieldUidModel.uid)
+                        .toMutableList()
                 if (!autoCompleteValues.contains(fieldUidModel.value)) {
                     autoCompleteValues.add(fieldUidModel.value.toString())
                     repository.saveListToPreferences(fieldUidModel.uid, autoCompleteValues)
