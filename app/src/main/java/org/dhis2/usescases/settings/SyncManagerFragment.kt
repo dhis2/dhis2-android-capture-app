@@ -105,6 +105,11 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
         super.onStop()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.closeChannel()
+    }
+
     private fun deleteLocalData() {
         deleteLocalDataDialog = AlertDialog(
             labelText = getString(R.string.delete_local_data),

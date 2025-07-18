@@ -233,8 +233,6 @@ class SyncManagerPresenter(
 
     fun dispose() {
         networkUtils.unregisterNetworkCallback()
-        settingsMessages.close()
-        _errorLogChannel.close()
     }
 
     fun resetSyncParameters() {
@@ -292,5 +290,10 @@ class SyncManagerPresenter(
                 loadData()
             }
         }
+    }
+
+    fun closeChannel() {
+        settingsMessages.close()
+        _errorLogChannel.close()
     }
 }
