@@ -65,6 +65,7 @@ import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -225,7 +226,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     "&scope=openid%20email" +
                     "&state=abc123"
 
-            val customTabsIntent = CustomTabsIntent.Builder().build()
+            val customTabsIntent = CustomTabsIntent.Builder()
+                .setShowTitle(false)
+                .setUrlBarHidingEnabled(true)
+                .build()
             customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             customTabsIntent.launchUrl(
                 this,
