@@ -59,6 +59,7 @@ La transaction a été annulée avec succès.</string>
     <string name="stock_on_hand_exceeded_message">
 Stock disponible ne peut être dépassé</string>
     <string name="speech_network_error">Erreur réseau</string>
+    <string name="unknown_speech_error">Une erreur inconnue s\'est produite.</string>
     <string name="login_error_bad_credentials">Le nom d\'utilisatuer et/ou mot de passe est incorrect</string>
     <string name="login_error_unknown_host">Serveur inconnu</string>
     <string name="online_search_parsing_error">Erreur lors de l\'analyse des résultats</string>
