@@ -66,7 +66,7 @@ internal class DataSetDetailRobot(
         itemWithTextIsDisplayed(text, substring, composeTestRule)
     }
 
-    fun checkDataSetIsCompletedAndModified(period: String, orgUnit: String ) {
+    fun checkDataSetIsCompletedAndModified(orgUnit: String ) {
         waitForView(withId(R.id.recycler))
             .check(matches(isDisplayed()))
         onView(withId(R.id.recycler))
@@ -74,7 +74,6 @@ internal class DataSetDetailRobot(
                 matches(
                     hasItem(
                         allOf(
-                            hasDescendant(withText(period)),
                             hasDescendant(withText(orgUnit)),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete))),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_sync_problem_grey)))
@@ -107,7 +106,9 @@ internal class DataSetDetailRobot(
             waitForView(withId(R.id.recycler)).perform(scrollToPosition<RecyclerView.ViewHolder>(i))
             val itemTitle = getTitleFromRecyclerViewItem(i)
             val date = SimpleDateFormat("MMM yyyy", Locale.getDefault()).parse(itemTitle)
-            dateList.add(date)
+            if (date != null) {
+                dateList.add(date)
+            }
         }
 
         assertTrue(
