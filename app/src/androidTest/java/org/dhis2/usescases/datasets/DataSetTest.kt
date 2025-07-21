@@ -37,7 +37,6 @@ class DataSetTest : BaseTest() {
 
     @Test
     fun datasetAutomate() = runTest {
-        val period = "July 2025"
         val orgUnit = "Ngelehun CHC"
 
         enterDataSetStep(
@@ -46,7 +45,6 @@ class DataSetTest : BaseTest() {
         )
         dataSetInstanceInChronologicalOrderStep()
         createDataSetInstanceStep(
-            period = period,
             orgUnit = orgUnit,
             openFuturePeriods = 9,
         )
@@ -111,8 +109,6 @@ class DataSetTest : BaseTest() {
     fun saveAndCompleteMandatoryFieldMandatoryValidationRule() = runTest {
         val dataSetUid = "Lpw6GcnTrmS"
         val dataSetName = "Emergency Response"
-        val periodListLabel = "Jan 2025"
-        val periodSelectorLabel = "January 2025"
         val orgUnit = "Ngelehun CHC"
         val catCombo = "Result"
         val tableId = "bjDvmb4bfuf"
@@ -125,7 +121,6 @@ class DataSetTest : BaseTest() {
         )
 
         createDataSetInstanceStep(
-            period = periodSelectorLabel,
             orgUnit = orgUnit,
             catCombo = catCombo,
         )
@@ -160,20 +155,17 @@ class DataSetTest : BaseTest() {
 
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
-        checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
+        checkDataSetInstanceHasBeenCreatedAndIsCompleted(orgUnit)
     }
 
     @Test
     fun saveAndCompleteOptionalValidationRule() = runTest {
         val dataSetUid = "Nyh6laLdBEJ"
         val dataSetName = "IDSR weekly"
-        val periodListLabel = "Week 19 2025-05-05 To 2025-05-11"
-        val periodSelectorLabel = "Week 19: May 5 - May 11, 2025"
         val orgUnit = "Ngelehun CHC"
         val tableId = "gbvX3pogf7p"
         val cellMandatoryFieldCombination01Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+SjJRZjFqdFp1ajg="
         val cellMandatoryFieldCombination02Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+clFMRm5OWFhJTDA="
-        val cellMandatoryFieldCombination03Id = "PGRlPkJveTNRd3p0Z2VaOjxjb2M+S1BQNjN6SlBrT3U="
         val legendTableId = "bjDvmb4bfuf"
         val cellLegendId = "PGRlPlVzU1VYMGNwS3NIOjxjb2M+SGxsdlg1MGNYQzA="
 
@@ -183,7 +175,6 @@ class DataSetTest : BaseTest() {
         )
 
         createDataSetInstanceStep(
-            period = periodSelectorLabel,
             orgUnit = orgUnit,
         )
 
@@ -221,7 +212,7 @@ class DataSetTest : BaseTest() {
         runOptionalValidationRules()
 
         checkValidationBarIsDisplayedAndCompleteAnyway()
-        checkDataSetInstanceHasBeenCreatedAndIsCompleted(periodListLabel, orgUnit)
+        checkDataSetInstanceHasBeenCreatedAndIsCompleted(orgUnit)
 
     }
 
@@ -473,11 +464,10 @@ class DataSetTest : BaseTest() {
     }
 
     private fun checkDataSetInstanceHasBeenCreatedAndIsCompleted(
-        period: String,
         orgUnit: String,
     ) {
         dataSetDetailRobot(composeTestRule) {
-            checkDataSetIsCompletedAndModified(period, orgUnit)
+            checkDataSetIsCompletedAndModified(orgUnit)
         }
     }
 
@@ -494,13 +484,11 @@ class DataSetTest : BaseTest() {
         val table20 = "ck7mRNwGDjP_1"
         val table220 = "ck7mRNwGDjP_3"
         val table22 = "t3aNCvHsoSn_0"
-        val table222 = "aN8uN5b15YG_1"
         val cellIdSection19 = "PGNvYz5TMzRVTE1jSE1jYTo8ZGU+Q2o1clRjOW5Fdmw="
         val cellId2Section19 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+RXpSNVkyVjBKRjk="
         val cellIdSection20 = "PGRlPnlxQmtuOUNXS2loOjxjb2M+bzJneEV0NkVrMkM="
         val cellId2Section20 = "PGRlPmxhWkxRZG51Y1YxOjxjb2M+bzJneEV0NkVrMkM="
         val cellIdSection22 = "PGRlPndjd2JOMWpSMGFyOjxjb2M+U2RPVUkyeVQ0Nkg="
-        val cellId2Section22 = "PGRlPk9LajZ2VjhobVRQOjxjb2M+RE9DN2VtTHp5Umk="
         dataSetTableRobot(composeTestRule) {
             clickOnSection(
                 disableAutomaticGroupingList[0].sectionIndex,
@@ -569,10 +557,8 @@ class DataSetTest : BaseTest() {
 
     private suspend fun checkPivotOptions() {
         val table5 = "aN8uN5b15YG"
-        val table13 = "UnNIOt1uB0J"
         val table23 = "aN8uN5b15YG_1"
         val cellIdSection5 = "PGNvYz5ET0M3ZW1MenlSaTo8ZGU+TFNKNW1LcHlFdjE="
-        val cellIdSection13 = "PGNvYz5wY0tqRUVscHZxZDo8ZGU+V0hCdHNDTVpWQUU="
         val cellIdSection23 = "PGNvYz5SMjNoOVFaUmJSdDo8ZGU+ZElxeDdyZG5WYzk="
         dataSetTableRobot(composeTestRule) {
             clickOnSection(pivotTestingData[0].sectionIndex, pivotTestingData[0].sectionName)
@@ -584,17 +570,6 @@ class DataSetTest : BaseTest() {
             value = "4",
             inputTestTag = "INPUT_NUMBER_FIELD"
         )
-
-        /*dataSetTableRobot(composeTestRule) {
-            clickOnSection(pivotTestingData[1].sectionIndex, pivotTestingData[1].sectionName)
-        }
-        tableIsVisible()
-        enterDataStep(
-            tableId = table13,
-            cellId = cellIdSection13,
-            value = "4",
-            inputTestTag = "INPUT_INTEGER_FIELD"
-        )*/
 
         dataSetTableRobot(composeTestRule) {
             clickOnSection(pivotTestingData[2].sectionIndex, pivotTestingData[2].sectionName)
@@ -778,7 +753,7 @@ class DataSetTest : BaseTest() {
             clickOnFilterBy(filter = "Period")
             clickOnFromToDate()
             chooseDate("08082024")
-            chooseDate("09092025")
+            chooseDate("09092026")
             checkFilterCounter("2")
         }
 
@@ -822,7 +797,6 @@ class DataSetTest : BaseTest() {
 
     private fun createDataSetInstanceStep(
         orgUnit: String,
-        period: String,
         catCombo: String? = null,
         openFuturePeriods: Int? = null,
     ) {
@@ -845,7 +819,7 @@ class DataSetTest : BaseTest() {
 
         reportPeriodSelectorRobot(composeTestRule) {
             openFuturePeriods?.let { checkFuturePeriodAvailable(it) }
-            selectReportPeriod(period)
+            selectFirstPeriod()
         }
 
         dataSetInitialRobot(composeTestRule) {
