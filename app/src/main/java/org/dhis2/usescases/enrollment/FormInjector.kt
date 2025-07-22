@@ -10,7 +10,6 @@ import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.model.EnrollmentRecords
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.FormResultDialogProvider
 
 data class EnrollmentFormBuilderConfig(
     val enrollmentUid: String,
@@ -27,7 +26,6 @@ fun AppCompatActivity.buildEnrollmentForm(
     config: EnrollmentFormBuilderConfig,
     locationProvider: LocationProvider,
     dateEditionWarningHandler: DateEditionWarningHandler,
-    enrollmentResultDialogProvider: FormResultDialogProvider,
     onFinish: () -> Unit,
 ): FormView {
     return FormView.Builder()
@@ -48,7 +46,6 @@ fun AppCompatActivity.buildEnrollmentForm(
             }
         }
         .onFinishDataEntry(onFinish)
-        .eventCompletionResultDialogProvider(enrollmentResultDialogProvider)
         .factory(supportFragmentManager)
         .setRecords(
             EnrollmentRecords(
