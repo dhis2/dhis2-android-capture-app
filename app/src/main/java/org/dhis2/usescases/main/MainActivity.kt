@@ -89,8 +89,6 @@ class MainActivity :
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
 
-    private var singleProgramNavigationDone = false
-
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             // no-op
@@ -189,8 +187,8 @@ class MainActivity :
         setUpDevelopmentMode()
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        singleProgramNavigationDone =
-            savedInstanceState?.getBoolean(SINGLE_PROGRAM_NAVIGATION) ?: false
+        presenter.updateSingleProgramNavigationDone(savedInstanceState?.getBoolean(SINGLE_PROGRAM_NAVIGATION) ?: false)
+
         val openScreen = intent.getStringExtra(FRAGMENT)
 
         when {
@@ -216,11 +214,12 @@ class MainActivity :
 
         observeSyncState()
         observeVersionUpdate()
+        observeSingleProgram()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
-        } else if (!singleProgramNavigationDone && presenter.hasOneHomeItem()) {
-            navigateToSingleProgram()
+        } else {
+            presenter.checkSingleProgramNavigation()
         }
 
         checkNotificationPermission()
@@ -238,7 +237,7 @@ class MainActivity :
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(SINGLE_PROGRAM_NAVIGATION, singleProgramNavigationDone)
+        outState.putBoolean(SINGLE_PROGRAM_NAVIGATION, presenter.isSingleProgramNavigationDone())
         outState.putString(FRAGMENT, mainNavigator.currentScreenName())
     }
 
@@ -324,9 +323,7 @@ class MainActivity :
                         binding.syncActionButton.visibility = View.VISIBLE
                         setBottomNavigationVisibility(true)
                         presenter.onDataSuccess()
-                        if (presenter.hasOneHomeItem()) {
-                            navigateToSingleProgram()
-                        }
+                        presenter.checkSingleProgramNavigation()
                     }
 
                     else -> {
@@ -334,13 +331,6 @@ class MainActivity :
                     }
                 }
             }
-        }
-    }
-
-    private fun navigateToSingleProgram() {
-        presenter.getSingleItemData()?.let { homeItemData ->
-            singleProgramNavigationDone = true
-            navigationLauncher.navigateTo(this, homeItemData)
         }
     }
 
@@ -353,6 +343,14 @@ class MainActivity :
                 binding.toolbarProgress.show()
             } else {
                 binding.toolbarProgress.hide()
+            }
+        }
+    }
+
+    private fun observeSingleProgram() {
+        lifecycleScope.launch {
+            presenter.singleProgramNavigationChannel.collect { homeItemData ->
+                navigationLauncher.navigateTo(this@MainActivity, homeItemData)
             }
         }
     }

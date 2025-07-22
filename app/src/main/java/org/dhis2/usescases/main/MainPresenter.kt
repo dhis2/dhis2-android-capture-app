@@ -12,7 +12,10 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
@@ -80,6 +83,14 @@ class MainPresenter(
 
     val versionToUpdate = versionRepository.newAppVersion.asLiveData(coroutineContext)
     val downloadingVersion = MutableLiveData(false)
+
+    private val _singleProgramNavigationChannel = Channel<HomeItemData>()
+    val singleProgramNavigationChannel = _singleProgramNavigationChannel.receiveAsFlow()
+        .onEach {
+            singleProgramNavigationDone = true
+        }
+
+    private var singleProgramNavigationDone = false
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
@@ -361,15 +372,21 @@ class MainPresenter(
         }
     }
 
-    fun hasOneHomeItem(): Boolean {
-        return repository.homeItemCount() == 1
-    }
-
-    fun getSingleItemData(): HomeItemData? {
-        return repository.singleHomeItemData()
+    fun checkSingleProgramNavigation() {
+        if (!singleProgramNavigationDone && repository.homeItemCount() == 1) {
+            launch(coroutineContext) {
+                repository.singleHomeItemData()?.let { _singleProgramNavigationChannel.send(it) }
+            }
+        }
     }
 
     fun hasFilters(): Boolean {
         return filterRepository.homeFilters().isNotEmpty()
     }
+
+    fun updateSingleProgramNavigationDone(done: Boolean) {
+        singleProgramNavigationDone = done
+    }
+
+    fun isSingleProgramNavigationDone() = singleProgramNavigationDone
 }

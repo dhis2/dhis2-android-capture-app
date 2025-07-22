@@ -18,5 +18,5 @@ interface HomeRepository {
     fun accountsCount(): Int
     fun isPinStored(): Boolean
     fun homeItemCount(): Int
-    fun singleHomeItemData(): HomeItemData?
+    suspend fun singleHomeItemData(): HomeItemData?
 }
