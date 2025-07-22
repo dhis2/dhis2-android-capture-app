@@ -291,6 +291,7 @@ internal class DataSetTableViewModel(
         fetchOptions: Boolean = false,
         newValue: String? = null,
         validationError: String? = null,
+        showInputDialog: Boolean = true,
     ) {
         CoroutineTracker.increment()
         val inputData = if (cellId != null) {
@@ -346,7 +347,7 @@ internal class DataSetTableViewModel(
                 } else {
                     it.dataSetSectionTable
                 },
-                selectedCellInfo = inputData,
+                selectedCellInfo = if (showInputDialog) inputData else CellSelectionState.Default(TableSelection.Unselected()),
             ) ?: it
         }
         CoroutineTracker.decrement()
@@ -393,16 +394,15 @@ internal class DataSetTableViewModel(
                                 (_dataSetScreenState.value as? DataSetScreenState.Loaded)
                                     ?.selectedCellInfo
 
-                            require(selectedCellInfo is CellSelectionState.InputDataUiState)
-
-                            val fetchOptions =
-                                if (selectedCellInfo.inputType is InputType.MultiText) {
-                                    selectedCellInfo.multiTextExtras().optionsFetched != true
-                                } else {
+                            val fetchOptions = when {
+                                selectedCellInfo is CellSelectionState.InputDataUiState &&
+                                    selectedCellInfo.inputType is InputType.MultiText ->
+                                    !selectedCellInfo.multiTextExtras().optionsFetched
+                                else ->
                                     false
-                                }
+                            }
 
-                            updateSelectedCell(uiAction.cellId, fetchOptions)
+                            updateSelectedCell(uiAction.cellId, fetchOptions, showInputDialog = uiAction.showInputDialog)
                         },
                         onFailure = {
                             updateSelectedCell(
@@ -411,6 +411,7 @@ internal class DataSetTableViewModel(
                                 validationError = fieldErrorMessageProvider.getFriendlyErrorMessage(
                                     it,
                                 ),
+                                showInputDialog = uiAction.showInputDialog,
                             )
                         },
                     )

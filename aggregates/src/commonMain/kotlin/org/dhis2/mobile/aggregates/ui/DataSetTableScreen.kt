@@ -78,6 +78,7 @@ import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
 import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
+import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
@@ -318,6 +319,18 @@ fun DataSetInstanceScreen(
                                     onTableResize = dataSetTableViewModel::onTableResize,
                                     emptySectionMessage = stringResource(Res.string.empty_section_message),
                                     emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
+                                    onCheckedCellChanged = { cellId, isChecked ->
+                                        dataSetTableViewModel.onUiAction(
+                                            UiAction.OnValueChanged(
+                                                cellId = cellId,
+                                                newValue = when {
+                                                    isChecked -> "true"
+                                                    else -> null
+                                                },
+                                                showInputDialog = false,
+                                            ),
+                                        )
+                                    },
                                 )
 
                             DataSetScreenState.Loading ->
@@ -394,6 +407,18 @@ fun DataSetInstanceScreen(
                         onTableResize = dataSetTableViewModel::onTableResize,
                         emptySectionMessage = stringResource(Res.string.empty_section_message),
                         emptyDatasetMessage = stringResource(Res.string.empty_dataset_message),
+                        onCheckedCellChanged = { cellId, isChecked ->
+                            dataSetTableViewModel.onUiAction(
+                                UiAction.OnValueChanged(
+                                    cellId = cellId,
+                                    newValue = when {
+                                        isChecked -> "true"
+                                        else -> null
+                                    },
+                                    showInputDialog = false,
+                                ),
+                            )
+                        },
                     )
                 } else {
                     ContentLoading(
@@ -541,6 +566,7 @@ private fun DataSetSinglePane(
     currentSection: String?,
     currentSelection: TableSelection,
     onTableResize: (ResizeAction) -> Unit,
+    onCheckedCellChanged: (cellId: String, Boolean) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -631,7 +657,7 @@ private fun DataSetSinglePane(
                 currentSelection = currentSelection,
                 onTableResize = onTableResize,
                 loading = dataSetSectionTable.loading,
-
+                onCheckedCellChanged = onCheckedCellChanged,
             )
         }
     }
@@ -678,6 +704,7 @@ private fun DataSetTableContent(
     onCellSelected: (TableSelection) -> Unit,
     currentSelection: TableSelection,
     onTableResize: (ResizeAction) -> Unit,
+    onCheckedCellChanged: (cellId: String, Boolean) -> Unit,
 ) {
     Box(
         modifier = modifier,
@@ -747,6 +774,7 @@ private fun DataSetTableContent(
             currentSelection = currentSelection,
             onTableResize = onTableResize,
             loading = dataSetSectionTable.loading,
+            onCheckedCellChanged = onCheckedCellChanged,
         )
     }
 }
@@ -803,6 +831,7 @@ private fun DataSetTable(
         cellError: String?,
     ) -> Unit,
     onCellSelected: (TableSelection) -> Unit,
+    onCheckedCellChanged: (cellId: String, Boolean) -> Unit,
     onTableResize: (ResizeAction) -> Unit,
     loading: Boolean,
 ) {
@@ -820,7 +849,11 @@ private fun DataSetTable(
             override fun onRowHeaderResize(tableId: String, newValue: Float) {
                 sectionTableId.value?.let {
                     onTableResize(
-                        ResizeAction.RowHeaderChanged(tableId, sectionTableId.value ?: "", newValue),
+                        ResizeAction.RowHeaderChanged(
+                            tableId,
+                            sectionTableId.value ?: "",
+                            newValue,
+                        ),
                     )
                 }
             }
@@ -894,6 +927,11 @@ private fun DataSetTable(
                     if (newTableSelection !is TableSelection.CellSelection) {
                         onCellSelected(newTableSelection)
                     }
+                }
+
+                override fun onChecked(tableCell: TableCell, checked: Boolean) {
+                    super.onChecked(tableCell, checked)
+                    onCheckedCellChanged(tableCell.id, checked)
                 }
             },
             topContent = topContent,
