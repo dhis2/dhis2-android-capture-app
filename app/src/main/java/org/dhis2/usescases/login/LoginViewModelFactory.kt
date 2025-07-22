@@ -7,7 +7,8 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.BiometricController
+import org.dhis2.data.biometric.BiometricAuthenticator
+import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -15,10 +16,11 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 class LoginViewModelFactory(
     private val view: LoginContracts.View,
     private val preferenceProvider: PreferenceProvider,
-    private val resources: ResourceManager,
+    private val resourceManager: ResourceManager,
     private val schedulerProvider: SchedulerProvider,
     private val dispatcherProvider: DispatcherProvider,
-    private val biometricController: BiometricController,
+    private val biometricAuthenticator: BiometricAuthenticator,
+    private val cryptographyManager: CryptographyManager,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
@@ -29,10 +31,11 @@ class LoginViewModelFactory(
         return LoginViewModel(
             view,
             preferenceProvider,
-            resources,
+            resourceManager,
             schedulerProvider,
             dispatcherProvider,
-            biometricController,
+            biometricAuthenticator,
+            cryptographyManager,
             analyticsHelper,
             crashReportController,
             networkUtils,
