@@ -39,7 +39,6 @@ class AboutPresenterTest {
     fun `Should print user credentials in view`() {
         val user = User.builder()
             .uid(UUID.randomUUID().toString())
-            .id(6654654)
             .username("demo@demo.es")
             .build()
         whenever(userRepository.credentials()) doReturn Flowable.just(user)

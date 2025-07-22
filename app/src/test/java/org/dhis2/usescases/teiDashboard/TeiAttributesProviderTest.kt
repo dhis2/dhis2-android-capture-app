@@ -243,21 +243,18 @@ class TeiAttributesProviderTest {
     private fun trackedEntityTypeAttributes(): List<TrackedEntityTypeAttribute> {
         return arrayListOf(
             TrackedEntityTypeAttribute.builder()
-                .id(1)
                 .displayInList(true)
                 .searchable(true)
                 .trackedEntityType(ObjectWithUid.create("teType"))
                 .trackedEntityAttribute(ObjectWithUid.create("attr1"))
                 .build(),
             TrackedEntityTypeAttribute.builder()
-                .id(2)
                 .displayInList(true)
                 .searchable(true)
                 .trackedEntityType(ObjectWithUid.create("teType"))
                 .trackedEntityAttribute(ObjectWithUid.create("attr2"))
                 .build(),
             TrackedEntityTypeAttribute.builder()
-                .id(4)
                 .searchable(true)
                 .displayInList(true)
                 .trackedEntityType(ObjectWithUid.create("teType"))
@@ -269,17 +266,14 @@ class TeiAttributesProviderTest {
     private fun trackedEntityAttributeValues(): List<TrackedEntityAttributeValue> {
         return arrayListOf(
             TrackedEntityAttributeValue.builder()
-                .id(1)
                 .value("attrValue1")
                 .trackedEntityAttribute("attr1")
                 .build(),
             TrackedEntityAttributeValue.builder()
-                .id(2)
                 .value("attrValue2")
                 .trackedEntityAttribute("attr2")
                 .build(),
             TrackedEntityAttributeValue.builder()
-                .id(3)
                 .value("attrValue3")
                 .trackedEntityAttribute("attr3")
                 .build(),
