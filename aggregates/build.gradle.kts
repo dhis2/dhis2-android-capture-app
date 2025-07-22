@@ -1,3 +1,5 @@
+import kotlin.text.set
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.compose)
@@ -13,10 +15,8 @@ repositories{
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
         }
     }
 
@@ -50,7 +50,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
         }
-        
+
         commonTest.dependencies {
             implementation(kotlin("test"))
             // Koin Test features
