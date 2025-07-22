@@ -100,9 +100,6 @@ class TeiDashboardMobileActivity :
     @Inject
     lateinit var dateEditionWarningHandler: DateEditionWarningHandler
 
-    @Inject
-    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
-
     var featureConfig: FeatureConfigRepository? = null
         @Inject set
 
@@ -307,7 +304,6 @@ class TeiDashboardMobileActivity :
                 ),
                 locationProvider = locationProvider,
                 dateEditionWarningHandler = dateEditionWarningHandler,
-                enrollmentResultDialogProvider = enrollmentResultDialogProvider,
             ) {
                 dashboardViewModel.updateDashboard()
             }

@@ -34,6 +34,8 @@ import org.dhis2.form.ui.FormViewModelFactory
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
@@ -62,8 +64,16 @@ object Injector {
             ),
             provideDispatchers(),
             openErrorLocation,
+            provideFormResultDialogProvider(context),
         )
     }
+
+    private fun provideFormResultDialogProvider(context: Context) =
+        FormResultDialogProvider(
+            FormResultDialogResourcesProvider(
+                provideResourcesManager(context),
+            ),
+        )
 
     private fun provideD2() = D2Manager.getD2()
 
