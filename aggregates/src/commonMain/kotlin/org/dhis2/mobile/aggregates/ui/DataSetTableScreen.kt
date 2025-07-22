@@ -808,6 +808,10 @@ private fun DataSetTable(
 ) {
     val density = LocalDensity.current
 
+    val inputDialogSizeDp = with(density) {
+        inputDialogSize?.toDp() ?: 0.dp
+    }
+
     val screenWidth = with(density) { getScreenWidth().roundToPx() - Spacing.Spacing32.roundToPx() }
     val sectionTableId = remember { mutableStateOf<String?>(null) }
 
@@ -820,7 +824,11 @@ private fun DataSetTable(
             override fun onRowHeaderResize(tableId: String, newValue: Float) {
                 sectionTableId.value?.let {
                     onTableResize(
-                        ResizeAction.RowHeaderChanged(tableId, sectionTableId.value ?: "", newValue),
+                        ResizeAction.RowHeaderChanged(
+                            tableId,
+                            sectionTableId.value ?: "",
+                            newValue,
+                        ),
                     )
                 }
             }
@@ -902,7 +910,7 @@ private fun DataSetTable(
                 start = Spacing.Spacing16,
                 top = Spacing.Spacing8,
                 end = Spacing.Spacing16,
-                bottom = if (inputDialogSize == null) Spacing.Spacing200 else (Spacing.Spacing200 + (inputDialogSize.dp / 2)),
+                bottom = Spacing.Spacing16 + inputDialogSizeDp,
             ),
             loading = loading,
         )
