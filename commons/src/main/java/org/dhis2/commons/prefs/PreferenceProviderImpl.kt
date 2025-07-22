@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import timber.log.Timber
@@ -13,6 +14,7 @@ import java.util.Date
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
+const val BIOMETRIC_CREDENTIALS = "biometric_credentials"
 
 open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
@@ -129,6 +131,23 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         pass?.let { secureValue(SECURE_PASS, it) }
     }
 
+    override fun saveUserCredentialsAndCipher(
+        serverUrl: String,
+        userName: String,
+        ciphertextWrapper: CiphertextWrapper,
+    ) {
+        saveUserCredentials(serverUrl, userName, null)
+        saveAsJson(BIOMETRIC_CREDENTIALS, ciphertextWrapper)
+    }
+
+    override fun getBiometricCredentials(): CiphertextWrapper? {
+        return getObjectFromJson(
+            BIOMETRIC_CREDENTIALS,
+            object : TypeToken<CiphertextWrapper>() {},
+            null,
+        )
+    }
+
     override fun areCredentialsSet(): Boolean {
         return getBoolean(SECURE_CREDENTIALS, false)
     }
@@ -147,6 +166,15 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     }
 
     override fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T {
+        val mapTypeToken = typeToken.type
+        return if (getString(key, null) == null) {
+            default
+        } else {
+            Gson().fromJson<T>(getString(key), mapTypeToken)
+        }
+    }
+
+    private fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T?): T? {
         val mapTypeToken = typeToken.type
         return if (getString(key, null) == null) {
             default

@@ -13,7 +13,8 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.BiometricController
+import org.dhis2.data.biometric.BiometricAuthenticator
+import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -43,7 +44,8 @@ class LoginModule(
         resourceManager: ResourceManager,
         schedulerProvider: SchedulerProvider,
         dispatcherProvider: DispatcherProvider,
-        biometricController: BiometricController,
+        biometricAuthenticator: BiometricAuthenticator,
+        cryptographyManager: CryptographyManager,
         analyticsHelper: AnalyticsHelper,
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
@@ -57,7 +59,8 @@ class LoginModule(
                 resourceManager,
                 schedulerProvider,
                 dispatcherProvider,
-                biometricController,
+                biometricAuthenticator,
+                cryptographyManager,
                 analyticsHelper,
                 crashReportController,
                 networkUtils,
@@ -65,6 +68,18 @@ class LoginModule(
                 repository,
             ),
         )[LoginViewModel::class.java]
+    }
+
+    @Provides
+    @PerActivity
+    fun provideBiometricAuthenticator(): BiometricAuthenticator {
+        return BiometricAuthenticator(view.abstractActivity)
+    }
+
+    @Provides
+    @PerActivity
+    fun provideCryptographyManager(): CryptographyManager {
+        return CryptographyManager()
     }
 
     @Provides
