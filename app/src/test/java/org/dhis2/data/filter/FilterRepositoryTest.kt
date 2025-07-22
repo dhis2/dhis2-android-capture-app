@@ -524,7 +524,7 @@ class FilterRepositoryTest {
         filterType: String,
         show: Boolean = true,
     ): FilterSetting {
-        return FilterSetting.builder().filter(show).filterType(filterType).id(25)
+        return FilterSetting.builder().filter(show).filterType(filterType)
             .scope(scope).sort(show).build()
     }
 

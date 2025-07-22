@@ -113,7 +113,11 @@ class ConflictGenerator(private val d2: D2) {
                     d2.databaseAdapter().update(
                         DataValueTableInfo.TABLE_INFO.name(),
                         cv,
-                        "_id = ${dataValue?.id()}",
+                        "dataElement = ${dataValue?.dataElement()} AND " +
+                            "period = ${dataValue?.period()} AND " +
+                            "orgUnit = ${dataValue?.organisationUnit()} AND " +
+                            "categoryOptionCombo = ${dataValue?.categoryOptionCombo()} AND " +
+                            "attributeOptionCombo = ${dataValue?.attributeOptionCombo()}",
                         emptyArray(),
                     )
                 }
@@ -337,7 +341,11 @@ class ConflictGenerator(private val d2: D2) {
             d2.databaseAdapter().update(
                 DataValueTableInfo.TABLE_INFO.name(),
                 updatedDataValueCV,
-                "_id = ${attributeValue.id()}",
+                "dataElement = ${attributeValue.dataElement()} AND " +
+                    "period = ${attributeValue.period()} AND " +
+                    "orgUnit = ${attributeValue.organisationUnit()} AND " +
+                    "categoryOptionCombo = ${attributeValue.categoryOptionCombo()} AND " +
+                    "attributeOptionCombo = ${attributeValue.attributeOptionCombo()}",
                 emptyArray(),
             )
         } catch (e: Exception) {
@@ -366,7 +374,11 @@ class ConflictGenerator(private val d2: D2) {
             d2.databaseAdapter().update(
                 DataValueTableInfo.TABLE_INFO.name(),
                 updatedDataValueCV,
-                "_id = ${attributeValue.id()}",
+                "dataElement = ${attributeValue.dataElement()} AND " +
+                    "period = ${attributeValue.period()} AND " +
+                    "orgUnit = ${attributeValue.organisationUnit()} AND " +
+                    "categoryOptionCombo = ${attributeValue.categoryOptionCombo()} AND " +
+                    "attributeOptionCombo = ${attributeValue.attributeOptionCombo()}",
                 emptyArray(),
             )
         } catch (e: Exception) {

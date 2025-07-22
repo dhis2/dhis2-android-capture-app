@@ -6,7 +6,6 @@ object DataElementFactory {
 
     fun create(uid: String, name: String): DataElement {
         return DataElement.builder()
-            .id(55)
             .uid(uid)
             .name(name)
             .displayName(name).build()
