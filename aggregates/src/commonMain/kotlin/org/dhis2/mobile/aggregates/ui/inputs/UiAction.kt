@@ -17,6 +17,8 @@ sealed class UiAction(open val cellId: String) {
     data class OnValueChanged(
         override val cellId: String,
         val newValue: String?,
+
+        val showInputDialog: Boolean = false,
     ) : UiAction(cellId)
 
     data class OnCaptureCoordinates(
