@@ -114,10 +114,10 @@ class ConflictGenerator(private val d2: D2) {
                         DataValueTableInfo.TABLE_INFO.name(),
                         cv,
                         "dataElement = ${dataValue?.dataElement()} AND " +
-                        "period = ${dataValue?.period()} AND " +
-                        "orgUnit = ${dataValue?.organisationUnit()} AND " +
-                        "categoryOptionCombo = ${dataValue?.categoryOptionCombo()} AND " +
-                        "attributeOptionCombo = ${dataValue?.attributeOptionCombo()}",
+                            "period = ${dataValue?.period()} AND " +
+                            "orgUnit = ${dataValue?.organisationUnit()} AND " +
+                            "categoryOptionCombo = ${dataValue?.categoryOptionCombo()} AND " +
+                            "attributeOptionCombo = ${dataValue?.attributeOptionCombo()}",
                         emptyArray(),
                     )
                 }
@@ -342,10 +342,10 @@ class ConflictGenerator(private val d2: D2) {
                 DataValueTableInfo.TABLE_INFO.name(),
                 updatedDataValueCV,
                 "dataElement = ${attributeValue.dataElement()} AND " +
-                        "period = ${attributeValue.period()} AND " +
-                        "orgUnit = ${attributeValue.organisationUnit()} AND " +
-                        "categoryOptionCombo = ${attributeValue.categoryOptionCombo()} AND " +
-                        "attributeOptionCombo = ${attributeValue.attributeOptionCombo()}",
+                    "period = ${attributeValue.period()} AND " +
+                    "orgUnit = ${attributeValue.organisationUnit()} AND " +
+                    "categoryOptionCombo = ${attributeValue.categoryOptionCombo()} AND " +
+                    "attributeOptionCombo = ${attributeValue.attributeOptionCombo()}",
                 emptyArray(),
             )
         } catch (e: Exception) {
@@ -375,10 +375,10 @@ class ConflictGenerator(private val d2: D2) {
                 DataValueTableInfo.TABLE_INFO.name(),
                 updatedDataValueCV,
                 "dataElement = ${attributeValue.dataElement()} AND " +
-                        "period = ${attributeValue.period()} AND " +
-                        "orgUnit = ${attributeValue.organisationUnit()} AND " +
-                        "categoryOptionCombo = ${attributeValue.categoryOptionCombo()} AND " +
-                        "attributeOptionCombo = ${attributeValue.attributeOptionCombo()}",
+                    "period = ${attributeValue.period()} AND " +
+                    "orgUnit = ${attributeValue.organisationUnit()} AND " +
+                    "categoryOptionCombo = ${attributeValue.categoryOptionCombo()} AND " +
+                    "attributeOptionCombo = ${attributeValue.attributeOptionCombo()}",
                 emptyArray(),
             )
         } catch (e: Exception) {
