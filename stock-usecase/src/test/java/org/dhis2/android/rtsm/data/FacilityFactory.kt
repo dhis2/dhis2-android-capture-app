@@ -13,7 +13,6 @@ object FacilityFactory {
         val name = faker.address().streetName()
 
         return OrganisationUnit.builder()
-            .id(id)
             .uid(uidGenerator.generate())
             .name(name)
             .displayName(name).build()
