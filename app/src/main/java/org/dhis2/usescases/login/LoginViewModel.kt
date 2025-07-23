@@ -375,8 +375,12 @@ class LoginViewModel(
     }
 
     fun saveUserCredentials(userPass: String? = null) {
-        if (!preferenceProvider.areSameCredentials(serverUrl.value!!, userName.value!!)) {
-            val pass = userPass ?: password.value!!
+        val serverUrl = serverUrl.value ?:""
+        val userName = userName.value ?:""
+        if(serverUrl.isEmpty() or userName.isEmpty()) return
+
+        if (!preferenceProvider.areSameCredentials(serverUrl, userName)) {
+            val pass = userPass ?: serverUrl
             if (canEnableBiometric()) {
                 val cryptoObject = cryptographyManager.getInitializedCipherForEncryption()?.let { cipher ->
                     BiometricPrompt.CryptoObject(cipher)
@@ -386,15 +390,15 @@ class LoginViewModel(
                     val ciphertextWrapper =
                         cryptographyManager.encryptData(pass, it.cryptoObject?.cipher!!)
                     preferenceProvider.saveUserCredentialsAndCipher(
-                        serverUrl.value!!,
-                        userName.value!!,
+                        serverUrl,
+                        userName,
                         ciphertextWrapper,
                     )
                 }, cryptoObject)
             }
             preferenceProvider.saveUserCredentials(
-                serverUrl.value!!,
-                userName.value!!,
+                serverUrl,
+                userName,
                 pass,
             )
         }
