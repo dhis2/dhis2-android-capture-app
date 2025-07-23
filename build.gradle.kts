@@ -12,7 +12,7 @@ buildscript {
         classpath(libs.kotlinPlugin)
         classpath(libs.jacoco)
         classpath(libs.kotlinSerialization)
-        classpath("com.browserstack:gradle-tool:1.1.0")
+        classpath(libs.browserstackgradle)
     }
 }
 

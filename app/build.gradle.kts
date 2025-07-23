@@ -14,7 +14,7 @@ plugins {
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
-    id("com.browserstack.gradle-tool")
+    alias(libs.plugins.browserstack)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 

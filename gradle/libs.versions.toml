@@ -90,11 +90,13 @@ playservicesauth = "21.3.0"
 playservicesphone = "18.2.0"
 ksp = "2.2.0-2.0.2"
 browserstacksdk = "1.38.0"
+broserstackgradletool = "1.1.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinSerialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
+browserstackgradle = { group = "com.browserstack", name = "gradle-tool", version.ref = "broserstackgradletool" }
 jacoco = { group = "org.jacoco", name = "org.jacoco.core", version.ref = "jacoco" }
 dhis2-android-sdk = { group = "org.hisp.dhis", name = "android-core", version.ref = "dhis2sdk" }
 dhis2-ruleengine = { group = "org.hisp.dhis.rules", name = "rule-engine-jvm", version.ref = "ruleEngine" }
@@ -194,6 +196,7 @@ test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamc
 test-turbine = { group = "app.cash.turbine", name = "turbine", version = "1.2.1" }
 test-javafaker = { group = "com.github.javafaker", name = "javafaker", version.ref = "javafaker" }
 browserstacksdk = {group = "com.browserstack", name = "browserstack-java-sdk", version.ref = "browserstacksdk"}
+
 maps-maplibre = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "maplibre" }
 maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", version.ref = "maplibregeogson" }
 maps-markerViewPlugin = { group = "org.maplibre.gl", name = "android-plugin-markerview-v9", version.ref = "maplibremarkerview" }
