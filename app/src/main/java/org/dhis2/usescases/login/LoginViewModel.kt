@@ -375,9 +375,9 @@ class LoginViewModel(
     }
 
     fun saveUserCredentials(userPass: String? = null) {
-        val serverUrl = serverUrl.value ?:""
-        val userName = userName.value ?:""
-        if(serverUrl.isEmpty() or userName.isEmpty()) return
+        val serverUrl = serverUrl.value ?: ""
+        val userName = userName.value ?: ""
+        if (serverUrl.isEmpty() or userName.isEmpty()) return
 
         if (!preferenceProvider.areSameCredentials(serverUrl, userName)) {
             val pass = userPass ?: serverUrl
