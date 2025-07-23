@@ -20,6 +20,8 @@ import org.hisp.dhis.android.core.settings.CustomIntentRequest
 import org.hisp.dhis.android.core.settings.CustomIntentRequestArgument
 import org.hisp.dhis.android.core.settings.CustomIntentResponse
 import org.hisp.dhis.android.core.settings.CustomIntentResponseData
+import org.hisp.dhis.android.core.settings.CustomIntentResponseDataExtra
+import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.settings.CustomIntentTrigger
 
 open class FormBaseConfiguration(
@@ -83,8 +85,15 @@ open class FormBaseConfiguration(
                     CustomIntentResponse.builder()
                         .data(
                             CustomIntentResponseData.builder()
-                                .argument("enrolment")
-                                .path("guid")
+                                .extras(
+                                    listOf(
+                                        CustomIntentResponseDataExtra.builder()
+                                            .extraName("enrolment")
+                                            .extraType(CustomIntentResponseExtraType.OBJECT)
+                                            .key("guid")
+                                            .build(),
+                                    ),
+                                )
                                 .build(),
                         )
                         .build(),
@@ -119,9 +128,15 @@ open class FormBaseConfiguration(
                     CustomIntentResponse.builder()
                         .data(
                             CustomIntentResponseData.builder()
-                                .argument("identification")
-                                .path("guid")
-                                .build(),
+                                .extras(
+                                    listOf(
+                                        CustomIntentResponseDataExtra.builder()
+                                            .extraName("identification")
+                                            .extraType(CustomIntentResponseExtraType.OBJECT)
+                                            .key("guid")
+                                            .build(),
+                                    ),
+                                ).build(),
                         )
                         .build(),
                 ).build(),
