@@ -700,18 +700,19 @@ class SearchTEIViewModelTest {
         // given
         val searchNavPageConfigurator: SearchPageConfigurator = mock {
             on { displayListView() } doReturn true
-            on { displayMapView() } doReturn true
+            on { displayMapView() } doReturn false
             on { displayAnalytics() } doReturn false
         }
+
+        whenever(searchNavPageConfigurator.initVariables()) doReturn searchNavPageConfigurator
+        whenever(resourceManager.getString(any()))doReturn "label"
 
         val viewModel = SearchTEIViewModel(
             initialProgramUid = initialProgram,
             initialQuery = initialQuery,
             searchRepository = repository,
             searchRepositoryKt = repositoryKt,
-            searchNavPageConfigurator = mock {
-                on { initVariables() } doReturn searchNavPageConfigurator
-            },
+            searchNavPageConfigurator = searchNavPageConfigurator,
             mapDataRepository = mapDataRepository,
             networkUtils = networkUtils,
             dispatchers = object : DispatcherProvider {
