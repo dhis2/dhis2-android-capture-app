@@ -1,5 +1,5 @@
 [versions]
-kotlinxDatetime = "0.7.1-0.6.x-compat"
+kotlinxDatetime = "0.7.1-0.6.x-compat" #Needs to be compatible with the Rule engine, update when it's updated
 sdk = "36"
 minSdk = "21"
 vCode = "145"
