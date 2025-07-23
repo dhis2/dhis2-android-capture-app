@@ -21,6 +21,7 @@ import org.hisp.dhis.android.core.settings.CustomIntentRequestArgument
 import org.hisp.dhis.android.core.settings.CustomIntentResponse
 import org.hisp.dhis.android.core.settings.CustomIntentResponseData
 import org.hisp.dhis.android.core.settings.CustomIntentResponseDataExtra
+import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.settings.CustomIntentTrigger
 
 open class FormBaseConfiguration(
@@ -88,6 +89,7 @@ open class FormBaseConfiguration(
                                     listOf(
                                         CustomIntentResponseDataExtra.builder()
                                             .extraName("enrolment")
+                                            .extraType(CustomIntentResponseExtraType.OBJECT)
                                             .key("guid")
                                             .build(),
                                     ),
@@ -130,6 +132,7 @@ open class FormBaseConfiguration(
                                     listOf(
                                         CustomIntentResponseDataExtra.builder()
                                             .extraName("identification")
+                                            .extraType(CustomIntentResponseExtraType.OBJECT)
                                             .key("guid")
                                             .build(),
                                     ),

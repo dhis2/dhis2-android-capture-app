@@ -89,64 +89,37 @@ abstract class DataEntryBaseRepository(
         }
     }
 
-    private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
-        return getFilteredCustomIntents(uid).isNotEmpty()
-    }
-
     fun getCustomIntentFromUid(uid: String?): CustomIntentModel? {
-        return if (uidIsACustomIntentTrigger(uid)) {
-            val filteredCustomIntents = getFilteredCustomIntents(uid)
-            val customIntentDTO = filteredCustomIntents.firstOrNull { customIntent ->
-                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
-            }
-            customIntentDTO?.let {
-                val customIntentResponse = if (uid == "M2wNlKugVe9" || uid == "goBca56SGgZ") {
-                    it.response()?.data()?.extras()?.map { dataExtra ->
-                        CustomIntentResponseDataModel(
-                            name = dataExtra.extraName(),
-                            extraType = when (dataExtra.extraType()) {
-                                ExtraType.STRING -> CustomIntentResponseExtraType.STRING
-                                ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
-                                ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
-                                ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
-                                ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
-                                ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
-                            },
-                            key = dataExtra.key(),
-                        )
-                    }
-                } else {
-                    it.response()?.data()?.extras()?.map { dataExtra ->
-                        CustomIntentResponseDataModel(
-                            name = dataExtra.extraName(),
-                            extraType = when (dataExtra.extraType()) {
-                                ExtraType.STRING -> CustomIntentResponseExtraType.STRING
-                                ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
-                                ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
-                                ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
-                                ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
-                                ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
-                            },
-                            key = dataExtra.key(),
-                        )
-                    }
-                } ?: emptyList()
-
-                CustomIntentModel(
-                    uid = it.uid(),
-                    name = it.name(),
-                    customIntentRequest = it.request()?.arguments()?.map { arg ->
-                        CustomIntentRequestArgumentModel(
-                            key = arg.key(),
-                            value = arg.value(),
-                        )
-                    } ?: emptyList(),
-                    customIntentResponse = customIntentResponse,
-                    packageName = it.packageName() ?: "",
+        return getFilteredCustomIntents(uid).firstOrNull { customIntent ->
+            customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
+        }?.let {
+            val customIntentResponse = it.response()?.data()?.extras()?.map { dataExtra ->
+                CustomIntentResponseDataModel(
+                    name = dataExtra.extraName(),
+                    extraType = when (dataExtra.extraType()) {
+                        ExtraType.STRING -> CustomIntentResponseExtraType.STRING
+                        ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
+                        ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
+                        ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
+                        ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
+                        ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
+                    },
+                    key = dataExtra.key(),
                 )
-            }
-        } else {
-            null
+            } ?: emptyList()
+
+            CustomIntentModel(
+                uid = it.uid(),
+                name = it.name(),
+                customIntentRequest = it.request()?.arguments()?.map { arg ->
+                    CustomIntentRequestArgumentModel(
+                        key = arg.key(),
+                        value = arg.value(),
+                    )
+                } ?: emptyList(),
+                customIntentResponse = customIntentResponse,
+                packageName = it.packageName() ?: "",
+            )
         }
     }
 
