@@ -10,7 +10,7 @@ import org.dhis2.mobile.login.authentication.ui.TwoFASettingsScreen
 private fun TwoFASettingsScreenPreview() {
     TwoFASettingsScreen(
         onBackClick = {},
-        isCheckingStatus = true
+        isCheckingStatus = true,
     )
 }
 
