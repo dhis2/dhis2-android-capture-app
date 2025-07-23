@@ -3,6 +3,7 @@ package org.dhis2.data.biometric
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ private const val ENCRYPTION_BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
 private const val ENCRYPTION_PADDING = KeyProperties.ENCRYPTION_PADDING_NONE
 private const val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 const val KEY_NAME = "DHIS2_BIOMETRIC_KEY"
+
 class BiometricAuthenticator(
     private val fragmentActivity: FragmentActivity,
 ) {
@@ -74,18 +76,28 @@ class CryptographyManager {
         load(null)
     }
 
-    fun getInitializedCipherForEncryption(): Cipher {
-        val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey()
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-        return cipher
+    fun getInitializedCipherForEncryption(): Cipher? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val cipher = getCipher()
+            val secretKey =
+                getOrCreateSecretKey()
+
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey)
+            cipher
+        } else {
+            null
+        }
     }
 
-    fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher {
-        val cipher = getCipher()
-        val secretKey = getOrCreateSecretKey()
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
-        return cipher
+    fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val cipher = getCipher()
+            val secretKey = getOrCreateSecretKey()
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, GCMParameterSpec(128, initializationVector))
+            cipher
+        } else {
+            null
+        }
     }
 
     fun encryptData(plaintext: String, cipher: Cipher): CiphertextWrapper {
@@ -103,6 +115,7 @@ class CryptographyManager {
         return Cipher.getInstance(transformation)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     private fun getOrCreateSecretKey(): SecretKey {
         // If Secretkey was previously created for that keyName, then grab and return it.
         keyStore.getKey(KEY_NAME, null)?.let { return it as SecretKey }
