@@ -22,7 +22,14 @@ kotlin {
 
     sourceSets {
         commonMain {
+            resources.srcDirs("src/commonMain/composeResources")
+
             dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.ui)
+                implementation(compose.material3)
+                api(compose.materialIconsExtended)
                 val designSystem = libs.dhis2.mobile.designsystem
                 implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}"){
                     isChanging= true
@@ -36,14 +43,30 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
+                // Koin Test features
+                implementation(libs.koin.test)
+                implementation(libs.koin.test.junit5)
+                implementation(libs.koin.test.junit4)
+                implementation(libs.test.turbine)
+                implementation(libs.test.kotlinCoroutines)
+                implementation(libs.test.mockitoKotlin)
+                implementation(compose.components.resources)
             }
         }
 
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
+                implementation(libs.androidx.compose.preview)
+                implementation(libs.dhis2.android.sdk)
+                // Koin support for Android
+                implementation(libs.koin.android)
+                implementation(libs.koin.androidx.compose)
+            }
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.common)
             }
         }
     }
@@ -67,8 +90,19 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
 
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    coreLibraryDesugaring(libs.desugar)
+}
+
+dependencies {
+    testImplementation(libs.junit.jupiter)
+    debugImplementation(libs.androidx.compose.preview)
+    debugImplementation(libs.androidx.compose.uitooling)
 }
