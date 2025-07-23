@@ -14,6 +14,7 @@ plugins {
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
+    id("com.browserstack.gradle-tool")
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
@@ -318,4 +319,5 @@ dependencies {
     androidTestImplementation(libs.test.rx2.idler)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
+    androidTestImplementation(libs.browserstacksdk)
 }

@@ -378,7 +378,9 @@ class MainPresenter(
     fun checkSingleProgramNavigation() {
         if (!singleProgramNavigationDone.load() && repository.homeItemCount() == 1) {
             launch(coroutineContext) {
-                repository.singleHomeItemData()?.let { _singleProgramNavigationChannel.send(it) }
+                repository.singleHomeItemData()?.let {
+                    _singleProgramNavigationChannel.send(it)
+                }
             }
         }
     }

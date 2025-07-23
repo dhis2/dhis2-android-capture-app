@@ -89,6 +89,7 @@ atomicfu = "0.29.0"
 playservicesauth = "21.3.0"
 playservicesphone = "18.2.0"
 ksp = "2.2.0-2.0.2"
+browserstacksdk = "1.38.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -192,6 +193,7 @@ test-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifes
 test-hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
 test-turbine = { group = "app.cash.turbine", name = "turbine", version = "1.2.1" }
 test-javafaker = { group = "com.github.javafaker", name = "javafaker", version.ref = "javafaker" }
+browserstacksdk = {group = "com.browserstack", name = "browserstack-java-sdk", version.ref = "browserstacksdk"}
 maps-maplibre = { group = "org.maplibre.gl", name = "android-sdk", version.ref = "maplibre" }
 maps-geojson = { group = "org.maplibre.gl", name = "android-sdk-geojson", version.ref = "maplibregeogson" }
 maps-markerViewPlugin = { group = "org.maplibre.gl", name = "android-plugin-markerview-v9", version.ref = "maplibremarkerview" }
@@ -211,8 +213,9 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "kotlinx-serialization" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePluginVersion" }
-ksp = {id = "com.google.devtools.ksp", version.ref = "ksp"}
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+browserstack = { id = "com.browserstack.gradle-tool" }
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material3-themeadapter"]
