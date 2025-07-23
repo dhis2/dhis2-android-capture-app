@@ -72,12 +72,6 @@ class LoginModule(
 
     @Provides
     @PerActivity
-    fun provideBiometricAuthenticator(): BiometricAuthenticator {
-        return BiometricAuthenticator(view.abstractActivity)
-    }
-
-    @Provides
-    @PerActivity
     fun provideCryptographyManager(): CryptographyManager {
         return CryptographyManager()
     }
