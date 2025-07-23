@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalAtomicApi::class)
+
 package org.dhis2.usescases.main
 
 import android.content.Context
@@ -50,6 +52,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 
 const val DEFAULT = "default"
@@ -87,10 +91,10 @@ class MainPresenter(
     private val _singleProgramNavigationChannel = Channel<HomeItemData>()
     val singleProgramNavigationChannel = _singleProgramNavigationChannel.receiveAsFlow()
         .onEach {
-            singleProgramNavigationDone = true
+            singleProgramNavigationDone.store(true)
         }
 
-    private var singleProgramNavigationDone = false
+    private var singleProgramNavigationDone = AtomicBoolean(false)
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
@@ -373,7 +377,7 @@ class MainPresenter(
     }
 
     fun checkSingleProgramNavigation() {
-        if (!singleProgramNavigationDone && repository.homeItemCount() == 1) {
+        if (!singleProgramNavigationDone.load() && repository.homeItemCount() == 1) {
             launch(coroutineContext) {
                 repository.singleHomeItemData()?.let { _singleProgramNavigationChannel.send(it) }
             }
@@ -385,7 +389,7 @@ class MainPresenter(
     }
 
     fun updateSingleProgramNavigationDone(done: Boolean) {
-        singleProgramNavigationDone = done
+        singleProgramNavigationDone.store(done)
     }
 
     fun isSingleProgramNavigationDone() = singleProgramNavigationDone
