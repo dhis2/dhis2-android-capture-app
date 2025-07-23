@@ -23,12 +23,13 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-
-
                 val designSystem = libs.dhis2.mobile.designsystem
                 implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}"){
                     isChanging= true
                 }
+                implementation(libs.compose.material3.window)
+                implementation(compose.components.resources)
+                implementation(project(":commonskmm"))
             }
         }
 
@@ -47,6 +48,12 @@ kotlin {
         }
     }
 
+}
+
+compose.resources {
+    publicResClass = false
+    packageOfResClass = "org.dhis2.mobile.login.resources"
+    generateResClass = always
 }
 
 android {
