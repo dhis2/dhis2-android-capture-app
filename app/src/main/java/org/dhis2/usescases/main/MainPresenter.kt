@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalAtomicApi::class)
-
 package org.dhis2.usescases.main
 
 import android.content.Context
@@ -61,6 +59,7 @@ const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
 const val PLAY_FLAVOR = "dhisPlayServices"
 
+@OptIn(ExperimentalAtomicApi::class)
 class MainPresenter(
     private val view: MainView,
     private val repository: HomeRepository,
@@ -392,5 +391,5 @@ class MainPresenter(
         singleProgramNavigationDone.store(done)
     }
 
-    fun isSingleProgramNavigationDone() = singleProgramNavigationDone
+    fun isSingleProgramNavigationDone() = singleProgramNavigationDone.load()
 }
