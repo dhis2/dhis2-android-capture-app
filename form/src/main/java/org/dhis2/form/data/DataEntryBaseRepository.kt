@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.settings.CustomIntent
 import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import timber.log.Timber
+import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType as ExtraType
 
 abstract class DataEntryBaseRepository(
     private val conf: FormBaseConfiguration,
@@ -87,6 +88,7 @@ abstract class DataEntryBaseRepository(
                 customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
         }
     }
+
     private fun uidIsACustomIntentTrigger(uid: String?): Boolean {
         return getFilteredCustomIntents(uid).isNotEmpty()
     }
@@ -98,24 +100,37 @@ abstract class DataEntryBaseRepository(
                 customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
             }
             customIntentDTO?.let {
-                // TODO: will be mapped correctly in issue #ANDROAPP-7130
                 val customIntentResponse = if (uid == "M2wNlKugVe9" || uid == "goBca56SGgZ") {
-                    listOf(
+                    it.response()?.data()?.extras()?.map { dataExtra ->
                         CustomIntentResponseDataModel(
-                            name = it.response()?.data()?.argument() ?: "",
-                            extraType = CustomIntentResponseExtraType.OBJECT,
-                            key = it.response()?.data()?.path(),
-                        ),
-                    )
+                            name = dataExtra.extraName(),
+                            extraType = when (dataExtra.extraType()) {
+                                ExtraType.STRING -> CustomIntentResponseExtraType.STRING
+                                ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
+                                ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
+                                ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
+                                ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
+                                ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
+                            },
+                            key = dataExtra.key(),
+                        )
+                    }
                 } else {
-                    listOf(
+                    it.response()?.data()?.extras()?.map { dataExtra ->
                         CustomIntentResponseDataModel(
-                            name = it.response()?.data()?.argument() ?: "",
-                            extraType = CustomIntentResponseExtraType.LIST_OF_OBJECTS,
-                            key = it.response()?.data()?.path(),
-                        ),
-                    )
-                }
+                            name = dataExtra.extraName(),
+                            extraType = when (dataExtra.extraType()) {
+                                ExtraType.STRING -> CustomIntentResponseExtraType.STRING
+                                ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
+                                ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
+                                ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
+                                ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
+                                ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
+                            },
+                            key = dataExtra.key(),
+                        )
+                    }
+                } ?: emptyList()
 
                 CustomIntentModel(
                     uid = it.uid(),
