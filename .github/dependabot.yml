@@ -14,6 +14,11 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
+    ignore:
+      - dependency-name: "com.squareup.okhttp3:*"
+      # Ignore any versions that are development builds
+      - dependency-name: "*"
+        versions: [ "*+dev*" ]
     groups:
       gradle-updates:
         patterns:
