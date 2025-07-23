@@ -143,7 +143,7 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     override fun getBiometricCredentials(): CiphertextWrapper? {
         return getObjectFromJson(
             BIOMETRIC_CREDENTIALS,
-            object : TypeToken<CiphertextWrapper>() {},
+            object : TypeToken<CiphertextWrapper?>() {},
             null,
         )
     }
@@ -166,15 +166,6 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     }
 
     override fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T): T {
-        val mapTypeToken = typeToken.type
-        return if (getString(key, null) == null) {
-            default
-        } else {
-            Gson().fromJson<T>(getString(key), mapTypeToken)
-        }
-    }
-
-    private fun <T> getObjectFromJson(key: String, typeToken: TypeToken<T>, default: T?): T? {
         val mapTypeToken = typeToken.type
         return if (getString(key, null) == null) {
             default
