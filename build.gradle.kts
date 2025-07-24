@@ -5,14 +5,12 @@ buildscript {
     repositories {
         maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
         google()
-        mavenCentral()
     }
     dependencies {
         classpath(libs.gradlePlugin)
         classpath(libs.kotlinPlugin)
         classpath(libs.jacoco)
         classpath(libs.kotlinSerialization)
-        classpath(libs.browserstackgradle)
     }
 }
 
