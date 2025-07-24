@@ -31,6 +31,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -73,6 +74,8 @@ class ProgramRulesTest {
     private lateinit var formViewModel: FormViewModel
 
     private val testingDispatcher = StandardTestDispatcher()
+
+    private val resultDialogUiProvider: FormResultDialogProvider = mock()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -142,6 +145,7 @@ class ProgramRulesTest {
                 }
             },
             geometryController,
+            resultDialogUiProvider = resultDialogUiProvider,
         )
 
         testingDispatcher.scheduler.advanceUntilIdle()

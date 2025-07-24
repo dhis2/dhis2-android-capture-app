@@ -24,7 +24,6 @@ import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.usescases.events.ScheduledEventActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -50,9 +49,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     @Inject
     lateinit var dateEditionWarningHandler: DateEditionWarningHandler
-
-    @Inject
-    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
 
     lateinit var binding: EnrollmentActivityBinding
     lateinit var mode: EnrollmentMode
@@ -129,7 +125,6 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
             ),
             locationProvider = locationProvider,
             dateEditionWarningHandler = dateEditionWarningHandler,
-            enrollmentResultDialogProvider = enrollmentResultDialogProvider,
         ) {
             presenter.finish(enrollmentMode)
         }
