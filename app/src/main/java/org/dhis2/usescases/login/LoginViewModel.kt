@@ -374,7 +374,7 @@ class LoginViewModel(
         return biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
     }
 
-    fun saveUserCredentials(userPass: String? = null) {
+    fun saveUserCredentials(userPass: String? = null, onDone: () -> Unit) {
         val serverUrl = serverUrl.value ?: ""
         val userName = userName.value ?: ""
         if (serverUrl.isEmpty() or userName.isEmpty()) return
@@ -382,9 +382,10 @@ class LoginViewModel(
         if (!preferenceProvider.areSameCredentials(serverUrl, userName)) {
             val pass = userPass ?: serverUrl
             if (canEnableBiometric()) {
-                val cryptoObject = cryptographyManager.getInitializedCipherForEncryption()?.let { cipher ->
-                    BiometricPrompt.CryptoObject(cipher)
-                }
+                val cryptoObject =
+                    cryptographyManager.getInitializedCipherForEncryption()?.let { cipher ->
+                        BiometricPrompt.CryptoObject(cipher)
+                    }
 
                 biometricAuthenticator.authenticate({
                     val ciphertextWrapper =
@@ -394,6 +395,7 @@ class LoginViewModel(
                         userName,
                         ciphertextWrapper,
                     )
+                    onDone()
                 }, cryptoObject)
             }
             preferenceProvider.saveUserCredentials(
@@ -401,6 +403,9 @@ class LoginViewModel(
                 userName,
                 pass,
             )
+        } 
+        else {
+            onDone()
         }
     }
 
@@ -408,9 +413,10 @@ class LoginViewModel(
         val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
         if (ciphertextWrapper != null) {
             val cryptoObject =
-                cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)?.let { cipher ->
-                    BiometricPrompt.CryptoObject(cipher)
-                }
+                cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
+                    ?.let { cipher ->
+                        BiometricPrompt.CryptoObject(cipher)
+                    }
             biometricAuthenticator.authenticate({
                 password.value = cryptographyManager.decryptData(
                     ciphertextWrapper.ciphertext,
