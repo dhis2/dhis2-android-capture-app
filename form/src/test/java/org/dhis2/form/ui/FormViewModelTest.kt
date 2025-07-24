@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
-import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
@@ -17,6 +16,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.hisp.dhis.android.core.common.ValueType
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -41,8 +41,8 @@ class FormViewModelTest {
     private val dispatcher: DispatcherProvider = mock {
         on { io() } doReturn testingDispatcher
     }
-    private val preferenceProvider: PreferenceProvider = mock()
     private val geometryController: GeometryController = mock()
+    private val resultDialogUiProvider: FormResultDialogProvider = mock()
 
     private lateinit var viewModel: FormViewModel
 
@@ -54,6 +54,7 @@ class FormViewModelTest {
             repository,
             dispatcher,
             geometryController,
+            resultDialogUiProvider = resultDialogUiProvider,
         )
         whenever(repository.getDateFormatConfiguration()) doReturn "ddMMyyyy"
     }
