@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +23,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -29,6 +34,7 @@ import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
@@ -49,6 +55,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,16 +108,27 @@ fun MapSelectorScreen(
         else -> false
     }
 
-    if (useTwoPaneLayout && screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
-        TwoPaneMapSelector(
-            screenState,
-            mapSelectorScreenActions,
-        )
-    } else {
-        SinglePaneMapSelector(
-            screenState,
-            mapSelectorScreenActions,
-        )
+    Scaffold(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentWindowInsets = WindowInsets.safeDrawing,
+        bottomBar = { Box {} },
+    ) { paddingValues ->
+        if (useTwoPaneLayout && screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
+            TwoPaneMapSelector(
+                screenState,
+                mapSelectorScreenActions,
+                paddingValues,
+            )
+        } else {
+            SinglePaneMapSelector(
+                screenState,
+                mapSelectorScreenActions,
+                paddingValues,
+            )
+        }
     }
 }
 
@@ -118,9 +136,13 @@ fun MapSelectorScreen(
 fun SinglePaneMapSelector(
     screenState: MapSelectorScreenState,
     screenActions: MapSelectorScreenActions,
+    paddingValues: PaddingValues,
 ) {
     Column(
-        Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .background(MaterialTheme.colorScheme.surfaceBright),
     ) {
         if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
             MapTopBar(screenActions.onBackClicked)
@@ -181,77 +203,97 @@ fun SinglePaneMapSelector(
 private fun TwoPaneMapSelector(
     screenState: MapSelectorScreenState,
     screenActions: MapSelectorScreenActions,
+    paddingValues: PaddingValues,
 ) {
-    Row(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalArrangement = spacedBy(16.dp),
+            .fillMaxWidth()
+            .padding(
+                start = 0.dp,
+                top = paddingValues.calculateTopPadding(),
+                end = 0.dp,
+                bottom = paddingValues.calculateBottomPadding(),
+            )
+            .background(MaterialTheme.colorScheme.surfaceBright),
     ) {
-        Column(
+        val localLayoutDirection = LocalLayoutDirection.current
+
+        Row(
             modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .fillMaxSize(),
-            verticalArrangement = spacedBy(16.dp),
+                .fillMaxSize()
+                .padding(
+                    top = 16.dp,
+                    start = paddingValues.calculateStartPadding(localLayoutDirection) + 16.dp,
+                    end = paddingValues.calculateEndPadding(localLayoutDirection) + 16.dp,
+                    bottom = 16.dp,
+                ),
+            horizontalArrangement = spacedBy(16.dp),
         ) {
-            if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
-                MapTopBar(screenActions.onBackClicked)
-            }
-
-            if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
-                SearchBar(
-                    searching = screenState.searching,
-                    locationItems = screenState.locationItems,
-                    searchBarActions = SearchBarActions(
-                        onBackClicked = screenActions.onBackClicked,
-                        onClearLocation = screenActions.onClearLocation,
-                        onSearchLocation = screenActions.onSearchLocation,
-                        onLocationSelected = screenActions.onLocationSelected,
-                        onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                        onButtonMode = {
-                            // no-op
-                        },
-                    ),
-                )
-            }
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.BottomCenter,
+            Column(
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .fillMaxSize(),
+                verticalArrangement = spacedBy(16.dp),
             ) {
-                Column {
-                    LocationInfoContent(
-                        selectedLocation = screenState.selectedLocation,
-                        captureMode = screenState.captureMode,
-                        displayPolygonInfo = screenState.displayPolygonInfo,
-                        accuracyRange = screenState.accuracyRange,
-                        configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
-                    )
+                if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
+                    MapTopBar(screenActions.onBackClicked)
+                }
 
-                    DoneButton(
-                        enabled = screenState.doneButtonEnabled,
-                        onDoneButtonClicked = screenActions.onDoneButtonClick,
+                if (screenState.isManualCaptureEnabled && !screenState.displayPolygonInfo) {
+                    SearchBar(
+                        searching = screenState.searching,
+                        locationItems = screenState.locationItems,
+                        searchBarActions = SearchBarActions(
+                            onBackClicked = screenActions.onBackClicked,
+                            onClearLocation = screenActions.onClearLocation,
+                            onSearchLocation = screenActions.onSearchLocation,
+                            onLocationSelected = screenActions.onLocationSelected,
+                            onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                            onButtonMode = {
+                                // no-op
+                            },
+                        ),
                     )
                 }
-            }
-        }
 
-        Column(Modifier.weight(0.7f)) {
-            Map(
-                modifier = Modifier
-                    .weight(1f),
-                captureMode = screenState.captureMode,
-                selectedLocation = screenState.selectedLocation,
-                searchOnThisAreaVisible = screenState.searchOnAreaVisible,
-                searching = screenState.searching,
-                locationState = screenState.locationState,
-                isManualCaptureEnabled = screenState.isManualCaptureEnabled,
-                isPolygonMode = screenState.displayPolygonInfo,
-                loadMap = screenActions.loadMap,
-                onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
-                onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
-            )
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.BottomCenter,
+                ) {
+                    Column {
+                        LocationInfoContent(
+                            selectedLocation = screenState.selectedLocation,
+                            captureMode = screenState.captureMode,
+                            displayPolygonInfo = screenState.displayPolygonInfo,
+                            accuracyRange = screenState.accuracyRange,
+                            configurePolygonInfoRecycler = screenActions.configurePolygonInfoRecycler,
+                        )
+
+                        DoneButton(
+                            enabled = screenState.doneButtonEnabled,
+                            onDoneButtonClicked = screenActions.onDoneButtonClick,
+                        )
+                    }
+                }
+            }
+
+            Column(Modifier.weight(0.7f)) {
+                Map(
+                    modifier = Modifier
+                        .weight(1f),
+                    captureMode = screenState.captureMode,
+                    selectedLocation = screenState.selectedLocation,
+                    searchOnThisAreaVisible = screenState.searchOnAreaVisible,
+                    searching = screenState.searching,
+                    locationState = screenState.locationState,
+                    isManualCaptureEnabled = screenState.isManualCaptureEnabled,
+                    isPolygonMode = screenState.displayPolygonInfo,
+                    loadMap = screenActions.loadMap,
+                    onSearchOnAreaClick = screenActions.onSearchOnAreaClick,
+                    onMyLocationButtonClicked = screenActions.onMyLocationButtonClick,
+                )
+            }
         }
     }
 }
@@ -678,10 +720,13 @@ fun TestPortraitMap(
 fun TestLandscapeMap(
     @PreviewParameter(ScreenStateParamProvider::class) screenState: MapSelectorScreenState,
 ) {
-    TwoPaneMapSelector(
-        screenState = screenState,
-        screenActions = previewActions,
-    )
+    Scaffold { paddingValues ->
+        TwoPaneMapSelector(
+            screenState = screenState,
+            screenActions = previewActions,
+            paddingValues = paddingValues,
+        )
+    }
 }
 
 private class ScreenStateParamProvider : PreviewParameterProvider<MapSelectorScreenState> {
