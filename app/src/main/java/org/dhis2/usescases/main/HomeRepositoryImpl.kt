@@ -61,7 +61,7 @@ class HomeRepositoryImpl(
         return d2.programs().size + d2.dataSetInstanceSummaries().size
     }
 
-    override fun singleHomeItemData(): HomeItemData? {
+    override suspend fun singleHomeItemData(): HomeItemData? {
         val program = d2.programs().firstOrNull()
         val dataSetInstance = d2.dataSetInstanceSummaries().firstOrNull()
 
