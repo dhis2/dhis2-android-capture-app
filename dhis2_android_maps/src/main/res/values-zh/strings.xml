@@ -8,6 +8,10 @@
     <string name="dialog_layer_base_map_bing_dark">Bing夜图</string>
     <string name="dialog_layer_base_map_bing_aerial">Bing空间图</string>
     <string name="dialog_layer_base_map_bing_aerial_label">Bing空间标示图</string>
+    <string name="dialog_layer_base_map_azure_road">Azure 路网</string>
+    <string name="dialog_layer_base_map_azure_dark">Azure 黑野</string>
+    <string name="dialog_layer_base_map_azure_aerial">Azure 卫星图</string>
+    <string name="dialog_layer_base_map_azure_aerial_label">Azure 卫星带标签图</string>
     <string name="action_apply">应用</string>
     <string name="dialog_layer_satellite">显示卫星视图</string>
     <string name="dialog_layer_event">显示事件</string>

@@ -45,6 +45,8 @@
     <string name="search_result_text">%s результатів знайдено</string>
     <string name="add_new">Додати нове</string>
     <string name="add">Додати</string>
+    <string name="enter_event_data">Введіть %s</string>
+    <string name="enter_cancel_event_data">Ввести / Пропустити %s</string>
     <string name="schedule_new">Запланувати нове</string>
     <string name="referral">Направлення</string>
 
@@ -95,6 +97,7 @@
     <string name="program_inactive">Програма неактивна</string>
 
     <string name="event_open">Відкрити</string>
+    <string name="event_not_completed">Не завершено</string>
     <string name="read_only">Тільки читати</string>
     <string name="finish_and_complete">Закінчити і завершити</string>
     <string name="completed">Завершено</string>
@@ -232,6 +235,8 @@
     <string name="settingsSms">Налаштування SMS</string>
     <string name="settingsSms_descr">Перевірте та відредагуйте параметри, що стосуються SMS-шлюзу</string>
     <string name="settingsCheckVersion">Оновлення додатку</string>
+    <string name="settingsExportDB">Експортувати базу даних</string>
+    <string name="settingsExportDBMessage">Експортуйте базу даних і поділіться нею з адміністратором</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Дата реєстрації</string>
@@ -475,6 +480,8 @@
     <string name="org_unit_selection_warning">Необхідно вибрати принаймні один організаційний підрозділ</string>
     <string name="send_user_name_title">Надіслати дані</string>
     <string name="send_user_name_mesage">Допоможіть DHIS2 покращити цей додаток, поділившись журналами помилок, пов’язаними з Вашим ідентифікатором користувача.</string>
+    <string name="improve_app_msg_title">Ви хочете допомогти нам покращити цю програму?</string>
+    <string name="improve_app_msg_text">Якщо ви погодитесь, застосунок надсилатиме анонімну статистику та журнали помилок, що допоможе нам покращити якість і продуктивність користувацького досвіду. Докладніше - у нашій політиці конфіденційності.</string>
     <string name="check_mandatory_field">Перевірте поля</string>
     <string name="error_no_network_during_sync">Під час синхронізації конфігурації з’єднання з Інтернетом було втрачено. Будь-ласка спробуйте пізніше</string>
     <string name="action_agree">Погодитись</string>
@@ -822,6 +829,7 @@
     <string name="search_too_many_results">Забагато результатів</string>
     <string name="search_too_many_results_message">Спробуйте змінити пошук, щоб звузити результати.</string>
     <string name="search_create_new">Створити новий</string>
+    <string name="search_new_te_type">Новий 1%s</string>
     <string name="search_min_attributes_message">Для пошуку необхідно ввести хоча б %s атрибут</string>
     <string name="action_ok">OK</string>
     <string name="init_search">Почніть пошук, щоб знайти будь-який %s</string>
@@ -841,6 +849,7 @@
     <string name="customactivityoncrash_error_activity_device">Пристрій: %s</string>
     <string name="customactivityoncrash_error_activity_os_version">Версія ОС: %s</string>
     <string name="open_details">Відкрити деталі %s</string>
+    <string name="tracked_entity_type_details">%s Деталі</string>
     <string name="syncing_resource">Синхронізація %s…</string>
     <string name="sms_sync_waiting_for_response">SMS відправлено. Очікування відповіді серверу.</string>
     <string name="sms_sync_sms_reached_server">SMS підтверджено на сервері. Оновлення статусу</string>
@@ -851,23 +860,33 @@
     <string name="sms_sync_sms_app_chooser_title">Надіслати SMS за допомогою</string>
     <string name="sms_sync_manual_confirmation">Очікується підтвердження вручну</string>
     <string name="syncing_events">Синхронізація подій</string>
+    <string name="enrolledIn">Зареєстровано в:</string>
+    <string name="ownedBy">Власник:</string>
+    <string name="sync_dialog_title_not_synced">Потрібна синхронізація</string>
     <string name="sync_dialog_title_synced">Синхронізовано</string>
+    <string name="sync_dialog_message_not_synced_tei">Ви хочете відправити зміни по цьому %s</string>
     <string name="sync_dialog_action_send">Надіслати</string>
     <string name="sync_dialog_action_not_now">Не зараз</string>
     <string name="software_update">Оновлення додатку</string>
     <string name="check_for_updates">Перевірити оновлення</string>
     <string name="checking_for_updates">Перевірка оновлень</string>
     <string name="no_updates">Оновлення відсутні</string>
+    <string name="app_version">Версія додатку</string>
     <string name="not_synced">Не синхронізовано</string>
     <string name="overdue">Прострочений %s</string>
+    <string name="registered_in">Зареєстровано в</string>
     <string name="view_only">Тільки перегляд</string>
     <string name="skipped">Пропущено</string>
     <string name="programs">Програми</string>
+    <string name="sync_successful">Синхронізація успішна</string>
     <string name="sync_error">Помилка синхронізації</string>
     <string name="mark_follow_up">Позначити для подальших дій</string>
     <string name="schedule_next">Запланувати наступний</string>
     <string name="schedule">Запланувати</string>
+    <string name="enter">Введіть</string>
+    <string name="refer">Перенаправити</string>
     <string name="scheduled_enter_event">Заплановано</string>
+    <string name="enter_event">Введіть %1$s</string>
     <string name="program_stage">Етап програми</string>
     <string name="event">подія</string>
     <string name="clear_search">Очистити пошук</string>

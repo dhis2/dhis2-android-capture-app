@@ -3,15 +3,22 @@
     <string name="default_column_label">Valores</string>
     <string name="total_header_label">Totales</string>
     <string name="input_age_date_of_birth">Fecha de nacimiento</string>
+    <string name="input_age">Edad</string>
     <string name="input_age_or">o</string>
     <string name="input_action_accept">Aceptar</string>
     <string name="input_action_cancel">Cancelar</string>
     <string name="no_results_found">No se encontraron resultados</string>
+    <string name="search_to_find_more">Busca para ver más</string>
     <string name="action_done">Hecho</string>
     <string name="input_coordinate_latitude">Latitud</string>
     <string name="input_coordinate_longitude">Longitud</string>
     <string name="input_coordinate_add_location">Agregar ubicación</string>
+    <string name="input_date_out_of_range">Fuera de rango</string>
+    <string name="format_error">Formato incorrecto</string>
     <string name="input_not_supported">No soportado</string>
+    <string name="completion_dialog_title">Todo se ve bien</string>
+    <string name="completion_dialog_description">¿También deseas completar el conjunto de datos\?</string>
+    <string name="validation_success_title">Todo se ve bien</string>
     <string name="mark_dataset_complete">¿Quiere completar también el set de datos\?</string>
     <string name="not_now">Ahora no</string>
     <string name="complete">Completar</string>
@@ -20,6 +27,7 @@
     <string name="field_required">Si introduce un valor, tendrá que completar toda la fila para poder marcar como Completado el Data Set.</string>
     <string name="ok">Aceptar</string>
     <string name="dataset_saved_completed">¡Guardado y completado!</string>
+    <string name="error_on_complete_dataset">Ha ocurrido un error al completar el conjunto de datos</string>
     <string name="run_validation_rules">¿Quieree validar la calidad de los datos\?</string>
     <string name="no">No</string>
     <string name="yes">Sí</string>
@@ -28,10 +36,43 @@
     <string name="complete_anyway">Completar de todas formas</string>
     <string name="review">Revisar</string>
     <string name="validation_rules_data_to_review">Datos a revisar</string>
+    <string name="action_can_not_be_performed">Esta acción no se puede realizar</string>
     <string name="action_next">Siguiente</string>
     <string name="add_file">Agregar archivo</string>
+    <string name="file_downloaded">Archivo descargado correctamente</string>
+    <string name="file_download_error">No se pudo descargar el archivo</string>
     <string name="add_image">Añadir imagen</string>
     <string name="take_photo">Tomar foto</string>
+    <string name="from_gallery">Agregar desde la galería</string>
+    <string name="empty_section_message">Esta sección está mal configurada.\nContacta a tu administrador.</string>
+    <string name="empty_dataset_message">Este conjunto de datos está mal configurado.\nContacta a tu administrador.</string>
+
     <string name="indicators_label">Indicadores</string>
     <string name="no_data_write_access">No tiene permisos de edición para estos datos.</string>
-    </resources>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">No tienes permiso para editar datos para %1$s</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">No puedes editar datos de %1$s</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">No se puede editar datos para %1$s en %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">No se pueden editar los datos de %1$s en %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">No se pueden editar los datos del periodo %1$s en %2$s</string>
+    <string name="dataset_closed">Estos datos no son editables porque están marcados como completados</string>
+    <string name="dataset_expired">Estos datos no son editables porque su tiempo de edición ha expirado</string>
+
+</resources>

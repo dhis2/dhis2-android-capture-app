@@ -39,6 +39,7 @@
     <string name="filters_title_state">Синхронізувати</string>
     <string name="filters_title_assigned">Призначено мені</string>
     <string name="filters_title_date">Дата</string>
+    <string name="filters_title_event_label_date">Дата %s </string>
     <string name="filter_follow_up_label">Для подальших дій %s</string>
     <string name="select_period">Обрати тип періоду</string>
     <string name="daily_period">Щодня</string>
@@ -140,6 +141,9 @@
     <string name="section_charts">Діаграми</string>
     <string name="section_charts_indicators">Діаграми та індикатори</string>
 
+    <!-- Enrollment -->
+    <string name="enrolled_in">Зареєстровано в:</string>
+
     <!--SDK error codes-->
     <string name="login_error_null_pass">Пароль відсутній. Будь ласка, введіть пароль.</string>
     <string name="login_error_null_username">Ім\'я користувача відсутнє. Будь ласка, введіть ім\'я користувача.</string>
@@ -234,7 +238,12 @@
         <item quantity="other">%d років прострочено</item>
     </plurals>
 
+    <string name="enrollment_date_V2">Дата %s </string>
+    <string name="new_enrollment">Новий %s</string>
     <string name="enrolling_ou">Зареєстровано в:</string>
+    <string name="more_enrollments">Інші реєстрації</string>
+    <string name="refresh_this_record">Оновити цей запис</string>
+    <string name="view_timeline">Переглянути хронологію</string>
     <!-- Event -->
     <plurals name="event_label">
         <item quantity="one">подія</item>
@@ -242,7 +251,11 @@
         <item quantity="many">події</item>
         <item quantity="other">події</item>
     </plurals>
+    <string name="new_event_label">Новий 1%s</string>
+    <string name="event_label_date">Дата %s </string>
     <string name="delete_event_label">Видалити %s</string>
+    <string name="event_label_was_deleted">%s успішно видалено</string>
+    <string name="confirm_delete_event_label">Ви впевнені, що хочете видалити %s?</string>
     <string name="week_period_span_default_label">Тиждень %d %s до %s</string>
     <string name="enrollment_reopen">повторно відкрити</string>
 
