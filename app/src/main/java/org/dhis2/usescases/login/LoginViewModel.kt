@@ -403,8 +403,7 @@ class LoginViewModel(
                 userName,
                 pass,
             )
-        } 
-        else {
+        } else {
             onDone()
         }
     }
