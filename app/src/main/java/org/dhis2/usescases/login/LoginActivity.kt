@@ -455,8 +455,9 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             displayTrackingMessage -> showCrashlyticsDialog()
             presenter.shouldAskForBiometrics() -> showBiometricDialog()
             else -> {
-                presenter.saveUserCredentials()
-                goToNextScreen()
+                presenter.saveUserCredentials {
+                    goToNextScreen()
+                }
             }
         }
     }
@@ -475,12 +476,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             ),
             showTopDivider = true,
             onMainButtonClicked = {
-                presenter.saveUserCredentials(binding.userPassEdit.text.toString())
-                onLoginDataUpdated(false)
+                presenter.saveUserCredentials(binding.userPassEdit.text.toString()) {
+                    onLoginDataUpdated(false)
+                }
             },
             onSecondaryButtonClicked = {
-                presenter.saveUserCredentials()
-                onLoginDataUpdated(false)
+                presenter.saveUserCredentials {
+                    onLoginDataUpdated(false)
+                }
             },
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
