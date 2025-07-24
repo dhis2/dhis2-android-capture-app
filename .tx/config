@@ -80,3 +80,11 @@ source_lang  = en
 type         = ANDROID
 minimum_perc = 0
 resource_name = CommonsKMM
+
+[o:hisp-uio:p:dhis2-android-capture-app:r:login-strings-xml]
+file_filter  = login/src/commonMain/composeResources/values-<lang>/strings.xml
+source_file  = login/src/commonMain/composeResources/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
+resource_name = Login

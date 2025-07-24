@@ -37,8 +37,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.material3)
             api(compose.materialIconsExtended)
-            val desyngsystem = libs.dhis2.mobile.designsystem
-            implementation("${desyngsystem.get().group}:${desyngsystem.get().name}:${desyngsystem.get().version}"){
+            val designSystem = libs.dhis2.mobile.designsystem
+            implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}"){
                 isChanging= true
             }
             implementation(libs.compose.material3.window)
