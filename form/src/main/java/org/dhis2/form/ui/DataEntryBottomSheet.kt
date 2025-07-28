@@ -1,0 +1,121 @@
+package org.dhis2.form.ui
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
+import org.dhis2.commons.dialogs.bottomsheet.ErrorFieldList
+import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
+import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
+import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
+import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+
+@Composable
+fun DataEntryBottomSheet(
+    model: BottomSheetDialogUiModel,
+    allowDiscard: Boolean,
+    fieldsWithIssues: List<FieldWithIssue>,
+    onPrimaryButtonClick: () -> Unit,
+    onSecondaryButtonClick: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BottomSheetShell(
+        uiState = BottomSheetShellUIState(
+            title = model.title,
+            subtitle = model.subtitle,
+            description = model.message,
+            showTopSectionDivider = false,
+            showBottomSectionDivider = false,
+            bottomPadding = BottomSheetShellDefaults.lowerPadding(true),
+            headerTextAlignment = model.headerTextAlignment,
+        ),
+        modifier = Modifier.navigationBarsPadding(),
+        content = if (fieldsWithIssues.isEmpty()) {
+            null
+        } else {
+            {
+                ErrorFieldList(
+                    fieldsWithIssues = fieldsWithIssues,
+                    onItemClick = {
+                        onDismiss()
+                    },
+                )
+            }
+        },
+        windowInsets = { BottomSheetShellDefaults.windowInsets(true) },
+        icon = model.iconResource.takeIf { it != -1 }?.let { iconResource ->
+            {
+                Icon(
+                    modifier = Modifier.size(Spacing24),
+                    painter = painterResource(iconResource),
+                    contentDescription = "Icon",
+                    tint = SurfaceColor.Primary,
+                )
+            }
+        },
+        buttonBlock = {
+            if (model.hasButtons()) {
+                ButtonBlock(
+                    modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+                    primaryButton = {
+                        model.secondaryButton?.let { secondaryButton ->
+                            Button(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag(SECONDARY_BUTTON_TAG),
+                                style = secondaryButton.buttonStyle,
+                                text = secondaryButton.textLabel
+                                    ?: stringResource(secondaryButton.textResource),
+                                colorStyle = when (secondaryButton) {
+                                    is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
+                                    else -> ColorStyle.DEFAULT
+                                },
+                                onClick = {
+                                    onSecondaryButtonClick()
+                                    onDismiss()
+                                },
+                            )
+                        }
+                    },
+                    secondaryButton = {
+                        model.mainButton?.let { mainButton ->
+                            Button(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag(MAIN_BUTTON_TAG),
+                                style = mainButton.buttonStyle,
+                                text = mainButton.textLabel ?: stringResource(
+                                    mainButton.textResource,
+                                ),
+                                colorStyle = when (mainButton) {
+                                    is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
+                                    else -> ColorStyle.DEFAULT
+                                },
+                                onClick = {
+                                    onPrimaryButtonClick()
+                                    onDismiss()
+                                },
+                            )
+                        }
+                    },
+                )
+            }
+        },
+        onDismiss = onDismiss,
+    )
+}
