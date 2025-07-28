@@ -112,6 +112,9 @@ dependencies {
     }
     api(libs.rx.binding.compat)
     testApi(libs.test.junit)
+    testApi(libs.test.mockitoCore)
+    testApi(libs.test.mockitoKotlin)
+    testApi(libs.test.mockitoInline)
     androidTestApi(libs.test.mockitoCore)
     androidTestApi(libs.test.mockitoKotlin)
     androidTestApi(libs.test.dexmaker.mockitoInline)
