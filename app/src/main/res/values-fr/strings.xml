@@ -870,4 +870,5 @@
     <string name="successful_sync">Synchronisation réussie</string>
     <string name="show_description">Afficher la description</string>
     <string name="hide_description">Masquer la description</string>
+    <string name="transfer">Transférer</string>
     </resources>
