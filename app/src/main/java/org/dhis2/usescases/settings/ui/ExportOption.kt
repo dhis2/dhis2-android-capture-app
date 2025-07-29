@@ -93,12 +93,7 @@ fun ExportOption(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(Spacing.Spacing72)
-                    .padding(
-                        start = Spacing.Spacing48,
-                        top = Spacing.Spacing16,
-                        end = Spacing.Spacing16,
-                        bottom = Spacing.Spacing16,
-                    ),
+                    .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
@@ -108,7 +103,7 @@ fun ExportOption(
                         onDownloadCLick(context, onDownload, launcher)
                         onPermissionGrantedCallback = onDownload
                     },
-                    style = ButtonStyle.TEXT,
+                    style = ButtonStyle.TONAL,
                     text = stringResource(id = R.string.download),
                     icon = {
                         Icon(
@@ -125,7 +120,7 @@ fun ExportOption(
                         onShareClick(context, onShare, launcher)
                         onPermissionGrantedCallback = onShare
                     },
-                    style = ButtonStyle.TEXT,
+                    style = ButtonStyle.TONAL,
                     text = stringResource(id = R.string.share),
                     icon = {
                         Icon(
@@ -171,7 +166,11 @@ fun ExportOption(
     }
 }
 
-private fun onDownloadCLick(context: Context, onSuccess: () -> Unit, launcher: ActivityResultLauncher<String>) {
+private fun onDownloadCLick(
+    context: Context,
+    onSuccess: () -> Unit,
+    launcher: ActivityResultLauncher<String>,
+) {
     if (checkPermissionAndAndroidVersion(context)) {
         onSuccess()
     } else {
@@ -179,7 +178,11 @@ private fun onDownloadCLick(context: Context, onSuccess: () -> Unit, launcher: A
     }
 }
 
-private fun onShareClick(context: Context, onSuccess: () -> Unit, launcher: ActivityResultLauncher<String>) {
+private fun onShareClick(
+    context: Context,
+    onSuccess: () -> Unit,
+    launcher: ActivityResultLauncher<String>,
+) {
     if (checkPermissionAndAndroidVersion(context)) {
         onSuccess()
     } else {

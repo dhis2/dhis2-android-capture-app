@@ -4,14 +4,13 @@ import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ImageSpan
 import android.view.animation.OvershootInterpolator
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.CloudSync
+import androidx.compose.material.icons.outlined.DataUsage
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material.icons.outlined.FolderDelete
+import androidx.compose.material.icons.outlined.Sms
+import androidx.compose.material.icons.outlined.Storage
+import androidx.compose.material.icons.outlined.SystemUpdate
+import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +63,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.AnnotatedString
@@ -93,6 +103,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlySwitch
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
@@ -237,7 +249,8 @@ private fun SettingItemList(
             .background(MaterialTheme.colorScheme.primary)
             .background(Color.White, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-        contentPadding = PaddingValues(top = 16.dp),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         item {
             SyncDataSettingItem(
@@ -465,7 +478,7 @@ private fun SyncDataSettingItem(
                 }
             }
         },
-        iconId = R.drawable.ic_sync_data,
+        icon = Icons.Outlined.Update,
         extraActions = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -508,18 +521,18 @@ private fun SyncDataSettingItem(
                         loadOptions = {},
                     )
                 } else {
-                    Text(text = stringResource(R.string.syncing_period_not_editable))
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Button(
-                        text = stringResource(R.string.SYNC_DATA).uppercase(),
-                        enabled = canInitSync,
-                        onClick = onSyncDataClick,
+                    Text(
+                        text = stringResource(R.string.syncing_period_not_editable),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.SYNC_DATA),
+                    style = ButtonStyle.TONAL,
+                    enabled = canInitSync,
+                    onClick = onSyncDataClick,
+                )
             }
         },
         showExtraActions = isOpened,
@@ -569,7 +582,7 @@ private fun SyncMetadataSettingItem(
                 }
             }
         },
-        iconId = R.drawable.ic_sync_configuration,
+        icon = Icons.Outlined.CloudSync,
         extraActions = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -607,18 +620,18 @@ private fun SyncMetadataSettingItem(
                         loadOptions = {},
                     )
                 } else {
-                    Text(text = stringResource(R.string.syncing_period_not_editable))
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Button(
-                        text = stringResource(R.string.SYNC_META).uppercase(),
-                        enabled = canInitSync,
-                        onClick = onSyncMetadataClick,
+                    Text(
+                        text = stringResource(R.string.syncing_period_not_editable),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.SYNC_META),
+                    style = ButtonStyle.TONAL,
+                    enabled = canInitSync,
+                    onClick = onSyncMetadataClick,
+                )
             }
         },
         showExtraActions = isOpened,
@@ -655,7 +668,7 @@ private fun SyncParametersSettingItem(
             syncParametersViewModel.currentTeiCount,
             syncParametersViewModel.numberOfTeiToDownload,
         ),
-        iconId = R.drawable.ic_sync_parameters,
+        icon = Icons.Outlined.DataUsage,
         extraActions = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -730,7 +743,10 @@ private fun SyncParametersSettingItem(
                         imeAction = ImeAction.Done,
                     )
                 } else {
-                    Text(text = stringResource(R.string.sync_parameters_not_editable))
+                    Text(
+                        text = stringResource(R.string.sync_parameters_not_editable),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
                 if (syncParametersViewModel.hasSpecificProgramSettings > 0) {
                     Text(
@@ -757,18 +773,15 @@ private fun SyncParametersSettingItem(
                                 end = indexOfNumber + indexOfNumber.toString().length,
                             )
                         },
+                        style = MaterialTheme.typography.bodyMedium,
                     )
-                    Row(
+                    Button(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.End,
-                    ) {
-                        Button(
-                            text = stringResource(R.string.program_settings).uppercase(),
-                            style = ButtonStyle.TEXT,
-                            enabled = true,
-                            onClick = onSpecificProgramSettingsClick,
-                        )
-                    }
+                        text = stringResource(R.string.program_settings),
+                        style = ButtonStyle.TONAL,
+                        enabled = true,
+                        onClick = onSpecificProgramSettingsClick,
+                    )
                 }
             }
         },
@@ -789,7 +802,7 @@ private fun ReservedValuesSettingItem(
         modifier = Modifier.testTag(SettingItem.RESERVED_VALUES.name),
         title = stringResource(id = R.string.settingsReservedValues),
         subtitle = stringResource(id = R.string.settingsReservedValues_descr),
-        iconId = R.drawable.ic_reserved_values,
+        icon = Icons.AutoMirrored.Outlined.List,
         extraActions = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -808,19 +821,18 @@ private fun ReservedValuesSettingItem(
                         imeAction = ImeAction.Done,
                     )
                 } else {
-                    Text(text = stringResource(R.string.rv_no_editable))
-                }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    Button(
-                        text = stringResource(R.string.manage_reserved_values_button).uppercase(),
-                        style = ButtonStyle.TEXT,
-                        enabled = true,
-                        onClick = onManageReservedValuesClick,
+                    Text(
+                        text = stringResource(R.string.rv_no_editable),
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.manage_reserved_values_button),
+                    style = ButtonStyle.TONAL,
+                    enabled = true,
+                    onClick = onManageReservedValuesClick,
+                )
             }
         },
         showExtraActions = isOpened,
@@ -836,7 +848,7 @@ private fun OpenSyncErrorLogSettingItem(
         modifier = Modifier.testTag(SettingItem.ERROR_LOG.name),
         title = stringResource(id = R.string.settingsErrorLog),
         subtitle = stringResource(R.string.settingsErrorLog_descr),
-        iconId = R.drawable.ic_open_sync_error_log,
+        icon = Icons.Outlined.ErrorOutline,
         extraActions = {
             /*no extra actions*/
         },
@@ -856,7 +868,7 @@ private fun ExportDatabaseSettingsSettingItem(
     SettingItem(
         title = stringResource(id = R.string.settingsExportDB),
         subtitle = stringResource(R.string.settingsExportDBMessage),
-        iconId = R.drawable.ic_settings_export,
+        icon = Icons.Outlined.Storage,
         extraActions = {
             ExportOption(onShare, onDownload, displayProgress)
         },
@@ -874,20 +886,23 @@ private fun DeleteLocalDatabaseSettingItem(
     SettingItem(
         title = stringResource(id = R.string.settingsDeleteLocalData),
         subtitle = stringResource(R.string.settingsDeleteLocalData_descr),
-        iconId = R.drawable.ic_delete_local_data,
+        icon = Icons.Outlined.FolderDelete,
         extraActions = {
-            Row(
+            Button(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Button(
-                    text = stringResource(R.string.action_accept).uppercase(),
-                    colorStyle = ColorStyle.ERROR,
-                    style = ButtonStyle.TEXT,
-                    enabled = true,
-                    onClick = onDeleteLocalDataClick,
-                )
-            }
+                text = stringResource(R.string.delete),
+                colorStyle = ColorStyle.ERROR,
+                style = ButtonStyle.OUTLINED,
+                enabled = true,
+                onClick = onDeleteLocalDataClick,
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Delete,
+                        contentDescription = stringResource(R.string.delete),
+                        tint = SurfaceColor.Error,
+                    )
+                },
+            )
         },
         showExtraActions = isOpened,
         onClick = onClick,
@@ -941,7 +956,7 @@ private fun SMSSettingItem(
     SettingItem(
         title = stringResource(id = R.string.settingsSms),
         subtitle = stringResource(R.string.settingsSms_descr),
-        iconId = R.drawable.ic_setting_sms,
+        icon = Icons.Outlined.Sms,
         extraActions = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -1060,18 +1075,15 @@ private fun AppUpdateSettingItem(
                 end = description.length,
             )
         },
-        iconId = R.drawable.ic_software_update_menu,
+        icon = Icons.Outlined.SystemUpdate,
         extraActions = {
-            Row(
+            Button(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                Button(
-                    text = stringResource(R.string.check_for_updates),
-                    enabled = true,
-                    onClick = onCheckVersionUpdate,
-                )
-            }
+                text = stringResource(R.string.check_for_updates),
+                style = ButtonStyle.TONAL,
+                enabled = true,
+                onClick = onCheckVersionUpdate,
+            )
         },
         showExtraActions = isOpened,
         onClick = onClick,
@@ -1083,7 +1095,7 @@ private fun SettingItem(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: AnnotatedString,
-    @DrawableRes iconId: Int,
+    icon: ImageVector,
     extraActions: @Composable () -> Unit,
     showExtraActions: Boolean,
     onClick: () -> Unit,
@@ -1094,10 +1106,10 @@ private fun SettingItem(
         subtitle = {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
-        iconId = iconId,
+        icon = icon,
         extraActions = extraActions,
         showExtraActions = showExtraActions,
         onClick = onClick,
@@ -1109,7 +1121,7 @@ private fun SettingItem(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: String,
-    @DrawableRes iconId: Int,
+    icon: ImageVector,
     extraActions: @Composable () -> Unit,
     showExtraActions: Boolean,
     onClick: () -> Unit,
@@ -1120,10 +1132,10 @@ private fun SettingItem(
         subtitle = {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
-        iconId = iconId,
+        icon = icon,
         extraActions = extraActions,
         showExtraActions = showExtraActions,
         onClick = onClick,
@@ -1135,7 +1147,7 @@ private fun SettingItem(
     modifier: Modifier = Modifier,
     title: String,
     subtitle: @Composable () -> Unit,
-    @DrawableRes iconId: Int,
+    icon: ImageVector,
     extraActions: @Composable () -> Unit,
     showExtraActions: Boolean,
     onClick: () -> Unit,
@@ -1143,7 +1155,16 @@ private fun SettingItem(
     Column(
         modifier = modifier
             .wrapContentHeight()
-            .background(Color.White),
+            .background(color = Color.White, shape = Shape.Small)
+            .border(
+                width = 1.dp,
+                color = if (showExtraActions) {
+                    SurfaceColor.ContainerHighest
+                } else {
+                    Color.Transparent
+                },
+                shape = Shape.Small,
+            ),
     ) {
         Row(
             modifier = Modifier
@@ -1153,15 +1174,23 @@ private fun SettingItem(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = spacedBy(16.dp),
         ) {
-            Icon(
-                modifier = Modifier.size(40.dp),
-                imageVector = ImageVector.vectorResource(id = iconId),
-                contentDescription = null,
-            )
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(SurfaceColor.PrimaryContainer, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = SurfaceColor.Primary,
+                )
+            }
+
             Column(modifier = Modifier.height(intrinsicSize = IntrinsicSize.Max)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 subtitle()
             }
@@ -1180,13 +1209,9 @@ private fun SettingItem(
         ) {
             Box(
                 modifier = Modifier
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(16.dp),
-                    )
                     .fillMaxWidth()
                     .padding(
-                        start = 72.dp,
+                        start = 64.dp,
                         top = 8.dp,
                         bottom = 8.dp,
                         end = 16.dp,
