@@ -52,6 +52,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.aggregates.model.DataSetDetails
@@ -117,6 +118,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+private val FabContainerHeight = 56.dp + 16.dp + 16.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 /**
@@ -176,6 +178,8 @@ fun DataSetInstanceScreen(
         (dataSetScreenState as? DataSetScreenState.Loaded)?.selectedCellInfo?.tableSelection
             ?: TableSelection.Unselected()
 
+    var fabSizeDp by remember { mutableStateOf(FabContainerHeight) }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -225,9 +229,15 @@ fun DataSetInstanceScreen(
         snackbarHost = { DataSetSnackbarHost(snackbarHostState) },
         floatingActionButton = {
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
+            val visible = loadedState?.dataSetSectionTable?.loading == false &&
+                loadedState.selectedCellInfo !is CellSelectionState.InputDataUiState
+            fabSizeDp = if (visible) {
+                FabContainerHeight
+            } else {
+                0.dp
+            }
             AnimatedVisibility(
-                visible = loadedState?.dataSetSectionTable?.loading == false &&
-                    loadedState.selectedCellInfo !is CellSelectionState.InputDataUiState,
+                visible = visible,
                 enter = fadeIn(),
                 exit = fadeOut(),
             ) {
@@ -301,6 +311,8 @@ fun DataSetInstanceScreen(
                                     ),
                                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
+                                    inputDialogSize = inputDialogSize,
+                                    fabSize = fabSizeDp,
                                     onCellClick = { cellId, cellValue, cellError ->
                                         scope.launch {
                                             dataSetTableViewModel.updateSelectedCell(
@@ -383,6 +395,7 @@ fun DataSetInstanceScreen(
                     DataSetSinglePane(
                         modifier = Modifier.fillMaxSize(),
                         inputDialogSize = inputDialogSize,
+                        fabSize = fabSizeDp,
                         dataSetSections = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSections,
                         dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                         initialTab = (dataSetScreenState as DataSetScreenState.Loaded).initialSection,
@@ -433,8 +446,10 @@ fun DataSetInstanceScreen(
                 }
             }
 
+            val visible = selectedCellInfo is CellSelectionState.InputDataUiState
+
             AnimatedVisibility(
-                visible = selectedCellInfo is CellSelectionState.InputDataUiState,
+                visible = visible,
                 enter = slideInVertically(
                     initialOffsetY = { fullHeight -> fullHeight },
                 ),
@@ -442,9 +457,7 @@ fun DataSetInstanceScreen(
                     targetOffsetY = { fullHeight -> fullHeight },
                 ),
             ) {
-                selectedCellInfo?.takeIf {
-                    it is CellSelectionState.InputDataUiState
-                }?.let { inputData ->
+                selectedCellInfo?.takeIf { visible }?.let { inputData ->
                     require(inputData is CellSelectionState.InputDataUiState)
                     InputDialog(
                         modifier = Modifier.align(Alignment.BottomCenter)
@@ -487,6 +500,10 @@ fun DataSetInstanceScreen(
                         },
                     )
                 }
+            }
+
+            if (visible.not()) {
+                inputDialogSize = null
             }
         }
     }
@@ -551,6 +568,7 @@ private fun DataSetSinglePane(
     modifier: Modifier = Modifier,
     dataSetSections: List<DataSetSection>,
     inputDialogSize: Int?,
+    fabSize: Dp,
     dataSetDetails: DataSetDetails,
     initialTab: Int,
     dataSetSectionTable: DataSetSectionTable,
@@ -587,6 +605,7 @@ private fun DataSetSinglePane(
                 dataSetSectionTable = dataSetSectionTable,
                 onCellClick = onCellClick,
                 inputDialogSize = inputDialogSize,
+                fabSize = fabSize,
                 topContent = {
                     Column(
                         modifier = modifier.fillMaxWidth()
@@ -693,6 +712,7 @@ private fun DataSetTableContent(
     dataSetDetails: DataSetDetails,
     dataSetSectionTable: DataSetSectionTable,
     inputDialogSize: Int? = null,
+    fabSize: Dp,
     currentSection: String?,
     emptySectionMessage: String? = null,
     emptyDatasetMessage: String? = null,
@@ -712,6 +732,7 @@ private fun DataSetTableContent(
         DataSetTable(
             dataSetSectionTable = dataSetSectionTable,
             inputDialogSize = inputDialogSize,
+            fabSize = fabSize,
             onCellClick = onCellClick,
             topContent = {
                 Column(
@@ -823,6 +844,7 @@ private fun DataSetTable(
     dataSetSectionTable: DataSetSectionTable,
     currentSelection: TableSelection,
     inputDialogSize: Int?,
+    fabSize: Dp,
     topContent: @Composable (() -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
     onCellClick: (
@@ -836,6 +858,10 @@ private fun DataSetTable(
     loading: Boolean,
 ) {
     val density = LocalDensity.current
+
+    val inputDialogSizeDp = with(density) {
+        inputDialogSize?.toDp() ?: 0.dp
+    }
 
     val screenWidth = with(density) { getScreenWidth().roundToPx() - Spacing.Spacing32.roundToPx() }
     val sectionTableId = remember { mutableStateOf<String?>(null) }
@@ -940,7 +966,7 @@ private fun DataSetTable(
                 start = Spacing.Spacing16,
                 top = Spacing.Spacing8,
                 end = Spacing.Spacing16,
-                bottom = if (inputDialogSize == null) Spacing.Spacing200 else (Spacing.Spacing200 + (inputDialogSize.dp / 2)),
+                bottom = Spacing.Spacing16 + inputDialogSizeDp + fabSize,
             ),
             loading = loading,
         )
