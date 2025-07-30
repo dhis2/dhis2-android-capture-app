@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="test_key">Test Key</string>
+    <string name="two_fa_no_connection_title">Can't connect to network</string>
+    <string name="two_fa_no_connection_description">You need an internet connection to turn two-factor authentication on or off.</string>
+    <string name="two_fa_no_connection_button">Try to reconnect</string>
+    <string name="two_fa_checking_status">Checking status...</string>
 </resources>
