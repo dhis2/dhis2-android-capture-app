@@ -152,7 +152,9 @@ fun TwoFASettingsScreen(
 
                     is TwoFAUiState.NoConnection -> {
                         item {
-                            Text(text = "Connection Error")
+                            TwoFANoConnectionScreen(
+                                onRetry = { viewModel.retry() },
+                            )
                         }
                     }
 
