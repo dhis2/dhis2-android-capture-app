@@ -21,6 +21,7 @@ import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
 import org.dhis2.usescases.settings.models.ErrorViewModel
+import org.dhis2.usescases.settings.ui.SettingsScreen
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import timber.log.Timber

@@ -16,6 +16,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
+import org.dhis2.usescases.settings.ui.TestTag_DataPeriod
+import org.dhis2.usescases.settings.ui.TestTag_MetaPeriod
+import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_EventMaxCount
+import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_LimitScope
+import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_TeiMaxCount
 
 fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
     SettingsRobot().apply {
