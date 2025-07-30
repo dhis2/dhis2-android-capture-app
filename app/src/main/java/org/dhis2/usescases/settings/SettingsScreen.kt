@@ -1156,6 +1156,7 @@ private fun SettingItem(
         modifier = modifier
             .wrapContentHeight()
             .background(color = Color.White, shape = Shape.Small)
+            .clip(Shape.Small)
             .border(
                 width = 1.dp,
                 color = if (showExtraActions) {
@@ -1195,6 +1196,9 @@ private fun SettingItem(
                 subtitle()
             }
         }
+
+        HorizontalDivider(modifier = Modifier.padding(start = 72.dp))
+
         AnimatedVisibility(
             showExtraActions,
             enter = expandVertically(
@@ -1211,7 +1215,7 @@ private fun SettingItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
-                        start = 64.dp,
+                        start = 72.dp,
                         top = 8.dp,
                         bottom = 8.dp,
                         end = 16.dp,
@@ -1219,9 +1223,6 @@ private fun SettingItem(
             ) {
                 extraActions()
             }
-        }
-        if (!showExtraActions) {
-            HorizontalDivider(modifier = Modifier.padding(start = 72.dp))
         }
     }
 }
