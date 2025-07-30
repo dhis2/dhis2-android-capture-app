@@ -257,6 +257,7 @@ dependencies {
     implementation(project(":tracker"))
     implementation(project(":aggregates"))
     implementation(project(":commonskmm"))
+    implementation(project(":login"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
