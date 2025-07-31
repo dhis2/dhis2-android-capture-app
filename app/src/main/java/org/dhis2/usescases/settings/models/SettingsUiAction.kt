@@ -16,6 +16,7 @@ internal sealed class SettingsUiAction {
     data class OnSaveReservedValuesToDownload(val count: Int) : SettingsUiAction()
     object OnManageReserveValues : SettingsUiAction()
     object OnOpenErrorLog : SettingsUiAction()
+    object OnOpenTwoFASettings : SettingsUiAction()
     object OnDownload : SettingsUiAction()
     object OnShare : SettingsUiAction()
     object OnDeleteLocalData : SettingsUiAction()
