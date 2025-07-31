@@ -36,7 +36,9 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.authentication.ui.viewmodel.TwoFASettingsViewModel
 import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.back_to_settings
 import org.dhis2.mobile.login.resources.two_fa_checking_status
+import org.dhis2.mobile.login.resources.two_fa_screen_title
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
@@ -79,14 +81,14 @@ fun TwoFASettingsScreen(
                     TopBarActionIcon(
                         icon = Icons.AutoMirrored.Filled.ArrowBack,
                         tint = MaterialTheme.colorScheme.onPrimary,
-                        contentDescription = "back arrow",
+                        contentDescription = stringResource(Res.string.back_to_settings),
                         onClick = onBackClick,
                     )
                 },
                 actions = { },
                 title = {
                     Text(
-                        text = "Two factor authentication",
+                        text = stringResource(Res.string.two_fa_screen_title),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,

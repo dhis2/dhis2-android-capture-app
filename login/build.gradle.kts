@@ -85,12 +85,6 @@ compose.resources {
     generateResClass = always
 }
 
-compose.resources {
-    publicResClass = false
-    packageOfResClass = "org.dhis2.mobile.login.resources"
-    generateResClass = always
-}
-
 android {
     namespace = "org.dhis2.mobile.login"
     compileSdk = libs.versions.sdk.get().toInt()
