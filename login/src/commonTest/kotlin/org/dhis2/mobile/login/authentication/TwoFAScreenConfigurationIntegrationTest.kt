@@ -26,16 +26,16 @@ import kotlin.test.assertTrue
 class TwoFAScreenConfigurationIntegrationTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var mockRepository: TwoFARepository
-    private lateinit var useCase: GetTwoFAStatus
+    private lateinit var repository: TwoFARepository
+    private lateinit var getTwoFAStatus: GetTwoFAStatus
     private lateinit var mapper: TwoFAUiStateMapper
     private lateinit var viewModel: TwoFASettingsViewModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        mockRepository = mock()
-        useCase = GetTwoFAStatus(mockRepository)
+        repository = mock()
+        getTwoFAStatus = GetTwoFAStatus(repository)
         mapper = TwoFAUiStateMapper()
     }
 
@@ -48,12 +48,12 @@ class TwoFAScreenConfigurationIntegrationTest {
     fun `Given user taps on 2FA settings, When 2FA status is disabled, Then loading screen and enable 2FA screen are displayed`() =
         runTest {
             // Given: User taps on 2FA settings
-            whenever(mockRepository.getTwoFAStatus()).thenReturn(
+            whenever(repository.getTwoFAStatus()).thenReturn(
                 flowOf(TwoFAStatus.Disabled()),
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(useCase, mapper)
+            viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
 
             // Then: Loading screen is displayed followed by enable 2FA screen
             viewModel.uiState.test {
@@ -61,8 +61,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 assertEquals(TwoFAUiState.Checking, awaitItem())
 
                 // Enable 2FA screen is displayed
-                val disabledState = awaitItem()
-                assertTrue(disabledState is TwoFAUiState.Disabled)
+                assertTrue(awaitItem() is TwoFAUiState.Enable)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -72,12 +71,12 @@ class TwoFAScreenConfigurationIntegrationTest {
     fun `Given user taps on 2FA settings, When 2FA status is enabled, Then loading screen and disable 2FA screen are displayed`() =
         runTest {
             // Given: User taps on 2FA settings
-            whenever(mockRepository.getTwoFAStatus()).thenReturn(
+            whenever(repository.getTwoFAStatus()).thenReturn(
                 flowOf(TwoFAStatus.Enabled()),
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(useCase, mapper)
+            viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
 
             // Then: Loading screen is displayed followed by disable 2FA screen
             viewModel.uiState.test {
@@ -85,8 +84,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 assertEquals(TwoFAUiState.Checking, awaitItem())
 
                 // Disable 2FA screen is displayed
-                val enabledState = awaitItem()
-                assertTrue(enabledState is TwoFAUiState.Enabled)
+                assertTrue(awaitItem() is TwoFAUiState.Disable)
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -96,12 +94,12 @@ class TwoFAScreenConfigurationIntegrationTest {
     fun `Given user taps on 2FA settings, When 2FA status has no internet, Then loading screen and no connection screen are displayed`() =
         runTest {
             // Given: User taps on 2FA settings
-            whenever(mockRepository.getTwoFAStatus()).thenReturn(
+            whenever(repository.getTwoFAStatus()).thenReturn(
                 flowOf(TwoFAStatus.NoConnection),
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(useCase, mapper)
+            viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
 
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {
@@ -109,8 +107,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 assertEquals(TwoFAUiState.Checking, awaitItem())
 
                 // No connection screen is displayed
-                val noConnectionState = awaitItem()
-                assertEquals(TwoFAUiState.NoConnection, noConnectionState)
+                assertEquals(TwoFAUiState.NoConnection, awaitItem())
 
                 cancelAndIgnoreRemainingEvents()
             }

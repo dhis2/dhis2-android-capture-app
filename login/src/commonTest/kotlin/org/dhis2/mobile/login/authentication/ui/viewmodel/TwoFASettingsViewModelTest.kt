@@ -33,8 +33,8 @@ class TwoFASettingsViewModelTest {
     fun `init emits noConnection and checkTwoFAStatus emits Enabled`() = runTest {
         val noConnectionStatus = TwoFAStatus.NoConnection
         val noConnectionUiState = TwoFAUiState.NoConnection
-        val enabledStatus = TwoFAStatus.Enabled("2FA is enabled")
-        val enabledUiState = TwoFAUiState.Enabled("2FA is enabled")
+        val enabledStatus = TwoFAStatus.Enabled()
+        val disableUiState = TwoFAUiState.Disable()
 
         whenever(getTwoFAStatus()).thenReturn(flowOf(noConnectionStatus))
         whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
@@ -47,13 +47,13 @@ class TwoFASettingsViewModelTest {
             assert(awaitItem() == noConnectionUiState)
 
             whenever(getTwoFAStatus()).thenReturn(flowOf(enabledStatus))
-            whenever(mapper.mapToUiState(enabledStatus)).thenReturn(enabledUiState)
+            whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
             viewModel.checkTwoFAStatus()
 
             assert(awaitItem() is TwoFAUiState.Checking)
 
-            assert(awaitItem() == enabledUiState)
+            assert(awaitItem() == disableUiState)
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -63,8 +63,8 @@ class TwoFASettingsViewModelTest {
     fun `retry calls checkTwoFAStatus`() = runTest {
         val noConnectionStatus = TwoFAStatus.NoConnection
         val noConnectionUiState = TwoFAUiState.NoConnection
-        val disabledStatus = TwoFAStatus.Disabled("2FA is disabled")
-        val disabledUiState = TwoFAUiState.Disabled("2FA is disabled")
+        val disabledStatus = TwoFAStatus.Disabled()
+        val enableUiState = TwoFAUiState.Enable()
 
         whenever(getTwoFAStatus()).thenReturn(flowOf(noConnectionStatus))
         whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
@@ -77,13 +77,13 @@ class TwoFASettingsViewModelTest {
             assert(awaitItem() == noConnectionUiState)
 
             whenever(getTwoFAStatus()).thenReturn(flowOf(disabledStatus))
-            whenever(mapper.mapToUiState(disabledStatus)).thenReturn(disabledUiState)
+            whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
 
             viewModel.retry()
 
             assert(awaitItem() is TwoFAUiState.Checking)
 
-            assert(awaitItem() == disabledUiState)
+            assert(awaitItem() == enableUiState)
 
             cancelAndIgnoreRemainingEvents()
         }
