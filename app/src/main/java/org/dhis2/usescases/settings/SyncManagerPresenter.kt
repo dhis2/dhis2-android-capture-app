@@ -192,6 +192,53 @@ class SyncManagerPresenter(
         }
     }
 
+    fun saveGatewayNumber(gatewayNumber: String) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveGatewayNumber(gatewayNumber))
+            when (result) {
+                UpdateSmsModule.EnableSmsResult.Success,
+                UpdateSmsModule.EnableSmsResult.Error,
+                ->
+                    loadData()
+
+                is UpdateSmsModule.EnableSmsResult.ValidationError ->
+                    _settingsState.update {
+                        it?.copy(
+                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
+                                gatewayValidationResult = result.validationResult,
+                            ),
+                        )
+                    }
+            }
+        }
+    }
+
+    fun saveResultSender(resultSender: String) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveResultNumber(resultSender))
+            when (result) {
+                UpdateSmsModule.EnableSmsResult.Success,
+                UpdateSmsModule.EnableSmsResult.Error,
+                ->
+                    loadData()
+
+                is UpdateSmsModule.EnableSmsResult.ValidationError ->
+                    _settingsState.update {
+                        it?.copy(
+                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
+                                resultSenderValidationResult = result.validationResult,
+                            ),
+                        )
+                    }
+            }
+        }
+    }
+
+    fun saveTimeout(timeout: Int) {
+        viewModelScope.launch(dispatcherProvider.io()) {
+            val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveTimeout(timeout))
+        }
+    }
     fun enableSmsModule(enableSms: Boolean, smsGateway: String, timeout: Int) {
         viewModelScope.launch(dispatcherProvider.io()) {
             val result = updateSmsModule(

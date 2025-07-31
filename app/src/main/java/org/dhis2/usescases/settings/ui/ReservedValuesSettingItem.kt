@@ -40,7 +40,7 @@ internal fun ReservedValuesSettingItem(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = spacedBy(8.dp),
             ) {
-                if (!reservedValuesSettings.canBeEdited) {
+                if (reservedValuesSettings.canBeEdited) {
                     InputPositiveIntegerOrZero(
                         title = stringResource(R.string.reserved_values_hint),
                         state = InputShellState.FOCUSED,

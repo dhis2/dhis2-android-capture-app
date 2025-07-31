@@ -4,7 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -68,6 +68,7 @@ fun SettingsScreen(
     }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
                 Snackbar(
@@ -82,7 +83,8 @@ fun SettingsScreen(
 
         settingsUIModel?.let {
             SettingItemList(
-                modifier = Modifier.padding(paddingValues),
+                modifier = Modifier,
+                contentPadding = paddingValues,
                 settingsUIModel = it,
                 exportingDatabase = exportingDatabase,
                 onSettingsUiAction = { uiAction ->
@@ -130,6 +132,13 @@ fun SettingsScreen(
 
                         is SettingsUiAction.EnableWaitForResponse ->
                             viewmodel.saveWaitForSmsResponse(true, uiAction.resultSender)
+
+                        is SettingsUiAction.SaveGateway ->
+                            viewmodel.saveGatewayNumber(uiAction.gatewayNumber)
+                        is SettingsUiAction.SaveResultSender ->
+                            viewmodel.saveResultSender(uiAction.resultSender)
+                        is SettingsUiAction.SaveTimeout ->
+                            viewmodel.saveTimeout(uiAction.timeout)
                     }
                 },
             )
@@ -140,6 +149,7 @@ fun SettingsScreen(
 @Composable
 private fun SettingItemList(
     modifier: Modifier,
+    contentPadding: PaddingValues,
     settingsUIModel: SettingsState,
     exportingDatabase: Boolean,
     onSettingsUiAction: (SettingsUiAction) -> Unit,
@@ -147,6 +157,7 @@ private fun SettingItemList(
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
+            .imePadding()
             .background(MaterialTheme.colorScheme.primary)
             .background(Color.White, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
@@ -251,8 +262,18 @@ private fun SettingItemList(
                 enableSms = { gateWayNumber, timeout ->
                     onSettingsUiAction(SettingsUiAction.EnableSMS(gateWayNumber, timeout))
                 },
+                saveGatewayNumber = { gatewayNumber ->
+                    onSettingsUiAction(SettingsUiAction.SaveGateway(gatewayNumber))
+                },
+                saveTimeout = { timeout ->
+                    onSettingsUiAction(SettingsUiAction.SaveTimeout(timeout))
+                },
+
                 disableSms = {
                     onSettingsUiAction(SettingsUiAction.DisableSMS)
+                },
+                saveResultSender = { resultSender ->
+                    onSettingsUiAction(SettingsUiAction.SaveResultSender(resultSender))
                 },
                 enableWaitForResponse = { resultSender ->
                     onSettingsUiAction(SettingsUiAction.EnableWaitForResponse(resultSender))

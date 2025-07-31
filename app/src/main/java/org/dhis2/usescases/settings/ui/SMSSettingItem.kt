@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -17,6 +18,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import org.dhis2.R
 import org.dhis2.usescases.settings.GatewayValidator
 import org.dhis2.usescases.settings.models.SMSSettingsViewModel
@@ -31,8 +33,11 @@ internal fun SMSSettingItem(
     smsSettings: SMSSettingsViewModel,
     isOpened: Boolean,
     onClick: () -> Unit,
+    saveGatewayNumber: (gatewayNumber: String) -> Unit,
+    saveTimeout: (timeout: Int) -> Unit,
     enableSms: (gatewayNumber: String, timeout: Int) -> Unit,
     disableSms: () -> Unit,
+    saveResultSender: (resultSender: String) -> Unit,
     enableWaitForResponse: (resultSenderNumber: String) -> Unit,
     disableWaitForResponse: () -> Unit,
 ) {
@@ -66,6 +71,37 @@ internal fun SMSSettingItem(
         )
     }
 
+    var gateWayTimeLeft by remember(smsSettings) { mutableIntStateOf(-1) }
+    var timeoutTimeLeft by remember(smsSettings) { mutableIntStateOf(-1) }
+    var resultSenderTimeLeft by remember(smsSettings) { mutableIntStateOf(-1) }
+
+    LaunchedEffect(gateWayTimeLeft) {
+        if (gateWayTimeLeft < 0) return@LaunchedEffect
+        while (gateWayTimeLeft > 0) {
+            delay(1000L)
+            gateWayTimeLeft--
+        }
+        saveGatewayNumber(gatewayNumber)
+    }
+
+    LaunchedEffect(timeoutTimeLeft) {
+        if (timeoutTimeLeft < 0) return@LaunchedEffect
+        while (timeoutTimeLeft > 0) {
+            delay(1000L)
+            timeoutTimeLeft--
+        }
+        saveTimeout(resultTimeout)
+    }
+
+    LaunchedEffect(resultSenderTimeLeft) {
+        if (resultSenderTimeLeft < 0) return@LaunchedEffect
+        while (resultSenderTimeLeft > 0) {
+            delay(1000L)
+            resultSenderTimeLeft--
+        }
+        saveResultSender(resultSender)
+    }
+
     SettingItem(
         title = stringResource(id = R.string.settingsSms),
         subtitle = stringResource(R.string.settingsSms_descr),
@@ -84,6 +120,7 @@ internal fun SMSSettingItem(
                         selection = TextRange(gatewayNumber.length),
                     ),
                     onValueChanged = {
+                        gateWayTimeLeft = 3
                         gatewayValidation = GatewayValidator.GatewayValidationResult.Valid
                         gatewayNumber = it?.text ?: ""
                     },
@@ -98,6 +135,7 @@ internal fun SMSSettingItem(
                         selection = TextRange(resultTimeout.toString().length),
                     ),
                     onValueChanged = {
+                        timeoutTimeLeft = 3
                         resultTimeout = it?.text?.toIntOrNull() ?: 0
                     },
                     imeAction = ImeAction.Done,
@@ -124,6 +162,7 @@ internal fun SMSSettingItem(
                         selection = TextRange(resultSender.length),
                     ),
                     onValueChanged = {
+                        resultSenderTimeLeft = 3
                         resultSender = it?.text ?: ""
                     },
                     imeAction = ImeAction.Done,

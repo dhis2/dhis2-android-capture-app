@@ -17,6 +17,9 @@ class UpdateSmsModule(
 ) {
 
     sealed interface SmsSetting {
+        data class SaveGatewayNumber(val smsGateway: String) : SmsSetting
+        data class SaveTimeout(val timeout: Int) : SmsSetting
+        data class SaveResultNumber(val resultNumber: String) : SmsSetting
         data class Enable(val smsGateway: String, val timeout: Int) : SmsSetting
         data object Disable : SmsSetting
     }
@@ -49,6 +52,34 @@ class UpdateSmsModule(
 
             SmsSetting.Disable -> {
                 updateSmsModule(false)
+            }
+
+            is SmsSetting.SaveGatewayNumber -> when (val validation = gatewayValidator(smsSetting.smsGateway)) {
+                GatewayValidator.GatewayValidationResult.Invalid ->
+                    ValidationError(validation)
+                GatewayValidator.GatewayValidationResult.Empty,
+                GatewayValidator.GatewayValidationResult.Valid,
+                -> {
+                    settingsRepository.saveGatewayNumber(smsSetting.smsGateway)
+                    settingsMessages.sendMessage("Gateway saved")
+                    Success
+                }
+            }
+            is SmsSetting.SaveResultNumber -> when (val validation = gatewayValidator(smsSetting.resultNumber)) {
+                GatewayValidator.GatewayValidationResult.Invalid ->
+                    ValidationError(validation)
+                GatewayValidator.GatewayValidationResult.Empty,
+                GatewayValidator.GatewayValidationResult.Valid,
+                -> {
+                    settingsRepository.saveGatewayNumber(smsSetting.resultNumber)
+                    settingsMessages.sendMessage("Result sender saved")
+                    Success
+                }
+            }
+            is SmsSetting.SaveTimeout -> {
+                settingsRepository.saveSmsResponseTimeout(smsSetting.timeout)
+                settingsMessages.sendMessage("Timeout updated")
+                Success
             }
         }
     }

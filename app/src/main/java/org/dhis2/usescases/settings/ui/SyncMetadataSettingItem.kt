@@ -14,6 +14,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
 import org.dhis2.bindings.EVERY_24_HOUR
@@ -116,7 +118,9 @@ internal fun SyncMetadataSettingItem(
                 }
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.SYNC_META),
+                    text = stringResource(R.string.SYNC_META)
+                        .lowercase()
+                        .capitalize(Locale.current),
                     style = ButtonStyle.TONAL,
                     enabled = canInitSync,
                     onClick = onSyncMetadataClick,

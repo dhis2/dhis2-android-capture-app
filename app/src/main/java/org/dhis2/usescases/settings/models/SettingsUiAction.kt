@@ -20,8 +20,12 @@ internal sealed class SettingsUiAction {
     object OnShare : SettingsUiAction()
     object OnDeleteLocalData : SettingsUiAction()
     object OnCheckVersionUpdates : SettingsUiAction()
+
+    data class SaveGateway(val gatewayNumber: String) : SettingsUiAction()
+    data class SaveTimeout(val timeout: Int) : SettingsUiAction()
     data class EnableSMS(val gateWayNumber: String, val timeout: Int) : SettingsUiAction()
     object DisableSMS : SettingsUiAction()
+    data class SaveResultSender(val resultSender: String) : SettingsUiAction()
     data class EnableWaitForResponse(val resultSender: String) : SettingsUiAction()
     object DisableWaitForResponse : SettingsUiAction()
 }
