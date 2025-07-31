@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.main.AVOID_SYNC
@@ -38,9 +39,9 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
-        settingsRobot {
-            clickOnSyncData(composeTestRule)
-            checkEditPeriodIsDisableForData(composeTestRule)
+        settingsRobot(composeTestRule) {
+            clickOnSyncData()
+            checkEditPeriodIsDisableForData()
         }
     }
 
@@ -53,9 +54,9 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
-        settingsRobot {
-            clickOnSyncConfiguration(composeTestRule)
-            checkEditPeriodIsDisableForConfiguration(composeTestRule)
+        settingsRobot(composeTestRule) {
+            clickOnSyncConfiguration()
+            checkEditPeriodIsDisableForConfiguration()
         }
     }
 
@@ -68,9 +69,9 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
-        settingsRobot {
-            clickOnSyncParameters(composeTestRule)
-            checkEditPeriodIsDisableForParameters(composeTestRule)
+        settingsRobot(composeTestRule) {
+            clickOnSyncParameters()
+            checkEditPeriodIsDisableForParameters()
         }
     }
 
@@ -83,9 +84,9 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
-        settingsRobot {
-            clickOnReservedValues(composeTestRule)
-            clickOnManageReservedValues(composeTestRule)
+        settingsRobot(composeTestRule) {
+            clickOnReservedValues()
+            clickOnManageReservedValues()
         }
     }
 
@@ -98,9 +99,45 @@ class SettingsTest : BaseTest() {
             clickOnSettings()
         }
 
-        settingsRobot {
-            clickOnOpenSyncErrorLog(composeTestRule)
+        settingsRobot(composeTestRule) {
+            clickOnOpenSyncErrorLog()
             checkLogViewIsDisplayed()
+        }
+    }
+
+    //This test covers test case ANDROAPP-7139
+    @Test
+    fun shouldNotShowTwoFAOption() {
+        disableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
+
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickOnSettings()
+        }
+
+        settingsRobot(composeTestRule) {
+            checkTwoFAOptionIsNotDisplayed()
+        }
+    }
+
+    //This test covers test case ANDROAPP-7139 and ANDROAPP-7140
+    @Test
+    fun shouldShowTwoFAOption() {
+        enableFeatureConfigValue(Feature.TWO_FACTOR_AUTHENTICATION)
+
+        startActivity()
+
+        homeRobot {
+            clickOnNavigationDrawerMenu()
+            clickOnSettings()
+        }
+
+        settingsRobot(composeTestRule) {
+            checkTwoFAOptionIsDisplayed()
+            clickOnTwoFASettings()
+            checkTwoFAScreenIsDisplayed()
         }
     }
 
