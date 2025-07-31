@@ -238,10 +238,12 @@ private fun SettingItemList(
             )
         }
 
-        item {
-            TwoFASettingItem(
-                onClick = { onSettingsUiAction(SettingsUiAction.OnOpenTwoFASettings) },
-            )
+        if (settingsUIModel.isTwoFAConfigured) {
+            item {
+                TwoFASettingItem(
+                    onClick = { onSettingsUiAction(SettingsUiAction.OnOpenTwoFASettings) },
+                )
+            }
         }
 
         item {
