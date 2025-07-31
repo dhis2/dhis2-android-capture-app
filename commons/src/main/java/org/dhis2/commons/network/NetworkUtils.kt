@@ -5,19 +5,18 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import androidx.lifecycle.asLiveData
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.dhis2.commons.R
 import timber.log.Timber
 
 class NetworkUtils(val context: Context) {
-
     val manager = context.getSystemService(
         Context.CONNECTIVITY_SERVICE,
     ) as ConnectivityManager?
     private val _connectionStatus = MutableStateFlow(false)
-    val connectionStatus = _connectionStatus.asLiveData()
+    val connectionStatus = _connectionStatus.asStateFlow()
 
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
