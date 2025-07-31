@@ -11,7 +11,7 @@ import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 
 open class TwoFASettingsViewModel(
-    private val twoFAStatusUseCase: GetTwoFAStatus,
+    private val getTwoFAStatus: GetTwoFAStatus,
     private val mapper: TwoFAUiStateMapper,
 ) : ViewModel() {
 
@@ -26,7 +26,7 @@ open class TwoFASettingsViewModel(
         viewModelScope.launch {
             _uiState.value = TwoFAUiState.Checking
 
-            twoFAStatusUseCase()
+            getTwoFAStatus()
                 .collect { status ->
                     _uiState.value = mapper.mapToUiState(status)
                 }

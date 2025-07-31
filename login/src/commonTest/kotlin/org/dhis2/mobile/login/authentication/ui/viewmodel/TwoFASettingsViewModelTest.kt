@@ -42,7 +42,6 @@ class TwoFASettingsViewModelTest {
         viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
 
         viewModel.uiState.test {
-
             assert(awaitItem() is TwoFAUiState.Checking)
 
             assert(awaitItem() == noConnectionUiState)
@@ -73,7 +72,6 @@ class TwoFASettingsViewModelTest {
         viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
 
         viewModel.uiState.test {
-
             assert(awaitItem() is TwoFAUiState.Checking)
 
             assert(awaitItem() == noConnectionUiState)

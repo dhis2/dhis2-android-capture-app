@@ -71,7 +71,7 @@ class TwoFASettingsViewModelIntegrationTest {
             // Second emission should be Enabled
             val enabledState = awaitItem()
             assertTrue(enabledState is TwoFAUiState.Enabled)
-            assertEquals(null, (enabledState as TwoFAUiState.Enabled).errorMessage)
+            assertEquals(null, enabledState.errorMessage)
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -97,7 +97,7 @@ class TwoFASettingsViewModelIntegrationTest {
             // Second emission should be Disabled with error message
             val disabledState = awaitItem()
             assertTrue(disabledState is TwoFAUiState.Disabled)
-            assertEquals(errorMessage, (disabledState as TwoFAUiState.Disabled).errorMessage)
+            assertEquals(errorMessage, disabledState.errorMessage)
 
             cancelAndIgnoreRemainingEvents()
         }
