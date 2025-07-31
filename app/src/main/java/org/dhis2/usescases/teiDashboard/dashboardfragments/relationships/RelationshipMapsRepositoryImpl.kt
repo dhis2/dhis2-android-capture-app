@@ -8,7 +8,6 @@ import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.relationship.Relationship
 
 class RelationshipMapsRepositoryImpl(
     private val d2: D2,
@@ -58,8 +57,10 @@ class RelationshipMapsRepositoryImpl(
 
     override fun addRelationshipInfo(
         mapItem: MapItemModel,
-        relationship: Relationship,
+        relationshipUid: String,
     ): MapItemModel {
+        val relationship = d2.relationshipModule().relationships().uid(relationshipUid).blockingGet()
+        requireNotNull(relationship)
         return trackedEntityInfoProvider.updateRelationshipInfo(mapItem, relationship)
     }
 

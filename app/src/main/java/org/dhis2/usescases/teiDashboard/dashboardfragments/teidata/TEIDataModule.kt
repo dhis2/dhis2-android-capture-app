@@ -24,7 +24,7 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.tracker.events.CreateEventUseCaseRepository
+import org.dhis2.tracker.events.CreateEventUseCaseRepositoryImpl
 import org.dhis2.usescases.teiDashboard.DashboardRepository
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper.TEIEventCardMapper
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
@@ -178,10 +178,8 @@ class TEIDataModule(
 
     @Provides
     fun provideCreateEventUseCase(
-        dispatcherProvider: DispatcherProvider,
-        repository: CreateEventUseCaseRepository,
+        repository: CreateEventUseCaseRepositoryImpl,
     ) = CreateEventUseCase(
-        dispatcher = dispatcherProvider,
         repository = repository,
     )
 
@@ -189,7 +187,7 @@ class TEIDataModule(
     fun provideCreateEventUseCaseRepository(
         d2: D2,
         dateUtils: DateUtils,
-    ) = CreateEventUseCaseRepository(
+    ) = CreateEventUseCaseRepositoryImpl(
         d2 = d2,
         dateUtils = dateUtils,
     )

@@ -17,7 +17,6 @@ import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
-import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
@@ -27,12 +26,14 @@ import org.dhis2.data.forms.dataentry.ValueStore;
 import org.dhis2.data.forms.dataentry.ValueStoreImpl;
 import org.dhis2.data.search.SearchParametersModel;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
-import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
+import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider;
+import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.relationships.model.RelationshipDirection;
+import org.dhis2.tracker.relationships.model.RelationshipGeometry;
 import org.dhis2.tracker.relationships.model.RelationshipModel;
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType;
 import org.dhis2.ui.ThemeManager;
@@ -443,10 +444,29 @@ public class SearchRepositoryImpl implements SearchRepository {
                 for (TrackedEntityAttributeValue attributeValue : toAttr) {
                     toValues.add(new kotlin.Pair<>(attributeValue.trackedEntityAttribute(), attributeValue.value()));
                 }
+
+                RelationshipGeometry fromGeometry = null;
+                RelationshipGeometry toGeometry = null;
+
+                if (fromTei.geometry() != null) {
+                    fromGeometry = new RelationshipGeometry(
+                            fromTei.geometry().type().name(),
+                            fromTei.geometry().coordinates()
+                    );
+                }
+
+                if (toTei.geometry() != null) {
+                    toGeometry = new RelationshipGeometry(
+                            toTei.geometry().type().name(),
+                            toTei.geometry().coordinates()
+                    );
+                }
+
                 relationshipModels.add(new RelationshipModel(
-                        relationship,
-                        fromTei.geometry(),
-                        toTei.geometry(),
+                        relationship.uid(),
+                        relationship.syncState().name(),
+                        fromGeometry,
+                        toGeometry,
                         direction,
                         relationshipTEIUid,
                         RelationshipOwnerType.TEI,
@@ -456,6 +476,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                         profilePicturePath(toTei, selectedProgram.uid()),
                         getTeiDefaultRes(fromTei),
                         getTeiDefaultRes(toTei),
+                        null,
                         null,
                         true,
                         null,

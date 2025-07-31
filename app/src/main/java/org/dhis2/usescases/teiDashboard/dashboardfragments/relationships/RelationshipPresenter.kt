@@ -25,6 +25,8 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.maplibre.geojson.Feature
@@ -71,7 +73,8 @@ class RelationshipPresenter internal constructor(
                     val mapItem = MapItemModel(
                         uid = relationship.ownerUid,
                         avatarProviderConfiguration = avatarProvider.getAvatar(
-                            style = relationship.ownerStyle,
+                            icon = relationship.ownerStyleIcon,
+                            color = relationship.ownerStyleColor,
                             profilePath = relationship.getPicturePath(),
                             firstAttributeValue = relationship.firstMainValue(),
                         ),
@@ -85,16 +88,27 @@ class RelationshipPresenter internal constructor(
                             )
                         },
                         isOnline = false,
-                        geometry = relationship.displayGeometry(),
+                        geometry = relationship.displayGeometry()?.let { relationshipGeometry ->
+                            Geometry.builder()
+                                .type(
+                                    relationshipGeometry.featureType?.let { name ->
+                                        FeatureType.valueOf(
+                                            name,
+                                        )
+                                    },
+                                )
+                                .coordinates(relationshipGeometry.coordinates)
+                                .build()
+                        },
                         relatedInfo = relationshipMapsRepository.getRelatedInfo(
                             ownerType = relationship.ownerType,
                             ownerUid = relationship.ownerUid,
                         ),
-                        state = relationship.relationship.syncState() ?: State.SYNCED,
+                        state = State.valueOf(relationship.relationshipState),
                     )
                     relationshipMapsRepository.addRelationshipInfo(
                         mapItem,
-                        relationship.relationship,
+                        relationship.relationshipUid,
                     )
                 }
 
@@ -125,18 +139,20 @@ class RelationshipPresenter internal constructor(
         relationshipTypeUid: String,
         teiTypeToAdd: String?,
     ) {
-        val writeAccess = relationshipsRepository.hasWritePermission(relationshipTypeUid)
+        scope.launch {
+            val writeAccess = relationshipsRepository.hasWritePermission(relationshipTypeUid)
 
-        if (writeAccess) {
-            analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
+            if (writeAccess) {
+                analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
 
-            val originUid = teiUid ?: eventUid
+                val originUid = teiUid ?: eventUid
 
-            if (originUid != null && teiTypeToAdd != null) {
-                view.goToAddRelationship(originUid, teiTypeToAdd)
+                if (originUid != null && teiTypeToAdd != null) {
+                    view.goToAddRelationship(originUid, teiTypeToAdd)
+                }
+            } else {
+                view.showPermissionError()
             }
-        } else {
-            view.showPermissionError()
         }
     }
 

@@ -16,6 +16,14 @@ import timber.log.Timber
 import java.io.File
 
 class MetadataIconProvider(private val d2: D2) {
+
+    operator fun invoke(color: String?, icon: String?, defaultColor: Color = SurfaceColor.Primary): MetadataIconData {
+        val objectStyleBuilder = ObjectStyle.builder()
+        color?.let { objectStyleBuilder.color(it) }
+        icon?.let { objectStyleBuilder.icon(it) }
+        return invoke(objectStyleBuilder.build(), defaultColor)
+    }
+
     operator fun invoke(style: ObjectStyle) = invoke(style, SurfaceColor.Primary)
 
     operator fun invoke(style: ObjectStyle, defaultColor: Color?) = style.icon()?.let {
