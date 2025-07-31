@@ -1,13 +1,11 @@
 package org.dhis2.tracker.relationships.domain
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
-import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.tracker.relationships.data.RelationshipsRepository
+import org.dhis2.tracker.relationships.data.RelationshipsRepositoryActions
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
-import org.hisp.dhis.android.core.relationship.Relationship
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -15,16 +13,11 @@ import org.mockito.kotlin.whenever
 class AddRelationshipTest {
 
     private lateinit var addRelationship: AddRelationship
-
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.Unconfined
-    }
-    private val repository: RelationshipsRepository = mock()
+    private val repository: RelationshipsRepositoryActions = mock()
 
     @Before
     fun setup() {
         addRelationship = AddRelationship(
-            dispatcher = dispatcherProvider,
             repository = repository,
         )
     }
@@ -36,16 +29,9 @@ class AddRelationshipTest {
         val relationshipTypeUid = "relationshipTypeUid"
         val side = RelationshipConstraintSide.TO
 
-        val relationship = Relationship.builder()
-            .uid("relationshipUid")
-            .build()
-
         // When
         whenever(
-            repository.createRelationship(selectedTeiUid, relationshipTypeUid, side),
-        ) doReturn relationship
-        whenever(
-            repository.addRelationship(relationship),
+            repository.addRelationship(any(), any(), any()),
         ) doReturn Result.success("relationshipUid")
 
         val result = addRelationship(selectedTeiUid, relationshipTypeUid, side)
@@ -61,16 +47,9 @@ class AddRelationshipTest {
         val relationshipTypeUid = "relationshipTypeUid"
         val side = RelationshipConstraintSide.TO
 
-        val relationship = Relationship.builder()
-            .uid("relationshipUid")
-            .build()
-
         // When
         whenever(
-            repository.createRelationship(selectedTeiUid, relationshipTypeUid, side),
-        ) doReturn relationship
-        whenever(
-            repository.addRelationship(relationship),
+            repository.addRelationship(any(), any(), any()),
         ) doReturn Result.failure(Exception("Failed to add relationship"))
 
         val result = addRelationship(selectedTeiUid, relationshipTypeUid, side)

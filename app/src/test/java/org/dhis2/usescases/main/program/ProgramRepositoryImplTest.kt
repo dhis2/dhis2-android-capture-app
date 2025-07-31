@@ -1,6 +1,7 @@
 package org.dhis2.usescases.main.program
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.compose.ui.graphics.Color
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.plugins.RxAndroidPlugins
@@ -52,7 +53,7 @@ class ProgramRepositoryImplTest {
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), anyOrNull()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before

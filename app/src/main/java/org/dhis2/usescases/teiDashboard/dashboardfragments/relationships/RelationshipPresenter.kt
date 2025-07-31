@@ -139,20 +139,18 @@ class RelationshipPresenter internal constructor(
         relationshipTypeUid: String,
         teiTypeToAdd: String?,
     ) {
-        scope.launch {
-            val writeAccess = relationshipsRepository.hasWritePermission(relationshipTypeUid)
+        val writeAccess = relationshipsRepository.hasWritePermission(relationshipTypeUid)
 
-            if (writeAccess) {
-                analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
+        if (writeAccess) {
+            analyticsHelper.setEvent(NEW_RELATIONSHIP, CLICK, NEW_RELATIONSHIP)
 
-                val originUid = teiUid ?: eventUid
+            val originUid = teiUid ?: eventUid
 
-                if (originUid != null && teiTypeToAdd != null) {
-                    view.goToAddRelationship(originUid, teiTypeToAdd)
-                }
-            } else {
-                view.showPermissionError()
+            if (originUid != null && teiTypeToAdd != null) {
+                view.goToAddRelationship(originUid, teiTypeToAdd)
             }
+        } else {
+            view.showPermissionError()
         }
     }
 

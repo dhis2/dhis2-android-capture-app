@@ -71,7 +71,13 @@ kotlin {
             implementation(project(":dhis2_android_maps"))
         }
 
-        androidUnitTest.dependencies { }
+        androidUnitTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.junit.jupiter)
+            implementation(libs.test.turbine)
+            implementation(libs.test.kotlinCoroutines)
+            implementation(libs.test.mockitoKotlin)
+        }
 
         val desktopMain by getting {
             dependencies {

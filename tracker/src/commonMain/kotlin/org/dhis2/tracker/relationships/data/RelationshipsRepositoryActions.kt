@@ -19,5 +19,5 @@ interface RelationshipsRepositoryActions {
         relationshipSide: RelationshipConstraintSide,
     ): Result<String>
 
-    suspend fun hasWritePermission(relationshipTypeUid: String): Boolean
+    fun hasWritePermission(relationshipTypeUid: String): Boolean
 }

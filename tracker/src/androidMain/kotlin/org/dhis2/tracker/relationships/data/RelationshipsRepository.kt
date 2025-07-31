@@ -286,7 +286,7 @@ abstract class RelationshipsRepository(
         }
     }
 
-    override suspend fun hasWritePermission(relationshipTypeUid: String): Boolean {
+    override fun hasWritePermission(relationshipTypeUid: String): Boolean {
         return getRelationshipTypeByUid(relationshipTypeUid)?.let { relationshipType ->
             d2.relationshipModule().relationshipService().hasAccessPermission(relationshipType)
         } ?: false

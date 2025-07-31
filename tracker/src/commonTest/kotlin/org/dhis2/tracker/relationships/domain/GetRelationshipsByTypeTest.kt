@@ -1,8 +1,6 @@
 package org.dhis2.tracker.relationships.domain
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.relationships.data.RelationshipsRepository
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.relationships.relationshipModel1
@@ -21,10 +19,6 @@ class GetRelationshipsByTypeTest {
     private lateinit var getRelationshipsByType: GetRelationshipsByType
 
     private val relationshipsRepository: RelationshipsRepository = mock()
-
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.Unconfined
-    }
 
     @Before
     fun setup() {

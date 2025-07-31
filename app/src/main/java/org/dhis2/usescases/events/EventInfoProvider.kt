@@ -86,7 +86,8 @@ class EventInfoProvider(
         } else {
             AvatarProviderConfiguration.Metadata(
                 metadataIconData = metadataIconProvider(
-                    stage?.style() ?: ObjectStyle.builder().build(),
+                    style = stage?.style() ?: ObjectStyle.builder().build(),
+
                 ),
             )
         }
