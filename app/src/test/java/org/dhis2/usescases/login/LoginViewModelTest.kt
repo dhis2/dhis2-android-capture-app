@@ -22,9 +22,11 @@ import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.BiometricController
+import org.dhis2.data.biometric.BiometricAuthenticator
+import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.MainCoroutineScopeRule
@@ -53,6 +55,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import java.io.File
+import javax.crypto.Cipher
 
 class LoginViewModelTest {
 
@@ -66,7 +69,8 @@ class LoginViewModelTest {
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
 
     private val preferenceProvider: PreferenceProvider = mock()
-    private val biometricController: BiometricController = mock()
+    private val biometricController: BiometricAuthenticator = mock()
+    private val cryptographyManager: CryptographyManager = mock()
     private val view: LoginContracts.View = mock()
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -100,6 +104,7 @@ class LoginViewModelTest {
             schedulers,
             dispatcherProvider,
             biometricController,
+            cryptographyManager,
             analyticsHelper,
             crashReportController,
             network,
@@ -116,6 +121,7 @@ class LoginViewModelTest {
             schedulers,
             dispatcherProvider,
             biometricController,
+            cryptographyManager,
             analyticsHelper,
             crashReportController,
             network,
@@ -239,8 +245,9 @@ class LoginViewModelTest {
     @Test
     fun `Should log in with biometric successfully`() {
         instantiateLoginViewModel()
+        mockBiometrics()
         loginViewModel.authenticateWithBiometric()
-        verify(biometricController).authenticate(any())
+        verify(biometricController).authenticate(any(), any())
     }
 
     @Test
@@ -389,8 +396,9 @@ class LoginViewModelTest {
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
         assert(loginViewModel.canLoginWithBiometrics.value == true)
+        mockBiometrics()
         loginViewModel.authenticateWithBiometric()
-        verify(biometricController).authenticate(any())
+        verify(biometricController).authenticate(any(), any())
     }
 
     @Test(expected = Throwable::class)
@@ -493,4 +501,13 @@ class LoginViewModelTest {
         .databaseCreationDate("")
         .encrypted(false)
         .build()
+
+    private fun mockBiometrics() {
+        val cipherTextWrapperMock: CiphertextWrapper = mock {
+            on { initializationVector } doReturn byteArrayOf()
+        }
+        val cipherMock: Cipher = mock()
+        whenever(preferenceProvider.getBiometricCredentials())doReturn cipherTextWrapperMock
+        whenever(cryptographyManager.getInitializedCipherForDecryption(any())) doReturn cipherMock
+    }
 }
