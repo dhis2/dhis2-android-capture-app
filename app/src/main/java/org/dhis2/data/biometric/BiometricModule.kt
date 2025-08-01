@@ -13,7 +13,7 @@ object BiometricModule {
     @PerActivity
     fun provideBiometricController(
         context: ActivityGlobalAbstract,
-    ): BiometricController {
-        return BiometricController(context)
+    ): BiometricAuthenticator {
+        return BiometricAuthenticator(context)
     }
 }
