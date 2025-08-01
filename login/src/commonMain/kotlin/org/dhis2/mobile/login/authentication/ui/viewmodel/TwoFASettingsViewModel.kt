@@ -22,7 +22,7 @@ open class TwoFASettingsViewModel(
         checkTwoFAStatus()
     }
 
-    fun checkTwoFAStatus() {
+    private fun checkTwoFAStatus() {
         viewModelScope.launch {
             _uiState.value = TwoFAUiState.Checking
 
