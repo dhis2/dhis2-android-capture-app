@@ -41,7 +41,6 @@ import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
 import org.dhis2.ui.avatar.AvatarProviderConfiguration
-import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
@@ -58,6 +57,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.maplibre.android.maps.MapView
 import javax.inject.Inject
@@ -158,7 +158,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                     }
                 }
 
-                Dhis2Theme {
+                DHIS2Theme {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -299,7 +299,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                             ) {
                                                 is AvatarProviderConfiguration.Metadata,
                                                 is AvatarProviderConfiguration.MainValueLabel,
-                                                -> null
+                                                    -> null
 
                                                 is AvatarProviderConfiguration.ProfilePic -> {
                                                     { launchImageDetail(config.profilePicturePath) }

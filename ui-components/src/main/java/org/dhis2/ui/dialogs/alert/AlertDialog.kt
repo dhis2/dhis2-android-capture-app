@@ -44,10 +44,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.ui.model.ButtonUiModel
-import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 const val TAG = "NotificationDialog"
 
@@ -78,7 +78,7 @@ class AlertDialog(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
             setContent {
-                Dhis2Theme {
+                DHIS2Theme {
                     Dhis2AlertDialogUi(
                         labelText = labelText,
                         descriptionText = descriptionText,
@@ -123,7 +123,7 @@ fun Dhis2AlertDialogUi(
     )
 
     var confirmButtonClick = remember { mutableStateOf(false) }
-    Dhis2Theme {
+    DHIS2Theme {
         AlertDialog(
             onDismissRequest = dismissButton.onClick,
             title = { Text(text = labelText, textAlign = TextAlign.Center) },

@@ -42,7 +42,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
-import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.accounts.AccountsActivity
@@ -281,7 +280,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.biometricButton.setContent {
             val displayBiometric by presenter.canLoginWithBiometrics.observeAsState(false)
             if (displayBiometric) {
-                Dhis2Theme {
+                DHIS2Theme {
                     IconButton(
                         onClick = {
                             presenter.authenticateWithBiometric()
@@ -300,7 +299,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
 
     private fun checkUrl(urlString: String): Boolean {
         return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
+                Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
     }
 
     override fun onPause() {
