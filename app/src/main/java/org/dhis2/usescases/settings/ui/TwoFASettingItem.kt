@@ -28,9 +28,7 @@ fun TwoFASettingItem(
             append(stringResource(R.string.settingTwoFADescr))
         },
         icon = Icons.Outlined.LockPerson,
-        extraActions = {
-            /*no extra actions*/
-        },
+        extraActions = {},
         showExtraActions = false,
         onClick = onClick,
     )
