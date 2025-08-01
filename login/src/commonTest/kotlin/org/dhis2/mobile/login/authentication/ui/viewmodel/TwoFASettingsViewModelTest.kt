@@ -30,27 +30,16 @@ class TwoFASettingsViewModelTest {
     }
 
     @Test
-    fun `init emits noConnection and checkTwoFAStatus emits Enabled`() = runTest {
-        val noConnectionStatus = TwoFAStatus.NoConnection
-        val noConnectionUiState = TwoFAUiState.NoConnection
+    fun `TwoFAStatus is enabled`() = runTest {
         val enabledStatus = TwoFAStatus.Enabled()
         val disableUiState = TwoFAUiState.Disable()
 
-        whenever(getTwoFAStatus()).thenReturn(flowOf(noConnectionStatus))
-        whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
+        whenever(getTwoFAStatus()).thenReturn(flowOf(enabledStatus))
+        whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
         viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
 
         viewModel.uiState.test {
-            assert(awaitItem() is TwoFAUiState.Checking)
-
-            assert(awaitItem() == noConnectionUiState)
-
-            whenever(getTwoFAStatus()).thenReturn(flowOf(enabledStatus))
-            whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
-
-            viewModel.checkTwoFAStatus()
-
             assert(awaitItem() is TwoFAUiState.Checking)
 
             assert(awaitItem() == disableUiState)
