@@ -2,7 +2,6 @@ package org.dhis2.ui.avatar
 
 import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
-
 sealed class AvatarProviderConfiguration {
     data class ProfilePic(
         val profilePicturePath: String,

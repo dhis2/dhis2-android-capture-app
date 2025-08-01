@@ -64,6 +64,7 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
         google()
         mavenCentral()
@@ -71,7 +72,6 @@ allprojects {
             url = uri("https://maven.google.com")
         }
         maven { url = uri("https://jitpack.io") }
-        mavenLocal()
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

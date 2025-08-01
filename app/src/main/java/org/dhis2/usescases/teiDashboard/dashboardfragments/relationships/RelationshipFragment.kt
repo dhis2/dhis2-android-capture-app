@@ -46,13 +46,15 @@ import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.ThemeManager
-import org.dhis2.ui.avatar.AvatarProvider
+import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.utils.OnDialogClickListener
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -60,6 +62,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.maplibre.android.location.permissions.PermissionsManager
 import org.maplibre.android.maps.MapView
@@ -316,9 +319,39 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                         presenter.onMapRelationshipClicked(item.uid)
                     },
                     listAvatar = {
-                        AvatarProvider(
-                            avatarProviderConfiguration = item.avatarProviderConfiguration,
-                            onImageClick = ::launchImageDetail,
+                        Avatar(
+                            style = when (
+                                val config =
+                                    item.avatarProviderConfiguration
+                            ) {
+                                is AvatarProviderConfiguration.MainValueLabel ->
+                                    AvatarStyleData.Text(
+                                        config.firstMainValue.firstOrNull()?.toString()
+                                            ?: "?",
+                                    )
+
+                                is AvatarProviderConfiguration.Metadata ->
+                                    AvatarStyleData.Metadata(
+                                        imageCardData = config.metadataIconData.imageCardData,
+                                        avatarSize = config.size,
+                                        tintColor = config.metadataIconData.color,
+                                    )
+
+                                is AvatarProviderConfiguration.ProfilePic ->
+                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                            },
+                            onImageClick = when (
+                                val config =
+                                    item.avatarProviderConfiguration
+                            ) {
+                                is AvatarProviderConfiguration.Metadata,
+                                is AvatarProviderConfiguration.MainValueLabel,
+                                -> null
+
+                                is AvatarProviderConfiguration.ProfilePic -> {
+                                    { launchImageDetail(config.profilePicturePath) }
+                                }
+                            },
                         )
                     },
                 )
