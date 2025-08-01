@@ -1,7 +1,7 @@
 package org.dhis2.tracker.relationships.domain
 
 import kotlinx.coroutines.test.runTest
-import org.dhis2.tracker.relationships.data.RelationshipsRepository
+import org.dhis2.tracker.relationships.data.RelationshipsRepositoryActions
 import org.dhis2.tracker.relationships.model.RelationshipSection
 import org.dhis2.tracker.relationships.relationshipModel1
 import org.dhis2.tracker.relationships.relationshipModel2
@@ -18,7 +18,7 @@ class GetRelationshipsByTypeTest {
 
     private lateinit var getRelationshipsByType: GetRelationshipsByType
 
-    private val relationshipsRepository: RelationshipsRepository = mock()
+    private val relationshipsRepository: RelationshipsRepositoryActions = mock()
 
     @Before
     fun setup() {
