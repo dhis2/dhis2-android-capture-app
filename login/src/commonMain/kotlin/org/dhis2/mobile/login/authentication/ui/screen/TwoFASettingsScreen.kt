@@ -40,7 +40,6 @@ import org.dhis2.mobile.login.resources.back_to_settings
 import org.dhis2.mobile.login.resources.two_fa_checking_status
 import org.dhis2.mobile.login.resources.two_fa_screen_title
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
@@ -135,17 +134,16 @@ fun TwoFASettingsScreen(
                     is TwoFAUiState.Checking -> {
                         item {
                             InfoBar(
-                                infoBarData = InfoBarData(
-                                    text = stringResource(Res.string.two_fa_checking_status),
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.Outlined.WifiFind,
-                                            contentDescription = stringResource(Res.string.two_fa_checking_status),
-                                        )
-                                    },
-                                    color = TextColor.OnSurfaceLight,
-                                    backgroundColor = SurfaceColor.Surface,
-                                ),
+                                text = stringResource(Res.string.two_fa_checking_status),
+                                textColor = TextColor.OnSurfaceLight,
+                                backgroundColor = SurfaceColor.Surface,
+                                displayProgress = true,
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.WifiFind,
+                                        contentDescription = stringResource(Res.string.two_fa_checking_status),
+                                    )
+                                },
                             )
                         }
                     }

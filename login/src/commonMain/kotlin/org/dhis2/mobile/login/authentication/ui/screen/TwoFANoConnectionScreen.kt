@@ -21,7 +21,6 @@ import org.dhis2.mobile.login.resources.two_fa_no_connection_title
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
@@ -33,18 +32,16 @@ fun TwoFANoConnectionScreen(
 ) {
     Column {
         InfoBar(
-            infoBarData = InfoBarData(
-                text = stringResource(Res.string.two_fa_no_connection_title),
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.SignalWifiConnectedNoInternet4,
-                        contentDescription = "Status Icon",
-                        tint = TextColor.OnErrorContainer,
-                    )
-                },
-                color = TextColor.OnErrorContainer,
-                backgroundColor = SurfaceColor.ErrorContainer,
-            ),
+            text = stringResource(Res.string.two_fa_no_connection_title),
+            textColor = TextColor.OnErrorContainer,
+            backgroundColor = SurfaceColor.ErrorContainer,
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.SignalWifiConnectedNoInternet4,
+                    contentDescription = stringResource(Res.string.two_fa_no_connection_title),
+                    tint = TextColor.OnErrorContainer,
+                )
+            },
         )
 
         Column(
