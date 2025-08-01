@@ -4,9 +4,9 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.ui.FILE_NOT_LOADED
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.icon.Icon

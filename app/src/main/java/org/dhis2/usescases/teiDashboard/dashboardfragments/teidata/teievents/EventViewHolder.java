@@ -8,22 +8,22 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.compose.ui.platform.ViewCompositionStrategy;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
+import org.dhis2.commons.bindings.BindingsKt;
 import org.dhis2.commons.data.EventViewModel;
 import org.dhis2.commons.databinding.ItemFieldValueBinding;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.ItemEventBinding;
 import org.dhis2.ui.MetadataIconData;
-import org.dhis2.ui.MetadataIconKt;
 import org.dhis2.utils.DhisTextUtils;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventStatus;
 import org.hisp.dhis.android.core.program.Program;
-import org.hisp.dhis.android.core.program.ProgramStage;
 import org.hisp.dhis.android.core.program.ProgramType;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +59,9 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         this.onScheduleClick = scheduleClick;
         this.onEventSelected = onEventSelected;
         this.colorUtils = colorUtils;
-        MetadataIconKt.handleComposeDispose(binding.composeStageIcon);
+        binding.composeStageIcon.setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed.INSTANCE
+        );
     }
 
     public void bind(EventViewModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
@@ -139,11 +141,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void renderStageIcon(MetadataIconData metadataIconData) {
-        MetadataIconKt.setUpMetadataIcon(
-                binding.composeStageIcon,
-                metadataIconData,
-                false
-        );
+        BindingsKt.setIconStyle(binding.composeStageIcon, metadataIconData);
     }
 
     private void initValues(boolean valueListIsOpen, List<Pair<String, String>> dataElementValues) {

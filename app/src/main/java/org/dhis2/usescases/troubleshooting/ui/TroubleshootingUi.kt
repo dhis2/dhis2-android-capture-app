@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -52,13 +53,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
-import org.dhis2.ui.MetadataIcon
 import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import java.util.Locale
 
 @ExperimentalFoundationApi
@@ -446,8 +450,25 @@ fun ProgramRuleConfigurationProgram(
                 onProgramClick(programUid)
             },
     ) {
-        MetadataIcon(metadataIconData = metadataIconData)
-
+        MetadataAvatar(
+            modifier = Modifier
+                .size(56.dp)
+                .alpha(0.5f),
+            icon = {
+                if (metadataIconData.isFileLoaded()) {
+                    MetadataIcon(
+                        imageCardData = metadataIconData.imageCardData,
+                    )
+                } else {
+                    androidx.compose.material3.Icon(
+                        painter = provideDHIS2Icon("dhis2_image_not_supported"),
+                        contentDescription = "",
+                    )
+                }
+            },
+            iconTint = metadataIconData.color,
+            size = MetadataAvatarSize.M(),
+        )
         Text(
             modifier = Modifier
                 .weight(weight = 1f)

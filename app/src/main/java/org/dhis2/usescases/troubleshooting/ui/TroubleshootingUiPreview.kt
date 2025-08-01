@@ -4,8 +4,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import org.dhis2.R
+import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData

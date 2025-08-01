@@ -170,11 +170,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                         (uiState as? RelationshipsUiState.Success)?.let { state ->
                             DeleteRelationshipsConfirmation(
                                 relationships =
-                                    relationshipSelectionState.selectedItems.map { selectedUid ->
-                                        state.data.first {
-                                            it.relationships.any { it.uid == selectedUid }
-                                        }.title
-                                    },
+                                relationshipSelectionState.selectedItems.map { selectedUid ->
+                                    state.data.first {
+                                        it.relationships.any { it.uid == selectedUid }
+                                    }.title
+                                },
                                 onDelete = {
                                     relationShipsViewModel.deleteSelectedRelationships()
                                 },
@@ -346,7 +346,7 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             ) {
                                 is AvatarProviderConfiguration.Metadata,
                                 is AvatarProviderConfiguration.MainValueLabel,
-                                    -> null
+                                -> null
 
                                 is AvatarProviderConfiguration.ProfilePic -> {
                                     { launchImageDetail(config.profilePicturePath) }

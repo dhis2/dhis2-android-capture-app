@@ -30,7 +30,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.Category
@@ -61,7 +61,11 @@ class EventRepository(
     private val eventMode: EventMode,
     dispatcherProvider: DispatcherProvider,
     featureConfig: FeatureConfigRepository,
-) : DataEntryBaseRepository(FormBaseConfiguration(d2, dispatcherProvider, featureConfig), fieldFactory, metadataIconProvider) {
+) : DataEntryBaseRepository(
+    FormBaseConfiguration(d2, dispatcherProvider, featureConfig),
+    fieldFactory,
+    metadataIconProvider,
+) {
 
     private val getEventPeriods = GetEventPeriods(
         EventPeriodRepository(d2),
@@ -131,9 +135,7 @@ class EventRepository(
         d2.programModule().programStageSections()
             .byProgramStageUid().eq(event?.programStage())
             .withDataElements()
-            .blockingGet()
-            .map { section -> section.uid() to section }
-            .toMap()
+            .blockingGet().associateBy { section -> section.uid() }
     }
 
     override fun sectionUids(): Flowable<List<String>> {

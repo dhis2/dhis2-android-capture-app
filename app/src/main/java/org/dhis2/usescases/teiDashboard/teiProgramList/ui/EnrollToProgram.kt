@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,15 +25,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
-import org.dhis2.ui.MetadataIcon
+import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramUiModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import java.util.Date
 
 @Composable
@@ -43,15 +49,27 @@ fun EnrollToProgram(programUiModel: ProgramUiModel, onEnrollClickListener: () ->
                 .background(color = Color.White)
                 .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = spacedBy(8.dp),
         ) {
-            MetadataIcon(
+            MetadataAvatar(
                 modifier = Modifier
-                    .width(56.dp)
-                    .height(56.dp)
+                    .size(56.dp)
                     .alpha(0.5f),
-                metadataIconData = programUiModel.metadataIconData,
+                icon = {
+                    if (programUiModel.metadataIconData.isFileLoaded()) {
+                        MetadataIcon(
+                            imageCardData = programUiModel.metadataIconData.imageCardData,
+                        )
+                    } else {
+                        Icon(
+                            painter = provideDHIS2Icon("dhis2_image_not_supported"),
+                            contentDescription = "",
+                        )
+                    }
+                },
+                iconTint = programUiModel.metadataIconData.color,
+                size = MetadataAvatarSize.M(),
             )
-            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 modifier = Modifier
                     .weight(2f, true)
@@ -62,13 +80,19 @@ fun EnrollToProgram(programUiModel: ProgramUiModel, onEnrollClickListener: () ->
         }
         Row(
             modifier = Modifier
-                .padding(top = 4.dp, bottom = 16.dp, end = 16.dp).fillMaxWidth(),
+                .padding(top = 4.dp, bottom = 16.dp, end = 16.dp)
+                .fillMaxWidth(),
         ) {
-            Spacer(modifier = Modifier.width(68.dp).height(0.dp))
+            Spacer(
+                modifier = Modifier
+                    .width(68.dp)
+                    .height(0.dp),
+            )
 
             Button(
                 text = stringResource(id = R.string.enroll),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .semantics { testTag = PROGRAM_TO_ENROLL.format(programUiModel.title) },
                 enabled = !programUiModel.isDownloading(),
                 onClick = onEnrollClickListener,

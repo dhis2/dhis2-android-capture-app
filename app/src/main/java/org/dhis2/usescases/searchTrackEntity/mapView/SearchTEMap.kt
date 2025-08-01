@@ -299,7 +299,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                             ) {
                                                 is AvatarProviderConfiguration.Metadata,
                                                 is AvatarProviderConfiguration.MainValueLabel,
-                                                    -> null
+                                                -> null
 
                                                 is AvatarProviderConfiguration.ProfilePic -> {
                                                     { launchImageDetail(config.profilePicturePath) }
