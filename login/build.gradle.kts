@@ -37,6 +37,11 @@ kotlin {
                 implementation(libs.compose.material3.window)
                 implementation(compose.components.resources)
                 implementation(project(":commonskmm"))
+
+                // Koin
+                api(libs.koin.core)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.composeVM)
             }
         }
 
@@ -61,6 +66,7 @@ kotlin {
                 // Koin support for Android
                 implementation(libs.koin.android)
                 implementation(libs.koin.androidx.compose)
+                implementation(libs.androidx.activity.compose)
             }
         }
 
