@@ -2,7 +2,7 @@ package org.dhis2.usescases.searchTrackEntity;
 
 import org.dhis2.commons.data.CarouselItemModel;
 import org.dhis2.tracker.relationships.model.RelationshipModel;
-import org.dhis2.ui.MetadataIconData;
+import org.dhis2.mobile.commons.model.MetadataIconData;
 import org.hisp.dhis.android.core.enrollment.Enrollment;
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode;
 import org.hisp.dhis.android.core.program.Program;

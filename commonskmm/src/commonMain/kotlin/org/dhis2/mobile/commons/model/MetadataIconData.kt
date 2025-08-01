@@ -1,4 +1,4 @@
-package org.dhis2.ui
+package org.dhis2.mobile.commons.model
 
 import androidx.compose.ui.graphics.Color
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData

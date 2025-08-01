@@ -1,9 +1,9 @@
 package org.dhis2.tracker.ui
 
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
-import org.dhis2.ui.avatar.AvatarProviderConfiguration.Metadata
-import org.dhis2.ui.avatar.AvatarProviderConfiguration.ProfilePic
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration.Metadata
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration.ProfilePic
 
 class AvatarProvider(
     private val metadataIconProvider: MetadataIconProvider,

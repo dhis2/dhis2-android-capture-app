@@ -5,10 +5,10 @@ import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.maps.model.RelationshipDirection
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration.Metadata
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration.ProfilePic
 import org.dhis2.tracker.data.ProfilePictureProvider
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
-import org.dhis2.ui.avatar.AvatarProviderConfiguration.Metadata
-import org.dhis2.ui.avatar.AvatarProviderConfiguration.ProfilePic
 import org.dhis2.utils.ValueUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope

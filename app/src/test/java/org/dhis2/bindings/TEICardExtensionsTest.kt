@@ -6,7 +6,7 @@ import org.dhis2.commons.bindings.getEnrollmentIconsData
 import org.dhis2.commons.resources.ColorType
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Test

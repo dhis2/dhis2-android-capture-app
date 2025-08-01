@@ -38,8 +38,8 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.EventMode
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.programStageSelection.ProgramStageData
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository

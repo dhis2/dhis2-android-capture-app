@@ -1,6 +1,5 @@
-package org.dhis2.ui.avatar
+package org.dhis2.mobile.commons.model
 
-import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 sealed class AvatarProviderConfiguration {
     data class ProfilePic(

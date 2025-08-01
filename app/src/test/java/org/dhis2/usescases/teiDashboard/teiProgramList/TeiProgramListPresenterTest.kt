@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.teiProgramList
 
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.mobile.commons.extensions.toColor
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.utils.analytics.AnalyticsHelper

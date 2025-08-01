@@ -2,13 +2,13 @@ package org.dhis2.tracker.relationships.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.ui.state.ListSelectionState
 import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
 
 @Preview
 @Composable

@@ -39,6 +39,7 @@ import org.dhis2.maps.managers.RelationshipMapManager
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.tracker.relationships.ui.DeleteRelationshipsConfirmation
 import org.dhis2.tracker.relationships.ui.RelationShipsScreen
 import org.dhis2.tracker.relationships.ui.RelationshipsViewModel
@@ -46,7 +47,6 @@ import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
 import org.dhis2.ui.ThemeManager
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity

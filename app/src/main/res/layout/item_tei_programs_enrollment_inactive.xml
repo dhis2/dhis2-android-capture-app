@@ -17,7 +17,7 @@
 
         <variable
             name="metadataIconData"
-            type="org.dhis2.ui.MetadataIconData" />
+            type="org.dhis2.mobile.commons.model.MetadataIconData" />
     </data>
 
     <LinearLayout

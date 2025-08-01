@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 
 data class EnrollmentViewModel(
     val uid: String,
