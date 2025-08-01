@@ -21,7 +21,7 @@ val twoFAModule = module {
     // ViewModels
     viewModel {
         TwoFASettingsViewModel(
-            twoFAStatusUseCase = get(),
+            getTwoFAStatus = get(),
             mapper = get(),
         )
     }

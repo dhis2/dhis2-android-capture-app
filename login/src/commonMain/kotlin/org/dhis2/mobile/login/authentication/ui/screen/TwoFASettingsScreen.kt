@@ -62,8 +62,8 @@ fun TwoFASettingsScreen(
 
     LaunchedEffect(uiState) {
         val errorMessage = when (val state = uiState) {
-            is TwoFAUiState.Enabled -> state.errorMessage
-            is TwoFAUiState.Disabled -> state.errorMessage
+            is TwoFAUiState.Enable -> state.errorMessage
+            is TwoFAUiState.Disable -> state.errorMessage
             else -> null
         }
 
@@ -152,19 +152,21 @@ fun TwoFASettingsScreen(
 
                     is TwoFAUiState.NoConnection -> {
                         item {
-                            Text(text = "Connection Error")
+                            TwoFANoConnectionScreen(
+                                onRetry = { viewModel.retry() },
+                            )
                         }
                     }
 
-                    is TwoFAUiState.Enabled -> {
+                    is TwoFAUiState.Enable -> {
                         item {
-                            Text(text = "Two factor authentication is enabled.")
+                            Text(text = "Two factor authentication is enable screen.")
                         }
                     }
 
-                    is TwoFAUiState.Disabled -> {
+                    is TwoFAUiState.Disable -> {
                         item {
-                            Text(text = "Two factor authentication is disabled.")
+                            Text(text = "Two factor authentication is disable screen.")
                         }
                     }
                 }
