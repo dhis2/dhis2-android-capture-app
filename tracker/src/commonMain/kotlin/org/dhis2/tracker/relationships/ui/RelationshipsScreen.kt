@@ -39,8 +39,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.cancel
 import org.dhis2.mobile.tracker.resources.empty_relationships
@@ -59,8 +58,9 @@ import org.dhis2.tracker.relationships.ui.state.ListSelectionState
 import org.dhis2.tracker.relationships.ui.state.RelationshipItemUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipSectionUiState
 import org.dhis2.tracker.relationships.ui.state.RelationshipsUiState
-import org.dhis2.ui.avatar.AvatarProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
@@ -79,6 +79,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefa
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2TextStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
@@ -252,9 +253,29 @@ private fun RelationShipTypeSection(
                     ),
                 ),
                 listAvatar = {
-                    AvatarProvider(
-                        avatarProviderConfiguration = item.avatar,
-                    ) { }
+                    Avatar(
+                        style = when (
+                            val config = item.avatar
+                        ) {
+                            is AvatarProviderConfiguration.MainValueLabel ->
+                                AvatarStyleData.Text(
+                                    config.firstMainValue.firstOrNull()
+                                        ?.toString()
+                                        ?: "?",
+                                )
+
+                            is AvatarProviderConfiguration.Metadata ->
+                                AvatarStyleData.Metadata(
+                                    imageCardData = config.metadataIconData.imageCardData,
+                                    avatarSize = config.size,
+                                    tintColor = config.metadataIconData.color,
+                                )
+
+                            is AvatarProviderConfiguration.ProfilePic ->
+                                AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                        },
+                        onImageClick = {},
+                    )
                 },
                 onCardClick = { if (item.canOpen) onRelationshipClick(item) },
                 onCardSelected = {
@@ -320,7 +341,7 @@ fun DeleteRelationshipsConfirmation(
 ) {
     BottomSheetShell(
         uiState = BottomSheetShellUIState(
-            bottomPadding = bottomSheetLowerPadding(),
+            bottomPadding = BottomSheetShellDefaults.lowerPadding(true),
             headerTextAlignment = TextAlign.Start,
             showTopSectionDivider = true,
             title = when (relationships.size) {
@@ -338,7 +359,7 @@ fun DeleteRelationshipsConfirmation(
                 )
             },
         ),
-        windowInsets = { bottomSheetInsets() },
+        windowInsets = { BottomSheetShellDefaults.windowInsets(true) },
 
         icon = {
             Icon(

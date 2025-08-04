@@ -8,7 +8,6 @@ import org.dhis2.usescases.development.RuleValidation
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
-import org.hisp.dhis.antlr.ParserExceptionWithoutContext
 import org.hisp.dhis.lib.expression.Expression
 import org.hisp.dhis.lib.expression.ExpressionMode
 import org.hisp.dhis.lib.expression.spi.ExpressionData
@@ -193,8 +192,6 @@ class TroubleshootingRepository(
             )!!
             convertInteger(result).toString()
             ""
-        } catch (e: ParserExceptionWithoutContext) {
-            "Condition " + condition + " not executed: " + e.message
         } catch (e: Exception) {
             "Unexpected exception while evaluating " + condition + ": " + e.message
         }

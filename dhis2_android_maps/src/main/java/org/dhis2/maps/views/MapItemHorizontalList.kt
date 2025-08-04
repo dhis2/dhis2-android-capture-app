@@ -33,7 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.model.MapItemModel
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
