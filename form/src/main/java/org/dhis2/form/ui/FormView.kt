@@ -35,6 +35,7 @@ import org.dhis2.commons.dialogs.AlertBottomDialog
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.locationprovider.LocationProvider
@@ -66,7 +67,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import timber.log.Timber
 import java.io.File
-import kotlin.invoke
 
 class FormView : Fragment() {
 
@@ -192,10 +192,16 @@ class FormView : Fragment() {
                         allowDiscard = it.allowDiscard,
                         fieldsWithIssues = it.fieldsWithIssues,
                         onPrimaryButtonClick = {
-                            if (it.allowDiscard) {
-                                viewModel.discardChanges()
+                            when (it.model.mainButton) {
+                                DialogButtonStyle.CompleteButton -> {
+                                    viewModel.completeEvent()
+                                    onFinishDataEntry?.invoke()
+                                }
+
+                                else -> {
+                                    /*Do nothing*/
+                                }
                             }
-                            onFinishDataEntry?.invoke()
                         },
                         onSecondaryButtonClick = {
                             if (it.allowDiscard) {
