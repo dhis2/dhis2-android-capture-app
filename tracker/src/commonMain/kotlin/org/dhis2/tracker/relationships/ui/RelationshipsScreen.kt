@@ -305,7 +305,7 @@ private fun RelationShipTypeSection(
 }
 
 @Composable
-internal fun NoRelationships() {
+private fun NoRelationships() {
     Column(
         modifier = Modifier
             .fillMaxSize()

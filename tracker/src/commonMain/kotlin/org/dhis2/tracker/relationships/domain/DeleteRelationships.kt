@@ -1,7 +1,5 @@
 package org.dhis2.tracker.relationships.domain
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.dhis2.tracker.relationships.data.RelationshipsRepositoryActions
 
 /*
@@ -10,7 +8,7 @@ import org.dhis2.tracker.relationships.data.RelationshipsRepositoryActions
 class DeleteRelationships(
     private val relationshipsRepository: RelationshipsRepositoryActions,
 ) {
-    suspend operator fun invoke(relationships: List<String>): Flow<Result<Unit>> {
+    suspend operator fun invoke(relationships: List<String>): Result<Unit> {
         var result = Result.success(Unit)
         relationships.forEach {
             try {
@@ -19,6 +17,6 @@ class DeleteRelationships(
                 result = Result.failure(error)
             }
         }
-        return flowOf(result)
+        return result
     }
 }

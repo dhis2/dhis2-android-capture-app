@@ -106,13 +106,13 @@ class RelationshipsViewModel(
 
     fun deleteSelectedRelationships() {
         viewModelScope.launch(dispatcher.io()) {
-            deleteRelationships(
+            val result = deleteRelationships(
                 relationshipSelectionState.value.selectedItems,
-            ).collect { result ->
-                if (result.isSuccess) {
-                    stopSelectingMode()
-                    refreshRelationships()
-                }
+            )
+
+            if (result.isSuccess) {
+                stopSelectingMode()
+                refreshRelationships()
             }
         }
     }
