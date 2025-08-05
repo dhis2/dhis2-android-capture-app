@@ -31,6 +31,7 @@ class GetSettingsState(
                     gatewayValidationResult = gatewayValidator(this.gatewayNumber),
                 )
             },
+            isTwoFAConfigured = settingsRepository.isTwoFAConfigured(),
         )
     }
 }

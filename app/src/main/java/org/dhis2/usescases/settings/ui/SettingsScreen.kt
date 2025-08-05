@@ -48,6 +48,7 @@ fun SettingsScreen(
     showErrorLogs: (List<ErrorViewModel>) -> Unit,
     displayDeleteLocalDataWarning: () -> Unit,
     showShareActions: (file: File) -> Unit,
+    display2FASettingsScreen: () -> Unit,
 ) {
     val settingsUIModel by viewmodel.settingsState.collectAsState()
     val exportingDatabase by viewmodel.exporting.observeAsState(false)
@@ -104,6 +105,7 @@ fun SettingsScreen(
                         SettingsUiAction.OnSpecificProgramSettingsClick -> checkProgramSpecificSettings()
                         SettingsUiAction.OnManageReserveValues -> manageReserveValues()
                         SettingsUiAction.OnOpenErrorLog -> viewmodel.checkSyncErrors()
+                        SettingsUiAction.OnOpenTwoFASettings -> display2FASettingsScreen()
                         is SettingsUiAction.OnSaveReservedValuesToDownload ->
                             viewmodel.saveReservedValues(uiAction.count)
 
@@ -234,6 +236,14 @@ private fun SettingItemList(
             OpenSyncErrorLogSettingItem(
                 onClick = { onSettingsUiAction(SettingsUiAction.OnOpenErrorLog) },
             )
+        }
+
+        if (settingsUIModel.isTwoFAConfigured) {
+            item {
+                TwoFASettingItem(
+                    onClick = { onSettingsUiAction(SettingsUiAction.OnOpenTwoFASettings) },
+                )
+            }
         }
 
         item {

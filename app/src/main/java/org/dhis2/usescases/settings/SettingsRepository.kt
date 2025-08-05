@@ -3,6 +3,8 @@ package org.dhis2.usescases.settings
 import io.reactivex.Single
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_ORG_UNIT
@@ -28,6 +30,7 @@ import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
+    val featureConfigRepository: FeatureConfigRepository,
 ) {
 
     private val syncSettings: SynchronizationSettings?
@@ -285,4 +288,8 @@ class SettingsRepository(
 
     suspend fun exportDatabase() =
         d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
+
+    fun isTwoFAConfigured(): Boolean {
+        return featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
+    }
 }

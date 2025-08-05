@@ -15,6 +15,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
+import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
 import org.dhis2.usescases.settings.ui.TestTag_DataPeriod
 import org.dhis2.usescases.settings.ui.TestTag_MetaPeriod
@@ -22,19 +23,22 @@ import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_EventMaxCount
 import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_LimitScope
 import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_TeiMaxCount
 
-fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
-    SettingsRobot().apply {
+fun settingsRobot(
+    composeTestRule: ComposeTestRule,
+    settingsRobot: SettingsRobot.() -> Unit
+) {
+    SettingsRobot(composeTestRule).apply {
         settingsRobot()
     }
 }
 
-class SettingsRobot : BaseRobot() {
+class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
-    fun clickOnSyncData(composeTestRule: ComposeTestRule) {
+    fun clickOnSyncData() {
         composeTestRule.onNodeWithTag(SettingItem.DATA_SYNC.name).performClick()
     }
 
-    fun checkEditPeriodIsDisableForData(composeTestRule: ComposeTestRule) {
+    fun checkEditPeriodIsDisableForData() {
         composeTestRule.onNode(
             hasParent(hasTestTag(SettingItem.DATA_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
@@ -42,11 +46,11 @@ class SettingsRobot : BaseRobot() {
         composeTestRule.onNodeWithTag(TestTag_DataPeriod).assertIsNotDisplayed()
     }
 
-    fun clickOnSyncConfiguration(composeTestRule: ComposeTestRule) {
+    fun clickOnSyncConfiguration() {
         composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).performClick()
     }
 
-    fun checkEditPeriodIsDisableForConfiguration(composeTestRule: ComposeTestRule) {
+    fun checkEditPeriodIsDisableForConfiguration() {
         composeTestRule.onNode(
             hasParent(hasTestTag(SettingItem.META_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
@@ -54,11 +58,11 @@ class SettingsRobot : BaseRobot() {
         composeTestRule.onNodeWithTag(TestTag_MetaPeriod).assertIsNotDisplayed()
     }
 
-    fun clickOnSyncParameters(composeTestRule: ComposeTestRule) {
+    fun clickOnSyncParameters() {
         composeTestRule.onNodeWithTag(SettingItem.SYNC_PARAMETERS.name).performClick()
     }
 
-    fun checkEditPeriodIsDisableForParameters(composeTestRule: ComposeTestRule) {
+    fun checkEditPeriodIsDisableForParameters() {
         composeTestRule.onNode(
             hasParent(hasTestTag(SettingItem.SYNC_PARAMETERS.name)) and
                     hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
@@ -68,11 +72,11 @@ class SettingsRobot : BaseRobot() {
         composeTestRule.onNodeWithTag(TestTag_SyncParameters_TeiMaxCount).assertIsNotDisplayed()
     }
 
-    fun clickOnReservedValues(composeTestRule: ComposeTestRule) {
+    fun clickOnReservedValues() {
         composeTestRule.onNodeWithTag(SettingItem.RESERVED_VALUES.name).performClick()
     }
 
-    fun clickOnManageReservedValues(composeTestRule: ComposeTestRule) {
+    fun clickOnManageReservedValues() {
         composeTestRule.onNode(
             hasParent(hasTestTag(SettingItem.RESERVED_VALUES.name)) and
                     hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
@@ -81,7 +85,7 @@ class SettingsRobot : BaseRobot() {
         Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
     }
 
-    fun clickOnOpenSyncErrorLog(composeTestRule: ComposeTestRule) {
+    fun clickOnOpenSyncErrorLog() {
         composeTestRule.onNodeWithTag(SettingItem.ERROR_LOG.name).performClick()
     }
 
@@ -89,9 +93,24 @@ class SettingsRobot : BaseRobot() {
         waitForView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
     }
 
+    fun checkTwoFAOptionIsDisplayed() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertIsDisplayed()
+    }
+
+    fun clickOnTwoFASettings() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).performClick()
+    }
+
+    fun checkTwoFAOptionIsNotDisplayed() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertIsNotDisplayed()
+    }
+
+    fun checkTwoFAScreenIsDisplayed() {
+        Intents.intended(IntentMatchers.hasComponent(TwoFASettingsActivity::class.java.name))
+    }
+
     companion object {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
         const val SYNC_PARAMETERS_NOT_EDIT_TEXT = "Sync parameters are not editable"
-        const val SYNC_DATA = "SYNC DATA NOW"
     }
 }

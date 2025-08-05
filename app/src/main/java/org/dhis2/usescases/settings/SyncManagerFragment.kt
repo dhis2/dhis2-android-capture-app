@@ -16,6 +16,7 @@ import org.dhis2.bindings.app
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.data.FormFileProvider.init
 import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
 import org.dhis2.ui.dialogs.alert.AlertDialog
 import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.general.FragmentGlobalAbstract
@@ -80,6 +81,7 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
                         showErrorLogs = ::showSyncErrors,
                         displayDeleteLocalDataWarning = ::deleteLocalData,
                         showShareActions = ::shareDB,
+                        display2FASettingsScreen = ::display2FASettingsScreen,
                     )
                 }
             }
@@ -159,5 +161,11 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
         } catch (e: Exception) {
             Timber.e(e)
         }
+    }
+
+    private fun display2FASettingsScreen() {
+        startActivity(
+            Intent(requireContext(), TwoFASettingsActivity::class.java),
+        )
     }
 }
