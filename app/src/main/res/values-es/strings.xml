@@ -948,7 +948,7 @@
     <string name="remove_enrollment_dialog_title">¿Eliminar de %s?</string>
     <string name="remove_enrollment_dialog_message">Datos de %s se borrarán. Esta acción no se puede deshacer.</string>
     <string name="schedule_next">Agendar siguiente</string>
-    <string name="schedule">Programado</string>
+    <string name="schedule">Programar</string>
     <string name="enter">Ingresa</string>
     <string name="refer">Referir</string>
     <string name="scheduled_enter_event">Planificado</string>
@@ -982,4 +982,7 @@
     <string name="successfully_transferred">Transferencia completada</string>
     <string name="event_cancelled">%1$scancelado</string>
     <string name="due_date_updated">fecha de vencimiento actualizada</string>
-    </resources>
+    <string name="complete_enrollment_label">Completar %s</string>
+    <string name="deactivate_enrollment_label">Desactivar %s</string>
+    <string name="reopen_enrollment_label">Reabrir %s</string>
+</resources>
