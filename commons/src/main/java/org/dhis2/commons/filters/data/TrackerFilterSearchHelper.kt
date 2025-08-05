@@ -104,10 +104,7 @@ class TrackerFilterSearchHelper @Inject constructor(
     ): TrackedEntitySearchCollectionRepository {
         val orgUnits: MutableList<String> = mutableListOf()
         val ouMode = if (filterManager.orgUnitUidsFilters.isEmpty()) {
-            orgUnits.addAll(
-                filterRepository.rootOrganisationUnitUids(),
-            )
-            OrganisationUnitMode.DESCENDANTS
+            OrganisationUnitMode.ACCESSIBLE
         } else {
             orgUnits.addAll(filterManager.orgUnitUidsFilters)
             OrganisationUnitMode.SELECTED
@@ -133,7 +130,7 @@ class TrackerFilterSearchHelper @Inject constructor(
                 if (filterManager.eventStatusFilters.isEmpty()) {
                     filterRepository.applyEventStatusFilter(
                         it,
-                        EventStatus.values().toMutableList(),
+                        EventStatus.entries.toMutableList(),
                     )
                 } else {
                     it
@@ -192,10 +189,12 @@ class TrackerFilterSearchHelper @Inject constructor(
                         repository,
                         orderDirection,
                     )
+
                     Filters.ENROLLMENT_STATUS -> filterRepository.sortByEnrollmentStatus(
                         repository,
                         orderDirection,
                     )
+
                     else -> repository
                 }
             } ?: repository
