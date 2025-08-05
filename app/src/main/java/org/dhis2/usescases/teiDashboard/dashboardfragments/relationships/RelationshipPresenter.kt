@@ -66,7 +66,7 @@ class RelationshipPresenter internal constructor(
 
     fun init() {
         scope.launch {
-            relationshipsRepository.getRelationships().collect {
+            relationshipsRepository.getRelationships().let {
                 _relationshipsModels.postValue(it)
 
                 val mapItems = it.map { relationship ->

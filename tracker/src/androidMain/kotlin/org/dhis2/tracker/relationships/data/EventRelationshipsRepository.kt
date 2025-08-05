@@ -1,7 +1,5 @@
 package org.dhis2.tracker.relationships.data
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
@@ -93,24 +91,22 @@ class EventRelationshipsRepository(
         )
     }
 
-    override suspend fun getRelationships(): Flow<List<RelationshipModel>> {
-        return flowOf(
-            d2.relationshipModule().relationships().getByItem(
-                RelationshipItem.builder().event(
-                    RelationshipItemEvent.builder().event(eventUid).build(),
-                ).build(),
-            ).mapNotNull { relationship ->
-                getRelationshipTypeByUid(
-                    relationship.relationshipType(),
-                )?.let { type ->
-                    mapToRelationshipModel(
-                        relationship = relationship,
-                        relationshipType = type,
-                        eventUid = eventUid,
-                    )
-                }
-            },
-        )
+    override suspend fun getRelationships(): List<RelationshipModel> {
+        return d2.relationshipModule().relationships().getByItem(
+            RelationshipItem.builder().event(
+                RelationshipItemEvent.builder().event(eventUid).build(),
+            ).build(),
+        ).mapNotNull { relationship ->
+            getRelationshipTypeByUid(
+                relationship.relationshipType(),
+            )?.let { type ->
+                mapToRelationshipModel(
+                    relationship = relationship,
+                    relationshipType = type,
+                    eventUid = eventUid,
+                )
+            }
+        }
     }
 
     override fun createRelationship(

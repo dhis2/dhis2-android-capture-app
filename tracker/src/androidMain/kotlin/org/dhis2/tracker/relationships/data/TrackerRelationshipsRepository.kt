@@ -1,7 +1,5 @@
 package org.dhis2.tracker.relationships.data
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.relationships.model.RelationshipConstraintSide
@@ -106,33 +104,30 @@ class TrackerRelationshipsRepository(
         )
     }
 
-    override suspend fun getRelationships(): Flow<List<RelationshipModel>> {
+    override suspend fun getRelationships(): List<RelationshipModel> {
         val tei = d2.trackedEntityModule().trackedEntityInstances()
             .uid(teiUid).blockingGet()
         val programUid = d2.enrollmentModule().enrollments()
             .uid(enrollmentUid).blockingGet()?.program()
 
-        return flowOf(
-            // Gets all the relationships by the tei uid
-            d2.relationshipModule().relationships().getByItem(
-                RelationshipItem.builder().trackedEntityInstance(
-                    RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid)
-                        .build(),
-                ).build(),
-            ).mapNotNull { relationship ->
-                // maps each relationship to a model
-                getRelationshipTypeByUid(
-                    relationship.relationshipType(),
-                )?.let { type ->
-                    mapToRelationshipModel(
-                        relationship = relationship,
-                        relationshipType = type,
-                        tei = tei,
-                        programUid = programUid,
-                    )
-                }
-            },
-        )
+        return d2.relationshipModule().relationships().getByItem(
+            RelationshipItem.builder().trackedEntityInstance(
+                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid)
+                    .build(),
+            ).build(),
+        ).mapNotNull { relationship ->
+            // maps each relationship to a model
+            getRelationshipTypeByUid(
+                relationship.relationshipType(),
+            )?.let { type ->
+                mapToRelationshipModel(
+                    relationship = relationship,
+                    relationshipType = type,
+                    tei = tei,
+                    programUid = programUid,
+                )
+            }
+        }
     }
 
     override fun createRelationship(

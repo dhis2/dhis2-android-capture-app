@@ -1,6 +1,5 @@
 package org.dhis2.tracker.relationships.data
 
-import kotlinx.coroutines.flow.Flow
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.date.toUi
 import org.dhis2.commons.resources.ResourceManager
@@ -39,7 +38,7 @@ abstract class RelationshipsRepository(
 
     abstract override suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection
 
-    abstract override suspend fun getRelationships(): Flow<List<RelationshipModel>>
+    abstract override suspend fun getRelationships(): List<RelationshipModel>
 
     abstract fun createRelationship(
         selectedTeiUid: String,

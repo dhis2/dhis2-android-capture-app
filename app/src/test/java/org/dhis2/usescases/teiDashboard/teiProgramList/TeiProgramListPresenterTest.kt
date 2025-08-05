@@ -158,9 +158,9 @@ class TeiProgramListPresenterTest {
 
     private fun mockedProgramViewModel(): ProgramUiModel {
         return ProgramUiModel(
-            "uid",
-            "programName",
-            MetadataIconData(
+            uid = "uid",
+            title = "programName",
+            metadataIconData = MetadataIconData(
                 imageCardData = ImageCardData.IconCardData(
                     "",
                     "",
@@ -169,12 +169,12 @@ class TeiProgramListPresenterTest {
                 ),
                 color = "#84FFFF".toColor(),
             ),
-            0,
-            "type",
-            "typeName",
-            "programType",
-            null,
-            true,
+            count = 0,
+            type = "type",
+            typeName = "typeName",
+            programType = "programType",
+            description = null,
+            onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
             downloadState = ProgramDownloadState.NONE,
@@ -187,13 +187,13 @@ class TeiProgramListPresenterTest {
 
     private fun mockedEnrollmentViewModel(): EnrollmentViewModel {
         return EnrollmentViewModel(
-            "uid",
-            "2020-01-01",
-            null,
-            "programName",
-            "orgUnit",
-            false,
-            "programUid",
+            uid = "uid",
+            enrollmentDate = "2020-01-01",
+            metadataIconData = null,
+            programName = "programName",
+            orgUnitName = "orgUnit",
+            followUp = false,
+            programUid = "programUid",
         )
     }
 }

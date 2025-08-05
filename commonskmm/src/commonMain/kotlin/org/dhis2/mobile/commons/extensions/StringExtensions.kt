@@ -21,8 +21,6 @@ import java.util.Locale
 
 expect fun String.toImageBitmap(): ImageBitmap?
 
-val crashReportController = getKoin().get<CrashReportController>()
-
 suspend fun String.userFriendlyValue(
     uid: String,
     addPercentageSymbol: Boolean = true,
@@ -59,7 +57,8 @@ suspend fun String.userFriendlyValue(
             }
 
             valueInfo.isBooleanType -> {
-                valueParser.valueFromBooleanType(this).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+                valueParser.valueFromBooleanType(this)
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
             valueInfo.isCoordinate ->
@@ -72,20 +71,27 @@ suspend fun String.userFriendlyValue(
     }
 }
 
-fun String.toDateTimeFormat() = try {
+private fun String.toDateTimeFormat(
+    crashReportController: CrashReportController = getKoin().get<CrashReportController>(),
+) = try {
     LocalDateTime.parse(this).format(dateTimeFormat)
 } catch (e: Exception) {
     crashReportController.trackError(e, e.message)
     this
 }
-fun String.toDateFormat() = try {
+
+private fun String.toDateFormat(
+    crashReportController: CrashReportController = getKoin().get<CrashReportController>(),
+) = try {
     LocalDate.parse(this).format(dateFormat)
 } catch (e: Exception) {
     crashReportController.trackError(e, e.message)
     this
 }
 
-fun String.toTimeFormat() = try {
+private fun String.toTimeFormat(
+    crashReportController: CrashReportController = getKoin().get<CrashReportController>(),
+) = try {
     LocalTime.parse(this).format(timeFormat)
 } catch (e: Exception) {
     crashReportController.trackError(e, e.message)
