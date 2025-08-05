@@ -231,7 +231,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 hasText(
                     enrollmentUIModel.enrollmentDate,
                 ) and hasAnySibling(
-                    hasText("Date of enrollment *"),
+                    hasText("Enrollment date *"),
                 ),
                 useUnmergedTree = true,
             ).assertIsDisplayed()
