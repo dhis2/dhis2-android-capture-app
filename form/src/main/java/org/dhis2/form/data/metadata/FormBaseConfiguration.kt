@@ -2,7 +2,6 @@ package org.dhis2.form.data.metadata
 
 import androidx.paging.PagingData
 import androidx.paging.filter
-import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -147,7 +146,7 @@ open class FormBaseConfiguration(
 
     fun evaluateCustomIntentRequestParams(
         customIntent: CustomIntent,
-        context: CustomIntentContext
+        context: CustomIntentContext,
     ): Map<String, Any?> {
         return d2.settingModule().customIntentService()
             .blockingEvaluateRequestParams(customIntent, context)

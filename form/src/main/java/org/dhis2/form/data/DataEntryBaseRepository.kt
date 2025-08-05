@@ -5,7 +5,6 @@ package org.dhis2.form.data
 import androidx.compose.ui.graphics.Color
 import androidx.paging.PagingData
 import androidx.paging.map
-import io.ktor.http.parameters
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -100,7 +99,7 @@ abstract class DataEntryBaseRepository(
                 param.value?.let { value ->
                     CustomIntentRequestArgumentModel(
                         key = param.key,
-                        value = value
+                        value = value,
                     )
                 }
             }
