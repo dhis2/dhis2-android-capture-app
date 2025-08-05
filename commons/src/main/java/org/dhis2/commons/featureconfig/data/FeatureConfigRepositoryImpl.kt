@@ -60,6 +60,8 @@ class FeatureConfigRepositoryImpl @Inject constructor(
         return when (feature) {
             Feature.AUTO_LOGOUT -> null
             Feature.RESPONSIVE_HOME -> FeatureOptions.ResponsiveHome(totalItems = getResponsiveHomeTotalItems())
+            Feature.CUSTOM_INTENTS -> null
+            Feature.TWO_FACTOR_AUTHENTICATION -> null
         }
     }
 

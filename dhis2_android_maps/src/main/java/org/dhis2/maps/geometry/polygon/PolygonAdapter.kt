@@ -6,11 +6,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.mapbox.geojson.Polygon
 import org.dhis2.commons.extensions.truncate
 import org.dhis2.maps.R
 import org.dhis2.maps.databinding.ItemPolygonFullBinding
 import org.dhis2.maps.model.MapData
+import org.maplibre.geojson.Polygon
 
 class PolygonAdapter(
     private val onAddPolygonPoint: (List<Double>) -> Unit,

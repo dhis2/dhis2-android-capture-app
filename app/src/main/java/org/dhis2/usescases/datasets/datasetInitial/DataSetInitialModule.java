@@ -7,9 +7,6 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * QUADRAM. Created by ppajuelo on 24/09/2018.
- */
 @Module
 public class DataSetInitialModule {
     private final String dataSetUid;

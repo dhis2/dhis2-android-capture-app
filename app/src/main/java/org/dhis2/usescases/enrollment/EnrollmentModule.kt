@@ -7,9 +7,10 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProviderImpl
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -86,7 +87,8 @@ class EnrollmentModule(
     fun provideEnrollmentConfiguration(
         d2: D2,
         dispatcherProvider: DispatcherProvider,
-    ) = EnrollmentConfiguration(d2, enrollmentUid, dispatcherProvider)
+        featureConfigRepository: FeatureConfigRepository,
+    ) = EnrollmentConfiguration(d2, enrollmentUid, dispatcherProvider, featureConfigRepository)
 
     @Provides
     @PerActivity
@@ -123,6 +125,7 @@ class EnrollmentModule(
         d2: D2,
         resourceManager: ResourceManager,
         periodUtils: DhisPeriodUtils,
+        preferenceProvider: PreferenceProvider,
     ): FieldViewModelFactory {
         return FieldViewModelFactoryImpl(
             HintProviderImpl(context),
@@ -135,7 +138,7 @@ class EnrollmentModule(
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),
             LegendValueProviderImpl(d2, resourceManager),
-            AutoCompleteProviderImpl(PreferenceProviderImpl(context)),
+            AutoCompleteProviderImpl(preferenceProvider),
         )
     }
 

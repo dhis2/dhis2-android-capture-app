@@ -1,19 +1,18 @@
 package org.dhis2.data.server
 
 import org.dhis2.R
-import javax.inject.Inject
 
-class SystemStyleMapper @Inject constructor() {
+object SystemStyleMapper {
 
-    private val serverGreenTheme = "green"
-    private val serverIndiaTheme = "india"
-    private val serverMyanmarTheme = "myanmar"
+    private const val SERVER_GREEN_THEME = "green"
+    private const val SERVER_INDIA_THEME = "india"
+    private const val SERVER_MYANMAR_THEME = "myanmar"
 
-    fun map(serverStyle: String?): Int {
+    operator fun invoke(serverStyle: String?): Int {
         return when {
-            serverStyle?.contains(serverGreenTheme) == true -> R.style.GreenTheme
-            serverStyle?.contains(serverIndiaTheme) == true -> R.style.OrangeTheme
-            serverStyle?.contains(serverMyanmarTheme) == true -> R.style.RedTheme
+            serverStyle?.contains(SERVER_GREEN_THEME) == true -> R.style.GreenTheme
+            serverStyle?.contains(SERVER_INDIA_THEME) == true -> R.style.OrangeTheme
+            serverStyle?.contains(SERVER_MYANMAR_THEME) == true -> R.style.RedTheme
             else -> R.style.AppTheme
         }
     }

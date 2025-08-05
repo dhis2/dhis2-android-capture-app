@@ -31,9 +31,8 @@ import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 import java.util.Collections
-import javax.inject.Inject
 
-class StockManagerImpl @Inject constructor(
+class StockManagerImpl(
     val d2: D2,
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
@@ -196,10 +195,10 @@ class StockManagerImpl @Inject constructor(
             )
         } catch (e: Exception) {
             if (e is D2Error) {
-                e.originalException()?.printStackTrace()
+                Timber.e(e.originalException())
                 Timber.e("Unable to save event: %s", e.errorCode().toString())
             } else {
-                e.printStackTrace()
+                Timber.e(e)
             }
             null
         }
@@ -209,10 +208,10 @@ class StockManagerImpl @Inject constructor(
                 d2.eventModule().events().uid(eventUid).setEventDate(item.date)
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
+                    Timber.e(e.originalException())
                     Timber.e("Unable to set event date: %s", e.errorCode().toString())
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
 
@@ -226,10 +225,10 @@ class StockManagerImpl @Inject constructor(
                 ).blockingSet(item.qty.toString())
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
+                    Timber.e(e.originalException())
                     Timber.e("Unable to set value for event: %s\n", e.errorCode().toString())
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
 
@@ -247,10 +246,10 @@ class StockManagerImpl @Inject constructor(
                 }
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
+                    Timber.e(e.originalException())
                     Timber.e("Unable to set destination for event: %s", e.errorCode().toString())
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
 
@@ -258,10 +257,10 @@ class StockManagerImpl @Inject constructor(
                 updateStockOnHand(item, stockUseCase.programUid, transaction, eventUid, stockUseCase)
             } catch (e: Exception) {
                 if (e is D2Error) {
-                    e.originalException()?.printStackTrace()
-                    Timber.e("Unable to update", e.errorCode().toString())
+                    Timber.e(e.originalException())
+                    Timber.e("Unable to update")
                 } else {
-                    e.printStackTrace()
+                    Timber.e(e)
                 }
             }
         }
@@ -276,7 +275,7 @@ class StockManagerImpl @Inject constructor(
     ) {
         disposable.add(
             ruleValidationHelper.evaluate(entry, program, transaction, eventUid, stockUseCase)
-                .doOnError { it.printStackTrace() }
+                .doOnError { e -> Timber.e(e) }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())
                 .subscribe { ruleEffects -> performRuleActions(ruleEffects, eventUid) },
@@ -292,7 +291,7 @@ class StockManagerImpl @Inject constructor(
                 val value = ruleEffect.data
                 if (de.isNotEmpty() && !value.isNullOrEmpty()) {
                     Timber.d("++++      Assigning rule actions:")
-                    println("Event uid: $eventUid, dvUid: $de, value: $value")
+                    Timber.d("Event uid: $eventUid, dvUid: $de, value: $value")
 
                     if (NumberUtils.isCreatable(value)) {
                         try {
@@ -301,9 +300,9 @@ class StockManagerImpl @Inject constructor(
                                 .value(eventUid, de)
                                 .blockingSet(value)
 
-                            println("Added data value '$value' to DE $de - Event($eventUid)")
+                            Timber.d("Added data value '$value' to DE $de - Event($eventUid)")
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            Timber.e(e)
 
                             if (e is D2Error) {
                                 Timber.e(

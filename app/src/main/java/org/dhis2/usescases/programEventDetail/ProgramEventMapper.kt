@@ -4,7 +4,6 @@ import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -110,18 +109,18 @@ class ProgramEventMapper(
             }
         val state: State = if (event.state() != null) event.state()!! else State.TO_UPDATE
 
-        return ProgramEventViewModel.create(
-            event.uid(),
-            event.organisationUnit()!!,
-            orgUnitName,
-            event.eventDate()!!,
-            state,
-            data,
-            event.status()!!,
-            hasExpired || !inOrgUnitRange,
-            attrOptCombo,
-            event.geometry(),
-            d2.eventModule().eventService().blockingIsEditable(event.uid()),
+        return ProgramEventViewModel(
+            uid = event.uid(),
+            orgUnitUid = event.organisationUnit()!!,
+            orgUnitName = orgUnitName,
+            date = event.eventDate()!!,
+            eventState = state,
+            eventDisplayData = data,
+            eventStatus = event.status()!!,
+            isExpired = hasExpired || !inOrgUnitRange,
+            attributeOptionComboName = attrOptCombo,
+            geometry = event.geometry(),
+            canBeEdited = d2.eventModule().eventService().blockingIsEditable(event.uid()),
         )
     }
 
@@ -182,7 +181,7 @@ class ProgramEventMapper(
                     }
                     val value = it.userFriendlyValue(d2) ?: ""
                     if (displayName != null) {
-                        data.add(Pair.create(displayName, value))
+                        data.add(Pair(displayName, value))
                     }
                 }
             }

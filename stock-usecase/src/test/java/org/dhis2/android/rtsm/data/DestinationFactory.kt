@@ -13,7 +13,6 @@ object DestinationFactory {
         val name = faker.address().streetName()
 
         return Option.builder()
-            .id(id)
             .uid(uidGenerator.generate())
             .name(name)
             .displayName(name).build()

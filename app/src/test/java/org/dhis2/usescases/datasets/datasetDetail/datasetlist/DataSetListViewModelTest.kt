@@ -131,7 +131,7 @@ class DataSetListViewModelTest {
         verify(filterManager).publishData()
     }
 
-    private fun dummyDataSet() = DataSetDetailModel.create(
+    private fun dummyDataSet() = DataSetDetailModel(
         "",
         "",
         "",

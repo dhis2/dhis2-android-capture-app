@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
@@ -17,7 +18,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import com.mapbox.mapboxsdk.maps.MapView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -33,8 +33,9 @@ import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
-import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.maplibre.android.maps.MapView
 
 class MapSelectorActivity : AppCompatActivity() {
 
@@ -77,11 +78,12 @@ class MapSelectorActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
         fieldUid = intent.getStringExtra(FIELD_UID)
 
         setContent {
-            Dhis2Theme {
+            DHIS2Theme {
                 val screenState by mapSelectorViewModel.screenState.collectAsState()
 
                 ObserveAsEvents(mapSelectorViewModel.geometryCoordinateResultChannel) { geometryCoordinates ->

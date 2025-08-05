@@ -272,7 +272,7 @@ class ManageStockViewModelTest {
             qty.toString(),
             object : OnQuantityValidated {
                 override fun validationCompleted(ruleEffects: List<RuleEffect>) {
-                    println("$ruleEffects")
+                    /*no-op*/
                 }
             },
         )

@@ -2,6 +2,7 @@ package org.dhis2.usescases.login
 
 import android.content.Intent
 import androidx.annotation.VisibleForTesting
+import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +15,6 @@ import org.dhis2.R
 import org.dhis2.commons.Constants.PREFS_URLS
 import org.dhis2.commons.Constants.PREFS_USERS
 import org.dhis2.commons.Constants.USER_TEST_ANDROID
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
@@ -25,7 +25,8 @@ import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.BiometricController
+import org.dhis2.data.biometric.BiometricAuthenticator
+import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.main.MainActivity
@@ -52,7 +53,8 @@ class LoginViewModel(
     private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
     private val dispatchers: DispatcherProvider,
-    private val biometricController: BiometricController,
+    private val biometricAuthenticator: BiometricAuthenticator,
+    private val cryptographyManager: CryptographyManager,
     private val analyticsHelper: AnalyticsHelper,
     private val crashReportController: CrashReportController,
     private val network: NetworkUtils,
@@ -67,7 +69,7 @@ class LoginViewModel(
     val userName = MutableLiveData<String>()
     val password = MutableLiveData<String>()
     val isDataComplete = MutableLiveData<Boolean>()
-    val isTestingEnvironment = MutableLiveData<Trio<String, String, String>>()
+    val isTestingEnvironment = MutableLiveData<Triple<String, String, String>>()
     private var testingCredentials: List<TestingCredential> = emptyList()
     private val _loginProgressVisible = MutableLiveData(false)
     val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
@@ -181,11 +183,14 @@ class LoginViewModel(
 
     fun checkBiometricVisibility() {
         _canLoginWithBiometrics.value =
-            biometricController.hasBiometric() &&
+            biometricAuthenticator.hasBiometric() &&
             userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
             preferenceProvider.getString(SECURE_SERVER_URL)
                 ?.let { it == serverUrl.value } ?: false &&
-            preferenceProvider.contains(SECURE_PASS)
+            (
+                preferenceProvider.contains(SECURE_PASS) ||
+                    cryptographyManager.isKeyReady()
+                )
     }
 
     fun onLoginButtonClick() {
@@ -351,7 +356,6 @@ class LoginViewModel(
     }
 
     private fun handleError(throwable: Throwable) {
-        Timber.e(throwable)
         if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
             userManager?.d2?.userModule()?.blockingLogOut()
             logIn()
@@ -366,20 +370,59 @@ class LoginViewModel(
             ?.blockingGet()?.value() == null
     }
 
-    fun saveUserCredentials(userPass: String? = null) {
-        if (!preferenceProvider.areSameCredentials(serverUrl.value!!, userName.value!!)) {
+    fun canEnableBiometric(): Boolean {
+        return biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
+    }
+
+    fun saveUserCredentials(userPass: String? = null, onDone: () -> Unit) {
+        val serverUrl = serverUrl.value ?: ""
+        val userName = userName.value ?: ""
+        if (serverUrl.isEmpty() or userName.isEmpty()) return
+
+        if (!preferenceProvider.areSameCredentials(serverUrl, userName)) {
+            val pass = userPass ?: serverUrl
+            if (canEnableBiometric()) {
+                val cryptoObject =
+                    cryptographyManager.getInitializedCipherForEncryption()?.let { cipher ->
+                        BiometricPrompt.CryptoObject(cipher)
+                    }
+
+                biometricAuthenticator.authenticate({
+                    val ciphertextWrapper =
+                        cryptographyManager.encryptData(pass, it.cryptoObject?.cipher!!)
+                    preferenceProvider.saveUserCredentialsAndCipher(
+                        serverUrl,
+                        userName,
+                        ciphertextWrapper,
+                    )
+                    onDone()
+                }, cryptoObject)
+            }
             preferenceProvider.saveUserCredentials(
-                serverUrl.value!!,
-                userName.value!!,
-                userPass,
+                serverUrl,
+                userName,
+                pass,
             )
+        } else {
+            onDone()
         }
     }
 
     fun authenticateWithBiometric() {
-        biometricController.authenticate {
-            password.value = preferenceProvider.getSecureValue(SECURE_PASS)
-            logIn()
+        val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
+        if (ciphertextWrapper != null) {
+            val cryptoObject =
+                cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
+                    ?.let { cipher ->
+                        BiometricPrompt.CryptoObject(cipher)
+                    }
+            biometricAuthenticator.authenticate({
+                password.value = cryptographyManager.decryptData(
+                    ciphertextWrapper.ciphertext,
+                    it.cryptoObject?.cipher!!,
+                )
+                logIn()
+            }, cryptoObject)
         }
     }
 
@@ -461,17 +504,21 @@ class LoginViewModel(
     }
 
     fun onUserChanged(userName: CharSequence, start: Int, before: Int, count: Int) {
+        LoginIdlingResource.increment()
         if (userName.toString() != this.userName.value) {
             this.userName.value = userName.toString()
             checkData()
         }
+        LoginIdlingResource.decrement()
     }
 
     fun onPassChanged(password: CharSequence, start: Int, before: Int, count: Int) {
+        LoginIdlingResource.increment()
         if (password.toString() != this.password.value) {
             this.password.value = password.toString()
             checkData()
         }
+        LoginIdlingResource.decrement()
     }
 
     private fun checkData() {
@@ -486,7 +533,7 @@ class LoginViewModel(
 
     private fun checkTestingEnvironment(serverUrl: String) {
         testingCredentials.find { it.server_url == serverUrl }?.let { credentials ->
-            isTestingEnvironment.value = Trio.create(
+            isTestingEnvironment.value = Triple(
                 serverUrl,
                 credentials.user_name,
                 credentials.user_pass,
@@ -538,7 +585,7 @@ class LoginViewModel(
     }
 
     fun shouldAskForBiometrics(): Boolean =
-        biometricController.hasBiometric() &&
+        biometricAuthenticator.hasBiometric() &&
             !preferenceProvider.areCredentialsSet() &&
             hasAccounts.value == false
 }

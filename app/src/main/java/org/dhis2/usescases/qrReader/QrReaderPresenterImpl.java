@@ -4,8 +4,6 @@ import android.util.Log;
 
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.schedulers.SchedulerProvider;
-import org.dhis2.commons.data.tuples.Pair;
-import org.dhis2.commons.data.tuples.Trio;
 import org.hisp.dhis.android.core.D2;
 import org.hisp.dhis.android.core.common.FeatureType;
 import org.hisp.dhis.android.core.common.Geometry;
@@ -36,13 +34,11 @@ import java.util.List;
 import java.util.Locale;
 
 import io.reactivex.disposables.CompositeDisposable;
+import kotlin.Pair;
+import kotlin.Triple;
 import timber.log.Timber;
 
 import static org.dhis2.commons.date.DateUtils.DATABASE_FORMAT_EXPRESSION;
-
-/**
- * QUADRAM. Created by ppajuelo on 22/05/2018.
- */
 
 class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
@@ -84,7 +80,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void handleDataWORegistrationInfo(JSONArray jsonArray) {
-        ArrayList<Trio<TrackedEntityDataValue, String, Boolean>> attributes = new ArrayList<>();
+        ArrayList<Triple<TrackedEntityDataValue, String, Boolean>> attributes = new ArrayList<>();
         if (eventUid != null) {
             try {
                 // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
@@ -120,13 +116,13 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
                             this.dataJson.add(attrValue);
                             DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
+                            attributes.add(new Triple<>(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                         } else {
-                            attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                            attributes.add(new Triple<>(trackedEntityDataValueModelBuilder.build(), null, false));
                         }
 
                     } else {
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                        attributes.add(new Triple<>(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
                 }
             } catch (JSONException | ParseException e) {
@@ -139,7 +135,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
 
     @Override
     public void handleDataInfo(JSONArray jsonArray) {
-        ArrayList<Trio<TrackedEntityDataValue, String, Boolean>> attributes = new ArrayList<>();
+        ArrayList<Triple<TrackedEntityDataValue, String, Boolean>> attributes = new ArrayList<>();
         try {
             // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -176,12 +172,12 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     if (d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingExists()) {
                         this.teiDataJson.add(attrValue);
                         DataElement de = d2.dataElementModule().dataElements().uid(attrValue.getString("dataElement")).blockingGet();
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
+                        attributes.add(new Triple<>(trackedEntityDataValueModelBuilder.build(), de.displayFormName(), true));
                     } else {
-                        attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                        attributes.add(new Triple<>(trackedEntityDataValueModelBuilder.build(), null, false));
                     }
                 } else {
-                    attributes.add(Trio.create(trackedEntityDataValueModelBuilder.build(), null, false));
+                    attributes.add(new Triple<>(trackedEntityDataValueModelBuilder.build(), null, false));
                 }
             }
         } catch (JSONException | ParseException e) {
@@ -220,7 +216,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
     @Override
     public void handleAttrInfo(JSONArray jsonArray) {
         this.attrJson.add(jsonArray);
-        ArrayList<Trio<String, String, Boolean>> attributes = new ArrayList<>();
+        ArrayList<Triple<String, String, Boolean>> attributes = new ArrayList<>();
         try {
             // LOOK FOR TRACKED ENTITY ATTRIBUTES ON LOCAL DATABASE
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -229,11 +225,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.
                     if (d2.trackedEntityModule().trackedEntityAttributes().uid(attrValue.getString("trackedEntityAttribute")).blockingExists()) {
                         TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(attrValue.getString("trackedEntityAttribute")).blockingGet();
-                        attributes.add(Trio.create(attribute.displayName(), attrValue.getString("value"), true));
+                        attributes.add(new Triple<>(attribute.displayName(), attrValue.getString("value"), true));
                     }
                     // TRACKED ENTITY ATTRIBUTE NOT FOUND, TRACKED ENTITY ATTRIBUTE VALUE CANNOT BE SAVED.
                     else {
-                        attributes.add(Trio.create(attrValue.getString("trackedEntityAttribute"), "", false));
+                        attributes.add(new Triple<>(attrValue.getString("trackedEntityAttribute"), "", false));
                     }
                 }
             }
@@ -256,11 +252,11 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                     // PROGRAM FOUND, ENROLLMENT CAN BE SAVED
                     if (d2.programModule().programs().uid(attrValue.getString("program")).blockingExists()) {
                         Program program = d2.programModule().programs().uid(attrValue.getString("program")).blockingGet();
-                        enrollments.add(Pair.create(program.displayName(), true));
+                        enrollments.add(new Pair<>(program.displayName(), true));
                     }
                     // PROGRAM NOT FOUND, ENROLLMENT CANNOT BE SAVED
                     else {
-                        enrollments.add(Pair.create(attrValue.getString("uid"), false));
+                        enrollments.add(new Pair<>(attrValue.getString("uid"), false));
                     }
                 }
             }
@@ -281,7 +277,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
             if (jsonObject.has("enrollment") && jsonObject.getString("enrollment") != null) {
                 // ENROLLMENT FOUND, EVENT CAN BE SAVED
                 if (d2.enrollmentModule().enrollments().uid(jsonObject.getString("enrollment")).blockingExists()) {
-                    events.add(Pair.create(jsonObject.getString("enrollment"), true));
+                    events.add(new Pair<>(jsonObject.getString("enrollment"), true));
                 }
                 // ENROLLMENT NOT FOUND IN LOCAL DATABASE, CHECK IF IT WAS READ FROM A QR
                 else if (enrollmentJson != null) {
@@ -297,14 +293,14 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
                         }
                     }
                     if (isEnrollmentReadFromQr) {
-                        events.add(Pair.create(jsonObject.getString("uid"), true));
+                        events.add(new Pair<>(jsonObject.getString("uid"), true));
                     } else {
-                        events.add(Pair.create(jsonObject.getString("uid"), false));
+                        events.add(new Pair<>(jsonObject.getString("uid"), false));
                     }
                 }
                 // ENROLLMENT NOT FOUND, EVENT CANNOT BE SAVED
                 else {
-                    events.add(Pair.create(jsonObject.getString("uid"), false));
+                    events.add(new Pair<>(jsonObject.getString("uid"), false));
                 }
             }
         } catch (JSONException e) {
@@ -322,7 +318,7 @@ class QrReaderPresenterImpl implements QrReaderContracts.Presenter {
         for (int i = 0; i < jsonArray.length(); i++) {
             try {
                 JSONObject relationship = jsonArray.getJSONObject(i);
-                relationships.add(Pair.create(relationship.getString("trackedEntityInstanceA"), true));
+                relationships.add(new Pair<>(relationship.getString("trackedEntityInstanceA"), true));
             } catch (Exception e) {
                 Timber.e(e);
             }

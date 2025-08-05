@@ -32,6 +32,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
@@ -51,7 +52,7 @@ class ProgramRepositoryImplTest {
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(any(), anyOrNull()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before

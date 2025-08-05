@@ -1,7 +1,6 @@
 package org.dhis2.form.ui.provider.inputfield
 
 import android.content.Intent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.relocation.BringIntoViewRequester
@@ -54,7 +53,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldProvider(
     modifier: Modifier,
@@ -85,7 +83,6 @@ fun FieldProvider(
             if (it.isFocused && !fieldUiModel.focused) {
                 scope.launch {
                     fieldUiModel.onItemClick()
-
                     delay(10)
                     bringIntoViewRequester.bringIntoView(visibleArea)
                 }
@@ -120,6 +117,14 @@ fun FieldProvider(
                 )
             },
         )
+
+        fieldUiModel.customIntent != null -> {
+            ProvideCustomIntentInput(
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                resources = resources,
+            )
+        }
 
         fieldUiModel.eventCategories != null -> ProvideCategorySelectorInput(
             modifier = modifierWithFocus,

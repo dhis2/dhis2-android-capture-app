@@ -34,7 +34,6 @@ object VisualizationsFactory {
         val name = faker.address().streetName()
 
         return AnalyticsDhisVisualization.builder()
-            .id(id)
             .name(name)
             .uid(uidGenerator.generate())
             .type(AnalyticsDhisVisualizationType.VISUALIZATION)

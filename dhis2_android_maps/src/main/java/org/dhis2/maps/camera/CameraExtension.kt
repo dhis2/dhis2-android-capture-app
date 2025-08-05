@@ -1,20 +1,20 @@
 package org.dhis2.maps.camera
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.MapboxMap.CancelableCallback
 import org.dhis2.maps.geometry.bound.GetBoundingBox
+import org.maplibre.android.camera.CameraPosition
+import org.maplibre.android.camera.CameraUpdateFactory
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.MapLibreMap.CancelableCallback
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.LineString
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 
 const val DEFAULT_BOUND_PADDING = 50
 
-fun MapboxMap.initCameraToViewAllElements(bounds: LatLngBounds) {
+fun MapLibreMap.initCameraToViewAllElements(bounds: LatLngBounds) {
     if (bounds.latitudeNorth == 0.0 && bounds.latitudeSouth == 0.0 &&
         bounds.longitudeEast == 0.0 && bounds.longitudeWest == 0.0
     ) {
@@ -26,7 +26,7 @@ fun MapboxMap.initCameraToViewAllElements(bounds: LatLngBounds) {
     }
 }
 
-private fun MapboxMap.zoomInToLanLngBoundsAnimation(bounds: LatLngBounds) {
+private fun MapLibreMap.zoomInToLanLngBoundsAnimation(bounds: LatLngBounds) {
     this.animateCamera(
         CameraUpdateFactory.newLatLngBounds(bounds, DEFAULT_BOUND_PADDING),
         CalculateCameraAnimationDuration(cameraPosition.target ?: LatLng(), bounds.center),
@@ -42,7 +42,7 @@ private fun MapboxMap.zoomInToLanLngBoundsAnimation(bounds: LatLngBounds) {
     )
 }
 
-fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
+fun MapLibreMap.moveCameraToPosition(latLng: LatLng) {
     this.animateCamera(
         CameraUpdateFactory.newLatLngZoom(
             LatLng(
@@ -64,7 +64,7 @@ fun MapboxMap.moveCameraToPosition(latLng: LatLng) {
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 }
 
-fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
+fun MapLibreMap.moveCameraToDevicePosition(latLng: LatLng) {
     this.easeCamera(
         CameraUpdateFactory.newLatLng(
             LatLng(
@@ -84,7 +84,7 @@ fun MapboxMap.moveCameraToDevicePosition(latLng: LatLng) {
     this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 }
 
-fun MapboxMap.centerCameraOnFeatures(features: List<Feature>) {
+fun MapLibreMap.centerCameraOnFeatures(features: List<Feature>) {
     val latLongs = mutableListOf<LatLng>().apply {
         features.forEach {
             addAll(

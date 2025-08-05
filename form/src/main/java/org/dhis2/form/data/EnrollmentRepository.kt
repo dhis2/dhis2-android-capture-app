@@ -168,6 +168,7 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
             ),
         )
+        val attributeCustomIntent = getCustomIntentFromUid(programTrackedEntityAttribute.trackedEntityAttribute()?.uid())
 
         val valueType = attribute.valueType()
         var mandatory = programTrackedEntityAttribute.mandatory() ?: false
@@ -240,6 +241,7 @@ class EnrollmentRepository(
             attribute.fieldMask(),
             optionSetConfig,
             if (valueType == ValueType.COORDINATE) FeatureType.POINT else null,
+            customIntentModel = attributeCustomIntent,
         )
 
         if (!error.isNullOrEmpty()) {

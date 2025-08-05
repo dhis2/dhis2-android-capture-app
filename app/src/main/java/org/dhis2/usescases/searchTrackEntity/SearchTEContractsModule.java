@@ -22,10 +22,6 @@ import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import kotlin.Pair;
 
-/**
- * QUADRAM. Created by ppajuelo on 02/11/2017.
- */
-
 public class SearchTEContractsModule {
 
     public interface View extends AbstractActivityContracts.View {

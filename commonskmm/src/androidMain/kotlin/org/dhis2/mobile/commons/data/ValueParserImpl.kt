@@ -28,7 +28,7 @@ internal class ValueParserImpl(private val d2: D2) : ValueParser {
                 isDateTime = valueType == ValueType.DATETIME,
                 isTime = valueType == ValueType.TIME,
                 isCoordinate = valueType == ValueType.COORDINATE,
-                isBooleanType = valueType == ValueType.TRUE_ONLY || valueType == ValueType.BOOLEAN,
+                isBooleanType = valueType == ValueType.BOOLEAN,
             )
         }
 

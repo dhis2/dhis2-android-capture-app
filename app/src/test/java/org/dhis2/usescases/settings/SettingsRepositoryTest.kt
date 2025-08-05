@@ -3,6 +3,7 @@ package org.dhis2.usescases.settings
 import io.reactivex.Single
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX_DEFAULT
@@ -27,8 +28,6 @@ import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
-import org.hisp.dhis.android.core.sms.domain.repository.WebApiRepository
-import org.hisp.dhis.android.core.sms.domain.repository.internal.LocalDbRepository
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -43,8 +42,17 @@ class SettingsRepositoryTest {
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferencesProvider: PreferenceProvider = mock()
-    private var localDbRepository: LocalDbRepository = mock()
-    private var webApiRepository: WebApiRepository = mock()
+    private val featureConfigRepository: FeatureConfigRepository = mock()
+    private val smsConfig: ConfigCase.SmsConfig = mock {
+        on { isModuleEnabled } doReturn true
+        on { gateway } doReturn "gatewaynumber"
+        on { isWaitingForResult } doReturn true
+        on { resultSender } doReturn "confirmationNumber"
+        on { resultWaitingTimeout } doReturn 120
+    }
+    private val configCase: ConfigCase = mock {
+        on { getSmsModuleConfig() } doReturn Single.just(smsConfig)
+    }
 
     private val SETTINGS_METADATA_PERIOD = MetadataSyncPeriod.EVERY_7_DAYS
     private val SETTINGS_DATA_PERIOD = DataSyncPeriod.EVERY_HOUR
@@ -64,7 +72,11 @@ class SettingsRepositoryTest {
 
     @Before
     fun setUp() {
-        settingsRepository = SettingsRepository(d2, preferencesProvider)
+        settingsRepository = SettingsRepository(
+            d2,
+            preferencesProvider,
+            featureConfigRepository,
+        )
         configurePreferences()
         configureDataCount()
         configureSMSConfig()
@@ -73,7 +85,7 @@ class SettingsRepositoryTest {
     @Test
     fun `Should return metadata period from general settings if exist`() {
         configureGeneralSettings(true)
-        val testObserver = settingsRepository.metaSync(userManager).test()
+        val testObserver = settingsRepository.metaSync().test()
         testObserver
             .assertNoErrors()
             .assertValue { metadataSettings ->
@@ -84,7 +96,7 @@ class SettingsRepositoryTest {
     @Test
     fun `Should return metadata period from preferences if general settings does not exist`() {
         configureGeneralSettings(false)
-        val testObserver = settingsRepository.metaSync(userManager).test()
+        val testObserver = settingsRepository.metaSync().test()
         testObserver
             .assertNoErrors()
             .assertValue { metadataSettings ->
@@ -329,7 +341,8 @@ class SettingsRepositoryTest {
         ) doReturn mock()
         whenever(
             d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP).byDeleted().isFalse.blockingCount(),
+                .byAggregatedSyncState().neq(State.RELATIONSHIP)
+                .byDeleted().isFalse.blockingCount(),
         ) doReturn 0
 
         whenever(
@@ -370,21 +383,7 @@ class SettingsRepositoryTest {
     }
 
     private fun configureSMSConfig() {
-        whenever(localDbRepository.isModuleEnabled()) doReturn
-            Single.just(true)
-        whenever(localDbRepository.getGatewayNumber()) doReturn
-            Single.just("gatewaynumber")
-        whenever(localDbRepository.getWaitingForResultEnabled()) doReturn
-            Single.just(true)
-        whenever(localDbRepository.getConfirmationSenderNumber()) doReturn
-            Single.just("confirmationNumber")
-        whenever(localDbRepository.getWaitingResultTimeout()) doReturn
-            Single.just(120)
-        whenever(d2.smsModule().configCase()) doReturn
-            ConfigCase(
-                webApiRepository,
-                localDbRepository,
-            )
+        whenever(d2.smsModule().configCase()) doReturn configCase
     }
 
     private fun mockedGeneralSettings(): GeneralSettings {

@@ -21,6 +21,7 @@ import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.SingleEventEnforcer
@@ -37,10 +38,10 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAc
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.teiDashboard.DashboardRepository
+import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TEIDataFragment.Companion.PREF_COMPLETED_EVENT
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.decrement
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton.increment
 import org.dhis2.usescases.teiDashboard.domain.GetNewEventCreationTypeOptions
-import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CREATE_EVENT_TEI
 import org.dhis2.utils.analytics.TYPE_EVENT_TEI
@@ -73,6 +74,7 @@ class TEIDataPresenter(
     private val dispatcher: DispatcherProvider,
     private val createEventUseCase: CreateEventUseCase,
     private val d2ErrorUtils: D2ErrorUtils,
+    private val preferences: PreferenceProvider,
 ) {
     private val groupingProcessor: BehaviorProcessor<Boolean> = BehaviorProcessor.create()
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
@@ -158,11 +160,11 @@ class TEIDataPresenter(
 
     private fun applyEffects(
         events: List<EventViewModel>,
-        calcResult: Result<RuleEffect>,
+        calcResult: Result<List<RuleEffect>>,
     ): List<EventViewModel> {
         Timber.d("APPLYING EFFECTS")
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             view.showProgramRuleErrorMessage()
             return emptyList()
         }
@@ -172,7 +174,7 @@ class TEIDataPresenter(
         ).applyRuleEffects(
             false,
             HashMap(),
-            calcResult.items(),
+            calcResult.getOrNull() ?: emptyList(),
             valueStore,
         )
         stagesToHide = stagesToHide1
@@ -215,6 +217,13 @@ class TEIDataPresenter(
                     }
                 }, Timber.Forest::d),
         )
+    }
+
+    fun checkIfHasToDisplayGenerateEvent() {
+        preferences.getString(PREF_COMPLETED_EVENT, null)?.let { eventUid ->
+            displayGenerateEvent(eventUid)
+            preferences.removeValue(PREF_COMPLETED_EVENT)
+        }
     }
 
     fun completeEnrollment() {
@@ -291,6 +300,7 @@ class TEIDataPresenter(
                 )
                 view.openEventCapture(intent)
             }
+
             else -> {
                 val event = d2.event(uid)
                 val intent = Intent(view.context, EventInitialActivity::class.java)
@@ -368,7 +378,8 @@ class TEIDataPresenter(
             when (eventCreationType) {
                 EventCreationType.ADDNEW -> programUid?.let { program ->
                     val orgUnitUid = d2.enrollment(enrollmentUid)?.organisationUnit()
-                    orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) } ?: checkOrgUnitCount(program, stage.uid())
+                    orgUnitUid?.let { onNewEventSelected(orgUnitUid, stage.uid()) }
+                        ?: checkOrgUnitCount(program, stage.uid())
                 }
 
                 EventCreationType.SCHEDULE -> {
@@ -386,6 +397,7 @@ class TEIDataPresenter(
                 EventCreationType.REFERAL -> {
                     createEventInEnrollment(eventCreationType)
                 }
+
                 else -> {
                     view.displayScheduleEvent(
                         programStage = null,
@@ -399,7 +411,12 @@ class TEIDataPresenter(
 
     fun getNewEventOptionsByStages(stage: ProgramStage?): List<MenuItemData<EventCreationType>> {
         val options = programUid?.let { getNewEventCreationTypeOptions(stage, it) }
-        return options?.let { eventCreationOptionsMapper.mapToEventsByStage(it, stage?.displayEventLabel()) } ?: emptyList()
+        return options?.let {
+            eventCreationOptionsMapper.mapToEventsByStage(
+                it,
+                stage?.displayEventLabel(),
+            )
+        } ?: emptyList()
     }
 
     fun fetchEvents() {

@@ -22,18 +22,6 @@ class AppTest : App() {
 
     val mutableWorkInfoStatuses = MutableLiveData<List<WorkInfo>>()
 
-    @Override
-    override fun onCreate() {
-        populateDBIfNeeded()
-        super.onCreate()
-    }
-
-    private fun populateDBIfNeeded() {
-        TestingInjector.provideDBImporter(applicationContext).apply {
-            copyDatabaseFromAssetsIfNeeded()
-        }
-    }
-
     fun restoreDB() {
         TestingInjector.provideDBImporter(applicationContext).apply {
             copyDatabaseFromAssetsIfNeeded(true)
@@ -80,8 +68,6 @@ class AppTest : App() {
             .schedulerModule(SchedulerModule(SchedulersProviderImpl()))
             .analyticsModule(AnalyticsModule())
             .preferenceModule(PreferencesTestingModule())
-            //.coroutineDispatchers(DispatcherTestingModule())
-            .customDispatcher(CustomDispatcherModule())
             .workManagerController(
                 MockedWorkManagerModule(
                     MockedWorkManagerController(

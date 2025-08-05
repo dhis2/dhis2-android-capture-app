@@ -29,10 +29,6 @@ import io.reactivex.schedulers.Schedulers;
 import kotlin.Unit;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by Cristian on 06/03/2018.
- */
-
 public class TeiProgramListInteractor implements TeiProgramListContract.Interactor {
 
     private TeiProgramListContract.View view;
@@ -176,7 +172,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(enrollments -> {
-                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.programName().compareToIgnoreCase(enrollment2.programName()));
+                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.getProgramName().compareToIgnoreCase(enrollment2.getProgramName()));
                             view.setActiveEnrollments(enrollments);
                         },
                         Timber::d)
@@ -188,7 +184,7 @@ public class TeiProgramListInteractor implements TeiProgramListContract.Interact
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(enrollments -> {
-                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.programName().compareToIgnoreCase(enrollment2.programName()));
+                            Collections.sort(enrollments, (enrollment1, enrollment2) -> enrollment1.getProgramName().compareToIgnoreCase(enrollment2.getProgramName()));
                             view.setOtherEnrollments(enrollments);
                         },
                         Timber::d)

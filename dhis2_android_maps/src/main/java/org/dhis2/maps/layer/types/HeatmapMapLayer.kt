@@ -1,14 +1,14 @@
 package org.dhis2.maps.layer.types
 
-import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.HeatmapLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.managers.TeiMapManager
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.HeatmapLayer
+import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.geojson.Feature
 
 const val HEATMAP_ICON = "HEATMAP_ICON"
 

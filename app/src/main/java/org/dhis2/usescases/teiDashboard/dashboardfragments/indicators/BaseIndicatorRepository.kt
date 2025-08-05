@@ -8,11 +8,8 @@ import dhis2.org.analytics.charts.ui.SectionTitle
 import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import org.dhis2.commons.data.tuples.Pair
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -50,16 +47,16 @@ abstract class BaseIndicatorRepository(
                             Timber.e(e)
                             null
                         }
-                        Pair.create(indicator, indicatorValue ?: "")
+                        Pair(indicator, indicatorValue ?: "")
                     }.flatMap {
-                        getLegendColorForIndicator(it.val0(), it.val1())
+                        getLegendColorForIndicator(it.first, it.second)
                     }.map {
                         IndicatorModel(
-                            it.val0(),
-                            it.val1(),
-                            it.val2(),
-                            LOCATION_INDICATOR_WIDGET,
-                            resourceManager.defaultIndicatorLabel(),
+                            programIndicator = it.first,
+                            value = it.second,
+                            color = it.third,
+                            location = LOCATION_INDICATOR_WIDGET,
+                            defaultLabel = resourceManager.defaultIndicatorLabel(),
                         )
                     }
                     .toList()
@@ -91,15 +88,15 @@ abstract class BaseIndicatorRepository(
                 }
             }
 
-    private fun applyRuleEffectForIndicators(calcResult: Result<RuleEffect>): List<IndicatorModel> {
+    private fun applyRuleEffectForIndicators(calcResult: Result<List<RuleEffect>>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
 
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             return arrayListOf()
         }
 
-        for (ruleEffect in calcResult.items()) {
+        for (ruleEffect in calcResult.getOrNull() ?: emptyList()) {
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
@@ -138,7 +135,7 @@ abstract class BaseIndicatorRepository(
     private fun getLegendColorForIndicator(
         indicator: ProgramIndicator,
         value: String?,
-    ): Observable<Trio<ProgramIndicator?, String?, String?>?> {
+    ): Observable<Triple<ProgramIndicator?, String?, String?>?> {
         var color: String?
         try {
             color = if (value?.toFloat()?.isNaN() == true) {
@@ -162,12 +159,12 @@ abstract class BaseIndicatorRepository(
                     }
                 }
             }
-        } catch (e: java.lang.Exception) {
+        } catch (_: java.lang.Exception) {
             color = null
         }
 
         return Observable.just(
-            Trio.create<ProgramIndicator, String, String>(
+            Triple(
                 indicator,
                 value,
                 color,

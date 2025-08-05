@@ -53,9 +53,6 @@ import java.util.zip.Inflater;
 import io.reactivex.Observable;
 import timber.log.Timber;
 
-/**
- * QUADRAM. Created by ppajuelo on 22/05/2018.
- */
 /*TODO: CHANGE THIS TO GET INFO FROM SMS Library*/
 public class QRCodeGenerator implements QRInterface {
 
@@ -455,7 +452,7 @@ public class QRCodeGenerator implements QRInterface {
         try {
             created = DateUtils.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         TrackedEntityInstance tei = TrackedEntityInstance.builder()
                 .uid(data[0])
@@ -486,19 +483,19 @@ public class QRCodeGenerator implements QRInterface {
         try {
             created = DateUtils.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         try {
             enrollmentDate = DateUtils.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
 
         if (!data[5].isEmpty())
             try {
                 incidentDate = DateUtils.databaseDateFormat().parse(data[5]);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
 
         Enrollment enrollment = Enrollment.builder()
@@ -544,25 +541,25 @@ public class QRCodeGenerator implements QRInterface {
         try {
             created = DateUtils.databaseDateFormat().parse(data[1]);
         } catch (ParseException e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         if (!data[7].isEmpty())
             try {
                 eventDate = DateUtils.databaseDateFormat().parse(data[7]);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         if (!data[8].isEmpty())
             try {
                 completeDate = DateUtils.databaseDateFormat().parse(data[8]);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         if (!data[9].isEmpty())
             try {
                 dueDate = DateUtils.databaseDateFormat().parse(data[9]);
             } catch (ParseException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         Event event = Event.builder()
                 .uid(data[0])

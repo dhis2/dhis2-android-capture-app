@@ -127,7 +127,6 @@ class TeiDashboardMobileActivity :
     @Inject
     lateinit var eventResourcesProvider: EventResourcesProvider
 
-    lateinit var programModel: DashboardProgramModel
     var teiUid: String? = null
     var programUid: String? = null
     var enrollmentUid: String? = null

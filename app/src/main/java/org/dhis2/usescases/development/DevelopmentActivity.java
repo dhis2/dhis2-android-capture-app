@@ -28,6 +28,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import timber.log.Timber;
+
 public class DevelopmentActivity extends ActivityGlobalAbstract {
 
     private int count;
@@ -121,12 +123,12 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
                 writer.write(buffer, 0, n);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         } finally {
             try {
                 is.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
 
@@ -170,21 +172,21 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             binding.iconImagePossitive.setImageResource(iconResource_positive);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             hasError = true;
         }
 
         try {
             binding.iconImageOutline.setImageResource(iconResource_outline);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             hasError = true;
         }
 
         try {
             binding.iconImageNegative.setImageResource(iconResource_negative);
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             hasError = true;
         }
 
@@ -192,7 +194,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             binding.iconImagePossitiveTint.setImageResource(iconResource_positive);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             hasError = true;
         }
 
@@ -201,7 +203,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             binding.iconImageOutlineTint.setImageResource(iconResource_outline);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             hasError = true;
         }
 
@@ -209,7 +211,7 @@ public class DevelopmentActivity extends ActivityGlobalAbstract {
             binding.iconImageNegativeTint.setImageResource(iconResource_negative);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
             hasError = true;
         }
 

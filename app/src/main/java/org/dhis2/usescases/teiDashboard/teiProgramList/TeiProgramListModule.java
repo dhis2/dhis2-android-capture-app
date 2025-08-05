@@ -15,9 +15,6 @@ import org.hisp.dhis.android.core.D2;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * QUADRAM. Created by Cristian on 13/02/2018.
- */
 @Module
 public class TeiProgramListModule {
 

@@ -72,7 +72,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running unit tests on app module'
-                    sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
+                    sh './gradlew :app:testDhis2DebugUnitTest --stacktrace --no-daemon'
                     echo 'Running unit tests on all other modules'
                     sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
                 }
@@ -123,6 +123,7 @@ pipeline {
             }
         }
         stage('Run UI Tests in Landscape') {
+            // This stage is commented out because it was unstable remove after validate.
             when {
                 expression {
                     return JOB_NAME.startsWith('android-multibranch-PUSH')

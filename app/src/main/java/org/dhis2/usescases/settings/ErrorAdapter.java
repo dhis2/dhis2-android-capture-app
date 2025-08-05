@@ -9,7 +9,6 @@ import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 
@@ -17,10 +16,7 @@ import java.util.List;
 
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.PublishProcessor;
-
-/**
- * QUADRAM. Created by ppajuelo on 25/10/2018.
- */
+import kotlin.Pair;
 
 public class ErrorAdapter extends RecyclerView.Adapter<ErrorViewHolder> {
 

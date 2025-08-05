@@ -14,6 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.about.AboutFragment
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
@@ -21,7 +22,7 @@ import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
 
 class MainNavigator(
-    private val dispatcherProvider: dispatch.core.DispatcherProvider,
+    private val dispatcherProvider: DispatcherProvider,
     private val fragmentManager: FragmentManager,
     private val onTransitionStart: () -> Unit,
     private val onScreenChanged: (
@@ -138,8 +139,8 @@ class MainNavigator(
             currentScreen.value = screen
             currentFragment = fragment
 
-            CoroutineScope(dispatcherProvider.main).launch {
-                withContext(dispatcherProvider.io) {
+            CoroutineScope(dispatcherProvider.ui()).launch {
+                withContext(dispatcherProvider.io()) {
                     val transaction: FragmentTransaction = fragmentManager.beginTransaction()
                     transaction.apply {
                         if (sharedView == null) {

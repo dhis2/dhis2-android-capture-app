@@ -2,10 +2,6 @@ package org.dhis2.maps.views
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
-import com.mapbox.mapboxsdk.geometry.LatLng
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,6 +33,10 @@ import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.GetMapData
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 
 class MapSelectorViewModel(
     val featureType: FeatureType,

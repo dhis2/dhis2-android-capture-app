@@ -1,7 +1,6 @@
 package org.dhis2.usescases.general
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.WindowManager
@@ -16,7 +15,6 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.ActivityResultObservable
 import org.dhis2.commons.ActivityResultObserver
-import org.dhis2.commons.Constants
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.service.SessionManagerServiceImpl
 import org.dhis2.commons.ui.extensions.handleInsets
@@ -99,10 +97,8 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
                 ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
         }
 
-        val prefs = getSharedPreferences()
         if (this is MainActivity || this is LoginActivity || this is SplashActivity || this is AccountsActivity) {
             serverComponent?.themeManager()?.clearProgramTheme()
-            prefs?.edit()?.remove(Constants.PROGRAM_THEME)?.apply()
         }
 
         if (this !is SplashActivity &&
@@ -121,10 +117,6 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
         if (handleEdgeToEdge) handleInsets()
 
         super.onCreate(savedInstanceState)
-    }
-
-    private fun getSharedPreferences(): SharedPreferences? {
-        return getSharedPreferences(Constants.SHARE_PREFS, MODE_PRIVATE)
     }
 
     override fun onUserInteraction() {

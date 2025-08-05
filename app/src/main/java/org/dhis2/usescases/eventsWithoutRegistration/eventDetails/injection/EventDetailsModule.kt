@@ -8,7 +8,6 @@ import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.prefs.PreferenceProviderImpl
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -79,6 +78,7 @@ class EventDetailsModule(
         d2: D2,
         resourceManager: ResourceManager,
         periodUtils: DhisPeriodUtils,
+        preferenceProvider: PreferenceProvider,
     ): EventDetailsRepository {
         return EventDetailsRepository(
             d2 = d2,
@@ -97,7 +97,7 @@ class EventDetailsModule(
                 UiEventTypesProviderImpl(),
                 KeyboardActionProviderImpl(),
                 LegendValueProviderImpl(d2, resourceManager),
-                AutoCompleteProviderImpl(PreferenceProviderImpl(context)),
+                AutoCompleteProviderImpl(preferenceProvider),
             ),
             onError = resourceManager::parseD2Error,
         )

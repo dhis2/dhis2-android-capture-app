@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,11 +37,10 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
-import javax.inject.Inject
+import timber.log.Timber
 
 @SuppressLint("MutableCollectionMutableState")
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val metadataManager: MetadataManager,
@@ -121,7 +119,7 @@ class HomeViewModel @Inject constructor(
                 .subscribe(
                     { _destinations.value = (OperationState.Success<List<Option>>(it)) },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                         _destinations.value = (
                             OperationState.Error(R.string.destinations_load_error)
                             )
@@ -143,7 +141,7 @@ class HomeViewModel @Inject constructor(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -160,7 +158,7 @@ class HomeViewModel @Inject constructor(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -176,7 +174,7 @@ class HomeViewModel @Inject constructor(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -191,7 +189,7 @@ class HomeViewModel @Inject constructor(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
@@ -213,7 +211,7 @@ class HomeViewModel @Inject constructor(
                         }
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                         _facilities.value = (OperationState.Error(R.string.facilities_load_error))
                     },
                 ),

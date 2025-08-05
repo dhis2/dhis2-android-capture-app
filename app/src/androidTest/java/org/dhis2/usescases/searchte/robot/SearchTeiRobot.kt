@@ -155,7 +155,9 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnShowMap() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("NAVIGATION_BAR_ITEM_Map"))
         composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 

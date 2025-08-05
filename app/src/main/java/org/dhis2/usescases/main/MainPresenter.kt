@@ -12,7 +12,10 @@ import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
@@ -47,6 +50,8 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
 import timber.log.Timber
+import kotlin.concurrent.atomics.AtomicBoolean
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 
 const val DEFAULT = "default"
@@ -54,6 +59,7 @@ const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
 const val PLAY_FLAVOR = "dhisPlayServices"
 
+@OptIn(ExperimentalAtomicApi::class)
 class MainPresenter(
     private val view: MainView,
     private val repository: HomeRepository,
@@ -68,7 +74,7 @@ class MainPresenter(
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
     private val syncStatusController: SyncStatusController,
     private val versionRepository: VersionRepository,
-    private val dispatcherProvider: DispatcherProvider,
+    val dispatcherProvider: DispatcherProvider,
     private val forceToNotSynced: Boolean,
 ) : CoroutineScope {
 
@@ -80,6 +86,14 @@ class MainPresenter(
 
     val versionToUpdate = versionRepository.newAppVersion.asLiveData(coroutineContext)
     val downloadingVersion = MutableLiveData(false)
+
+    private val _singleProgramNavigationChannel = Channel<HomeItemData>()
+    val singleProgramNavigationChannel = _singleProgramNavigationChannel.receiveAsFlow()
+        .onEach {
+            singleProgramNavigationDone.store(true)
+        }
+
+    private var singleProgramNavigationDone = AtomicBoolean(false)
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
@@ -361,15 +375,23 @@ class MainPresenter(
         }
     }
 
-    fun hasOneHomeItem(): Boolean {
-        return repository.homeItemCount() == 1
-    }
-
-    fun getSingleItemData(): HomeItemData? {
-        return repository.singleHomeItemData()
+    fun checkSingleProgramNavigation() {
+        if (!singleProgramNavigationDone.load() && repository.homeItemCount() == 1) {
+            launch(coroutineContext) {
+                repository.singleHomeItemData()?.let {
+                    _singleProgramNavigationChannel.send(it)
+                }
+            }
+        }
     }
 
     fun hasFilters(): Boolean {
         return filterRepository.homeFilters().isNotEmpty()
     }
+
+    fun updateSingleProgramNavigationDone(done: Boolean) {
+        singleProgramNavigationDone.store(done)
+    }
+
+    fun isSingleProgramNavigationDone() = singleProgramNavigationDone.load()
 }

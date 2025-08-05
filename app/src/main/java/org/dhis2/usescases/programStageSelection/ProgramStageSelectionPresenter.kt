@@ -12,7 +12,6 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.EventMode
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.rules.models.RuleEffect
@@ -42,7 +41,7 @@ class ProgramStageSelectionPresenter(
         val stageModelsFlowable = Flowable.zip(
             stagesFlowable.subscribeOn(schedulerProvider.io()),
             ruleEffectFlowable.subscribeOn(schedulerProvider.io()),
-        ) { stageModels: List<ProgramStage>, calcResult: Result<RuleEffect> ->
+        ) { stageModels, calcResult ->
             applyEffects(
                 stageModels,
                 calcResult,
@@ -80,14 +79,17 @@ class ProgramStageSelectionPresenter(
     @VisibleForTesting
     fun applyEffects(
         stageModels: List<ProgramStage>,
-        calcResult: Result<RuleEffect>,
+        calcResult: Result<List<RuleEffect>>,
     ): List<ProgramStage> {
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             return stageModels
         }
-        val stageView = stageModels.map { it.uid() to it }.toMap().toMutableMap()
-        ruleUtils.applyRuleEffects(stageView, kotlin.Result.success(calcResult.items()))
+        val stageView = stageModels.associateBy { it.uid() }.toMutableMap()
+        ruleUtils.applyRuleEffects(
+            stageView,
+            Result.success(calcResult.getOrDefault(emptyList())),
+        )
         return ArrayList(stageView.values)
     }
 

@@ -182,20 +182,18 @@ class EventInitialActivity :
                 presenter.scheduleEvent(
                     enrollmentUid,
                     programStageModelUid,
-                    eventDetails.selectedDate,
-                    eventDetails.selectedOrgUnit,
-                    null,
-                    eventDetails.catOptionComboUid,
+                    requireNotNull(eventDetails.selectedDate),
+                    requireNotNull(eventDetails.selectedOrgUnit),
+                    requireNotNull(eventDetails.catOptionComboUid),
                     geometry,
                 )
             } else {
                 presenter.createEvent(
                     enrollmentUid,
                     programStageModelUid,
-                    eventDetails.selectedDate,
-                    eventDetails.selectedOrgUnit,
-                    null,
-                    eventDetails.catOptionComboUid,
+                    requireNotNull(eventDetails.selectedDate),
+                    requireNotNull(eventDetails.selectedOrgUnit),
+                    requireNotNull(eventDetails.catOptionComboUid),
                     geometry,
                     getTrackedEntityInstance,
                 )
@@ -206,7 +204,7 @@ class EventInitialActivity :
     }
 
     override fun onDestroy() {
-        presenter.onDettach()
+        presenter.onDetach()
         disposable.dispose()
         super.onDestroy()
     }

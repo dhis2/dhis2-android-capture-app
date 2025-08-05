@@ -15,8 +15,7 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
 import android.widget.Toast
-import android.window.OnBackInvokedDispatcher
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -31,7 +30,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import dispatch.core.dispatcherProvider
 import kotlinx.coroutines.launch
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -90,8 +88,6 @@ class MainActivity :
 
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
-
-    private var singleProgramNavigationDone = false
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -191,8 +187,8 @@ class MainActivity :
         setUpDevelopmentMode()
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        singleProgramNavigationDone =
-            savedInstanceState?.getBoolean(SINGLE_PROGRAM_NAVIGATION) ?: false
+        presenter.updateSingleProgramNavigationDone(savedInstanceState?.getBoolean(SINGLE_PROGRAM_NAVIGATION) ?: false)
+
         val openScreen = intent.getStringExtra(FRAGMENT)
 
         when {
@@ -218,11 +214,12 @@ class MainActivity :
 
         observeSyncState()
         observeVersionUpdate()
+        observeSingleProgram()
 
         if (!presenter.wasSyncAlreadyDone()) {
             presenter.launchInitialDataSync()
-        } else if (!singleProgramNavigationDone && presenter.hasOneHomeItem()) {
-            navigateToSingleProgram()
+        } else {
+            presenter.checkSingleProgramNavigation()
         }
 
         checkNotificationPermission()
@@ -240,7 +237,7 @@ class MainActivity :
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean(SINGLE_PROGRAM_NAVIGATION, singleProgramNavigationDone)
+        outState.putBoolean(SINGLE_PROGRAM_NAVIGATION, presenter.isSingleProgramNavigationDone())
         outState.putString(FRAGMENT, mainNavigator.currentScreenName())
     }
 
@@ -268,15 +265,11 @@ class MainActivity :
     }
 
     private fun registerOnBackPressedCallback() {
-        if (Build.VERSION.SDK_INT >= 33) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(OnBackInvokedDispatcher.PRIORITY_DEFAULT) {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
                 backPressed()
             }
-        } else {
-            onBackPressedDispatcher.addCallback(this) {
-                backPressed()
-            }
-        }
+        })
     }
 
     private fun setUpNavigationBar() {
@@ -330,9 +323,7 @@ class MainActivity :
                         binding.syncActionButton.visibility = View.VISIBLE
                         setBottomNavigationVisibility(true)
                         presenter.onDataSuccess()
-                        if (presenter.hasOneHomeItem()) {
-                            navigateToSingleProgram()
-                        }
+                        presenter.checkSingleProgramNavigation()
                     }
 
                     else -> {
@@ -340,13 +331,6 @@ class MainActivity :
                     }
                 }
             }
-        }
-    }
-
-    private fun navigateToSingleProgram() {
-        presenter.getSingleItemData()?.let { homeItemData ->
-            singleProgramNavigationDone = true
-            navigationLauncher.navigateTo(this, homeItemData)
         }
     }
 
@@ -359,6 +343,14 @@ class MainActivity :
                 binding.toolbarProgress.show()
             } else {
                 binding.toolbarProgress.hide()
+            }
+        }
+    }
+
+    private fun observeSingleProgram() {
+        lifecycleScope.launch {
+            presenter.singleProgramNavigationChannel.collect { homeItemData ->
+                navigationLauncher.navigateTo(this@MainActivity, homeItemData)
             }
         }
     }
@@ -422,9 +414,11 @@ class MainActivity :
 
     override fun showPeriodRequest(periodRequest: FilterManager.PeriodRequest) {
         if (periodRequest == FilterManager.PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD, isFromToFilter = true)
+                .show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(filterType = Filters.PERIOD)
+                .show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
@@ -508,6 +502,7 @@ class MainActivity :
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
             isPinLayoutVisible -> isPinLayoutVisible = false
+            else -> back()
         }
     }
 
@@ -672,6 +667,7 @@ class MainActivity :
                     Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
                         .setData(String.format("package:%s", packageName).toUri()),
                 )
+
             !hasPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)) && Build.VERSION.SDK_INT < Build.VERSION_CODES.R ->
                 requestReadStoragePermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
 

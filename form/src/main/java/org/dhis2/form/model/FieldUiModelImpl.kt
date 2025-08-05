@@ -3,6 +3,7 @@ package org.dhis2.form.model
 import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
@@ -34,6 +35,7 @@ data class FieldUiModelImpl(
     override val selectableDates: SelectableDates? = null,
     override val eventCategories: List<EventCategory>? = null,
     override val periodSelector: PeriodSelector? = null,
+    override var customIntent: CustomIntentModel? = null,
 ) : FieldUiModel {
 
     private var callback: FieldUiModel.Callback? = null
@@ -127,7 +129,7 @@ data class FieldUiModelImpl(
         if (callback != item.callback) return false
         if (selectableDates != item.selectableDates) return false
         if (eventCategories != item.eventCategories) return false
-
+        if (customIntent != item.customIntent) return false
         return true
     }
 }

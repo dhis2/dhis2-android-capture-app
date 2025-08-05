@@ -10,10 +10,6 @@ import org.dhis2.App;
 
 import javax.inject.Inject;
 
-/**
- * QUADRAM. Created by ppajuelo on 23/10/2018.
- */
-
 public class SyncInitWorker extends Worker {
 
     public static final String INIT_META = "INIT_META";

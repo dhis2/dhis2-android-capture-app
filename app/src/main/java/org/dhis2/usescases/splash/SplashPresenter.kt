@@ -1,7 +1,6 @@
 package org.dhis2.usescases.splash
 
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -26,14 +25,6 @@ class SplashPresenter internal constructor(
     }
 
     fun init() {
-        preferenceProvider.sharedPreferences().all.forEach {
-            when (it.key) {
-                Constants.PREFS_URLS, Constants.PREFS_USERS -> {
-                }
-
-                else -> preferenceProvider.setValue(it.key, it.value)
-            }
-        }
         isUserLoggedIn()
     }
 

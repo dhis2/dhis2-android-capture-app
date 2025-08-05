@@ -1,14 +1,20 @@
 package org.dhis2.commons.prefs
 
-import android.content.SharedPreferences
 import com.google.gson.reflect.TypeToken
+import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import java.util.Date
 
 interface PreferenceProvider {
 
-    fun sharedPreferences(): SharedPreferences
-
     fun saveUserCredentials(serverUrl: String, userName: String, pass: String?)
+
+    fun saveUserCredentialsAndCipher(
+        serverUrl: String,
+        userName: String,
+        ciphertextWrapper: CiphertextWrapper,
+    )
+
+    fun getBiometricCredentials(): CiphertextWrapper?
 
     fun areCredentialsSet(): Boolean
     fun areSameCredentials(serverUrl: String?, userName: String?): Boolean
@@ -29,4 +35,5 @@ interface PreferenceProvider {
     fun lastMetadataSync(): Date?
     fun lastDataSync(): Date?
     fun lastSync(): Date?
+    fun getList(key: String, default: List<String>): List<String>
 }

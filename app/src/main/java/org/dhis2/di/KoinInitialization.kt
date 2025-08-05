@@ -1,10 +1,12 @@
 package org.dhis2.di
 
 import android.app.Application
+import org.dhis2.android.rtsm.di.stockModule
 import org.dhis2.commons.di.resourceManagerModule
 import org.dhis2.commons.filters.periods.di.filterPeriodsModule
 import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.commons.di.commonsModule
+import org.dhis2.mobile.login.authentication.di.twoFAModule
 import org.dhis2.usescases.datasets.di.dataSetModules
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
@@ -23,6 +25,8 @@ object KoinInitialization {
                 filterPeriodsModule,
                 resourceManagerModule,
                 dataSetModules,
+                stockModule,
+                twoFAModule,
             )
         }
     }

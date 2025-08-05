@@ -4,16 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.databinding.ObservableBoolean;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.dhis2.commons.data.tuples.Pair;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.databinding.ItemErrorDialogBinding;
 import org.dhis2.usescases.settings.models.ErrorViewModel;
 
 import io.reactivex.processors.FlowableProcessor;
-
-/**
- * QUADRAM. Created by ppajuelo on 25/10/2018.
- */
+import kotlin.Pair;
 
 public class ErrorViewHolder extends RecyclerView.ViewHolder {
 
@@ -37,7 +33,7 @@ public class ErrorViewHolder extends RecyclerView.ViewHolder {
         binding.errorComponent.setText(errorMessageModel.getErrorComponent());
         binding.selected.setOnCheckedChangeListener((buttonView, isChecked) -> {
             errorMessageModel.setSelected(isChecked);
-            processor.onNext(Pair.create(isChecked, errorMessageModel));
+            processor.onNext(new kotlin.Pair<>(isChecked, errorMessageModel));
         });
         binding.selected.setChecked(errorMessageModel.isSelected());
     }

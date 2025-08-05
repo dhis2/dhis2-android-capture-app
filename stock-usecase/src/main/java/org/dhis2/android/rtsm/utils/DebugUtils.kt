@@ -107,7 +107,6 @@ fun printRuleEffects(
 fun printRuleEngineData(buffer: StringBuilder, data: String) {
     val charsLen = data.length
     val desiredLen = MAX_LEN - charsLen - 2
-//    println(data)
     buffer.append("|" + data.padEnd(if (desiredLen > MAX_LEN) desiredLen else MAX_LEN) + "|\n")
 }
 

@@ -17,9 +17,13 @@ import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.hasItem
@@ -28,10 +32,8 @@ import org.dhis2.utils.AdapterItemPosition
 import org.dhis2.utils.AdapterItemTitle
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.not
 import org.junit.Assert.assertTrue
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 internal fun dataSetDetailRobot(
@@ -65,6 +67,8 @@ internal class DataSetDetailRobot(
     }
 
     fun checkDataSetIsCompletedAndModified(orgUnit: String ) {
+        waitForView(withId(R.id.recycler))
+            .check(matches(isDisplayed()))
         onView(withId(R.id.recycler))
             .check(
                 matches(
@@ -73,6 +77,21 @@ internal class DataSetDetailRobot(
                             hasDescendant(withText(orgUnit)),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete))),
                             hasDescendant(withTagValue(equalTo(R.drawable.ic_sync_problem_grey)))
+                        )
+                    )
+                )
+            )
+    }
+
+    fun checkDataSetIsNotCompletedAndModified(catCombo: String, orgUnit: String ) {
+        onView(withId(R.id.recycler))
+            .check(
+                matches(
+                    hasItem(
+                        allOf(
+                            hasDescendant(withText(catCombo)),
+                            hasDescendant(withText(orgUnit)),
+                            not(hasDescendant(withTagValue(equalTo(R.drawable.ic_event_status_complete)))),
                         )
                     )
                 )

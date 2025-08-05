@@ -63,7 +63,9 @@ class DataSetListViewModel(
                         CoroutineTracker.decrement()
                     }
                 }
+        }
 
+        viewModelScope.launch(dispatcher.io()) {
             dataSetDetailRepository.canWriteAny()
                 .asFlow()
                 .catch { Timber.d(it) }

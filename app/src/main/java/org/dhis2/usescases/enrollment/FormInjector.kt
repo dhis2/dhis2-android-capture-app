@@ -37,8 +37,7 @@ fun AppCompatActivity.buildEnrollmentForm(
                 fieldUid = action.id,
                 showWarning = ::showDateEditionWarning,
             )
-        }
-        .onLoadingListener { loading ->
+        }.onLoadingListener { loading ->
             runOnUiThread {
                 handleLoading(
                     hasWriteAccess = config.hasWriteAccess,

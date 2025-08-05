@@ -23,7 +23,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.flow.teiFlow.entity.EnrollmentListUIModel
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.DashboardProgramViewHolder
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListActivity
@@ -123,12 +122,13 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             dateTextFieldNode.performTextReplacement(dateValue)
             dateTextFieldNode.performImeAction()
         }
+        Espresso.closeSoftKeyboard()
     }
 
     @OptIn(ExperimentalTestApi::class)
     fun openFormSection(personAttribute: String) {
         composeTestRule.waitForIdle()
-        composeTestRule.waitUntilAtLeastOneExists(hasText(personAttribute, true))
+        composeTestRule.waitUntilAtLeastOneExists(hasText(personAttribute, true), TIMEOUT)
         composeTestRule.onNodeWithText(personAttribute).performClick()
     }
 

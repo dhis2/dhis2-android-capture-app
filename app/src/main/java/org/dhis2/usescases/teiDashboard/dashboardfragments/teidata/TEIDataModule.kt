@@ -8,6 +8,7 @@ import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.network.NetworkUtils
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.D2ErrorUtils
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -58,6 +59,7 @@ class TEIDataModule(
         dispatcherProvider: DispatcherProvider,
         createEventUseCase: CreateEventUseCase,
         d2ErrorUtils: D2ErrorUtils,
+        preferences: PreferenceProvider,
     ): TEIDataPresenter {
         return TEIDataPresenter(
             view,
@@ -78,6 +80,7 @@ class TEIDataModule(
             dispatcherProvider,
             createEventUseCase,
             d2ErrorUtils,
+            preferences,
         )
     }
 

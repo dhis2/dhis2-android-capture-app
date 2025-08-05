@@ -1,8 +1,8 @@
 package org.dhis2.maps.geometry.bound
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.mapboxsdk.constants.GeometryConstants
-import com.mapbox.mapboxsdk.geometry.LatLng
+import org.maplibre.android.constants.GeometryConstants
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.geojson.BoundingBox
 
 class GetBoundingBox {
 

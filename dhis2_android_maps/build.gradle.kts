@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -60,12 +61,9 @@ dependencies {
     api(libs.maps.geojson) {
         exclude("com.google.android.gms")
     }
-    implementation(libs.maps.markerViewPlugin) {
-        exclude("com.mapbox.mapboxsdk", "mapbox-android-sdk")
-    }
-    implementation(libs.maps.annotationPlugin) {
-        exclude("com.mapbox.mapboxsdk", "mapbox-android-sdk")
-    }
+    implementation(libs.maps.markerViewPlugin)
+    implementation(libs.maps.annotationPlugin)
+    implementation(libs.androidx.activity.compose)
 
     testImplementation(libs.bundles.map.test)
     coreLibraryDesugaring(libs.desugar)

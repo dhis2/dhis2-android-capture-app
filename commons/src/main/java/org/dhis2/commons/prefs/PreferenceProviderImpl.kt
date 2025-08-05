@@ -6,12 +6,15 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
+import timber.log.Timber
 import java.util.Date
 
 const val LAST_META_SYNC = "last_meta_sync"
 const val LAST_DATA_SYNC = "last_data_sync"
+const val BIOMETRIC_CREDENTIALS = "biometric_credentials"
 
 open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
@@ -23,10 +26,6 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
 
     init {
         sharedPreferences.edit { remove(SECURE_PASS) }
-    }
-
-    override fun sharedPreferences(): SharedPreferences {
-        return sharedPreferences
     }
 
     override fun getSecureValue(key: String, default: String?): String? {
@@ -45,37 +44,41 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         value?.let {
             when (it) {
                 is String -> {
-                    sharedPreferences.edit().putString(key, it).apply()
+                    sharedPreferences.edit { putString(key, it) }
                 }
 
                 is Boolean -> {
-                    sharedPreferences.edit().putBoolean(key, it).apply()
+                    sharedPreferences.edit { putBoolean(key, it) }
                 }
 
                 is Int -> {
-                    sharedPreferences.edit().putInt(key, it).apply()
+                    sharedPreferences.edit { putInt(key, it) }
                 }
 
                 is Long -> {
-                    sharedPreferences.edit().putLong(key, it).apply()
+                    sharedPreferences.edit { putLong(key, it) }
                 }
 
                 is Float -> {
-                    sharedPreferences.edit().putFloat(key, it).apply()
+                    sharedPreferences.edit { putFloat(key, it) }
                 }
 
                 is Set<*> -> {
-                    sharedPreferences.edit().putStringSet(key, it as Set<String>).apply()
+                    if (it.all { element -> element is String }) {
+                        @Suppress("UNCHECKED_CAST")
+                        val stringSet = it as Set<String>
+                        sharedPreferences.edit { putStringSet(key, stringSet) }
+                    } else {
+                        Timber.e("Attempted to save a Set for key '$key' that does not exclusively contain Strings. Skipping.")
+                    }
                 }
             }
-        } ?: run {
-            sharedPreferences.edit().clear().apply()
-        }
+        } ?: removeValue(key)
     }
 
     override fun removeValue(key: String) {
         if (contains(key)) {
-            sharedPreferences.edit().remove(key).apply()
+            sharedPreferences.edit { remove(key) }
         }
     }
 
@@ -106,9 +109,18 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         )
     }
 
+    override fun getList(key: String, default: List<String>): List<String> {
+        val json = getString(key, null)
+        return json?.let {
+            val type = object : TypeToken<List<String>>() {}.type
+            Gson().fromJson(json, type)
+        } ?: default
+    }
+
     override fun contains(vararg keys: String): Boolean {
-        return keys.all {
-            sharedPreferences.contains(it) or css.getAllKeys().any { it.startsWith(it) } == true
+        return keys.all { key ->
+            sharedPreferences.contains(key) or css.getAllKeys()
+                .any { storedKey -> storedKey.startsWith(key) }
         }
     }
 
@@ -117,6 +129,23 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         setValue(SECURE_SERVER_URL, serverUrl)
         setValue(SECURE_USER_NAME, userName)
         pass?.let { secureValue(SECURE_PASS, it) }
+    }
+
+    override fun saveUserCredentialsAndCipher(
+        serverUrl: String,
+        userName: String,
+        ciphertextWrapper: CiphertextWrapper,
+    ) {
+        saveUserCredentials(serverUrl, userName, null)
+        saveAsJson(BIOMETRIC_CREDENTIALS, ciphertextWrapper)
+    }
+
+    override fun getBiometricCredentials(): CiphertextWrapper? {
+        return getObjectFromJson(
+            BIOMETRIC_CREDENTIALS,
+            object : TypeToken<CiphertextWrapper?>() {},
+            null,
+        )
     }
 
     override fun areCredentialsSet(): Boolean {
@@ -129,7 +158,7 @@ open class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     }
 
     override fun clear() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit { clear() }
     }
 
     override fun <T> saveAsJson(key: String, objectToSave: T) {

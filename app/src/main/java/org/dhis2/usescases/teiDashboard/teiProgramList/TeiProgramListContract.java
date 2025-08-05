@@ -8,10 +8,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-/**
- * QUADRAM. Created by Cristian on 13/02/2017.
- */
-
 public class TeiProgramListContract {
 
     public interface View extends AbstractActivityContracts.View {

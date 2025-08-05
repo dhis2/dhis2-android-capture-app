@@ -294,17 +294,14 @@ class DashboardRepositoryImplTest {
             teiAttributesProvider.getValuesFromTrackedEntityTypeAttributes(teType, teiUid),
         ) doReturn arrayListOf(
             TrackedEntityAttributeValue.builder()
-                .id(1)
                 .value("attrValue1")
                 .trackedEntityAttribute("attr1")
                 .build(),
             TrackedEntityAttributeValue.builder()
-                .id(2)
                 .value("attrValue2")
                 .trackedEntityAttribute("attr2")
                 .build(),
             TrackedEntityAttributeValue.builder()
-                .id(3)
                 .value("attrValue4")
                 .trackedEntityAttribute("attr4")
                 .build(),
@@ -365,17 +362,14 @@ class DashboardRepositoryImplTest {
             teiAttributesProvider.getValuesFromProgramTrackedEntityAttributes(teType, teiUid),
         ) doReturn arrayListOf(
             TrackedEntityAttributeValue.builder()
-                .id(1)
                 .value("attrValue1")
                 .trackedEntityAttribute("attr1")
                 .build(),
             TrackedEntityAttributeValue.builder()
-                .id(2)
                 .value("attrValue2")
                 .trackedEntityAttribute("attr2")
                 .build(),
             TrackedEntityAttributeValue.builder()
-                .id(3)
                 .value("attrValue3")
                 .trackedEntityAttribute("attr3")
                 .build(),

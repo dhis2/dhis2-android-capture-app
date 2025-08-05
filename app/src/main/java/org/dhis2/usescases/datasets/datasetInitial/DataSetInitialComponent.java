@@ -4,10 +4,6 @@ import org.dhis2.commons.di.dagger.PerActivity;
 
 import dagger.Subcomponent;
 
-/**
- * QUADRAM. Created by ppajuelo on 24/09/2018.
- */
-
 @Subcomponent(modules = DataSetInitialModule.class)
 @PerActivity
 public interface DataSetInitialComponent {

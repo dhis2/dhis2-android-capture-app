@@ -76,21 +76,21 @@ jobs:
 
     # Upload DhisRelease APK
     - name: Upload DhisRelease APK
-      uses: actions/upload-artifact@v4.6.1
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: ${{ env.repository_name }} - DhisRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk
 
     # Upload DhisPlayServicesRelease APK
     - name: Upload DhisPlayServicesRelease APK
-      uses: actions/upload-artifact@v4.6.1
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: ${{ env.repository_name }} - DhisPlayServicesRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
 
       # Upload Training Release APK
     - name: Upload Training Release APK
-      uses: actions/upload-artifact@v4.6.1
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: ${{ env.repository_name }} - Training Release APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

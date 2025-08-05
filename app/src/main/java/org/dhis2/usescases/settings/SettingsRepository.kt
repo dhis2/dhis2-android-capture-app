@@ -1,9 +1,10 @@
 package org.dhis2.usescases.settings
 
-import io.reactivex.Completable
 import io.reactivex.Single
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
+import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
+import org.dhis2.commons.featureconfig.model.Feature
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_ORG_UNIT
@@ -12,7 +13,6 @@ import org.dhis2.commons.prefs.Preference.Companion.NUMBER_RV
 import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncResult
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
@@ -24,12 +24,21 @@ import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.settings.GeneralSettings
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 
 class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
+    val featureConfigRepository: FeatureConfigRepository,
 ) {
+
+    private val syncSettings: SynchronizationSettings?
+        get() = if (d2.settingModule().synchronizationSettings().blockingExists()) {
+            d2.settingModule().synchronizationSettings().blockingGet()
+        } else {
+            null
+        }
     private val generalSettings: GeneralSettings?
         get() = if (d2.settingModule().generalSetting().blockingExists()) {
             d2.settingModule().generalSetting().blockingGet()
@@ -48,29 +57,28 @@ class SettingsRepository(
     fun dataSync(): Single<DataSettingsViewModel> {
         return Single.just(
             DataSettingsViewModel(
-                dataPeriod(),
-                prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
-                !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
-                dataHasErrors(),
-                dataHasWarning(),
-                generalSettings?.dataSync() == null,
-                prefs.getString(Constants.SYNC_RESULT, null)?.let {
+                dataSyncPeriod = dataPeriod(),
+                lastDataSync = prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
+                syncHasErrors = !prefs.getBoolean(Constants.LAST_DATA_SYNC_STATUS, true),
+                dataHasErrors = dataHasErrors(),
+                dataHasWarnings = dataHasWarning(),
+                canEdit = syncSettings?.dataSync() == null,
+                syncResult = prefs.getString(Constants.SYNC_RESULT, null)?.let {
                     SyncResult.valueOf(it)
                 },
+                syncInProgress = false,
             ),
         )
     }
 
-    fun metaSync(userManager: UserManager): Single<MetadataSettingsViewModel> {
-        val (flag, theme) = userManager.theme.blockingGet()
-        prefs.setValue(Preference.FLAG, flag)
-        prefs.setValue(Preference.THEME, theme)
+    fun metaSync(): Single<MetadataSettingsViewModel> {
         return Single.just(
             MetadataSettingsViewModel(
-                metadataPeriod(),
-                prefs.getString(Constants.LAST_META_SYNC, "-")!!,
-                !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
-                generalSettings?.metadataSync() == null,
+                metadataSyncPeriod = metadataPeriod(),
+                lastMetadataSync = prefs.getString(Constants.LAST_META_SYNC, "-")!!,
+                hasErrors = !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
+                canEdit = syncSettings?.metadataSync() == null,
+                syncInProgress = false,
             ),
         )
     }
@@ -106,13 +114,15 @@ class SettingsRepository(
     fun sms(): Single<SMSSettingsViewModel> {
         return Single.just(
             SMSSettingsViewModel(
-                smsConfig.isModuleEnabled,
-                smsConfig.gateway,
-                smsConfig.resultSender,
-                smsConfig.resultWaitingTimeout,
-                generalSettings?.smsGateway() == null,
-                generalSettings?.smsResultSender() == null,
-                smsConfig.isWaitingForResult,
+                isEnabled = smsConfig.isModuleEnabled,
+                gatewayNumber = smsConfig.gateway,
+                responseNumber = smsConfig.resultSender,
+                responseTimeout = smsConfig.resultWaitingTimeout,
+                isGatewayNumberEditable = generalSettings?.smsGateway() == null,
+                isResponseNumberEditable = generalSettings?.smsResultSender() == null,
+                waitingForResponse = smsConfig.isWaitingForResult,
+                gatewayValidationResult = GatewayValidator.GatewayValidationResult.Valid,
+                resultSenderValidationResult = GatewayValidator.GatewayValidationResult.Valid,
             ),
         )
     }
@@ -203,30 +213,34 @@ class SettingsRepository(
         }
     }
 
-    fun saveEventsToDownload(numberOfEvents: Int) {
+    suspend fun saveEventsToDownload(numberOfEvents: Int) {
         prefs.setValue(Constants.EVENT_MAX, numberOfEvents)
     }
 
-    fun saveTeiToDownload(numberOfTeis: Int) {
+    suspend fun saveTeiToDownload(numberOfTeis: Int) {
         prefs.setValue(Constants.TEI_MAX, numberOfTeis)
     }
 
-    fun saveLimitScope(limitScope: LimitScope) {
+    suspend fun saveLimitScope(limitScope: LimitScope) {
         when (limitScope) {
             LimitScope.ALL_ORG_UNITS -> {
             }
+
             LimitScope.GLOBAL -> {
                 prefs.setValue(LIMIT_BY_ORG_UNIT, false)
                 prefs.setValue(LIMIT_BY_PROGRAM, false)
             }
+
             LimitScope.PER_ORG_UNIT -> {
                 prefs.setValue(LIMIT_BY_ORG_UNIT, true)
                 prefs.setValue(LIMIT_BY_PROGRAM, false)
             }
+
             LimitScope.PER_PROGRAM -> {
                 prefs.setValue(LIMIT_BY_ORG_UNIT, false)
                 prefs.setValue(LIMIT_BY_PROGRAM, true)
             }
+
             LimitScope.PER_OU_AND_PROGRAM -> {
                 prefs.setValue(LIMIT_BY_ORG_UNIT, true)
                 prefs.setValue(LIMIT_BY_PROGRAM, true)
@@ -234,7 +248,7 @@ class SettingsRepository(
         }
     }
 
-    fun saveReservedValuesToDownload(reservedValuesCount: Int) {
+    suspend fun saveReservedValuesToDownload(reservedValuesCount: Int) {
         prefs.setValue(NUMBER_RV, reservedValuesCount)
     }
 
@@ -254,12 +268,28 @@ class SettingsRepository(
         d2.smsModule().configCase().setWaitingForResultEnabled(shouldWait).blockingAwait()
     }
 
-    fun enableSmsModule(enable: Boolean): Completable {
-        return if (enable) {
-            d2.smsModule().configCase().setModuleEnabled(enable)
+    suspend fun enableSmsModule(enable: Boolean) {
+        val job = if (enable) {
+            d2.smsModule().configCase().setModuleEnabled(true)
                 .andThen(d2.smsModule().configCase().refreshMetadataIds())
         } else {
-            d2.smsModule().configCase().setModuleEnabled(enable)
+            d2.smsModule().configCase().setModuleEnabled(false)
         }
+        job.blockingAwait()
+    }
+
+    suspend fun deleteLocalData() {
+        d2.wipeModule().wipeData()
+    }
+
+    suspend fun d2Errors() = d2.maintenanceModule().d2Errors().blockingGet()
+    suspend fun trackerImportConflicts() = d2.importModule().trackerImportConflicts().blockingGet()
+    suspend fun foreignKeyViolations() = d2.maintenanceModule().foreignKeyViolations().blockingGet()
+
+    suspend fun exportDatabase() =
+        d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
+
+    fun isTwoFAConfigured(): Boolean {
+        return featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
     }
 }

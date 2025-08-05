@@ -10,9 +10,9 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
-    id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
@@ -104,12 +104,6 @@ android {
 
         manifestPlaceholders["appAuthRedirectScheme"] = ""
 
-        ndk {
-            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
-        }
-        javaCompileOptions
-            .annotationProcessorOptions.arguments["dagger.hilt.disableModulesHaveInstallInCheck"] =
-            "true"
     }
     packaging {
         jniLibs {
@@ -149,9 +143,10 @@ android {
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
         }
         getByName("release") {
-            isMinifyEnabled = false
+            isShrinkResources = true
+            isMinifyEnabled = true
             proguardFiles(
-                getDefaultProguardFile("proguard-android.txt"),
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
 
@@ -191,15 +186,15 @@ android {
         resolutionStrategy {
             preferProjectModules()
             force(
-                "junit:junit:4.12",
-                "com.squareup.okhttp3:okhttp:4.9.3",
-                "com.squareup.okhttp3:mockwebserver:4.9.3",
-                "com.squareup.okhttp3:logging-interceptor:4.9.3"
+                "junit:junit:4.13.2",
+                "com.squareup.okhttp3:okhttp:4.12.0",
+                "com.squareup.okhttp3:mockwebserver:4.12.0",
+                "com.squareup.okhttp3:logging-interceptor:4.12.0"
             )
             setForcedModules(
-                "com.squareup.okhttp3:okhttp:4.9.3",
-                "com.squareup.okhttp3:mockwebserver:4.9.3",
-                "com.squareup.okhttp3:logging-interceptor:4.9.3"
+                "com.squareup.okhttp3:okhttp:4.12.0",
+                "com.squareup.okhttp3:mockwebserver:4.12.0",
+                "com.squareup.okhttp3:logging-interceptor:4.12.0"
             )
             cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
         }
@@ -234,6 +229,14 @@ android {
 
         }
     }
+
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.incremental", "true")
+        arg("room.expandProjection", "true")
+        // Enable debug logs
+        arg("ksp.logging.level", "DEBUG")
+    }
 }
 
 kotlin {
@@ -254,6 +257,7 @@ dependencies {
     implementation(project(":tracker"))
     implementation(project(":aggregates"))
     implementation(project(":commonskmm"))
+    implementation(project(":login"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
@@ -274,14 +278,10 @@ dependencies {
     implementation(libs.github.pinlock)
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
-    implementation(libs.dagger.hilt.android)
     implementation(libs.network.okhttp)
-    implementation(libs.dates.jodatime)
     implementation(libs.analytics.matomo)
     implementation(libs.analytics.rxlint)
     implementation(libs.analytics.customactivityoncrash)
-    implementation(platform(libs.dispatcher.dispatchBOM))
-    implementation(libs.dispatcher.dispatchCore)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
 
@@ -290,9 +290,7 @@ dependencies {
     "dhis2PlayServicesImplementation"(libs.google.auth)
     "dhis2PlayServicesImplementation"(libs.google.auth.apiphone)
 
-    kapt(libs.dagger.compiler)
-    kapt(libs.dagger.hilt.android.compiler)
-    kapt(libs.deprecated.autoValueParcel)
+    ksp(libs.dagger.compiler)
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)
@@ -320,5 +318,4 @@ dependencies {
     androidTestImplementation(libs.test.rx2.idler)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
-    androidTestImplementation(libs.dispatcher.dispatchEspresso)
 }
