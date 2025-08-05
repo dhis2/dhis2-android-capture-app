@@ -35,7 +35,7 @@ open class FormBaseConfiguration(
         .byUid().`in`(optionGroupUids)
         .blockingGet()
 
-    fun customIntents(): List<CustomIntent?> = if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
+    val customIntents: List<CustomIntent?> = if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
         getMockedCustomIntents()
     } else {
         d2.settingModule().customIntents()

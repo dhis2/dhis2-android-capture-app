@@ -84,7 +84,7 @@ abstract class DataEntryBaseRepository(
     }
 
     private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> {
-        return conf.customIntents().filter { customIntent ->
+        return conf.customIntents.filter { customIntent ->
             customIntent?.trigger()?.attributes()?.any { it.uid() == uid } == true ||
                 customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
         }
