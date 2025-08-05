@@ -125,5 +125,7 @@ dependencies {
     api(libs.dhis2.mobile.designsystem) {
         isChanging = true
     }
+    api(libs.dates.jodatime)
+    api(libs.commons.text)
     coreLibraryDesugaring(libs.desugar)
 }

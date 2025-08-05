@@ -279,7 +279,6 @@ dependencies {
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
     implementation(libs.network.okhttp)
-    implementation(libs.dates.jodatime)
     implementation(libs.analytics.matomo)
     implementation(libs.analytics.rxlint)
     implementation(libs.analytics.customactivityoncrash)
