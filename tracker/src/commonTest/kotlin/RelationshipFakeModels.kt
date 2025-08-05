@@ -5,7 +5,6 @@ import org.dhis2.tracker.relationships.model.RelationshipDirection
 import org.dhis2.tracker.relationships.model.RelationshipModel
 import org.dhis2.tracker.relationships.model.RelationshipOwnerType
 import org.dhis2.tracker.relationships.model.RelationshipSection
-import org.mockito.kotlin.mock
 import java.util.Date
 
 val relationshipSection1 = RelationshipSection(
@@ -38,8 +37,8 @@ val relationshipModel1 = RelationshipModel(
     toImage = null,
     fromDefaultImageResource = 0,
     toDefaultImageResource = 0,
-    ownerStyleColor = mock(),
-    ownerStyleIcon = mock(),
+    ownerStyleColor = "#FFFFFF",
+    ownerStyleIcon = "icon",
     fromLastUpdated = Date(),
     toLastUpdated = Date(),
     fromDescription = "Description 1",
