@@ -29,6 +29,7 @@ import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -168,8 +169,11 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
             ),
         )
-        val attributeCustomIntent =
-            getCustomIntentFromUid(programTrackedEntityAttribute.trackedEntityAttribute()?.uid())
+        val customIntentContext = CustomIntentContext(programUid, null)
+        val attributeCustomIntent = getCustomIntentFromUid(
+            uid = programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
+            context = customIntentContext,
+        )
 
         val valueType = attribute.valueType()
         var mandatory = programTrackedEntityAttribute.mandatory() ?: false

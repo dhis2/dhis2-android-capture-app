@@ -2,6 +2,7 @@ package org.dhis2.form.data.metadata
 
 import androidx.paging.PagingData
 import androidx.paging.filter
+import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -15,6 +16,7 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.settings.CustomIntent
 import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import org.hisp.dhis.android.core.settings.CustomIntentAttribute
+import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.android.core.settings.CustomIntentDataElement
 import org.hisp.dhis.android.core.settings.CustomIntentRequest
 import org.hisp.dhis.android.core.settings.CustomIntentRequestArgument
@@ -75,9 +77,9 @@ open class FormBaseConfiguration(
                 .request(
                     CustomIntentRequest.builder().arguments(
                         listOf(
-                            CustomIntentRequestArgument.builder().key("projectId").value("testDhisProjectId").build(),
-                            CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
-                            CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
+                            CustomIntentRequestArgument.builder().key("projectId").value("'testDhisProjectId'").build(),
+                            CustomIntentRequestArgument.builder().key("moduleId").value("'testDhisModuleId'").build(),
+                            CustomIntentRequestArgument.builder().key("userId").value("'testDhisUserId'").build(),
                         ),
                     ).build(),
                 )
@@ -118,9 +120,9 @@ open class FormBaseConfiguration(
                 .request(
                     CustomIntentRequest.builder().arguments(
                         listOf(
-                            CustomIntentRequestArgument.builder().key("projectId").value("testDhisProjectId").build(),
-                            CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
-                            CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
+                            CustomIntentRequestArgument.builder().key("projectId").value("'testDhisProjectId'").build(),
+                            CustomIntentRequestArgument.builder().key("moduleId").value("'testDhisModuleId'").build(),
+                            CustomIntentRequestArgument.builder().key("userId").value("'testDhisUserId'").build(),
                         ),
                     ).build(),
                 )
@@ -141,6 +143,14 @@ open class FormBaseConfiguration(
                         .build(),
                 ).build(),
         )
+    }
+
+    fun evaluateCustomIntentRequestParams(
+        customIntent: CustomIntent,
+        context: CustomIntentContext
+    ): Map<String, Any?> {
+        return d2.settingModule().customIntentService()
+            .blockingEvaluateRequestParams(customIntent, context)
     }
 
     fun disableCollapsableSectionsInProgram(programUid: String) =
