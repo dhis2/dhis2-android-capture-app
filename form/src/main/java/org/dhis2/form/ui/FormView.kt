@@ -204,11 +204,9 @@ class FormView : Fragment() {
                             }
                         },
                         onSecondaryButtonClick = {
-                            if (it.allowDiscard) {
-                                viewModel.discardChanges()
-                            }
                             onFinishDataEntry?.invoke()
                         },
+                        onDiscardChanges = viewModel::discardChanges,
                         onDismiss = {
                             resultDialogData = null
                         },

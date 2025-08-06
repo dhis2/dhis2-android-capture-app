@@ -32,6 +32,7 @@ fun DataEntryBottomSheet(
     fieldsWithIssues: List<FieldWithIssue>,
     onPrimaryButtonClick: () -> Unit,
     onSecondaryButtonClick: () -> Unit,
+    onDiscardChanges: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
@@ -86,6 +87,9 @@ fun DataEntryBottomSheet(
                                     else -> ColorStyle.DEFAULT
                                 },
                                 onClick = {
+                                    if (allowDiscard) {
+                                        onDiscardChanges()
+                                    }
                                     onSecondaryButtonClick()
                                     onDismiss()
                                 },
