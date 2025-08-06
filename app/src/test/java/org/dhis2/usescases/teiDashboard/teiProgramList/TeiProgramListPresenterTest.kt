@@ -1,8 +1,8 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList
 
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -158,18 +158,23 @@ class TeiProgramListPresenterTest {
 
     private fun mockedProgramViewModel(): ProgramUiModel {
         return ProgramUiModel(
-            "uid",
-            "programName",
-            MetadataIconData(
-                imageCardData = ImageCardData.IconCardData("", "", "ic_home_positive", "#84FFFF".toColor()),
+            uid = "uid",
+            title = "programName",
+            metadataIconData = MetadataIconData(
+                imageCardData = ImageCardData.IconCardData(
+                    "",
+                    "",
+                    "ic_home_positive",
+                    "#84FFFF".toColor(),
+                ),
                 color = "#84FFFF".toColor(),
             ),
-            0,
-            "type",
-            "typeName",
-            "programType",
-            null,
-            true,
+            count = 0,
+            type = "type",
+            typeName = "typeName",
+            programType = "programType",
+            description = null,
+            onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
             downloadState = ProgramDownloadState.NONE,
@@ -182,13 +187,13 @@ class TeiProgramListPresenterTest {
 
     private fun mockedEnrollmentViewModel(): EnrollmentViewModel {
         return EnrollmentViewModel(
-            "uid",
-            "2020-01-01",
-            null,
-            "programName",
-            "orgUnit",
-            false,
-            "programUid",
+            uid = "uid",
+            enrollmentDate = "2020-01-01",
+            metadataIconData = null,
+            programName = "programName",
+            orgUnitName = "orgUnit",
+            followUp = false,
+            programUid = "programUid",
         )
     }
 }

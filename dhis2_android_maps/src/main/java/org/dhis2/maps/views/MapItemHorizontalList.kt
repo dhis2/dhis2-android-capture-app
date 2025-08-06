@@ -33,16 +33,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.model.MapItemModel
-import org.dhis2.ui.avatar.AvatarProvider
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -173,10 +175,28 @@ fun MapItemHorizontalListPreview() {
                     onCardClick = {
                     },
                     listAvatar = {
-                        AvatarProvider(
-                            avatarProviderConfiguration = item.avatarProviderConfiguration,
-                            onImageClick = {
+                        Avatar(
+                            style = when (
+                                val config =
+                                    item.avatarProviderConfiguration
+                            ) {
+                                is AvatarProviderConfiguration.MainValueLabel ->
+                                    AvatarStyleData.Text(
+                                        config.firstMainValue.firstOrNull()?.toString()
+                                            ?: "?",
+                                    )
+
+                                is AvatarProviderConfiguration.Metadata ->
+                                    AvatarStyleData.Metadata(
+                                        imageCardData = config.metadataIconData.imageCardData,
+                                        avatarSize = config.size,
+                                        tintColor = config.metadataIconData.color,
+                                    )
+
+                                is AvatarProviderConfiguration.ProfilePic ->
+                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
                             },
+                            onImageClick = {},
                         )
                     },
                 )

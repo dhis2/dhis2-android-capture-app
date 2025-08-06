@@ -33,12 +33,13 @@ import org.dhis2.maps.managers.EventMapManager
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
-import org.dhis2.ui.avatar.AvatarProvider
-import org.dhis2.ui.theme.Dhis2Theme
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -46,6 +47,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.maplibre.android.maps.MapView
 import javax.inject.Inject
@@ -77,7 +80,7 @@ class EventMapFragment :
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Dhis2Theme {
+                DHIS2Theme {
                     val listState = rememberLazyListState()
                     val eventMapData by presenter.eventMapData.observeAsState(initial = null)
                     val items by remember(eventMapData) {
@@ -86,7 +89,8 @@ class EventMapFragment :
 
                     val clickedItem by presenter.mapItemClicked.observeAsState(initial = null)
                     val locationState = eventMapManager?.locationState?.collectAsState()
-                    val mapDataFinishedLoading = eventMapManager?.dataFinishedLoading?.collectAsState()
+                    val mapDataFinishedLoading =
+                        eventMapManager?.dataFinishedLoading?.collectAsState()
 
                     LaunchedEffect(key1 = clickedItem) {
                         clickedItem?.let {
@@ -174,7 +178,10 @@ class EventMapFragment :
                                     .fillParentMaxWidth()
                                     .testTag("MAP_ITEM"),
                                 listCardState = rememberListCardState(
-                                    title = ListCardTitleModel(text = item.title, allowOverflow = false),
+                                    title = ListCardTitleModel(
+                                        text = item.title,
+                                        allowOverflow = false,
+                                    ),
                                     description = item.description?.let {
                                         ListCardDescriptionModel(
                                             text = it,
@@ -202,9 +209,39 @@ class EventMapFragment :
                                         Pair(item.uid, "")
                                 },
                                 listAvatar = {
-                                    AvatarProvider(
-                                        avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                        onImageClick = ::launchImageDetail,
+                                    Avatar(
+                                        style = when (
+                                            val config =
+                                                item.avatarProviderConfiguration
+                                        ) {
+                                            is AvatarProviderConfiguration.MainValueLabel ->
+                                                AvatarStyleData.Text(
+                                                    config.firstMainValue.firstOrNull()?.toString()
+                                                        ?: "?",
+                                                )
+
+                                            is AvatarProviderConfiguration.Metadata ->
+                                                AvatarStyleData.Metadata(
+                                                    imageCardData = config.metadataIconData.imageCardData,
+                                                    avatarSize = config.size,
+                                                    tintColor = config.metadataIconData.color,
+                                                )
+
+                                            is AvatarProviderConfiguration.ProfilePic ->
+                                                AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                        },
+                                        onImageClick = when (
+                                            val config =
+                                                item.avatarProviderConfiguration
+                                        ) {
+                                            is AvatarProviderConfiguration.Metadata,
+                                            is AvatarProviderConfiguration.MainValueLabel,
+                                            -> null
+
+                                            is AvatarProviderConfiguration.ProfilePic -> {
+                                                { launchImageDetail(config.profilePicturePath) }
+                                            }
+                                        },
                                     )
                                 },
                             )

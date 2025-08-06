@@ -1,6 +1,6 @@
 package org.dhis2.form.data
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
@@ -29,6 +29,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -50,7 +51,7 @@ class FormRepositoryIntegrationTest {
     private val program: Program = mock {
         on { uid() } doReturn "programUid"
         on { description() } doReturn "program description"
-        on { enrollmentDateLabel() } doReturn "enrollment date label"
+        on { displayEnrollmentLabel() } doReturn "enrollment date label"
         on { selectEnrollmentDatesInFuture() } doReturn false
         on { displayIncidentDate() } doReturn false
         on { access() } doReturn mock()
@@ -90,10 +91,11 @@ class FormRepositoryIntegrationTest {
         whenever(conf.captureOrgUnitsCount()) doReturn 1
 
         whenever(enrollmentFormLabelsProvider.provideSingleSectionLabel()) doReturn "single section label"
+        whenever(enrollmentFormLabelsProvider.provideEnrollmentDateDefaultLabel(anyOrNull())) doReturn "Default enrollment label"
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfIsNewAndNotCompleted() = runBlocking {
+    fun shouldOpenEnrollmentDetailSectionIfIsNewAndNotCompleted() = runTest {
         mockUncompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
@@ -104,7 +106,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfIsNewAndCompleted() = runBlocking {
+    fun shouldOpenEnrollmentDetailSectionIfIsNewAndCompleted() = runTest {
         mockCompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
@@ -115,7 +117,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfNotCompleted() = runBlocking {
+    fun shouldOpenEnrollmentDetailSectionIfNotCompleted() = runTest {
         mockUncompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
@@ -126,7 +128,7 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldNotOpenEnrollmentDetailSectionIfCompleted() = runBlocking {
+    fun shouldNotOpenEnrollmentDetailSectionIfCompleted() = runTest {
         mockCompletedEnrollment()
         whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 

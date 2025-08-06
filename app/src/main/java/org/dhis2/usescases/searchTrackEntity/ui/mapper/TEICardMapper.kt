@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import org.dhis2.R
-import org.dhis2.bindings.hasFollowUp
+import org.dhis2.commons.bindings.hasFollowUp
 import org.dhis2.commons.bindings.isFilePathValid
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toOverdueOrScheduledUiText

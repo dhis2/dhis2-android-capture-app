@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment

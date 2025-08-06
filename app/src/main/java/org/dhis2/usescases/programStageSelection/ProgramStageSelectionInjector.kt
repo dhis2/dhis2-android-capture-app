@@ -12,7 +12,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.tracker.events.CreateEventUseCaseRepository
+import org.dhis2.tracker.events.CreateEventUseCaseRepositoryImpl
 import org.hisp.dhis.android.core.D2
 
 @PerActivity
@@ -73,16 +73,15 @@ class ProgramStageSelectionModule(
     @Provides
     @PerActivity
     fun provideCreateEventUseCase(
-        dispatcherProvider: DispatcherProvider,
-        repository: CreateEventUseCaseRepository,
-    ) = CreateEventUseCase(dispatcherProvider, repository)
+        repository: CreateEventUseCaseRepositoryImpl,
+    ) = CreateEventUseCase(repository)
 
     @Provides
     @PerActivity
     fun provideCreateEventUseCaseRepository(
         d2: D2,
         dateUtils: DateUtils,
-    ) = CreateEventUseCaseRepository(d2, dateUtils)
+    ) = CreateEventUseCaseRepositoryImpl(d2, dateUtils)
 
     @Provides
     @PerActivity

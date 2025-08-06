@@ -1,8 +1,9 @@
 package org.dhis2.usescases.programEventDetail
 
+import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -29,7 +30,7 @@ class ProgramEventMapperTest {
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), anyOrNull()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
     }
 
     @Before

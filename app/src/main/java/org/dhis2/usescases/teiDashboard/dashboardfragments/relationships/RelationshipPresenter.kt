@@ -25,6 +25,8 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.maplibre.geojson.Feature
@@ -64,14 +66,15 @@ class RelationshipPresenter internal constructor(
 
     fun init() {
         scope.launch {
-            relationshipsRepository.getRelationships().collect {
+            relationshipsRepository.getRelationships().let {
                 _relationshipsModels.postValue(it)
 
                 val mapItems = it.map { relationship ->
                     val mapItem = MapItemModel(
                         uid = relationship.ownerUid,
                         avatarProviderConfiguration = avatarProvider.getAvatar(
-                            style = relationship.ownerStyle,
+                            icon = relationship.ownerStyleIcon,
+                            color = relationship.ownerStyleColor,
                             profilePath = relationship.getPicturePath(),
                             firstAttributeValue = relationship.firstMainValue(),
                         ),
@@ -85,16 +88,27 @@ class RelationshipPresenter internal constructor(
                             )
                         },
                         isOnline = false,
-                        geometry = relationship.displayGeometry(),
+                        geometry = relationship.displayGeometry()?.let { relationshipGeometry ->
+                            Geometry.builder()
+                                .type(
+                                    relationshipGeometry.featureType?.let { name ->
+                                        FeatureType.valueOf(
+                                            name,
+                                        )
+                                    },
+                                )
+                                .coordinates(relationshipGeometry.coordinates)
+                                .build()
+                        },
                         relatedInfo = relationshipMapsRepository.getRelatedInfo(
                             ownerType = relationship.ownerType,
                             ownerUid = relationship.ownerUid,
                         ),
-                        state = relationship.relationship.syncState() ?: State.SYNCED,
+                        state = State.valueOf(relationship.relationshipState),
                     )
                     relationshipMapsRepository.addRelationshipInfo(
                         mapItem,
-                        relationship.relationship,
+                        relationship.relationshipUid,
                     )
                 }
 

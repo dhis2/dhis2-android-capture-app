@@ -1,6 +1,6 @@
 package org.dhis2.usescases.main.program
 
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 import java.util.Date
 

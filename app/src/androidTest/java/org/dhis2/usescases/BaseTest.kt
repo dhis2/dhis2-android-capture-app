@@ -65,7 +65,7 @@ open class BaseTest {
     var testName: TestName = TestName()
 
     @get:Rule
-    var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+    var permissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA,

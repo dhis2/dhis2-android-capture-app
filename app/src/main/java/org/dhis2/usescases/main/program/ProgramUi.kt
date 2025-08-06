@@ -57,8 +57,8 @@ import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.ui.icons.toIconData
 import org.dhis2.data.service.SyncStatusData
-import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColorInt
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
@@ -654,9 +654,9 @@ private fun testingProgramModel() = ProgramUiModel(
             uid = "",
             label = "",
             iconRes = "dhis2_positive_negative",
-            iconTint = "#00BCD4".toColor(),
+            iconTint = Color("#00BCD4".toColorInt()),
         ),
-        color = "#00BCD4".toColor(),
+        color = Color("#00BCD4".toColorInt()),
     ),
     count = 12,
     type = "type",

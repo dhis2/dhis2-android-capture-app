@@ -20,7 +20,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.maps.model.MapItemModel
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
@@ -323,7 +323,8 @@ class SearchRepositoryImplKt(
                         OptionSetConfiguration(
                             searchEmitter = searchFlow,
                             optionFlow = searchFlow.debounce(300).flatMapLatest {
-                                d2.optionModule().options().orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                d2.optionModule().options()
+                                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                     .byOptionSetUid().eq(attribute.optionSet()!!.uid())
                                     .getPagingData(10)
                                     .map { pagingData ->
@@ -370,7 +371,8 @@ class SearchRepositoryImplKt(
                         OptionSetConfiguration(
                             searchEmitter = searchEmitter,
                             optionFlow = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid()).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
+                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                                 .getPagingData(10)
                                 .map { pagingData ->
                                     pagingData.map { option ->

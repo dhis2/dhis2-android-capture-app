@@ -2,6 +2,7 @@
 
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
@@ -30,6 +31,7 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
+import androidx.core.graphics.toColorInt
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
 import org.dhis2.composetable.ui.semantics.MANDATORY_ICON_TEST_TAG
@@ -45,7 +47,7 @@ import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_EXPAND_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_BAR_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG
 import org.dhis2.mobile.aggregates.ui.constants.VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.CellSelected
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.RowBackground
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.internal.semantics.TEST_TAG_COLUMN_HEADERS
@@ -393,6 +395,7 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
             .assertIsDisplayed()
     }
+
     fun checkItemWithTextIsNotDisplayed(text: String) {
         assertTableIsDisplayed()
         composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)

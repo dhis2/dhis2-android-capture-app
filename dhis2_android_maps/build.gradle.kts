@@ -55,6 +55,7 @@ kotlin {
 
 dependencies {
     implementation(project(":commons"))
+    implementation(project(":commonskmm"))
     api(libs.maps.maplibre) {
         exclude("com.google.android.gms")
     }

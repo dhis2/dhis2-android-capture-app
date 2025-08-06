@@ -1,11 +1,9 @@
 package org.dhis2.usescases.programEventDetail.usecase
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.tracker.events.CreateEventUseCaseRepository
+import org.dhis2.tracker.events.CreateEventUseCaseRepositoryImpl
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -29,10 +27,6 @@ import java.util.Date
 
 class CreateEventUseCaseTest {
 
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.Unconfined
-    }
-
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     private val eventRepository: EventObjectRepository = mock()
@@ -49,14 +43,14 @@ class CreateEventUseCaseTest {
 
     private val dateUtils: DateUtils = DateUtils.getInstance()
 
-    private lateinit var repository: CreateEventUseCaseRepository
+    private lateinit var repository: CreateEventUseCaseRepositoryImpl
 
     private lateinit var createEventUseCase: CreateEventUseCase
 
     @Before
     fun setUp() {
-        repository = CreateEventUseCaseRepository(d2, dateUtils)
-        createEventUseCase = CreateEventUseCase(dispatcherProvider, repository)
+        repository = CreateEventUseCaseRepositoryImpl(d2, dateUtils)
+        createEventUseCase = CreateEventUseCase(repository)
         mockD2Resources()
     }
 

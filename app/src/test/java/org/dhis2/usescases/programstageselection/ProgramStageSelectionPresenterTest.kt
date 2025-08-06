@@ -28,6 +28,7 @@
 
 package org.dhis2.usescases.programstageselection
 
+import androidx.compose.ui.graphics.Color
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -37,14 +38,15 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.EventMode
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.programStageSelection.ProgramStageData
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.period.PeriodType
@@ -73,7 +75,7 @@ class ProgramStageSelectionPresenterTest {
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), anyOrNull()) } doReturn MetadataIconData.defaultIcon()
+        on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
     }
     private val dispatcherProvider: DispatcherProvider = mock {
         on { io() } doReturn Dispatchers.Unconfined

@@ -40,14 +40,15 @@ import org.dhis2.maps.model.MapStyle
 import org.dhis2.maps.views.LocationIcon
 import org.dhis2.maps.views.MapScreen
 import org.dhis2.maps.views.OnMapClickListener
-import org.dhis2.ui.avatar.AvatarProvider
-import org.dhis2.ui.theme.Dhis2Theme
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEContractsModule
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
@@ -55,6 +56,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.maplibre.android.maps.MapView
 import javax.inject.Inject
@@ -155,7 +158,7 @@ class SearchTEMap : FragmentGlobalAbstract() {
                     }
                 }
 
-                Dhis2Theme {
+                DHIS2Theme {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -234,9 +237,14 @@ class SearchTEMap : FragmentGlobalAbstract() {
                             onItem = { item ->
 
                                 ListCard(
-                                    modifier = Modifier.fillParentMaxWidth().testTag("MAP_ITEM"),
+                                    modifier = Modifier
+                                        .fillParentMaxWidth()
+                                        .testTag("MAP_ITEM"),
                                     listCardState = rememberListCardState(
-                                        title = ListCardTitleModel(text = item.title, allowOverflow = false),
+                                        title = ListCardTitleModel(
+                                            text = item.title,
+                                            allowOverflow = false,
+                                        ),
                                         description = item.description?.let {
                                             ListCardDescriptionModel(
                                                 text = it,
@@ -263,9 +271,40 @@ class SearchTEMap : FragmentGlobalAbstract() {
                                         cardClick(item)
                                     },
                                     listAvatar = {
-                                        AvatarProvider(
-                                            avatarProviderConfiguration = item.avatarProviderConfiguration,
-                                            onImageClick = ::launchImageDetail,
+                                        Avatar(
+                                            style = when (
+                                                val config =
+                                                    item.avatarProviderConfiguration
+                                            ) {
+                                                is AvatarProviderConfiguration.MainValueLabel ->
+                                                    AvatarStyleData.Text(
+                                                        config.firstMainValue.firstOrNull()
+                                                            ?.toString()
+                                                            ?: "?",
+                                                    )
+
+                                                is AvatarProviderConfiguration.Metadata ->
+                                                    AvatarStyleData.Metadata(
+                                                        imageCardData = config.metadataIconData.imageCardData,
+                                                        avatarSize = config.size,
+                                                        tintColor = config.metadataIconData.color,
+                                                    )
+
+                                                is AvatarProviderConfiguration.ProfilePic ->
+                                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                            },
+                                            onImageClick = when (
+                                                val config =
+                                                    item.avatarProviderConfiguration
+                                            ) {
+                                                is AvatarProviderConfiguration.Metadata,
+                                                is AvatarProviderConfiguration.MainValueLabel,
+                                                -> null
+
+                                                is AvatarProviderConfiguration.ProfilePic -> {
+                                                    { launchImageDetail(config.profilePicturePath) }
+                                                }
+                                            },
                                         )
                                     },
                                 )

@@ -18,8 +18,8 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
-import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
@@ -77,7 +77,6 @@ class ProgramViewModelTest {
             programRepository,
             featureConfigRepository,
             dispatcherProvider,
-
             matomoAnalyticsController,
             filterManager,
             syncStatusController,
@@ -142,9 +141,9 @@ class ProgramViewModelTest {
 
     private fun programViewModel(): ProgramUiModel {
         return ProgramUiModel(
-            "uid",
-            "displayName",
-            MetadataIconData(
+            uid = "uid",
+            title = "displayName",
+            metadataIconData = MetadataIconData(
                 imageCardData = ImageCardData.IconCardData(
                     "",
                     "",
@@ -153,11 +152,11 @@ class ProgramViewModelTest {
                 ),
                 color = "#84FFFF".toColor(),
             ),
-            1,
-            "type",
-            "typeName",
-            "programType",
-            "description",
+            count = 1,
+            type = "type",
+            typeName = "typeName",
+            programType = "programType",
+            description = "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
@@ -171,9 +170,9 @@ class ProgramViewModelTest {
 
     private fun dataSetViewModel(): ProgramUiModel {
         return ProgramUiModel(
-            "uid",
-            "displayName",
-            MetadataIconData(
+            uid = "uid",
+            title = "displayName",
+            metadataIconData = MetadataIconData(
                 imageCardData = ImageCardData.IconCardData(
                     "",
                     "",
@@ -182,11 +181,11 @@ class ProgramViewModelTest {
                 ),
                 color = "#84FFFF".toColor(),
             ),
-            1,
-            "type",
-            "typeName",
-            "",
-            "description",
+            count = 1,
+            type = "type",
+            typeName = "typeName",
+            programType = "",
+            description = "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,

@@ -6,7 +6,7 @@ import org.dhis2.commons.data.EventViewModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMapper
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.event.Event

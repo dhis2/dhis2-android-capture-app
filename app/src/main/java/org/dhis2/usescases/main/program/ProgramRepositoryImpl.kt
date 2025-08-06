@@ -66,16 +66,16 @@ internal class ProgramRepositoryImpl(
                         .uid(it.dataSetUid())
                         .blockingGet()?.let { dataSet ->
                             programViewModelMapper.map(
-                                dataSet,
-                                it,
-                                if (filterPresenter.isAssignedToMeApplied()) {
+                                dataSet = dataSet,
+                                dataSetInstanceSummary = it,
+                                recordCount = if (filterPresenter.isAssignedToMeApplied()) {
                                     0
                                 } else {
                                     it.dataSetInstanceCount()
                                 },
-                                resourceManager.defaultDataSetLabel(),
-                                filterPresenter.areFiltersActive(),
-                                metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
+                                dataSetLabel = resourceManager.defaultDataSetLabel(),
+                                filtersAreActive = filterPresenter.areFiltersActive(),
+                                metadataIconData = metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
                             )
                         }
                 }

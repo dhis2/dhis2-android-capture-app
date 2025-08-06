@@ -32,9 +32,9 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.ui.MetadataIconData
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.option.Option
 import org.junit.Before
