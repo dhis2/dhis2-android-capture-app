@@ -244,6 +244,7 @@
     <string name="settingsCheckVersionMessage">Software</string>
     <string name="settingsExportDB">Exportar base de datos</string>
     <string name="settingsExportDBMessage">Exporta tu base de datos y compártela con tu administrador</string>
+    <string name="settingTwoFA">Autenticación de dos factores</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Fecha de inscripción</string>
