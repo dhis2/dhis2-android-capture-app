@@ -62,6 +62,7 @@
     <string name="done_task">Origem</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_MANAGER">Configurações</string>
+    <string name="settingTwoFA">Autenticação de dois fatores</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Data de inscrição</string>

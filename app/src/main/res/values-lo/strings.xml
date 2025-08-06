@@ -229,6 +229,7 @@
     <string name="settingsSms">ຕັ້ງຄ່າຂໍ້ຄວາມ</string>
     <string name="settingsCheckVersion">ອັບເດດຊັອບແວ</string>
     <string name="settingsCheckVersionMessage">ຊອບແວ</string>
+    <string name="settingTwoFA">ກວດສອບຄວາມຖືກຕ້ອງແບບ 2 ຂັ້ນ</string>
     <!--endregion-->
 
     <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>

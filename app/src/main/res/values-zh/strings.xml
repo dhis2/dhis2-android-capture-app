@@ -240,6 +240,7 @@
     <string name="settingsCheckVersionMessage">软件</string>
     <string name="settingsExportDB">导出数据库</string>
     <string name="settingsExportDBMessage">导出数据库并与管理员共享</string>
+    <string name="settingTwoFA">双重身份验证</string>
     <!--endregion-->
 
     <string name="enrollmment_date">加入日期</string>
