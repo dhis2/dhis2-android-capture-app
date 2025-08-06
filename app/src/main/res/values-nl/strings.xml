@@ -224,6 +224,7 @@
     <string name="settingsSms_descr">Controleer en bewerk parameters met betrekking tot de sms-gateway</string>
     <string name="settingsCheckVersion">Software-update</string>
     <string name="settingsCheckVersionMessage">Software</string>
+    <string name="settingTwoFA">Twee-factor-authenticatie</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Inschrijvingsdatum</string>
