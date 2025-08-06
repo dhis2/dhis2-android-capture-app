@@ -70,56 +70,72 @@ fun DataEntryBottomSheet(
             }
         },
         buttonBlock = {
-            if (model.hasButtons()) {
-                ButtonBlock(
-                    modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
-                    primaryButton = {
-                        model.secondaryButton?.let { secondaryButton ->
-                            Button(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag(SECONDARY_BUTTON_TAG),
-                                style = secondaryButton.buttonStyle,
-                                text = secondaryButton.textLabel
-                                    ?: stringResource(secondaryButton.textResource),
-                                colorStyle = when (secondaryButton) {
-                                    is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
-                                    else -> ColorStyle.DEFAULT
-                                },
-                                onClick = {
-                                    if (allowDiscard) {
-                                        onDiscardChanges()
-                                    }
-                                    onSecondaryButtonClick()
-                                    onDismiss()
-                                },
-                            )
-                        }
-                    },
-                    secondaryButton = {
-                        model.mainButton?.let { mainButton ->
-                            Button(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag(MAIN_BUTTON_TAG),
-                                style = mainButton.buttonStyle,
-                                text = mainButton.textLabel ?: stringResource(
-                                    mainButton.textResource,
-                                ),
-                                colorStyle = when (mainButton) {
-                                    is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
-                                    else -> ColorStyle.DEFAULT
-                                },
-                                onClick = {
-                                    onPrimaryButtonClick()
-                                    onDismiss()
-                                },
-                            )
-                        }
-                    },
-                )
-            }
+            DataEntryButtonBlock(
+                model = model,
+                allowDiscard = allowDiscard,
+                onPrimaryButtonClick = onPrimaryButtonClick,
+                onSecondaryButtonClick = onSecondaryButtonClick,
+                onDiscardChanges = onDiscardChanges,
+                onDismiss = onDismiss,
+            )
         },
         onDismiss = onDismiss,
     )
+}
+
+@Composable
+private fun DataEntryButtonBlock(
+    model: BottomSheetDialogUiModel,
+    allowDiscard: Boolean,
+    onPrimaryButtonClick: () -> Unit,
+    onSecondaryButtonClick: () -> Unit,
+    onDiscardChanges: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    if (model.hasButtons()) {
+        ButtonBlock(
+            modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+            primaryButton = {
+                model.secondaryButton?.let { secondaryButton ->
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(SECONDARY_BUTTON_TAG),
+                        style = secondaryButton.buttonStyle,
+                        text = secondaryButton.textLabel
+                            ?: stringResource(secondaryButton.textResource),
+                        colorStyle = getColorStyle(secondaryButton),
+                        onClick = {
+                            onDiscardChanges.takeIf { allowDiscard }?.invoke()
+                            onSecondaryButtonClick()
+                            onDismiss()
+                        },
+                    )
+                }
+            },
+            secondaryButton = {
+                model.mainButton?.let { mainButton ->
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag(MAIN_BUTTON_TAG),
+                        style = mainButton.buttonStyle,
+                        text = mainButton.textLabel ?: stringResource(
+                            mainButton.textResource,
+                        ),
+                        colorStyle = getColorStyle(mainButton),
+                        onClick = {
+                            onPrimaryButtonClick()
+                            onDismiss()
+                        },
+                    )
+                }
+            },
+        )
+    }
+}
+
+private fun getColorStyle(style: DialogButtonStyle) = when (style) {
+    is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
+    else -> ColorStyle.DEFAULT
 }
