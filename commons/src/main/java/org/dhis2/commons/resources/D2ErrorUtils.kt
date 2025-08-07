@@ -152,8 +152,12 @@ class D2ErrorUtils(
                     context.getString(R.string.error_no_internet_connection)
                 }
 
-            D2ErrorCode.DATABASE_IMPORT_FAILED -> "Database import failed"
-            D2ErrorCode.DATABASE_IMPORT_INVALID_FILE -> "Invalid file"
+            D2ErrorCode.DATABASE_IMPORT_FAILED ->
+                context.getString(R.string.database_import_failed)
+            D2ErrorCode.DATABASE_IMPORT_INVALID_FILE ->
+                context.getString(R.string.invalid_file)
+            D2ErrorCode.NOT_IN_TOTP_2FA_ENROLLMENT_MODE ->
+                context.getString(R.string.not_in_totp_2fa_enrollment_mode)
         }
     }
 

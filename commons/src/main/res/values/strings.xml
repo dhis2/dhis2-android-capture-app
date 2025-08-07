@@ -341,4 +341,7 @@
     <string name="period_yearly_title">Year</string>
     <string name="period_financial_year_title">Financial year</string>
     <string name="no_periods">No periods available\n</string>
+    <string name="database_import_failed">Database import failed</string>
+    <string name="invalid_file">Invalid file</string>
+    <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
 </resources>
