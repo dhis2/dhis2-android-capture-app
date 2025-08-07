@@ -10,7 +10,7 @@ data class CustomIntentModel(
 
 data class CustomIntentRequestArgumentModel(
     val key: String,
-    val value: String,
+    val value: Any,
 )
 
 data class CustomIntentResponseDataModel(

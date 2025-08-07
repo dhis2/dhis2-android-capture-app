@@ -26,6 +26,7 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.settings.CustomIntent
 import org.hisp.dhis.android.core.settings.CustomIntentActionType
+import org.hisp.dhis.android.core.settings.CustomIntentContext
 import timber.log.Timber
 import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType as ExtraType
 
@@ -83,16 +84,25 @@ abstract class DataEntryBaseRepository(
     }
 
     private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> {
-        return conf.customIntents().filter { customIntent ->
+        return conf.customIntents.filter { customIntent ->
             customIntent?.trigger()?.attributes()?.any { it.uid() == uid } == true ||
                 customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
         }
     }
 
-    fun getCustomIntentFromUid(uid: String?): CustomIntentModel? {
+    fun getCustomIntentFromUid(uid: String?, context: CustomIntentContext): CustomIntentModel? {
         return getFilteredCustomIntents(uid).firstOrNull { customIntent ->
             customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
         }?.let {
+            val requestParams = conf.evaluateCustomIntentRequestParams(it, context)
+            val customIntentRequest = requestParams.mapNotNull { param ->
+                param.value?.let { value ->
+                    CustomIntentRequestArgumentModel(
+                        key = param.key,
+                        value = value,
+                    )
+                }
+            }
             val customIntentResponse = it.response()?.data()?.extras()?.map { dataExtra ->
                 CustomIntentResponseDataModel(
                     name = dataExtra.extraName(),
@@ -111,12 +121,7 @@ abstract class DataEntryBaseRepository(
             CustomIntentModel(
                 uid = it.uid(),
                 name = it.name(),
-                customIntentRequest = it.request()?.arguments()?.map { arg ->
-                    CustomIntentRequestArgumentModel(
-                        key = arg.key(),
-                        value = arg.value(),
-                    )
-                } ?: emptyList(),
+                customIntentRequest = customIntentRequest,
                 customIntentResponse = customIntentResponse,
                 packageName = it.packageName() ?: "",
             )

@@ -49,6 +49,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
+import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class EventRepository(
@@ -545,7 +546,8 @@ class EventRepository(
             programStageDataElement.dataElement()!!.uid(),
         ).blockingGet()
         val uid = de?.uid() ?: ""
-        val customIntent = getCustomIntentFromUid(uid)
+        val customIntentContext = CustomIntentContext(programUid, programStage?.uid())
+        val customIntent = getCustomIntentFromUid(uid, customIntentContext)
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false

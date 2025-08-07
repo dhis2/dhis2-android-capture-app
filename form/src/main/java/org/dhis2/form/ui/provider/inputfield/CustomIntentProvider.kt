@@ -112,7 +112,15 @@ fun ProvideCustomIntentInput(
 fun mapIntentData(customIntent: CustomIntentModel): Intent {
     return Intent(customIntent.packageName).apply {
         customIntent.customIntentRequest.forEach { argument ->
-            putExtra(argument.key, argument.value)
+            when (val value = argument.value) {
+                is String -> putExtra(argument.key, value)
+                is Int -> putExtra(argument.key, value)
+                is Double -> putExtra(argument.key, value)
+                is Long -> putExtra(argument.key, value)
+                is Short -> putExtra(argument.key, value)
+                is Boolean -> putExtra(argument.key, value)
+                else -> putExtra(argument.key, value.toString())
+            }
         }
     }
 }

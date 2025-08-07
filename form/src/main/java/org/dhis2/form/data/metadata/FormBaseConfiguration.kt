@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.settings.CustomIntent
 import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import org.hisp.dhis.android.core.settings.CustomIntentAttribute
+import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.android.core.settings.CustomIntentDataElement
 import org.hisp.dhis.android.core.settings.CustomIntentRequest
 import org.hisp.dhis.android.core.settings.CustomIntentRequestArgument
@@ -34,7 +35,7 @@ open class FormBaseConfiguration(
         .byUid().`in`(optionGroupUids)
         .blockingGet()
 
-    fun customIntents(): List<CustomIntent?> = if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
+    val customIntents: List<CustomIntent?> = if (featureConfig.isFeatureEnable(Feature.CUSTOM_INTENTS)) {
         getMockedCustomIntents()
     } else {
         d2.settingModule().customIntents()
@@ -75,9 +76,9 @@ open class FormBaseConfiguration(
                 .request(
                     CustomIntentRequest.builder().arguments(
                         listOf(
-                            CustomIntentRequestArgument.builder().key("projectId").value("testDhisProjectId").build(),
-                            CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
-                            CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
+                            CustomIntentRequestArgument.builder().key("projectId").value("'testDhisProjectId'").build(),
+                            CustomIntentRequestArgument.builder().key("moduleId").value("'testDhisModuleId'").build(),
+                            CustomIntentRequestArgument.builder().key("userId").value("'testDhisUserId'").build(),
                         ),
                     ).build(),
                 )
@@ -118,9 +119,9 @@ open class FormBaseConfiguration(
                 .request(
                     CustomIntentRequest.builder().arguments(
                         listOf(
-                            CustomIntentRequestArgument.builder().key("projectId").value("testDhisProjectId").build(),
-                            CustomIntentRequestArgument.builder().key("moduleId").value("testDhisModuleId").build(),
-                            CustomIntentRequestArgument.builder().key("userId").value("testDhisUserId").build(),
+                            CustomIntentRequestArgument.builder().key("projectId").value("'testDhisProjectId'").build(),
+                            CustomIntentRequestArgument.builder().key("moduleId").value("'testDhisModuleId'").build(),
+                            CustomIntentRequestArgument.builder().key("userId").value("'testDhisUserId'").build(),
                         ),
                     ).build(),
                 )
@@ -141,6 +142,14 @@ open class FormBaseConfiguration(
                         .build(),
                 ).build(),
         )
+    }
+
+    fun evaluateCustomIntentRequestParams(
+        customIntent: CustomIntent,
+        context: CustomIntentContext,
+    ): Map<String, Any?> {
+        return d2.settingModule().customIntentService()
+            .blockingEvaluateRequestParams(customIntent, context)
     }
 
     fun disableCollapsableSectionsInProgram(programUid: String) =
