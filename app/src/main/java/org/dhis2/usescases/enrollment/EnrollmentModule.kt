@@ -7,7 +7,6 @@ import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -87,8 +86,7 @@ class EnrollmentModule(
     fun provideEnrollmentConfiguration(
         d2: D2,
         dispatcherProvider: DispatcherProvider,
-        featureConfigRepository: FeatureConfigRepository,
-    ) = EnrollmentConfiguration(d2, enrollmentUid, dispatcherProvider, featureConfigRepository)
+    ) = EnrollmentConfiguration(d2, enrollmentUid, dispatcherProvider)
 
     @Provides
     @PerActivity
