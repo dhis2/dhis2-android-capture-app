@@ -58,7 +58,7 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot(composeTestRule) {
-
+            clickOnValidateServerButton()
             // Test case - [ANDROAPP-4122](https://dhis2.atlassian.net/browse/ANDROAPP-4122)
             clearServerField()
             typeServer(MOCK_SERVER_URL)
@@ -114,6 +114,7 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot(composeTestRule) {
+            clickOnValidateServerButton()
             checkUnblockSessionViewIsVisible()
         }
     }
@@ -125,6 +126,7 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot(composeTestRule) {
+            clickOnValidateServerButton()
             clickQRButton()
             checkQRScanIsOpened()
             checkURL(MOCK_SERVER_URL)

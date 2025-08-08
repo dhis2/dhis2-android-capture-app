@@ -344,9 +344,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     override fun showUnlockButton() {
-        binding.unlock.visibility = View.VISIBLE
-        binding.logout.visibility = View.GONE
-        onUnlockClick(binding.unlock)
+        if (::binding.isInitialized) {
+            binding.unlock.visibility = View.VISIBLE
+            binding.logout.visibility = View.GONE
+        }
+        onUnlockClick()
     }
 
     override fun renderError(throwable: Throwable) {
@@ -415,7 +417,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
-    override fun onUnlockClick(android: View) {
+    override fun onUnlockClick() {
         PinDialog(
             PinDialog.Mode.ASK,
             false,
