@@ -29,6 +29,8 @@ import org.dhis2.data.biometric.BiometricAuthenticator
 import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
 import org.dhis2.mobile.commons.reporting.CrashReportController
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.utils.TestingCredential
 import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
@@ -42,6 +44,8 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.File
 
@@ -60,7 +64,9 @@ class LoginViewModel(
     private val network: NetworkUtils,
     private var userManager: UserManager?,
     private val repository: LoginRepository,
-) : ViewModel() {
+) : ViewModel(), KoinComponent {
+
+    private val navigator: Navigator by inject()
 
     private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
     var disposable: CompositeDisposable = CompositeDisposable()
@@ -79,10 +85,6 @@ class LoginViewModel(
 
     private val _canLoginWithBiometrics = MutableLiveData<Boolean>()
     val canLoginWithBiometrics: LiveData<Boolean> = _canLoginWithBiometrics
-
-    private val _displayMoreActions = MutableLiveData<Boolean>(true)
-    val displayMoreActions: LiveData<Boolean> = _displayMoreActions
-
     private val _autoCompleteData = MutableLiveData<Pair<List<String>, List<String>>>()
     val autoCompleteData: LiveData<Pair<List<String>, List<String>>> = _autoCompleteData
 
@@ -468,7 +470,9 @@ class LoginViewModel(
     }
 
     fun onManageAccountClicked() {
-        view.openAccountsActivity()
+        viewModelScope.launch(dispatchers.io()) {
+            navigator.navigate(LoginScreenState.Accounts)
+        }
     }
 
     fun grantTrackingPermissions(granted: Boolean) {
@@ -577,11 +581,6 @@ class LoginViewModel(
                 view.onDbImportFinished(result.isSuccess)
             }
         }
-    }
-
-    fun displayMoreActions() = displayMoreActions
-    fun setDisplayMoreActions(shouldDisplayMoreActions: Boolean) {
-        _displayMoreActions.postValue(shouldDisplayMoreActions)
     }
 
     fun shouldAskForBiometrics(): Boolean =

@@ -14,23 +14,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?colorPrimary">
-
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/topbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/white"
-            app:clipCorners="@{16}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topbar">
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +31,6 @@
                 android:paddingStart="16dp"
                 android:paddingTop="18dp"
                 android:paddingEnd="16dp"
-                app:clipCorners="@{16}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintWidth_max="450dp">
@@ -234,10 +222,10 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 android:padding="16dp"
-                app:layout_constraintWidth_max="450dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:layout_constraintWidth_max="450dp">
 
                 <androidx.compose.ui.platform.ComposeView
                     android:id="@+id/biometricButton"
@@ -246,7 +234,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="spread"/>
+                    app:layout_constraintVertical_chainStyle="spread" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/login"
@@ -256,17 +244,17 @@
                     android:layout_marginTop="24dp"
                     android:onClick="@{()-> presenter.onLoginButtonClick()}"
                     android:text="@string/log_in_button"
-                    app:layout_constraintTop_toBottomOf="@id/biometricButton"/>
+                    app:layout_constraintTop_toBottomOf="@id/biometricButton" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/manageAccounts"
                     style="@style/NoBackgroundButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/rubik_regular"
                     android:layout_marginTop="6dp"
-                    android:text="@string/manage_accounts"
+                    android:fontFamily="@font/rubik_regular"
                     android:onClick="@{() -> presenter.onManageAccountClicked()}"
+                    android:text="@string/manage_accounts"
                     android:visibility="@{presenter.hasAccounts ? View.VISIBLE : View.GONE }"
                     app:layout_constraintTop_toBottomOf="@id/loginOpenId"
                     tools:text="Manage Accounts" />
@@ -278,10 +266,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:visibility="gone"
-                    tools:visibility="visible"
                     app:icon="@drawable/ic_dhis"
                     app:layout_constraintTop_toBottomOf="@id/login"
-                    tools:text="Log in with google" />
+                    tools:text="Log in with google"
+                    tools:visibility="visible" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/logout"
@@ -320,13 +308,13 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/white"
-            app:clipCorners="@{16}"
             android:gravity="center"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:visibility="gone"
+            app:clipCorners="@{16}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topbar">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/progressMessage"

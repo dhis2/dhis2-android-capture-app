@@ -3,27 +3,35 @@ package org.dhis2.usescases.login
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils.isEmpty
 import android.text.TextWatcher
 import android.util.Patterns
+import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import android.widget.ArrayAdapter
-import androidx.activity.result.ActivityResult
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.databinding.DataBindingUtil
+import androidx.compose.ui.viewinterop.AndroidView
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.dhis2.App
 import org.dhis2.R
@@ -42,12 +50,11 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
+import org.dhis2.mobile.login.main.ui.screen.LoginScreen
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.usescases.login.auth.AuthServiceModel
 import org.dhis2.usescases.login.auth.OpenIdProviders
-import org.dhis2.usescases.login.ui.LoginTopBar
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.sync.SyncActivity
@@ -61,6 +68,7 @@ import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -73,11 +81,10 @@ const val EXTRA_ACCOUNT_DISABLED = "EXTRA_ACCOUNT_DISABLED"
 const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 const val FROM_SPLASH = "FROM_SPLASH"
-const val RESULT_ACCOUNT_SERVER = "RESULT_ACCOUNT_SERVER"
-const val RESULT_ACCOUNT_USERNAME = "RESULT_ACCOUNT_USERNAME"
-const val RESULT_ACCOUNT_CLICKED = "RESULT_ACCOUNT_CLICKED"
 
 class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
+
+    override var handleEdgeToEdge = false
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -154,22 +161,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 }
             }
         }
-
-        fun accountIntentResult(
-            serverUrl: String?,
-            userName: String?,
-            wasAccountClicked: Boolean,
-        ): Intent = Intent().apply {
-            serverUrl?.let { putExtra(RESULT_ACCOUNT_SERVER, serverUrl) }
-            userName?.let { putExtra(RESULT_ACCOUNT_USERNAME, userName) }
-            putExtra(FROM_SPLASH, false)
-            putExtra(RESULT_ACCOUNT_CLICKED, wasAccountClicked)
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.LoginTheme)
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(Color.WHITE),
+        )
         val loginComponent = app().loginComponent() ?: app().createLoginComponent(
             LoginModule(
                 view = this,
@@ -183,22 +181,13 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         super.onCreate(savedInstanceState)
         val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
         val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
-        val fromSplash = intent.getBooleanExtra(FROM_SPLASH, false)
-
-        if ((isDeletion && accountsCount >= 1)) {
-            openAccountsActivity()
-        }
 
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
-
-        binding.topbar.setContent {
-            val displayMoreActions by presenter.displayMoreActions().observeAsState(true)
+        setContent {
             DHIS2Theme {
-                LoginTopBar(
-                    version = buildInfo(),
-                    displayMoreActions = displayMoreActions,
+                LoginScreen(
+                    versionName = buildInfo(),
                     onImportDatabase = {
                         showLoginProgress(false, getString(R.string.importing_database))
                         val intent = Intent()
@@ -206,9 +195,30 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                         intent.action = Intent.ACTION_GET_CONTENT
                         filePickerLauncher.launch(intent)
                     },
+                    legacyLoginContent = { server, username ->
+                        AndroidView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L)),
+                            factory = { context ->
+                                ActivityLoginBinding.inflate(LayoutInflater.from(this)).also {
+                                    binding = it
+                                    initLegacy(isDeletion, accountsCount)
+                                    setAccount(server, username)
+                                }.root
+                            },
+                            update = {
+                                // no-op
+                            },
+                        )
+                    },
                 )
             }
         }
+    }
+
+    private fun initLegacy(isDeletion: Boolean, accountsCount: Int) {
+        val fromSplash = intent.getBooleanExtra(FROM_SPLASH, false)
 
         provideBiometricButton()
 
@@ -525,22 +535,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    private val requestAccount = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) { result: ActivityResult ->
-        if (result.resultCode == RESULT_OK) {
-            val wasAccountClicked = result.data?.extras?.getBoolean(RESULT_ACCOUNT_CLICKED) ?: false
-            setAccount(
-                result.data?.extras?.getString(RESULT_ACCOUNT_SERVER) ?: getDefaultServerProtocol(),
-                result.data?.extras?.getString(RESULT_ACCOUNT_USERNAME),
-                wasAccountClicked,
-            )
-        }
-        if (result.resultCode == RESULT_CANCELED) {
-            resetLoginInfo()
-        }
-    }
-
     override fun initLogin(): UserManager {
         return app().createServerComponent().userManager()
     }
@@ -552,7 +546,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.userNameEdit.isEnabled = true
         binding.clearUrl.visibility = View.VISIBLE
         binding.clearUserNameButton.visibility = View.VISIBLE
-        presenter.setDisplayMoreActions(true)
     }
 
     private fun blockLoginInfo() {
@@ -562,19 +555,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.userNameEdit.isEnabled = false
         binding.clearUrl.visibility = View.GONE
         binding.clearUserNameButton.visibility = View.GONE
-        presenter.setDisplayMoreActions(false)
     }
 
-    /*
-     * TODO: [Pending confirmation] Remove comment to set skipSync. This way the user will go to the home screen.
-     * */
-    private fun setAccount(serverUrl: String?, userName: String?, wasAccountClicked: Boolean) {
-        serverUrl?.let { binding.serverUrlEdit.setText(it) }
+    private fun setAccount(serverUrl: String?, userName: String?) {
+        binding.serverUrlEdit.setText(serverUrl ?: "")
         binding.userNameEdit.setText(userName ?: "")
         presenter.setAccountInfo(serverUrl, userName)
         binding.userPassEdit.text = null
-//        skipSync = wasAccountClicked
-        if (wasAccountClicked) {
+        if (serverUrl?.isNotEmpty() == true && userName?.isNotEmpty() == true) {
             blockLoginInfo()
         } else {
             resetLoginInfo()
@@ -628,10 +616,6 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         activity?.let {
             startActivity(Intent(it, PolicyView::class.java))
         }
-    }
-
-    override fun openAccountsActivity() {
-        requestAccount.launch(Intent(this, AccountsActivity::class.java))
     }
 
     private fun checkMessage() {
