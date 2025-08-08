@@ -25,5 +25,5 @@ internal fun syncPeriodLabel(currentDataSyncPeriod: Int): String {
             else -> stringResource(R.string.a_day)
         }
 
-    return String.format(stringResource(R.string.settings_sync_period) + ": %s", setting)
+    return setting
 }

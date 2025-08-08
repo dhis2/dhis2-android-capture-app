@@ -36,9 +36,9 @@
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
     <string name="sync_incomplete_error_text">Sync finished but we did not receive server confirmation for all records. Those record are still marked as "offline" in the App. We recommend to retry the synchronization.</string>
     <string name="metadata_sync_error">FAIL: Something went wrong in the sync process. If you have connection please try again. If the error persist, contact your administrator.</string>
-    <string name="data_sync_warning">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. Check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
+    <string name="data_sync_warning">There are conflicts in your data. Please sync your configuration, review your data and try syncing again.</string>
     <string name="data_sync_warning_program">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. If warning persists, check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
-    <string name="data_sync_error">ERROR: Some of your data failed to sync. Check their sync status: programs with errors are marked as @, TEI\'s and events as $".</string>
+    <string name="data_sync_error">Some of your data failed to sync.</string>
     <string name="data_sync_error_program">ERROR: Some of your data failed to sync. Check their sync status: TEI\'s and events with conflicts are marked as $".</string>
     <string name="server_sync_error">There was an error and the server did not respond. Contact your administrator.</string>
 
@@ -205,6 +205,8 @@
     <string name="SYNC_META">SYNC Configuration Now</string>
     <string name="SYNC_MANAGER">Settings</string>
     <string name="last_data_sync_date">Last sync on: %s</string>
+    <string name="last_data_sync">Last sync on</string>
+
     <string name="last_metadata_sync_date">Last sync on: %s</string>
     <string name="refill_reserved_values">Refill</string>
     <string name="settings_sms_module_title">SMS module:</string>
@@ -220,7 +222,7 @@
         <item quantity="one">There is %s program with specific settings</item>
         <item quantity="other">There are %s programs with specific settings</item>
     </plurals>
-    <string name="settings_sync_period">Syncing period</string>
+    <string name="settings_sync_period">Sync period</string>
     <string name="settings_limit_scope">Settings limited</string>
     <string name="settings_limit_globally">Globally</string>
     <string name="settings_limit_program">by program</string>
@@ -627,6 +629,7 @@
     <string name="filter_event_status_skipped">Skipped</string>
     <string name="event_tei_limits">Events:%smax:%s%scurrent:%s TEI:%smax:%s%scurrent:%s</string>
     <string name="event_tei_limits_v2">Settings limited %s\nEvents: %s/%s TEI: %s/%s</string>
+    <string name="limit_setting">Settings limited %s</string>
     <string name="enrollment_data_hide">Hide enrollment data</string>
     <string name="enrollment_data_show">Show enrollment data</string>
     <string name="sms_enabled">SMS module enabled</string>
