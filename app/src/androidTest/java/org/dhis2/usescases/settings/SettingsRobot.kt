@@ -49,7 +49,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).performClick()
     }
 
-    @OptIn(ExperimentalTestApi::class)
     fun checkEditPeriodIsDisableForConfiguration() {
         composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).printToLog("SETTING_ITEM")
         composeTestRule.onNode(
