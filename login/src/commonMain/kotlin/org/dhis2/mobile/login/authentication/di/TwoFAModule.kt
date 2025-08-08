@@ -8,7 +8,7 @@ import org.dhis2.mobile.login.authentication.ui.viewmodel.TwoFASettingsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val twoFAModule = module {
+internal val twoFAModule = module {
     // Repository
     single<TwoFARepository> { TwoFARepositoryImpl() }
 
