@@ -55,7 +55,6 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
         savedInstanceState: Bundle?,
     ): View {
         init(requireContext())
-        val color = TextColor
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
