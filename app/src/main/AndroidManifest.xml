@@ -129,7 +129,6 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".usescases.settingsprogram.SettingsProgramActivity" />
 
-        <activity android:name=".usescases.login.accounts.AccountsActivity" />
         <activity
             android:name=".usescases.crash.CrashActivity"
             android:exported="false"
