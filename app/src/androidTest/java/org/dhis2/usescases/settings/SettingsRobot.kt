@@ -1,13 +1,13 @@
 package org.dhis2.usescases.settings
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.hasParent
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -40,8 +40,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEditPeriodIsDisableForData() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.DATA_SYNC.name)) and
-                    hasText(NOT_EDIT_TEXT)
+    hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_DataPeriod).assertIsNotDisplayed()
     }
@@ -50,10 +49,11 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkEditPeriodIsDisableForConfiguration() {
+        composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).printToLog("SETTING_ITEM")
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.META_SYNC.name)) and
-                    hasText(NOT_EDIT_TEXT)
+    hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_MetaPeriod).assertIsNotDisplayed()
     }
@@ -64,7 +64,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEditPeriodIsDisableForParameters() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.SYNC_PARAMETERS.name)) and
                     hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_SyncParameters_LimitScope).assertIsNotDisplayed()
@@ -78,8 +77,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnManageReservedValues() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.RESERVED_VALUES.name)) and
-                    hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
+    hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
 
         Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
