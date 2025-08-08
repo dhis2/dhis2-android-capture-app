@@ -22,6 +22,7 @@ import org.dhis2.R
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.hisp.dhis.android.core.settings.LimitScope
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
@@ -39,17 +40,26 @@ internal fun SyncParametersSettingItem(
     onTeiToDownloadLimitUpdate: (Int) -> Unit,
     onSpecificProgramSettingsClick: () -> Unit,
 ) {
+    val additionalInfoList = listOf(
+        AdditionalInfoItem(
+            value = stringResource(R.string.limit_setting).format(provideLimitScopeLabel(syncParametersViewModel.limitScope)),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            key = stringResource(R.string.sync_events),
+            value = syncParametersViewModel.currentEventCount.toString() + "/" + syncParametersViewModel.numberOfEventsToDownload.toString(),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            key = stringResource(R.string.tei),
+            value = syncParametersViewModel.currentTeiCount.toString() + "/" + syncParametersViewModel.numberOfTeiToDownload.toString(),
+            isConstantItem = true,
+        ),
+    )
     SettingItem(
         modifier = Modifier.testTag(SettingItem.SYNC_PARAMETERS.name),
         title = stringResource(id = R.string.settingsSyncParameters),
-        subtitle =
-            stringResource(R.string.event_tei_limits_v2).format(
-                provideLimitScopeLabel(syncParametersViewModel.limitScope),
-                syncParametersViewModel.currentEventCount,
-                syncParametersViewModel.numberOfEventsToDownload,
-                syncParametersViewModel.currentTeiCount,
-                syncParametersViewModel.numberOfTeiToDownload,
-            ),
+        additionalInfoList = additionalInfoList,
         icon = Icons.Outlined.DataUsage,
         extraActions = {
             Column(

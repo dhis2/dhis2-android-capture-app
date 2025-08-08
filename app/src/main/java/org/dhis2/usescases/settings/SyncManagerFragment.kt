@@ -25,6 +25,7 @@ import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.ui.SettingsScreen
 import org.dhis2.usescases.settingsprogram.SettingsProgramActivity
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -54,7 +55,7 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
         savedInstanceState: Bundle?,
     ): View {
         init(requireContext())
-
+        val color = TextColor
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
