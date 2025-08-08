@@ -1,15 +1,20 @@
 package org.dhis2.usescases.settingsprogram.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,14 +26,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
 import org.dhis2.ui.MetadataIcon
+import org.dhis2.usescases.settings.SettingsViewModelFactory
+import org.dhis2.usescases.settings.ui.SettingsScreen
 import org.dhis2.usescases.settingsprogram.SettingsProgramViewModel
+import org.dhis2.usescases.settingsprogram.di.settingsProgramModule
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
@@ -37,7 +47,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.koin.compose.KoinApplication
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +62,7 @@ fun SettingsProgramScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.safeDrawing,
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.primary,
         topBar = {
             TopBar(
                 navigationIcon = {
@@ -70,26 +83,28 @@ fun SettingsProgramScreen(
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors().copy(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         },
     ) { paddingValues ->
-        val localLayoutDirection = LocalLayoutDirection.current
         val settings by settingsViewModel.programSettings.collectAsState(emptyList())
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(
-                top = paddingValues.calculateTopPadding() + 16.dp,
-                end = paddingValues.calculateEndPadding(localLayoutDirection),
-                start = paddingValues.calculateStartPadding(localLayoutDirection),
-                bottom = paddingValues.calculateBottomPadding(),
-            ),
+                .padding(paddingValues)
+                .clip(
+                    shape =
+                        RoundedCornerShape(
+                            topStart = Radius.L,
+                            topEnd = Radius.L,
+                        ),
+                ).background(color = MaterialTheme.colorScheme.background),
+            contentPadding = PaddingValues(Spacing.Spacing16),
             verticalArrangement = spacedBy(Spacing.Spacing4),
         ) {
             items(items = settings) { setting ->
@@ -101,6 +116,7 @@ fun SettingsProgramScreen(
                     title = ListCardTitleModel(text = setting.name ?: ""),
                     description = ListCardDescriptionModel(text = setting.description),
                     additionalInfoColumnState = additionalInfoColumnState,
+                    shadow = false,
                 )
                 ListCard(
                     modifier = Modifier,

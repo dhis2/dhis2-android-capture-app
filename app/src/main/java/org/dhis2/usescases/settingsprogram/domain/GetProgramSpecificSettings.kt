@@ -21,12 +21,10 @@ class GetProgramSpecificSettings(
                 SpecificSettings(
                     name = programSetting.name(),
                     description = if (programSetting.eventsDownload() != null) {
-                        "${programSetting.eventsDownload()} " +
-                            resourceManager.getString(R.string.events) +
+                        "${programSetting.eventsDownload()} ${resourceManager.getString(R.string.events)} " +
                             trailingText(programSetting.settingDownload())
                     } else {
-                        "${programSetting.teiDownload()} " +
-                            resourceManager.getString(R.string.teis) +
+                        "${programSetting.teiDownload()} ${resourceManager.getString(R.string.teis)} " +
                             trailingText(programSetting.settingDownload())
                     },
                     metadataIconData = metadataIconProvider(style),
