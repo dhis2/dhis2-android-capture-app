@@ -51,7 +51,7 @@ import org.dhis2.android.rtsm.ui.home.model.EditionDialogResult
 import org.dhis2.android.rtsm.ui.home.model.SettingsUiState
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.option.Option
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton

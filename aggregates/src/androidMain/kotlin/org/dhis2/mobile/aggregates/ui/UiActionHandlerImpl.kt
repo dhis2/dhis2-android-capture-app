@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.views.MapSelectorActivity
 import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
@@ -28,6 +27,7 @@ import org.dhis2.mobile.commons.extensions.rotateImage
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.GetFileResource
 import org.dhis2.mobile.commons.files.toFileOverWrite
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 

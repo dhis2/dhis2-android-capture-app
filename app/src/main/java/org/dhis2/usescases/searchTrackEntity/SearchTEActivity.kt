@@ -44,7 +44,6 @@ import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.Companion.FILTER_DIALOG
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
@@ -52,6 +51,7 @@ import org.dhis2.commons.sync.SyncContext.TrackerProgramTei
 import org.dhis2.data.forms.dataentry.ProgramAdapter
 import org.dhis2.databinding.ActivitySearchBinding
 import org.dhis2.form.ui.intent.FormIntent.OnSave
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.general.ActivityGlobalAbstract

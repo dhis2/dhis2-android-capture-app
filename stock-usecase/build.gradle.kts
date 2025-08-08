@@ -79,6 +79,7 @@ kotlin {
 dependencies {
 
     implementation(project(":commons"))
+    implementation(project(":commonskmm"))
     implementation(project(":compose-table"))
     implementation(project(":dhis2-mobile-program-rules"))
     implementation(project(":dhis_android_analytics"))

@@ -1,7 +1,6 @@
 package org.dhis2.commons.orgunitselector
 
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,10 +18,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import org.dhis2.commons.R
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.OrgBottomSheet
 import javax.inject.Inject
@@ -78,7 +79,7 @@ class OUTreeFragment : BottomSheetDialogFragment() {
                 model = ouTreeModel
                 arguments = Bundle().apply {
                     putBoolean(ARG_SINGLE_SELECTION, singleSelection)
-                    putParcelable(ARG_SCOPE, orgUnitScope)
+                    putSerializableScope(ARG_SCOPE, orgUnitScope)
                     putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
                 }
                 CoroutineTracker.decrement()
@@ -104,16 +105,7 @@ class OUTreeFragment : BottomSheetDialogFragment() {
                 preselectedOrgUnits = requireArguments().getStringArrayList(ARG_PRE_SELECTED_OU)
                     ?.toList() ?: emptyList(),
                 singleSelection = requireArguments().getBoolean(ARG_SINGLE_SELECTION, false),
-                orgUnitSelectorScope = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    requireArguments().getParcelable(
-                        ARG_SCOPE,
-                        OrgUnitSelectorScope::class.java,
-                    )!!
-                } else {
-                    requireArguments().getParcelable(
-                        ARG_SCOPE,
-                    )!!
-                },
+                orgUnitSelectorScope = requireArguments().getSerializableScope(ARG_SCOPE)!!,
             ),
         )?.inject(this)
     }
@@ -185,3 +177,11 @@ data class OUTreeModel(
     val showClearButton: Boolean = true,
     val hideOrgUnits: List<OrganisationUnit>? = null,
 )
+
+private fun Bundle.putSerializableScope(key: String, value: OrgUnitSelectorScope) {
+    putString(key, Json.encodeToString(value))
+}
+
+private fun Bundle.getSerializableScope(key: String): OrgUnitSelectorScope? {
+    return getString(key)?.let { Json.decodeFromString(it) }
+}

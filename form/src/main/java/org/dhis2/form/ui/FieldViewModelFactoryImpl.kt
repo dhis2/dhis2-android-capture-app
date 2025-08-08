@@ -2,7 +2,6 @@ package org.dhis2.form.ui
 
 import androidx.databinding.ObservableField
 import org.dhis2.commons.extensions.Preconditions.Companion.isNull
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.model.EventCategory
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
@@ -17,6 +16,7 @@ import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.ValueType

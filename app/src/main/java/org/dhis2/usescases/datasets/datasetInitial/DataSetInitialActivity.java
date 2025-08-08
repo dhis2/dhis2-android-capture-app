@@ -19,7 +19,7 @@ import org.dhis2.commons.Constants;
 import org.dhis2.commons.extensions.CategoryOptionExtensionsKt;
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope;
 import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.data.dhislogic.OrganisationUnitExtensionsKt;
 import org.dhis2.databinding.ActivityDatasetInitialBinding;
@@ -46,8 +46,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
-import kotlin.jvm.functions.Function2;
 
 public class DataSetInitialActivity extends ActivityGlobalAbstract implements DataSetInitialContract.View {
 

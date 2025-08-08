@@ -1,11 +1,11 @@
 package org.dhis2.form.model
 
 import androidx.databinding.ObservableField
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.intent.FormIntent.OnFocus
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 

@@ -31,11 +31,11 @@ import org.dhis2.commons.matomo.Actions.Companion.CREATE_EVENT
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityProgramEventDetailBinding
 import org.dhis2.form.model.EventMode
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
