@@ -785,7 +785,6 @@
     <string name="granular_sync_refresh">ເລີ່ມໃໝ່</string>
     <string name="unknown_date">ບໍ່ຮູ້</string>
     <string name="granular_sync_refresh_title">ໂຫຼດຂໍ້ມູນທັງໝົດຄືນໃໝ່</string>
-    <string name="add_accout">ເພີ່ມບັນຊີ</string>
     <string name="delete_account">ລົບບັນຊີ</string>
     <string name="manage_accounts">ຈັດການບັນຊີ</string>
     <string name="main_menu_troubleshooting">ການ​ແກ້​ໄຂ​ບັນ​ຫາ​ການ​ກຳນົດຄ່າ</string>

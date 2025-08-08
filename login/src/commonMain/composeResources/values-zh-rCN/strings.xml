@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="test_key">测试密钥</string>
     <string name="add_account">新增帐户</string>
 </resources>

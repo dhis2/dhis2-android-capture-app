@@ -817,7 +817,6 @@
     <string name="unknown_date">Không rõ</string>
     <string name="granular_sync_refresh_title">Làm mới lại tất cả dữ liệu</string>
     <string name="max_accounts_text">Bạn đã đạt số lượng tài khoản tối đa (%d). Để tạo thêm tài khoản, hãy đăng nhập và xóa một trong những tài khoản của bạn.</string>
-    <string name="add_accout">Thêm Tài khoản</string>
     <string name="delete_account">Xóa Tài khoản</string>
     <string name="manage_accounts">Quản lý Tài Khoản</string>
     <string name="main_menu_troubleshooting">Xử lý sự cố cấu hình</string>

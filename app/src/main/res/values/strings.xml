@@ -835,7 +835,6 @@
     <string name="unknown_date">Unknown</string>
     <string name="granular_sync_refresh_title">Refresh all data</string>
     <string name="max_accounts_text">You have reached the maximum number of accounts (%d). To add a new account, log in and delete one of your accounts</string>
-    <string name="add_accout">Add Account</string>
     <string name="delete_account">Delete Account</string>
     <string name="manage_accounts">Manage Accounts</string>
     <string name="main_menu_troubleshooting">Configuration troubleshooting</string>
