@@ -14,5 +14,9 @@
     <string name="show_less">Show less</string>
     <string name="cancel">Cancel</string>
     <string name="remove">Remove</string>
+    <string name="empty_search_attributes_message">There are no search fields configured to use.\nPlease contact your admin.</string>
+    <string name="clear_search">Clear search</string>
+    <string name="search">Search</string>
+    <string name="optional">Optional</string>
 
 </resources>

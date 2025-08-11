@@ -12,7 +12,6 @@ import org.dhis2.commons.bindings.program
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.periods.data.EventPeriodRepository
 import org.dhis2.commons.periods.domain.GetEventPeriods
 import org.dhis2.commons.periods.model.Period
@@ -30,6 +29,7 @@ import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.Category

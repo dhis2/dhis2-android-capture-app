@@ -53,8 +53,8 @@
 -dontwarn org.dhis2.commons.filters.FilterManager
 -dontwarn org.dhis2.commons.orgunitselector.OUTreeFragment$Builder
 -dontwarn org.dhis2.commons.orgunitselector.OUTreeFragment
--dontwarn org.dhis2.commons.orgunitselector.OrgUnitSelectorScope$ProgramCaptureScope
--dontwarn org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
+-dontwarn org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope$ProgramCaptureScope
+-dontwarn org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 -dontwarn org.dhis2.commons.sync.OnDismissListener
 -dontwarn org.dhis2.commons.sync.OnNoConnectionListener
 -dontwarn org.dhis2.commons.sync.OnSyncNavigationListener

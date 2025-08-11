@@ -17,7 +17,6 @@ import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.filters.workingLists.WorkingListViewModelFactory
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.orgunitselector.OURepositoryConfiguration
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -27,6 +26,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.maps.model.MapScope
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.maps.utils.DhisMapUtils
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.tracker.events.CreateEventUseCaseRepositoryImpl

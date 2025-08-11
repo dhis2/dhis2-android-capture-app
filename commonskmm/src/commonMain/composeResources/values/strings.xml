@@ -121,4 +121,21 @@
     <string name="yes">yes</string>
     <string name="no">no</string>
     <string name="re_open_to_edit">Re-open form to edit</string>
+    <string name="input_age_date_of_birth">Date of birth</string>
+    <string name="input_age">Age</string>
+    <string name="input_age_or">or</string>
+    <string name="input_action_accept">Accept</string>
+    <string name="input_action_cancel">Cancel</string>
+    <string name="input_coordinate_latitude">Latitude</string>
+    <string name="input_coordinate_longitude">Longitude</string>
+    <string name="input_coordinate_add_location">Add location</string>
+    <string name="input_date_out_of_range">Out of range</string>
+    <string name="format_error">Incorrect format</string>
+    <string name="add_file">Add file</string>
+    <string name="add_image">Add Image</string>
+    <string name="from_gallery">Add from Gallery</string>
+    <string name="no_results_found">No results found</string>
+    <string name="search_to_find_more">Search to find more</string>
+    <string name="action_done">Done</string>
+    <string name="input_not_supported">Not supported</string>
 </resources>

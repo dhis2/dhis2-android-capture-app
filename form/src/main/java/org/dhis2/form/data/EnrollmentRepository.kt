@@ -6,7 +6,6 @@ import io.reactivex.Single
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
@@ -20,6 +19,7 @@ import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.ObjectStyle

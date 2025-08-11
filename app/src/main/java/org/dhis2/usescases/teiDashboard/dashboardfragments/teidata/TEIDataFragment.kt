@@ -38,7 +38,6 @@ import org.dhis2.commons.dialogs.DialogClickListener
 import org.dhis2.commons.dialogs.imagedetail.ImageDetailActivity
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
@@ -46,6 +45,7 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext.EnrollmentEvent
 import org.dhis2.databinding.FragmentTeiDataBinding
 import org.dhis2.form.model.EventMode
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.FragmentGlobalAbstract

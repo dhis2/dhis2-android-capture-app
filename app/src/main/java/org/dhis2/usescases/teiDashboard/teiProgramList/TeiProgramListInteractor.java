@@ -7,7 +7,7 @@ import org.dhis2.R;
 import org.dhis2.commons.dialogs.calendarpicker.CalendarPicker;
 import org.dhis2.commons.dialogs.calendarpicker.OnDatePickerListener;
 import org.dhis2.commons.orgunitselector.OUTreeFragment;
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope;
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope;
 import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.usescases.main.program.ProgramDownloadState;
 import org.dhis2.usescases.main.program.ProgramUiModel;

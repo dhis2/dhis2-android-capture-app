@@ -40,7 +40,6 @@ import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.orgunitselector.OUTreeModel
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.sync.OnDismissListener
@@ -48,6 +47,7 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.form.model.EnrollmentMode
 import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 import org.dhis2.ui.ThemeManager

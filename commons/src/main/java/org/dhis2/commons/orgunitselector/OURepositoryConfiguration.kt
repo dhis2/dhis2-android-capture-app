@@ -1,5 +1,6 @@
 package org.dhis2.commons.orgunitselector
 
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit

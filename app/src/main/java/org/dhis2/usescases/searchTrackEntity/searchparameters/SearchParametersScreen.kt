@@ -39,7 +39,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.R
 import org.dhis2.commons.Constants
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.scan.ScanContract
@@ -47,6 +46,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem

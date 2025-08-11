@@ -39,7 +39,6 @@ import org.dhis2.commons.extensions.closeKeyboard
 import org.dhis2.commons.extensions.serializable
 import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.form.R
 import org.dhis2.form.data.DataIntegrityCheckResult
@@ -69,6 +68,7 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.DATA_EXTRA
 import org.dhis2.maps.views.MapSelectorActivity.Companion.FIELD_UID
 import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
