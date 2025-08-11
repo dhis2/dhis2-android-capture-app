@@ -25,12 +25,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import org.dhis2.R
-import org.dhis2.ui.MetadataIcon
 import org.dhis2.usescases.settingsprogram.SettingsProgramViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
@@ -109,7 +109,7 @@ fun SettingsProgramScreen(
                     listCardState = listCardState,
                     listAvatar = {
                         MetadataIcon(
-                            metadataIconData = setting.metadataIconData,
+                            imageCardData = setting.metadataIconData,
                         )
                     },
                     onCardClick = {},
