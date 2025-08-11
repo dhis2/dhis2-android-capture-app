@@ -3,17 +3,12 @@ package org.dhis2.mobile.aggregates.ui.states
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
+import org.dhis2.mobile.commons.input.InputExtra
 import org.dhis2.mobile.commons.input.InputType
-import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
-import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
-import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
-import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
-import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
-import org.hisp.dhis.mobile.ui.designsystem.component.model.DateTimeVisualTransformation
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
 internal sealed class CellSelectionState(open val tableSelection: TableSelection?) {
@@ -44,42 +39,6 @@ internal sealed class CellSelectionState(open val tableSelection: TableSelection
         fun multiTextExtras() = inputExtra as InputExtra.MultiText
         fun optionSetExtras() = inputExtra as InputExtra.OptionSet
     }
-}
-
-internal sealed class InputExtra {
-    data class Date(
-        val allowManualInput: Boolean,
-        val is24HourFormat: Boolean,
-        val visualTransformation: DateTimeVisualTransformation,
-        val selectableDates: SelectableDates,
-        val yearRange: IntRange,
-    ) : InputExtra()
-
-    data class File(
-        val fileState: UploadFileState,
-        val filePath: String?,
-        val fileWeight: String?,
-    ) : InputExtra()
-
-    data class Coordinate(
-        val coordinateValue: Coordinates?,
-    ) : InputExtra()
-
-    data object Age : InputExtra()
-
-    data class MultiText(
-        val numberOfOptions: Int,
-        val options: List<CheckBoxData>,
-        val optionsFetched: Boolean,
-    ) : InputExtra()
-
-    data class OptionSet(
-        val numberOfOptions: Int,
-        val options: List<RadioButtonData>,
-        val optionsFetched: Boolean,
-    ) : InputExtra()
-
-    data object None : InputExtra()
 }
 
 internal data class ButtonAction(
