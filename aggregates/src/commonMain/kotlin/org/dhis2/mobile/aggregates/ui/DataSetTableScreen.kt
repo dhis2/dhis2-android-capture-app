@@ -79,7 +79,6 @@ import org.dhis2.mobile.aggregates.ui.constants.SAVE_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.constants.SYNC_BUTTON_TAG
 import org.dhis2.mobile.aggregates.ui.inputs.InputProvider
 import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
-import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.snackbar.DataSetSnackbarHost
 import org.dhis2.mobile.aggregates.ui.snackbar.ObserveAsEvents
 import org.dhis2.mobile.aggregates.ui.snackbar.SnackbarController
@@ -87,6 +86,7 @@ import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
 import org.dhis2.mobile.aggregates.ui.states.DataSetSectionTable
 import org.dhis2.mobile.aggregates.ui.viewModel.DataSetTableViewModel
+import org.dhis2.mobile.commons.input.UiAction
 import org.dhis2.mobile.commons.ui.NonEditableReasonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button

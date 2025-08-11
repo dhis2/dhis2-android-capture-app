@@ -16,7 +16,6 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataToReview
 import org.dhis2.mobile.aggregates.model.GreyedOutField
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.MandatoryCellElements
 import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.model.PivoteMode
@@ -26,6 +25,7 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.commons.files.FileController
+import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper

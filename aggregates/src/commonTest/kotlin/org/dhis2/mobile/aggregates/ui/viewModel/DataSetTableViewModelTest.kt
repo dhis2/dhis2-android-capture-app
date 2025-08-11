@@ -42,7 +42,6 @@ import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionConfiguration
 import org.dhis2.mobile.aggregates.model.DataSetInstanceSectionData
 import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.model.PivoteMode
 import org.dhis2.mobile.aggregates.model.TableGroup
@@ -57,7 +56,6 @@ import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
-import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
@@ -70,6 +68,8 @@ import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.input.InputType
+import org.dhis2.mobile.commons.input.UiAction
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection

@@ -2,8 +2,8 @@ package org.dhis2.mobile.aggregates.ui.states
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.constants.INPUT_DIALOG_NEXT_TAG
+import org.dhis2.mobile.commons.input.InputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState

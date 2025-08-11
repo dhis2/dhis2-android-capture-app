@@ -1,4 +1,4 @@
-package org.dhis2.mobile.aggregates.ui.inputs
+package org.dhis2.mobile.commons.input
 
 sealed class UiAction(open val cellId: String) {
     data class OnNextClick(

@@ -33,7 +33,6 @@ import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS_COMBINATION
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.SUCCESS
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
@@ -48,7 +47,6 @@ import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
-import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getCategoryOptionCombo
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
@@ -62,6 +60,8 @@ import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.input.InputType
+import org.dhis2.mobile.commons.input.UiAction
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
@@ -510,7 +510,7 @@ internal class DataSetTableViewModel(
                 is UiAction.OnOpenOrgUnitTree -> {
                     uiActionHandler.onCaptureOrgUnit(
                         uiAction.currentOrgUnitUid
-                            ?.let { listOf(uiAction.currentOrgUnitUid) } ?: emptyList(),
+                            ?.let { listOf(it) } ?: emptyList(),
                     ) {
                         onUiAction(
                             UiAction.OnValueChanged(
