@@ -1,13 +1,11 @@
 package org.dhis2.usescases.settings
 
-import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.printToLog
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -50,7 +48,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
-        composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).printToLog("SETTING_ITEM")
         composeTestRule.onNode(
     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
