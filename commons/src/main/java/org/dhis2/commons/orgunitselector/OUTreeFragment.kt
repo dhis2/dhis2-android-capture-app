@@ -178,10 +178,15 @@ data class OUTreeModel(
     val hideOrgUnits: List<OrganisationUnit>? = null,
 )
 
+private val json = Json {
+    classDiscriminator = "type"
+    encodeDefaults = true
+}
+
 private fun Bundle.putSerializableScope(key: String, value: OrgUnitSelectorScope) {
-    putString(key, Json.encodeToString(value))
+    putString(key, json.encodeToString(value))
 }
 
 private fun Bundle.getSerializableScope(key: String): OrgUnitSelectorScope? {
-    return getString(key)?.let { Json.decodeFromString(it) }
+    return getString(key)?.let { json.decodeFromString<OrgUnitSelectorScope>(it) }
 }

@@ -8,6 +8,7 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.atomicfu)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 
