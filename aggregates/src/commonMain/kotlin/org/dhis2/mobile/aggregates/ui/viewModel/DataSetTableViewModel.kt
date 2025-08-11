@@ -41,8 +41,6 @@ import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
 import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
-import org.dhis2.mobile.aggregates.ui.CallbackStatus
-import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
@@ -60,8 +58,10 @@ import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.input.CallbackStatus
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.input.UiAction
+import org.dhis2.mobile.commons.input.UiActionHandler
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell

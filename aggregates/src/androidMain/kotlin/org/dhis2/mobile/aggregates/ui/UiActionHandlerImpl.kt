@@ -27,6 +27,8 @@ import org.dhis2.mobile.commons.extensions.rotateImage
 import org.dhis2.mobile.commons.files.FileHandler
 import org.dhis2.mobile.commons.files.GetFileResource
 import org.dhis2.mobile.commons.files.toFileOverWrite
+import org.dhis2.mobile.commons.input.CallbackStatus
+import org.dhis2.mobile.commons.input.UiActionHandler
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File

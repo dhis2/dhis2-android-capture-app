@@ -51,7 +51,6 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
-import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
@@ -70,6 +69,7 @@ import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.input.UiAction
+import org.dhis2.mobile.commons.input.UiActionHandler
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection

@@ -1,4 +1,4 @@
-package org.dhis2.mobile.aggregates.ui
+package org.dhis2.mobile.commons.input
 
 interface UiActionHandler {
     fun onCaptureCoordinates(
