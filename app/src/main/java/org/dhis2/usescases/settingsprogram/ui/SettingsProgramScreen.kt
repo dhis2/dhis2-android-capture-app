@@ -109,7 +109,7 @@ fun SettingsProgramScreen(
                     listCardState = listCardState,
                     listAvatar = {
                         MetadataIcon(
-                            imageCardData = setting.metadataIconData,
+                            imageCardData = setting.metadataIconData.imageCardData,
                         )
                     },
                     onCardClick = {},
