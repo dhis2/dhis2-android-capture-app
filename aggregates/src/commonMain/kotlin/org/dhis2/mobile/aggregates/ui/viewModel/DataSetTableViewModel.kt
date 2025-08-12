@@ -562,6 +562,16 @@ internal class DataSetTableViewModel(
     fun onTableResize(resizeAction: ResizeAction) {
         viewModelScope.launch(dispatcher.io()) {
             computeResizeAction(resizeAction)
+            val currentSectionId = (_dataSetScreenState.value as? DataSetScreenState.Loaded)
+                ?.dataSetSectionTable?.id ?: return@launch
+            val updatedDimensions = overwrittenWidths(currentSectionId)
+            _dataSetScreenState.update { state ->
+                (state as? DataSetScreenState.Loaded)?.copy(
+                    dataSetSectionTable = state.dataSetSectionTable.copy(
+                        overridingDimensions = updatedDimensions,
+                    ),
+                ) ?: state
+            }
         }
     }
 
