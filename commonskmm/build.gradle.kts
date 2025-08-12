@@ -43,13 +43,17 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.material3)
             implementation(compose.components.resources)
+            implementation(libs.compose.material3.window)
 
             // Koin
             api(libs.koin.core)
             implementation(libs.ktxml)
             implementation(libs.koin.compose)
             implementation(libs.koin.composeVM)
+
+            // Design system
             implementation(libs.dhis2.mobile.designsystem)
+
             //dates
             implementation(libs.kotlinx.datetime)
 

@@ -1,6 +1,6 @@
-package org.dhis2.mobile.aggregates.model
+package org.dhis2.mobile.commons.input
 
-internal sealed class InputType {
+sealed class InputType {
     data object OptionSet : InputType()
     data object Text : InputType()
     data object LongText : InputType()
@@ -30,6 +30,8 @@ internal sealed class InputType {
     data object Image : InputType()
     data object GeoJson : InputType()
     data object MultiText : InputType()
+    data object QRCode : InputType()
+    data object Barcode : InputType()
 
     fun isText() = listOf(
         Text,

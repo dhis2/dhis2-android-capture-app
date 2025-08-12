@@ -33,7 +33,6 @@ import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.ERROR
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.MISSING_MANDATORY_FIELDS_COMBINATION
 import org.dhis2.mobile.aggregates.model.DataSetMandatoryFieldsStatus.SUCCESS
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.MANDATORY
 import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.NONE
@@ -42,13 +41,10 @@ import org.dhis2.mobile.aggregates.model.Violation
 import org.dhis2.mobile.aggregates.model.mapper.toTableModel
 import org.dhis2.mobile.aggregates.model.mapper.updateValue
 import org.dhis2.mobile.aggregates.model.mapper.withTotalsRow
-import org.dhis2.mobile.aggregates.ui.CallbackStatus
-import org.dhis2.mobile.aggregates.ui.UiActionHandler
 import org.dhis2.mobile.aggregates.ui.constants.NO_SECTION_UID
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
 import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
-import org.dhis2.mobile.aggregates.ui.inputs.UiAction
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getCategoryOptionCombo
 import org.dhis2.mobile.aggregates.ui.provider.IdsProvider.getDataElementUid
@@ -62,6 +58,10 @@ import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.input.CallbackStatus
+import org.dhis2.mobile.commons.input.InputType
+import org.dhis2.mobile.commons.input.UiAction
+import org.dhis2.mobile.commons.input.UiActionHandler
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.UploadFileState
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableCell
@@ -361,7 +361,7 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnNextClick -> {
                     findCell(
-                        cellId = uiAction.cellId,
+                        cellId = uiAction.id,
                         findNextEditable = true,
                     )?.let { (_, nextCell) ->
                         updateSelectedCell(nextCell.id)
@@ -381,7 +381,7 @@ internal class DataSetTableViewModel(
                     CoroutineTracker.increment()
 
                     val result = withContext(dispatcher.io()) {
-                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
                         setDataValue(
                             rowIds = rowIds,
                             columnIds = columnIds,
@@ -402,11 +402,11 @@ internal class DataSetTableViewModel(
                                     false
                             }
 
-                            updateSelectedCell(uiAction.cellId, fetchOptions, showInputDialog = uiAction.showInputDialog)
+                            updateSelectedCell(uiAction.id, fetchOptions, showInputDialog = uiAction.showInputDialog)
                         },
                         onFailure = {
                             updateSelectedCell(
-                                cellId = uiAction.cellId,
+                                cellId = uiAction.id,
                                 newValue = uiAction.newValue,
                                 validationError = fieldErrorMessageProvider.getFriendlyErrorMessage(
                                     it,
@@ -427,7 +427,7 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnCaptureCoordinates -> {
                     val dataElementUid = withContext(dispatcher.io()) {
-                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
                         getDataElementUid(rowIds, columnIds)
                     }
 
@@ -436,14 +436,14 @@ internal class DataSetTableViewModel(
                         locationType = uiAction.locationType,
                         initialData = uiAction.initialData,
                     ) { result ->
-                        onUiAction(UiAction.OnValueChanged(uiAction.cellId, result))
+                        onUiAction(UiAction.OnValueChanged(uiAction.id, result))
                     }
                 }
 
                 is UiAction.OnAddImage -> {
-                    uiActionHandler.onAddImage(uiAction.cellId) { result ->
+                    uiActionHandler.onAddImage(uiAction.id) { result ->
                         result?.let {
-                            uploadFile(uiAction.cellId, result)
+                            uploadFile(uiAction.id, result)
                         }
                     }
                 }
@@ -451,7 +451,7 @@ internal class DataSetTableViewModel(
                 is UiAction.OnTakePhoto -> {
                     uiActionHandler.onTakePicture { result ->
                         result?.let {
-                            uploadFile(uiAction.cellId, it)
+                            uploadFile(uiAction.id, it)
                         }
                     }
                 }
@@ -474,7 +474,7 @@ internal class DataSetTableViewModel(
                     val fileDownloadMsg = resourceManager.provideFileDownload()
                     val fileDownloadErrorMsg = resourceManager.provideFileDownloadError()
                     uiActionHandler.onDownloadFile(
-                        uiAction.cellId,
+                        uiAction.id,
                         uiAction.filePath,
                     ) { result ->
                         result?.let {
@@ -490,9 +490,9 @@ internal class DataSetTableViewModel(
                 is UiAction.OnSelectFile -> {
                     updateFileLoadingState(UploadFileState.UPLOADING)
                     uiActionHandler.onSelectFile(
-                        uiAction.cellId,
+                        uiAction.id,
                         { result ->
-                            result?.let { uploadFile(uiAction.cellId, result) }
+                            result?.let { uploadFile(uiAction.id, result) }
                         },
                         {
                             updateFileLoadingState(UploadFileState.ADD)
@@ -510,11 +510,11 @@ internal class DataSetTableViewModel(
                 is UiAction.OnOpenOrgUnitTree -> {
                     uiActionHandler.onCaptureOrgUnit(
                         uiAction.currentOrgUnitUid
-                            ?.let { listOf(uiAction.currentOrgUnitUid) } ?: emptyList(),
+                            ?.let { listOf(it) } ?: emptyList(),
                     ) {
                         onUiAction(
                             UiAction.OnValueChanged(
-                                cellId = uiAction.cellId,
+                                id = uiAction.id,
                                 newValue = it,
                             ),
                         )
@@ -522,7 +522,15 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnFetchOptions ->
-                    updateSelectedCell(uiAction.cellId, true)
+                    updateSelectedCell(uiAction.id, true)
+
+                is UiAction.OnBarCodeScan -> {
+                    // Not supported in DataSet Table
+                }
+
+                is UiAction.OnQRCodeScan -> {
+                    // Not supported in DataSet Table
+                }
             }
         }
     }

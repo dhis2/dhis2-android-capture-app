@@ -1,4 +1,4 @@
-package org.dhis2.mobile.aggregates.ui
+package org.dhis2.mobile.commons.input
 
 interface UiActionHandler {
     fun onCaptureCoordinates(
@@ -36,6 +36,18 @@ interface UiActionHandler {
     fun onShareImage(
         filepath: String?,
         onActivityNotFound: () -> Unit,
+    )
+
+    fun onQRScan(
+        fieldUid: String,
+        optionSet: String?,
+        callback: (result: String?) -> Unit,
+    )
+
+    fun onBarcodeScan(
+        fieldUid: String,
+        optionSet: String?,
+        callback: (result: String?) -> Unit,
     )
 }
 

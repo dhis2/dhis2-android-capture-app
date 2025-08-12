@@ -5,9 +5,9 @@ import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.CellValueExtra
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.commons.extensions.getFormattedFileSize
 import org.dhis2.mobile.commons.extensions.userFriendlyValue
+import org.dhis2.mobile.commons.input.InputType
 
 internal class GetDataValueInput(
     private val dataSetUid: String,

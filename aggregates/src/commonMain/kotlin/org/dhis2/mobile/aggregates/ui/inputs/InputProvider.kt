@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.resources.Res
 import org.dhis2.mobile.aggregates.resources.action_done
 import org.dhis2.mobile.aggregates.resources.add_file
@@ -51,6 +50,8 @@ import org.dhis2.mobile.commons.extensions.fileSizeLabel
 import org.dhis2.mobile.commons.extensions.getDateFromAge
 import org.dhis2.mobile.commons.extensions.hasDateFormat
 import org.dhis2.mobile.commons.extensions.toImageBitmap
+import org.dhis2.mobile.commons.input.InputType
+import org.dhis2.mobile.commons.input.UiAction
 import org.dhis2.mobile.commons.ui.ImagePickerOptionsDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -265,7 +266,7 @@ internal fun InputProvider(
                 onUpdateButtonClicked = {
                     onAction(
                         UiAction.OnCaptureCoordinates(
-                            cellId = inputData.id,
+                            id = inputData.id,
                             initialData = inputData.value,
                             locationType = "POINT", // Is always POINT as it is InputCoordinate component
                         ),
@@ -928,6 +929,8 @@ internal fun InputProvider(
         InputType.TrackerAssociate,
         InputType.Reference,
         InputType.GeoJson,
+        InputType.QRCode,
+        InputType.Barcode,
         -> {
             InputNotSupported(
                 title = inputData.label,

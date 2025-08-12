@@ -1,6 +1,6 @@
 package org.dhis2.mobile.aggregates.data.mappers
 
-import org.dhis2.mobile.aggregates.model.InputType
+import org.dhis2.mobile.commons.input.InputType
 import org.hisp.dhis.android.core.common.ValueType
 
 internal fun ValueType.toInputType() = when (this) {

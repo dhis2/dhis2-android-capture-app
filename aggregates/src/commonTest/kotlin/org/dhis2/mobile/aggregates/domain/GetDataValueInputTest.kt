@@ -6,10 +6,10 @@ import org.dhis2.mobile.aggregates.data.DataSetInstanceRepository
 import org.dhis2.mobile.aggregates.data.OptionRepository
 import org.dhis2.mobile.aggregates.model.CellValueExtra
 import org.dhis2.mobile.aggregates.model.DataElementInfo
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.onRunBlocking
 import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.di.commonsModule
+import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.model.internal.ValueInfo
 import org.junit.Rule
 import org.junit.Test

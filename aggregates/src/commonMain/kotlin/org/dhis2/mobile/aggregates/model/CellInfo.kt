@@ -1,5 +1,7 @@
 package org.dhis2.mobile.aggregates.model
 
+import org.dhis2.mobile.commons.input.InputType
+
 internal data class CellInfo(
     val label: String,
     val value: String?,

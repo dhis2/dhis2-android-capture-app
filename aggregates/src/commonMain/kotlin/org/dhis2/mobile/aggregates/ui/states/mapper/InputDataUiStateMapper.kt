@@ -9,12 +9,12 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
 import org.dhis2.mobile.aggregates.model.CellInfo
 import org.dhis2.mobile.aggregates.model.CellValueExtra
-import org.dhis2.mobile.aggregates.model.InputType
 import org.dhis2.mobile.aggregates.ui.provider.ResourceManager
 import org.dhis2.mobile.aggregates.ui.states.ButtonAction
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
-import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.input.InputExtra
+import org.dhis2.mobile.commons.input.InputType
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.Coordinates
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
