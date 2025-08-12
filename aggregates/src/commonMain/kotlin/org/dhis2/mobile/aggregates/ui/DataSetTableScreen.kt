@@ -335,7 +335,7 @@ fun DataSetInstanceScreen(
                                     onCheckedCellChanged = { cellId, isChecked ->
                                         dataSetTableViewModel.onUiAction(
                                             UiAction.OnValueChanged(
-                                                cellId = cellId,
+                                                id = cellId,
                                                 newValue = when {
                                                     isChecked -> "true"
                                                     else -> null
@@ -424,7 +424,7 @@ fun DataSetInstanceScreen(
                         onCheckedCellChanged = { cellId, isChecked ->
                             dataSetTableViewModel.onUiAction(
                                 UiAction.OnValueChanged(
-                                    cellId = cellId,
+                                    id = cellId,
                                     newValue = when {
                                         isChecked -> "true"
                                         else -> null

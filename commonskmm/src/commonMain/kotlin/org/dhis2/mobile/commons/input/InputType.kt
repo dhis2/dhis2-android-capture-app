@@ -30,6 +30,8 @@ sealed class InputType {
     data object Image : InputType()
     data object GeoJson : InputType()
     data object MultiText : InputType()
+    data object QRCode : InputType()
+    data object Barcode : InputType()
 
     fun isText() = listOf(
         Text,

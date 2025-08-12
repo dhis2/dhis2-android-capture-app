@@ -63,10 +63,10 @@ import org.dhis2.mobile.aggregates.ui.states.CellSelectionState
 import org.dhis2.mobile.aggregates.ui.states.CellSelectionState.InputDataUiState
 import org.dhis2.mobile.aggregates.ui.states.DataSetModalDialogUIState
 import org.dhis2.mobile.aggregates.ui.states.DataSetScreenState
-import org.dhis2.mobile.aggregates.ui.states.InputExtra
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.input.InputExtra
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.input.UiAction
 import org.dhis2.mobile.commons.input.UiActionHandler

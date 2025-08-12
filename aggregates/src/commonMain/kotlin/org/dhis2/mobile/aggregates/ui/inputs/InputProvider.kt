@@ -266,7 +266,7 @@ internal fun InputProvider(
                 onUpdateButtonClicked = {
                     onAction(
                         UiAction.OnCaptureCoordinates(
-                            cellId = inputData.id,
+                            id = inputData.id,
                             initialData = inputData.value,
                             locationType = "POINT", // Is always POINT as it is InputCoordinate component
                         ),
@@ -929,6 +929,8 @@ internal fun InputProvider(
         InputType.TrackerAssociate,
         InputType.Reference,
         InputType.GeoJson,
+        InputType.QRCode,
+        InputType.Barcode,
         -> {
             InputNotSupported(
                 title = inputData.label,

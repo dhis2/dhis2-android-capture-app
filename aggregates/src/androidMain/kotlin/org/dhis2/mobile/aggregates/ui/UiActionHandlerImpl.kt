@@ -247,6 +247,22 @@ class UiActionHandlerImpl(
         }
     }
 
+    override fun onQRScan(
+        fieldUid: String,
+        optionSet: String?,
+        callback: (String?) -> Unit,
+    ) {
+        // Not implemented, because dataset does not support rendering types.
+    }
+
+    override fun onBarcodeScan(
+        fieldUid: String,
+        optionSet: String?,
+        callback: (String?) -> Unit,
+    ) {
+        // Not implemented, because dataset does not support rendering types.
+    }
+
     private fun downloadFile(filepath: String) {
         fileHandler.copyAndOpen(File(filepath)) {
             callback?.invoke(CallbackStatus.OK.name)

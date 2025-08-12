@@ -37,6 +37,18 @@ interface UiActionHandler {
         filepath: String?,
         onActivityNotFound: () -> Unit,
     )
+
+    fun onQRScan(
+        fieldUid: String,
+        optionSet: String?,
+        callback: (result: String?) -> Unit,
+    )
+
+    fun onBarcodeScan(
+        fieldUid: String,
+        optionSet: String?,
+        callback: (result: String?) -> Unit,
+    )
 }
 
 enum class CallbackStatus {

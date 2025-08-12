@@ -1,76 +1,86 @@
 package org.dhis2.mobile.commons.input
 
-sealed class UiAction(open val cellId: String) {
+sealed class UiAction(open val id: String) {
     data class OnNextClick(
-        override val cellId: String,
-    ) : UiAction(cellId)
+        override val id: String,
+    ) : UiAction(id)
 
     data class OnDoneClick(
-        override val cellId: String,
-    ) : UiAction(cellId)
+        override val id: String,
+    ) : UiAction(id)
 
     data class OnFocusChanged(
-        override val cellId: String,
+        override val id: String,
         val hasFocus: Boolean,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnValueChanged(
-        override val cellId: String,
+        override val id: String,
         val newValue: String?,
 
         val showInputDialog: Boolean = true,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnCaptureCoordinates(
-        override val cellId: String,
+        override val id: String,
         val locationType: String,
         val initialData: String?,
 
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnEmailAction(
-        override val cellId: String,
+        override val id: String,
         val email: String,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnSelectFile(
-        override val cellId: String,
-    ) : UiAction(cellId)
+        override val id: String,
+    ) : UiAction(id)
 
     data class OnShareImage(
-        override val cellId: String,
+        override val id: String,
         val filePath: String?,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnDownloadFile(
-        override val cellId: String,
+        override val id: String,
         val filePath: String?,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnAddImage(
-        override val cellId: String,
-    ) : UiAction(cellId)
+        override val id: String,
+    ) : UiAction(id)
 
     data class OnTakePhoto(
-        override val cellId: String,
-    ) : UiAction(cellId)
+        override val id: String,
+    ) : UiAction(id)
 
     data class OnCall(
-        override val cellId: String,
+        override val id: String,
         val phoneNumber: String,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnLinkClicked(
-        override val cellId: String,
+        override val id: String,
         val link: String,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnOpenOrgUnitTree(
-        override val cellId: String,
+        override val id: String,
         val currentOrgUnitUid: String?,
-    ) : UiAction(cellId)
+    ) : UiAction(id)
 
     data class OnFetchOptions(
-        override val cellId: String,
-    ) : UiAction(cellId)
+        override val id: String,
+    ) : UiAction(id)
+
+    data class OnBarCodeScan(
+        override val id: String,
+        val optionSet: String? = null,
+    ) : UiAction(id)
+
+    data class OnQRCodeScan(
+        override val id: String,
+        val optionSet: String? = null,
+    ) : UiAction(id)
 }

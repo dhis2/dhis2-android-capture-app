@@ -361,7 +361,7 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnNextClick -> {
                     findCell(
-                        cellId = uiAction.cellId,
+                        cellId = uiAction.id,
                         findNextEditable = true,
                     )?.let { (_, nextCell) ->
                         updateSelectedCell(nextCell.id)
@@ -381,7 +381,7 @@ internal class DataSetTableViewModel(
                     CoroutineTracker.increment()
 
                     val result = withContext(dispatcher.io()) {
-                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
                         setDataValue(
                             rowIds = rowIds,
                             columnIds = columnIds,
@@ -402,11 +402,11 @@ internal class DataSetTableViewModel(
                                     false
                             }
 
-                            updateSelectedCell(uiAction.cellId, fetchOptions, showInputDialog = uiAction.showInputDialog)
+                            updateSelectedCell(uiAction.id, fetchOptions, showInputDialog = uiAction.showInputDialog)
                         },
                         onFailure = {
                             updateSelectedCell(
-                                cellId = uiAction.cellId,
+                                cellId = uiAction.id,
                                 newValue = uiAction.newValue,
                                 validationError = fieldErrorMessageProvider.getFriendlyErrorMessage(
                                     it,
@@ -427,7 +427,7 @@ internal class DataSetTableViewModel(
 
                 is UiAction.OnCaptureCoordinates -> {
                     val dataElementUid = withContext(dispatcher.io()) {
-                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.cellId)
+                        val (rowIds, columnIds) = CellIdGenerator.getIdInfo(uiAction.id)
                         getDataElementUid(rowIds, columnIds)
                     }
 
@@ -436,14 +436,14 @@ internal class DataSetTableViewModel(
                         locationType = uiAction.locationType,
                         initialData = uiAction.initialData,
                     ) { result ->
-                        onUiAction(UiAction.OnValueChanged(uiAction.cellId, result))
+                        onUiAction(UiAction.OnValueChanged(uiAction.id, result))
                     }
                 }
 
                 is UiAction.OnAddImage -> {
-                    uiActionHandler.onAddImage(uiAction.cellId) { result ->
+                    uiActionHandler.onAddImage(uiAction.id) { result ->
                         result?.let {
-                            uploadFile(uiAction.cellId, result)
+                            uploadFile(uiAction.id, result)
                         }
                     }
                 }
@@ -451,7 +451,7 @@ internal class DataSetTableViewModel(
                 is UiAction.OnTakePhoto -> {
                     uiActionHandler.onTakePicture { result ->
                         result?.let {
-                            uploadFile(uiAction.cellId, it)
+                            uploadFile(uiAction.id, it)
                         }
                     }
                 }
@@ -474,7 +474,7 @@ internal class DataSetTableViewModel(
                     val fileDownloadMsg = resourceManager.provideFileDownload()
                     val fileDownloadErrorMsg = resourceManager.provideFileDownloadError()
                     uiActionHandler.onDownloadFile(
-                        uiAction.cellId,
+                        uiAction.id,
                         uiAction.filePath,
                     ) { result ->
                         result?.let {
@@ -490,9 +490,9 @@ internal class DataSetTableViewModel(
                 is UiAction.OnSelectFile -> {
                     updateFileLoadingState(UploadFileState.UPLOADING)
                     uiActionHandler.onSelectFile(
-                        uiAction.cellId,
+                        uiAction.id,
                         { result ->
-                            result?.let { uploadFile(uiAction.cellId, result) }
+                            result?.let { uploadFile(uiAction.id, result) }
                         },
                         {
                             updateFileLoadingState(UploadFileState.ADD)
@@ -514,7 +514,7 @@ internal class DataSetTableViewModel(
                     ) {
                         onUiAction(
                             UiAction.OnValueChanged(
-                                cellId = uiAction.cellId,
+                                id = uiAction.id,
                                 newValue = it,
                             ),
                         )
@@ -522,7 +522,15 @@ internal class DataSetTableViewModel(
                 }
 
                 is UiAction.OnFetchOptions ->
-                    updateSelectedCell(uiAction.cellId, true)
+                    updateSelectedCell(uiAction.id, true)
+
+                is UiAction.OnBarCodeScan -> {
+                    // Not supported in DataSet Table
+                }
+
+                is UiAction.OnQRCodeScan -> {
+                    // Not supported in DataSet Table
+                }
             }
         }
     }
