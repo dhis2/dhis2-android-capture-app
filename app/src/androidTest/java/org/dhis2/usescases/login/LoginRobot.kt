@@ -93,7 +93,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickQRButton() {
-        onView(withId(R.id.server_url_edit)).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
+        waitForView(
+            withId(R.id.server_url_edit),
+            TIMEOUT.toInt(),
+        ).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
     }
 
     fun checkLoginButtonIsHidden() {
@@ -138,7 +141,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkURL(url: String) {
-        onView(withId(R.id.server_url_edit)).check(matches(withText(url)))
+        waitForView(
+            withId(R.id.server_url_edit),
+            TIMEOUT.toInt(),
+        ).check(matches(withText(url)))
     }
 
     fun clickAccountRecovery() {
