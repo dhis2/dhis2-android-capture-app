@@ -1,9 +1,14 @@
 package org.dhis2.form.ui
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,6 +21,8 @@ import org.dhis2.commons.dialogs.bottomsheet.ErrorFieldList
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
+import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
@@ -40,12 +47,11 @@ fun DataEntryBottomSheet(
             title = model.title,
             subtitle = model.subtitle,
             description = model.message,
-            showTopSectionDivider = false,
-            showBottomSectionDivider = false,
-            bottomPadding = BottomSheetShellDefaults.lowerPadding(true),
+            showTopSectionDivider = true,
+            showBottomSectionDivider = fieldsWithIssues.isNotEmpty(),
+            bottomPadding = bottomSheetLowerPadding(),
             headerTextAlignment = model.headerTextAlignment,
         ),
-        modifier = Modifier.navigationBarsPadding(),
         content = if (fieldsWithIssues.isEmpty()) {
             null
         } else {
@@ -58,7 +64,7 @@ fun DataEntryBottomSheet(
                 )
             }
         },
-        windowInsets = { BottomSheetShellDefaults.windowInsets(true) },
+        windowInsets = { bottomSheetInsets() },
         icon = model.iconResource.takeIf { it != -1 }?.let { iconResource ->
             {
                 Icon(
