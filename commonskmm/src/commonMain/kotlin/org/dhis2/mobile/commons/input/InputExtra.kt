@@ -40,5 +40,9 @@ sealed class InputExtra {
         val optionsFetched: Boolean,
     ) : InputExtra()
 
+    data class ScanCode(
+        val optionSetUid: String?,
+    ) : InputExtra()
+
     data object None : InputExtra()
 }

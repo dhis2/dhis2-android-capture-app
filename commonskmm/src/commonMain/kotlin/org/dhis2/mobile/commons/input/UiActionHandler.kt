@@ -22,15 +22,18 @@ interface UiActionHandler {
         callback: (result: String?) -> Unit,
         onFailure: () -> Unit,
     )
+
     fun onDownloadFile(
         fieldUid: String,
         filepath: String?,
         callback: (result: String?) -> Unit,
     )
+
     fun onAddImage(
         fieldUid: String,
         callback: (result: String?) -> Unit,
     )
+
     fun onTakePicture(callback: (result: String?) -> Unit)
 
     fun onShareImage(
@@ -44,10 +47,26 @@ interface UiActionHandler {
         callback: (result: String?) -> Unit,
     )
 
+    fun onDisplayQRCode(
+        fieldUid: String,
+        value: String,
+        label: String,
+        editable: Boolean,
+        onScan: () -> Unit,
+    )
+
     fun onBarcodeScan(
         fieldUid: String,
         optionSet: String?,
         callback: (result: String?) -> Unit,
+    )
+
+    fun onDisplayBarCode(
+        fieldUid: String,
+        value: String,
+        label: String,
+        editable: Boolean,
+        onScan: () -> Unit,
     )
 }
 

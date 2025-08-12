@@ -528,7 +528,15 @@ internal class DataSetTableViewModel(
                     // Not supported in DataSet Table
                 }
 
+                is UiAction.OnDisplayBarCode -> {
+                    // Not supported in DataSet Table
+                }
+
                 is UiAction.OnQRCodeScan -> {
+                    // Not supported in DataSet Table
+                }
+
+                is UiAction.OnDisplayQRCode -> {
                     // Not supported in DataSet Table
                 }
             }

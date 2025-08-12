@@ -255,10 +255,30 @@ class UiActionHandlerImpl(
         // Not implemented, because dataset does not support rendering types.
     }
 
+    override fun onDisplayQRCode(
+        fieldUid: String,
+        value: String,
+        label: String,
+        editable: Boolean,
+        onScan: () -> Unit,
+    ) {
+        // Not implemented, because dataset does not support rendering types.
+    }
+
     override fun onBarcodeScan(
         fieldUid: String,
         optionSet: String?,
         callback: (String?) -> Unit,
+    ) {
+        // Not implemented, because dataset does not support rendering types.
+    }
+
+    override fun onDisplayBarCode(
+        fieldUid: String,
+        value: String,
+        label: String,
+        editable: Boolean,
+        onScan: () -> Unit,
     ) {
         // Not implemented, because dataset does not support rendering types.
     }

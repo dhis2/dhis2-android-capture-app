@@ -12,7 +12,6 @@ import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.databinding.ActivityScanBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import javax.inject.Inject
 
 class ScanActivity : ActivityGlobalAbstract() {
@@ -21,7 +20,6 @@ class ScanActivity : ActivityGlobalAbstract() {
     private lateinit var capture: CaptureManager
     private var uid: String? = null
     private var optionSetUid: String? = null
-    private var renderingType: ValueTypeRenderingType? = null
 
     @Inject
     lateinit var scanRepository: ScanRepository
@@ -36,8 +34,6 @@ class ScanActivity : ActivityGlobalAbstract() {
             ?.inject(this)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_scan)
-        renderingType =
-            intent.getSerializableExtra(Constants.SCAN_RENDERING_TYPE) as ValueTypeRenderingType?
         mScannerView = binding.scannerView
         capture = CaptureManager(this, mScannerView)
         capture.initializeFromIntent(intent, savedInstanceState)

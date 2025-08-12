@@ -55,7 +55,6 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -70,7 +69,6 @@ import org.dhis2.maps.views.MapSelectorActivity.Companion.LOCATION_TYPE_EXTRA
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
-import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.io.File
@@ -572,13 +570,6 @@ class FormView : Fragment() {
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
         viewModel.clearFocus()
         onActivityForResult?.invoke()
-        val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
-            when (it) {
-                UiRenderType.QR_CODE -> ValueTypeRenderingType.QR_CODE
-                UiRenderType.BAR_CODE -> ValueTypeRenderingType.BAR_CODE
-                else -> ValueTypeRenderingType.DEFAULT
-            }
-        }
 
         qrScanContent.launch(
             ScanOptions().apply {
@@ -588,7 +579,6 @@ class FormView : Fragment() {
                 setBarcodeImageEnabled(false)
                 addExtra(Constants.UID, event.uid)
                 event.optionSet?.let { addExtra(Constants.OPTION_SET, event.optionSet) }
-                addExtra(Constants.SCAN_RENDERING_TYPE, valueTypeRenderingType)
             },
         )
     }
@@ -626,7 +616,6 @@ class FormView : Fragment() {
                 RecyclerViewUiEvents.ScanQRCode(
                     event.uid,
                     event.optionSet,
-                    event.renderingType,
                 ),
             )
         }.show(

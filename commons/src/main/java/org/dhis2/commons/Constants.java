@@ -119,17 +119,8 @@ public class Constants {
     // Note
     public static final String NOTE_ID = "NOTE_ID";
     public static final String NOTE_TYPE = "NOTE_TYPE";
-
     public static final String OPTION_SET = "OPTION_SET";
-    @Nullable
-    public static final String SCAN_RENDERING_TYPE = "SCAN_RENDERING_TYPE";
     public static final String QUERY_DATA = "QUERY_DATA";
-
-    //DATASET
-    public static final String NO_SECTION = "NO_SECTION";
-
-    public static final int ACCESS_LOCATION_PERMISSION_REQUEST = 101;
-
     public static final String NEW_APP_VERSION = "NEW_APP_VERSION";
 
 

@@ -79,8 +79,24 @@ sealed class UiAction(open val id: String) {
         val optionSet: String? = null,
     ) : UiAction(id)
 
+    data class OnDisplayBarCode(
+        override val id: String,
+        val optionSet: String?,
+        val value: String,
+        val editable: Boolean,
+        val label: String,
+    ) : UiAction(id)
+
     data class OnQRCodeScan(
         override val id: String,
         val optionSet: String? = null,
+    ) : UiAction(id)
+
+    data class OnDisplayQRCode(
+        override val id: String,
+        val optionSet: String?,
+        val value: String,
+        val editable: Boolean,
+        val label: String,
     ) : UiAction(id)
 }

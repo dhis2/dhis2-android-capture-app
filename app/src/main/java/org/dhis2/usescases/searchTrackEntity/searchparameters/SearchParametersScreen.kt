@@ -127,7 +127,6 @@ fun SearchParametersScreen(
                                         uiEvent.optionSet,
                                     )
                                 }
-                                addExtra(Constants.SCAN_RENDERING_TYPE, uiEvent.renderingType)
                             },
                         )
                     }

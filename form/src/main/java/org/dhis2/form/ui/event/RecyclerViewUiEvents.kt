@@ -18,7 +18,6 @@ sealed class RecyclerViewUiEvents {
     data class ScanQRCode(
         val uid: String,
         val optionSet: String?,
-        val renderingType: UiRenderType?,
     ) : RecyclerViewUiEvents()
 
     data class DisplayQRCode(

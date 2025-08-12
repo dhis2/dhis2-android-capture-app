@@ -84,7 +84,6 @@ private fun performOnExpandActions(fieldUiModel: FieldUiModel, callback: FieldUi
             RecyclerViewUiEvents.ScanQRCode(
                 uid = fieldUiModel.uid,
                 optionSet = fieldUiModel.optionSet,
-                renderingType = fieldUiModel.renderingType,
             ),
         )
     }

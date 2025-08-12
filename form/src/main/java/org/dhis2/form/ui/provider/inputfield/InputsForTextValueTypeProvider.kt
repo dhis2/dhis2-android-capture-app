@@ -110,7 +110,6 @@ private fun ProvideQRInput(
                     RecyclerViewUiEvents.ScanQRCode(
                         fieldUiModel.uid,
                         optionSet = fieldUiModel.optionSet,
-                        fieldUiModel.renderingType,
                     ),
                 )
             } else {
@@ -215,7 +214,6 @@ private fun ProvideBarcodeInput(
                     RecyclerViewUiEvents.ScanQRCode(
                         fieldUiModel.uid,
                         optionSet = fieldUiModel.optionSet,
-                        fieldUiModel.renderingType,
                     ),
                 )
             } else {
