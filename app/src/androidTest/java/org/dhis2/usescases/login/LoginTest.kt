@@ -126,7 +126,9 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot(composeTestRule) {
+            composeTestRule.waitForIdle()
             clickOnValidateServerButton()
+            composeTestRule.waitForIdle()
             clickQRButton()
             checkQRScanIsOpened()
             checkURL(MOCK_SERVER_URL)
