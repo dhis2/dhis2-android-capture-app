@@ -6,4 +6,8 @@
     <string name="share">साझा करें</string>
     <string name="action_close">बंद करें</string>
     <string name="download">डाउनलोड</string>
+    <string name="input_age_date_of_birth">जन्म तिथि</string>
+    <string name="input_age">आयु</string>
+    <string name="input_action_cancel">रद्द करें</string>
+    <string name="action_done">पूरा हुआ</string>
     </resources>

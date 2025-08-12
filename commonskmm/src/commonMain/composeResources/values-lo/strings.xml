@@ -89,4 +89,16 @@
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     <string name="yes">ແມ່ນ</string>
     <string name="no">ບໍ່ແມ່ນ</string>
+    <string name="input_age_date_of_birth">ວັນເດືອນປີເກີດ</string>
+    <string name="input_age">Age(years)</string>
+    <string name="input_age_or">ຫຼື</string>
+    <string name="input_action_accept">ຍອມຮັບ</string>
+    <string name="input_action_cancel">ຍົກເລີກ</string>
+    <string name="input_coordinate_latitude">ເສັ້ນຂະໜານ</string>
+    <string name="input_coordinate_longitude">ເສັ້ນແວງ</string>
+    <string name="input_coordinate_add_location">ເພີ່ມທີ່ຕັ້ງ</string>
+    <string name="add_file">ເອົາຟາຍຂໍ້ມູນເຂົ້າ</string>
+    <string name="add_image">ເພີ່ມຮູບພາບ</string>
+    <string name="no_results_found">ບໍ່ພົບຜົນການຊອກຫາ</string>
+    <string name="action_done">ສຳເລັດ</string>
     </resources>
