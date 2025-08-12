@@ -49,7 +49,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnValidateServerButton(){
-        composeTestRule.waitUntilExactlyOneExists(hasTestTag(ServerValidationContentButtonTag))
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(ServerValidationContentButtonTag),
+            TIMEOUT,
+        )
         composeTestRule.onNodeWithTag(ServerValidationContentButtonTag).performClick()
     }
 
