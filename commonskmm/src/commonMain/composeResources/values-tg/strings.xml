@@ -15,4 +15,11 @@
     <string name="action_close">Пӯшидан</string>
     <string name="download">Боргирӣ</string>
     <string name="coordinates">Координатаҳо</string>
+    <string name="input_age_date_of_birth">Санаи таваллуд</string>
+    <string name="input_age">Синну сол</string>
+    <string name="input_age_or">ё</string>
+    <string name="input_action_cancel">Бекор кардан</string>
+    <string name="input_coordinate_latitude">Тӯл</string>
+    <string name="input_coordinate_longitude">Арз</string>
+    <string name="action_done">Иҷро шуд</string>
     </resources>

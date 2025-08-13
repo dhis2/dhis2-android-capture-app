@@ -9,6 +9,7 @@
     <string name="cancel">បោះបង់</string>
     <string name="prompt_password">ពាក្យ​សម្ងាត់</string>
     <string name="content_desc_search">ស្វែងរក</string>
+    <string name="confirm_transaction_label">បញ្ជាក់</string>
     <string name="speech_network_error">បណ្ដាញមានបញ្ហា</string>
     <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
     <string name="done_task">ផ្ទាំងដើម</string>

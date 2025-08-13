@@ -8,4 +8,7 @@
     <string name="discard_changes">වෙනස් කිරීම් ඉවතලන්න</string>
     <string name="action_close">වසන්න</string>
     <string name="download">බාගත කරන්න</string>
+    <string name="input_age_or">හෝ</string>
+    <string name="input_action_accept">පිළිගන්න</string>
+    <string name="action_done">නිම කළා</string>
     </resources>

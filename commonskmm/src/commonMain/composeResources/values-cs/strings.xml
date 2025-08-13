@@ -112,4 +112,17 @@
     <string name="yes">ano</string>
     <string name="no">ne</string>
     <string name="re_open_to_edit">Znovuotevření formuláře pro úpravy</string>
+    <string name="input_age_date_of_birth">Datum narození</string>
+    <string name="input_age">Stáří</string>
+    <string name="input_age_or">nebo</string>
+    <string name="input_action_accept">Přijmout</string>
+    <string name="input_action_cancel">Zrušit</string>
+    <string name="input_coordinate_latitude">Zeměpisná šířka</string>
+    <string name="input_coordinate_longitude">Zeměpisná délka</string>
+    <string name="input_coordinate_add_location">Přidat umístění</string>
+    <string name="add_file">Přidat soubor</string>
+    <string name="add_image">Přidat obrázek</string>
+    <string name="no_results_found">Nenalezeny žádné výsledky</string>
+    <string name="action_done">Hotovo</string>
+    <string name="input_not_supported">Není podporováno</string>
 </resources>
