@@ -8,20 +8,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.location.LocationListenerCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.dhis2.commons.locationprovider.LocationSettingLauncher
 import org.dhis2.maps.camera.MapSelectorZoomHandler
 import org.dhis2.maps.di.Injector
@@ -33,6 +26,7 @@ import org.dhis2.maps.model.MapSelectorScreenActions
 import org.dhis2.maps.model.MapSelectorScreenState
 import org.dhis2.maps.utils.GeometryCoordinate
 import org.dhis2.maps.utils.addMoveListeners
+import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.maplibre.android.maps.MapView
@@ -127,18 +121,6 @@ class MapSelectorActivity : AppCompatActivity() {
                     if (screenState.displayPolygonInfo) {
                         polygonAdapter.updateWithFeatureCollection(screenState.mapData)
                     }
-                }
-            }
-        }
-    }
-
-    @Composable
-    private fun <T> ObserveAsEvents(flow: Flow<T>, onEvent: (T) -> Unit) {
-        val lifecycleOwner = LocalLifecycleOwner.current
-        LaunchedEffect(flow, lifecycleOwner.lifecycle) {
-            lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                withContext(Dispatchers.Main.immediate) {
-                    flow.collect(onEvent)
                 }
             }
         }
