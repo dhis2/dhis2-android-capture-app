@@ -120,4 +120,13 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="re_open_to_edit">重新打开表单进行编辑</string>
-</resources>
+    <string name="input_age">年龄</string>
+    <string name="input_coordinate_latitude">维度</string>
+    <string name="input_coordinate_longitude">经度</string>
+    <string name="input_date_out_of_range">超出范围</string>
+    <string name="format_error">格式不正确</string>
+    <string name="add_file">添加文件</string>
+    <string name="add_image">添加图片</string>
+    <string name="no_results_found">没有结果</string>
+    <string name="search_to_find_more">搜索查找更多信息</string>
+    </resources>

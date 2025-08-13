@@ -111,4 +111,17 @@
     <string name="yes">có</string>
     <string name="no">không</string>
     <string name="re_open_to_edit">Mở lại form để chỉnh sửa</string>
+    <string name="input_age_date_of_birth">Ngày sinh</string>
+    <string name="input_age">Tuổi</string>
+    <string name="input_age_or">hoặc</string>
+    <string name="input_action_accept">Chấp nhận</string>
+    <string name="input_action_cancel">Hủy</string>
+    <string name="input_coordinate_latitude">Vĩ độ</string>
+    <string name="input_coordinate_longitude">Kinh độ</string>
+    <string name="input_coordinate_add_location">Thêm vị trí</string>
+    <string name="add_file">Thêm tập tin</string>
+    <string name="add_image">Thêm hình ảnh</string>
+    <string name="no_results_found">Không tìm thấy kết quả nào</string>
+    <string name="action_done">Hoàn thành</string>
+    <string name="input_not_supported">Không được hỗ trợ</string>
 </resources>
