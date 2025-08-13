@@ -19,9 +19,12 @@ import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
+import org.junit.FixMethodOrder
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runners.MethodSorters
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LoginTest : BaseTest() {
 
     @get:Rule
@@ -107,7 +110,7 @@ class LoginTest : BaseTest() {
     }
 
     @Test
-    fun shouldGoToPinScreenWhenPinWasSet() {
+    fun goToPinScreenWhenPinWasSet() {
         preferencesRobot.saveValue(SESSION_LOCKED, true)
         preferencesRobot.saveValue(PIN, PIN_PASSWORD)
 
@@ -120,15 +123,14 @@ class LoginTest : BaseTest() {
     }
 
     @Test
-    fun shouldGenerateLoginThroughQR() {
+    fun generateLoginThroughQR() {
+        preferencesRobot.cleanPreferences()
         enableIntents()
-        mockOnActivityForResult()
         startLoginActivity()
 
         loginRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             clickOnValidateServerButton()
-            composeTestRule.waitForIdle()
+            mockOnActivityForResult()
             clickQRButton()
             checkQRScanIsOpened()
             checkURL(MOCK_SERVER_URL)
@@ -137,7 +139,8 @@ class LoginTest : BaseTest() {
 
     private fun mockOnActivityForResult() {
         val intent = Intent().apply {
-            putExtra(EXTRA_DATA, MOCK_SERVER_URL)
+            putExtra(EXTRA_DATA, MOCK_SERVER_URL
+            )
         }
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, intent)
         intending(allOf(IntentMatchers.hasComponent(ScanActivity::class.java.name))).respondWith(
