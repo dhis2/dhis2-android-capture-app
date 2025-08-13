@@ -200,7 +200,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L)),
-                            factory = { context ->
+                            factory = {
                                 ActivityLoginBinding.inflate(LayoutInflater.from(this)).also {
                                     binding = it
                                     initLegacy(isDeletion, accountsCount)
