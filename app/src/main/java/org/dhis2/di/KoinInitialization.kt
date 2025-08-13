@@ -7,6 +7,7 @@ import org.dhis2.commons.filters.periods.di.filterPeriodsModule
 import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.login.authentication.di.twoFAModule
+import org.dhis2.tracker.searchparameters.di.searchParametersModule
 import org.dhis2.usescases.datasets.di.dataSetModules
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
@@ -27,6 +28,7 @@ object KoinInitialization {
                 dataSetModules,
                 stockModule,
                 twoFAModule,
+                searchParametersModule,
             )
         }
     }

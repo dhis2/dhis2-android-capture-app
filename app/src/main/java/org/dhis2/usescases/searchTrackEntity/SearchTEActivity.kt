@@ -50,9 +50,9 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncContext.TrackerProgramTei
 import org.dhis2.data.forms.dataentry.ProgramAdapter
 import org.dhis2.databinding.ActivitySearchBinding
-import org.dhis2.form.ui.intent.FormIntent.OnSave
-import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.searchparameters.ui.screen.SearchParametersScreen
+import org.dhis2.tracker.ui.UiActionHandlerImpl
 import org.dhis2.ui.ThemeManager
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnAddRelationship
@@ -62,7 +62,6 @@ import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnSyncIconClick
 import org.dhis2.usescases.searchTrackEntity.LegacyInteraction.OnTeiClick
 import org.dhis2.usescases.searchTrackEntity.listView.SearchTEList.Companion.get
 import org.dhis2.usescases.searchTrackEntity.mapView.SearchTEMap.Companion.get
-import org.dhis2.usescases.searchTrackEntity.searchparameters.initSearchScreen
 import org.dhis2.usescases.searchTrackEntity.ui.SearchScreenConfigurator
 import org.dhis2.utils.customviews.BreakTheGlassBottomDialog
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -71,7 +70,6 @@ import org.dhis2.utils.granularsync.shouldLaunchSyncDialog
 import org.dhis2.utils.isLandscape
 import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.arch.call.D2Progress
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -329,40 +327,23 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     private fun initSearchParameters() {
-        initSearchScreen(
-            binding.searchContainer,
-            viewModel,
-            initialProgram,
-            tEType,
-            resourceManager,
-            { uid: String, preselectedOrgUnits: List<String>, orgUnitScope: OrgUnitSelectorScope, label: String ->
-                OUTreeFragment.Builder()
-                    .withPreselectedOrgUnits(preselectedOrgUnits)
-                    .singleSelection()
-                    .onSelection { selectedOrgUnits: List<OrganisationUnit> ->
-                        var selectedOrgUnit: String? = null
-                        if (selectedOrgUnits.isNotEmpty()) {
-                            selectedOrgUnit = selectedOrgUnits[0].uid()
-                        }
-                        viewModel.onParameterIntent(
-                            OnSave(
-                                uid,
-                                selectedOrgUnit,
-                                ValueType.ORGANISATION_UNIT,
-                                null,
-                                true,
-                            ),
-                        )
-                    }
-                    .orgUnitScope(orgUnitScope)
-                    .build()
-                    .show(supportFragmentManager, label)
-            },
-            {
-                binding.root.closeKeyboard()
-                presenter.onClearClick()
-            },
+        viewModel.fetchSearchParameters(
+            programUid = initialProgram,
+            teiTypeUid = tEType,
         )
+
+        binding.searchContainer.setContent {
+            SearchParametersScreen(
+                uiActionHandler = UiActionHandlerImpl(this),
+                onSearch = viewModel::onSearch,
+                onClear = {
+                    binding.root.closeKeyboard()
+                    presenter.onClearClick()
+                    viewModel.clearQueryData()
+                    viewModel.clearFocus()
+                },
+            )
+        }
     }
 
     private fun setupBottomNavigation() {
@@ -698,9 +679,11 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun showPeriodRequest(periodRequest: Pair<PeriodRequest, Filters>) {
         if (periodRequest.first == PeriodRequest.FROM_TO) {
-            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second, isFromToFilter = true).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second, isFromToFilter = true)
+                .show(supportFragmentManager, FILTER_DIALOG)
         } else {
-            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second).show(supportFragmentManager, FILTER_DIALOG)
+            FilterPeriodsDialog.newPeriodsFilter(periodRequest.second)
+                .show(supportFragmentManager, FILTER_DIALOG)
         }
     }
 
