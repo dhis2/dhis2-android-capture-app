@@ -15,7 +15,10 @@ class UiActionHandlerImpl(
 
     private var qrScanCallback: ((String?) -> Unit)? = null
 
-    private val qrScanLauncher = context.registerForActivityResult(ScanContract()) { result ->
+    private val qrScanLauncher = context.activityResultRegistry.register(
+        "qrScanLauncher",
+        ScanContract(),
+    ) { result ->
         result.contents?.let { qrData ->
             qrScanCallback?.invoke(qrData)
         }
