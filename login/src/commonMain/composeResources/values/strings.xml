@@ -6,4 +6,5 @@
     <string name="two_fa_no_connection_button">Try to reconnect</string>
     <string name="two_fa_checking_status">Checking status...</string>
     <string name="back_to_settings">Back to settings</string>
+    <string name="action_next">Next</string>
 </resources>

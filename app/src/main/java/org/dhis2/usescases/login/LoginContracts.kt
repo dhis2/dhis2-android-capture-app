@@ -12,7 +12,7 @@ class LoginContracts {
         fun showUnlockButton()
 
         @UiThread
-        fun onUnlockClick(android: android.view.View)
+        fun onUnlockClick()
 
         @UiThread
         fun onLogoutClick(android: android.view.View)
@@ -50,7 +50,6 @@ class LoginContracts {
         fun getDefaultServerProtocol(): String
         fun isNetworkAvailable(): Boolean
         fun openOpenIDActivity(it: IntentWithRequestCode?)
-        fun openAccountsActivity()
         fun showNoConnectionDialog()
         fun initLogin(): UserManager?
         fun onDbImportFinished(isSuccess: Boolean)
