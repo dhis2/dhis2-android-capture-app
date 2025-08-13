@@ -822,7 +822,6 @@
     <string name="unknown_date">Neznámý</string>
     <string name="granular_sync_refresh_title">Obnovit všechna data</string>
     <string name="max_accounts_text">Dosáhli jste maximálního počtu účtů (%d). Chcete-li přidat nový účet, přihlaste se a smažte jeden ze svých účtů</string>
-    <string name="add_accout">Přidat účet</string>
     <string name="delete_account">Smazat účet</string>
     <string name="manage_accounts">Spravovat účty</string>
     <string name="main_menu_troubleshooting">Odstraňování problémů s konfigurací</string>

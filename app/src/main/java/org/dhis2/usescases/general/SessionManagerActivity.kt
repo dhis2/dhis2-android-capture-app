@@ -24,7 +24,6 @@ import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.login.LoginActivity.Companion.bundle
-import org.dhis2.usescases.login.accounts.AccountsActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.splash.SplashActivity
@@ -97,13 +96,12 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
                 ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
         }
 
-        if (this is MainActivity || this is LoginActivity || this is SplashActivity || this is AccountsActivity) {
+        if (this is MainActivity || this is LoginActivity || this is SplashActivity) {
             serverComponent?.themeManager()?.clearProgramTheme()
         }
 
         if (this !is SplashActivity &&
             this !is LoginActivity &&
-            this !is AccountsActivity &&
             this !is ScanActivity &&
             handleEdgeToEdge
         ) {

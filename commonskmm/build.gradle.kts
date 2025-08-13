@@ -44,6 +44,7 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.components.resources)
             implementation(libs.compose.material3.window)
+            implementation(libs.lifecycle.runtime.compose)
 
             // Koin
             api(libs.koin.core)

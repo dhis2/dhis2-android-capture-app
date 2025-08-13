@@ -10,11 +10,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
+import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.action_next
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+const val ServerValidationContentButtonTag = "ServerValidationContentButtonTag"
 
 @Composable
 internal fun ServerValidationContent() {
@@ -25,7 +30,8 @@ internal fun ServerValidationContent() {
             .padding(16.dp),
     ) {
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
+                .testTag(ServerValidationContentButtonTag),
             enabled = true,
             style = ButtonStyle.FILLED,
             icon = {
@@ -35,7 +41,7 @@ internal fun ServerValidationContent() {
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
             },
-            text = "Next",
+            text = stringResource(Res.string.action_next),
             onClick = viewModel::onValidateServer,
         )
     }

@@ -1,4 +1,4 @@
-package org.dhis2.usescases.login.accounts.ui
+package org.dhis2.mobile.login.accounts.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,22 +9,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.R
-import org.dhis2.usescases.login.accounts.AccountModel
+import org.dhis2.mobile.login.accounts.domain.model.AccountModel
 
-@ExperimentalMaterialApi
 @Composable
 fun AccountItem(
     modifier: Modifier = Modifier,
@@ -32,10 +31,11 @@ fun AccountItem(
     onItemClicked: (AccountModel) -> Unit,
 ) {
     Card(
-        elevation = 4.dp,
-        shape = RoundedCornerShape(8.dp),
         modifier = modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .shadow(elevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
+        shape = RoundedCornerShape(8.dp),
         onClick = { onItemClicked(account) },
     ) {
         Row(
@@ -47,7 +47,7 @@ fun AccountItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(colorResource(id = R.color.colorPrimary)),
+                    .background(MaterialTheme.colorScheme.primary),
             ) {
                 Text(
                     text = account.name.first().uppercaseChar().toString(),
@@ -60,24 +60,16 @@ fun AccountItem(
             ) {
                 Text(
                     text = account.name,
-                    color = colorResource(id = R.color.colorPrimary),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 Text(
                     text = account.serverUrl,
-                    color = colorResource(id = R.color.textSecondary),
-                    fontSize = 12.sp,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
     }
-}
-
-@ExperimentalMaterialApi
-@Preview(showBackground = false)
-@Composable
-fun AccountPreview() {
-    AccountItem(
-        account = AccountModel("android", "https://play.dhis2.com/android-dev"),
-        onItemClicked = {},
-    )
 }

@@ -795,7 +795,6 @@
     <string name="unknown_date">Onbekend</string>
     <string name="granular_sync_refresh_title">Ververs alle gegevens</string>
     <string name="max_accounts_text">U heeft het maximale aantal accounts bereikt (%d). Om een nieuw account toe te voegen, logt u in en verwijdert u een van uw accounts</string>
-    <string name="add_accout">Account toevoegen</string>
     <string name="delete_account">Account verwijderen</string>
     <string name="manage_accounts">Accounts beheren</string>
     <string name="main_menu_troubleshooting">Problemen met configuratie oplossen</string>

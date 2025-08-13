@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.compose)
     id("com.android.library")
     alias(libs.plugins.kotlin.compose.compiler)
-
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -37,6 +37,7 @@ kotlin {
                 implementation(libs.compose.material3.window)
                 implementation(compose.components.resources)
                 implementation(project(":commonskmm"))
+                implementation(libs.navigation.compose)
 
                 // Koin
                 api(libs.koin.core)

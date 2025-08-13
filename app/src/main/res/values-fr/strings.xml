@@ -789,7 +789,6 @@
     <string name="granular_sync_refresh">Actualiser</string>
     <string name="unknown_date">Inconnu</string>
     <string name="granular_sync_refresh_title">Actualiser toutes les données</string>
-    <string name="add_accout">Ajouter une compte</string>
     <string name="delete_account">Supprimer compte</string>
     <string name="manage_accounts">Gérer les comptes</string>
     <string name="troubleshooting_language_title">Langue</string>
