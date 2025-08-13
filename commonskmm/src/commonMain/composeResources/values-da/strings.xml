@@ -6,4 +6,6 @@
     <string name="due_date">Due date</string>
     <string name="action_close">Close</string>
     <string name="incident_date">Incident date</string>
+    <string name="input_action_cancel">Cancel</string>
+    <string name="no_results_found">No results found</string>
     </resources>

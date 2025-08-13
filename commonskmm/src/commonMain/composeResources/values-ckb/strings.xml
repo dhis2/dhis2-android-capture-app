@@ -12,4 +12,7 @@
     <string name="no_reserved_values">هیچ نرخێکی دیکەی تەرخانکراو نەما. پەیوەندی بە بەڕێوەبەری سیستەمەکەتەوە بکە</string>
     <string name="yes">بەڵێ</string>
     <string name="no">نەخێر</string>
+    <string name="input_action_accept">پەسندکردن</string>
+    <string name="input_action_cancel">لابردن</string>
+    <string name="action_done">تةواو كرا</string>
     </resources>
