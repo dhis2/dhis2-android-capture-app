@@ -42,7 +42,7 @@ internal fun SyncMetadataSettingItem(
         metadataSettings.syncInProgress -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
                     isConstantItem = true,
                     ),
@@ -56,7 +56,7 @@ internal fun SyncMetadataSettingItem(
         metadataSettings.hasErrors -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                         value = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
                         isConstantItem = true,
                 ),
@@ -71,7 +71,7 @@ internal fun SyncMetadataSettingItem(
         else -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
                 ),
                 AdditionalInfoItem(
