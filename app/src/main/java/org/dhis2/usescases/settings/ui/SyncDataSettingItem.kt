@@ -50,7 +50,7 @@ internal fun SyncDataSettingItem(
         dataSettings.syncInProgress -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(dataSettings.dataSyncPeriod),
                     isConstantItem = true,
                 ),
@@ -63,12 +63,12 @@ internal fun SyncDataSettingItem(
         dataSettings.dataHasErrors -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                         value = syncPeriodLabel(dataSettings.dataSyncPeriod),
                         isConstantItem = true,
                 ),
                 AdditionalInfoItem(
-                    value = stringResource(R.string.data_sync_error),
+                    value = stringResource(R.string.data_sync_error_v2),
                     isConstantItem = true,
                     icon = {
                             Icon(
@@ -84,12 +84,12 @@ internal fun SyncDataSettingItem(
         dataSettings.dataHasWarnings -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(dataSettings.dataSyncPeriod),
                         isConstantItem = true,
                 ),
                 AdditionalInfoItem(
-                    value = stringResource(R.string.data_sync_warning),
+                    value = stringResource(R.string.data_sync_warning_v2),
                     isConstantItem = true,
                     truncate = false,
                     icon = {
@@ -106,7 +106,7 @@ internal fun SyncDataSettingItem(
         dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.INCOMPLETE -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(dataSettings.dataSyncPeriod),
                     isConstantItem = true,
                 ),
@@ -128,7 +128,7 @@ internal fun SyncDataSettingItem(
         dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.ERROR -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(dataSettings.dataSyncPeriod),
                         isConstantItem = true,
                 ),
@@ -142,7 +142,7 @@ internal fun SyncDataSettingItem(
         else -> {
             listOf(
                 AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period),
+                    key = stringResource(R.string.settings_sync_period_v2),
                     value = syncPeriodLabel(dataSettings.dataSyncPeriod),
                 ),
                 AdditionalInfoItem(
@@ -178,7 +178,7 @@ internal fun SyncDataSettingItem(
                         )
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_DATA_PERIOD),
-                        title = stringResource(R.string.settings_sync_period),
+                        title = stringResource(R.string.settings_sync_period_v2),
                         state = InputShellState.FOCUSED,
                         itemCount = dataSyncPeriods.size,
                         onSearchOption = {},
