@@ -8,6 +8,7 @@ import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.login.authentication.di.twoFAModule
 import org.dhis2.usescases.datasets.di.dataSetModules
+import org.dhis2.usescases.settingsprogram.di.settingsProgramModule
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -27,6 +28,7 @@ object KoinInitialization {
                 dataSetModules,
                 stockModule,
                 twoFAModule,
+                settingsProgramModule,
             )
         }
     }

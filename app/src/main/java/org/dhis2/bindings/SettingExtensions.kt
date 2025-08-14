@@ -1,9 +1,6 @@
 package org.dhis2.bindings
 
-import android.content.Context
-import org.dhis2.R
 import org.hisp.dhis.android.core.settings.DataSyncPeriod
-import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 
 const val EVERY_15_MIN = 15 * 60
@@ -33,15 +30,5 @@ fun DataSyncPeriod.toSeconds(): Int {
         DataSyncPeriod.EVERY_12_HOURS -> EVERY_12_HOUR
         DataSyncPeriod.EVERY_24_HOURS -> EVERY_24_HOUR
         DataSyncPeriod.MANUAL -> MANUAL
-    }
-}
-
-fun LimitScope?.toTrailingText(context: Context): String {
-    return when (this) {
-        LimitScope.ALL_ORG_UNITS -> context.getString(R.string.limit_scope_all_ou_trailing)
-        LimitScope.PER_ORG_UNIT -> context.getString(R.string.limit_scope_ou_trailing)
-        LimitScope.PER_PROGRAM -> context.getString(R.string.limit_scope_program_trailing)
-        LimitScope.PER_OU_AND_PROGRAM -> context.getString(R.string.limit_scope_ou_program_trailing)
-        else -> context.getString(R.string.limit_scope_global_trailing)
     }
 }
