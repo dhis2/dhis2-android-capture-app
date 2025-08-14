@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,11 +32,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
 import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBar
 import org.hisp.dhis.mobile.ui.designsystem.component.TopBarActionIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.koin.compose.viewmodel.koinViewModel
@@ -108,8 +113,21 @@ fun SettingsProgramScreen(
                     modifier = Modifier,
                     listCardState = listCardState,
                     listAvatar = {
-                        MetadataIcon(
-                            imageCardData = setting.metadataIconData.imageCardData,
+                        MetadataAvatar(
+                            icon = {
+                                if (setting.metadataIconData.isFileLoaded()) {
+                                    MetadataIcon(
+                                        imageCardData = setting.metadataIconData.imageCardData,
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = provideDHIS2Icon("dhis2_image_not_supported"),
+                                        contentDescription = "",
+                                    )
+                                }
+                            },
+                            iconTint = setting.metadataIconData.color,
+                            size = MetadataAvatarSize.M(),
                         )
                     },
                     onCardClick = {},
