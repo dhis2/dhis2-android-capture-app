@@ -3,7 +3,6 @@ package org.dhis2.usescases.login
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils.isEmpty
@@ -28,6 +27,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -69,6 +69,7 @@ import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -166,7 +167,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.dark(Color.WHITE),
+            statusBarStyle = SystemBarStyle.dark(SurfaceColor.Primary.toArgb()),
         )
         val loginComponent = app().loginComponent() ?: app().createLoginComponent(
             LoginModule(
