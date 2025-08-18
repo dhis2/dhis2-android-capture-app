@@ -807,7 +807,6 @@
     <string name="unknown_date">Невідомо</string>
     <string name="granular_sync_refresh_title">Оновити всі дані</string>
     <string name="max_accounts_text">Ви досягли максимальної кількості акаунтів (%d). Щоб додати новий обліковий запис, увійдіть і видаліть один із своїх облікових записів</string>
-    <string name="add_accout">Додати обліковий запис</string>
     <string name="delete_account">Видалити обліковий запис</string>
     <string name="manage_accounts">Управління обліковими записами</string>
     <string name="main_menu_troubleshooting">Усунення несправностей конфігурації</string>

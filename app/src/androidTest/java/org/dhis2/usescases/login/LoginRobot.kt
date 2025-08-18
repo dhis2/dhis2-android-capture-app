@@ -1,6 +1,8 @@
 package org.dhis2.usescases.login
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -22,6 +24,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.viewactions.ClickDrawableAction
 import org.dhis2.commons.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
+import org.dhis2.mobile.login.main.ui.screen.ServerValidationContentButtonTag
 import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -43,6 +46,15 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
 
     val context = InstrumentationRegistry.getInstrumentation().targetContext
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnValidateServerButton(){
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag(ServerValidationContentButtonTag),
+            TIMEOUT,
+        )
+        composeTestRule.onNodeWithTag(ServerValidationContentButtonTag).performClick()
+    }
 
     fun typeServer(server: String) {
         onView(withId(R.id.server_url_edit)).perform(TypeTextAction(server))
@@ -84,7 +96,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickQRButton() {
-        onView(withId(R.id.server_url_edit)).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
+        waitForView(
+            withId(R.id.server_url_edit),
+            TIMEOUT.toInt(),
+        ).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
     }
 
     fun checkLoginButtonIsHidden() {
@@ -129,7 +144,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkURL(url: String) {
-        onView(withId(R.id.server_url_edit)).check(matches(withText(url)))
+        waitForView(
+            withId(R.id.server_url_edit),
+            TIMEOUT.toInt(),
+        ).check(matches(withText(url)))
     }
 
     fun clickAccountRecovery() {

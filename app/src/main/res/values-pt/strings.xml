@@ -821,7 +821,6 @@
     <string name="unknown_date">Desconhecido</string>
     <string name="granular_sync_refresh_title">Atualizar todos os dados</string>
     <string name="max_accounts_text"> Atingiu o número máximo de contas  (%d). Para adicionar uma nova conta, inicie sessão e elimine uma das suas contas</string>
-    <string name="add_accout">Adicionar conta</string>
     <string name="delete_account">Eliminar conta</string>
     <string name="manage_accounts">Gerir contas</string>
     <string name="main_menu_troubleshooting">Resolução de problemas de configuração</string>

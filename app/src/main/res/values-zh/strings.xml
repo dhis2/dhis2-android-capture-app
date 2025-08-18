@@ -819,7 +819,6 @@
     <string name="unknown_date">未知</string>
     <string name="granular_sync_refresh_title">刷新所有数据</string>
     <string name="max_accounts_text">您已达到最大帐户数 (%d)。要添加新帐户，请登录并删除您的一个帐户</string>
-    <string name="add_accout">新增帐户</string>
     <string name="delete_account">删除帐户</string>
     <string name="manage_accounts">管理帐户</string>
     <string name="main_menu_troubleshooting">配置疑难解答</string>

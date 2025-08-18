@@ -788,7 +788,6 @@
     <string name="unknown_date">Неизвестный</string>
     <string name="granular_sync_refresh_title">Обновить все данные</string>
     <string name="max_accounts_text">Вы достигли максимального количества учетных записей (%d). Чтобы добавить новую учетную запись, войдите в систему и удалите одну из своих учетных записей</string>
-    <string name="add_accout">Добавить аккаунт</string>
     <string name="delete_account">Удалить аккаунт</string>
     <string name="manage_accounts">Управление учетными записями</string>
     <string name="main_menu_troubleshooting">Устранение неисправностей конфигурации</string>

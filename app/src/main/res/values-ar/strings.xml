@@ -810,7 +810,6 @@
     <string name="granular_sync_refresh">إعادة التجديد</string>
     <string name="unknown_date">غير معروف</string>
     <string name="granular_sync_refresh_title">قم بتحديث كافة البيانات</string>
-    <string name="add_accout">إضافة حساب</string>
     <string name="delete_account">حذف الحساب</string>
     <string name="manage_accounts">إدارة الحسابات</string>
     <string name="main_menu_troubleshooting">استكشاف أخطاء التكوين وإصلاحها</string>
