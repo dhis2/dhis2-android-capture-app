@@ -16,15 +16,10 @@ updates:
       prefix: "deps"
     ignore:
       - dependency-name: "com.squareup.okhttp3:*"
-      # Ignore development, snapshot, alpha, beta, and RC versions
+      # Ignore development, snapshot, alpha, beta, and RC versions for all dependencies
       - dependency-name: "*"
-        versions: [
-          ">=0.0.0-dev",
-          ">=0.0.0-SNAPSHOT",
-          ">=0.0.0-alpha",
-          ">=0.0.0-beta",
-          ">=0.0.0-rc"
-        ]
+        update-types: ["version-update:semver-major", "version-update:semver-minor", "version-update:semver-patch"]
+      # versions: ["*-dev*", "*-SNAPSHOT", "*-alpha*", "*-beta*", "*-rc*"]
     groups:
       gradle-updates:
         patterns:
