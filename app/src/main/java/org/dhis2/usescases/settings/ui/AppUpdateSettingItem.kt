@@ -6,7 +6,6 @@ import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import org.dhis2.BuildConfig
 import org.dhis2.R
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -14,6 +13,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 
 @Composable
 internal fun AppUpdateSettingItem(
+    versionName: String,
     isOpened: Boolean,
     onClick: () -> Unit,
     onCheckVersionUpdate: () -> Unit,
@@ -23,7 +23,7 @@ internal fun AppUpdateSettingItem(
         additionalInfoList = listOf(
             AdditionalInfoItem(
                 key = stringResource(R.string.app_version),
-                value = BuildConfig.VERSION_NAME,
+                value = versionName,
                 ),
             ),
         icon = Icons.Outlined.SystemUpdate,
