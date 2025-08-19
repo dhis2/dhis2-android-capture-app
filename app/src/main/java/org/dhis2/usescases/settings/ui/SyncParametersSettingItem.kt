@@ -40,22 +40,7 @@ internal fun SyncParametersSettingItem(
     onTeiToDownloadLimitUpdate: (Int) -> Unit,
     onSpecificProgramSettingsClick: () -> Unit,
 ) {
-    val additionalInfoList = listOf(
-        AdditionalInfoItem(
-            value = stringResource(R.string.limit_setting).format(provideLimitScopeLabel(syncParametersViewModel.limitScope)),
-            isConstantItem = true,
-        ),
-        AdditionalInfoItem(
-            key = stringResource(R.string.sync_events),
-            value = syncParametersViewModel.currentEventCount.toString() + "/" + syncParametersViewModel.numberOfEventsToDownload.toString(),
-            isConstantItem = true,
-        ),
-        AdditionalInfoItem(
-            key = stringResource(R.string.tei),
-            value = syncParametersViewModel.currentTeiCount.toString() + "/" + syncParametersViewModel.numberOfTeiToDownload.toString(),
-            isConstantItem = true,
-        ),
-    )
+    val additionalInfoList = provideInfoItems(syncParametersViewModel)
     SettingItem(
         modifier = Modifier.testTag(SettingItem.SYNC_PARAMETERS.name),
         title = stringResource(id = R.string.settingsSyncParameters),
@@ -191,6 +176,29 @@ internal fun SyncParametersSettingItem(
         onClick = onClick,
     )
 }
+
+@Composable
+private fun provideInfoItems(syncParametersViewModel: SyncParametersViewModel): List<AdditionalInfoItem> =
+    listOf(
+        AdditionalInfoItem(
+            value = stringResource(R.string.limit_setting).format(
+                provideLimitScopeLabel(
+                    syncParametersViewModel.limitScope,
+                ),
+            ),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            key = stringResource(R.string.sync_events),
+            value = syncParametersViewModel.currentEventCount.toString() + "/" + syncParametersViewModel.numberOfEventsToDownload.toString(),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            key = stringResource(R.string.tei),
+            value = syncParametersViewModel.currentTeiCount.toString() + "/" + syncParametersViewModel.numberOfTeiToDownload.toString(),
+            isConstantItem = true,
+        ),
+    )
 
 @Composable
 private fun provideLimitScopeLabel(limitScope: LimitScope) =
