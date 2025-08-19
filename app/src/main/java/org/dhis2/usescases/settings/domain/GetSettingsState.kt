@@ -32,6 +32,7 @@ class GetSettingsState(
                 )
             },
             isTwoFAConfigured = settingsRepository.isTwoFAConfigured(),
+            versionName = settingsRepository.getVersionName(),
         )
     }
 }

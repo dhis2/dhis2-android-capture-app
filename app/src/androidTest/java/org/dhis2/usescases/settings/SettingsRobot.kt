@@ -2,6 +2,9 @@ package org.dhis2.usescases.settings
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasParent
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -37,8 +40,10 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForData() {
+        composeTestRule.onNodeWithTag(SettingItem.DATA_SYNC.name)
+            .assertIsDisplayed()
         composeTestRule.onNode(
-    hasText(NOT_EDIT_TEXT)
+            hasText(getString(R.string.syncing_period_not_editable))
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_DataPeriod).assertIsNotDisplayed()
     }
@@ -48,8 +53,10 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
+        composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name)
+            .assertIsDisplayed()
         composeTestRule.onNode(
-    hasText(NOT_EDIT_TEXT)
+            hasText(getString(R.string.syncing_period_not_editable))
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_MetaPeriod).assertIsNotDisplayed()
     }
@@ -59,8 +66,10 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForParameters() {
+        composeTestRule.onNodeWithTag(SettingItem.SYNC_PARAMETERS.name)
+            .assertIsDisplayed()
         composeTestRule.onNode(
-                    hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
+            hasText(getString(R.string.sync_parameters_not_editable))
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_SyncParameters_LimitScope).assertIsNotDisplayed()
         composeTestRule.onNodeWithTag(TestTag_SyncParameters_EventMaxCount).assertIsNotDisplayed()
@@ -73,7 +82,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnManageReservedValues() {
         composeTestRule.onNode(
-    hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
+            hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
 
         Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
@@ -101,10 +110,5 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkTwoFAScreenIsDisplayed() {
         Intents.intended(IntentMatchers.hasComponent(TwoFASettingsActivity::class.java.name))
-    }
-
-    companion object {
-        const val NOT_EDIT_TEXT = "Syncing period is not editable"
-        const val SYNC_PARAMETERS_NOT_EDIT_TEXT = "Sync parameters are not editable"
     }
 }
