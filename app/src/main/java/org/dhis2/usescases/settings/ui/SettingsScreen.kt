@@ -298,6 +298,7 @@ private fun SettingItemList(
 
         item {
             AppUpdateSettingItem(
+                versionName = settingsUIModel.versionName,
                 isOpened = settingsUIModel.openedItem == SettingItem.VERSION_UPDATE,
                 onClick = { onSettingsUiAction(SettingsUiAction.OnItemClick(SettingItem.VERSION_UPDATE)) },
                 onCheckVersionUpdate = { onSettingsUiAction(SettingsUiAction.OnCheckVersionUpdates) },

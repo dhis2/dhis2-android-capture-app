@@ -1,6 +1,7 @@
 package org.dhis2.usescases.settings
 
 import io.reactivex.Single
+import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -337,5 +338,6 @@ class SettingsRepository(
 
     suspend fun exportDatabase() = d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
 
+    fun getVersionName(): String = BuildConfig.VERSION_NAME
     fun isTwoFAConfigured(): Boolean = featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
 }
