@@ -3,10 +3,10 @@ package org.dhis2.usescases.settings.ui
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,109 +48,27 @@ internal fun SyncDataSettingItem(
 ) {
     val additionalInfoList = when {
         dataSettings.syncInProgress -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                    isConstantItem = true,
-                ),
-                    AdditionalInfoItem(
-                        value = stringResource(R.string.syncing_data),
-                    isConstantItem = true,
-                ),
-            )
+            provideSyncInProgressInfo(dataSettings.dataSyncPeriod)
         }
+
         dataSettings.dataHasErrors -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                        value = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                        isConstantItem = true,
-                ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.data_sync_error_v2),
-                    isConstantItem = true,
-                    icon = {
-                            Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = "SYNC ERROR",
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                        },
-                    color = AdditionalInfoItemColor.ERROR.color,
-                ),
-            )
+            provideDataErrorItems(dataSettings.dataSyncPeriod)
         }
+
         dataSettings.dataHasWarnings -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                        isConstantItem = true,
-                ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.data_sync_warning_v2),
-                    isConstantItem = true,
-                    truncate = false,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = "SYNC WARNING",
-                            tint = AdditionalInfoItemColor.WARNING.color,
-                        )
-                    },
-                    color = AdditionalInfoItemColor.WARNING.color,
-                ),
-            )
+            provideDataWarningItems(dataSettings.dataSyncPeriod)
         }
+
         dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.INCOMPLETE -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                    isConstantItem = true,
-                ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.sync_incomplete_error_text),
-                    isConstantItem = true,
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = "SYNC INCOMPLETE",
-                            tint = AdditionalInfoItemColor.DISABLED.color,
-                        )
-                    },
-                    color = AdditionalInfoItemColor.DISABLED.color,
-                    truncate = false,
-                ),
-            )
+            provideIncompleteSyncInfo(dataSettings)
         }
+
         dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.ERROR -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                        isConstantItem = true,
-                ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.sync_error_text),
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.ERROR.color,
-                ),
-            )
+            provideSyncErrorInfo(dataSettings.dataSyncPeriod)
         }
+
         else -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                ),
-                AdditionalInfoItem(
-                    key = stringResource(R.string.last_data_sync),
-                    value = dataSettings.lastDataSync,
-                    color = TextColor.OnSurface,
-                ),
-            )
+            provideDefaultInfoItems(dataSettings.dataSyncPeriod, dataSettings.lastDataSync)
         }
     }
 
@@ -228,3 +146,112 @@ internal fun SyncDataSettingItem(
         onClick = onClick,
     )
 }
+
+@Composable
+private fun provideDefaultInfoItems(
+    dataSyncPeriod: Int,
+    lastDataSync: String,
+): List<AdditionalInfoItem> = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(dataSyncPeriod),
+    ),
+    AdditionalInfoItem(
+        key = stringResource(R.string.last_data_sync),
+        value = lastDataSync,
+        color = TextColor.OnSurface,
+    ),
+)
+
+@Composable
+private fun provideSyncErrorInfo(dataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(dataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.sync_error_text),
+        isConstantItem = true,
+        color = AdditionalInfoItemColor.ERROR.color,
+    ),
+)
+
+@Composable
+private fun provideIncompleteSyncInfo(dataSettings: DataSettingsViewModel): List<AdditionalInfoItem> =
+    listOf(
+        AdditionalInfoItem(
+            key = stringResource(R.string.settings_sync_period_v2),
+            value = syncPeriodLabel(dataSettings.dataSyncPeriod),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            value = stringResource(R.string.sync_incomplete_error_text),
+            isConstantItem = true,
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.SyncDisabled,
+                    contentDescription = "SYNC INCOMPLETE",
+                    tint = AdditionalInfoItemColor.DISABLED.color,
+                )
+            },
+            color = AdditionalInfoItemColor.DISABLED.color,
+            truncate = false,
+        ),
+    )
+
+@Composable
+private fun provideDataWarningItems(dataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(dataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.data_sync_warning_v2),
+        isConstantItem = true,
+        truncate = false,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.SyncDisabled,
+                contentDescription = "SYNC WARNING",
+                tint = AdditionalInfoItemColor.WARNING.color,
+            )
+        },
+        color = AdditionalInfoItemColor.WARNING.color,
+    ),
+)
+
+@Composable
+private fun provideDataErrorItems(dataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(dataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.data_sync_error_v2),
+        isConstantItem = true,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.SyncDisabled,
+                contentDescription = "SYNC ERROR",
+                tint = AdditionalInfoItemColor.ERROR.color,
+            )
+        },
+        color = AdditionalInfoItemColor.ERROR.color,
+    ),
+)
+
+@Composable
+private fun provideSyncInProgressInfo(dataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(dataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.syncing_data),
+        isConstantItem = true,
+    ),
+)

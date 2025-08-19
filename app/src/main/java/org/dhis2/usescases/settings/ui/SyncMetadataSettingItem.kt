@@ -40,45 +40,17 @@ internal fun SyncMetadataSettingItem(
 ) {
     val additionalInfoList = when {
         metadataSettings.syncInProgress -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
-                    isConstantItem = true,
-                    ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.syncing_configuration),
-                    isConstantItem = true,
-                ),
-            )
+            provideSyncInProgressInfoItems(metadataSettings.metadataSyncPeriod)
         }
 
         metadataSettings.hasErrors -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                        value = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
-                        isConstantItem = true,
-                ),
-                AdditionalInfoItem(
-                    value = stringResource(R.string.metadata_sync_error),
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.ERROR.color,
-                ),
-            )
+            provideHasErrorItems(metadataSettings.metadataSyncPeriod)
         }
 
         else -> {
-            listOf(
-                AdditionalInfoItem(
-                    key = stringResource(R.string.settings_sync_period_v2),
-                    value = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
-                ),
-                AdditionalInfoItem(
-                    key = stringResource(R.string.last_data_sync),
-                    value = metadataSettings.lastMetadataSync,
-                    color = TextColor.OnSurface,
-                ),
+            provideDefaultInfoItems(
+                metadataSettings.metadataSyncPeriod,
+                metadataSettings.lastMetadataSync,
             )
         }
     }
@@ -150,3 +122,43 @@ internal fun SyncMetadataSettingItem(
         onClick = onClick,
     )
 }
+
+@Composable
+private fun provideDefaultInfoItems(metadataSyncPeriod: Int, lastMetadataSync: String) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod),
+    ),
+    AdditionalInfoItem(
+        key = stringResource(R.string.last_data_sync),
+        value = lastMetadataSync,
+        color = TextColor.OnSurface,
+    ),
+)
+
+@Composable
+private fun provideHasErrorItems(metadataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.metadata_sync_error),
+        isConstantItem = true,
+        color = AdditionalInfoItemColor.ERROR.color,
+    ),
+)
+
+@Composable
+private fun provideSyncInProgressInfoItems(metadataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.syncing_configuration),
+        isConstantItem = true,
+    ),
+)
