@@ -27,7 +27,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing.Spacing24
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
-fun DataEntryBottomSheet(
+internal fun DataEntryBottomSheet(
     model: BottomSheetDialogUiModel,
     allowDiscard: Boolean,
     fieldsWithIssues: List<FieldWithIssue>,

@@ -822,7 +822,7 @@ class FormViewModel(
         }
     }
 
-    private suspend fun provideShowResultDialog(result: DataIntegrityCheckResult): FormActions.ShowResultDialog? {
+    private fun provideShowResultDialog(result: DataIntegrityCheckResult): FormActions.ShowResultDialog? {
         return when (result) {
             is FieldsWithErrorResult -> {
                 resultDialogUiProvider(
