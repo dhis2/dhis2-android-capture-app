@@ -70,7 +70,7 @@ const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
 class SearchTEIViewModel(
     val initialProgramUid: String?,
-    initialQuery: MutableMap<String, String>?,
+    initialQuery: MutableMap<String, List<String>?>?,
     private val searchRepository: SearchRepository,
     private val searchRepositoryKt: SearchRepositoryKt,
     private val searchNavPageConfigurator: SearchPageConfigurator,
@@ -93,10 +93,9 @@ class SearchTEIViewModel(
     val navigationBarUIState: MutableState<NavigationBarUIState<NavigationPage>> =
         _navigationBarUIState
 
-    val queryData =
-        mutableMapOf<String, String>().apply {
-            initialQuery?.let { putAll(it) }
-        }
+    val queryData = mutableMapOf<String, List<String>?>().apply {
+        initialQuery?.let { putAll(it) }
+    }
 
     private val _legacyInteraction = MutableLiveData<LegacyInteraction?>()
     val legacyInteraction: LiveData<LegacyInteraction?> = _legacyInteraction
@@ -376,31 +375,31 @@ class SearchTEIViewModel(
 
     private fun updateQuery(
         uid: String,
-        value: String?,
+        values: List<String>?,
     ) {
-        if (value.isNullOrEmpty()) {
+        if (values.isNullOrEmpty()) {
             queryData.remove(uid)
         } else {
-            queryData[uid] = value
+            queryData[uid] = values
         }
 
-        updateSearchParameters(uid, value)
+        updateSearchParameters(uid, values)
         updateSearch()
     }
 
     private fun updateSearchParameters(
         uid: String,
-        value: String?,
+        values: List<String>?,
     ) {
         val updatedItems =
             uiState.items.map {
                 if (it.uid == uid) {
                     (it as FieldUiModelImpl).copy(
-                        value = value,
+                        value = values?.joinToString(","),
                         displayName =
                             displayNameProvider.provideDisplayName(
                                 valueType = it.valueType,
-                                value = value,
+                                value = values?.joinToString(","),
                                 optionSet = it.optionSet,
                                 periodType = it.periodSelector?.type,
                             ),
@@ -665,7 +664,9 @@ class SearchTEIViewModel(
                         } ?: true
             }
 
-    fun queryDataByProgram(programUid: String?): MutableMap<String, String> = searchRepository.filterQueryForProgram(queryData, programUid)
+    fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> {
+        return searchRepository.filterQueryForProgram(queryData, programUid)
+    }
 
     fun onEnrollClick() {
         _legacyInteraction.postValue(LegacyInteraction.OnEnrollClick(queryData))
@@ -985,14 +986,14 @@ class SearchTEIViewModel(
             is FormIntent.OnTextChange -> {
                 updateQuery(
                     formIntent.uid,
-                    formIntent.value,
+                    formIntent.value?.let { listOf(it) },
                 )
             }
 
             is FormIntent.OnSave -> {
                 updateQuery(
                     formIntent.uid,
-                    formIntent.value,
+                    formIntent.value?.let { listOf(it) },
                 )
             }
 
@@ -1049,7 +1050,7 @@ class SearchTEIViewModel(
         viewModelScope.launch {
             updateQuery(
                 formIntent.uid,
-                formIntent.value,
+                formIntent.value?.let { listOf(it) },
             )
 
             searching = queryData.isNotEmpty()

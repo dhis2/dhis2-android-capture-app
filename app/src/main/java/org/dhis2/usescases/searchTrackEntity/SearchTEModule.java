@@ -70,6 +70,7 @@ import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
+import java.util.List;
 import java.util.Map;
 
 import dagger.Module;
@@ -83,13 +84,13 @@ public class SearchTEModule {
     private final String teiType;
     private final String initialProgram;
     private final Context moduleContext;
-    private final Map<String, String> initialQuery;
+    private final Map<String, List<String>> initialQuery;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
                           Context context,
-                          Map<String, String> initialQuery) {
+                          Map<String, List<String>> initialQuery) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
