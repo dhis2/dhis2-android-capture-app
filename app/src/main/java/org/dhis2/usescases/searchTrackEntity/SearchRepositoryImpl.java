@@ -213,7 +213,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
 
             String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
-            String dataValue = searchParametersModel.getQueryData().get(dataId);
+            List<String> dataValues = searchParametersModel.getQueryData().get(dataId);
 
 
             boolean isTETypeAttribute = d2.trackedEntityModule().trackedEntityTypeAttributes()
@@ -225,13 +225,23 @@ public class SearchRepositoryImpl implements SearchRepository {
                 TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet();
                 boolean isUnique = attribute.unique();
                 boolean isOptionSet = (attribute.optionSet() != null);
-                if (isUnique || isOptionSet) {
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
-                } else if (dataValue.contains("_os_")) {
-                    dataValue = dataValue.split("_os_")[1];
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
-                } else
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).like(dataValue);
+                if(dataValues != null && dataValues.size()>1) {
+                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).in(dataValues);
+
+                } else {
+                    assert dataValues != null;
+                    if(dataValues.size() == 1) {
+                        String dataValue = dataValues.get(0);
+                        if (isUnique || isOptionSet) {
+                            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
+                        } else if (dataValue.contains("_os_")) {
+                            dataValue = dataValue.split("_os_")[1];
+                            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
+                        } else
+                            trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).like(dataValue);
+                    }
+                }
+
             }
         }
 
@@ -244,7 +254,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                          @NonNull String orgUnit,
                                                          @NonNull String programUid,
                                                          @Nullable String teiUid,
-                                                         HashMap<String, String> queryData,
+                                                         HashMap<String, List<String>> queryData,
                                                          @Nullable String fromRelationshipUid) {
 
         Single<String> enrollmentInitial;
@@ -282,7 +292,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);
                         for (String key : queryData.keySet()) {
-                            String dataValue = queryData.get(key);
+                            List<String> dataValues = queryData.get(key);
+
+                            assert dataValues != null;
+                            String dataValue = !dataValues.isEmpty() ? dataValues.get(0) : null;
+                            assert dataValue != null;
                             if (dataValue.contains("_os_"))
                                 dataValue = dataValue.split("_os_")[1];
 
@@ -896,11 +910,11 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @Nullable String programUid) {
-        Map<String, String> filteredQuery = new HashMap<>();
-        for (Map.Entry<String, String> entry : queryData.entrySet()) {
+    public @NotNull Map<String, List<String>> filterQueryForProgram(@NotNull Map<String, List<String>> queryData, @Nullable String programUid) {
+        Map<String, List<String>> filteredQuery = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : queryData.entrySet()) {
             String attributeUid = entry.getKey();
-            String value = entry.getValue();
+            List<String> value = entry.getValue();
             if (programUid == null && attributeIsForType(attributeUid) ||
                     programUid != null && attributeBelongsToProgram(attributeUid, programUid)
             ) {

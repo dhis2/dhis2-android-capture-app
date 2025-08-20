@@ -264,7 +264,7 @@ class SearchRepositoryImplKt(
                             }
 
                             relationshipTarget?.event() != null -> {
-                                Timber.tag("MAP RELATIONSHIP BUILDER")
+                                Timber.tag("MAP RELATIONS BUILDER")
                                     .d("Event need to be added and updated with relationship info")
                             }
                         }

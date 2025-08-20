@@ -14,7 +14,7 @@ class SearchTeiViewModelFactory(
     private val searchRepositoryKt: SearchRepositoryKt,
     private val searchNavPageConfigurator: SearchPageConfigurator,
     private val initialProgramUid: String?,
-    private val initialQuery: MutableMap<String, String>?,
+    private val initialQuery: MutableMap<String, List<String>?>?,
     private val mapDataRepository: MapDataRepository,
     private val networkUtils: NetworkUtils,
     private val dispatchers: DispatcherProvider,
