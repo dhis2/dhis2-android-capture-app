@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity
 
 import android.os.Bundle
 import org.dhis2.commons.Constants
+import kotlin.text.get
 
 enum class SearchTEExtra(
     val key: String,
@@ -16,7 +17,7 @@ fun SearchTEActivity.teiUidExtra() = intent.getStringExtra(SearchTEExtra.TEI_UID
 
 fun SearchTEActivity.programUidExtra() = intent.getStringExtra(SearchTEExtra.PROGRAM_UID.key)
 
-fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, String> {
+fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, List<String>> {
     return when {
         savedInstanceState == null -> {
             val attributes =
@@ -30,11 +31,12 @@ fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, St
             if (attributes.size != values.size) return emptyMap()
             attributes
                 .mapIndexed { index, attributeUid ->
-                    attributeUid to values[index]
+                    attributeUid to listOf(values[index])
                 }.toMap()
         }
         savedInstanceState.containsKey(Constants.QUERY_DATA) -> {
-            savedInstanceState.getSerializable(Constants.QUERY_DATA) as Map<String, String>
+            @Suppress("UNCHECKED_CAST")
+            savedInstanceState.getSerializable(Constants.QUERY_DATA) as Map<String, List<String>>
         }
         else -> {
             emptyMap()

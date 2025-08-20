@@ -46,7 +46,7 @@ class SearchNavigator(
 
     fun changeProgram(
         programUid: String?,
-        currentQueryData: Map<String, String>,
+        currentQueryData: Map<String, List<String>>,
         fromRelationshipTeiUid: String?,
     ) {
         val intent =
@@ -94,20 +94,19 @@ class SearchNavigator(
         )
     }
 
-    private fun updateBundle(
-        programUid: String?,
-        currentQueryData: Map<String, String>,
-    ): Bundle =
-        activity.intent.extras?.apply {
+    private fun updateBundle(programUid: String?, currentQueryData: Map<String, List<String>>): Bundle {
+        return activity.intent.extras?.apply {
             putString(SearchTEActivity.Extra.PROGRAM_UID.key(), programUid)
             putStringArrayList(
                 SearchTEActivity.Extra.QUERY_ATTR.key(),
                 ArrayList(currentQueryData.keys),
             )
-            putStringArrayList(
-                SearchTEActivity.Extra.QUERY_VALUES.key(),
-                ArrayList(currentQueryData.values),
-            )
+            if (!currentQueryData.values.isEmpty()) {
+                putStringArrayList(
+                    SearchTEActivity.Extra.QUERY_VALUES.key(),
+                    ArrayList(currentQueryData.values.first()),
+                )
+            }
         } ?: Bundle()
 }
 

@@ -267,14 +267,14 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void onEnrollClick(HashMap<String, String> queryData) {
+    public void onEnrollClick(HashMap<String, List<String>> queryData) {
         singleEventEnforcer.processEvent(() -> {
             manageEnrollClick(queryData);
             return Unit.INSTANCE;
         });
     }
 
-    public void manageEnrollClick(HashMap<String, String> queryData) {
+    public void manageEnrollClick(HashMap<String, List<String>> queryData) {
         if (selectedProgram != null)
             if (canCreateTei())
                 enroll(selectedProgram.uid(), null, queryData);
@@ -294,7 +294,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
     }
 
     @Override
-    public void enroll(String programUid, String uid, HashMap<String, String> queryData) {
+    public void enroll(String programUid, String uid, HashMap<String, List<String>> queryData) {
 
         compositeDisposable.add(getOrgUnits()
                 .subscribeOn(schedulerProvider.io())
@@ -320,7 +320,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
         );
     }
 
-    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid,  HashMap<String, String> queryData) {
+    private void enrollInOrgUnit(String orgUnitUid, String programUid, String uid,  HashMap<String, List<String>> queryData) {
         compositeDisposable.add(
                 searchRepository.saveToEnroll(trackedEntity.uid(), orgUnitUid, programUid, uid, queryData, view.fromRelationshipTEI())
                         .subscribeOn(schedulerProvider.computation())
