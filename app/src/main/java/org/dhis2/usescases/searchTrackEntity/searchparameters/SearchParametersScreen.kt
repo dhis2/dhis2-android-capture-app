@@ -366,7 +366,7 @@ fun initSearchScreen(
     composeView.setContent {
         SearchParametersScreen(
             resourceManager = resources,
-            uiState = viewModel.uiState,
+            uiState = viewModel.searchParametersUiState,
             onSearch = viewModel::onSearch,
             intentHandler = viewModel::onParameterIntent,
             onShowOrgUnit = onShowOrgUnit,

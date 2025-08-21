@@ -1,5 +1,7 @@
 package org.dhis2.mobile.commons.di
 
+import org.dhis2.mobile.commons.customintents.CustomIntentProvider
+import org.dhis2.mobile.commons.customintents.CustomIntentProviderImpl
 import org.dhis2.mobile.commons.data.TableDimensionRepository
 import org.dhis2.mobile.commons.data.TableDimensionRepositoryImpl
 import org.dhis2.mobile.commons.data.ValueParser
@@ -23,15 +25,17 @@ actual val commonsModule: Module
             single<ValueParser> {
                 ValueParserImpl(get())
             }
-            single<FileController> {
-                FileControllerImpl()
-            }
-            single<FileHandler> {
-                FileHandlerImpl()
-            }
-            single<CrashReportController> {
-                CrashReportControllerImpl()
-            }
+            single<CustomIntentProvider> {
+            CustomIntentProviderImpl(get())
+        }
+        single<FileController> {
+            FileControllerImpl()
+        }
+        single<FileHandler> {
+            FileHandlerImpl()
+        }
+        single<CrashReportController> {
+            CrashReportControllerImpl()}
 
             single<NetworkStatusProvider> {
                 NetworkStatusProviderImpl(get())

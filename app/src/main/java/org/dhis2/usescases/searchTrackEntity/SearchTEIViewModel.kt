@@ -134,7 +134,7 @@ class SearchTEIViewModel(
     private val _teTypeName = MutableLiveData("")
     val teTypeName: LiveData<String> = _teTypeName
 
-    var uiState by mutableStateOf(SearchParametersUiState())
+    var searchParametersUiState by mutableStateOf(SearchParametersUiState())
 
     var mapManager: MapManager? = null
 
@@ -393,7 +393,7 @@ class SearchTEIViewModel(
         values: List<String>?,
     ) {
         val updatedItems =
-            uiState.items.map {
+            searchParametersUiState.items.map {
                 if (it.uid == uid) {
                     (it as FieldUiModelImpl).copy(
                         value = values?.joinToString(","),
@@ -409,7 +409,7 @@ class SearchTEIViewModel(
                     it
                 }
             }
-        uiState = uiState.copy(items = updatedItems)
+        searchParametersUiState = searchParametersUiState.copy(items = updatedItems)
     }
 
     fun clearQueryData() {
@@ -421,11 +421,10 @@ class SearchTEIViewModel(
 
     private fun clearSearchParameters() {
         val updatedItems =
-            uiState.items.map {
+            searchParametersUiState.items.map {
                 (it as FieldUiModelImpl).copy(value = null, displayName = null)
             }
-        uiState =
-            uiState.copy(
+        searchParametersUiState = searchParametersUiState.copy(
                 items = updatedItems,
                 searchedItems = mapOf(),
             )
@@ -444,7 +443,7 @@ class SearchTEIViewModel(
                 ),
             )
         }
-        uiState = uiState.copy(searchEnabled = queryData.isNotEmpty())
+        searchParametersUiState = searchParametersUiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
     private suspend fun loadSearchResults() =
@@ -592,8 +591,7 @@ class SearchTEIViewModel(
             try {
                 if (canPerformSearch()) {
                     searching = queryData.isNotEmpty()
-                    uiState =
-                        uiState.copy(
+                    searchParametersUiState = searchParametersUiState.copy(
                             clearSearchEnabled = queryData.isNotEmpty(),
                             searchedItems = getFriendlyQueryData(),
                         )
@@ -624,8 +622,8 @@ class SearchTEIViewModel(
                             R.string.search_min_num_attr,
                             minAttributesToSearch,
                         )
-                    uiState = uiState.copy(minAttributesMessage = message)
-                    uiState.updateMinAttributeWarning(true)
+                    searchParametersUiState = searchParametersUiState.copy(minAttributesMessage = message)
+                    searchParametersUiState.updateMinAttributeWarning(true)
                     setSearchScreen()
                     _refreshData.postValue(Unit)
                     onNewSearch.emit(Unit)
@@ -876,7 +874,7 @@ class SearchTEIViewModel(
             if (keyBoardIsOpen) closeKeyboardCallback()
             closeSearchOrFilterCallback()
             viewModelScope.launch {
-                uiState.onBackPressed(true)
+                searchParametersUiState.onBackPressed(true)
             }
         } else if (keyBoardIsOpen) {
             closeKeyboardCallback()
@@ -977,7 +975,7 @@ class SearchTEIViewModel(
             viewModelScope.launch {
                 val fieldUiModels =
                     searchRepositoryKt.searchParameters(programUid, teiTypeUid)
-                uiState = uiState.copy(items = fieldUiModels)
+                searchParametersUiState = searchParametersUiState.copy(items = fieldUiModels)
             }
     }
 
@@ -1003,7 +1001,7 @@ class SearchTEIViewModel(
 
             is FormIntent.OnFocus -> {
                 val updatedItems =
-                    uiState.items.map { field ->
+                    searchParametersUiState.items.map { field ->
                         if (field.focused && field.uid != formIntent.uid) {
                             val validation =
                                 field.value
@@ -1031,7 +1029,7 @@ class SearchTEIViewModel(
                             field
                         }
                     }
-                uiState = uiState.copy(items = updatedItems)
+                searchParametersUiState = searchParametersUiState.copy(items = updatedItems)
             }
 
             is FormIntent.ClearValue -> {
@@ -1054,8 +1052,7 @@ class SearchTEIViewModel(
             )
 
             searching = queryData.isNotEmpty()
-            uiState =
-                uiState.copy(
+            searchParametersUiState = searchParametersUiState.copy(
                     clearSearchEnabled = queryData.isNotEmpty(),
                     searchedItems = getFriendlyQueryData(),
                 )
@@ -1107,19 +1104,19 @@ class SearchTEIViewModel(
 
     fun clearFocus() {
         val updatedItems =
-            uiState.items.map {
+            searchParametersUiState.items.map {
                 if (it.focused) {
                     (it as FieldUiModelImpl).copy(focused = false)
                 } else {
                     it
                 }
             }
-        uiState = uiState.copy(items = updatedItems)
+        searchParametersUiState = searchParametersUiState.copy(items = updatedItems)
     }
 
     fun getFriendlyQueryData(): Map<String, String> {
         val map = mutableMapOf<String, String>()
-        uiState.items
+        searchParametersUiState.items
             .filter { !it.value.isNullOrEmpty() }
             .forEach { item ->
 
