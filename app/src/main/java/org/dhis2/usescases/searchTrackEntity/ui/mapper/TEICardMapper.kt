@@ -3,7 +3,7 @@ package org.dhis2.usescases.searchTrackEntity.ui.mapper
 import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Close

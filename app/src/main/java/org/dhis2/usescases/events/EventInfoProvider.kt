@@ -1,6 +1,6 @@
 package org.dhis2.usescases.events
 
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.EventBusy
