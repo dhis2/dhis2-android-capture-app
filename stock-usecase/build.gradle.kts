@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.bundles.stock.implementation)
+    implementation(libs.androidx.compose)
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
     testImplementation(libs.bundles.stock.test)
