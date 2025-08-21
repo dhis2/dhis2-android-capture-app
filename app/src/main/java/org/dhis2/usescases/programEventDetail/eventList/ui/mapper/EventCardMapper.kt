@@ -2,7 +2,6 @@ package org.dhis2.usescases.programEventDetail.eventList.ui.mapper
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Event
@@ -11,6 +10,7 @@ import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R

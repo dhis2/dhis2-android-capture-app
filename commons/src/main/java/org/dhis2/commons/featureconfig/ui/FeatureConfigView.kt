@@ -12,15 +12,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +49,7 @@ class FeatureConfigView : AppCompatActivity() {
 
     private val viewModel: FeatureConfigViewModel by viewModels { viewModelFactory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         handleInsets()
@@ -59,14 +62,17 @@ class FeatureConfigView : AppCompatActivity() {
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(
-                        backgroundColor = colorResource(id = R.color.colorPrimary),
-                        title = { Text(text = stringResource(id = R.string.feature_configuration), color = Color.White) },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = colorResource(id = R.color.colorPrimary),
+                            titleContentColor = Color.White,
+                            navigationIconContentColor = Color.White,
+                        ),
+                        title = { Text(text = stringResource(id = R.string.feature_configuration)) },
                         navigationIcon = {
                             IconButton(onClick = { onBackPressedDispatcher.onBackPressed() }) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowBackIosNew,
                                     contentDescription = "Back",
-                                    tint = Color.White,
                                 )
                             }
                         },
@@ -85,7 +91,9 @@ class FeatureConfigView : AppCompatActivity() {
                         }
 
                         Row(
-                            Modifier.fillMaxWidth().padding(Spacing.Spacing16),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(Spacing.Spacing16),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = spacedBy(8.dp),
                         ) {
