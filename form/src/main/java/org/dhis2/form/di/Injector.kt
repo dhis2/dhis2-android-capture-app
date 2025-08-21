@@ -40,8 +40,8 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
-import org.dhis2.mobile.commons.customintents.CustomIntentProvider
-import org.dhis2.mobile.commons.customintents.CustomIntentProviderImpl
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
+import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.EvaluationType
@@ -87,8 +87,8 @@ object Injector {
 
     fun provideDispatchers(): DispatcherProvider = FormDispatcher()
 
-    fun provideCustomIntentProvider(): CustomIntentProvider {
-        return CustomIntentProviderImpl(provideD2())
+    fun provideCustomIntentProvider(): CustomIntentRepository {
+        return CustomIntentRepositoryImpl(provideD2())
     }
 
     private fun provideFormRepository(
@@ -160,7 +160,7 @@ object Injector {
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
             metadataIconProvider = metadataIconProvider,
-            customIntentProvider = provideCustomIntentProvider(),
+            customIntentRepository = provideCustomIntentProvider(),
         )
 
     private fun provideEventRepository(
@@ -180,7 +180,7 @@ object Injector {
                 ),
             eventMode = eventRecords.eventMode,
             dispatcherProvider = provideDispatchers(),
-            customIntentProvider = provideCustomIntentProvider(),
+            customIntentRepository = provideCustomIntentProvider(),
         )
 
     private fun provideEnrollmentFormLabelsProvider(context: Context) = EnrollmentFormLabelsProvider(provideResourcesManager(context))

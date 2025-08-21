@@ -28,7 +28,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.mobile.commons.customintents.CustomIntentProvider
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
@@ -59,7 +59,7 @@ class EventRepository(
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val eventMode: EventMode,
-    private val customIntentProvider: CustomIntentProvider,
+    private val customIntentRepository: CustomIntentRepository,
     dispatcherProvider: DispatcherProvider,
 ) : DataEntryBaseRepository(
         FormBaseConfiguration(d2, dispatcherProvider),
@@ -620,7 +620,7 @@ class EventRepository(
                     programStageDataElement.dataElement()!!.uid(),
                 ).blockingGet()
         val uid = de?.uid() ?: ""
-        val customIntent = customIntentProvider.getCustomIntentsWithTrigger(uid, programUid, programStage?.uid())
+        val customIntent = customIntentRepository.getCustomIntents(uid, programUid, programStage?.uid())
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false
