@@ -214,8 +214,8 @@ class SearchTEList : FragmentGlobalAbstract() {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
                         .createButtonScrollVisibility.observeAsState(true)
-                    val queryData = remember(viewModel.uiState) {
-                        viewModel.uiState.searchedItems
+                    val queryData = remember(viewModel.searchParametersUiState) {
+                        viewModel.searchParametersUiState.searchedItems
                     }
 
                     FullSearchButtonAndWorkingList(
@@ -251,7 +251,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                     .createButtonScrollVisibility.observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
                 val teTypeName by viewModel.teTypeName.observeAsState()
-                val hasQueryData = remember(viewModel.uiState) {
+                val hasQueryData = remember(viewModel.searchParametersUiState) {
                     viewModel.queryData.isNotEmpty()
                 }
 
