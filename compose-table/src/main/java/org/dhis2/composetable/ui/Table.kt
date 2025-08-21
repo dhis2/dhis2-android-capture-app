@@ -125,7 +125,9 @@ fun Table(
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
                     }
-                    stickyFooter(keyboardState == Keyboard.Closed)
+                    if (index != 0) {
+                        stickyFooter(keyboardState == Keyboard.Closed)
+                    }
                 }
                 bottomContent?.let { item { it.invoke() } }
             }
