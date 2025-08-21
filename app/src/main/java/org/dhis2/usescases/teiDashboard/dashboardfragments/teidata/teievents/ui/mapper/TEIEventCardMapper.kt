@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.mapper
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Event

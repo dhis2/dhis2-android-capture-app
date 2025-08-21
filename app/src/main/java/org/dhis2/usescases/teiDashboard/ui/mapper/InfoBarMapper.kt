@@ -1,6 +1,6 @@
 package org.dhis2.usescases.teiDashboard.ui.mapper
 
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircle

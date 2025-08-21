@@ -2,7 +2,7 @@ package org.dhis2.usescases.programEventDetail.eventList.ui.mapper
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Event

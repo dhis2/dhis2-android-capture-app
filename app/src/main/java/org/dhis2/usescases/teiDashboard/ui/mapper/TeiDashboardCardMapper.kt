@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.ui.mapper
 
 import android.graphics.BitmapFactory
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.PhoneEnabled
