@@ -56,7 +56,7 @@ class SearchTEIViewModelTest {
 
     private lateinit var viewModel: SearchTEIViewModel
     private val initialProgram = "programUid"
-    private val initialQuery = mutableMapOf<String, String>()
+    private val initialQuery = mutableMapOf<String, List<String>?>()
     private val repository: SearchRepository = mock()
     private val repositoryKt: SearchRepositoryKt =
         mock {
@@ -453,7 +453,7 @@ class SearchTEIViewModelTest {
         setAllowCreateBeforeSearch(false)
         whenever(
             repository.filterQueryForProgram(viewModel.queryData, null),
-        ) doReturn mapOf("field" to "value")
+        ) doReturn mapOf("field" to listOf("value"))
 
         performSearch()
         viewModel.onDataLoaded(1)
