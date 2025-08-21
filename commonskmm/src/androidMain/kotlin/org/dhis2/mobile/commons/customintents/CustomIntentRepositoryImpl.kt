@@ -10,12 +10,12 @@ import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType as ExtraType
 
-class CustomIntentProviderImpl(
+class CustomIntentRepositoryImpl(
     private val d2: D2,
-) : CustomIntentProvider {
+) : CustomIntentRepository {
     private val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
 
-    override fun getCustomIntentsWithTrigger(
+    override fun getCustomIntents(
         triggerUid: String?,
         programUid: String?,
         programStageUid: String?,
