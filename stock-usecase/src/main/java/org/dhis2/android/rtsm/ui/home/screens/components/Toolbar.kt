@@ -34,6 +34,7 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -62,6 +63,7 @@ fun Toolbar(
                     text = capitalizeText(title).ifBlank {
                         stringResource(R.string.title_activity_home)
                     },
+                    color = SurfaceColor.SurfaceBright,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     fontSize = 17.sp,
