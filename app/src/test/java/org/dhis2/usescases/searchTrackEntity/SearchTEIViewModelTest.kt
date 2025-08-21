@@ -293,7 +293,7 @@ class SearchTEIViewModelTest {
     fun `Should use callback to perform min attributes warning`() = runTest {
         setCurrentProgram(testingProgram(displayFrontPageList = false))
         viewModel.onSearch()
-        viewModel.uiState.shouldShowMinAttributeWarning.test {
+        viewModel.searchParametersUiState.shouldShowMinAttributeWarning.test {
             assertTrue(awaitItem())
         }
     }
@@ -656,7 +656,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should return user-friendly names on search parameters fields`() {
-        viewModel.uiState = viewModel.uiState.copy(items = getFieldUIModels())
+        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getFieldUIModels())
         val expectedMap = mapOf(
             "uid1" to "Friendly OrgUnit Name",
             "uid2" to "Male",
@@ -675,17 +675,17 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should clear uiState when clearing data`() {
-        viewModel.uiState = viewModel.uiState.copy(items = getFieldUIModels())
+        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getFieldUIModels())
         performSearch()
         viewModel.clearQueryData()
         assert(viewModel.queryData.isEmpty())
-        assert(viewModel.uiState.items.all { it.value == null })
-        assert(viewModel.uiState.searchedItems.isEmpty())
+        assert(viewModel.searchParametersUiState.items.all { it.value == null })
+        assert(viewModel.searchParametersUiState.searchedItems.isEmpty())
     }
 
     @Test
     fun `should return date without format`() {
-        viewModel.uiState = viewModel.uiState.copy(items = getMalformedDateFieldUIModels())
+        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getMalformedDateFieldUIModels())
         val expectedMap = mapOf(
             "uid1" to "04",
         )
