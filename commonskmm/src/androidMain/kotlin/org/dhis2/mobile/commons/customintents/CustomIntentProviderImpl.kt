@@ -13,7 +13,7 @@ import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType as Extr
 class CustomIntentProviderImpl(
     private val d2: D2,
 ) : CustomIntentProvider {
-    val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
+    private val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
 
     override fun getCustomIntentsWithTrigger(
         triggerUid: String?,
@@ -23,7 +23,7 @@ class CustomIntentProviderImpl(
         return getCustomIntentFromUid(triggerUid, CustomIntentContext(programUid, programStageUid))
     }
 
-    fun getCustomIntentFromUid(uid: String?, context: CustomIntentContext): CustomIntentModel? {
+    private fun getCustomIntentFromUid(uid: String?, context: CustomIntentContext): CustomIntentModel? {
         return getFilteredCustomIntents(uid).firstOrNull { customIntent ->
             customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
         }?.let {
@@ -68,7 +68,7 @@ class CustomIntentProviderImpl(
         }
     }
 
-    fun evaluateCustomIntentRequestParams(
+    private fun evaluateCustomIntentRequestParams(
         customIntent: CustomIntent,
         context: CustomIntentContext,
     ): Map<String, Any?> {
