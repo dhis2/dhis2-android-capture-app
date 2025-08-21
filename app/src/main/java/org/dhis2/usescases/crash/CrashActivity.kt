@@ -2,7 +2,6 @@ package org.dhis2.usescases.crash
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -26,8 +25,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,8 +67,10 @@ class CrashActivity : AppCompatActivity() {
                             goBack()
                         }
                     },
-                ) {
+                ) { paddingValues ->
                     CrashScreen(
+                        modifier = Modifier
+                            .padding(paddingValues),
                         crashReport = loadCrashReport(),
                         onCopy = { copyTextToClipboard(it) },
                     )
@@ -92,7 +93,7 @@ class CrashActivity : AppCompatActivity() {
 
     private fun copyTextToClipboard(textToCopy: String) {
         val clipboard =
-            getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         if (textToCopy.isNotEmpty()) {
             val clip = ClipData.newPlainText("copy", textToCopy)
             clipboard.setPrimaryClip(clip)
@@ -121,8 +122,12 @@ data class CrashReport(
 )
 
 @Composable
-fun CrashScreen(crashReport: CrashReport, onCopy: (textToCopy: String) -> Unit) {
-    Column(modifier = Modifier.fillMaxHeight()) {
+fun CrashScreen(
+    modifier: Modifier = Modifier,
+    crashReport: CrashReport,
+    onCopy: (textToCopy: String) -> Unit,
+) {
+    Column(modifier = modifier.fillMaxHeight()) {
         CrashHeader()
         CrashDeviceInfo(crashReport)
         CrashStackTraceInfo(crashReport.stackTrace) {

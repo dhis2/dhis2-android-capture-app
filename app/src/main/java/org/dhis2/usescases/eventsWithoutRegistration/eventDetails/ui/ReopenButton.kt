@@ -10,22 +10,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.dhis2.R
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @ExperimentalAnimationApi
 @Composable
@@ -39,12 +37,11 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
             onClick = onReopenClickListener,
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.section_warning_color),
+                containerColor = colorResource(id = R.color.section_warning_color),
             ),
             contentPadding = PaddingValues(10.dp),
             modifier = Modifier
                 .height(40.dp)
-                .wrapContentWidth()
                 .wrapContentWidth(),
         ) {
             Icon(
@@ -55,11 +52,8 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
             Spacer(modifier = Modifier.size(8.dp))
             Text(
                 text = "Re-open form",
-                fontSize = 14.sp,
                 color = Color.White,
-                style = TextStyle.Default.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                ),
+                style = MaterialTheme.typography.labelLarge,
             )
         }
     }
@@ -69,5 +63,7 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
 @Preview
 @Composable
 fun ReopenButtonPreview() {
-    ReopenButton(visible = true) {}
+    DHIS2Theme {
+        ReopenButton(visible = true) {}
+    }
 }

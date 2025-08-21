@@ -85,7 +85,6 @@ dependencies {
     api(libs.androidx.viewModelKtx)
     api(libs.androidx.recyclerView)
     debugApi(libs.androidx.compose.uitooling)
-    api(libs.androidx.compose)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
     api(libs.androidx.compose.paging)

@@ -23,14 +23,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -96,7 +96,10 @@ fun TroubleshootingScreen(
                 languageSelectorVisible = !languageSelectorVisible
             },
         )
-        Divider(startIndent = 72.dp, thickness = if (languageSelectorVisible) 0.dp else 1.dp)
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 72.dp),
+            thickness = if (languageSelectorVisible) 0.dp else 1.dp,
+        )
         LanguageSelector(
             currentLocale = currentLocale,
             languages = localesToShow,
@@ -114,7 +117,10 @@ fun TroubleshootingScreen(
                 troubleshootingViewModel.fetchRuleValidations()
             },
         )
-        Divider(startIndent = 72.dp, thickness = if (rulesValidationVisible) 0.dp else 1.dp)
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 72.dp),
+            thickness = if (rulesValidationVisible) 0.dp else 1.dp,
+        )
         ProgramRuleConfigurationItemList(
             visible = rulesValidationVisible,
             configurationErrors = ruleValidations,
@@ -251,9 +257,10 @@ fun LanguageSelector(
                                 expanded = false
                                 onLanguageChanged(locale)
                             },
-                        ) {
-                            Text(text = locale.displayName.replaceFirstChar { it.uppercase() })
-                        }
+                            text = {
+                                Text(text = locale.displayName.replaceFirstChar { it.uppercase() })
+                            },
+                        )
                     }
                 }
             }

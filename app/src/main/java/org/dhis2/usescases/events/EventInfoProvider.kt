@@ -1,6 +1,5 @@
 package org.dhis2.usescases.events
 
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.EventBusy
@@ -8,6 +7,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material3.Icon
 import org.dhis2.R
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.enrollment
