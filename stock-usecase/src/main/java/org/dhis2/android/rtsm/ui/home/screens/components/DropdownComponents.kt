@@ -14,13 +14,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -172,7 +172,7 @@ fun DropdownComponentTransactions(
                                 isExpanded = false
                             }
                         },
-                    ) {
+                        text = {
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -196,7 +196,7 @@ fun DropdownComponentTransactions(
                             )
                             Text(text = capitalizeText(item.label))
                         }
-                    }
+                    )
                 }
             }
         }
@@ -428,7 +428,7 @@ fun DropdownComponentDistributedTo(
                                 onDestinationSelected.invoke(item)
                             }
                         },
-                    ) {
+                        text = {
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -451,7 +451,7 @@ fun DropdownComponentDistributedTo(
                         ) {
                             Text(text = capitalizeText(item.displayName().toString()))
                         }
-                    }
+                    )
                 }
             }
         }

@@ -2,11 +2,8 @@ package org.dhis2.android.rtsm.ui.home.screens
 
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.BackdropScaffold
-import androidx.compose.material.BackdropValue
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -22,7 +19,6 @@ import kotlinx.coroutines.CoroutineScope
 import org.dhis2.android.rtsm.ui.home.HomeViewModel
 import org.dhis2.android.rtsm.ui.home.screens.components.AnalyticsTopBar
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AnalyticsScreen(
     modifier: Modifier = Modifier,
@@ -33,11 +29,10 @@ fun AnalyticsScreen(
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     supportFragmentManager: FragmentManager,
 ) {
-    val backdropState = rememberBackdropScaffoldState(BackdropValue.Revealed)
     val settingsUiState by viewModel.settingsUiState.collectAsState()
-    BackdropScaffold(
+    Scaffold(
         modifier = modifier,
-        appBar = {
+        topBar = {
             AnalyticsTopBar(
                 title = settingsUiState.programName,
                 themeColor = themeColor,
@@ -48,11 +43,7 @@ fun AnalyticsScreen(
                 syncAction = syncAction,
             )
         },
-        backLayerBackgroundColor = themeColor,
-        backLayerContent = {
-        },
-        frontLayerElevation = 0.dp,
-        frontLayerContent = {
+        content = { paddingValues ->
             var frameId = 0
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -68,9 +59,5 @@ fun AnalyticsScreen(
                 },
             )
         },
-        scaffoldState = backdropState,
-        gesturesEnabled = false,
-        frontLayerBackgroundColor = Color.White,
-        frontLayerScrimColor = Color.Unspecified,
     )
 }

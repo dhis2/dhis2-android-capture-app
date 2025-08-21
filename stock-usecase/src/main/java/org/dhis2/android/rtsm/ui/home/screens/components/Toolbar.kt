@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.MaterialTheme
@@ -134,9 +135,11 @@ fun Toolbar(
                 )
             }
         },
-        backgroundColor = themeColor,
-        contentColor = Color.White,
-        elevation = 0.dp,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = themeColor,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        ),
     )
 }
 
@@ -232,9 +235,11 @@ fun AnalyticsTopBar(
                 )
             }
         },
-        backgroundColor = themeColor,
-        contentColor = Color.White,
-        elevation = 0.dp,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = themeColor,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        ),
     )
 }
 
