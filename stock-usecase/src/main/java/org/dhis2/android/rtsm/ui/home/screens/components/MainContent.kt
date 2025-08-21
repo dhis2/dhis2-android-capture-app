@@ -16,8 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.BackdropScaffoldState
-import androidx.compose.material.ExperimentalMaterialApi
+import org.dhis2.android.rtsm.ui.home.screens.components.BackdropState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
@@ -61,10 +60,9 @@ import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 import org.dhis2.composetable.actions.TableResizeActions
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MainContent(
-    backdropState: BackdropScaffoldState,
+    backdropState: BackdropState,
     isFrontLayerDisabled: Boolean?,
     themeColor: Color,
     viewModel: HomeViewModel,

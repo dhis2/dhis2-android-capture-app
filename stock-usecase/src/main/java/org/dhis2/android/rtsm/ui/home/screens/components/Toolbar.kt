@@ -7,8 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.BackdropScaffoldState
-import androidx.compose.material.ExperimentalMaterialApi
+import org.dhis2.android.rtsm.ui.home.screens.components.BackdropState
 import androidx.compose.material3.Icon
 import androidx.compose.material.ScaffoldState
 import androidx.compose.material3.Text
@@ -44,7 +43,7 @@ fun Toolbar(
     to: String?,
     themeColor: Color,
     launchBottomSheet: () -> Unit,
-    backdropState: BackdropScaffoldState,
+    backdropState: BackdropState,
     scaffoldState: ScaffoldState,
     syncAction: (scope: CoroutineScope, scaffoldState: ScaffoldState) -> Unit = { _, _ -> },
     hasFacilitySelected: Boolean,
