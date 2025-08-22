@@ -73,9 +73,9 @@ public class SearchTEContractsModule {
 
         void onBackClick();
 
-        void onEnrollClick(HashMap<String, String> queryData);
+        void onEnrollClick(HashMap<String,  List<String>> queryData);
 
-        void enroll(String programUid, String teiUid, HashMap<String, String> queryData);
+        void enroll(String programUid, String teiUid, HashMap<String, List<String>> queryData);
 
         void onTEIClick(String teiUid, String enrollmentUid, boolean isOnline);
 

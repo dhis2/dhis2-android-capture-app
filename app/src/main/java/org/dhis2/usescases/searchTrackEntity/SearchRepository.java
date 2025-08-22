@@ -37,7 +37,7 @@ public interface SearchRepository {
     Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
 
     @NonNull
-    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, @Nullable String fromRelationshipUid);
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, List<String>> queryData, @Nullable String fromRelationshipUid);
 
     Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
@@ -75,7 +75,7 @@ public interface SearchRepository {
     @Nullable
     String currentProgram();
 
-    @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
+    @NotNull Map<String, List<String>> filterQueryForProgram(@NotNull Map<String, List<String>> queryData, @org.jetbrains.annotations.Nullable String programUid);
 
     boolean canCreateInProgramWithoutSearch();
 

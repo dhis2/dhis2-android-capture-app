@@ -9,7 +9,7 @@ enum class LegacyInteractionID {
 }
 
 sealed class LegacyInteraction(val id: LegacyInteractionID) {
-    data class OnEnrollClick(val queryData: MutableMap<String, String>) :
+    data class OnEnrollClick(val queryData: MutableMap<String, List<String>?>) :
         LegacyInteraction(LegacyInteractionID.ON_ENROLL_CLICK)
 
     data class OnAddRelationship(
@@ -24,7 +24,7 @@ sealed class LegacyInteraction(val id: LegacyInteractionID) {
     data class OnEnroll(
         val initialProgramUid: String?,
         val teiUid: String,
-        val queryData: MutableMap<String, String>,
+        val queryData: MutableMap<String, List<String>?>,
     ) : LegacyInteraction(LegacyInteractionID.ON_ENROLL)
 
     data class OnTeiClick(val teiUid: String, val enrollmentUid: String?, val online: Boolean) :

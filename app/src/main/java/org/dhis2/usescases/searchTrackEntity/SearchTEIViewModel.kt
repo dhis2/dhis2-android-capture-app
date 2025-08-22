@@ -70,7 +70,7 @@ const val TEI_TYPE_SEARCH_MAX_RESULTS = 5
 
 class SearchTEIViewModel(
     val initialProgramUid: String?,
-    initialQuery: MutableMap<String, String>?,
+    initialQuery: MutableMap<String, List<String>?>?,
     private val searchRepository: SearchRepository,
     private val searchRepositoryKt: SearchRepositoryKt,
     private val searchNavPageConfigurator: SearchPageConfigurator,
@@ -93,7 +93,7 @@ class SearchTEIViewModel(
     val navigationBarUIState: MutableState<NavigationBarUIState<NavigationPage>> =
         _navigationBarUIState
 
-    val queryData = mutableMapOf<String, String>().apply {
+    val queryData = mutableMapOf<String, List<String>?>().apply {
         initialQuery?.let { putAll(it) }
     }
 
@@ -352,25 +352,25 @@ class SearchTEIViewModel(
         performSearch()
     }
 
-    private fun updateQuery(uid: String, value: String?) {
-        if (value.isNullOrEmpty()) {
+    private fun updateQuery(uid: String, values: List<String>?) {
+        if (values.isNullOrEmpty()) {
             queryData.remove(uid)
         } else {
-            queryData[uid] = value
+            queryData[uid] = values
         }
 
-        updateSearchParameters(uid, value)
+        updateSearchParameters(uid, values)
         updateSearch()
     }
 
-    private fun updateSearchParameters(uid: String, value: String?) {
+    private fun updateSearchParameters(uid: String, values: List<String>?) {
         val updatedItems = uiState.items.map {
             if (it.uid == uid) {
                 (it as FieldUiModelImpl).copy(
-                    value = value,
+                    value = values?.joinToString(","),
                     displayName = displayNameProvider.provideDisplayName(
                         valueType = it.valueType,
-                        value = value,
+                        value = values?.joinToString(","),
                         optionSet = it.optionSet,
                         periodType = it.periodSelector?.type,
                     ),
@@ -615,7 +615,7 @@ class SearchTEIViewModel(
         }
     }
 
-    fun queryDataByProgram(programUid: String?): MutableMap<String, String> {
+    fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> {
         return searchRepository.filterQueryForProgram(queryData, programUid)
     }
 
@@ -910,14 +910,14 @@ class SearchTEIViewModel(
         is FormIntent.OnTextChange -> {
             updateQuery(
                 formIntent.uid,
-                formIntent.value,
+                formIntent.value?.let { listOf(it) },
             )
         }
 
         is FormIntent.OnSave -> {
             updateQuery(
                 formIntent.uid,
-                formIntent.value,
+                formIntent.value?.let { listOf(it) },
             )
         }
 
@@ -966,7 +966,7 @@ class SearchTEIViewModel(
         viewModelScope.launch {
             updateQuery(
                 formIntent.uid,
-                formIntent.value,
+                formIntent.value?.let { listOf(it) },
             )
 
             searching = queryData.isNotEmpty()

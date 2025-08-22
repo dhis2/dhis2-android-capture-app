@@ -109,7 +109,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     lateinit var resourceManager: ResourceManager
 
     private var initialProgram: String? = null
-    private var initialQuery: Map<String, String>? = null
+    private var initialQuery: Map<String, List<String>>? = null
 
     private var fromRelationship = false
     private var fromRelationshipTeiUid: String? = null

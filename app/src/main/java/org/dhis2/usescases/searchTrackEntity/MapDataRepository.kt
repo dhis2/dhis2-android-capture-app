@@ -22,7 +22,7 @@ class MapDataRepository(
 
     fun getTrackerMapData(
         selectedProgram: Program?,
-        queryData: MutableMap<String, String>,
+        queryData: MutableMap<String, List<String>?>,
         layersVisibility: Map<String, MapLayer> = emptyMap(),
     ): TrackerMapData {
         val mapTeis = searchRepositoryKt.searchTeiForMap(
