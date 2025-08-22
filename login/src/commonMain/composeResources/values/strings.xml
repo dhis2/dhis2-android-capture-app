@@ -10,4 +10,10 @@
     <string name="server_verification_running">Establishing connection...</string>
     <string name="server_verification_title">Which server do you want to connect to?</string>
     <string name="server_url_title">Server URL</string>
+    <string name="two_fa_is_on">Two-factor authentication is on.</string>
+    <string name="two_fa_disable_title">Turning off two-factor authentication</string>
+    <string name="two_fa_disable_desc_1">To disable two-factor authentication open your authenticator app.</string>
+    <string name="two_fa_disable_desc_2">Enter the code from your authenticator app below.</string>
+    <string name="two_fa_code">Authentication code</string>
+    <string name="two_fa_disable_button">Turn off</string>
 </resources>

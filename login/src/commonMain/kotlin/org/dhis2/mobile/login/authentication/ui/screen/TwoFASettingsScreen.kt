@@ -164,7 +164,11 @@ fun TwoFASettingsScreen(
 
                     is TwoFAUiState.Disable -> {
                         item {
-                            Text(text = "Two factor authentication is disable screen.")
+                            TwoFADisableScreen(
+                                (uiState as TwoFAUiState.Disable).errorMessage,
+                            ) { code ->
+                                viewModel.disableTwoFA(code)
+                            }
                         }
                     }
                 }
