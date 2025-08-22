@@ -18,7 +18,7 @@ updates:
       - dependency-name: "com.squareup.okhttp3:*"
       # Ignore pre-release versions (alpha, dev, beta, rc, snapshot)
       - dependency-name: "*"
-        update-types: ["version-update:semver-prerelease"]      
+        update-types: ["version-update:semver-prerelease"]
     groups:
       gradle-updates:
         patterns:
