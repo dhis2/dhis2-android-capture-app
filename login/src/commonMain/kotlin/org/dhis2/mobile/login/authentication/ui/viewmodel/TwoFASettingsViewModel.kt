@@ -6,15 +6,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 
 open class TwoFASettingsViewModel(
     private val getTwoFAStatus: GetTwoFAStatus,
+    private val disableTwoFA: DisableTwoFA,
     private val mapper: TwoFAUiStateMapper,
 ) : ViewModel() {
-
     private val _uiState = MutableStateFlow<TwoFAUiState>(TwoFAUiState.Checking)
     val uiState: StateFlow<TwoFAUiState> = _uiState.asStateFlow()
 
@@ -35,5 +36,13 @@ open class TwoFASettingsViewModel(
 
     fun retry() {
         checkTwoFAStatus()
+    }
+
+    fun disableTwoFA(code: String) {
+        viewModelScope.launch {
+            disableTwoFA.invoke(code).collect { status ->
+                _uiState.value = mapper.mapToUiState(status)
+            }
+        }
     }
 }

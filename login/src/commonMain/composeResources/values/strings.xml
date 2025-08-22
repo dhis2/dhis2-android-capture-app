@@ -7,4 +7,10 @@
     <string name="two_fa_checking_status">Checking status...</string>
     <string name="back_to_settings">Back to settings</string>
     <string name="action_next">Next</string>
+    <string name="two_fa_is_on">Two-factor authentication is on.</string>
+    <string name="two_fa_disable_title">Turning off two-factor authentication</string>
+    <string name="two_fa_disable_desc_1">To disable two-factor authentication open your authenticator app.</string>
+    <string name="two_fa_disable_desc_2">Enter the code from your authenticator app below.</string>
+    <string name="two_fa_code">Authentication code</string>
+    <string name="two_fa_disable_button">Turn off</string>
 </resources>
