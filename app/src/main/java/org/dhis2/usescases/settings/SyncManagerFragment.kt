@@ -53,7 +53,6 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
         savedInstanceState: Bundle?,
     ): View {
         init(requireContext())
-
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,

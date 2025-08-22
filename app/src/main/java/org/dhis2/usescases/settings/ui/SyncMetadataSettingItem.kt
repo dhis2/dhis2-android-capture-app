@@ -10,10 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -23,11 +20,14 @@ import org.dhis2.bindings.EVERY_7_DAYS
 import org.dhis2.commons.Constants
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 internal fun SyncMetadataSettingItem(
@@ -38,39 +38,27 @@ internal fun SyncMetadataSettingItem(
     onSyncMetadataClick: () -> Unit,
     onSyncMetaPeriodChanged: (Int) -> Unit,
 ) {
+    val additionalInfoList = when {
+        metadataSettings.syncInProgress -> {
+            provideSyncInProgressInfoItems(metadataSettings.metadataSyncPeriod)
+        }
+
+        metadataSettings.hasErrors -> {
+            provideHasErrorItems(metadataSettings.metadataSyncPeriod)
+        }
+
+        else -> {
+            provideDefaultInfoItems(
+                metadataSettings.metadataSyncPeriod,
+                metadataSettings.lastMetadataSync,
+            )
+        }
+    }
+
     SettingItem(
         modifier = Modifier.testTag(SettingItem.META_SYNC.name),
         title = stringResource(id = R.string.settingsSyncMetadata),
-        subtitle = buildAnnotatedString {
-            val currentMetadataSyncPeriod = syncPeriodLabel(metadataSettings.metadataSyncPeriod)
-            when {
-                metadataSettings.syncInProgress -> {
-                    append(
-                        currentMetadataSyncPeriod + "\n" + stringResource(R.string.syncing_configuration),
-                    )
-                }
-
-                metadataSettings.hasErrors -> {
-                    val message =
-                        currentMetadataSyncPeriod + "\n" + stringResource(R.string.metadata_sync_error)
-                    append(message)
-                    addStyle(
-                        style = SpanStyle(color = colorResource(R.color.red_060)),
-                        start = 0,
-                        end = message.length,
-                    )
-                }
-
-                else -> {
-                    append(
-                        currentMetadataSyncPeriod + "\n" + String.format(
-                            stringResource(R.string.last_data_sync_date),
-                            metadataSettings.lastMetadataSync,
-                        ),
-                    )
-                }
-            }
-        },
+        additionalInfoList = additionalInfoList,
         icon = Icons.Outlined.CloudSync,
         extraActions = {
             Column(
@@ -131,3 +119,43 @@ internal fun SyncMetadataSettingItem(
         onClick = onClick,
     )
 }
+
+@Composable
+private fun provideDefaultInfoItems(metadataSyncPeriod: Int, lastMetadataSync: String) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod),
+    ),
+    AdditionalInfoItem(
+        key = stringResource(R.string.last_data_sync),
+        value = lastMetadataSync,
+        color = TextColor.OnSurface,
+    ),
+)
+
+@Composable
+private fun provideHasErrorItems(metadataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.metadata_sync_error),
+        isConstantItem = true,
+        color = AdditionalInfoItemColor.ERROR.color,
+    ),
+)
+
+@Composable
+private fun provideSyncInProgressInfoItems(metadataSyncPeriod: Int) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.syncing_configuration),
+        isConstantItem = true,
+    ),
+)

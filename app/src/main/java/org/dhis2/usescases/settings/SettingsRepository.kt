@@ -1,6 +1,7 @@
 package org.dhis2.usescases.settings
 
 import io.reactivex.Single
+import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -292,4 +293,6 @@ class SettingsRepository(
     fun isTwoFAConfigured(): Boolean {
         return featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
     }
+
+    fun getVersionName(): String = BuildConfig.VERSION_NAME
 }
