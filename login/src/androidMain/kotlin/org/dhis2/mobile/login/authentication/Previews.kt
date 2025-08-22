@@ -1,0 +1,21 @@
+package org.dhis2.mobile.login.authentication
+
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import org.dhis2.mobile.login.authentication.ui.screen.TwoFAToEnableScreen
+import org.dhis2.mobile.login.authentication.ui.state.TwoFaEnableUiState
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+
+@Preview(showBackground = true)
+@Composable
+fun TwoFAToEnableScreenPreview() {
+    DHIS2Theme {
+        TwoFAToEnableScreen(
+            enableUiState = TwoFaEnableUiState.Starting,
+            secretCode = "SECRETCODE",
+            onAuthenticatorButtonClicked = {},
+            onCopyCodeButtonClicked = {},
+            onEnableButtonClicked = {},
+        )
+    }
+}

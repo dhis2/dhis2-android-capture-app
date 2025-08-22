@@ -13,8 +13,27 @@ class TwoFARepositoryImpl(
     override fun getTwoFAStatus(): Flow<TwoFAStatus> =
         flow {
             delay(2000) // Simulate network delay
-            emit(TwoFAStatus.Enabled())
+            emit(TwoFAStatus.Disabled())
         }
+
+    override fun getTwoFASecretCode(): Flow<String> = flow {
+        try {
+            emit(d2.userModule().twoFactorAuthManager().getTotpSecret())
+        } catch (e: Exception) {
+            emit("")
+        }
+    }
+
+    override fun enableTwoFA(code: String): Flow<Boolean> = flow {
+        d2.userModule().twoFactorAuthManager().enable2fa(code).fold(
+            onSuccess = {
+                emit(true)
+            },
+            onFailure = {
+                emit(false)
+            },
+        )
+    }
 
     override fun disableTwoFAs(code: String): Flow<TwoFAStatus> =
         flow {
