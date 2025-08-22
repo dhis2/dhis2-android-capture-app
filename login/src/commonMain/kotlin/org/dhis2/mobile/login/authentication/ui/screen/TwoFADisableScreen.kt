@@ -36,6 +36,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
