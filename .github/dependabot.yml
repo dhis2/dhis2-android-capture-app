@@ -16,8 +16,11 @@ updates:
       prefix: "deps"
     ignore:
       - dependency-name: "com.squareup.okhttp3:*"
-      - dependency-name: "org.hisp.dhis.mobile:designsystem:*"
-      - dependency-name: "org.hisp.dhis:android-core:*"
+      - dependency-name: "org.hisp.dhis.mobile:designsystem"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     groups:
       gradle-updates:
         patterns:
