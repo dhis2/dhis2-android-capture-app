@@ -15,8 +15,27 @@ class TwoFARepositoryImpl(
         } else {
             // TwoFAStatus.Disabled()
             // return Enabled just for test disable screen
-            TwoFAStatus.Enabled()
+            TwoFAStatus.Disabled()
         }
+
+    override fun getTwoFASecretCode(): Flow<String> = flow {
+        try {
+            emit(d2.userModule().twoFactorAuthManager().getTotpSecret())
+        } catch (e: Exception) {
+            emit("")
+        }
+    }
+
+    override fun enableTwoFA(code: String): Flow<Boolean> = flow {
+        d2.userModule().twoFactorAuthManager().enable2fa(code).fold(
+            onSuccess = {
+                emit(true)
+            },
+            onFailure = {
+                emit(false)
+            },
+        )
+    }
 
     override suspend fun disableTwoFAs(code: String): Flow<TwoFAStatus> =
         flow {

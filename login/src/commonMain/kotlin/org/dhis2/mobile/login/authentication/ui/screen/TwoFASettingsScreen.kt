@@ -56,6 +56,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun TwoFASettingsScreen(
     onBackClick: () -> Unit = {},
+    onOpenStore: () -> Unit = {},
+    onCopyCode: (String) -> Unit = {},
 ) {
     val viewModel: TwoFASettingsViewModel = koinViewModel<TwoFASettingsViewModel>()
 
@@ -161,7 +163,22 @@ fun TwoFASettingsScreen(
 
                     is TwoFAUiState.Enable -> {
                         item {
-                            Text(text = "Two factor authentication is enable screen.")
+                            val enableUiState by viewModel.uiEnableState.collectAsState()
+                            val secretCode by viewModel.secretCode.collectAsState()
+
+                            TwoFAToEnableScreen(
+                                enableUiState,
+                                secretCode,
+                                {
+                                    onOpenStore()
+                                },
+                                { code ->
+                                    onCopyCode(code)
+                                },
+                                { code ->
+                                    viewModel.enableTwoFA(code)
+                                },
+                            )
                         }
                     }
 
