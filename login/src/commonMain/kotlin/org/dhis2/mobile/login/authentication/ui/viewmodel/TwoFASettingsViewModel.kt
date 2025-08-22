@@ -92,6 +92,14 @@ open class TwoFASettingsViewModel(
         }
     }
 
+    fun getSecretCode() {
+        viewModelScope.launch {
+            getTwoFASecretCode().collect { code ->
+                _secretCode.value = code
+            }
+        }
+    }
+
     fun retry() {
         checkTwoFAStatus()
     }
