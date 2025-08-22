@@ -22,13 +22,13 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -150,13 +150,11 @@ fun AddNewButton(
             .requiredHeight(44.dp)
             .then(modifier),
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = SurfaceColor.PrimaryContainer,
+            containerColor = SurfaceColor.PrimaryContainer,
             contentColor = TextColor.OnPrimaryContainer,
         ),
         shape = RoundedCornerShape(Spacing.Spacing16),
-        elevation = ButtonDefaults.elevation(
-            defaultElevation = 0.dp,
-        ),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_add_primary),
@@ -378,7 +376,7 @@ fun SearchOutsideProgram(resultText: String, buttonText: String, onSearchOutside
                 ),
             ),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.white),
+                containerColor = colorResource(id = R.color.white),
             ),
         ) {
             Icon(
