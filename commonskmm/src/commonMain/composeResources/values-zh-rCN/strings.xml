@@ -112,4 +112,17 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="re_open_to_edit">重新打开表单进行编辑</string>
+    <string name="input_age_date_of_birth">生日</string>
+    <string name="input_age">年龄</string>
+    <string name="input_age_or">或</string>
+    <string name="input_action_accept">接受</string>
+    <string name="input_action_cancel">取消</string>
+    <string name="input_coordinate_latitude">维度</string>
+    <string name="input_coordinate_longitude">经度</string>
+    <string name="input_coordinate_add_location">添加位置</string>
+    <string name="add_file">添加文件</string>
+    <string name="add_image">添加图片</string>
+    <string name="no_results_found">没有结果</string>
+    <string name="action_done">完成</string>
+    <string name="input_not_supported">不支持</string>
 </resources>

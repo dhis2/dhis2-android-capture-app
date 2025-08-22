@@ -63,4 +63,16 @@
     <string name="cat_combo">Kat kombo</string>
     <string name="yes">ja</string>
     <string name="no">nei</string>
-    </resources>
+    <string name="input_age_date_of_birth">Fødselsdato</string>
+    <string name="input_age">Alder</string>
+    <string name="input_age_or">eller</string>
+    <string name="input_action_accept">Aksepter</string>
+    <string name="input_action_cancel">Avbryt</string>
+    <string name="input_coordinate_latitude">Breddegrad</string>
+    <string name="input_coordinate_longitude">Lengdegrad</string>
+    <string name="add_file">Legg til fil</string>
+    <string name="add_image">Legg til bilde</string>
+    <string name="no_results_found">Ingen resultater funnet</string>
+    <string name="action_done">Fullfør</string>
+    <string name="input_not_supported">Ikke støttet</string>
+</resources>

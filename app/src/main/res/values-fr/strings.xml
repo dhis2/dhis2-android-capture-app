@@ -226,6 +226,7 @@
     <string name="settingsCheckVersion">Mise à jour du logiciel</string>
     <string name="settingsExportDB">Exportation de la base des données</string>
     <string name="settingsExportDBMessage">Exporter votre base de données et le partager avec l\'administrateur</string>
+    <string name="settingTwoFA">Authentification à deux facteurs</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Date d\'enrôlement</string>

@@ -240,6 +240,7 @@
     <string name="settingsCheckVersionMessage">Phần mềm</string>
     <string name="settingsExportDB">Xuất cơ sở dữ liệu</string>
     <string name="settingsExportDBMessage">Xuất cơ sở dữ liệu và chia sẻ nó với quản trị của bạn</string>
+    <string name="settingTwoFA">Xác thực hai yếu tố</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Ngày đăng ký</string>

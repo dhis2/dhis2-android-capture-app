@@ -102,4 +102,21 @@
     <string name="cat_combo">تجميع فئة</string>
     <string name="yes">نعم</string>
     <string name="no">لا</string>
-    </resources>
+    <string name="input_age_date_of_birth">تاريخ الميلاد</string>
+    <string name="input_age">عُمر</string>
+    <string name="input_age_or">أو</string>
+    <string name="input_action_accept">قبول</string>
+    <string name="input_action_cancel">إلغاء</string>
+    <string name="input_coordinate_latitude">خط العرض</string>
+    <string name="input_coordinate_longitude">خط الطول</string>
+    <string name="input_coordinate_add_location">إضافة موقع</string>
+    <string name="input_date_out_of_range">خارج النطاق</string>
+    <string name="format_error">تنسيق غير صحيح</string>
+    <string name="add_file">إضافة ملف</string>
+    <string name="add_image">إضافة صورة</string>
+    <string name="from_gallery">إضافة من المعرض</string>
+    <string name="no_results_found">لم يتم العثور على أي نتائج</string>
+    <string name="search_to_find_more">ابحث للعثور على المزيد</string>
+    <string name="action_done">تم</string>
+    <string name="input_not_supported">غير مدعوم</string>
+</resources>

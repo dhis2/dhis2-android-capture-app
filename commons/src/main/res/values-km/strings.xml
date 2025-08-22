@@ -53,6 +53,7 @@
     <!-- Sections -->
     <string name="section_feedback">មតិ​ឆ្លើយតប</string>
     <string name="section_indicators">Indicators</string>
+    <string name="section_charts">គំនូសតាង(ក្រាប)</string>
     <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
     <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
     <string name="add_file">បញ្ចូលឯកសារ</string>
