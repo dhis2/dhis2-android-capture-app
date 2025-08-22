@@ -15,7 +15,9 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
-      - dependency-name: "com.squareup.okhttp3:*"      
+      - dependency-name: "com.squareup.okhttp3:*"
+      - dependency-name: "org.hisp.dhis.mobile:designsystem:*"
+      - dependency-name: "org.hisp.dhis:android-core:*"
     groups:
       gradle-updates:
         patterns:
