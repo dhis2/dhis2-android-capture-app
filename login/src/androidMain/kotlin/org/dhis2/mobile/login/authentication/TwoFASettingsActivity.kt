@@ -42,7 +42,7 @@ class TwoFASettingsActivity : ComponentActivity() {
 @Composable
 private fun TwoFANoConnectionScreenPreview() {
     DHIS2Theme {
-        TwoFANoConnectionScreen()
+        TwoFADisableScreen {}
     }
 }
 
