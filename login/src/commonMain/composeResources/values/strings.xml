@@ -16,4 +16,5 @@
     <string name="two_fa_disable_desc_2">Enter the code from your authenticator app below.</string>
     <string name="two_fa_code">Authentication code</string>
     <string name="two_fa_disable_button">Turn off</string>
+    <string name="two_fa_disable_error">Fail to turn two factor authentication off.</string>
 </resources>

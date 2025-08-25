@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
+import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
@@ -21,6 +22,7 @@ class TwoFASettingsViewModelTest {
 
     private lateinit var viewModel: TwoFASettingsViewModel
     private val getTwoFAStatus: GetTwoFAStatus = mock()
+    private val disableTwoFA: DisableTwoFA = mock()
     private val mapper: TwoFAUiStateMapper = mock()
     private val testDispatcher = StandardTestDispatcher()
 
@@ -37,7 +39,7 @@ class TwoFASettingsViewModelTest {
         whenever(getTwoFAStatus()).thenReturn(flowOf(enabledStatus))
         whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
-        viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
+        viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
 
         viewModel.uiState.test {
             assert(awaitItem() is TwoFAUiState.Checking)
@@ -58,7 +60,7 @@ class TwoFASettingsViewModelTest {
         whenever(getTwoFAStatus()).thenReturn(flowOf(noConnectionStatus))
         whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
 
-        viewModel = TwoFASettingsViewModel(getTwoFAStatus, mapper)
+        viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
 
         viewModel.uiState.test {
             assert(awaitItem() is TwoFAUiState.Checking)
