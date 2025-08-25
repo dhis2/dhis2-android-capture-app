@@ -102,6 +102,30 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    buildTypes {
+        getByName("debug"){
+
+        }
+        getByName("release"){
+
+        }
+    }
+    buildFeatures.buildConfig = true
+
+    flavorDimensions += listOf("default")
+    productFlavors {
+        create("dhis2") {
+            buildConfigField("String","LOGIN_TEST", "\"test\"")
+        }
+        create("dhis2PlayServices") {
+            buildConfigField("String","LOGIN_TEST", "\"test\"")
+
+        }
+        create("dhis2Training") {
+            buildConfigField("String","LOGIN_TEST", "\"test\"")
+        }
+    }
 }
 
 dependencies {
