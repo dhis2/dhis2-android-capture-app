@@ -23,7 +23,7 @@ class TwoFARepositoryImpl(
                     emit(TwoFAStatus.Disabled())
                 },
                 onFailure = {
-                    emit(TwoFAStatus.Enabled(it.message))
+                    emit(TwoFAStatus.Enabled(it.message ?: it.errorDescription()))
                 },
             )
         }
