@@ -16,7 +16,6 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.form.model.EventRecords
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FormView
-import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobile.commons.ui.NonEditableReasonBlock
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureAction
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
@@ -27,9 +26,6 @@ import javax.inject.Inject
 class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView {
     @Inject
     lateinit var presenter: EventCaptureFormPresenter
-
-    @Inject
-    lateinit var eventResultDialogUiProvider: FormResultDialogProvider
 
     private lateinit var activity: EventCaptureActivity
 
@@ -72,7 +68,6 @@ class EventCaptureFormFragment : FragmentGlobalAbstract(), EventCaptureFormView 
             .onPercentageUpdate { percentage: Float? ->
                 activity.updatePercentage(percentage!!)
             }
-            .eventCompletionResultDialogProvider(eventResultDialogUiProvider = eventResultDialogUiProvider)
             .factory(activity.supportFragmentManager)
             .setRecords(EventRecords(eventUid, eventMode ?: EventMode.CHECK))
             .openErrorLocation(requireArguments().getBoolean(OPEN_ERROR_LOCATION, false))

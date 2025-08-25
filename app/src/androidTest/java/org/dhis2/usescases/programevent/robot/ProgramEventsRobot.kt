@@ -62,7 +62,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
 
     @OptIn(ExperimentalTestApi::class)
     fun checkEventIsComplete(eventDate: String) {
-        composeTestRule.waitUntilAtLeastOneExists(hasText("Event completed", true), 2000)
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Event completed", true), TIMEOUT)
         composeTestRule.onNodeWithText(eventDate,true).assertIsDisplayed()
         composeTestRule.onNodeWithText("Event completed",true).assertIsDisplayed()
     }

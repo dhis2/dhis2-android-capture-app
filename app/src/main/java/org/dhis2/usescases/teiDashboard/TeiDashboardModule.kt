@@ -14,8 +14,6 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.metadata.EnrollmentConfiguration
-import org.dhis2.form.ui.provider.FormResultDialogProvider
-import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.usescases.enrollment.DateEditionWarningHandler
@@ -73,16 +71,6 @@ class TeiDashboardModule(
         enrollmentConfiguration,
         eventResourcesProvider,
     )
-
-    @Provides
-    @PerActivity
-    fun provideResultDialogProvider(
-        resourceManager: ResourceManager,
-    ): FormResultDialogProvider {
-        return FormResultDialogProvider(
-            FormResultDialogResourcesProvider(resourceManager),
-        )
-    }
 
     @Provides
     @PerActivity

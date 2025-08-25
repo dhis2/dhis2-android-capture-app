@@ -31,6 +31,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
@@ -103,6 +104,8 @@ class DataEntryIntegrationTest {
         preferenceProvider = preferenceProvider,
     )
 
+    private val resultDialogUiProvider: FormResultDialogProvider = mock()
+
     private lateinit var formViewModel: FormViewModel
 
     @Before
@@ -155,6 +158,7 @@ class DataEntryIntegrationTest {
             dispatcher = dispatcher,
             geometryController = geometryController,
             openErrorLocation = false,
+            resultDialogUiProvider = resultDialogUiProvider,
         )
     }
 

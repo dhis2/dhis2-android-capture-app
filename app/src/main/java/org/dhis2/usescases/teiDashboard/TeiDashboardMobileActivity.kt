@@ -46,7 +46,6 @@ import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityDashboardMobileBinding
 import org.dhis2.form.model.EnrollmentMode
-import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.TEIDashboardItems
 import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
@@ -99,9 +98,6 @@ class TeiDashboardMobileActivity :
 
     @Inject
     lateinit var dateEditionWarningHandler: DateEditionWarningHandler
-
-    @Inject
-    lateinit var enrollmentResultDialogProvider: FormResultDialogProvider
 
     var featureConfig: FeatureConfigRepository? = null
         @Inject set
@@ -307,7 +303,6 @@ class TeiDashboardMobileActivity :
                 ),
                 locationProvider = locationProvider,
                 dateEditionWarningHandler = dateEditionWarningHandler,
-                enrollmentResultDialogProvider = enrollmentResultDialogProvider,
             ) {
                 dashboardViewModel.updateDashboard()
             }
