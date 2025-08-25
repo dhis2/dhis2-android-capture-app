@@ -28,11 +28,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import org.dhis2.mobile.login.authentication.ui.state.TwoFADisableUiState
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.authentication.ui.viewmodel.TwoFASettingsViewModel
 import org.dhis2.mobile.login.resources.Res
@@ -164,11 +167,21 @@ fun TwoFASettingsScreen(
 
                     is TwoFAUiState.Disable -> {
                         item {
-                            TwoFADisableScreen(
-                                (uiState as TwoFAUiState.Disable).errorMessage,
-                            ) { code ->
-                                viewModel.disableTwoFA(code)
+                            var twoFADisableUiState: TwoFADisableUiState by remember(uiState) {
+                                mutableStateOf(
+                                    when {
+                                        (uiState as TwoFAUiState.Disable).errorMessage != null -> TwoFADisableUiState.Failure
+                                        else -> TwoFADisableUiState.Starting
+                                    },
+                                )
                             }
+                            TwoFADisableScreen(
+                                twoFADisableUiState = twoFADisableUiState,
+                                onDisable = { code ->
+                                    twoFADisableUiState = TwoFADisableUiState.Disabling
+                                    viewModel.disableTwoFA(code)
+                                },
+                            )
                         }
                     }
                 }
