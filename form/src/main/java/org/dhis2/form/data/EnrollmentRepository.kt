@@ -20,6 +20,7 @@ import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
@@ -170,10 +171,11 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
             ),
         )
-        val attributeCustomIntent = customIntentRepository.getCustomIntents(
+        val attributeCustomIntent = customIntentRepository.getCustomIntent(
             programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
             programUid,
             null,
+            CustomIntentActionTypeModel.DATA_ENTRY,
         )
 
         val valueType = attribute.valueType()

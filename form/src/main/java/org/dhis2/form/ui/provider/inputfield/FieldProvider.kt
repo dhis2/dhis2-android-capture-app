@@ -123,6 +123,8 @@ fun FieldProvider(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 resources = resources,
+                inputStyle = inputStyle,
+                modifier = modifierWithFocus,
             )
         }
 

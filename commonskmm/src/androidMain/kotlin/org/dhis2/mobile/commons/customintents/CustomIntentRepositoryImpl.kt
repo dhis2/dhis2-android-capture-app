@@ -1,13 +1,14 @@
 package org.dhis2.mobile.commons.customintents
 
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
 import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.CustomIntent
-import org.hisp.dhis.android.core.settings.CustomIntentActionType
 import org.hisp.dhis.android.core.settings.CustomIntentContext
+import org.hisp.dhis.android.core.settings.CustomIntentActionType as CustomIntentType
 import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType as ExtraType
 
 class CustomIntentRepositoryImpl(
@@ -15,19 +16,32 @@ class CustomIntentRepositoryImpl(
 ) : CustomIntentRepository {
     private val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
 
-    override fun getCustomIntents(
+    override fun getCustomIntent(
         triggerUid: String?,
         programUid: String?,
         programStageUid: String?,
+        actionType: CustomIntentActionTypeModel,
     ): CustomIntentModel? {
-        return getCustomIntentFromUid(triggerUid, CustomIntentContext(programUid, programStageUid))
+        return getCustomIntentFromUid(triggerUid, CustomIntentContext(programUid, programStageUid), actionType)
     }
 
-    private fun getCustomIntentFromUid(uid: String?, context: CustomIntentContext): CustomIntentModel? {
+    private fun getCustomIntentActionType(actionType: CustomIntentActionTypeModel): CustomIntentType {
+        return when (actionType) {
+            CustomIntentActionTypeModel.DATA_ENTRY -> CustomIntentType.DATA_ENTRY
+            CustomIntentActionTypeModel.SEARCH -> CustomIntentType.SEARCH
+        }
+    }
+
+    private fun getCustomIntentFromUid(
+        uid: String?,
+        context: CustomIntentContext,
+        actionType: CustomIntentActionTypeModel,
+    ): CustomIntentModel? {
         return getFilteredCustomIntents(uid).firstOrNull { customIntent ->
-            customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
+            customIntent?.action()?.contains(getCustomIntentActionType(actionType)) == true
         }?.let {
             val requestParams = evaluateCustomIntentRequestParams(it, context)
+
             val customIntentRequest = requestParams.mapNotNull { param ->
                 param.value?.let { value ->
                     CustomIntentRequestArgumentModel(

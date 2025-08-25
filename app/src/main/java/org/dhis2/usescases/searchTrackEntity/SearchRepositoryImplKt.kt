@@ -20,7 +20,10 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.maps.model.MapItemModel
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
+import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
@@ -49,6 +52,7 @@ class SearchRepositoryImplKt(
     private val metadataIconProvider: MetadataIconProvider,
     private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
+    private val customIntentRepository: CustomIntentRepository,
 ) : SearchRepositoryKt {
 
     private lateinit var savedSearchParameters: SearchParametersModel
@@ -343,10 +347,17 @@ class SearchRepositoryImplKt(
                             onSearch = { searchFlow.value = it },
                         )
                     }
+                    val customIntentModel = customIntentRepository.getCustomIntent(
+                        programUid = programUid,
+                        triggerUid = attribute.uid(),
+                        programStageUid = null,
+                        actionType = CustomIntentActionTypeModel.SEARCH,
+                    )
                     createField(
                         trackedEntityAttribute = attribute,
                         programTrackedEntityAttribute = programAttribute,
                         optionSetConfiguration = optionSetConfiguration,
+                        customIntent = customIntentModel,
                     )
                 }
         }.filter { parameter ->
@@ -406,6 +417,7 @@ class SearchRepositoryImplKt(
         trackedEntityAttribute: TrackedEntityAttribute,
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
         optionSetConfiguration: OptionSetConfiguration?,
+        customIntent: CustomIntentModel? = null,
     ): FieldUiModel {
         return fieldViewModelFactory.create(
             id = trackedEntityAttribute.uid(),
@@ -424,6 +436,7 @@ class SearchRepositoryImplKt(
             fieldMask = trackedEntityAttribute.fieldMask(),
             optionSetConfiguration = optionSetConfiguration,
             featureType = null,
+            customIntentModel = customIntent,
         )
     }
 }

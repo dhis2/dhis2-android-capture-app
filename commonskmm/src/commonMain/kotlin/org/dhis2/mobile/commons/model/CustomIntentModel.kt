@@ -27,3 +27,8 @@ enum class CustomIntentResponseExtraType {
     OBJECT,
     LIST_OF_OBJECTS,
 }
+
+enum class CustomIntentActionTypeModel {
+    DATA_ENTRY,
+    SEARCH,
+}

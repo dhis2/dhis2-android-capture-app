@@ -19,6 +19,8 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProviderImpl;
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository;
+import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
@@ -183,7 +185,8 @@ public class SearchTEModule {
             FieldViewModelFactory fieldViewModelFactory,
             MetadataIconProvider metadataIconProvider,
             ColorUtils colorUtils,
-            DateUtils dateUtils
+            DateUtils dateUtils,
+            CustomIntentRepository customIntentRepository
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -208,7 +211,8 @@ public class SearchTEModule {
                         metadataIconProvider,
                         profilePictureProvider,
                         dateUtils
-                )
+                ),
+                customIntentRepository
         );
     }
 
@@ -246,6 +250,12 @@ public class SearchTEModule {
     @PerActivity
     MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapAttributeToFeature attributeToFeatureMapper, MapDataElementToFeature dataElementToFeatureMapper) {
         return new MapCoordinateFieldToFeatureCollection(dataElementToFeatureMapper, attributeToFeatureMapper);
+    }
+
+    @Provides
+    @PerActivity
+    CustomIntentRepository provideCustomIntentRepository(D2 d2) {
+        return new CustomIntentRepositoryImpl(d2);
     }
 
     @Provides
