@@ -10,12 +10,20 @@ sealed interface LoginScreenState {
     @Serializable
     data class ServerValidation(
         val currentServer: String,
+        val availableServers: List<String>,
+        val error: String? = null,
+        val validationRunning: Boolean = false,
     ) : LoginScreenState
 
     @Serializable
     data class LegacyLogin(
         val selectedServer: String,
         val selectedUsername: String,
+    ) : LoginScreenState
+
+    @Serializable
+    data class OauthLogin(
+        val selectedServer: String,
     ) : LoginScreenState
 
     @Serializable

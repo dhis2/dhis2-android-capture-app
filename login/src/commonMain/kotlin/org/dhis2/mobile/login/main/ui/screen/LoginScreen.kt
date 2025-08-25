@@ -119,13 +119,18 @@ fun LoginScreen(
                 LoadingScreen()
             }
             composable<LoginScreenState.ServerValidation> {
+                val args = it.toRoute<LoginScreenState.ServerValidation>()
                 displayMoreActions = true
-                ServerValidationContent()
+                ServerValidationContent(args.availableServers)
             }
             composable<LoginScreenState.LegacyLogin> {
+                displayMoreActions = false
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
                 legacyLoginContent(arg.selectedServer, arg.selectedUsername)
+            }
+            composable<LoginScreenState.OauthLogin> {
+                Text("Pending implementation")
             }
             composable<LoginScreenState.Accounts> {
                 displayMoreActions = true

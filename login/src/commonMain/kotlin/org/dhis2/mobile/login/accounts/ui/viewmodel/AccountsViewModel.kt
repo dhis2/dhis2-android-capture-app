@@ -45,7 +45,12 @@ class AccountsViewModel(
 
     fun onAddAccountClicked() {
         viewModelScope.launch {
-            navigator.navigate(LoginScreenState.ServerValidation(currentServer = ""))
+            navigator.navigate(
+                LoginScreenState.ServerValidation(
+                    currentServer = "",
+                    availableServers = repository.availableServers(),
+                ),
+            )
         }
     }
 }
