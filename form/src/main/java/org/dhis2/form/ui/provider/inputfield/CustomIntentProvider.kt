@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import org.dhis2.commons.resources.ResourceManager
@@ -26,6 +27,7 @@ import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.mobile.ui.designsystem.component.CustomIntentState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCustomIntent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import timber.log.Timber
@@ -35,6 +37,8 @@ fun ProvideCustomIntentInput(
     fieldUiModel: FieldUiModel,
     resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
+    inputStyle: InputStyle,
+    modifier: Modifier,
 ) {
     var values =
         remember(fieldUiModel) {
@@ -91,6 +95,8 @@ fun ProvideCustomIntentInput(
         buttonText = resources.getString(R.string.custom_intent_launch),
         supportingText = supportingTextList.toList(),
         inputShellState = inputShellState,
+        inputStyle = inputStyle,
+        modifier = modifier,
         onLaunch = {
             customIntentState = CustomIntentState.LOADING
             if (supportingTextList.contains(errorGettingDataMessage)) {

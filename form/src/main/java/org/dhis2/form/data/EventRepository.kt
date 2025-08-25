@@ -30,6 +30,7 @@ import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -620,7 +621,12 @@ class EventRepository(
                     programStageDataElement.dataElement()!!.uid(),
                 ).blockingGet()
         val uid = de?.uid() ?: ""
-        val customIntent = customIntentRepository.getCustomIntents(uid, programUid, programStage?.uid())
+        val customIntent = customIntentRepository.getCustomIntent(
+            uid,
+            programUid,
+            programStage?.uid(),
+            CustomIntentActionTypeModel.DATA_ENTRY,
+        )
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false
