@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.ui.contracts.serverQrReader
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_next
@@ -48,6 +49,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+
 const val ServerValidationContentButtonTag = "ServerValidationContentButtonTag"
 
 @Composable
@@ -76,7 +78,7 @@ internal fun ServerValidationContent(
         )
         Spacer(Modifier.size(Spacing.Spacing16))
         var server by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue(""))
+            mutableStateOf(TextFieldValue((currentScreen as? LoginScreenState.ServerValidation)?.currentServer ?: ""))
         }
         var state by remember(errorMessage, isServerValidationRunning) {
             mutableStateOf(
@@ -87,6 +89,10 @@ internal fun ServerValidationContent(
                 },
             )
         }
+        val qrReader = serverQrReader { serverUrl ->
+            server = server.copy(text = serverUrl ?: "")
+        }
+
         InputQRCode(
             title = "Server URL",
             state = state,
@@ -95,8 +101,7 @@ internal fun ServerValidationContent(
                     SupportingTextData(text = it, state = SupportingTextState.ERROR),
                 )
             },
-            onQRButtonClicked = {
-            },
+            onQRButtonClicked = qrReader::launch,
             inputTextFieldValue = server,
             autoCompleteList = availableServers,
             autoCompleteItemSelected = { selectedServer ->

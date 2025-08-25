@@ -49,6 +49,7 @@ class LoginTest : BaseTest() {
 
     @Test
     fun loginFlow() {
+        mockWebServerRobot.addResponse(GET, API_LOGIN_CONFIG, API_LOGIN_CONFIG_RESPONSE, 200)
         mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
         mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
         mockWebServerRobot.addResponse(
@@ -61,10 +62,9 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot(composeTestRule) {
+            typeServerToValidate(MOCK_SERVER_URL)
             clickOnValidateServerButton()
             // Test case - [ANDROAPP-4122](https://dhis2.atlassian.net/browse/ANDROAPP-4122)
-            clearServerField()
-            typeServer(MOCK_SERVER_URL)
             typeUsername(USERNAME)
             typePassword(PASSWORD)
             clearUsernameField()
@@ -129,7 +129,6 @@ class LoginTest : BaseTest() {
         startLoginActivity()
 
         loginRobot(composeTestRule) {
-            clickOnValidateServerButton()
             mockOnActivityForResult()
             clickQRButton()
             checkQRScanIsOpened()
@@ -163,6 +162,9 @@ class LoginTest : BaseTest() {
 
     companion object {
         const val HTTP_UNAUTHORIZE = 401
+        const val API_LOGIN_CONFIG = "/api/loginConfig"
+
+        const val API_LOGIN_CONFIG_RESPONSE ="mocks/loginconfig/legacy_flow_config.json"
         const val API_ME_RESPONSE_OK = "mocks/user/user.json"
         const val API_ME_UNAUTHORIZE = "mocks/user/unauthorize.json"
         const val API_SYSTEM_INFO_RESPONSE_OK = "mocks/systeminfo/systeminfo.json"
