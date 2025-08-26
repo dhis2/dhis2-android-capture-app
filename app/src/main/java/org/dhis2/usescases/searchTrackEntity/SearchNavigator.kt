@@ -101,10 +101,11 @@ class SearchNavigator(
                 SearchTEActivity.Extra.QUERY_ATTR.key(),
                 ArrayList(currentQueryData.keys),
             )
-            if (!currentQueryData.values.isEmpty()) {
+            val queryDataValues = currentQueryData.values.map { it.joinToString(",") }
+            if (queryDataValues.isNotEmpty()) {
                 putStringArrayList(
                     SearchTEActivity.Extra.QUERY_VALUES.key(),
-                    ArrayList(currentQueryData.values.first()),
+                    ArrayList(queryDataValues),
                 )
             }
         } ?: Bundle()

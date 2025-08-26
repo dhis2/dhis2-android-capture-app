@@ -986,14 +986,14 @@ class SearchTEIViewModel(
             is FormIntent.OnTextChange -> {
                 updateQuery(
                     formIntent.uid,
-                    formIntent.value?.let { listOf(it) },
+                    formIntent.value?.split(","),
                 )
             }
 
             is FormIntent.OnSave -> {
                 updateQuery(
                     formIntent.uid,
-                    formIntent.value?.let { listOf(it) },
+                    formIntent.value?.split(","),
                 )
             }
 
