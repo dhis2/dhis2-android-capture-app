@@ -2,4 +2,5 @@
 <resources>
     <string name="test_key">测试密钥</string>
     <string name="add_account">新增帐户</string>
+    <string name="server_url_title">服务器URL</string>
 </resources>

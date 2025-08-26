@@ -34,6 +34,7 @@ import org.dhis2.mobile.login.main.ui.contracts.serverQrReader
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_next
+import org.dhis2.mobile.login.resources.server_url_title
 import org.dhis2.mobile.login.resources.server_verification_running
 import org.dhis2.mobile.login.resources.server_verification_title
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -94,7 +95,7 @@ internal fun ServerValidationContent(
         }
 
         InputQRCode(
-            title = "Server URL",
+            title = stringResource(Res.string.server_url_title),
             state = state,
             supportingText = errorMessage?.takeIf { state == InputShellState.ERROR }?.let {
                 listOf(

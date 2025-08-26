@@ -7,6 +7,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.runtime.Composable
 
+private const val scanActivityClassName = "org.dhis2.usescases.qrScanner.ScanActivity"
+
 @Composable
 actual fun serverQrReader(onResult: (String?) -> Unit): ServerQRReader {
     val launcher =
@@ -22,8 +24,6 @@ actual fun serverQrReader(onResult: (String?) -> Unit): ServerQRReader {
 }
 
 internal class ReflectiveScanActivityContract : ActivityResultContract<Unit, String?>() {
-    private val scanActivityClassName = "org.dhis2.usescases.qrScanner.ScanActivity"
-
     override fun createIntent(context: Context, input: Unit): Intent {
         val intent = Intent()
         intent.setClassName(context.packageName, scanActivityClassName)

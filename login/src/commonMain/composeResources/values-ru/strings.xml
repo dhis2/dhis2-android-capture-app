@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="add_account">Добавить аккаунт</string>
+    <string name="server_url_title">Адрес веб-страницы сервера</string>
 </resources>
