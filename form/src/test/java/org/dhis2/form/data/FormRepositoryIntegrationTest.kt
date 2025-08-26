@@ -188,13 +188,12 @@ class FormRepositoryIntegrationTest {
                 autoCompleteProvider,
             )
 
-        val dataEntryRepository =
-            EnrollmentRepository(
-                fieldFactory,
-                conf,
-                enrollmentMode,
-                enrollmentFormLabelsProvider,
-                customIntentRepository,
+        val dataEntryRepository = EnrollmentRepository(
+            fieldFactory,
+            conf,
+            enrollmentMode,
+            enrollmentFormLabelsProvider,
+            customIntentRepository,
                 metadataIconProvider,
             )
 
