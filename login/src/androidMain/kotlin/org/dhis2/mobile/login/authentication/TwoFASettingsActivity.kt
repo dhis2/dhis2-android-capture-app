@@ -12,7 +12,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.net.toUri
-import org.dhis2.mobile.login.authentication.ui.screen.TwoFADisableScreen
 import org.dhis2.mobile.login.authentication.ui.screen.TwoFANoConnectionScreen
 import org.dhis2.mobile.login.authentication.ui.screen.TwoFASettingsScreen
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
