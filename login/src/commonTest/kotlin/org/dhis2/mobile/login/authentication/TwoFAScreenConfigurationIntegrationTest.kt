@@ -36,6 +36,8 @@ class TwoFAScreenConfigurationIntegrationTest {
     private lateinit var enableTwoFA: EnableTwoFA
     private lateinit var mapper: TwoFAUiStateMapper
     private lateinit var viewModel: TwoFASettingsViewModel
+    private lateinit var enableTwoFa: EnableTwoFA
+    private lateinit var disableTwoFa: DisableTwoFA
 
     @BeforeTest
     fun setup() {
@@ -64,11 +66,11 @@ class TwoFAScreenConfigurationIntegrationTest {
             // When: 2FA status is checked
             viewModel =
                 TwoFASettingsViewModel(
-                    getTwoFAStatus,
-                    getTwoFASecretCode,
-                    enableTwoFA,
-                    disableTwoFA,
-                    mapper,
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFaSecretCode,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
                 )
 
             // Then: Loading screen is displayed followed by enable 2FA screen
@@ -94,11 +96,11 @@ class TwoFAScreenConfigurationIntegrationTest {
             // When: 2FA status is checked
             viewModel =
                 TwoFASettingsViewModel(
-                    getTwoFAStatus,
-                    getTwoFASecretCode,
-                    enableTwoFA,
-                    disableTwoFA,
-                    mapper,
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFaSecretCode,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
                 )
 
             // Then: Loading screen is displayed followed by disable 2FA screen
@@ -124,11 +126,11 @@ class TwoFAScreenConfigurationIntegrationTest {
             // When: 2FA status is checked
             viewModel =
                 TwoFASettingsViewModel(
-                    getTwoFAStatus,
-                    getTwoFASecretCode,
-                    enableTwoFA,
-                    disableTwoFA,
-                    mapper,
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFaSecretCode,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
                 )
 
             // Then: Loading screen is displayed followed by no connection screen

@@ -47,11 +47,11 @@ class TwoFASettingsViewModelTest {
 
             viewModel =
                 TwoFASettingsViewModel(
-                    getTwoFAStatus,
-                    getTwoFASecretCode,
-                    enableTwoFA,
-                    disableTwoFA,
-                    mapper,
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFASecretCode,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
+                    mapper = mapper,
                 )
 
             viewModel.uiState.test {
@@ -71,10 +71,10 @@ class TwoFASettingsViewModelTest {
             val enableUiState = TwoFAUiState.Enable()
 
             whenever(getTwoFAStatus()) doReturnConsecutively
-                listOf(
-                    noConnectionUiState,
-                    disabledStatus,
-                )
+                    listOf(
+                        noConnectionUiState,
+                        disabledStatus,
+                    )
             whenever(mapper.mapToUiState(noConnectionUiState)) doReturn TwoFAUiState.NoConnection
 
             whenever(mapper.mapToUiState(disabledStatus)) doReturn enableUiState
