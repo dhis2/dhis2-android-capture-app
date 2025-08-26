@@ -79,19 +79,19 @@ fun TwoFADisableScreen(
                 onValueChanged = { it?.let { authCode = it } },
                 title = stringResource(Res.string.two_fa_code),
                 state =
-                    if (twoFADisableUiState is TwoFADisableUiState.Failure && authCode.text.isEmpty()) {
-                        InputShellState.ERROR
-                    } else if (twoFADisableUiState is TwoFADisableUiState.Disabling) {
-                        InputShellState.DISABLED
-                    } else {
-                        InputShellState.UNFOCUSED
-                    },
+                if (twoFADisableUiState is TwoFADisableUiState.Failure && authCode.text.isEmpty()) {
+                    InputShellState.ERROR
+                } else if (twoFADisableUiState is TwoFADisableUiState.Disabling) {
+                    InputShellState.DISABLED
+                } else {
+                    InputShellState.UNFOCUSED
+                },
                 supportingText =
-                    if (twoFADisableUiState is TwoFADisableUiState.Failure && authCode.text.isEmpty()) {
-                        listOf(SupportingTextData(stringResource(Res.string.two_fa_disable_error)))
-                    } else {
-                        null
-                    },
+                if (twoFADisableUiState is TwoFADisableUiState.Failure && authCode.text.isEmpty()) {
+                    listOf(SupportingTextData(stringResource(Res.string.two_fa_disable_error)))
+                } else {
+                    null
+                },
             )
         }
         Button(
@@ -119,11 +119,11 @@ fun TextStep(
 ) {
     Column(
         modifier =
-            Modifier
-                .background(
-                    color = SurfaceColor.ContainerLow,
-                    shape = RoundedCornerShape(16.dp),
-                ).padding(16.dp),
+        Modifier
+            .background(
+                color = SurfaceColor.ContainerLow,
+                shape = RoundedCornerShape(16.dp),
+            ).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(
