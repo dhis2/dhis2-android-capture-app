@@ -17,6 +17,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.ui.ThemeManager
@@ -69,6 +70,7 @@ class SearchRepositoryTest {
         }
     private lateinit var searchRepository: SearchRepositoryImplKt
     private lateinit var searchRepositoryJava: SearchRepository
+    private val customIntentRepository: CustomIntentRepository = mock()
 
     private val trackedEntitySearchItemHelper: TrackedEntitySearchItemHelper = mock()
 
@@ -114,16 +116,16 @@ class SearchRepositoryTest {
             trackedEntityAttributes[uid] ?: createTrackedEntityAttributeRepository(uid, false)
         }
 
-        searchRepository =
-            SearchRepositoryImplKt(
-                searchRepositoryJava = mock(),
-                d2 = d2,
-                dispatcher = dispatchers,
-                fieldViewModelFactory = fieldViewModelFactory,
-                metadataIconProvider = metadataIconProvider,
-                trackedEntityInstanceInfoProvider = mock(),
-                eventInfoProvider = mock(),
-            )
+        searchRepository = SearchRepositoryImplKt(
+            searchRepositoryJava = mock(),
+            d2 = d2,
+            dispatcher = dispatchers,
+            fieldViewModelFactory = fieldViewModelFactory,
+            metadataIconProvider = metadataIconProvider,
+            trackedEntityInstanceInfoProvider = mock(),
+            eventInfoProvider = mock(),
+            customIntentRepository = customIntentRepository,
+        )
 
         searchRepositoryJava =
             SearchRepositoryImpl(
