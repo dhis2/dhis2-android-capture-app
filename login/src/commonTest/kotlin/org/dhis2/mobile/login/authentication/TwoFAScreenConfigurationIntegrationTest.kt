@@ -154,11 +154,11 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
             viewModel =
                 TwoFASettingsViewModel(
-                    getTwoFAStatus,
-                    getTwoFASecretCode,
-                    enableTwoFA,
-                    disableTwoFA,
-                    mapper,
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFaSecretCode,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
                 )
 
             // When: 2FA code is entered correctly"
@@ -192,11 +192,11 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
             viewModel =
                 TwoFASettingsViewModel(
-                    getTwoFAStatus,
-                    getTwoFASecretCode,
-                    enableTwoFA,
-                    disableTwoFA,
-                    mapper,
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFaSecretCode,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
                 )
 
             // When: 2FA incorrect code is entered"
