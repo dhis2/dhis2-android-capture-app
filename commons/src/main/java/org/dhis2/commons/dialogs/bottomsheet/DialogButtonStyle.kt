@@ -22,6 +22,7 @@ sealed class DialogButtonStyle(
     data class MainButton(override val textResource: Int) : DialogButtonStyle(
         textResource = textResource,
         colorResource = Color.White,
+        buttonStyle = ButtonStyle.FILLED,
     )
 
     data class SecondaryButtonLabel(override val textLabel: String) : DialogButtonStyle(
@@ -38,6 +39,7 @@ sealed class DialogButtonStyle(
         textResource = R.string.complete,
         colorResource = Color.White,
         iconResource = R.drawable.ic_event_status_complete,
+        buttonStyle = ButtonStyle.FILLED,
     )
 
     class DiscardButton : DialogButtonStyle(

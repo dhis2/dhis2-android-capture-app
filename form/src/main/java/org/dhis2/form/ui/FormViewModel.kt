@@ -16,8 +16,11 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
+import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.periods.model.Period
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.R
@@ -25,10 +28,15 @@ import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.data.EventRepository.Companion.EVENT_COORDINATE_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
 import org.dhis2.form.data.EventRepository.Companion.EVENT_REPORT_DATE_UID
+import org.dhis2.form.data.FieldsWithErrorResult
+import org.dhis2.form.data.FieldsWithWarningResult
 import org.dhis2.form.data.FormRepository
 import org.dhis2.form.data.GeometryController
 import org.dhis2.form.data.GeometryParserImpl
+import org.dhis2.form.data.MissingMandatoryResult
+import org.dhis2.form.data.NotSavedResult
 import org.dhis2.form.data.RulesUtilsProviderConfigurationError
+import org.dhis2.form.data.SuccessfulResult
 import org.dhis2.form.model.ActionType
 import org.dhis2.form.model.FieldListConfiguration
 import org.dhis2.form.model.FieldUiModel
@@ -40,6 +48,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
@@ -47,6 +56,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.DateTimeFailure
 import org.hisp.dhis.android.core.common.valuetype.validation.failures.TimeFailure
+import org.hisp.dhis.android.core.event.EventStatus
 import timber.log.Timber
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -60,6 +70,7 @@ class FormViewModel(
     private val dispatcher: DispatcherProvider,
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
     private val openErrorLocation: Boolean = false,
+    private val resultDialogUiProvider: FormResultDialogProvider,
 ) : ViewModel() {
 
     val loading = MutableLiveData(true)
@@ -79,9 +90,17 @@ class FormViewModel(
     private val _queryData = MutableLiveData<RowAction>()
     val queryData = _queryData
 
-    private val _dataIntegrityResult = MutableLiveData<DataIntegrityCheckResult>()
-    val dataIntegrityResult = _dataIntegrityResult
+    sealed interface FormActions {
+        data object OnFinish : FormActions
+        data class ShowResultDialog(
+            val model: BottomSheetDialogUiModel,
+            val allowDiscard: Boolean,
+            val fieldsWithIssues: List<FieldWithIssue>,
+        ) : FormActions
+    }
 
+    private val _actionsChannel = Channel<FormActions>()
+    val actionsChannel = _actionsChannel.receiveAsFlow()
     private val _completionPercentage = MutableLiveData<Float>()
     val completionPercentage = _completionPercentage
 
@@ -758,13 +777,106 @@ class FormViewModel(
                 repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
             }
             try {
-                _dataIntegrityResult.postValue(result.await())
+                handleDataIntegrityResult(result.await())
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
                 val list = repository.composeList()
                 _items.postValue(list)
             }
+        }
+    }
+
+    private suspend fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+        val action = when {
+            (result is SuccessfulResult) and (result.eventResultDetails.eventStatus == null) -> FormActions.OnFinish
+            else -> showDataEntryResultDialogDeprecated(result)
+        }
+        action?.let { _actionsChannel.send(it) }
+    }
+
+    private suspend fun showDataEntryResultDialogDeprecated(result: DataIntegrityCheckResult): FormActions? {
+        return when (result.eventResultDetails.eventStatus) {
+            EventStatus.ACTIVE, null -> provideShowResultDialog(result)
+
+            EventStatus.COMPLETED -> {
+                val resultAction = provideShowResultDialog(result)
+                if (resultAction?.fieldsWithIssues?.isEmpty() == true) {
+                    FormActions.OnFinish
+                }
+                resultAction
+            }
+
+            EventStatus.SKIPPED -> {
+                val resultAction = provideShowResultDialog(result)
+                if (resultAction?.fieldsWithIssues?.isEmpty() == true) {
+                    activateEvent()
+                }
+                resultAction
+            }
+
+            EventStatus.SCHEDULE,
+            EventStatus.VISITED,
+            EventStatus.OVERDUE,
+            -> FormActions.OnFinish
+        }
+    }
+
+    private fun provideShowResultDialog(result: DataIntegrityCheckResult): FormActions.ShowResultDialog? {
+        return when (result) {
+            is FieldsWithErrorResult -> {
+                resultDialogUiProvider(
+                    canComplete = result.canComplete,
+                    onCompleteMessage = result.onCompleteMessage,
+                    errorFields = result.fieldUidErrorList,
+                    emptyMandatoryFields = result.mandatoryFields,
+                    warningFields = result.warningFields,
+                    eventMode = result.eventResultDetails.eventMode,
+                    eventState = result.eventResultDetails.eventStatus,
+                    result = result,
+                )
+            }
+
+            is FieldsWithWarningResult -> resultDialogUiProvider(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = result.fieldUidWarningList,
+                eventMode = result.eventResultDetails.eventMode,
+                eventState = result.eventResultDetails.eventStatus,
+                result = result,
+            )
+
+            is MissingMandatoryResult -> resultDialogUiProvider(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = result.errorFields,
+                emptyMandatoryFields = result.mandatoryFields,
+                warningFields = result.warningFields,
+                eventMode = result.eventResultDetails.eventMode,
+                eventState = result.eventResultDetails.eventStatus,
+                result = result,
+            )
+
+            is SuccessfulResult -> resultDialogUiProvider(
+                canComplete = result.canComplete,
+                onCompleteMessage = result.onCompleteMessage,
+                errorFields = emptyList(),
+                emptyMandatoryFields = emptyMap(),
+                warningFields = emptyList(),
+                eventMode = result.eventResultDetails.eventMode,
+                eventState = result.eventResultDetails.eventStatus,
+                result = result,
+            )
+
+            NotSavedResult -> null
+        }?.let { (model, fieldsWithIssues) ->
+            FormActions.ShowResultDialog(
+                model,
+                result.allowDiscard,
+                fieldsWithIssues,
+            )
         }
     }
 
@@ -814,13 +926,29 @@ class FormViewModel(
 
     fun discardChanges() {
         repository.backupOfChangedItems().forEach {
-            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask, it.allowFutureDates))
+            submitIntent(
+                FormIntent.OnSave(
+                    it.uid,
+                    it.value,
+                    it.valueType,
+                    it.fieldMask,
+                    it.allowFutureDates,
+                ),
+            )
         }
     }
 
     fun saveDataEntry() {
         getLastFocusedTextItem()?.let {
-            submitIntent(FormIntent.OnSave(it.uid, it.value, it.valueType, it.fieldMask, it.allowFutureDates))
+            submitIntent(
+                FormIntent.OnSave(
+                    it.uid,
+                    it.value,
+                    it.valueType,
+                    it.fieldMask,
+                    it.allowFutureDates,
+                ),
+            )
         }
         submitIntent(FormIntent.OnFinish())
     }

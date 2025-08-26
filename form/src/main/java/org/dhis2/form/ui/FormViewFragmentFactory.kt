@@ -3,9 +3,7 @@ package org.dhis2.form.ui
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import org.dhis2.commons.locationprovider.LocationProvider
-import org.dhis2.form.data.DataIntegrityCheckResult
 import org.dhis2.form.model.RowAction
-import org.dhis2.form.ui.provider.FormResultDialogProvider
 
 class FormViewFragmentFactory(
     val locationProvider: LocationProvider?,
@@ -15,9 +13,7 @@ class FormViewFragmentFactory(
     private val onFinishDataEntry: (() -> Unit)?,
     private val onActivityForResult: (() -> Unit)?,
     private val completionListener: ((percentage: Float) -> Unit)?,
-    private val onDataIntegrityCheck: ((result: DataIntegrityCheckResult) -> Unit)?,
     private val onFieldItemsRendered: ((fieldsEmpty: Boolean) -> Unit)?,
-    private val formResultDialogProvider: FormResultDialogProvider?,
     private val actionIconsActivate: Boolean = true,
     private val openErrorLocation: Boolean = false,
     private val programUid: String? = null,
@@ -31,7 +27,6 @@ class FormViewFragmentFactory(
                     onFocused = onFocused,
                     onFinishDataEntry = onFinishDataEntry,
                     onActivityForResult = onActivityForResult,
-                    onDataIntegrityCheck = onDataIntegrityCheck,
                     onFieldItemsRendered = onFieldItemsRendered,
                 )
                 setConfiguration(
@@ -39,7 +34,6 @@ class FormViewFragmentFactory(
                     completionListener = completionListener,
                     actionIconsActivate = actionIconsActivate,
                     openErrorLocation = openErrorLocation,
-                    eventResultDialogUiProvider = formResultDialogProvider,
                     programUid = programUid,
                 )
             }
