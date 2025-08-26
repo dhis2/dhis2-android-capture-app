@@ -159,7 +159,6 @@ class TwoFAScreenConfigurationIntegrationTest {
             whenever(repository.disableTwoFAs("123456")).thenReturn(
                 flowOf(TwoFAStatus.Disabled()),
             )
-            viewModel.disableTwoFA("123456")
 
             // Then: enable 2FA screen is displayed after disable
             viewModel.uiState.test {
@@ -168,6 +167,8 @@ class TwoFAScreenConfigurationIntegrationTest {
 
                 // Disable 2FA screen is displayed
                 assertTrue(awaitItem() is TwoFAUiState.Disable)
+
+                viewModel.disableTwoFA("123456")
 
                 // Enable 2FA screen is displayed
                 assertTrue(awaitItem() is TwoFAUiState.Enable)
@@ -195,7 +196,6 @@ class TwoFAScreenConfigurationIntegrationTest {
             whenever(repository.disableTwoFAs("123456")).thenReturn(
                 flowOf(TwoFAStatus.Enabled("error")),
             )
-            viewModel.disableTwoFA("123456")
 
             // Then: enable 2FA screen is displayed after disable
             viewModel.uiState.test {
@@ -204,6 +204,8 @@ class TwoFAScreenConfigurationIntegrationTest {
 
                 // Disable 2FA screen is displayed
                 assertTrue(awaitItem() is TwoFAUiState.Disable)
+
+                viewModel.disableTwoFA("123456")
 
                 // Disable 2FA screen is displayed with error
                 assertEquals(TwoFAUiState.Disable("error"), awaitItem())
