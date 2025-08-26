@@ -8,6 +8,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Geometry
@@ -40,6 +41,7 @@ class EventRepositoryTest {
     private val resources: ResourceManager = mock()
     private val eventResourcesProvider: EventResourcesProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
+    private val customIntentRepository: CustomIntentRepository = Mockito.mock()
 
     private val mockedProgram: Program =
         mock {
@@ -172,17 +174,17 @@ class EventRepositoryTest {
         )
     }
 
-    private fun eventRepository(eventMode: EventMode) =
-        EventRepository(
-            fieldFactory = fieldViewModelFactory,
-            eventUid = eventUid,
-            d2 = d2,
-            metadataIconProvider = metadataIconProvider,
-            resources = resources,
-            eventResourcesProvider = eventResourcesProvider,
-            eventMode = eventMode,
-            dispatcherProvider = dispatchers,
-        )
+    private fun eventRepository(eventMode: EventMode) = EventRepository(
+        fieldFactory = fieldViewModelFactory,
+        eventUid = eventUid,
+        d2 = d2,
+        metadataIconProvider = metadataIconProvider,
+        resources = resources,
+        eventResourcesProvider = eventResourcesProvider,
+        eventMode = eventMode,
+        dispatcherProvider = dispatchers,
+        customIntentRepository = customIntentRepository,
+    )
 
     private val mockedStage =
         mock<ProgramStage> {

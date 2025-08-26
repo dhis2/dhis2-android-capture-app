@@ -22,6 +22,7 @@ class EnrollmentRepositoryTest {
     private val enrollmentMode: EnrollmentMode = mock()
     private val enrolmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
+
     lateinit var repository: DataEntryRepository
     val programSection: ProgramSection = mock()
 
@@ -63,15 +64,14 @@ class EnrollmentRepositoryTest {
                 .trackedEntityType()
                 ?.access()
                 ?.data()
-                ?.write(),
-        ) doReturn true
-        repository =
-            EnrollmentRepository(
-                fieldFactory,
-                conf,
-                enrollmentMode,
-                enrolmentFormLabelsProvider,
-                metadataIconProvider,
+                ?.write(),) doReturn true
+        repository = EnrollmentRepository(
+            fieldFactory = fieldFactory,
+                conf = conf,
+            enrollmentMode = enrollmentMode,
+            enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
+            metadataIconProvider = metadataIconProvider,
+            customIntentRepository = customIntentRepository,
             )
     }
 
