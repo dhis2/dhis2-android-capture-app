@@ -14,6 +14,7 @@ import org.dhis2.form.ui.provider.HintProvider
 import org.dhis2.form.ui.provider.KeyboardActionProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
 import org.dhis2.form.ui.provider.UiEventTypesProvider
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.FeatureType
@@ -28,6 +29,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
@@ -48,6 +50,7 @@ class FormRepositoryIntegrationTest {
             on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
         }
     private val metadataIconProvider: MetadataIconProvider = mock()
+    private val customIntentRepository: CustomIntentRepository = Mockito.mock()
 
     private val program: Program =
         mock {
@@ -191,8 +194,9 @@ class FormRepositoryIntegrationTest {
                 conf,
                 enrollmentMode,
                 enrollmentFormLabelsProvider,
-                metadataIconProvider,
-            )
+                customIntentRepository,
+            metadataIconProvider,
+        )
 
         return FormRepositoryImpl(
             formValueStore,
