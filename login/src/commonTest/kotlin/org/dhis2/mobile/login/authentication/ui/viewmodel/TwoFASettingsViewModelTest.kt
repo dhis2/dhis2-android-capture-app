@@ -17,18 +17,17 @@ import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TwoFASettingsViewModelTest {
 
     private lateinit var viewModel: TwoFASettingsViewModel
     private val getTwoFAStatus: GetTwoFAStatus = mock()
-    private val getTwoFASecretCode: GetTwoFASecretCode = mock()
-
-    private val disableTwoFA: DisableTwoFA = mock()
-    private val enableTwoFA: EnableTwoFA = mock()
-
     private val mapper: TwoFAUiStateMapper = mock()
+    private val getTwoFASecretCode: GetTwoFASecretCode = mock()
+    private val enableTwoFA: EnableTwoFA = mock()
+    private val disableTwoFA: DisableTwoFA = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -68,8 +67,17 @@ class TwoFASettingsViewModelTest {
         val disabledStatus = TwoFAStatus.Disabled()
         val enableUiState = TwoFAUiState.Enable()
 
-        whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
-        whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
+        viewModel = TwoFASettingsViewModel(
+            getTwoFAStatus = getTwoFAStatus,
+            getTwoFASecretCode = getTwoFASecretCode,
+            enableTwoFA = enableTwoFA,
+            disableTwoFA = disableTwoFA,
+            mapper = mapper,
+        )
+
+        viewModel.uiState.test {
+            whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
+            whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
 
         viewModel = TwoFASettingsViewModel(
             getTwoFAStatus,
@@ -89,9 +97,9 @@ class TwoFASettingsViewModelTest {
 
             viewModel.retry()
 
-            assert(awaitItem() is TwoFAUiState.Checking)
+            assertEquals(TwoFAUiState.Checking, awaitItem())
 
-            assert(awaitItem() == enableUiState)
+            assertEquals(enableUiState, awaitItem())
 
             cancelAndIgnoreRemainingEvents()
         }

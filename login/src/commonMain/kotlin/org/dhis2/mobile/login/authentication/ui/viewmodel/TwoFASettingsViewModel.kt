@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.authentication.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +33,7 @@ open class TwoFASettingsViewModel(
             checkTwoFAStatus()
         }.stateIn(
             viewModelScope,
-            SharingStarted.Lazily,
+            SharingStarted.WhileSubscribed(5000L),
             TwoFAUiState.Checking,
         )
 
@@ -58,10 +59,13 @@ open class TwoFASettingsViewModel(
 
     private fun checkTwoFAStatus() {
         viewModelScope.launch {
-            _uiState.value = TwoFAUiState.Checking
-
+            _uiState.update {
+                TwoFAUiState.Checking
+            }
+            delay(1000)
             val twoFAStatus = getTwoFAStatus()
-            _uiState.update { mapper.mapToUiState(twoFAStatus) }
+            _uiState.update {
+                        mapper.mapToUiState(twoFAStatus) }
         }
     }
 
@@ -69,7 +73,8 @@ open class TwoFASettingsViewModel(
         viewModelScope.launch {
             getTwoFASecretCode().collect { code ->
                 _secretCode.value = code
-            }
+                    }
+                }
         }
     }
 
