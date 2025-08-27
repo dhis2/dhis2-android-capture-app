@@ -1,12 +1,15 @@
 package org.dhis2.usescases.login
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.clearText
@@ -22,7 +25,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.viewactions.ClickDrawableAction
 import org.dhis2.commons.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
 import org.dhis2.mobile.login.main.ui.screen.ServerValidationContentButtonTag
 import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
@@ -48,7 +50,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
 
     @OptIn(ExperimentalTestApi::class)
-    fun clickOnValidateServerButton(){
+    fun clickOnValidateServerButton() {
         composeTestRule.waitUntilExactlyOneExists(
             hasTestTag(ServerValidationContentButtonTag),
             TIMEOUT,
@@ -61,6 +63,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         closeKeyboard()
     }
 
+    fun typeServerToValidate(server: String) {
+        composeTestRule.onNodeWithTag("INPUT_QR_CODE_FIELD").performTextReplacement(server)
+    }
+
     fun clearServerField() {
         onView(withId(R.id.server_url_edit)).perform(clearText())
     }
@@ -70,7 +76,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun typeUsername(username: String) {
-        onView(withId(R.id.user_name_edit)).perform(TypeTextAction(username))
+        waitForView(withId(R.id.user_name_edit), TIMEOUT.toInt()).perform(TypeTextAction(username))
         pressImeActionButton()
     }
 
@@ -96,10 +102,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickQRButton() {
-        waitForView(
-            withId(R.id.server_url_edit),
-            TIMEOUT.toInt(),
-        ).perform(ClickDrawableAction(ClickDrawableAction.RIGHT))
+        composeTestRule.onNodeWithTag("INPUT_QR_CODE_BUTTON").performClick()
     }
 
     fun checkLoginButtonIsHidden() {
@@ -144,10 +147,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkURL(url: String) {
-        waitForView(
-            withId(R.id.server_url_edit),
-            TIMEOUT.toInt(),
-        ).check(matches(withText(url)))
+        composeTestRule.onNodeWithTag("INPUT_QR_CODE_FIELD").assert(hasText(url))
     }
 
     fun clickAccountRecovery() {

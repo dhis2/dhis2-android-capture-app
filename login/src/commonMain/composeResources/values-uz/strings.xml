@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="test_key">Тест Калити</string>
+    <string name="server_url_title">Сервер URLи</string>
 </resources>
