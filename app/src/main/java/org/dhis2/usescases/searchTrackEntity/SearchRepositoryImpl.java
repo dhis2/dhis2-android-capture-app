@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import static org.dhis2.usescases.searchTrackEntity.SearchRepositoryImpl.Companion.OPTION_SET_REGEX;
 import android.database.sqlite.SQLiteConstraintException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -238,17 +237,20 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                                           boolean isUnique,
                                                                           boolean isOptionSet) {
         if (dataValues.size() > 1) {
+            // return any tracked entities with attributes that match the the values in the list
             return trackedEntityInstanceQuery.byFilter(dataId).in(dataValues);
-
         } else {
             if (dataValues.size() == 1) {
                 String dataValue = dataValues.get(0);
                 if (isUnique || isOptionSet) {
+                    // If the attribute is unique or an option set, we want an exact match
                     return trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
                 } else if (dataValue.contains(OPTION_SET_REGEX)) {
+                    //legacy code could no longer be needed
                     dataValue = dataValue.split(OPTION_SET_REGEX)[1];
                     return trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
                 } else
+                    // return tracked entities that contain the data value
                     return trackedEntityInstanceQuery.byFilter(dataId).like(dataValue);
             } else {
                 return trackedEntityInstanceQuery;
@@ -963,8 +965,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byProgramUids(Collections.singletonList(currentProgram))
                 .blockingCount() > 1;
     }
+    private static final String OPTION_SET_REGEX = "_os_";
 
-    public static class Companion {
-        public static final String OPTION_SET_REGEX = "_os_";
     }
-}
+
+
