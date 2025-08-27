@@ -48,6 +48,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.text.get
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchTEIViewModelTest {
@@ -204,6 +205,26 @@ class SearchTEIViewModelTest {
         val queryData = viewModel.queryData
 
         assertTrue(queryData.isNotEmpty())
+    }
+
+    @Test
+    fun `Should update query data when list of values is passed`() {
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
+                value = "testingValue,testingValue2",
+                valueType = ValueType.TEXT,
+            ),
+        )
+
+        val queryData = viewModel.queryData
+
+        assertTrue(queryData.isNotEmpty())
+        assertTrue(queryData.containsKey("testingUid"))
+        val values = queryData["testingUid"]
+        assertTrue(values?.size == 2)
+        assertTrue(values?.contains("testingValue") == true)
+        assertTrue(values?.contains("testingValue2") == true)
     }
 
     @ExperimentalCoroutinesApi
