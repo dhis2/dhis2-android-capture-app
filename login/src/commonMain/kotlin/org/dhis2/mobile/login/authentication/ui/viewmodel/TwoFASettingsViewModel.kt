@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
@@ -27,10 +28,8 @@ open class TwoFASettingsViewModel(
         viewModelScope.launch {
             _uiState.value = TwoFAUiState.Checking
 
-            getTwoFAStatus()
-                .collect { status ->
-                    _uiState.value = mapper.mapToUiState(status)
-                }
+            val twoFAStatus = getTwoFAStatus()
+            _uiState.update { mapper.mapToUiState(twoFAStatus) }
         }
     }
 
