@@ -4,16 +4,21 @@
     <string name="cancel">रद्द करें</string>
     <string name="yes">हाँ</string>
     <string name="no">नहीं</string>
+    <string name="search">सर्च करें / खोजें</string>
     <string name="done">पूरा हुआ</string>
 
+    <string name="state_error">त्रुटि</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_sync_error">सिंक की गलती</string>
     <string name="interval_yesterday">कल (बिता हुआ)</string>
 
+    <string name="keep_editing">संपादन करते रहें</string>
     <string name="not_now">अभी नहीं</string>
+    <string name="review">रिव्यू</string>
     <string name="overdue_today">आज</string>
     <plurals name="overdue_days">
         <item quantity="one">%d दिन बाकी है</item>
