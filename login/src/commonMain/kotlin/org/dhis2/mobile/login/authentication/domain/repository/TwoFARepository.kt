@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 
 interface TwoFARepository {
-    fun getTwoFAStatus(): Flow<TwoFAStatus>
+    suspend fun getTwoFAStatus(): TwoFAStatus
 
-    fun disableTwoFAs(code: String): Flow<TwoFAStatus>
+    suspend fun disableTwoFAs(code: String): Flow<TwoFAStatus>
 }

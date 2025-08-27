@@ -1,6 +1,5 @@
 package org.dhis2.mobile.login.authentication.data.repository
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
@@ -10,13 +9,16 @@ import org.hisp.dhis.android.core.D2
 class TwoFARepositoryImpl(
     private val d2: D2,
 ) : TwoFARepository {
-    override fun getTwoFAStatus(): Flow<TwoFAStatus> =
-        flow {
-            delay(2000) // Simulate network delay
-            emit(TwoFAStatus.Enabled())
+    override suspend fun getTwoFAStatus(): TwoFAStatus =
+        if (d2.userModule().twoFactorAuthManager().is2faEnabled()) {
+            TwoFAStatus.Enabled()
+        } else {
+            // TwoFAStatus.Disabled()
+            // return Enabled just for test disable screen
+            TwoFAStatus.Enabled()
         }
 
-    override fun disableTwoFAs(code: String): Flow<TwoFAStatus> =
+    override suspend fun disableTwoFAs(code: String): Flow<TwoFAStatus> =
         flow {
             d2.userModule().twoFactorAuthManager().disable2fa(code).fold(
                 onSuccess = {
