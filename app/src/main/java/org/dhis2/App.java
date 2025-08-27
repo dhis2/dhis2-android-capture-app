@@ -173,7 +173,7 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     protected void setUpServerComponent() {
         serverComponent = appComponent.plus(new ServerModule());
-        if (Boolean.TRUE.equals(serverComponent.userManager().isUserLoggedIn().blockingFirst()))
+        if (serverComponent.userManager().isUserLoggedIn().blockingFirst())
             setUpUserComponent();
     }
 

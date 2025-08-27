@@ -123,7 +123,7 @@ class LoginViewModel(
         } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
         displayManageAccount()
 
-        viewModelScope.launch {
+        viewModelScope.launch(dispatchers.io()) {
             testingCredentials = repository.getTestingCredentials()
             loadAutoCompleteData(testingCredentials)
         }
@@ -184,15 +184,17 @@ class LoginViewModel(
     }
 
     fun checkBiometricVisibility() {
-        _canLoginWithBiometrics.value =
-            biometricAuthenticator.hasBiometric() &&
-            userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
-            preferenceProvider.getString(SECURE_SERVER_URL)
-                ?.let { it == serverUrl.value } ?: false &&
-            (
-                preferenceProvider.contains(SECURE_PASS) ||
-                    cryptographyManager.isKeyReady()
-                )
+        viewModelScope.launch(dispatchers.io()) {
+            _canLoginWithBiometrics.value =
+                biometricAuthenticator.hasBiometric() &&
+                userManager?.accountCount() == 1 &&
+                preferenceProvider.getString(SECURE_SERVER_URL)
+                    ?.let { it == serverUrl.value } ?: false &&
+                (
+                    preferenceProvider.contains(SECURE_PASS) ||
+                        cryptographyManager.isKeyReady()
+                    )
+        }
     }
 
     fun onLoginButtonClick() {
@@ -444,6 +446,8 @@ class LoginViewModel(
             preferenceProvider.getSet(PREFS_USERS, emptySet())?.toMutableList() ?: mutableListOf()
 
         urls.let {
+            testingCredentials.forEach {
+            }
             for (testingCredential in testingCredentials) {
                 if (!it.contains(testingCredential.server_url)) {
                     it.add(testingCredential.server_url)

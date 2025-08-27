@@ -1,51 +1,32 @@
-package org.dhis2.data.server;
+package org.dhis2.data.server
 
-import android.content.Intent;
+import android.content.Intent
+import io.reactivex.Completable
+import io.reactivex.Observable
+import io.reactivex.Single
+import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.user.User
+import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+interface UserManager {
+    fun logIn(username: String, password: String, serverUrl: String): Observable<User?>
 
-import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.user.User;
-import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode;
-import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig;
+    fun logIn(config: OpenIDConnectConfig): Observable<IntentWithRequestCode?>
 
-import io.reactivex.Completable;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import kotlin.Pair;
+    fun handleAuthData(serverUrl: String, data: Intent?, requestCode: Int): Observable<User?>
 
-public interface UserManager {
+    val isUserLoggedIn: Observable<Boolean>
 
-    @NonNull
-    Observable<User> logIn(@NonNull String username, @NonNull String password, @NonNull String serverUrl);
+    fun userName(): Single<String>
 
-    @NonNull
-    Observable<IntentWithRequestCode> logIn(@NonNull OpenIDConnectConfig config);
+    val d2: D2
 
-    @NonNull
-    Observable<User> handleAuthData(@NonNull String serverUrl, @Nullable Intent data, int requestCode);
+    val theme: Single<Pair<String?, Int>>
 
-    @NonNull
-    Observable<Boolean> isUserLoggedIn();
+    fun logout(): Completable
 
-    @NonNull
-    Single<String> userInitials();
+    fun allowScreenShare(): Boolean
 
-    @NonNull
-    Single<String> userFullName();
-
-    @NonNull
-    Single<String> userName();
-
-    D2 getD2();
-
-    Boolean hasMultipleAccounts();
-
-    @NonNull
-    Single<Pair<String, Integer>> getTheme();
-
-    Completable logout();
-
-    boolean allowScreenShare();
+    suspend fun accountCount(): Int
 }
