@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="add_account">Account toevoegen</string>
+    <string name="server_url_title">Server-URL</string>
 </resources>

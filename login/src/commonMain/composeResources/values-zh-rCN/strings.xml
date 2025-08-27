@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="add_account">新增帐户</string>
+    <string name="server_url_title">服务器URL</string>
 </resources>

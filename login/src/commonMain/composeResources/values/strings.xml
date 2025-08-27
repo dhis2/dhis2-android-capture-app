@@ -7,4 +7,7 @@
     <string name="two_fa_checking_status">Checking status...</string>
     <string name="back_to_settings">Back to settings</string>
     <string name="action_next">Next</string>
+    <string name="server_verification_running">Establishing connection...</string>
+    <string name="server_verification_title">Which server do you want to connect to?</string>
+    <string name="server_url_title">Server URL</string>
 </resources>
