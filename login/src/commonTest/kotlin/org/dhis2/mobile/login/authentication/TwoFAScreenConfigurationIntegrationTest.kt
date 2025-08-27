@@ -51,7 +51,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
-                flowOf(TwoFAStatus.Disabled()),
+                TwoFAStatus.Disabled(),
             )
 
             // When: 2FA status is checked
@@ -74,7 +74,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
-                flowOf(TwoFAStatus.Enabled()),
+                TwoFAStatus.Enabled(),
             )
 
             // When: 2FA status is checked
@@ -97,7 +97,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
-                flowOf(TwoFAStatus.NoConnection),
+                TwoFAStatus.NoConnection,
             )
 
             // When: 2FA status is checked
@@ -120,7 +120,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
-                flowOf(TwoFAStatus.Enabled()),
+                TwoFAStatus.Enabled(),
             )
             viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
 
@@ -150,7 +150,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
-                flowOf(TwoFAStatus.Enabled()),
+                TwoFAStatus.Enabled(),
             )
             viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
 
