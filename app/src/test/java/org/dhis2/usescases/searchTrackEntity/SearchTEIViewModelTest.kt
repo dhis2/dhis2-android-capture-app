@@ -205,6 +205,9 @@ class SearchTEIViewModelTest {
         val queryData = viewModel.queryData
 
         assertTrue(queryData.isNotEmpty())
+        assertTrue(queryData["testingUid"]?.size == 1)
+        val values = queryData["testingUid"]
+        assertTrue(values?.contains("testingValue") == true)
     }
 
     @Test
@@ -225,6 +228,40 @@ class SearchTEIViewModelTest {
         assertTrue(values?.size == 2)
         assertTrue(values?.contains("testingValue") == true)
         assertTrue(values?.contains("testingValue2") == true)
+    }
+
+    @Test
+    fun `Should update query data when various list of values are passed`() {
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
+                value = "testingValue,testingValue2",
+                valueType = ValueType.TEXT,
+            ),
+        )
+
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid2",
+                value = "testingValue,testingValue2",
+                valueType = ValueType.TEXT,
+            ),
+        )
+
+        val queryData = viewModel.queryData
+
+        assertTrue(queryData.isNotEmpty())
+        assertTrue(queryData.containsKey("testingUid"))
+        val values1 = queryData["testingUid"]
+        assertTrue(values1?.size == 2)
+        assertTrue(values1?.contains("testingValue") == true)
+        assertTrue(values1?.contains("testingValue2") == true)
+
+        assertTrue(queryData.containsKey("testingUid"))
+        val values2 = queryData["testingUid2"]
+        assertTrue(values2?.size == 2)
+        assertTrue(values2?.contains("testingValue") == true)
+        assertTrue(values2?.contains("testingValue2") == true)
     }
 
     @ExperimentalCoroutinesApi
