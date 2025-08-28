@@ -3,7 +3,6 @@ package org.dhis2.mobile.login.authentication.ui.viewmodel
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -36,7 +35,7 @@ class TwoFASettingsViewModelTest {
         val enabledStatus = TwoFAStatus.Enabled()
         val disableUiState = TwoFAUiState.Disable()
 
-        whenever(getTwoFAStatus()).thenReturn(flowOf(enabledStatus))
+        whenever(getTwoFAStatus()).thenReturn(enabledStatus)
         whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
         viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
@@ -57,7 +56,7 @@ class TwoFASettingsViewModelTest {
         val disabledStatus = TwoFAStatus.Disabled()
         val enableUiState = TwoFAUiState.Enable()
 
-        whenever(getTwoFAStatus()).thenReturn(flowOf(noConnectionStatus))
+        whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
         whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
 
         viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
@@ -67,7 +66,7 @@ class TwoFASettingsViewModelTest {
 
             assert(awaitItem() == noConnectionUiState)
 
-            whenever(getTwoFAStatus()).thenReturn(flowOf(disabledStatus))
+            whenever(getTwoFAStatus()).thenReturn(disabledStatus)
             whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
 
             viewModel.retry()
