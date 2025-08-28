@@ -1,5 +1,3 @@
-import java.util.Locale
-
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
@@ -22,6 +20,14 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
 }
+
+// Variables to hold aggregated test results
+var totalTestsRun: Long = 0
+var totalTestsPassed: Long = 0
+var totalTestsFailed: Long = 0
+var totalTestsSkipped: Long = 0
+var totalModules: MutableList<String> = mutableListOf()
+var failedTests: MutableList<String> = mutableListOf()
 
 sonarqube {
     properties {
@@ -101,11 +107,59 @@ allprojects {
             exclude { element -> element.file.path.contains("dhis2-android-sdk") }
         }
     }
+
+    tasks.withType<AbstractTestTask> {
+        afterSuite(
+            KotlinClosure2({ desc: TestDescriptor, result: TestResult ->
+                if (result.resultType == TestResult.ResultType.FAILURE) {
+                    synchronized(rootProject) {
+                        val testName = desc.className + "." + desc.name
+                        failedTests.add(testName)
+                    }
+                }
+                if (desc.parent == null) {
+                    synchronized(rootProject) {
+                        totalModules.add(project.name)
+                        totalTestsRun += result.testCount
+                        totalTestsPassed += result.successfulTestCount
+                        totalTestsFailed += result.failedTestCount
+                        totalTestsFailed += result.skippedTestCount
+                    }
+                }
+            })
+        )
+    }
 }
+
+// Initialize extra properties on the root project for storing totals
+rootProject.ext.set("totalTestsRun", 0L)
+rootProject.ext.set("totalTestsPassed", 0L)
+rootProject.ext.set("totalTestsFailed", 0L)
+rootProject.ext.set("totalTestsSkipped", 0L)
+rootProject.ext.set("totalModules", mutableListOf<String>())
+
+gradle.addBuildListener(object : BuildAdapter() {
+    override fun buildFinished(result: BuildResult) {
+        println("================================================")
+        println("           AGGREGATED TEST RESULTS")
+        println("================================================")
+        println("  Modules:  ${totalModules.joinToString(", ")}")
+        println("  Total Tests Run: $totalTestsRun")
+        println("  Total Passed:   $totalTestsPassed")
+        println("  Total Failed:   $totalTestsFailed")
+        println("  Total Skipped:  $totalTestsSkipped")
+        println("================================================")
+        if (totalTestsFailed > 0) {
+            println("  Failed Tests:")
+            failedTests.forEach {
+                println("   ***  $it")
+            }
+            println("================================================")
+        }
+    }
+})
+
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
-
-
-
