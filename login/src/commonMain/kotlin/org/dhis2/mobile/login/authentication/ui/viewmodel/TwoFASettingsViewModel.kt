@@ -65,16 +65,8 @@ open class TwoFASettingsViewModel(
             delay(1000)
             val twoFAStatus = getTwoFAStatus()
             _uiState.update {
-                        mapper.mapToUiState(twoFAStatus) }
-        }
-    }
-
-    fun getSecretCode() {
-        viewModelScope.launch {
-            getTwoFASecretCode().collect { code ->
-                _secretCode.value = code
-                    }
-                }
+                mapper.mapToUiState(twoFAStatus)
+            }
         }
     }
 
