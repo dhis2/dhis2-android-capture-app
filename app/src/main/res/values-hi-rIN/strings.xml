@@ -13,7 +13,14 @@
     <string name="sync_complete_text">सिंक पूरा हुआ</string>
 
     <string name="sync_error_title">सिंक की गलती</string>
+    <string name="sync_error_text">सिंक के दौरान एक त्रुटि हुई है। कृपया फिर से प्रयास करें।</string>
+    <string name="metadata_sync_error">सिंक प्रक्रिया में कुछ गलत हो गया है। यदि आपका कनेक्शन उपलब्ध है, तो कृपया फिर से प्रयास करें। वरना अपने व्यवस्थापक से संपर्क करें।</string>
     <string name="add">जोड़ें</string>
+    <!--PERIOD-->
+    <string name="DAILY">रोज़ाना</string>
+    <string name="WEEKLY">साप्ताहिक</string>
+    <string name="MONTHLY">मासिक</string>
+    <string name="YEARLY">वार्षिक</string>
     <string name="action_share_zero_items">साझा करें</string>
     <!-- Input hints -->
     <string name="search">सर्च करें / खोजें</string>
@@ -38,6 +45,8 @@
     <string name="skip">छोड़ें</string>
     <string name="event_overdue">अतिदेय</string>
     <string name="action_close">बंद करें</string>
+    <string name="data_every_day">रोज़ाना</string>
+    <string name="data_every_week">साप्ताहिक</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
     <string name="filter_event_status_overdue">अतिदेय</string>

@@ -7,12 +7,21 @@
     <string name="search">सर्च करें / खोजें</string>
     <string name="done">पूरा हुआ</string>
 
+    <string name="daily_period">रोज़ाना</string>
+    <string name="weekly">साप्ताहिक</string>
+    <string name="monthly">मासिक</string>
+    <string name="yearly">वार्षिक</string>
     <string name="state_error">त्रुटि</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="DAILY">रोज़ाना</string>
+    <string name="WEEKLY">साप्ताहिक</string>
+    <string name="MONTHLY">मासिक</string>
+    <string name="YEARLY">वार्षिक</string>
+
     <string name="filter_sync_error">सिंक की गलती</string>
     <string name="interval_yesterday">कल (बिता हुआ)</string>
 
@@ -25,6 +34,7 @@
         <item quantity="other">%d दिन बाकी है</item>
     </plurals>
     <string name="remove">हटाएं</string>
+    <string name="period_daily_title">रोज़ाना</string>
     <string name="period_monthly_title">महीना</string>
     <string name="period_yearly_title">वर्ष</string>
     </resources>
