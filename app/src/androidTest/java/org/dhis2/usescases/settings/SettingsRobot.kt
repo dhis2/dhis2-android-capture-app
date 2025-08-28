@@ -2,6 +2,7 @@ package org.dhis2.usescases.settings
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -40,7 +41,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEditPeriodIsDisableForData() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.DATA_SYNC.name)) and
+            hasAnyAncestor(hasTestTag(SettingItem.DATA_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_DataPeriod).assertIsNotDisplayed()
@@ -52,7 +53,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEditPeriodIsDisableForConfiguration() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.META_SYNC.name)) and
+            hasAnyAncestor(hasTestTag(SettingItem.META_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_MetaPeriod).assertIsNotDisplayed()
@@ -64,7 +65,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkEditPeriodIsDisableForParameters() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.SYNC_PARAMETERS.name)) and
+            hasAnyAncestor(hasTestTag(SettingItem.SYNC_PARAMETERS.name)) and
                     hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TestTag_SyncParameters_LimitScope).assertIsNotDisplayed()
@@ -78,7 +79,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnManageReservedValues() {
         composeTestRule.onNode(
-            hasParent(hasTestTag(SettingItem.RESERVED_VALUES.name)) and
+            hasAnyAncestor(hasTestTag(SettingItem.RESERVED_VALUES.name)) and
                     hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
 

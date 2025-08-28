@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasAnySibling
 import androidx.compose.ui.test.hasParent
@@ -96,10 +97,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitUntilAtLeastOneExists(hasText(title))
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText("$it:",true).assertIsDisplayed() }
+            item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value,true), useUnmergedTree = true
+                        and hasText(item.value, true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -150,7 +151,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value,true), useUnmergedTree = true
+                        and hasText(item.value, true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -166,7 +167,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
             .assertIsDisplayed()
         composeTestRule.onNode(
-            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+            hasAnyAncestor(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
                     and hasText(firstName, true), useUnmergedTree = true
         ).assertIsDisplayed()
     }
