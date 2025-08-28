@@ -55,6 +55,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.painterResource
@@ -69,7 +70,7 @@ fun TwoFAToEnableScreen(
     onEnableButtonClicked: (String) -> Unit,
 ) {
     Column(
-        verticalArrangement = spacedBy(12.dp),
+        verticalArrangement = spacedBy(Spacing.Spacing12),
     ) {
         InfoBar(
             text = stringResource(Res.string.two_fa_status_off),
@@ -219,7 +220,7 @@ fun TwoFAAuthStepThree(
                 shape = RoundedCornerShape(Radius.M),
             )
             .padding(16.dp),
-        verticalArrangement = spacedBy(12.dp),
+        verticalArrangement = spacedBy(Spacing.Spacing12),
     ) {
         Row {
             Text(
