@@ -1,8 +1,11 @@
 package org.dhis2.mobile.login.main.data
 
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
+import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.jetbrains.compose.resources.getString
 
 class LoginRepositoryImpl(
     private val d2: D2,
@@ -16,7 +19,8 @@ class LoginRepositoryImpl(
                     ServerValidationResult.Legacy
                 }
             }
+
             is Result.Failure ->
-                ServerValidationResult.Error(result.failure.errorDescription())
+                ServerValidationResult.Error(getString(Res.string.server_url_error))
         }
 }
