@@ -66,7 +66,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 getTwoFASecretCode,
                 enableTwoFA,
                 disableTwoFA,
-                mapper
+                mapper,
             )
 
             // Then: Loading screen is displayed followed by enable 2FA screen
@@ -95,7 +95,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 getTwoFASecretCode,
                 enableTwoFA,
                 disableTwoFA,
-                mapper
+                mapper,
             )
 
             // Then: Loading screen is displayed followed by disable 2FA screen
@@ -124,7 +124,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 getTwoFASecretCode,
                 enableTwoFA,
                 disableTwoFA,
-                mapper
+                mapper,
             )
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {
@@ -150,7 +150,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 getTwoFASecretCode,
                 enableTwoFA,
                 disableTwoFA,
-                mapper
+                mapper,
             )
 
             // When: 2FA code is entered correctly"
@@ -186,7 +186,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 getTwoFASecretCode,
                 enableTwoFA,
                 disableTwoFA,
-                mapper
+                mapper,
             )
 
             // When: 2FA code is entered correctly"

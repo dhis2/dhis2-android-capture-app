@@ -49,7 +49,7 @@ class TwoFASettingsViewModelTest {
             getTwoFASecretCode,
             enableTwoFA,
             disableTwoFA,
-            mapper
+            mapper,
         )
 
         viewModel.uiState.test {
@@ -76,7 +76,7 @@ class TwoFASettingsViewModelTest {
             getTwoFASecretCode,
             enableTwoFA,
             disableTwoFA,
-            mapper
+            mapper,
         )
 
         viewModel.uiState.test {
