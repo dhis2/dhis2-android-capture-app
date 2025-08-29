@@ -25,10 +25,10 @@ import kotlin.test.assertEquals
 class TwoFASettingsViewModelTest {
     private lateinit var viewModel: TwoFASettingsViewModel
     private val getTwoFAStatus: GetTwoFAStatus = mock()
-    private val disableTwoFA: DisableTwoFA = mock()
-    private val mapper: TwoFAUiStateMapper = mock()
     private val getTwoFASecretCode: GetTwoFASecretCode = mock()
+    private val disableTwoFA: DisableTwoFA = mock()
     private val enableTwoFA: EnableTwoFA = mock()
+    private val mapper: TwoFAUiStateMapper = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
