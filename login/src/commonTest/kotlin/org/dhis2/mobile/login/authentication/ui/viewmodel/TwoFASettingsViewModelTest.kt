@@ -79,29 +79,30 @@ class TwoFASettingsViewModelTest {
             whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
             whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
 
-        viewModel = TwoFASettingsViewModel(
-            getTwoFAStatus,
-            getTwoFASecretCode,
-            enableTwoFA,
-            disableTwoFA,
-            mapper,
-        )
+            viewModel = TwoFASettingsViewModel(
+                getTwoFAStatus,
+                getTwoFASecretCode,
+                enableTwoFA,
+                disableTwoFA,
+                mapper,
+            )
 
-        viewModel.uiState.test {
-            assert(awaitItem() is TwoFAUiState.Checking)
+            viewModel.uiState.test {
+                assert(awaitItem() is TwoFAUiState.Checking)
 
-            assert(awaitItem() == noConnectionUiState)
+                assert(awaitItem() == noConnectionUiState)
 
-            whenever(getTwoFAStatus()).thenReturn(disabledStatus)
-            whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
+                whenever(getTwoFAStatus()).thenReturn(disabledStatus)
+                whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
 
-            viewModel.retry()
+                viewModel.retry()
 
-            assertEquals(TwoFAUiState.Checking, awaitItem())
+                assertEquals(TwoFAUiState.Checking, awaitItem())
 
-            assertEquals(enableUiState, awaitItem())
+                assertEquals(enableUiState, awaitItem())
 
-            cancelAndIgnoreRemainingEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
     }
 }
