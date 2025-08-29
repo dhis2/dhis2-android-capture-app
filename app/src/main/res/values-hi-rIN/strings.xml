@@ -1,7 +1,30 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Warnings and error messages -->
+    <string name="error">त्रुटि</string>
+    <string name="error_wrong_server_url">गलत सर्वर</string>
+    <string name="error_wrong_credentials">गलत लॉगिन जानकारी</string>
     <string name="something_wrong">कुछ गलत हुआ</string>
+    <!-- SyncService strings: -->
+    <string name="sync_now">अभी सिंक करें</string>
+    <string name="sync_text">सिंक हो रहा है</string>
+    <string name="sync_title">सिंक हो रहा है</string>
+
+    <string name="sync_complete_title">खत्म</string>
+    <string name="sync_complete_text">सिंक पूरा हुआ</string>
+
+    <string name="sync_error_title">सिंक की गलती</string>
+    <string name="sync_error_text">सिंक के दौरान एक त्रुटि हुई है। कृपया फिर से प्रयास करें।</string>
+    <string name="metadata_sync_error">सिंक प्रक्रिया में कुछ गलत हो गया है। यदि आपका कनेक्शन उपलब्ध है, तो कृपया फिर से प्रयास करें। वरना अपने व्यवस्थापक से संपर्क करें।</string>
     <string name="add">जोड़ें</string>
+    <!--PERIOD-->
+    <string name="DAILY">रोज़ाना</string>
+    <string name="WEEKLY">साप्ताहिक</string>
+    <string name="MONTHLY">मासिक</string>
+    <string name="YEARLY">वार्षिक</string>
     <string name="action_share_zero_items">साझा करें</string>
+    <!-- Input hints -->
+    <string name="search">सर्च करें / खोजें</string>
+    <string name="state_error">त्रुटि</string>
     <string name="update">अपडेट करें</string>
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
@@ -9,28 +32,36 @@
     <string name="wipe_data_no">रद्द करें</string>
     <string name="SYNC_MANAGER">सेटिंग्स</string>
     <string name="settingsCheckVersionMessage">सॉफ्टवेयर</string>
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">सर्च करें / खोजें</string>
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">दिन</string>
     <string name="next">आगे</string>
     <string name="SAVE">सहेजें</string>
     <string name="button_ok">ठीक है</string>
     <string name="share">साझा करें</string>
+    <string name="error_on_complete_title">त्रुटि</string>
     <string name="save">सहेजें</string>
     <string name="skip">छोड़ें</string>
     <string name="event_overdue">अतिदेय</string>
     <string name="action_close">बंद करें</string>
+    <string name="data_every_day">रोज़ाना</string>
+    <string name="data_every_week">साप्ताहिक</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
     <string name="go_back">पीछे जाएं</string>
     <string name="interval_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_sync_error">सिंक की गलती</string>
     <string name="name">नाम</string>
     <string name="action_done">पूरा हुआ</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
     <string name="customactivityoncrash_error_activity_error_details_close">बंद करें</string>
+    <string name="login_error_bad_credentials">गलत लॉगिन जानकारी</string>
     <string name="unknown_date">अज्ञात</string>
     <string name="troubleshooting_language_title">भाषा</string>
     <string name="sync_dialog_title_syncing">सिंक हो रहा है</string>
     <string name="sync_dialog_action_not_now">अभी नहीं</string>
+    <string name="sync_error">सिंक की गलती</string>
     </resources>

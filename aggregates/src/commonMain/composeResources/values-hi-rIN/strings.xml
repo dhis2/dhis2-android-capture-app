@@ -8,5 +8,7 @@
     <string name="ok">ठीक है</string>
     <string name="no">नहीं</string>
     <string name="yes">हाँ</string>
+    <string name="error">त्रुटि</string>
+    <string name="review">रिव्यू</string>
     <string name="action_next">आगे</string>
     </resources>
