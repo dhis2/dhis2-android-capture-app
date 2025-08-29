@@ -4,6 +4,7 @@ import kotlinx.coroutines.delay
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.arch.helpers.Result as Dhis2Result
 
 private const val TWO_FA_FEATURE_FLAG = "TWO_FACTOR_AUTHENTICATION"
@@ -22,14 +23,20 @@ class TwoFARepositoryImpl(
         return if (is2FAEnabled) {
             TwoFAStatus.Enabled()
         } else {
-            TwoFAStatus.Disabled(
-                secretCode = d2.userModule().twoFactorAuthManager().getTotpSecret(),
-            )
+            try {
+                TwoFAStatus.Disabled(
+                    secretCode = d2.userModule().twoFactorAuthManager().getTotpSecret(),
+                )
+            } catch (d2Error: D2Error) {
+                TwoFAStatus.Enabled(
+                    errorMessage = d2Error.localizedMessage ?: d2Error.errorDescription()
+                )
+            }
         }
     }
 
     override suspend fun enableTwoFA(code: String): Result<Unit> {
-        delay(3000)
+        delay(3000) //TODO: Delete line when feature flag is removed
         val result = if (featureFlagEnabled()) {
             isEnabledForTesting = true
             Dhis2Result.Success(Unit)
@@ -50,7 +57,7 @@ class TwoFARepositoryImpl(
     }
 
     override suspend fun disableTwoFAs(code: String): Result<Unit> {
-        delay(3000)
+        delay(3000) //TODO: Delete line when feature flag is removed
         val result = if (featureFlagEnabled()) {
             isEnabledForTesting = false
             Dhis2Result.Success(Unit)

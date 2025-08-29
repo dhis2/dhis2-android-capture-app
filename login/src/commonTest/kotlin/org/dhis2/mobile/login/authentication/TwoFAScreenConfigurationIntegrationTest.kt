@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
@@ -15,6 +16,7 @@ import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.authentication.ui.viewmodel.TwoFASettingsViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
@@ -37,6 +39,11 @@ class TwoFAScreenConfigurationIntegrationTest {
     private lateinit var viewModel: TwoFASettingsViewModel
     private lateinit var enableTwoFa: EnableTwoFA
     private lateinit var disableTwoFa: DisableTwoFA
+    private val dispatchers = Dispatcher(
+        testDispatcher,
+        testDispatcher,
+        testDispatcher,
+    )
 
     @BeforeTest
     fun setup() {
@@ -72,6 +79,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                dispatchers = dispatchers,
             )
 
             // Then: Loading screen is displayed followed by enable 2FA screen
@@ -100,6 +108,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                dispatchers = dispatchers,
             )
 
             // Then: Loading screen is displayed followed by disable 2FA screen
@@ -128,6 +137,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                dispatchers = dispatchers,
             )
 
             // Then: Loading screen is displayed followed by no connection screen
@@ -155,6 +165,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                dispatchers = dispatchers,
             )
 
             // When: 2FA code is entered correctly"
@@ -168,6 +179,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 // Disable 2FA screen is displayed
                 assertEquals(
                     TwoFAUiState.Disable(
+                        state = InputShellState.UNFOCUSED,
                         isDisabling = false,
                         disableErrorMessage = null,
                     ),
@@ -178,6 +190,7 @@ class TwoFAScreenConfigurationIntegrationTest {
 
                 assertEquals(
                     TwoFAUiState.Disable(
+                        state = InputShellState.UNFOCUSED,
                         isDisabling = true,
                     ),
                     awaitItem(),
@@ -209,6 +222,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                dispatchers = dispatchers,
             )
 
             // When: 2FA incorrect code is entered"
@@ -225,9 +239,22 @@ class TwoFAScreenConfigurationIntegrationTest {
                 assertTrue(awaitItem() is TwoFAUiState.Disable)
 
                 viewModel.disableTwoFA("123456")
+                assertEquals(
+                    TwoFAUiState.Disable(
+                        state = InputShellState.UNFOCUSED,
+                        isDisabling = true,
+                        disableErrorMessage = null,
+                    ), awaitItem()
+                )
 
                 // Disable 2FA screen is displayed with error
-                assertEquals(TwoFAUiState.Disable(isDisabling = false, "error"), awaitItem())
+                assertEquals(
+                    TwoFAUiState.Disable(
+                        state = InputShellState.ERROR,
+                        isDisabling = false,
+                        disableErrorMessage = "error"
+                    ), awaitItem()
+                )
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -252,6 +279,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                dispatchers = dispatchers,
             )
 
             // Then: Loading screen is displayed followed by no connection screen
@@ -288,6 +316,7 @@ class TwoFAScreenConfigurationIntegrationTest {
 
                 assertEquals(
                     TwoFAUiState.Disable(
+                        state = InputShellState.UNFOCUSED,
                         isDisabling = false,
                         disableErrorMessage = null,
                         errorMessage = null,

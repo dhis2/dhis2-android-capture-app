@@ -45,6 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TwoFADisableScreen(
     twoFADisableUiState: TwoFAUiState.Disable,
+    onAuthCodeUpdated: (String) -> Unit,
     onDisable: (String) -> Unit,
 ) {
     var authCode: TextFieldValue by remember(twoFADisableUiState) { mutableStateOf(TextFieldValue("")) }
@@ -77,27 +78,20 @@ fun TwoFADisableScreen(
         ) {
             InputText(
                 inputTextFieldValue = authCode,
-                onValueChanged = { it?.let { authCode = it } },
+                onValueChanged = { it?.let { onAuthCodeUpdated(it.text) } },
                 title = stringResource(Res.string.two_fa_code),
-                state =
-                if (twoFADisableUiState.disableErrorMessage != null && authCode.text.isEmpty()) {
-                    InputShellState.ERROR
-                } else if (twoFADisableUiState.isDisabling) {
-                    InputShellState.DISABLED
-                } else {
-                    InputShellState.UNFOCUSED
-                },
+                state = twoFADisableUiState.state,
                 supportingText =
-                if (twoFADisableUiState.disableErrorMessage != null && authCode.text.isEmpty()) {
-                    listOf(
-                        SupportingTextData(
-                            text = stringResource(Res.string.two_fa_disable_error),
-                            state = SupportingTextState.ERROR,
-                        ),
-                    )
-                } else {
-                    null
-                },
+                    if (twoFADisableUiState.state == InputShellState.ERROR) {
+                        listOf(
+                            SupportingTextData(
+                                text = stringResource(Res.string.two_fa_disable_error),
+                                state = SupportingTextState.ERROR,
+                            ),
+                        )
+                    } else {
+                        null
+                    },
             )
         }
         Button(

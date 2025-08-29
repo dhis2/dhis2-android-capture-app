@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.authentication.di
 
+import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
@@ -24,13 +25,14 @@ internal val twoFAModule =
         // Mappers
         single<TwoFAUiStateMapper> { TwoFAUiStateMapper() }
 
-        // ViewModels
-        viewModel {
-            TwoFASettingsViewModel(
-                getTwoFAStatus = get(),
-                enableTwoFA = get(),
-                disableTwoFA = get(),
-                mapper = get(),
-            )
-        }
+    // ViewModels
+    viewModel {
+        TwoFASettingsViewModel(
+            getTwoFAStatus = get(),
+            enableTwoFA = get(),
+            disableTwoFA = get(),
+            mapper = get(),
+            dispatchers = get(),
+        )
     }
+}

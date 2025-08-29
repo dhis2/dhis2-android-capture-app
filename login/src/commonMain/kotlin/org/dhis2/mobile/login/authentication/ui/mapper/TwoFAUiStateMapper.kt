@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.authentication.ui.mapper
 
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 
 class TwoFAUiStateMapper {
     fun mapToUiState(twoFAStatus: TwoFAStatus): TwoFAUiState =
@@ -15,6 +16,7 @@ class TwoFAUiStateMapper {
             )
             // When 2FA is enabled in the system, show the Disable screen
             is TwoFAStatus.Enabled -> TwoFAUiState.Disable(
+                state = InputShellState.UNFOCUSED,
                 isDisabling = false,
                 disableErrorMessage = null,
                 errorMessage = twoFAStatus.errorMessage,

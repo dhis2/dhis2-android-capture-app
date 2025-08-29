@@ -6,12 +6,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.junit.Before
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
@@ -29,6 +31,12 @@ class TwoFASettingsViewModelTest {
     private val disableTwoFa: DisableTwoFA = mock()
     private val testDispatcher = StandardTestDispatcher()
 
+    private val dispatchers = Dispatcher(
+        testDispatcher,
+        testDispatcher,
+        testDispatcher,
+    )
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -38,6 +46,7 @@ class TwoFASettingsViewModelTest {
     fun `TwoFAStatus is enabled`() = runTest {
         val enabledStatus = TwoFAStatus.Enabled()
         val disableUiState = TwoFAUiState.Disable(
+            state = InputShellState.UNFOCUSED,
             isDisabling = false,
             disableErrorMessage = null,
         )
@@ -50,6 +59,7 @@ class TwoFASettingsViewModelTest {
             enableTwoFA = enableTwoFa,
             disableTwoFA = disableTwoFa,
             mapper = mapper,
+            dispatchers = dispatchers,
         )
 
             viewModel.uiState.test {
@@ -86,6 +96,7 @@ class TwoFASettingsViewModelTest {
             enableTwoFA = enableTwoFa,
             disableTwoFA = disableTwoFa,
             mapper = mapper,
+            dispatchers = dispatchers,
         )
 
             viewModel.uiState.test {

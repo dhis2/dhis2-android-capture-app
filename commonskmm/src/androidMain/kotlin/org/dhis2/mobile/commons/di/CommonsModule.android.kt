@@ -1,5 +1,6 @@
 package org.dhis2.mobile.commons.di
 
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.data.TableDimensionRepository
 import org.dhis2.mobile.commons.data.TableDimensionRepositoryImpl
 import org.dhis2.mobile.commons.data.ValueParser
@@ -40,7 +41,10 @@ actual val commonsModule: Module
 
             factoryOf<D2ErrorMessageProvider>(::D2ErrorMessageProviderImpl)
 
-            factory<TableDimensionRepository> { params ->
-                TableDimensionRepositoryImpl(get(), params.get())
-            }
+        factory<TableDimensionRepository> { params ->
+            TableDimensionRepositoryImpl(get(), params.get())
         }
+        factory<Dispatcher> {
+            Dispatcher()
+        }
+    }

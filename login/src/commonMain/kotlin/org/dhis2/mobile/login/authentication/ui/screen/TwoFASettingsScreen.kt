@@ -182,6 +182,7 @@ fun TwoFASettingsScreen(
                         item {
                             TwoFADisableScreen(
                                 twoFADisableUiState = uiState as TwoFAUiState.Disable,
+                                onAuthCodeUpdated = viewModel::updateAuthCode,
                                 onDisable = { code ->
                                     viewModel.disableTwoFA(code)
                                 },

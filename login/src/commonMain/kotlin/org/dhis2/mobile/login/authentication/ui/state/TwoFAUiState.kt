@@ -1,5 +1,7 @@
 package org.dhis2.mobile.login.authentication.ui.state
 
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+
 sealed class TwoFAUiState {
     object Checking : TwoFAUiState()
     data class Enable(
@@ -10,6 +12,7 @@ sealed class TwoFAUiState {
     ) : TwoFAUiState()
 
     data class Disable(
+        val state: InputShellState,
         val isDisabling: Boolean,
         val disableErrorMessage: String? = null,
         val errorMessage: String? = null,
