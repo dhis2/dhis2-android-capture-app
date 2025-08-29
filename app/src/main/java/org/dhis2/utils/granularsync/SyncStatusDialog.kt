@@ -22,7 +22,6 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.work.WorkInfo
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -44,6 +43,7 @@ import org.dhis2.usescases.sms.SmsSendingService
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.customviews.MessageAmountDialog
 import org.hisp.dhis.android.core.common.State
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import javax.inject.Inject
 
 private const val SMS_PERMISSIONS_REQ_ID = 102
@@ -106,7 +106,7 @@ class SyncStatusDialog : BottomSheetDialogFragment(), GranularSyncContracts.View
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Mdc3Theme {
+                DHIS2Theme {
                     val syncState by viewModel.currentState.collectAsState()
                     syncState?.let { syncUiState ->
                         when {

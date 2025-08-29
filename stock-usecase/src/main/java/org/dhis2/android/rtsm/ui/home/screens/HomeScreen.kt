@@ -111,7 +111,7 @@ fun HomeScreen(
         ) { targetIndex ->
             when (targetIndex) {
                 BottomNavigation.ANALYTICS.id -> {
-                    DHIS2Theme() {
+                    DHIS2Theme {
                         AnalyticsScreen(
                             viewModel = viewModel,
                             backAction = { manageStockViewModel.onHandleBackNavigation() },
