@@ -1,6 +1,5 @@
 package org.dhis2.mobile.login.authentication.di
 
-import kotlinx.coroutines.Dispatchers
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus

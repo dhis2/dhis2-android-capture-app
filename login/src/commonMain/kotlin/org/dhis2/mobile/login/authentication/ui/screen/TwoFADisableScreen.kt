@@ -82,16 +82,16 @@ fun TwoFADisableScreen(
                 title = stringResource(Res.string.two_fa_code),
                 state = twoFADisableUiState.state,
                 supportingText =
-                    if (twoFADisableUiState.state == InputShellState.ERROR) {
-                        listOf(
-                            SupportingTextData(
-                                text = stringResource(Res.string.two_fa_disable_error),
-                                state = SupportingTextState.ERROR,
-                            ),
-                        )
-                    } else {
-                        null
-                    },
+                if (twoFADisableUiState.state == InputShellState.ERROR) {
+                    listOf(
+                        SupportingTextData(
+                            text = stringResource(Res.string.two_fa_disable_error),
+                            state = SupportingTextState.ERROR,
+                        ),
+                    )
+                } else {
+                    null
+                },
             )
         }
         Button(
@@ -119,11 +119,11 @@ fun TextStep(
 ) {
     Column(
         modifier =
-            Modifier
-                .background(
-                    color = SurfaceColor.ContainerLow,
-                    shape = RoundedCornerShape(16.dp),
-                ).padding(16.dp),
+        Modifier
+            .background(
+                color = SurfaceColor.ContainerLow,
+                shape = RoundedCornerShape(16.dp),
+            ).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(

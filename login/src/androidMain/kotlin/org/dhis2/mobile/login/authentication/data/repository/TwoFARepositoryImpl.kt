@@ -29,14 +29,14 @@ class TwoFARepositoryImpl(
                 )
             } catch (d2Error: D2Error) {
                 TwoFAStatus.Enabled(
-                    errorMessage = d2Error.localizedMessage ?: d2Error.errorDescription()
+                    errorMessage = d2Error.localizedMessage ?: d2Error.errorDescription(),
                 )
             }
         }
     }
 
     override suspend fun enableTwoFA(code: String): Result<Unit> {
-        delay(3000) //TODO: Delete line when feature flag is removed
+        delay(3000) // TODO: Delete line when feature flag is removed
         val result = if (featureFlagEnabled()) {
             isEnabledForTesting = true
             Dhis2Result.Success(Unit)
@@ -57,7 +57,7 @@ class TwoFARepositoryImpl(
     }
 
     override suspend fun disableTwoFAs(code: String): Result<Unit> {
-        delay(3000) //TODO: Delete line when feature flag is removed
+        delay(3000) // TODO: Delete line when feature flag is removed
         val result = if (featureFlagEnabled()) {
             isEnabledForTesting = false
             Dhis2Result.Success(Unit)

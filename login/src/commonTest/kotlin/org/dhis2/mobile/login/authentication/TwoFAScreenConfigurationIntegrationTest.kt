@@ -32,7 +32,6 @@ class TwoFAScreenConfigurationIntegrationTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var repository: TwoFARepository
     private lateinit var getTwoFAStatus: GetTwoFAStatus
-    private lateinit var getTwoFASecretCode: GetTwoFASecretCode
     private lateinit var disableTwoFA: DisableTwoFA
     private lateinit var enableTwoFA: EnableTwoFA
     private lateinit var mapper: TwoFAUiStateMapper
@@ -244,7 +243,8 @@ class TwoFAScreenConfigurationIntegrationTest {
                         state = InputShellState.UNFOCUSED,
                         isDisabling = true,
                         disableErrorMessage = null,
-                    ), awaitItem()
+                    ),
+                    awaitItem(),
                 )
 
                 // Disable 2FA screen is displayed with error
@@ -252,8 +252,9 @@ class TwoFAScreenConfigurationIntegrationTest {
                     TwoFAUiState.Disable(
                         state = InputShellState.ERROR,
                         isDisabling = false,
-                        disableErrorMessage = "error"
-                    ), awaitItem()
+                        disableErrorMessage = "error",
+                    ),
+                    awaitItem(),
                 )
 
                 cancelAndIgnoreRemainingEvents()
