@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="not_now">अभी नहीं</string>
+    <string name="keep_editing">संपादन करते रहें</string>
+    <string name="review">रिव्यू</string>
     <string name="cancel">रद्द करें</string>
     <string name="save">सहेजें</string>
+    <string name="draw_here">यहाँ चित्र बनाएँ</string>
     <string name="action_done">पूरा हुआ</string>
     <string name="action_cancel">रद्द करें</string>
     <string name="action_close">बंद करें</string>
+    <string name="hint_search">सर्च करें / खोजें</string>
     </resources>
