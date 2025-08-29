@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import org.dhis2.mobile.login.authentication.ui.state.TwoFADisableUiState
+import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.two_fa_code
 import org.dhis2.mobile.login.resources.two_fa_disable_button
@@ -37,13 +37,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun TwoFADisableScreen(
-    twoFADisableUiState: TwoFADisableUiState,
+    twoFADisableUiState: TwoFAUiState.Disable,
     onDisable: (String) -> Unit,
 ) {
     var authCode: TextFieldValue by remember(twoFADisableUiState) { mutableStateOf(TextFieldValue("")) }
@@ -79,16 +80,21 @@ fun TwoFADisableScreen(
                 onValueChanged = { it?.let { authCode = it } },
                 title = stringResource(Res.string.two_fa_code),
                 state =
-                if (twoFADisableUiState is TwoFADisableUiState.Failure && authCode.text.isEmpty()) {
+                if (twoFADisableUiState.disableErrorMessage != null && authCode.text.isEmpty()) {
                     InputShellState.ERROR
-                } else if (twoFADisableUiState is TwoFADisableUiState.Disabling) {
+                } else if (twoFADisableUiState.isDisabling) {
                     InputShellState.DISABLED
                 } else {
                     InputShellState.UNFOCUSED
                 },
                 supportingText =
-                if (twoFADisableUiState is TwoFADisableUiState.Failure && authCode.text.isEmpty()) {
-                    listOf(SupportingTextData(stringResource(Res.string.two_fa_disable_error)))
+                if (twoFADisableUiState.disableErrorMessage != null && authCode.text.isEmpty()) {
+                    listOf(
+                        SupportingTextData(
+                            text = stringResource(Res.string.two_fa_disable_error),
+                            state = SupportingTextState.ERROR,
+                        ),
+                    )
                 } else {
                     null
                 },
@@ -99,7 +105,7 @@ fun TwoFADisableScreen(
             text = stringResource(Res.string.two_fa_disable_button),
             colorStyle = ColorStyle.ERROR,
             style = ButtonStyle.FILLED,
-            enabled = authCode.text.length >= 6 && twoFADisableUiState !is TwoFADisableUiState.Disabling,
+            enabled = authCode.text.length >= 6 && twoFADisableUiState.isDisabling.not(),
             onClick = { onDisable(authCode.text) },
             icon = {
                 Icon(

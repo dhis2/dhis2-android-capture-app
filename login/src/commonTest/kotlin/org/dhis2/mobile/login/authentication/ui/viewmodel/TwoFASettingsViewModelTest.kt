@@ -9,7 +9,6 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
-import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFASecretCode
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
@@ -25,10 +24,9 @@ import kotlin.test.assertEquals
 class TwoFASettingsViewModelTest {
     private lateinit var viewModel: TwoFASettingsViewModel
     private val getTwoFAStatus: GetTwoFAStatus = mock()
-    private val getTwoFASecretCode: GetTwoFASecretCode = mock()
-    private val disableTwoFA: DisableTwoFA = mock()
-    private val enableTwoFA: EnableTwoFA = mock()
     private val mapper: TwoFAUiStateMapper = mock()
+    private val enableTwoFa: EnableTwoFA = mock()
+    private val disableTwoFa: DisableTwoFA = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -37,22 +35,22 @@ class TwoFASettingsViewModelTest {
     }
 
     @Test
-    fun `TwoFAStatus is enabled`() =
-        runTest {
-            val enabledStatus = TwoFAStatus.Enabled()
-            val disableUiState = TwoFAUiState.Disable()
+    fun `TwoFAStatus is enabled`() = runTest {
+        val enabledStatus = TwoFAStatus.Enabled()
+        val disableUiState = TwoFAUiState.Disable(
+            isDisabling = false,
+            disableErrorMessage = null,
+        )
 
             whenever(getTwoFAStatus()).thenReturn(enabledStatus)
             whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
-            viewModel =
-                TwoFASettingsViewModel(
-                    getTwoFAStatus = getTwoFAStatus,
-                    getTwoFASecretCode = getTwoFASecretCode,
-                    enableTwoFA = enableTwoFA,
-                    disableTwoFA = disableTwoFA,
-                    mapper = mapper,
-                )
+        viewModel = TwoFASettingsViewModel(
+            getTwoFAStatus = getTwoFAStatus,
+            enableTwoFA = enableTwoFa,
+            disableTwoFA = disableTwoFa,
+            mapper = mapper,
+        )
 
             viewModel.uiState.test {
                 assert(awaitItem() is TwoFAUiState.Checking)
@@ -64,11 +62,15 @@ class TwoFASettingsViewModelTest {
         }
 
     @Test
-    fun `retry calls checkTwoFAStatus`() =
-        runTest {
-            val noConnectionUiState = TwoFAStatus.NoConnection
-            val disabledStatus = TwoFAStatus.Disabled()
-            val enableUiState = TwoFAUiState.Enable()
+    fun `retry calls checkTwoFAStatus`() = runTest {
+        val noConnectionStatus = TwoFAStatus.NoConnection
+        val noConnectionUiState = TwoFAUiState.NoConnection
+        val disabledStatus = TwoFAStatus.Disabled(secretCode = "SECRETCODE")
+        val enableUiState = TwoFAUiState.Enable(
+            secretCode = "SECRETCODE",
+            isEnabling = false,
+            enableErrorMessage = null,
+        )
 
             whenever(getTwoFAStatus()) doReturnConsecutively
                     listOf(
@@ -79,14 +81,12 @@ class TwoFASettingsViewModelTest {
 
             whenever(mapper.mapToUiState(disabledStatus)) doReturn enableUiState
 
-            viewModel =
-                TwoFASettingsViewModel(
-                    getTwoFAStatus = getTwoFAStatus,
-                    getTwoFASecretCode = getTwoFASecretCode,
-                    enableTwoFA = enableTwoFA,
-                    disableTwoFA = disableTwoFA,
-                    mapper = mapper,
-                )
+        viewModel = TwoFASettingsViewModel(
+            getTwoFAStatus = getTwoFAStatus,
+            enableTwoFA = enableTwoFa,
+            disableTwoFA = disableTwoFa,
+            mapper = mapper,
+        )
 
             viewModel.uiState.test {
                 assertEquals(TwoFAUiState.Checking, awaitItem())

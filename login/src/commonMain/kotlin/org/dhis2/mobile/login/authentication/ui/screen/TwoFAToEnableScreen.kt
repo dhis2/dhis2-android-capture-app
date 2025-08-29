@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.mobile.login.authentication.ui.state.TwoFaEnableUiState
+import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.play_store
 import org.dhis2.mobile.login.resources.two_fa_authentication_code
@@ -66,8 +66,7 @@ const val TURN_ON_BUTTON_TEST_TAG = "turn_on_button_test_tag"
 
 @Composable
 fun TwoFAToEnableScreen(
-    enableUiState: TwoFaEnableUiState,
-    secretCode: String,
+    enableUiState: TwoFAUiState.Enable,
     onAuthenticatorButtonClicked: () -> Unit,
     onCopyCodeButtonClicked: (String) -> Unit,
     onEnableButtonClicked: (String) -> Unit,
@@ -95,7 +94,7 @@ fun TwoFAToEnableScreen(
 
         TwoFAAuthStepOne(onAuthenticatorButtonClicked)
 
-        TwoFAAuthStepTwo(secretCode, onCopyCodeButtonClicked)
+        TwoFAAuthStepTwo(enableUiState.secretCode, onCopyCodeButtonClicked)
 
         TwoFAAuthStepThree(enableUiState, onEnableButtonClicked)
     }
@@ -212,7 +211,7 @@ fun TwoFAAuthStepTwo(
 
 @Composable
 fun TwoFAAuthStepThree(
-    enableUiState: TwoFaEnableUiState,
+    enableUiState: TwoFAUiState.Enable,
     onEnableButtonClicked: (String) -> Unit,
 ) {
     var textValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -249,18 +248,14 @@ fun TwoFAAuthStepThree(
         ) {
             InputText(
                 title = stringResource(Res.string.two_fa_authentication_code),
-                supportingText =
-                    when (enableUiState) {
-                        is TwoFaEnableUiState.Failure -> {
-                            listOf(
-                                SupportingTextData(
-                                    text = stringResource(Res.string.two_fa_failed_to_turn_on),
-                                    state = SupportingTextState.ERROR,
-                                ),
-                            )
-                        }
-                        else -> null
-                    },
+                supportingText = enableUiState.enableErrorMessage?.let {
+                    listOf(
+                        SupportingTextData(
+                            text = stringResource(Res.string.two_fa_failed_to_turn_on),
+                            state = SupportingTextState.ERROR,
+                        ),
+                    )
+                },
                 inputTextFieldValue = textValue,
                 onValueChanged = {
                     if (it != null) {
@@ -271,28 +266,23 @@ fun TwoFAAuthStepThree(
             )
 
             Button(
-                enabled =
-                    when (enableUiState) {
-                        is TwoFaEnableUiState.Enabling -> false
-                        else -> {
-                            textValue.text.length == 6
-                        }
-                    },
-                modifier =
-                    Modifier
-                        .testTag(TURN_ON_BUTTON_TEST_TAG)
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
+                enabled = when (enableUiState.isEnabling) {
+                    true -> false
+                    else -> { textValue.text.length == 6 }
+                },
+                modifier = Modifier
+                    .testTag(turn_on_button_test_tag)
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
-                text =
-                    when (enableUiState) {
-                        is TwoFaEnableUiState.Enabling -> {
-                            stringResource(Res.string.two_fa_turning_on_button)
-                        }
-                        else -> {
-                            stringResource(Res.string.two_fa_turn_on_button)
-                        }
-                    },
+                text = when (enableUiState.isEnabling) {
+                    true -> {
+                        stringResource(Res.string.two_fa_turning_on_button)
+                    }
+                    else -> {
+                        stringResource(Res.string.two_fa_turn_on_button)
+                    }
+                },
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Key,
