@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
+import timber.log.Timber
 
 class SettingsRepository(
     val d2: D2,
@@ -281,11 +282,15 @@ class SettingsRepository(
     }
 
     fun saveGatewayNumber(gatewayNumber: String) {
-        d2
+        try {
+            d2
             .smsModule()
             .configCase()
             .setGatewayNumber(gatewayNumber)
             .blockingAwait()
+        } catch (e: Exception) {
+            Timber.d(e.message)
+        }
     }
 
     fun saveSmsResultSender(smsResultSender: String) {

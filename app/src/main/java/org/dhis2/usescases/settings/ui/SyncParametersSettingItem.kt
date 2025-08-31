@@ -8,11 +8,13 @@ import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -98,12 +100,21 @@ internal fun SyncParametersSettingItem(
                         loadOptions = {},
                     )
 
+                    var eventsToDownload = remember {
+                        TextFieldValue(
+                            text = syncParametersViewModel.numberOfEventsToDownload.toString(),
+                            composition = TextRange(0, syncParametersViewModel.numberOfEventsToDownload.toString().length),
+                        )
+                    }
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT),
                         title = stringResource(R.string.events_to_download),
                         state = InputShellState.FOCUSED,
-                        inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfEventsToDownload.toString()),
+                        inputTextFieldValue = eventsToDownload,
                         onValueChanged = { fieldValue ->
+                            fieldValue?.let {
+                                eventsToDownload = fieldValue
+                            }
                             onEventToDownloadLimitUpdate(
                                 fieldValue?.text?.toIntOrNull() ?: 0,
                             )
@@ -111,12 +122,22 @@ internal fun SyncParametersSettingItem(
                         imeAction = ImeAction.Done,
                     )
 
+                    var numTeisDownloadTextFieldValue = remember {
+                        TextFieldValue(
+                            text = syncParametersViewModel.numberOfTeiToDownload.toString(),
+                            composition = TextRange(0, syncParametersViewModel.numberOfTeiToDownload.toString().length),
+                        )
+                    }
+
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT),
                         title = stringResource(R.string.teis_to_download),
                         state = InputShellState.FOCUSED,
-                        inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfTeiToDownload.toString()),
+                        inputTextFieldValue = numTeisDownloadTextFieldValue,
                         onValueChanged = { fieldValue ->
+                            fieldValue?.let {
+                                numTeisDownloadTextFieldValue = fieldValue
+                            }
                             onTeiToDownloadLimitUpdate(
                                 fieldValue?.text?.toIntOrNull() ?: 0,
                             )
