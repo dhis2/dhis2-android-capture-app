@@ -91,7 +91,6 @@ open class TwoFASettingsViewModel(
                     } else {
                         InputShellState.UNFOCUSED
                     },
-                    isDisabling = true,
                 ) ?: it
             }
         }

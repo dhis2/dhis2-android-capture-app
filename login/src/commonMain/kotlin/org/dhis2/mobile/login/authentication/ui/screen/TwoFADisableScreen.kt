@@ -78,7 +78,12 @@ fun TwoFADisableScreen(
         ) {
             InputText(
                 inputTextFieldValue = authCode,
-                onValueChanged = { it?.let { onAuthCodeUpdated(it.text) } },
+                onValueChanged = {
+                    it?.let {
+                        authCode = it
+                        onAuthCodeUpdated(it.text)
+                    }
+                },
                 title = stringResource(Res.string.two_fa_code),
                 state = twoFADisableUiState.state,
                 supportingText =
