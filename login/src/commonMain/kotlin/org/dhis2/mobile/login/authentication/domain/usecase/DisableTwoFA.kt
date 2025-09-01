@@ -1,13 +1,9 @@
 package org.dhis2.mobile.login.authentication.domain.usecase
 
-import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 
-class GetTwoFAStatus(
+class DisableTwoFA(
     private val twoFARepository: TwoFARepository,
 ) {
-
-    suspend operator fun invoke(): TwoFAStatus {
-        return twoFARepository.getTwoFAStatus()
-    }
+    suspend operator fun invoke(code: String) = twoFARepository.disableTwoFAs(code)
 }
