@@ -8,6 +8,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
+import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
+import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFASecretCode
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
@@ -15,14 +17,17 @@ import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TwoFASettingsViewModelTest {
 
     private lateinit var viewModel: TwoFASettingsViewModel
     private val getTwoFAStatus: GetTwoFAStatus = mock()
-    private val disableTwoFA: DisableTwoFA = mock()
     private val mapper: TwoFAUiStateMapper = mock()
+    private val getTwoFASecretCode: GetTwoFASecretCode = mock()
+    private val enableTwoFA: EnableTwoFA = mock()
+    private val disableTwoFA: DisableTwoFA = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -38,7 +43,13 @@ class TwoFASettingsViewModelTest {
         whenever(getTwoFAStatus()).thenReturn(enabledStatus)
         whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
-        viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
+        viewModel = TwoFASettingsViewModel(
+            getTwoFAStatus,
+            getTwoFASecretCode,
+            enableTwoFA,
+            disableTwoFA,
+            mapper,
+        )
 
         viewModel.uiState.test {
             assert(awaitItem() is TwoFAUiState.Checking)
@@ -56,26 +67,42 @@ class TwoFASettingsViewModelTest {
         val disabledStatus = TwoFAStatus.Disabled()
         val enableUiState = TwoFAUiState.Enable()
 
-        whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
-        whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
-
-        viewModel = TwoFASettingsViewModel(getTwoFAStatus, disableTwoFA, mapper)
+        viewModel = TwoFASettingsViewModel(
+            getTwoFAStatus = getTwoFAStatus,
+            getTwoFASecretCode = getTwoFASecretCode,
+            enableTwoFA = enableTwoFA,
+            disableTwoFA = disableTwoFA,
+            mapper = mapper,
+        )
 
         viewModel.uiState.test {
-            assert(awaitItem() is TwoFAUiState.Checking)
+            whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
+            whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
 
-            assert(awaitItem() == noConnectionUiState)
+            viewModel = TwoFASettingsViewModel(
+                getTwoFAStatus,
+                getTwoFASecretCode,
+                enableTwoFA,
+                disableTwoFA,
+                mapper,
+            )
 
-            whenever(getTwoFAStatus()).thenReturn(disabledStatus)
-            whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
+            viewModel.uiState.test {
+                assert(awaitItem() is TwoFAUiState.Checking)
 
-            viewModel.retry()
+                assert(awaitItem() == noConnectionUiState)
 
-            assert(awaitItem() is TwoFAUiState.Checking)
+                whenever(getTwoFAStatus()).thenReturn(disabledStatus)
+                whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
 
-            assert(awaitItem() == enableUiState)
+                viewModel.retry()
 
-            cancelAndIgnoreRemainingEvents()
+                assertEquals(TwoFAUiState.Checking, awaitItem())
+
+                assertEquals(enableUiState, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
         }
     }
 }
