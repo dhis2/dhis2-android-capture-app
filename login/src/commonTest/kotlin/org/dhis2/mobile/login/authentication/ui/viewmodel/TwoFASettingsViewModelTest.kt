@@ -14,6 +14,8 @@ import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.junit.Before
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -62,10 +64,16 @@ class TwoFASettingsViewModelTest {
 
     @Test
     fun `retry calls checkTwoFAStatus`() = runTest {
-        val noConnectionStatus = TwoFAStatus.NoConnection
-        val noConnectionUiState = TwoFAUiState.NoConnection
+        val noConnectionUiState = TwoFAStatus.NoConnection
         val disabledStatus = TwoFAStatus.Disabled()
         val enableUiState = TwoFAUiState.Enable()
+
+        whenever(getTwoFAStatus()) doReturnConsecutively listOf(
+            noConnectionUiState, disabledStatus,
+        )
+        whenever(mapper.mapToUiState(noConnectionUiState)) doReturn TwoFAUiState.NoConnection
+
+        whenever(mapper.mapToUiState(disabledStatus)) doReturn enableUiState
 
         viewModel = TwoFASettingsViewModel(
             getTwoFAStatus = getTwoFAStatus,
@@ -76,33 +84,17 @@ class TwoFASettingsViewModelTest {
         )
 
         viewModel.uiState.test {
-            whenever(getTwoFAStatus()).thenReturn(noConnectionStatus)
-            whenever(mapper.mapToUiState(noConnectionStatus)).thenReturn(noConnectionUiState)
+            assertEquals(TwoFAUiState.Checking, awaitItem())
 
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus,
-                getTwoFASecretCode,
-                enableTwoFA,
-                disableTwoFA,
-                mapper,
-            )
+            assertEquals(TwoFAUiState.NoConnection, awaitItem())
 
-            viewModel.uiState.test {
-                assert(awaitItem() is TwoFAUiState.Checking)
+            viewModel.retry()
 
-                assert(awaitItem() == noConnectionUiState)
+            assertEquals(TwoFAUiState.Checking, awaitItem())
 
-                whenever(getTwoFAStatus()).thenReturn(disabledStatus)
-                whenever(mapper.mapToUiState(disabledStatus)).thenReturn(enableUiState)
+            assertEquals(enableUiState, awaitItem())
 
-                viewModel.retry()
-
-                assertEquals(TwoFAUiState.Checking, awaitItem())
-
-                assertEquals(enableUiState, awaitItem())
-
-                cancelAndIgnoreRemainingEvents()
-            }
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }
