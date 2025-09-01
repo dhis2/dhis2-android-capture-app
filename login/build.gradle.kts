@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.compose)
@@ -11,6 +14,13 @@ kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+
+        dependencies {
+            androidTestImplementation(libs.test.compose.ui.test.junit4.android)
+            debugImplementation(libs.test.ui.test.manifest)
         }
     }
 
@@ -95,6 +105,7 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

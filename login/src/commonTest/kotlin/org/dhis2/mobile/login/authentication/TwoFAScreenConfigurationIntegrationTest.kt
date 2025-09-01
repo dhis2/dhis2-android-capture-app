@@ -17,6 +17,7 @@ import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
 import org.dhis2.mobile.login.authentication.ui.mapper.TwoFAUiStateMapper
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.authentication.ui.viewmodel.TwoFASettingsViewModel
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.test.AfterTest
@@ -126,6 +127,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 disableTwoFA,
                 mapper,
             )
+
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {
                 // Loading screen is displayed
@@ -157,7 +159,6 @@ class TwoFAScreenConfigurationIntegrationTest {
             whenever(repository.disableTwoFAs("123456")).thenReturn(
                 flowOf(TwoFAStatus.Disabled()),
             )
-            viewModel.disableTwoFA("123456")
 
             // Then: enable 2FA screen is displayed after disable
             viewModel.uiState.test {
@@ -166,6 +167,8 @@ class TwoFAScreenConfigurationIntegrationTest {
 
                 // Disable 2FA screen is displayed
                 assertTrue(awaitItem() is TwoFAUiState.Disable)
+
+                viewModel.disableTwoFA("123456")
 
                 // Enable 2FA screen is displayed
                 assertTrue(awaitItem() is TwoFAUiState.Enable)
@@ -193,7 +196,6 @@ class TwoFAScreenConfigurationIntegrationTest {
             whenever(repository.disableTwoFAs("123456")).thenReturn(
                 flowOf(TwoFAStatus.Enabled("error")),
             )
-            viewModel.disableTwoFA("123456")
 
             // Then: enable 2FA screen is displayed after disable
             viewModel.uiState.test {
@@ -203,8 +205,46 @@ class TwoFAScreenConfigurationIntegrationTest {
                 // Disable 2FA screen is displayed
                 assertTrue(awaitItem() is TwoFAUiState.Disable)
 
+                viewModel.disableTwoFA("123456")
+
                 // Disable 2FA screen is displayed with error
                 assertEquals(TwoFAUiState.Disable("error"), awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `Given user is in enable 2FA, when 2FA is enabled, go to disable screen`() =
+        runTest {
+            // Given: User taps on 2FA settings
+            whenever(repository.getTwoFAStatus()).thenReturn(
+                TwoFAStatus.Disabled(),
+            )
+
+            whenever(repository.enableTwoFA("123456")) doReturn flowOf(true)
+
+            // When: 2FA status is checked
+            viewModel = TwoFASettingsViewModel(
+                getTwoFAStatus = getTwoFAStatus,
+                getTwoFASecretCode = getTwoFASecretCode,
+                enableTwoFA = enableTwoFA,
+                disableTwoFA = disableTwoFA,
+                mapper = mapper,
+            )
+
+            // Then: Loading screen is displayed followed by no connection screen
+            viewModel.uiState.test {
+                // Loading screen is displayed
+                assertEquals(TwoFAUiState.Checking, awaitItem())
+
+                // Enable 2FA screen is displayed
+                assertEquals(TwoFAUiState.Enable(), awaitItem())
+
+                // User enables 2FA
+                viewModel.enableTwoFA("123456")
+
+                assertEquals(TwoFAUiState.Disable(), awaitItem())
 
                 cancelAndIgnoreRemainingEvents()
             }

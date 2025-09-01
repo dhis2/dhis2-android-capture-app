@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,8 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+
+const val turn_on_button_test_tag = "turn_on_button_test_tag"
 
 @Composable
 fun TwoFAToEnableScreen(
@@ -268,6 +271,7 @@ fun TwoFAAuthStepThree(
                     else -> { textValue.text.length == 6 }
                 },
                 modifier = Modifier
+                    .testTag(turn_on_button_test_tag)
                     .fillMaxWidth()
                     .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
@@ -285,7 +289,7 @@ fun TwoFAAuthStepThree(
                         contentDescription = "Status Icon",
                     )
                 },
-                onClick = { onEnableButtonClicked.invoke(textValue.text) },
+                onClick = { onEnableButtonClicked(textValue.text) },
             )
         }
     }
