@@ -49,15 +49,15 @@ class SyncManagerPresenter(
     private val connectionStatus = networkUtils.connectionStatus
 
     private val _settingsState = MutableStateFlow<SettingsState?>(null)
-    val settingsState = _settingsState
-        .onStart {
-            loadData()
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(),
-            null,
-        )
+    val settingsState =
+        _settingsState
+            .onStart {
+                loadData()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(),
+                null,
+            )
 
     val messageChannel = settingsMessages.messageChannel
 
@@ -67,21 +67,22 @@ class SyncManagerPresenter(
     private val _fileToShareChannel = Channel<File>()
     val fileToShareChannel = _fileToShareChannel.receiveAsFlow()
 
-    private val syncWorkInfo = launchSync.syncWorkInfo.stateIn(
-        viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = LaunchSync.SyncStatusProgress(
-            metadataSyncProgress = LaunchSync.SyncStatus.None,
-            dataSyncProgress = LaunchSync.SyncStatus.None,
-        ),
-    )
+    private val syncWorkInfo =
+        launchSync.syncWorkInfo.stateIn(
+            viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue =
+                LaunchSync.SyncStatusProgress(
+                    metadataSyncProgress = LaunchSync.SyncStatus.None,
+                    dataSyncProgress = LaunchSync.SyncStatus.None,
+                ),
+        )
 
     init {
         connectionStatus
             .onEach { hasConnection ->
                 _settingsState.update { it?.copy(hasConnection = hasConnection) }
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
 
         syncWorkInfo
             .onEach { syncStatusProgress ->
@@ -94,29 +95,31 @@ class SyncManagerPresenter(
 
                 _settingsState.update {
                     it?.copy(
-                        metadataSettingsViewModel = it.metadataSettingsViewModel.copy(
-                            syncInProgress = syncStatusProgress.metadataSyncProgress is LaunchSync.SyncStatus.InProgress,
-                        ),
-                        dataSettingsViewModel = it.dataSettingsViewModel.copy(
-                            syncInProgress = syncStatusProgress.dataSyncProgress is LaunchSync.SyncStatus.InProgress,
-                        ),
+                        metadataSettingsViewModel =
+                            it.metadataSettingsViewModel.copy(
+                                syncInProgress = syncStatusProgress.metadataSyncProgress is LaunchSync.SyncStatus.InProgress,
+                            ),
+                        dataSettingsViewModel =
+                            it.dataSettingsViewModel.copy(
+                                syncInProgress = syncStatusProgress.dataSyncProgress is LaunchSync.SyncStatus.InProgress,
+                            ),
                     )
                 }
 
                 if (shouldLoadData) {
                     loadData()
                 }
-            }
-            .launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
     private suspend fun loadData() {
-        val settingsState = getSettingsState(
-            openedItem = _settingsState.value?.openedItem,
-            hasConnection = connectionStatus.value,
-            metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
-            dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
-        )
+        val settingsState =
+            getSettingsState(
+                openedItem = _settingsState.value?.openedItem,
+                hasConnection = connectionStatus.value,
+                metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
+                dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
+            )
         _settingsState.update { settingsState }
     }
 
@@ -168,13 +171,17 @@ class SyncManagerPresenter(
         }
     }
 
-    fun saveWaitForSmsResponse(shouldWait: Boolean, resultSender: String) {
+    fun saveWaitForSmsResponse(
+        shouldWait: Boolean,
+        resultSender: String,
+    ) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val setting = if (shouldWait) {
-                UpdateSmsResponse.ResponseSetting.Enable(resultSender)
-            } else {
-                UpdateSmsResponse.ResponseSetting.Disable
-            }
+            val setting =
+                if (shouldWait) {
+                    UpdateSmsResponse.ResponseSetting.Enable(resultSender)
+                } else {
+                    UpdateSmsResponse.ResponseSetting.Disable
+                }
 
             when (val result = updateSmsResponse(setting)) {
                 UpdateSmsResponse.UpdateSmsResponseResult.Success ->
@@ -183,9 +190,10 @@ class SyncManagerPresenter(
                 is UpdateSmsResponse.UpdateSmsResponseResult.ValidationError ->
                     _settingsState.update {
                         it?.copy(
-                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                resultSenderValidationResult = result.validationResult,
-                            ),
+                            smsSettingsViewModel =
+                                it.smsSettingsViewModel.copy(
+                                    resultSenderValidationResult = result.validationResult,
+                                ),
                         )
                     }
             }
@@ -204,9 +212,10 @@ class SyncManagerPresenter(
                 is UpdateSmsModule.EnableSmsResult.ValidationError ->
                     _settingsState.update {
                         it?.copy(
-                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                gatewayValidationResult = result.validationResult,
-                            ),
+                            smsSettingsViewModel =
+                                it.smsSettingsViewModel.copy(
+                                    gatewayValidationResult = result.validationResult,
+                                ),
                         )
                     }
             }
@@ -225,9 +234,10 @@ class SyncManagerPresenter(
                 is UpdateSmsModule.EnableSmsResult.ValidationError ->
                     _settingsState.update {
                         it?.copy(
-                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                resultSenderValidationResult = result.validationResult,
-                            ),
+                            smsSettingsViewModel =
+                                it.smsSettingsViewModel.copy(
+                                    resultSenderValidationResult = result.validationResult,
+                                ),
                         )
                     }
             }
@@ -239,15 +249,21 @@ class SyncManagerPresenter(
             val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveTimeout(timeout))
         }
     }
-    fun enableSmsModule(enableSms: Boolean, smsGateway: String, timeout: Int) {
+
+    fun enableSmsModule(
+        enableSms: Boolean,
+        smsGateway: String,
+        timeout: Int,
+    ) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val result = updateSmsModule(
-                if (enableSms) {
-                    UpdateSmsModule.SmsSetting.Enable(smsGateway, timeout)
-                } else {
-                    UpdateSmsModule.SmsSetting.Disable
-                },
-            )
+            val result =
+                updateSmsModule(
+                    if (enableSms) {
+                        UpdateSmsModule.SmsSetting.Enable(smsGateway, timeout)
+                    } else {
+                        UpdateSmsModule.SmsSetting.Disable
+                    },
+                )
             when (result) {
                 UpdateSmsModule.EnableSmsResult.Success,
                 UpdateSmsModule.EnableSmsResult.Error,
@@ -257,9 +273,10 @@ class SyncManagerPresenter(
                 is UpdateSmsModule.EnableSmsResult.ValidationError ->
                     _settingsState.update {
                         it?.copy(
-                            smsSettingsViewModel = it.smsSettingsViewModel.copy(
-                                gatewayValidationResult = result.validationResult,
-                            ),
+                            smsSettingsViewModel =
+                                it.smsSettingsViewModel.copy(
+                                    gatewayValidationResult = result.validationResult,
+                                ),
                         )
                     }
             }
@@ -315,7 +332,7 @@ class SyncManagerPresenter(
             when (val result = exportDatabase(exportType)) {
                 is ExportDatabase.ExportResult.Share -> _fileToShareChannel.send(result.db)
                 else -> {
-                    /*do nothing*/
+                    // do nothing
                 }
             }
         }

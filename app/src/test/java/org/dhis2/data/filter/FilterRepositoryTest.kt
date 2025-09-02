@@ -33,7 +33,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class FilterRepositoryTest {
-
     companion object {
         const val EVENT_DATE = "date"
         const val ENROLLMENT_DATE = "enrollment_date"
@@ -61,14 +60,15 @@ class FilterRepositoryTest {
     @Before
     fun setUp() {
         mockFilterLabels()
-        filterRepository = FilterRepository(
-            d2,
-            filterResources,
-            getFiltersApplyingWebAppConfig,
-            eventFilterToWorkingListItemMapper,
-            teiFilterToWorkingListItemMapper,
-            programStageToWorkingListItemMapper,
-        )
+        filterRepository =
+            FilterRepository(
+                d2,
+                filterResources,
+                getFiltersApplyingWebAppConfig,
+                eventFilterToWorkingListItemMapper,
+                teiFilterToWorkingListItemMapper,
+                programStageToWorkingListItemMapper,
+            )
     }
 
     private fun mockFilterLabels() {
@@ -89,11 +89,19 @@ class FilterRepositoryTest {
     fun `Should get home filters without assign to me when webapp is not configured`() {
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(
-            d2.programModule().programStages().byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byEnableUserAssignment()
-                .eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn true
 
         val result = filterRepository.homeFilters()
@@ -108,11 +116,19 @@ class FilterRepositoryTest {
     fun `Should get home filters with assign to me when webapp is not configured`() {
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(
-            d2.programModule().programStages().byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byEnableUserAssignment()
-                .eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
 
         val result = filterRepository.homeFilters()
@@ -127,11 +143,19 @@ class FilterRepositoryTest {
     fun `Should get home filters when webapp is configured`() {
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
-            d2.programModule().programStages().byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byEnableUserAssignment()
-                .eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
         whenever(
             d2.settingModule().appearanceSettings().getHomeFilters(),
@@ -183,29 +207,67 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get dashboard filters when webapp is not configured`() {
-        val program = Program.builder().uid("random")
-            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
-        val catCombo = CategoryCombo.builder().uid("catCom").isDefault(true).build()
+        val program =
+            Program
+                .builder()
+                .uid("random")
+                .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+                .build()
+        val catCombo =
+            CategoryCombo
+                .builder()
+                .uid("catCom")
+                .isDefault(true)
+                .build()
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
-        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid()),
+            d2
+                .programModule()
+                .programs()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(program)
+        whenever(
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
                 .byEnableUserAssignment(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
         whenever(
-            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet(),
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .uid(program.categoryComboUid())
+                .blockingGet(),
         ) doReturn catCombo
 
         val result = filterRepository.dashboardFilters(program.uid())
@@ -220,38 +282,84 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get dashboard filters with catOptCombo when webapp is not configured`() {
-        val program = Program.builder().uid("random")
-            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
-        val catCombo = CategoryCombo.builder().uid("catCom").isDefault(false).build()
+        val program =
+            Program
+                .builder()
+                .uid("random")
+                .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+                .build()
+        val catCombo =
+            CategoryCombo
+                .builder()
+                .uid("catCom")
+                .isDefault(false)
+                .build()
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn false
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
-        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid()),
+            d2
+                .programModule()
+                .programs()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(program)
+        whenever(
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
                 .byEnableUserAssignment(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
         whenever(
-            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet(),
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .uid(program.categoryComboUid())
+                .blockingGet(),
         ) doReturn catCombo
         whenever(
             d2.categoryModule().categoryOptionCombos().byCategoryComboUid(),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catCombo.uid()),
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(catCombo.uid()),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catCombo.uid())
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(catCombo.uid())
                 .blockingGet(),
         ) doReturn emptyList()
 
@@ -268,26 +376,60 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get dashboard filters when webapp is configured with empty result`() {
-        val program = Program.builder().uid("random")
-            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION).build()
-        val catCombo = CategoryCombo.builder().uid("catCom").isDefault(true).build()
+        val program =
+            Program
+                .builder()
+                .uid("random")
+                .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+                .build()
+        val catCombo =
+            CategoryCombo
+                .builder()
+                .uid("catCom")
+                .isDefault(true)
+                .build()
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
-        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
+        whenever(
+            d2
+                .programModule()
+                .programs()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid()),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
                 .byEnableUserAssignment(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
         whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid()),
@@ -299,7 +441,11 @@ class FilterRepositoryTest {
             ),
         ) doReturn emptyList()
         whenever(
-            d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).blockingGet(),
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .uid(program.categoryComboUid())
+                .blockingGet(),
         ) doReturn catCombo
 
         val result = filterRepository.dashboardFilters(program.uid())
@@ -309,40 +455,84 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get tracker working list when webapp is configured`() {
-        val program = Program.builder().uid("random")
-            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
-            .trackedEntityType(
-                TrackedEntityType.builder().uid("trackerUid").displayName("Name").build(),
-            )
-            .build()
+        val program =
+            Program
+                .builder()
+                .uid("random")
+                .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+                .trackedEntityType(
+                    TrackedEntityType
+                        .builder()
+                        .uid("trackerUid")
+                        .displayName("Name")
+                        .build(),
+                ).build()
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
-        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
+        whenever(
+            d2
+                .programModule()
+                .programs()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid()),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
                 .byEnableUserAssignment(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid()),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceFilters()
+                .byProgram()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceFilters()
+                .byProgram()
+                .eq(program.uid())
                 .withTrackedEntityInstanceEventFilters(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
-                .withTrackedEntityInstanceEventFilters().blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceFilters()
+                .byProgram()
+                .eq(program.uid())
+                .withTrackedEntityInstanceEventFilters()
+                .blockingGet(),
         ) doReturn createTrackerEntityInstanceFilters()
         whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid()),
@@ -360,23 +550,43 @@ class FilterRepositoryTest {
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid()),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+            d2
+                .trackedEntityModule()
+                .trackedEntityTypes()
+                .uid(program.trackedEntityType()?.uid())
                 .blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
-                .blockingGet()?.displayName(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityTypes()
+                .uid(program.trackedEntityType()?.uid())
+                .blockingGet()
+                ?.displayName(),
         ) doReturn program.trackedEntityType()?.displayName()
         whenever(
-            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid()),
+            d2
+                .programModule()
+                .programStageWorkingLists()
+                .byProgram()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+            d2
+                .programModule()
+                .programStageWorkingLists()
+                .byProgram()
+                .eq(program.uid())
                 .withAttributeValueFilters(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
-                .withAttributeValueFilters().blockingGet(),
+            d2
+                .programModule()
+                .programStageWorkingLists()
+                .byProgram()
+                .eq(program.uid())
+                .withAttributeValueFilters()
+                .blockingGet(),
         ) doReturn emptyList()
 
         val result = filterRepository.workingListFilter(program.uid())
@@ -386,40 +596,84 @@ class FilterRepositoryTest {
 
     @Test
     fun `Should get default tracker filters with follow up filter`() {
-        val program = Program.builder().uid("random")
-            .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
-            .trackedEntityType(
-                TrackedEntityType.builder().uid("trackerUid").displayName("Name").build(),
-            )
-            .build()
+        val program =
+            Program
+                .builder()
+                .uid("random")
+                .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
+                .trackedEntityType(
+                    TrackedEntityType
+                        .builder()
+                        .uid("trackerUid")
+                        .displayName("Name")
+                        .build(),
+                ).build()
         whenever(d2.programModule().programs().uid(any())) doReturn mock()
-        whenever(d2.programModule().programs().uid(any()).get()) doReturn Single.just(program)
+        whenever(
+            d2
+                .programModule()
+                .programs()
+                .uid(any())
+                .get(),
+        ) doReturn Single.just(program)
         whenever(d2.settingModule().appearanceSettings().blockingExists()) doReturn true
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid()),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
                 .byEnableUserAssignment(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStages().byProgramUid().eq(program.uid())
-                .byEnableUserAssignment().eq(true).blockingIsEmpty(),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(program.uid())
+                .byEnableUserAssignment()
+                .eq(true)
+                .blockingIsEmpty(),
         ) doReturn false
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid()),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceFilters()
+                .byProgram()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceFilters()
+                .byProgram()
+                .eq(program.uid())
                 .withTrackedEntityInstanceEventFilters(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceFilters().byProgram().eq(program.uid())
-                .withTrackedEntityInstanceEventFilters().blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceFilters()
+                .byProgram()
+                .eq(program.uid())
+                .withTrackedEntityInstanceEventFilters()
+                .blockingGet(),
         ) doReturn emptyList()
         whenever(
             d2.settingModule().appearanceSettings().getProgramFiltersByUid(program.uid()),
@@ -437,23 +691,43 @@ class FilterRepositoryTest {
             d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid()),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
+            d2
+                .trackedEntityModule()
+                .trackedEntityTypes()
+                .uid(program.trackedEntityType()?.uid())
                 .blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityTypes().uid(program.trackedEntityType()?.uid())
-                .blockingGet()?.displayName(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityTypes()
+                .uid(program.trackedEntityType()?.uid())
+                .blockingGet()
+                ?.displayName(),
         ) doReturn program.trackedEntityType()?.displayName()
         whenever(
-            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid()),
+            d2
+                .programModule()
+                .programStageWorkingLists()
+                .byProgram()
+                .eq(program.uid()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
+            d2
+                .programModule()
+                .programStageWorkingLists()
+                .byProgram()
+                .eq(program.uid())
                 .withAttributeValueFilters(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageWorkingLists().byProgram().eq(program.uid())
-                .withAttributeValueFilters().blockingGet(),
+            d2
+                .programModule()
+                .programStageWorkingLists()
+                .byProgram()
+                .eq(program.uid())
+                .withAttributeValueFilters()
+                .blockingGet(),
         ) doReturn emptyList()
 
         val result = filterRepository.programFilters(program.uid())
@@ -466,15 +740,22 @@ class FilterRepositoryTest {
         assert(result.size == 5)
     }
 
-    private fun createTrackerEntityInstanceFilters(): List<TrackedEntityInstanceFilter> {
-        return listOf(
-            TrackedEntityInstanceFilter.builder().uid("uid").displayName("random").build(),
-            TrackedEntityInstanceFilter.builder().uid("uid2").displayName("random2").build(),
+    private fun createTrackerEntityInstanceFilters(): List<TrackedEntityInstanceFilter> =
+        listOf(
+            TrackedEntityInstanceFilter
+                .builder()
+                .uid("uid")
+                .displayName("random")
+                .build(),
+            TrackedEntityInstanceFilter
+                .builder()
+                .uid("uid2")
+                .displayName("random2")
+                .build(),
         )
-    }
 
-    private fun createGlobalTrackerFilterResult(): List<FilterItem> {
-        return listOf(
+    private fun createGlobalTrackerFilterResult(): List<FilterItem> =
+        listOf(
             PeriodFilter(
                 ProgramType.TRACKER,
                 observableSortingInject,
@@ -488,10 +769,9 @@ class FilterRepositoryTest {
                 ENROLLMENT_STATUS,
             ),
         )
-    }
 
-    private fun createDefaultTrackerFilterResult(): List<FilterItem> {
-        return listOf(
+    private fun createDefaultTrackerFilterResult(): List<FilterItem> =
+        listOf(
             PeriodFilter(
                 ProgramType.TRACKER,
                 observableSortingInject,
@@ -517,72 +797,81 @@ class FilterRepositoryTest {
                 ASSIGN_TO_ME,
             ),
         )
-    }
 
     private fun createFilterValue(
         scope: String,
         filterType: String,
         show: Boolean = true,
-    ): FilterSetting {
-        return FilterSetting.builder().filter(show).filterType(filterType)
-            .scope(scope).sort(show).build()
-    }
+    ): FilterSetting =
+        FilterSetting
+            .builder()
+            .filter(show)
+            .filterType(filterType)
+            .scope(scope)
+            .sort(show)
+            .build()
 
-    private fun createWebAppHomeFilters(): Map<HomeFilter, FilterSetting> {
-        return mapOf(
+    private fun createWebAppHomeFilters(): Map<HomeFilter, FilterSetting> =
+        mapOf(
             HomeFilter.DATE to createFilterValue(HOME_FILTER, "DATE"),
             HomeFilter.ASSIGNED_TO_ME to createFilterValue(HOME_FILTER, "ASSIGNED_TO_ME"),
             HomeFilter.ORG_UNIT to createFilterValue(HOME_FILTER, "ORG_UNIT", false),
         )
-    }
 
-    private fun createWebAppTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> {
-        return mapOf(
-            ProgramFilter.EVENT_DATE to createFilterValue(
-                PROGRAM_FILTER,
-                "EVENT_DATE",
-                false,
-            ),
-            ProgramFilter.SYNC_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "EVE",
-                false,
-            ),
-            ProgramFilter.ORG_UNIT to createFilterValue(
-                PROGRAM_FILTER,
-                "ORG_UNIT",
-                false,
-            ),
-            ProgramFilter.ENROLLMENT_DATE to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false,
-            ),
-            ProgramFilter.ENROLLMENT_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false,
-            ),
-            ProgramFilter.ASSIGNED_TO_ME to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false,
-            ),
-            ProgramFilter.EVENT_STATUS to createFilterValue(
-                PROGRAM_FILTER,
-                "ENROLLMENT_DATE",
-                false,
-            ),
-            ProgramFilter.FOLLOW_UP to createFilterValue(
-                PROGRAM_FILTER,
-                "FOLLOW_UP",
-                false,
-            ),
+    private fun createWebAppTrackedEntityFilters(): Map<ProgramFilter, FilterSetting> =
+        mapOf(
+            ProgramFilter.EVENT_DATE to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "EVENT_DATE",
+                    false,
+                ),
+            ProgramFilter.SYNC_STATUS to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "EVE",
+                    false,
+                ),
+            ProgramFilter.ORG_UNIT to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "ORG_UNIT",
+                    false,
+                ),
+            ProgramFilter.ENROLLMENT_DATE to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "ENROLLMENT_DATE",
+                    false,
+                ),
+            ProgramFilter.ENROLLMENT_STATUS to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "ENROLLMENT_DATE",
+                    false,
+                ),
+            ProgramFilter.ASSIGNED_TO_ME to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "ENROLLMENT_DATE",
+                    false,
+                ),
+            ProgramFilter.EVENT_STATUS to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "ENROLLMENT_DATE",
+                    false,
+                ),
+            ProgramFilter.FOLLOW_UP to
+                createFilterValue(
+                    PROGRAM_FILTER,
+                    "FOLLOW_UP",
+                    false,
+                ),
         )
-    }
 
-    private fun createHomeFiltersResult(): List<FilterItem> {
-        return listOf(
+    private fun createHomeFiltersResult(): List<FilterItem> =
+        listOf(
             PeriodFilter(
                 ProgramType.ALL,
                 observableSortingInject,
@@ -596,5 +885,4 @@ class FilterRepositoryTest {
                 ASSIGN_TO_ME,
             ),
         )
-    }
 }

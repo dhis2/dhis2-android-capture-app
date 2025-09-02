@@ -27,7 +27,6 @@ class DataSetListViewModel(
     val matomoAnalyticsController: MatomoAnalyticsController,
     dispatcher: DispatcherProvider,
 ) : ViewModel() {
-
     private val _datasets = MutableLiveData<List<DataSetDetailModel>>()
     val datasets: LiveData<List<DataSetDetailModel>> = _datasets
 
@@ -41,7 +40,8 @@ class DataSetListViewModel(
     init {
         viewModelScope.launch(dispatcher.io()) {
 
-            filterManager.asFlowable()
+            filterManager
+                .asFlowable()
                 .startWith(filterManager)
                 .flatMap { filterManager: FilterManager ->
                     CoroutineTracker.increment()
@@ -51,13 +51,11 @@ class DataSetListViewModel(
                         filterManager.stateFilters,
                         filterManager.catOptComboFilters,
                     )
-                }
-                .asFlow()
+                }.asFlow()
                 .catch {
                     Timber.d(it)
                     CoroutineTracker.decrement()
-                }
-                .collectLatest {
+                }.collectLatest {
                     withContext(dispatcher.ui()) {
                         _datasets.value = it
                         CoroutineTracker.decrement()
@@ -66,7 +64,8 @@ class DataSetListViewModel(
         }
 
         viewModelScope.launch(dispatcher.io()) {
-            dataSetDetailRepository.canWriteAny()
+            dataSetDetailRepository
+                .canWriteAny()
                 .asFlow()
                 .catch { Timber.d(it) }
                 .collectLatest {
@@ -99,12 +98,11 @@ class DataSetListViewModel(
         periodId: String,
         organisationUnitUid: String,
         attributeOptionComboUid: String,
-    ): Boolean {
-        return dataSetDetailRepository.dataSetIsEditable(
+    ): Boolean =
+        dataSetDetailRepository.dataSetIsEditable(
             datasetUid,
             periodId,
             organisationUnitUid,
             attributeOptionComboUid,
         )
-    }
 }

@@ -14,18 +14,22 @@ class ExportDatabase(
     private val settingsMessages: SettingsMessages,
     private val resourceManager: ResourceManager,
 ) {
-
     private val _exporting = MutableLiveData<Boolean>()
     val exporting: LiveData<Boolean> = _exporting
 
     sealed interface ExportType {
         data object Download : ExportType
+
         data object Share : ExportType
     }
 
     sealed interface ExportResult {
         data object Success : ExportResult
-        data class Share(val db: File) : ExportResult
+
+        data class Share(
+            val db: File,
+        ) : ExportResult
+
         data object Error : ExportResult
     }
 

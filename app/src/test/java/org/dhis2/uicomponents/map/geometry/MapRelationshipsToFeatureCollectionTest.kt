@@ -23,7 +23,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class MapRelationshipsToFeatureCollectionTest {
-
     private val mapLineToFeature: MapLineRelationshipToFeature = mock()
     private val mapPointToFeature: MapPointToFeature = mock()
     private val mapPolygonToFeature: MapPolygonToFeature = mock()
@@ -72,12 +71,13 @@ class MapRelationshipsToFeatureCollectionTest {
         whenever(
             mapPointToFeature.map(secondRelationship.to.geometry!!),
         ) doReturn getPointToFeature(secondRelationship)
-        whenever(bounds.getEnclosingBoundingBox(any())) doReturn BoundingBox.fromLngLats(
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        )
+        whenever(bounds.getEnclosingBoundingBox(any())) doReturn
+            BoundingBox.fromLngLats(
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            )
 
         val result = mapRelationshipsToFeatureCollection.mapLegacy(relationshipsModel)
         assertThat(result.first.size, `is`(2))

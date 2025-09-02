@@ -14,24 +14,26 @@ class GetSettingsState(
         hasConnection: Boolean,
         metadataSyncInProgress: Boolean,
         dataSyncInProgress: Boolean,
-    ): SettingsState {
-        return SettingsState(
+    ): SettingsState =
+        SettingsState(
             openedItem = openedItem,
             hasConnection = hasConnection,
-            metadataSettingsViewModel = settingsRepository.metaSync().blockingGet().copy(
-                syncInProgress = metadataSyncInProgress,
-            ),
-            dataSettingsViewModel = settingsRepository.dataSync().blockingGet().copy(
-                syncInProgress = dataSyncInProgress,
-            ),
+            metadataSettingsViewModel =
+                settingsRepository.metaSync().blockingGet().copy(
+                    syncInProgress = metadataSyncInProgress,
+                ),
+            dataSettingsViewModel =
+                settingsRepository.dataSync().blockingGet().copy(
+                    syncInProgress = dataSyncInProgress,
+                ),
             syncParametersViewModel = settingsRepository.syncParameters().blockingGet(),
             reservedValueSettingsViewModel = settingsRepository.reservedValues().blockingGet(),
-            smsSettingsViewModel = with(settingsRepository.sms().blockingGet()) {
-                copy(
-                    gatewayValidationResult = gatewayValidator(this.gatewayNumber),
-                )
-            },
+            smsSettingsViewModel =
+                with(settingsRepository.sms().blockingGet()) {
+                    copy(
+                        gatewayValidationResult = gatewayValidator(this.gatewayNumber),
+                    )
+                },
             isTwoFAConfigured = settingsRepository.isTwoFAConfigured(),
         )
-    }
 }

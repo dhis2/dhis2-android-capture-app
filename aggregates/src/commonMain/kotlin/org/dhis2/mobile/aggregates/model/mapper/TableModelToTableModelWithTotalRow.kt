@@ -13,13 +13,15 @@ internal suspend fun TableModel.withTotalsRow(
     resourceManager: ResourceManager,
     absoluteRowIndex: Int,
 ) = this.copy(
-    tableRows = tableRows + buildTotalsRow(
-        tableId = id,
-        columnCount = tableHeaderModel.tableMaxColumns(),
-        absoluteRowIndex = absoluteRowIndex,
-        tableRows = tableRows,
-        resourceManager = resourceManager,
-    ),
+    tableRows =
+        tableRows +
+            buildTotalsRow(
+                tableId = id,
+                columnCount = tableHeaderModel.tableMaxColumns(),
+                absoluteRowIndex = absoluteRowIndex,
+                tableRows = tableRows,
+                resourceManager = resourceManager,
+            ),
 )
 
 private suspend fun buildTotalsRow(
@@ -29,33 +31,38 @@ private suspend fun buildTotalsRow(
     tableRows: List<TableRowModel>,
     resourceManager: ResourceManager,
 ) = TableRowModel(
-    rowHeaders = listOf(
-        RowHeader(
-            id = totalHeaderRowId(tableId),
-            title = resourceManager.totalsHeader(),
-            row = absoluteRowIndex,
-            column = 0,
-            disabled = true,
+    rowHeaders =
+        listOf(
+            RowHeader(
+                id = totalHeaderRowId(tableId),
+                title = resourceManager.totalsHeader(),
+                row = absoluteRowIndex,
+                column = 0,
+                disabled = true,
+            ),
         ),
-    ),
-    values = buildMap {
-        repeat(columnCount) { columnIndex ->
-            put(
-                key = columnIndex,
-                value = TableCell(
-                    id = totalCellId(tableId, columnIndex),
-                    row = absoluteRowIndex,
-                    column = columnIndex,
-                    content = TableCellContent.Text(
-                        tableRows.sumOf {
-                            it.values[columnIndex]?.value?.toDoubleOrNull()
-                                ?: 0.0
-                        }.toString(),
-                    ),
-                    editable = false,
-                ),
-            )
-        }
-    },
+    values =
+        buildMap {
+            repeat(columnCount) { columnIndex ->
+                put(
+                    key = columnIndex,
+                    value =
+                        TableCell(
+                            id = totalCellId(tableId, columnIndex),
+                            row = absoluteRowIndex,
+                            column = columnIndex,
+                            content =
+                                TableCellContent.Text(
+                                    tableRows
+                                        .sumOf {
+                                            it.values[columnIndex]?.value?.toDoubleOrNull()
+                                                ?: 0.0
+                                        }.toString(),
+                                ),
+                            editable = false,
+                        ),
+                )
+            }
+        },
     maxLines = 1,
 )

@@ -6,7 +6,9 @@ import org.dhis2.commons.Constants
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 
-class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
+class IndicatorInjector(
+    private val indicatorsFragment: IndicatorsFragment,
+) {
     fun inject(context: Context) {
         indicatorsFragment.apply {
             arguments?.let {
@@ -21,7 +23,8 @@ class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
 
     private fun injectIndicatorsForTracker(context: Context) {
         val activity = context as TeiDashboardMobileActivity
-        ((context.applicationContext) as App).dashboardComponent()!!
+        ((context.applicationContext) as App)
+            .dashboardComponent()!!
             .plus(
                 IndicatorsModule(
                     activity.programUid ?: "",
@@ -29,19 +32,19 @@ class IndicatorInjector(private val indicatorsFragment: IndicatorsFragment) {
                     indicatorsFragment,
                     VisualizationType.TRACKER,
                 ),
-            )
-            .inject(indicatorsFragment)
+            ).inject(indicatorsFragment)
     }
 
     private fun injectIndicatorsForEvents(context: Context) {
         val activity = context as EventCaptureActivity
-        activity.eventCaptureComponent?.plus(
-            IndicatorsModule(
-                activity.intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
-                activity.intent.getStringExtra(Constants.EVENT_UID) ?: "",
-                indicatorsFragment,
-                VisualizationType.EVENTS,
-            ),
-        )?.inject(indicatorsFragment)
+        activity.eventCaptureComponent
+            ?.plus(
+                IndicatorsModule(
+                    activity.intent.getStringExtra(Constants.PROGRAM_UID) ?: "",
+                    activity.intent.getStringExtra(Constants.EVENT_UID) ?: "",
+                    indicatorsFragment,
+                    VisualizationType.EVENTS,
+                ),
+            )?.inject(indicatorsFragment)
     }
 }

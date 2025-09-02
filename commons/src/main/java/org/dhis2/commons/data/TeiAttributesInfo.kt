@@ -7,18 +7,16 @@ data class TeiAttributesInfo(
 ) {
     private val attrListNotEmpty = attributes.filter { it.isNotEmpty() }
 
-    fun teiMainLabel(formattedLabel: String?): String {
-        return when (attrListNotEmpty.size) {
+    fun teiMainLabel(formattedLabel: String?): String =
+        when (attrListNotEmpty.size) {
             0 -> formattedLabel?.format(teTypeName) ?: teTypeName
             1 -> attrListNotEmpty[0]
             else -> String.format("%s %s", attrListNotEmpty[0], attrListNotEmpty[1])
         }
-    }
 
-    fun teiSecondaryLabel(): String? {
-        return when (attrListNotEmpty.size) {
+    fun teiSecondaryLabel(): String? =
+        when (attrListNotEmpty.size) {
             0, 1, 2 -> null
             else -> attrListNotEmpty[2]
         }
-    }
 }

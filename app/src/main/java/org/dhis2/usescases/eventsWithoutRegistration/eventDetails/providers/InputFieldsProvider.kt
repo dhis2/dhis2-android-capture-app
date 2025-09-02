@@ -69,31 +69,38 @@ fun ProvideInputDate(
         var state by remember {
             mutableStateOf(getInputState(uiModel.detailsEnabled))
         }
-        val yearRange = if (uiModel.selectableDates != null) {
-            IntRange(
-                uiModel.selectableDates.initialDate.substring(4, 8).toInt(),
-                uiModel.selectableDates.endDate.substring(4, 8).toInt(),
-            )
-        } else {
-            IntRange(1924, 2124)
-        }
-        val inputState = rememberInputDateTimeState(
-            InputDateTimeData(
-                title = uiModel.eventDate.label ?: "",
-                allowsManualInput = uiModel.allowsManualInput,
-                actionType = DateTimeActionType.DATE,
-                visualTransformation = DateTransformation(),
-                isRequired = uiModel.required,
-                is24hourFormat = uiModel.is24HourFormat,
-                selectableDates = uiModel.selectableDates ?: SelectableDates(
-                    "01011924",
-                    "12312124",
+        val yearRange =
+            if (uiModel.selectableDates != null) {
+                IntRange(
+                    uiModel.selectableDates.initialDate
+                        .substring(4, 8)
+                        .toInt(),
+                    uiModel.selectableDates.endDate
+                        .substring(4, 8)
+                        .toInt(),
+                )
+            } else {
+                IntRange(1924, 2124)
+            }
+        val inputState =
+            rememberInputDateTimeState(
+                InputDateTimeData(
+                    title = uiModel.eventDate.label ?: "",
+                    allowsManualInput = uiModel.allowsManualInput,
+                    actionType = DateTimeActionType.DATE,
+                    visualTransformation = DateTransformation(),
+                    isRequired = uiModel.required,
+                    is24hourFormat = uiModel.is24HourFormat,
+                    selectableDates =
+                        uiModel.selectableDates ?: SelectableDates(
+                            "01011924",
+                            "12312124",
+                        ),
+                    yearRange = yearRange,
                 ),
-                yearRange = yearRange,
-            ),
-            inputTextFieldValue = value,
-            inputState = state,
-        )
+                inputTextFieldValue = value,
+                inputState = state,
+            )
         InputDateTime(
             state = inputState,
             modifier = modifier.testTag(INPUT_EVENT_INITIAL_DATE),
@@ -115,8 +122,8 @@ fun ProvideInputDate(
     }
 }
 
-fun isValidDateFormat(dateString: String): Boolean {
-    return try {
+fun isValidDateFormat(dateString: String): Boolean =
+    try {
         when (ValueType.DATE.validator.validate(dateString)) {
             is Result.Failure -> false
             is Result.Success -> true
@@ -124,9 +131,11 @@ fun isValidDateFormat(dateString: String): Boolean {
     } catch (e: DateTimeParseException) {
         false
     }
-}
 
-fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String) {
+fun manageActionBasedOnValue(
+    uiModel: EventInputDateUiModel,
+    dateString: String,
+) {
     if (dateString.isEmpty()) {
         uiModel.onClear?.invoke()
     } else if (isValidDateFormat(dateString)) {
@@ -143,11 +152,12 @@ fun manageActionBasedOnValue(uiModel: EventInputDateUiModel, dateString: String)
 }
 
 fun InputDateValues.isInRange(selectableDates: SelectableDates): Boolean {
-    val format = LocalDate.Format {
-        dayOfMonth()
-        monthNumber()
-        year()
-    }
+    val format =
+        LocalDate.Format {
+            dayOfMonth()
+            monthNumber()
+            year()
+        }
     val date = LocalDate(year, month, day)
     return format.parse(selectableDates.initialDate) <= date &&
         format.parse(selectableDates.endDate) >= date
@@ -162,30 +172,35 @@ private fun formatStoredDateToUI(dateValue: String): String? {
     }
 
     val year = components[2]
-    val month = if (components[1].length == 1) {
-        "0${components[1]}"
-    } else {
-        components[1]
-    }
-    val day = if (components[0].length == 1) {
-        "0${components[0]}"
-    } else {
-        components[0]
-    }
+    val month =
+        if (components[1].length == 1) {
+            "0${components[1]}"
+        } else {
+            components[1]
+        }
+    val day =
+        if (components[0].length == 1) {
+            "0${components[0]}"
+        } else {
+            components[0]
+        }
 
     return "$day$month$year"
 }
 
-fun formatUIDateToStored(dateValue: String?): InputDateValues? {
-    return if (dateValue?.length != 10) {
+fun formatUIDateToStored(dateValue: String?): InputDateValues? =
+    if (dateValue?.length != 10) {
         null
     } else {
         val date = LocalDate.Formats.ISO.parse(dateValue)
         InputDateValues(date.dayOfMonth, date.monthNumber, date.year)
     }
-}
 
-data class InputDateValues(val day: Int, val month: Int, val year: Int)
+data class InputDateValues(
+    val day: Int,
+    val month: Int,
+    val year: Int,
+)
 
 @Composable
 fun ProvideOrgUnit(
@@ -234,14 +249,15 @@ fun ProvideCategorySelector(
         }
     }
 
-    val selectableOptions = eventCatComboUiModel.category.options
-        .filter { option ->
-            option.access().data().write()
-        }.filter { option ->
-            option.inDateRange(eventCatComboUiModel.currentDate)
-        }.filter { option ->
-            option.inOrgUnit(eventCatComboUiModel.selectedOrgUnit)
-        }
+    val selectableOptions =
+        eventCatComboUiModel.category.options
+            .filter { option ->
+                option.access().data().write()
+            }.filter { option ->
+                option.inDateRange(eventCatComboUiModel.currentDate)
+            }.filter { option ->
+                option.inOrgUnit(eventCatComboUiModel.selectedOrgUnit)
+            }
     val dropdownItems = selectableOptions.map { DropdownItem(it.displayName() ?: it.code() ?: "") }
 
     if (selectableOptions.isNotEmpty()) {
@@ -306,9 +322,10 @@ fun ProvidePeriodSelector(
         legendData = null,
         onFocusChanged = {},
         supportingTextData = null,
-        focusRequester = remember {
-            FocusRequester()
-        },
+        focusRequester =
+            remember {
+                FocusRequester()
+            },
         expanded = false,
     )
 }
@@ -343,11 +360,12 @@ fun ProvideEmptyCategorySelector(
     )
 }
 
-private fun getInputState(enabled: Boolean) = if (enabled) {
-    InputShellState.UNFOCUSED
-} else {
-    InputShellState.DISABLED
-}
+private fun getInputState(enabled: Boolean) =
+    if (enabled) {
+        InputShellState.UNFOCUSED
+    } else {
+        InputShellState.DISABLED
+    }
 
 @Composable
 fun ProvideCoordinates(
@@ -390,23 +408,25 @@ fun ProvideCoordinates(
     }
 }
 
-fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
-    return value?.let {
-        val geometry = Geometry.builder()
-            .coordinates(it)
-            .type(featureType)
-            .build()
+fun mapGeometry(
+    value: String?,
+    featureType: FeatureType,
+): Coordinates? =
+    value?.let {
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates(it)
+                .type(featureType)
+                .build()
 
         Coordinates(
             latitude = GeometryHelper.getPoint(geometry)[1],
             longitude = GeometryHelper.getPoint(geometry)[0],
         )
     }
-}
 
-fun willShowCalendar(periodType: PeriodType?): Boolean {
-    return (periodType == null || periodType == PeriodType.Daily)
-}
+fun willShowCalendar(periodType: PeriodType?): Boolean = (periodType == null || periodType == PeriodType.Daily)
 
 const val INPUT_EVENT_INITIAL_DATE = "INPUT_EVENT_INITIAL_DATE"
 const val EMPTY_CATEGORY_SELECTOR = "EMPTY_CATEGORY_SELECTOR"

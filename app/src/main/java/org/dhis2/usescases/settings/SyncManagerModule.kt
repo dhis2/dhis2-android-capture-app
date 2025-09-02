@@ -28,7 +28,6 @@ import org.hisp.dhis.android.core.D2
 
 @Module
 class SyncManagerModule {
-
     @Provides
     @PerFragment
     fun provideViewModelFactory(
@@ -166,23 +165,18 @@ class SyncManagerModule {
         d2: D2,
         preferenceProvider: PreferenceProvider,
         featureConfigRepository: FeatureConfigRepository,
-    ): SettingsRepository {
-        return SettingsRepository(
+    ): SettingsRepository =
+        SettingsRepository(
             d2,
             preferenceProvider,
             featureConfigRepository,
         )
-    }
 
     @Provides
     @PerFragment
-    fun providesGatewayValidator(): GatewayValidator {
-        return GatewayValidator()
-    }
+    fun providesGatewayValidator(): GatewayValidator = GatewayValidator()
 
     @Provides
     @PerFragment
-    fun providesSettingsMessage(): SettingsMessages {
-        return SettingsMessages()
-    }
+    fun providesSettingsMessage(): SettingsMessages = SettingsMessages()
 }

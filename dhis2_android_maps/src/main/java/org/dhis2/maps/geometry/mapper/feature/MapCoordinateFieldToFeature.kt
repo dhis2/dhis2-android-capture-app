@@ -11,10 +11,11 @@ import org.dhis2.maps.utils.CoordinateAttributeInfo
 import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.maplibre.geojson.Feature
 
-class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryToFeature) {
-
-    fun map(coordinateDataElementInfo: CoordinateDataElementInfo): Feature? {
-        return mapGeometryToFeature.map(
+class MapCoordinateFieldToFeature(
+    private val mapGeometryToFeature: MapGeometryToFeature,
+) {
+    fun map(coordinateDataElementInfo: CoordinateDataElementInfo): Feature? =
+        mapGeometryToFeature.map(
             coordinateDataElementInfo.geometry,
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
@@ -30,10 +31,9 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
                 }
             },
         )
-    }
 
-    fun map(coordinateAttributeInfo: CoordinateAttributeInfo): Feature? {
-        return mapGeometryToFeature.map(
+    fun map(coordinateAttributeInfo: CoordinateAttributeInfo): Feature? =
+        mapGeometryToFeature.map(
             coordinateAttributeInfo.geometry,
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
@@ -41,5 +41,4 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
                 TEI to coordinateAttributeInfo.tei.uid()!!,
             ),
         )
-    }
 }

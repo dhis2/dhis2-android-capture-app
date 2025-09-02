@@ -11,7 +11,6 @@ class CreateOrUpdateEventDetails(
     private val repository: EventDetailsRepository,
     private val resourcesProvider: EventDetailResourcesProvider,
 ) {
-
     operator fun invoke(
         selectedDate: Date,
         selectedOrgUnit: String?,

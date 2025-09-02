@@ -24,26 +24,28 @@ fun TableHeader(
     modifier: Modifier,
     tableHeaderModel: TableHeader,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable
-    (columnIndex: Int, rowIndex: Int) -> CellStyle,
+    cellStyle: @Composable (columnIndex: Int, rowIndex: Int) -> CellStyle,
     onHeaderCellSelected: (columnIndex: Int, headerRowIndex: Int) -> Unit,
     onHeaderResize: (Int, Float) -> Unit,
     onResizing: (ResizingCell?) -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .horizontalScroll(state = horizontalScrollState)
-            .height(IntrinsicSize.Min),
+        modifier =
+            modifier
+                .horizontalScroll(state = horizontalScrollState)
+                .height(IntrinsicSize.Min),
     ) {
         Column(
-            modifier = Modifier
-                .height(IntrinsicSize.Min),
+            modifier =
+                Modifier
+                    .height(IntrinsicSize.Min),
         ) {
             tableHeaderModel.rows.forEachIndexed { rowIndex, tableHeaderRow ->
                 Row(
-                    modifier = Modifier
-                        .height(IntrinsicSize.Min)
-                        .zIndex(1f),
+                    modifier =
+                        Modifier
+                            .height(IntrinsicSize.Min)
+                            .zIndex(1f),
                 ) {
                     val totalColumns = tableHeaderModel.numberOfColumns(rowIndex)
                     val rowOptions = tableHeaderRow.cells.size
@@ -53,36 +55,39 @@ fun TableHeader(
                             val cellIndex = columnIndex % rowOptions
                             HeaderCell(
                                 modifier = Modifier.zIndex((totalColumns - columnIndex) * 1f),
-                                itemHeaderUiState = ItemColumnHeaderUiState(
-                                    tableId = tableId,
-                                    rowIndex = rowIndex,
-                                    columnIndex = columnIndex,
-                                    headerCell = tableHeaderRow.cells[cellIndex],
-                                    headerMeasures = HeaderMeasures(
-                                        width = dimensions.headerCellWidth(
-                                            tableId = tableId ?: "",
-                                            column = columnIndex,
-                                            headerRowColumns = tableHeaderModel.numberOfColumns(rowIndex),
-                                            totalColumns = tableHeaderModel.tableMaxColumns(),
-                                            hasTotal = tableHeaderModel.hasTotals,
-                                        ),
-                                        height = dimensions.defaultHeaderHeight,
-                                    ),
-                                    paddingValues = dimensions.headerCellPaddingValues,
-                                    cellStyle = cellStyle(columnIndex, rowIndex),
-                                    onCellSelected = { onHeaderCellSelected(it, rowIndex) },
-                                    onHeaderResize = onHeaderResize,
-                                    onResizing = onResizing,
-                                    isLastRow = tableHeaderModel.rows.lastIndex == rowIndex,
-                                ) { dimensions, currentOffsetX ->
-                                    dimensions.canUpdateColumnHeaderWidth(
-                                        tableId = tableId ?: "",
-                                        currentOffsetX = currentOffsetX,
+                                itemHeaderUiState =
+                                    ItemColumnHeaderUiState(
+                                        tableId = tableId,
+                                        rowIndex = rowIndex,
                                         columnIndex = columnIndex,
-                                        tableHeaderModel.tableMaxColumns(),
-                                        tableHeaderModel.hasTotals,
-                                    )
-                                },
+                                        headerCell = tableHeaderRow.cells[cellIndex],
+                                        headerMeasures =
+                                            HeaderMeasures(
+                                                width =
+                                                    dimensions.headerCellWidth(
+                                                        tableId = tableId ?: "",
+                                                        column = columnIndex,
+                                                        headerRowColumns = tableHeaderModel.numberOfColumns(rowIndex),
+                                                        totalColumns = tableHeaderModel.tableMaxColumns(),
+                                                        hasTotal = tableHeaderModel.hasTotals,
+                                                    ),
+                                                height = dimensions.defaultHeaderHeight,
+                                            ),
+                                        paddingValues = dimensions.headerCellPaddingValues,
+                                        cellStyle = cellStyle(columnIndex, rowIndex),
+                                        onCellSelected = { onHeaderCellSelected(it, rowIndex) },
+                                        onHeaderResize = onHeaderResize,
+                                        onResizing = onResizing,
+                                        isLastRow = tableHeaderModel.rows.lastIndex == rowIndex,
+                                    ) { dimensions, currentOffsetX ->
+                                        dimensions.canUpdateColumnHeaderWidth(
+                                            tableId = tableId ?: "",
+                                            currentOffsetX = currentOffsetX,
+                                            columnIndex = columnIndex,
+                                            tableHeaderModel.tableMaxColumns(),
+                                            tableHeaderModel.hasTotals,
+                                        )
+                                    },
                             )
                         },
                     )
@@ -102,10 +107,11 @@ fun TableHeader(
                                     dimensions.defaultHeaderHeight * tableHeaderModel.rows.size,
                                 ),
                                 paddingValues = dimensions.headerCellPaddingValues,
-                                cellStyle = cellStyle(
-                                    tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
-                                    tableHeaderModel.rows.size - 1,
-                                ),
+                                cellStyle =
+                                    cellStyle(
+                                        tableHeaderModel.numberOfColumns(tableHeaderModel.rows.size - 1),
+                                        tableHeaderModel.rows.size - 1,
+                                    ),
                                 onCellSelected = {},
                                 onHeaderResize = { _, _ -> },
                                 onResizing = {},

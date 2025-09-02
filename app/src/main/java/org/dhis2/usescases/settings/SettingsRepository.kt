@@ -32,30 +32,37 @@ class SettingsRepository(
     val prefs: PreferenceProvider,
     val featureConfigRepository: FeatureConfigRepository,
 ) {
-
     private val syncSettings: SynchronizationSettings?
-        get() = if (d2.settingModule().synchronizationSettings().blockingExists()) {
-            d2.settingModule().synchronizationSettings().blockingGet()
-        } else {
-            null
-        }
+        get() =
+            if (d2.settingModule().synchronizationSettings().blockingExists()) {
+                d2.settingModule().synchronizationSettings().blockingGet()
+            } else {
+                null
+            }
     private val generalSettings: GeneralSettings?
-        get() = if (d2.settingModule().generalSetting().blockingExists()) {
-            d2.settingModule().generalSetting().blockingGet()
-        } else {
-            null
-        }
+        get() =
+            if (d2.settingModule().generalSetting().blockingExists()) {
+                d2.settingModule().generalSetting().blockingGet()
+            } else {
+                null
+            }
     private val programSettings: ProgramSettings?
-        get() = if (d2.settingModule().programSetting().blockingExists()) {
-            d2.settingModule().programSetting().blockingGet()
-        } else {
-            null
-        }
+        get() =
+            if (d2.settingModule().programSetting().blockingExists()) {
+                d2.settingModule().programSetting().blockingGet()
+            } else {
+                null
+            }
     private val smsConfig: ConfigCase.SmsConfig
-        get() = d2.smsModule().configCase().getSmsModuleConfig().blockingGet()
+        get() =
+            d2
+                .smsModule()
+                .configCase()
+                .getSmsModuleConfig()
+                .blockingGet()
 
-    fun dataSync(): Single<DataSettingsViewModel> {
-        return Single.just(
+    fun dataSync(): Single<DataSettingsViewModel> =
+        Single.just(
             DataSettingsViewModel(
                 dataSyncPeriod = dataPeriod(),
                 lastDataSync = prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
@@ -63,16 +70,16 @@ class SettingsRepository(
                 dataHasErrors = dataHasErrors(),
                 dataHasWarnings = dataHasWarning(),
                 canEdit = syncSettings?.dataSync() == null,
-                syncResult = prefs.getString(Constants.SYNC_RESULT, null)?.let {
-                    SyncResult.valueOf(it)
-                },
+                syncResult =
+                    prefs.getString(Constants.SYNC_RESULT, null)?.let {
+                        SyncResult.valueOf(it)
+                    },
                 syncInProgress = false,
             ),
         )
-    }
 
-    fun metaSync(): Single<MetadataSettingsViewModel> {
-        return Single.just(
+    fun metaSync(): Single<MetadataSettingsViewModel> =
+        Single.just(
             MetadataSettingsViewModel(
                 metadataSyncPeriod = metadataPeriod(),
                 lastMetadataSync = prefs.getString(Constants.LAST_META_SYNC, "-")!!,
@@ -81,10 +88,9 @@ class SettingsRepository(
                 syncInProgress = false,
             ),
         )
-    }
 
-    fun syncParameters(): Single<SyncParametersViewModel> {
-        return Single.just(
+    fun syncParameters(): Single<SyncParametersViewModel> =
+        Single.just(
             SyncParametersViewModel(
                 teiToDownload(),
                 eventsToDownload(),
@@ -97,10 +103,9 @@ class SettingsRepository(
                 programSettings?.specificSettings()?.size ?: 0,
             ),
         )
-    }
 
-    fun reservedValues(): Single<ReservedValueSettingsViewModel> {
-        return Single.just(
+    fun reservedValues(): Single<ReservedValueSettingsViewModel> =
+        Single.just(
             ReservedValueSettingsViewModel(
                 generalSettings?.reservedValues() ?: prefs.getInt(
                     NUMBER_RV,
@@ -109,10 +114,9 @@ class SettingsRepository(
                 generalSettings?.reservedValues() == null,
             ),
         )
-    }
 
-    fun sms(): Single<SMSSettingsViewModel> {
-        return Single.just(
+    fun sms(): Single<SMSSettingsViewModel> =
+        Single.just(
             SMSSettingsViewModel(
                 isEnabled = smsConfig.isModuleEnabled,
                 gatewayNumber = smsConfig.gateway,
@@ -125,79 +129,102 @@ class SettingsRepository(
                 resultSenderValidationResult = GatewayValidator.GatewayValidationResult.Valid,
             ),
         )
-    }
 
-    private fun dataHasErrors(): Boolean {
-        return d2.eventModule().events()
-            .byAggregatedSyncState().`in`(State.ERROR)
-            .blockingGet().isNotEmpty() ||
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().`in`(State.ERROR)
-                .blockingGet().isNotEmpty() ||
-            d2.dataValueModule().dataValues()
-                .bySyncState().`in`(State.ERROR)
-                .blockingGet().isNotEmpty()
-    }
+    private fun dataHasErrors(): Boolean =
+        d2
+            .eventModule()
+            .events()
+            .byAggregatedSyncState()
+            .`in`(State.ERROR)
+            .blockingGet()
+            .isNotEmpty() ||
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byAggregatedSyncState()
+                .`in`(State.ERROR)
+                .blockingGet()
+                .isNotEmpty() ||
+            d2
+                .dataValueModule()
+                .dataValues()
+                .bySyncState()
+                .`in`(State.ERROR)
+                .blockingGet()
+                .isNotEmpty()
 
-    private fun dataHasWarning(): Boolean {
-        return d2.eventModule().events()
-            .byAggregatedSyncState().`in`(State.WARNING)
-            .blockingGet().isNotEmpty() ||
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().`in`(State.WARNING)
-                .blockingGet().isNotEmpty() ||
-            d2.dataValueModule().dataValues()
-                .bySyncState().`in`(State.WARNING)
-                .blockingGet().isNotEmpty()
-    }
+    private fun dataHasWarning(): Boolean =
+        d2
+            .eventModule()
+            .events()
+            .byAggregatedSyncState()
+            .`in`(State.WARNING)
+            .blockingGet()
+            .isNotEmpty() ||
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byAggregatedSyncState()
+                .`in`(State.WARNING)
+                .blockingGet()
+                .isNotEmpty() ||
+            d2
+                .dataValueModule()
+                .dataValues()
+                .bySyncState()
+                .`in`(State.WARNING)
+                .blockingGet()
+                .isNotEmpty()
 
-    private fun metadataPeriod(): Int {
-        return generalSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
+    private fun metadataPeriod(): Int =
+        generalSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_META,
             TIME_WEEKLY,
         )
-    }
 
-    private fun dataPeriod(): Int {
-        return generalSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
+    private fun dataPeriod(): Int =
+        generalSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_DATA,
             TIME_DAILY,
         )
-    }
 
-    private fun teiToDownload(): Int {
-        return programSettings?.globalSettings()?.teiDownload() ?: prefs.getInt(
+    private fun teiToDownload(): Int =
+        programSettings?.globalSettings()?.teiDownload() ?: prefs.getInt(
             Constants.TEI_MAX,
             Constants.TEI_MAX_DEFAULT,
         )
-    }
 
-    private fun currentTeiCount(): Int {
-        return d2.trackedEntityModule().trackedEntityInstances()
-            .byAggregatedSyncState().neq(State.RELATIONSHIP)
-            .byDeleted().isFalse
+    private fun currentTeiCount(): Int =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .byAggregatedSyncState()
+            .neq(State.RELATIONSHIP)
+            .byDeleted()
+            .isFalse
             .blockingCount()
-    }
 
-    private fun currentEventCount(): Int {
-        return d2.eventModule().events()
-            .byEnrollmentUid().isNull
-            .byDeleted().isFalse
-            .bySyncState().neq(State.RELATIONSHIP)
+    private fun currentEventCount(): Int =
+        d2
+            .eventModule()
+            .events()
+            .byEnrollmentUid()
+            .isNull
+            .byDeleted()
+            .isFalse
+            .bySyncState()
+            .neq(State.RELATIONSHIP)
             .blockingCount()
-    }
 
-    private fun eventsToDownload(): Int {
-        return programSettings?.globalSettings()?.eventsDownload() ?: prefs.getInt(
+    private fun eventsToDownload(): Int =
+        programSettings?.globalSettings()?.eventsDownload() ?: prefs.getInt(
             Constants.EVENT_MAX,
             Constants.EVENT_MAX_DEFAULT,
         )
-    }
 
-    private fun limitScope(): LimitScope {
-        return programSettings?.globalSettings()?.settingDownload()
+    private fun limitScope(): LimitScope =
+        programSettings?.globalSettings()?.settingDownload()
             ?: getLimitedScopeFromPreferences()
-    }
 
     private fun getLimitedScopeFromPreferences(): LimitScope {
         val byOrgUnit = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false)
@@ -253,28 +280,48 @@ class SettingsRepository(
     }
 
     fun saveGatewayNumber(gatewayNumber: String) {
-        d2.smsModule().configCase().setGatewayNumber(gatewayNumber).blockingAwait()
+        d2
+            .smsModule()
+            .configCase()
+            .setGatewayNumber(gatewayNumber)
+            .blockingAwait()
     }
 
     fun saveSmsResultSender(smsResultSender: String) {
-        d2.smsModule().configCase().setConfirmationSenderNumber(smsResultSender).blockingAwait()
+        d2
+            .smsModule()
+            .configCase()
+            .setConfirmationSenderNumber(smsResultSender)
+            .blockingAwait()
     }
 
     fun saveSmsResponseTimeout(smsResponseTimeout: Int) {
-        d2.smsModule().configCase().setWaitingResultTimeout(smsResponseTimeout).blockingAwait()
+        d2
+            .smsModule()
+            .configCase()
+            .setWaitingResultTimeout(smsResponseTimeout)
+            .blockingAwait()
     }
 
     fun saveWaitForSmsResponse(shouldWait: Boolean) {
-        d2.smsModule().configCase().setWaitingForResultEnabled(shouldWait).blockingAwait()
+        d2
+            .smsModule()
+            .configCase()
+            .setWaitingForResultEnabled(shouldWait)
+            .blockingAwait()
     }
 
     suspend fun enableSmsModule(enable: Boolean) {
-        val job = if (enable) {
-            d2.smsModule().configCase().setModuleEnabled(true)
-                .andThen(d2.smsModule().configCase().refreshMetadataIds())
-        } else {
-            d2.smsModule().configCase().setModuleEnabled(false)
-        }
+        val job =
+            if (enable) {
+                d2
+                    .smsModule()
+                    .configCase()
+                    .setModuleEnabled(true)
+                    .andThen(d2.smsModule().configCase().refreshMetadataIds())
+            } else {
+                d2.smsModule().configCase().setModuleEnabled(false)
+            }
         job.blockingAwait()
     }
 
@@ -283,13 +330,12 @@ class SettingsRepository(
     }
 
     suspend fun d2Errors() = d2.maintenanceModule().d2Errors().blockingGet()
+
     suspend fun trackerImportConflicts() = d2.importModule().trackerImportConflicts().blockingGet()
+
     suspend fun foreignKeyViolations() = d2.maintenanceModule().foreignKeyViolations().blockingGet()
 
-    suspend fun exportDatabase() =
-        d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
+    suspend fun exportDatabase() = d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
 
-    fun isTwoFAConfigured(): Boolean {
-        return featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
-    }
+    fun isTwoFAConfigured(): Boolean = featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
 }

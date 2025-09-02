@@ -30,7 +30,6 @@ import java.util.Date
 class TeiDashboardCardMapper(
     val resourceManager: ResourceManager,
 ) {
-
     fun map(
         dashboardModel: DashboardModel,
         onImageClick: (File) -> Unit,
@@ -48,12 +47,13 @@ class TeiDashboardCardMapper(
         return TeiCardUiModel(
             avatar = avatar,
             title = getTitle(dashboardModel),
-            additionalInfo = getAdditionalInfo(
-                dashboardModel,
-                phoneCallback,
-                emailCallback,
-                programsCallback,
-            ),
+            additionalInfo =
+                getAdditionalInfo(
+                    dashboardModel,
+                    phoneCallback,
+                    emailCallback,
+                    programsCallback,
+                ),
             actionButton = {},
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
@@ -62,35 +62,41 @@ class TeiDashboardCardMapper(
     }
 
     @Composable
-    private fun ProvideAvatar(path: String, onImageClick: (File) -> Unit) {
+    private fun ProvideAvatar(
+        path: String,
+        onImageClick: (File) -> Unit,
+    ) {
         val file = File(path)
         val bitmap = BitmapFactory.decodeFile(file.absolutePath).asImageBitmap()
         val painter = BitmapPainter(bitmap)
 
         Avatar(
-            style = AvatarStyleData.Image(
-                imagePainter = painter,
-            ),
+            style =
+                AvatarStyleData.Image(
+                    imagePainter = painter,
+                ),
             onImageClick = { onImageClick.invoke(file) },
         )
     }
 
-    private fun getTitle(item: DashboardModel): String {
-        return when {
+    private fun getTitle(item: DashboardModel): String =
+        when {
             item.teiHeader != null -> item.teiHeader!!
-            item is DashboardEnrollmentModel -> item.trackedEntityAttributes.takeIf { it.isNotEmpty() }
-                ?.let {
-                    val attribute = it.filterAttributes().firstOrNull()
-                    val key = attribute?.first?.displayFormName()
-                    val value = attribute?.second?.value()?.takeIf { attrValue ->
-                        attrValue.isNotEmpty()
+            item is DashboardEnrollmentModel ->
+                item.trackedEntityAttributes
+                    .takeIf { it.isNotEmpty() }
+                    ?.let {
+                        val attribute = it.filterAttributes().firstOrNull()
+                        val key = attribute?.first?.displayFormName()
+                        val value =
+                            attribute?.second?.value()?.takeIf { attrValue ->
+                                attrValue.isNotEmpty()
+                            } ?: "-"
+                        "$key: $value"
                     } ?: "-"
-                    "$key: $value"
-                } ?: "-"
 
             else -> "-"
         }
-    }
 
     private fun getAdditionalInfo(
         item: DashboardModel,
@@ -98,46 +104,48 @@ class TeiDashboardCardMapper(
         emailCallback: (String) -> Unit,
         programsCallback: () -> Unit,
     ): List<AdditionalInfoItem> {
-        val attributesList = when (item) {
-            is DashboardEnrollmentModel -> item.trackedEntityAttributes.filterAttributes()
-            is DashboardTEIModel -> emptyList()
-        }.map {
-            if (it.first.valueType() == ValueType.PHONE_NUMBER) {
-                AdditionalInfoItem(
-                    key = it.first.displayFormName(),
-                    value = it.second.value()?.takeIf { attrValue -> attrValue.isNotEmpty() }
-                        ?: "-",
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.PhoneEnabled,
-                            contentDescription = "Icon Button",
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    color = SurfaceColor.Primary,
-                    action = { phoneCallback.invoke(it.second.value() ?: "") },
-                )
-            } else if (it.first.valueType() == ValueType.EMAIL) {
-                AdditionalInfoItem(
-                    key = it.first.displayFormName(),
-                    value = it.second.value() ?: "-",
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.MailOutline,
-                            contentDescription = "Icon Button",
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    color = SurfaceColor.Primary,
-                    action = { emailCallback.invoke(it.second.value() ?: "") },
-                )
-            } else {
-                AdditionalInfoItem(
-                    key = it.first.displayFormName(),
-                    value = it.second.value() ?: "-",
-                )
-            }
-        }.toMutableList()
+        val attributesList =
+            when (item) {
+                is DashboardEnrollmentModel -> item.trackedEntityAttributes.filterAttributes()
+                is DashboardTEIModel -> emptyList()
+            }.map {
+                if (it.first.valueType() == ValueType.PHONE_NUMBER) {
+                    AdditionalInfoItem(
+                        key = it.first.displayFormName(),
+                        value =
+                            it.second.value()?.takeIf { attrValue -> attrValue.isNotEmpty() }
+                                ?: "-",
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.PhoneEnabled,
+                                contentDescription = "Icon Button",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        color = SurfaceColor.Primary,
+                        action = { phoneCallback.invoke(it.second.value() ?: "") },
+                    )
+                } else if (it.first.valueType() == ValueType.EMAIL) {
+                    AdditionalInfoItem(
+                        key = it.first.displayFormName(),
+                        value = it.second.value() ?: "-",
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Filled.MailOutline,
+                                contentDescription = "Icon Button",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        color = SurfaceColor.Primary,
+                        action = { emailCallback.invoke(it.second.value() ?: "") },
+                    )
+                } else {
+                    AdditionalInfoItem(
+                        key = it.first.displayFormName(),
+                        value = it.second.value() ?: "-",
+                    )
+                }
+            }.toMutableList()
 
         if (item.teiHeader == null) {
             attributesList.removeFirstOrNull()
@@ -145,41 +153,42 @@ class TeiDashboardCardMapper(
 
         return when (item) {
             is DashboardEnrollmentModel ->
-                attributesList.also { list ->
-                    if (item.currentProgram().displayIncidentDate() == true) {
-                        addIncidentDate(
+                attributesList
+                    .also { list ->
+                        if (item.currentProgram().displayIncidentDate() == true) {
+                            addIncidentDate(
+                                list,
+                                item.currentProgram().displayIncidentDateLabel(),
+                                item.currentEnrollment.incidentDate(),
+                            )
+                        }
+                    }.also { list ->
+                        addEnrollmentDate(
+                            item.currentProgram().uid(),
                             list,
-                            item.currentProgram().displayIncidentDateLabel(),
-                            item.currentEnrollment.incidentDate(),
+                            item.currentProgram().displayEnrollmentDateLabel(),
+                            item.currentEnrollment.enrollmentDate(),
                         )
-                    }
-                }.also { list ->
-                    addEnrollmentDate(
-                        item.currentProgram().uid(),
-                        list,
-                        item.currentProgram().displayEnrollmentDateLabel(),
-                        item.currentEnrollment.enrollmentDate(),
-                    )
-                }.also { list ->
-                    addOwnedBy(
-                        list,
-                        item.ownerOrgUnit,
-                    )
-                    if (item.getCurrentOrgUnit() != item.ownerOrgUnit) {
-                        addEnrollIn(
+                    }.also { list ->
+                        addOwnedBy(
                             list,
-                            item.getCurrentOrgUnit(),
+                            item.ownerOrgUnit,
                         )
+                        if (item.getCurrentOrgUnit() != item.ownerOrgUnit) {
+                            addEnrollIn(
+                                list,
+                                item.getCurrentOrgUnit(),
+                            )
+                        }
+                    }.also { list ->
+                        item.getEnrollmentActivePrograms().takeIf { it.isNotEmpty() }?.let {
+                            addEnrollPrograms(
+                                list,
+                                it,
+                                programsCallback,
+                            )
+                        }
                     }
-                }.also { list ->
-                    item.getEnrollmentActivePrograms().takeIf { it.isNotEmpty() }?.let {
-                        addEnrollPrograms(
-                            list,
-                            it,
-                            programsCallback,
-                        )
-                    }
-                }
 
             is DashboardTEIModel -> attributesList
         }
@@ -250,11 +259,12 @@ class TeiDashboardCardMapper(
     ) {
         list.add(
             AdditionalInfoItem(
-                key = programLabel ?: resourceManager.formatWithEnrollmentLabel(
-                    programUid,
-                    R.string.enrollment_date_V2,
-                    1,
-                ),
+                key =
+                    programLabel ?: resourceManager.formatWithEnrollmentLabel(
+                        programUid,
+                        R.string.enrollment_date_V2,
+                        1,
+                    ),
                 value = enrollmentDate.toUi() ?: "-",
                 isConstantItem = true,
             ),
@@ -262,7 +272,8 @@ class TeiDashboardCardMapper(
     }
 
     private fun List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>.filterAttributes() =
-        this.filter { it.first.valueType() != ValueType.IMAGE }
+        this
+            .filter { it.first.valueType() != ValueType.IMAGE }
             .filter { it.first.valueType() != ValueType.COORDINATE }
             .filter { it.first.valueType() != ValueType.FILE_RESOURCE }
             .filter { it.second.value()?.isNotEmpty() == true }

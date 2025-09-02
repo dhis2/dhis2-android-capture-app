@@ -10,17 +10,14 @@ import org.hisp.dhis.android.core.D2Manager
 import javax.inject.Singleton
 
 @Module
-open class SessionManagerModule() {
-
+open class SessionManagerModule {
     @Provides
     @Singleton
     fun providesSessionManagerService(
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
         featureConfigRepository: FeatureConfigRepository,
-    ): SessionManagerService {
-        return SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences, featureConfigRepository)
-    }
+    ): SessionManagerService = SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences, featureConfigRepository)
 
     @Provides
     @Singleton
@@ -28,11 +25,8 @@ open class SessionManagerModule() {
         schedulerProvider: SchedulerProvider,
         preferences: PreferenceProvider,
         featureConfigRepository: FeatureConfigRepository,
-    ): SessionManagerServiceImpl {
-        return SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences, featureConfig = featureConfigRepository)
-    }
+    ): SessionManagerServiceImpl =
+        SessionManagerServiceImpl(provideSdk(), schedulerProvider, preferences, featureConfig = featureConfigRepository)
 
-    private fun provideSdk(): D2 {
-        return D2Manager.getD2()
-    }
+    private fun provideSdk(): D2 = D2Manager.getD2()
 }

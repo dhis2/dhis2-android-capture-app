@@ -15,7 +15,6 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class SearchPageConfiguratorTest {
-
     private val searchRepository: SearchRepository = mock()
     private val program: Program = mock()
     private val teType: TrackedEntityType = mock()

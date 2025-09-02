@@ -12,16 +12,16 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class TrackedEntityInstanceExtensions {
-
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     @Test
     fun `Should not filter teis if program is null`() {
-        val testList = mutableListOf(
-            TrackedEntityInstance.builder().uid("tei_A").build(),
-            TrackedEntityInstance.builder().uid("tei_C").build(),
-            TrackedEntityInstance.builder().uid("tei_D").build(),
-        )
+        val testList =
+            mutableListOf(
+                TrackedEntityInstance.builder().uid("tei_A").build(),
+                TrackedEntityInstance.builder().uid("tei_C").build(),
+                TrackedEntityInstance.builder().uid("tei_D").build(),
+            )
 
         testList.filterDeletedEnrollment(d2, null)
 
@@ -30,23 +30,33 @@ class TrackedEntityInstanceExtensions {
 
     @Test
     fun `Should filter tei with deleted enrollment`() {
-        val testList = mutableListOf(
-            TrackedEntityInstance.builder().uid("tei_A").build(),
-            TrackedEntityInstance.builder().uid("tei_C").build(),
-            TrackedEntityInstance.builder().uid("tei_D").build(),
-        )
+        val testList =
+            mutableListOf(
+                TrackedEntityInstance.builder().uid("tei_A").build(),
+                TrackedEntityInstance.builder().uid("tei_C").build(),
+                TrackedEntityInstance.builder().uid("tei_D").build(),
+            )
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byAggregatedSyncState()
+                .neq(State.RELATIONSHIP),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byAggregatedSyncState()
+                .neq(State.RELATIONSHIP)
                 .uid(anyString()),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances()
-                .byAggregatedSyncState().neq(State.RELATIONSHIP)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .byAggregatedSyncState()
+                .neq(State.RELATIONSHIP)
                 .uid(anyString())
                 .blockingExists(),
         ) doReturn true
@@ -59,38 +69,66 @@ class TrackedEntityInstanceExtensions {
         assertTrue(testList.size == 2)
     }
 
-    private fun handleEnrollmentCall(teiUid: String, programUid: String, returnValue: Boolean) {
+    private fun handleEnrollmentCall(
+        teiUid: String,
+        programUid: String,
+        returnValue: Boolean,
+    ) {
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid),
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
                 .byProgram(),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid),
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .byProgram()
+                .eq(programUid),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .byProgram()
+                .eq(programUid)
                 .byDeleted(),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse,
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .byProgram()
+                .eq(programUid)
+                .byDeleted()
+                .isFalse,
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(teiUid)
-                .byProgram().eq(programUid)
-                .byDeleted().isFalse
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .byProgram()
+                .eq(programUid)
+                .byDeleted()
+                .isFalse
                 .blockingIsEmpty(),
         ) doReturn returnValue
     }

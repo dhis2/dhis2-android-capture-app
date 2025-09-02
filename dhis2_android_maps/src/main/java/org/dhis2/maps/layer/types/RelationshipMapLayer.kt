@@ -37,7 +37,6 @@ class RelationshipMapLayer(
     private val lineColor: Int?,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-
     private val LINE_LAYER_ID: String = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
     private val SELECTED_LINE_LAYER_ID: String = "SELECTED_RELATIONSHIP_LINE_LAYER_ID_$sourceId"
     private val LINE_ARROW_LAYER_ID: String = "RELATIONSHIP_LINE_ARROW_LAYER_ID_$sourceId"
@@ -82,104 +81,115 @@ class RelationshipMapLayer(
     }
 
     private val baseRelationshipLayer: Layer
-        get() = style.getLayer(BASE_RELATIONSHIP_LAYER_ID)
-            ?: LineLayer(BASE_RELATIONSHIP_LAYER_ID, sourceId)
-                .withProperties(visibility(Property.NONE))
+        get() =
+            style.getLayer(BASE_RELATIONSHIP_LAYER_ID)
+                ?: LineLayer(BASE_RELATIONSHIP_LAYER_ID, sourceId)
+                    .withProperties(visibility(Property.NONE))
 
     private val linesLayer: Layer
-        get() = style.getLayer(LINE_LAYER_ID)
-            ?: LineLayer(LINE_LAYER_ID, sourceId)
-                .withProperties(
-                    lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(LINE_WIDTH),
-                    lineCap(LINE_CAP_SQUARE),
-                ).withFilter(isLine())
+        get() =
+            style.getLayer(LINE_LAYER_ID)
+                ?: LineLayer(LINE_LAYER_ID, sourceId)
+                    .withProperties(
+                        lineColor(lineColor ?: LINE_COLOR),
+                        lineWidth(LINE_WIDTH),
+                        lineCap(LINE_CAP_SQUARE),
+                    ).withFilter(isLine())
 
     private val selectedLineLayer: Layer
-        get() = style.getLayer(SELECTED_LINE_LAYER_ID)
-            ?: LineLayer(SELECTED_LINE_LAYER_ID, SELECTED_SOURCE)
-                .withProperties(
-                    lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(SELECTED_LINE_WIDTH),
-                    lineCap(LINE_CAP_SQUARE),
-                )
+        get() =
+            style.getLayer(SELECTED_LINE_LAYER_ID)
+                ?: LineLayer(SELECTED_LINE_LAYER_ID, SELECTED_SOURCE)
+                    .withProperties(
+                        lineColor(lineColor ?: LINE_COLOR),
+                        lineWidth(SELECTED_LINE_WIDTH),
+                        lineCap(LINE_CAP_SQUARE),
+                    )
 
     private val arrowLayer: Layer
-        get() = style.getLayer(LINE_ARROW_LAYER_ID)
-            ?: SymbolLayer(LINE_ARROW_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ARROW),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
-                ).withFilter(isLine())
-                .withFilter(isUnidirectional())
+        get() =
+            style.getLayer(LINE_ARROW_LAYER_ID)
+                ?: SymbolLayer(LINE_ARROW_LAYER_ID, sourceId)
+                    .withProperties(
+                        PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ARROW),
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
+                        PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
+                    ).withFilter(isLine())
+                    .withFilter(isUnidirectional())
 
     private val arrowBidirectionalLayer: Layer
-        get() = style.getLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID)
-            ?: SymbolLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(
-                        RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
-                    ),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
-                ).withFilter(isLine())
-                .withFilter(isBiderectional())
+        get() =
+            style.getLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID)
+                ?: SymbolLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID, sourceId)
+                    .withProperties(
+                        PropertyFactory.iconImage(
+                            RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
+                        ),
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
+                        PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
+                    ).withFilter(isLine())
+                    .withFilter(isBiderectional())
     private val selectedArrowLayer: Layer
-        get() = style.getLayer(SELECTED_LINE_ARROW_LAYER_ID)
-            ?: SymbolLayer(SELECTED_LINE_ARROW_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
-                    PropertyFactory.iconAllowOverlap(true),
-                    visibility(Property.NONE),
-                    PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
-                ).withFilter(isLine())
+        get() =
+            style.getLayer(SELECTED_LINE_ARROW_LAYER_ID)
+                ?: SymbolLayer(SELECTED_LINE_ARROW_LAYER_ID, sourceId)
+                    .withProperties(
+                        PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
+                        PropertyFactory.iconAllowOverlap(true),
+                        visibility(Property.NONE),
+                        PropertyFactory.symbolPlacement(Property.SYMBOL_PLACEMENT_LINE_CENTER),
+                        PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
+                    ).withFilter(isLine())
 
     private val pointLayer: Layer
-        get() = style.getLayer(POINT_LAYER_ID)
-            ?: SymbolLayer(POINT_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.iconImage(
-                        "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId",
-                    ),
-                    PropertyFactory.iconAllowOverlap(true),
-                    visibility(Property.NONE),
-                    PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
-                ).withFilter(isPoint())
+        get() =
+            style.getLayer(POINT_LAYER_ID)
+                ?: SymbolLayer(POINT_LAYER_ID, sourceId)
+                    .withProperties(
+                        PropertyFactory.iconImage(
+                            "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId",
+                        ),
+                        PropertyFactory.iconAllowOverlap(true),
+                        visibility(Property.NONE),
+                        PropertyFactory.iconColor(lineColor ?: LINE_COLOR),
+                    ).withFilter(isPoint())
 
     private val teiPointLayer: Layer
-        get() = style.getLayer(TEI_POINT_LAYER_ID)
-            ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
-                .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
-                .withFilter(isPoint())
+        get() =
+            style.getLayer(TEI_POINT_LAYER_ID)
+                ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
+                    .withTEIMarkerProperties()
+                    .withInitialVisibility(Property.NONE)
+                    .withFilter(isPoint())
 
     private val selectedPointLayer: Layer
-        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
-            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_SOURCE)
-                .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
-                .withFilter(isPoint())
+        get() =
+            style.getLayer(SELECTED_POINT_LAYER_ID)
+                ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_SOURCE)
+                    .withTEIMarkerProperties()
+                    .withInitialVisibility(Property.NONE)
+                    .withFilter(isPoint())
 
     private val polygonLayer: Layer
-        get() = style.getLayer(POLYGON_LAYER_ID)
-            ?: FillLayer(POLYGON_LAYER_ID, sourceId)
-                .withProperties(
-                    PropertyFactory.fillColor(
-                        colorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50),
-                    ),
-                ).withFilter(isPolygon())
+        get() =
+            style.getLayer(POLYGON_LAYER_ID)
+                ?: FillLayer(POLYGON_LAYER_ID, sourceId)
+                    .withProperties(
+                        PropertyFactory.fillColor(
+                            colorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50),
+                        ),
+                    ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
-        get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
-            ?: LineLayer(POLYGON_BORDER_LAYER_ID, sourceId)
-                .withProperties(
-                    lineColor(lineColor ?: LINE_COLOR),
-                    lineWidth(LINE_WIDTH),
-                ).withFilter(isPolygon())
+        get() =
+            style.getLayer(POLYGON_BORDER_LAYER_ID)
+                ?: LineLayer(POLYGON_BORDER_LAYER_ID, sourceId)
+                    .withProperties(
+                        lineColor(lineColor ?: LINE_COLOR),
+                        lineWidth(LINE_WIDTH),
+                    ).withFilter(isPolygon())
 
     override fun showLayer() {
         setVisibility(Property.VISIBLE)
@@ -212,20 +222,19 @@ class RelationshipMapLayer(
         selectedPointLayer.setProperties(visibility(Property.NONE))
     }
 
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(sourceId)
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? =
+        style
+            .getSourceAs<GeoJsonSource>(sourceId)
             ?.querySourceFeatures(
                 Expression.eq(
                     Expression.get(MapRelationshipsToFeatureCollection.RELATIONSHIP_UID),
                     featureUidProperty,
                 ),
-            )
-            ?.firstOrNull()
+            )?.firstOrNull()
             ?.let {
                 setSelectedItem(it)
                 it
             }
-    }
 
     private fun setVisibility(visibility: String) {
         arrowLayer.setProperties(visibility(visibility))
@@ -246,13 +255,10 @@ class RelationshipMapLayer(
         private const val SELECTED_LINE_WIDTH = 4f
     }
 
-    override fun getId(): String {
-        return LINE_LAYER_ID
-    }
+    override fun getId(): String = LINE_LAYER_ID
 
-    override fun layerIdsToSearch(): Array<String> {
-        return arrayOf(
+    override fun layerIdsToSearch(): Array<String> =
+        arrayOf(
             TEI_POINT_LAYER_ID,
         )
-    }
 }

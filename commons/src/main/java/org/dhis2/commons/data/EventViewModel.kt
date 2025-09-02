@@ -29,37 +29,36 @@ data class EventViewModel(
     val displayOrgUnit: Boolean = true,
 ) {
     var isClicked: Boolean = false
+
     fun toggleValueList() {
         this.valueListIsOpen = !valueListIsOpen
     }
 
-    fun canShowAddButton(): Boolean {
-        return if (type == EventViewModelType.STAGE) {
+    fun canShowAddButton(): Boolean =
+        if (type == EventViewModelType.STAGE) {
             canAddNewEvent && (stage?.repeatable() == true || eventCount == 0)
         } else {
             true
         }
-    }
 
-    fun isAfterToday(today: Date): Boolean {
-        return type == EventViewModelType.EVENT && event?.eventDate() != null &&
+    fun isAfterToday(today: Date): Boolean =
+        type == EventViewModelType.EVENT &&
+            event?.eventDate() != null &&
             event.eventDate()?.after(today) == true
-    }
 
-    fun applyHideStage(hidden: Boolean): EventViewModel? {
-        return when {
-            type == EventViewModelType.STAGE && hidden -> when {
-                eventCount > 0 -> copy(canAddNewEvent = false)
-                else -> null
-            }
+    fun applyHideStage(hidden: Boolean): EventViewModel? =
+        when {
+            type == EventViewModelType.STAGE && hidden ->
+                when {
+                    eventCount > 0 -> copy(canAddNewEvent = false)
+                    else -> null
+                }
 
             else -> this
         }
-    }
 }
 
-fun List<EventViewModel>.uids(): List<String> {
-    return map {
+fun List<EventViewModel>.uids(): List<String> =
+    map {
         it.event?.uid()!!
     }
-}

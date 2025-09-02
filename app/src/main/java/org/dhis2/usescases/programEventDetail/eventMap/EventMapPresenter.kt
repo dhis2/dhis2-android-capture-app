@@ -26,7 +26,6 @@ class EventMapPresenter(
     val preferences: PreferenceProvider,
     val schedulerProvider: SchedulerProvider,
 ) {
-
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
     var mapManager: MapManager? = null
 
@@ -41,7 +40,9 @@ class EventMapPresenter(
 
     fun init() {
         disposable.add(
-            filterManager.asFlowable().startWith(filterManager)
+            filterManager
+                .asFlowable()
+                .startWith(filterManager)
                 .switchMap { eventRepository.filteredEventsForMap(layersVisibility) }
                 .defaultSubscribe(
                     schedulerProvider,
@@ -68,9 +69,7 @@ class EventMapPresenter(
         eventInfoProcessor.onNext(eventUid)
     }
 
-    fun programFeatureType(): FeatureType {
-        return eventRepository.featureType().blockingGet()
-    }
+    fun programFeatureType(): FeatureType = eventRepository.featureType().blockingGet()
 
     fun onDestroy() {
         disposable.clear()
@@ -87,7 +86,5 @@ class EventMapPresenter(
         filterManager.publishData()
     }
 
-    fun programUid(): String? {
-        return eventRepository.program().blockingGet()?.uid()
-    }
+    fun programUid(): String? = eventRepository.program().blockingGet()?.uid()
 }

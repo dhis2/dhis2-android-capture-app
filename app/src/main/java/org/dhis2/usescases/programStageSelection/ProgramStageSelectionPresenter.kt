@@ -38,25 +38,26 @@ class ProgramStageSelectionPresenter(
         val ruleEffectFlowable = programStageSelectionRepository.calculate()
 
         // Combining results of two repositories into a single stream.
-        val stageModelsFlowable = Flowable.zip(
-            stagesFlowable.subscribeOn(schedulerProvider.io()),
-            ruleEffectFlowable.subscribeOn(schedulerProvider.io()),
-        ) { stageModels, calcResult ->
-            applyEffects(
-                stageModels,
-                calcResult,
-            )
-        }
-        compositeDisposable.add(
-            stageModelsFlowable.map { programStages ->
-                programStages.map { programStage ->
-                    ProgramStageData(
-                        programStage,
-                        metadataIconProvider(programStage.style(), SurfaceColor.Primary),
-                    )
-                }
+        val stageModelsFlowable =
+            Flowable.zip(
+                stagesFlowable.subscribeOn(schedulerProvider.io()),
+                ruleEffectFlowable.subscribeOn(schedulerProvider.io()),
+            ) { stageModels, calcResult ->
+                applyEffects(
+                    stageModels,
+                    calcResult,
+                )
             }
-                .subscribeOn(schedulerProvider.io())
+        compositeDisposable.add(
+            stageModelsFlowable
+                .map { programStages ->
+                    programStages.map { programStage ->
+                        ProgramStageData(
+                            programStage,
+                            metadataIconProvider(programStage.style(), SurfaceColor.Primary),
+                        )
+                    }
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(this::handleProgramStages) { t: Throwable? ->
                     Timber.e(t)
@@ -66,11 +67,12 @@ class ProgramStageSelectionPresenter(
 
     private fun handleProgramStages(programStages: List<ProgramStageData>) {
         when (programStages.size) {
-            1 -> view.setResult(
-                programStageUid = programStages.first().programStage.uid(),
-                repeatable = programStages.first().programStage.repeatable() == true,
-                periodType = programStages.first().programStage.periodType(),
-            )
+            1 ->
+                view.setResult(
+                    programStageUid = programStages.first().programStage.uid(),
+                    repeatable = programStages.first().programStage.repeatable() == true,
+                    periodType = programStages.first().programStage.periodType(),
+                )
 
             else -> view.setData(programStages)
         }
@@ -113,9 +115,8 @@ class ProgramStageSelectionPresenter(
         }
     }
 
-    fun getStandardInterval(programStageUid: String): Int {
-        return programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
-    }
+    fun getStandardInterval(programStageUid: String): Int =
+        programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
 
     fun onOrgUnitForNewEventSelected(
         programStageUid: String,

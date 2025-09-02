@@ -15,7 +15,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class DeleteLocalDataTest {
-
     private lateinit var deleteLocalData: DeleteLocalData
     private val settingsRepository: SettingsRepository = mock()
     private val settingsMessages: SettingsMessages = mock()
@@ -24,29 +23,32 @@ class DeleteLocalDataTest {
 
     @Before
     fun setUp() {
-        deleteLocalData = DeleteLocalData(
-            settingsRepository,
-            settingsMessages,
-            resourceManager,
-            analyticsHelper,
-        )
+        deleteLocalData =
+            DeleteLocalData(
+                settingsRepository,
+                settingsMessages,
+                resourceManager,
+                analyticsHelper,
+            )
     }
 
     @Test
-    fun shouldDeleteData() = runTest {
-        val doneMessage = "done"
-        whenever(resourceManager.getString(R.string.delete_local_data_done)) doReturn doneMessage
-        deleteLocalData()
-        verify(settingsRepository).deleteLocalData()
-        verify(settingsMessages, times(1)).sendMessage(doneMessage)
-    }
+    fun shouldDeleteData() =
+        runTest {
+            val doneMessage = "done"
+            whenever(resourceManager.getString(R.string.delete_local_data_done)) doReturn doneMessage
+            deleteLocalData()
+            verify(settingsRepository).deleteLocalData()
+            verify(settingsMessages, times(1)).sendMessage(doneMessage)
+        }
 
     @Test
-    fun shouldSendErrorMessage() = runTest {
-        val errorMessage = "error"
-        whenever(resourceManager.getString(R.string.delete_local_data_error)) doReturn errorMessage
-        whenever(settingsRepository.deleteLocalData()) doThrow RuntimeException()
-        deleteLocalData()
-        verify(settingsMessages, times(1)).sendMessage(errorMessage)
-    }
+    fun shouldSendErrorMessage() =
+        runTest {
+            val errorMessage = "error"
+            whenever(resourceManager.getString(R.string.delete_local_data_error)) doReturn errorMessage
+            whenever(settingsRepository.deleteLocalData()) doThrow RuntimeException()
+            deleteLocalData()
+            verify(settingsMessages, times(1)).sendMessage(errorMessage)
+        }
 }

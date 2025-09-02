@@ -16,7 +16,6 @@ class SplashModule internal constructor(
     private val splashView: SplashView,
     serverComponent: ServerComponent?,
 ) {
-
     private val userManager: UserManager? = serverComponent?.userManager()
 
     @Provides
@@ -25,23 +24,26 @@ class SplashModule internal constructor(
         schedulerProvider: SchedulerProvider,
         preferenceProvider: PreferenceProvider,
         crashReportController: CrashReportController,
-    ): SplashPresenter {
-        return SplashPresenter(
+    ): SplashPresenter =
+        SplashPresenter(
             splashView,
             userManager,
             schedulerProvider,
             preferenceProvider,
             crashReportController,
         )
-    }
 
     @Provides
     @PerActivity
     @Named(FLAG)
-    fun provideFlag(): String {
-        return if (userManager?.d2 != null && userManager.isUserLoggedIn.blockingFirst()) {
+    fun provideFlag(): String =
+        if (userManager?.d2 != null && userManager.isUserLoggedIn.blockingFirst()) {
             val systemSetting =
-                userManager.d2.systemSettingModule().systemSetting().flag().blockingGet()
+                userManager.d2
+                    .systemSettingModule()
+                    .systemSetting()
+                    .flag()
+                    .blockingGet()
             if (systemSetting != null) {
                 systemSetting.value() ?: ""
             } else {
@@ -50,5 +52,4 @@ class SplashModule internal constructor(
         } else {
             ""
         }
-    }
 }

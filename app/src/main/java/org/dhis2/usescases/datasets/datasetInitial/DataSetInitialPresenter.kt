@@ -17,7 +17,6 @@ class DataSetInitialPresenter(
     private val dataSetInitialRepository: DataSetInitialRepository,
     private val schedulerProvider: SchedulerProvider,
 ) : DataSetInitialContract.Presenter {
-
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var catCombo: String? = null
     private var openFuturePeriods: Int? = 0
@@ -26,7 +25,8 @@ class DataSetInitialPresenter(
 
     override fun init() {
         compositeDisposable.add(
-            dataSetInitialRepository.orgUnits()
+            dataSetInitialRepository
+                .orgUnits()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -38,7 +38,8 @@ class DataSetInitialPresenter(
                 ),
         )
         compositeDisposable.add(
-            dataSetInitialRepository.dataSet()
+            dataSetInitialRepository
+                .dataSet()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -67,7 +68,8 @@ class DataSetInitialPresenter(
     override fun onCatOptionClick(catOptionUid: String) {
         CoroutineTracker.increment()
         compositeDisposable.add(
-            dataSetInitialRepository.catCombo(catOptionUid)
+            dataSetInitialRepository
+                .catCombo(catOptionUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -89,20 +91,20 @@ class DataSetInitialPresenter(
 
     override fun onActionButtonClick(periodType: PeriodType) {
         compositeDisposable.add(
-            Flowable.zip(
-                dataSetInitialRepository.getCategoryOptionCombo(
-                    view.selectedCatOptions,
-                    catCombo,
-                ),
-                dataSetInitialRepository.getPeriodId(periodType, view.selectedPeriod),
-                BiFunction { val0: String?, val1: String? ->
-                    Pair(
-                        val0!!,
-                        val1!!,
-                    )
-                },
-            )
-                .subscribeOn(schedulerProvider.io())
+            Flowable
+                .zip(
+                    dataSetInitialRepository.getCategoryOptionCombo(
+                        view.selectedCatOptions,
+                        catCombo,
+                    ),
+                    dataSetInitialRepository.getPeriodId(periodType, view.selectedPeriod),
+                    BiFunction { val0: String?, val1: String? ->
+                        Pair(
+                            val0!!,
+                            val1!!,
+                        )
+                    },
+                ).subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { response: Pair<String, String> ->
@@ -116,9 +118,7 @@ class DataSetInitialPresenter(
         )
     }
 
-    override fun getCatOption(selectedOption: String): CategoryOption {
-        return dataSetInitialRepository.getCategoryOption(selectedOption)
-    }
+    override fun getCatOption(selectedOption: String): CategoryOption = dataSetInitialRepository.getCategoryOption(selectedOption)
 
     override fun onDettach() {
         compositeDisposable.clear()

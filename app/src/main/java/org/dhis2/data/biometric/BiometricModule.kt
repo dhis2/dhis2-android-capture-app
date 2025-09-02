@@ -7,13 +7,8 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 
 @Module
 object BiometricModule {
-
     @JvmStatic
     @Provides
     @PerActivity
-    fun provideBiometricController(
-        context: ActivityGlobalAbstract,
-    ): BiometricAuthenticator {
-        return BiometricAuthenticator(context)
-    }
+    fun provideBiometricController(context: ActivityGlobalAbstract): BiometricAuthenticator = BiometricAuthenticator(context)
 }

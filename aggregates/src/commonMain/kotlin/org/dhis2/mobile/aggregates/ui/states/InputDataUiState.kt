@@ -11,10 +11,13 @@ import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.table.ui.TableSelection
 
-internal sealed class CellSelectionState(open val tableSelection: TableSelection?) {
-
+internal sealed class CellSelectionState(
+    open val tableSelection: TableSelection?,
+) {
     @Stable
-    internal data class Default(override val tableSelection: TableSelection) : CellSelectionState(tableSelection)
+    internal data class Default(
+        override val tableSelection: TableSelection,
+    ) : CellSelectionState(tableSelection)
 
     @Stable
     internal data class InputDataUiState(
@@ -33,10 +36,15 @@ internal sealed class CellSelectionState(open val tableSelection: TableSelection
         val currentSelectedCell: TableSelection.CellSelection?,
     ) : CellSelectionState(currentSelectedCell) {
         fun dateExtras() = inputExtra as InputExtra.Date
+
         fun fileExtras() = inputExtra as InputExtra.File
+
         fun coordinateExtras() = inputExtra as InputExtra.Coordinate
+
         fun ageExtras() = inputExtra as InputExtra.Age
+
         fun multiTextExtras() = inputExtra as InputExtra.MultiText
+
         fun optionSetExtras() = inputExtra as InputExtra.OptionSet
     }
 }

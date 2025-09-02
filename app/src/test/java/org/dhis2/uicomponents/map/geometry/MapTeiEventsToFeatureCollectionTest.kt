@@ -17,7 +17,6 @@ import org.junit.Test
 import org.maplibre.geojson.Point
 
 class MapTeiEventsToFeatureCollectionTest {
-
     private lateinit var mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection
 
     @Before
@@ -47,30 +46,32 @@ class MapTeiEventsToFeatureCollectionTest {
         }
     }
 
-    private fun createEventsList(): List<MapItemModel> {
-        return listOf(
+    private fun createEventsList(): List<MapItemModel> =
+        listOf(
             MapItemModel(
                 uid = EVENTUID,
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    "image",
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        "image",
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
                 geometry = getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]"),
-                relatedInfo = RelatedInfo(
-                    event = RelatedInfo.Event(
-                        stageUid = "stageUid",
-                        stageDisplayName = "stage",
-                        teiUid = "teiUid",
+                relatedInfo =
+                    RelatedInfo(
+                        event =
+                            RelatedInfo.Event(
+                                stageUid = "stageUid",
+                                stageDisplayName = "stage",
+                                teiUid = "teiUid",
+                            ),
                     ),
-                ),
                 state = State.SYNCED,
             ),
         )
-    }
 
     companion object {
         const val EVENTUID = "eventUid"

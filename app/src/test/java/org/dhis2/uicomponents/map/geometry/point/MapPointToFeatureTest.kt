@@ -14,7 +14,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class MapPointToFeatureTest {
-
     private lateinit var mapPointToFeature: MapPointToFeature
     private val boundsGeometry: BoundsGeometry = mock()
 
@@ -27,17 +26,20 @@ class MapPointToFeatureTest {
     fun `Should map point to feature`() {
         val latitude = 11.00
         val longitude = -30.00
-        val geometry = Geometry.builder()
-            .coordinates("[-30.00, 11.00]")
-            .type(FeatureType.POINT)
-            .build()
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates("[-30.00, 11.00]")
+                .type(FeatureType.POINT)
+                .build()
 
-        whenever(boundsGeometry.update(latitude, longitude)) doReturn BoundsGeometry(
-            latitude,
-            latitude,
-            longitude,
-            longitude,
-        )
+        whenever(boundsGeometry.update(latitude, longitude)) doReturn
+            BoundsGeometry(
+                latitude,
+                latitude,
+                longitude,
+                longitude,
+            )
 
         val result = mapPointToFeature.map(geometry, boundsGeometry)
 
@@ -53,10 +55,12 @@ class MapPointToFeatureTest {
 
     @Test
     fun `Should not map point to feature`() {
-        val geometry = Geometry.builder()
-            .coordinates("[-181.00, 11.00]")
-            .type(FeatureType.POINT)
-            .build()
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates("[-181.00, 11.00]")
+                .type(FeatureType.POINT)
+                .build()
 
         val result = mapPointToFeature.map(geometry, boundsGeometry)
 

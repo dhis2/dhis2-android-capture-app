@@ -54,62 +54,86 @@ class MapAttributeToFeatureTest {
         assertTrue(result.isEmpty())
     }
 
-    private fun mockedAttributeInfoList(): List<CoordinateAttributeInfo> {
-        return listOf(
+    private fun mockedAttributeInfoList(): List<CoordinateAttributeInfo> =
+        listOf(
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
-                TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                TrackedEntityAttribute
+                    .builder()
+                    .uid("attrUid")
+                    .displayFormName("attrName")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
-                TrackedEntityAttribute.builder().uid("attr2Uid")
-                    .displayFormName("attr2Name").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                TrackedEntityAttribute
+                    .builder()
+                    .uid("attr2Uid")
+                    .displayFormName("attr2Name")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("tei2Uid").build(),
-                TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                TrackedEntityAttribute
+                    .builder()
+                    .uid("attrUid")
+                    .displayFormName("attrName")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
         )
-    }
 
-    private fun mockedFeatures(): List<Feature> {
-        return listOf(
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE,
-                ),
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE,
-                )
-            },
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
-                ),
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
-                )
-            },
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
-                ),
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
-                )
-            },
+    private fun mockedFeatures(): List<Feature> =
+        listOf(
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(
+                        MapEventToFeatureCollectionTest.FIRST_FEATURE_LONGITUDE,
+                        MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE,
+                    ),
+                ).also {
+                    it.addStringProperty(
+                        MapEventToFeatureCollectionTest.UID,
+                        MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE,
+                    )
+                },
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
+                    ),
+                ).also {
+                    it.addStringProperty(
+                        MapEventToFeatureCollectionTest.UID,
+                        MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
+                    )
+                },
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
+                    ),
+                ).also {
+                    it.addStringProperty(
+                        MapEventToFeatureCollectionTest.UID,
+                        MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
+                    )
+                },
         )
-    }
 }

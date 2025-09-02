@@ -1,7 +1,11 @@
 package org.dhis2.commons.matomo
 
 interface MatomoAnalyticsController {
-    fun trackScreenView(screen: String, title: String)
+    fun trackScreenView(
+        screen: String,
+        title: String,
+    )
+
     fun trackScreenViewWithDimension(
         screen: String,
         title: String,
@@ -24,7 +28,12 @@ interface MatomoAnalyticsController {
         secondValue: String,
     )
 
-    fun trackEvent(category: String, action: String, label: String)
+    fun trackEvent(
+        category: String,
+        action: String,
+        label: String,
+    )
+
     fun trackEventWithDimension(
         category: String,
         action: String,
@@ -33,12 +42,22 @@ interface MatomoAnalyticsController {
         dimensionValue: String,
     )
 
-    fun trackException(exception: Throwable, description: String)
+    fun trackException(
+        exception: Throwable,
+        description: String,
+    )
+
     fun setUserId(identification: String?)
 
     fun updateDefaultTracker()
-    fun updateDhisImplementationTracker(matomoUrl: String, siteId: Int, trackerName: String)
+
+    fun updateDhisImplementationTracker(
+        matomoUrl: String,
+        siteId: Int,
+        trackerName: String,
+    )
 
     fun trackDownload()
+
     fun clearDhisImplementation()
 }

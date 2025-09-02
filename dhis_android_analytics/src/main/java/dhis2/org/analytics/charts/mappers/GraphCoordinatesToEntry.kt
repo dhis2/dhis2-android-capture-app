@@ -7,19 +7,24 @@ import dhis2.org.analytics.charts.data.GraphPoint
 import java.time.YearMonth
 
 class GraphCoordinatesToEntry {
-
     private val dateToPosition = DateToPosition()
-    fun map(graph: Graph, coordinates: List<GraphPoint>, serieLabel: String): List<Entry> {
+
+    fun map(
+        graph: Graph,
+        coordinates: List<GraphPoint>,
+        serieLabel: String,
+    ): List<Entry> {
         var minMonth: YearMonth? = null
         return coordinates.mapIndexed { _, graphPoint ->
 
-            val position = graphPoint.position ?: dateToPosition(
-                graphPoint.eventDate,
-                graph.eventPeriodType,
-                minMonth,
-            ) { newValue ->
-                minMonth = newValue
-            }
+            val position =
+                graphPoint.position ?: dateToPosition(
+                    graphPoint.eventDate,
+                    graph.eventPeriodType,
+                    minMonth,
+                ) { newValue ->
+                    minMonth = newValue
+                }
 
             Entry(
                 position,
@@ -29,12 +34,11 @@ class GraphCoordinatesToEntry {
         }
     }
 
-    fun mapNutrition(coordinates: List<GraphPoint>): List<Entry> {
-        return coordinates.map { graphPoint ->
+    fun mapNutrition(coordinates: List<GraphPoint>): List<Entry> =
+        coordinates.map { graphPoint ->
             Entry(
                 graphPoint.position ?: 0f,
                 graphPoint.numericValue(),
             )
         }
-    }
 }

@@ -13,13 +13,10 @@ import org.dhis2.usescases.settingsprogram.ui.SettingsProgramScreen
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 class SettingsProgramActivity : ActivityGlobalAbstract() {
-
     override var handleEdgeToEdge = false
 
     companion object {
-        fun getIntentActivity(context: Context): Intent {
-            return Intent(context, SettingsProgramActivity::class.java)
-        }
+        fun getIntentActivity(context: Context): Intent = Intent(context, SettingsProgramActivity::class.java)
     }
 
     @OptIn(ExperimentalMaterial3Api::class)

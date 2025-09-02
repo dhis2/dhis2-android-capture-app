@@ -14,15 +14,16 @@ class MapEventToFeatureCollection(
     private val bounds: GetBoundingBox,
 ) {
     fun map(eventList: List<Event>): Pair<FeatureCollection, BoundingBox> {
-        val features = eventList.filter { it.geometry() != null }.mapNotNull {
-            mapGeometryToFeature.map(
-                it.geometry()!!,
-                mapOf(
-                    PROPERTY_FEATURE_SOURCE to FeatureSource.EVENT.name,
-                    EVENT to it.uid(),
-                ),
-            )
-        }
+        val features =
+            eventList.filter { it.geometry() != null }.mapNotNull {
+                mapGeometryToFeature.map(
+                    it.geometry()!!,
+                    mapOf(
+                        PROPERTY_FEATURE_SOURCE to FeatureSource.EVENT.name,
+                        EVENT to it.uid(),
+                    ),
+                )
+            }
 
         return Pair<FeatureCollection, BoundingBox>(
             FeatureCollection.fromFeatures(features),

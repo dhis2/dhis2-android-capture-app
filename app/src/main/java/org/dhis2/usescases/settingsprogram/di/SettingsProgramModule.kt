@@ -7,21 +7,22 @@ import org.dhis2.usescases.settingsprogram.domain.GetProgramSpecificSettings
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val settingsProgramModule = module {
+val settingsProgramModule =
+    module {
 
-    factory {
-        MetadataIconProvider(get())
-    }
+        factory {
+            MetadataIconProvider(get())
+        }
 
-    single {
-        SettingsProgramRepository(get())
-    }
+        single {
+            SettingsProgramRepository(get())
+        }
 
-    single {
-        GetProgramSpecificSettings(get(), get(), get())
-    }
+        single {
+            GetProgramSpecificSettings(get(), get(), get())
+        }
 
-    viewModel {
-        SettingsProgramViewModel(get())
+        viewModel {
+            SettingsProgramViewModel(get())
+        }
     }
-}

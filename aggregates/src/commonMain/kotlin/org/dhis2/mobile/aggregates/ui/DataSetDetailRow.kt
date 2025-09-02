@@ -56,12 +56,18 @@ internal fun DataSetDetails(
 
     Box(Modifier.background(MaterialTheme.colorScheme.primary)) {
         Column(
-            modifier = modifier.clip(RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L)).background(MaterialTheme.colorScheme.surfaceBright),
+            modifier =
+                modifier
+                    .clip(
+                        RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+                    ).background(MaterialTheme.colorScheme.surfaceBright),
             horizontalAlignment = columnContentAlignment,
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(vertical = Spacing.Spacing8, horizontal = Spacing.Spacing16),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Spacing.Spacing8, horizontal = Spacing.Spacing16),
                 horizontalAlignment = columnContentAlignment,
             ) {
                 titleDetails.header?.let {
@@ -80,7 +86,8 @@ internal fun DataSetDetails(
                     val textLayoutResultState = remember { mutableStateOf<TextLayoutResult?>(null) }
                     val textLayoutResult = textLayoutResultState.value
                     val subHeaderTextStyle =
-                        MaterialTheme.typography.bodyMedium.copy(color = TextColor.OnSurfaceLight)
+                        MaterialTheme.typography.bodyMedium
+                            .copy(color = TextColor.OnSurfaceLight)
                             .toSpanStyle()
                     var annotatedText by remember {
                         mutableStateOf(
@@ -95,18 +102,20 @@ internal fun DataSetDetails(
                     }
                     if (textLayoutResult?.hasVisualOverflow == true) {
                         val lastCharIndex = textLayoutResult.getLineEnd(1)
-                        val adjustedText = subHeaderText
-                            .substring(startIndex = 0, endIndex = lastCharIndex)
-                            .dropLast(3)
-                            .dropLastWhile { it == ' ' || it == '.' }
+                        val adjustedText =
+                            subHeaderText
+                                .substring(startIndex = 0, endIndex = lastCharIndex)
+                                .dropLast(3)
+                                .dropLastWhile { it == ' ' || it == '.' }
 
                         val textWithAppliedOverflow = "$adjustedText..."
 
-                        annotatedText = buildAnnotatedString {
-                            withStyle(style = subHeaderTextStyle) {
-                                append(textWithAppliedOverflow)
+                        annotatedText =
+                            buildAnnotatedString {
+                                withStyle(style = subHeaderTextStyle) {
+                                    append(textWithAppliedOverflow)
+                                }
                             }
-                        }
                     }
                     Text(
                         text = annotatedText,
@@ -125,7 +134,6 @@ internal fun DataSetDetails(
                 modifier = Modifier.padding(horizontal = Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = rowContentAlignment,
-
             ) {
                 item(key = dataSetDetails.dateLabel) {
                     if (editable) {
@@ -138,7 +146,7 @@ internal fun DataSetDetails(
                                 )
                             },
                             onClick = {
-                                /*not yet supported*/
+                                // not yet supported
                             },
                         )
                     } else {
@@ -161,7 +169,7 @@ internal fun DataSetDetails(
                                 )
                             },
                             onClick = {
-                                /*not yet supported*/
+                                // not yet supported
                             },
                         )
                     } else {
@@ -185,7 +193,7 @@ internal fun DataSetDetails(
                                     )
                                 },
                                 onClick = {
-                                    /*not yet supported*/
+                                    // not yet supported
                                 },
                             )
                         } else {
@@ -202,23 +210,26 @@ internal fun DataSetDetails(
     }
 }
 
-private fun getTextAlignment(textAlignment: TextAlignment?) = when (textAlignment) {
-    TextAlignment.LEFT -> TextAlign.Start
-    TextAlignment.CENTER -> TextAlign.Center
-    TextAlignment.RIGHT -> TextAlign.End
-    else -> TextAlign.Center
-}
+private fun getTextAlignment(textAlignment: TextAlignment?) =
+    when (textAlignment) {
+        TextAlignment.LEFT -> TextAlign.Start
+        TextAlignment.CENTER -> TextAlign.Center
+        TextAlignment.RIGHT -> TextAlign.End
+        else -> TextAlign.Center
+    }
 
-private fun getColumContentAlignment(textAlignment: TextAlignment?) = when (textAlignment) {
-    TextAlignment.LEFT -> Alignment.Start
-    TextAlignment.CENTER -> Alignment.CenterHorizontally
-    TextAlignment.RIGHT -> Alignment.End
-    else -> Alignment.CenterHorizontally
-}
+private fun getColumContentAlignment(textAlignment: TextAlignment?) =
+    when (textAlignment) {
+        TextAlignment.LEFT -> Alignment.Start
+        TextAlignment.CENTER -> Alignment.CenterHorizontally
+        TextAlignment.RIGHT -> Alignment.End
+        else -> Alignment.CenterHorizontally
+    }
 
-private fun getRowContentAlignment(textAlignment: TextAlignment?) = when (textAlignment) {
-    TextAlignment.LEFT -> Arrangement.Start
-    TextAlignment.CENTER -> Arrangement.Center
-    TextAlignment.RIGHT -> Arrangement.End
-    else -> Arrangement.Center
-}
+private fun getRowContentAlignment(textAlignment: TextAlignment?) =
+    when (textAlignment) {
+        TextAlignment.LEFT -> Arrangement.Start
+        TextAlignment.CENTER -> Arrangement.Center
+        TextAlignment.RIGHT -> Arrangement.End
+        else -> Arrangement.Center
+    }

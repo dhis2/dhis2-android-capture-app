@@ -34,8 +34,9 @@ import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import javax.inject.Inject
 
-class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
-
+class EnrollmentActivity :
+    ActivityGlobalAbstract(),
+    EnrollmentView {
     enum class EnrollmentMode { NEW, CHECK }
 
     private var forRelationship: Boolean = false
@@ -78,23 +79,26 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    /*region LIFECYCLE*/
+    // region LIFECYCLE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val enrollmentUid = intent.getStringExtra(ENROLLMENT_UID_EXTRA) ?: ""
         val programUid = intent.getStringExtra(PROGRAM_UID_EXTRA) ?: ""
-        val enrollmentMode = intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
-            ?: EnrollmentMode.NEW
+        val enrollmentMode =
+            intent.getStringExtra(MODE_EXTRA)?.let { EnrollmentMode.valueOf(it) }
+                ?: EnrollmentMode.NEW
         val openErrorLocation = intent.getBooleanExtra(OPEN_ERROR_LOCATION, false)
-        (applicationContext as App).userComponent()?.plus(
-            EnrollmentModule(
-                this,
-                enrollmentUid,
-                programUid,
-                enrollmentMode,
-                context,
-            ),
-        )?.inject(this)
+        (applicationContext as App)
+            .userComponent()
+            ?.plus(
+                EnrollmentModule(
+                    this,
+                    enrollmentUid,
+                    programUid,
+                    enrollmentMode,
+                    context,
+                ),
+            )?.inject(this)
 
         super.onCreate(savedInstanceState)
 
@@ -110,24 +114,27 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         binding = DataBindingUtil.setContentView(this, R.layout.enrollment_activity)
         binding.view = this
 
-        formView = buildEnrollmentForm(
-            config = EnrollmentFormBuilderConfig(
-                enrollmentUid = enrollmentUid,
-                programUid = programUid,
-                enrollmentMode = org.dhis2.form.model.EnrollmentMode.valueOf(
-                    enrollmentMode.name,
-                ),
-                hasWriteAccess = presenter.hasWriteAccess(),
-                openErrorLocation = openErrorLocation,
-                containerId = R.id.formViewContainer,
-                loadingView = binding.toolbarProgress,
-                saveButton = binding.save,
-            ),
-            locationProvider = locationProvider,
-            dateEditionWarningHandler = dateEditionWarningHandler,
-        ) {
-            presenter.finish(enrollmentMode)
-        }
+        formView =
+            buildEnrollmentForm(
+                config =
+                    EnrollmentFormBuilderConfig(
+                        enrollmentUid = enrollmentUid,
+                        programUid = programUid,
+                        enrollmentMode =
+                            org.dhis2.form.model.EnrollmentMode.valueOf(
+                                enrollmentMode.name,
+                            ),
+                        hasWriteAccess = presenter.hasWriteAccess(),
+                        openErrorLocation = openErrorLocation,
+                        containerId = R.id.formViewContainer,
+                        loadingView = binding.toolbarProgress,
+                        saveButton = binding.save,
+                    ),
+                locationProvider = locationProvider,
+                dateEditionWarningHandler = dateEditionWarningHandler,
+            ) {
+                presenter.finish(enrollmentMode)
+            }
 
         presenter.init()
     }
@@ -143,7 +150,11 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 RQ_INCIDENT_GEOMETRY, RQ_ENROLLMENT_GEOMETRY -> {
@@ -187,11 +198,12 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         }
     }
 
-    private val openEventForResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) {
-        presenter.getEnrollment()?.uid()?.let { it1 -> openDashboard(it1) }
-    }
+    private val openEventForResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) {
+            presenter.getEnrollment()?.uid()?.let { it1 -> openDashboard(it1) }
+        }
 
     override fun openDashboard(enrollmentUid: String) {
         if (forRelationship) {
@@ -227,13 +239,14 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
 
     private fun showDeleteDialog() {
         BottomSheetDialog(
-            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = getString(R.string.not_saved),
-                message = getString(R.string.discard_go_back),
-                iconResource = R.drawable.ic_error_outline,
-                mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
-                secondaryButton = DialogButtonStyle.DiscardButton(),
-            ),
+            bottomSheetDialogUiModel =
+                BottomSheetDialogUiModel(
+                    title = getString(R.string.not_saved),
+                    message = getString(R.string.discard_go_back),
+                    iconResource = R.drawable.ic_error_outline,
+                    mainButton = DialogButtonStyle.MainButton(R.string.keep_editing),
+                    secondaryButton = DialogButtonStyle.DiscardButton(),
+                ),
             onSecondaryButtonClicked = {
                 presenter.deleteAllSavedData()
                 finish()
@@ -242,11 +255,16 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         ).show(supportFragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
-    private fun handleGeometry(featureType: FeatureType, dataExtra: String, requestCode: Int) {
-        val geometry = GeometryController(GeometryParserImpl()).generateLocationFromCoordinates(
-            featureType,
-            dataExtra,
-        )
+    private fun handleGeometry(
+        featureType: FeatureType,
+        dataExtra: String,
+        requestCode: Int,
+    ) {
+        val geometry =
+            GeometryController(GeometryParserImpl()).generateLocationFromCoordinates(
+                featureType,
+                dataExtra,
+            )
 
         if (geometry != null) {
             when (requestCode) {
@@ -266,9 +284,9 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
         finish()
     }
 
-    /*endregion*/
+    // endregion
 
-    /*region TEI*/
+    // region TEI
     override fun displayTeiInfo(teiInfo: TeiAttributesInfo) {
         if (mode != EnrollmentMode.NEW) {
             binding.title.text =
@@ -288,31 +306,32 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun displayTeiPicture(picturePath: String) {
-        val intent = ImageDetailActivity.intent(
-            context = this,
-            title = null,
-            imagePath = picturePath,
-        )
+        val intent =
+            ImageDetailActivity.intent(
+                context = this,
+                title = null,
+                imagePath = picturePath,
+            )
 
         startActivity(intent)
     }
-    /*endregion*/
-    /*region ACCESS*/
+    // endregion
+    // region ACCESS
 
     override fun setAccess(access: Boolean?) {
         if (access == false) {
             binding.save.visibility = View.GONE
         }
     }
-    /*endregion*/
+    // endregion
 
-    /*region STATUS*/
+    // region STATUS
 
     override fun renderStatus(status: EnrollmentStatus) {
         binding.enrollmentStatus = status
     }
 
-    /*endregion*/
+    // endregion
 
     override fun requestFocus() {
         binding.root.requestFocus()
@@ -331,9 +350,10 @@ class EnrollmentActivity : ActivityGlobalAbstract(), EnrollmentView {
     }
 
     override fun showDateEditionWarning(message: String?) {
-        val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setMessage(message)
-            .setPositiveButton(R.string.button_ok, null)
+        val dialog =
+            MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setMessage(message)
+                .setPositiveButton(R.string.button_ok, null)
         dialog.show()
     }
 }

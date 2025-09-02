@@ -24,13 +24,12 @@ class LoginRepository(
             }
         }
 
-    private fun getCredentialsFromFile(rawFile: Int): List<TestingCredential> {
-        return try {
+    private fun getCredentialsFromFile(rawFile: Int): List<TestingCredential> =
+        try {
             val inputStream = resources.openRawResource(rawFile)
             val jsonString = inputStream.bufferedReader().use { it.readText() }
             gson.fromJson(jsonString, Array<TestingCredential>::class.java).toList()
         } catch (e: Exception) {
             emptyList()
         }
-    }
 }

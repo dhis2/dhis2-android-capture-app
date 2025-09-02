@@ -55,7 +55,6 @@ class EventDetailsViewModel(
     private val resourcesProvider: EventDetailResourcesProvider,
     private val configurePeriodSelector: ConfigurePeriodSelector,
 ) : ViewModel() {
-
     var showPeriods: ((periodType: PeriodType) -> Unit)? = null
     var showOrgUnits: (() -> Unit)? = null
     var showNoOrgUnits: (() -> Unit)? = null
@@ -127,10 +126,9 @@ class EventDetailsViewModel(
                 catOptionComboUid = eventCatCombo.value.uid,
                 isCatComboCompleted = eventCatCombo.value.isCompleted,
                 coordinates = eventCoordinates.value.model?.value,
-            )
-                .collect {
-                    _eventDetails.value = it
-                }
+            ).collect {
+                _eventDetails.value = it
+            }
         }
     }
 
@@ -143,8 +141,7 @@ class EventDetailsViewModel(
                 catOptionComboUid = eventCatCombo.value.uid,
                 isCatComboCompleted = eventCatCombo.value.isCompleted,
                 coordinates = eventCoordinates.value.model?.value,
-            )
-                .flowOn(Dispatchers.IO)
+            ).flowOn(Dispatchers.IO)
                 .collect {
                     _eventDetails.value = it
                     EventIdlingResourceSingleton.decrement()
@@ -171,7 +168,10 @@ class EventDetailsViewModel(
         setUpEventDetails()
     }
 
-    fun setUpOrgUnit(selectedDate: Date? = null, selectedOrgUnit: String? = null) {
+    fun setUpOrgUnit(
+        selectedDate: Date? = null,
+        selectedOrgUnit: String? = null,
+    ) {
         viewModelScope.launch {
             configureOrgUnit(selectedDate, selectedOrgUnit)
                 .flowOn(Dispatchers.IO)
@@ -231,15 +231,14 @@ class EventDetailsViewModel(
         }
     }
 
-    fun getSelectableDates(eventDate: EventDate): SelectableDates {
-        return if (eventDate.allowFutureDates) {
+    fun getSelectableDates(eventDate: EventDate): SelectableDates =
+        if (eventDate.allowFutureDates) {
             SelectableDates(DEFAULT_MIN_DATE, DEFAULT_MAX_DATE)
         } else {
             val currentDate =
                 SimpleDateFormat("ddMMyyyy", Locale.US).format(Date(System.currentTimeMillis()))
             SelectableDates(DEFAULT_MIN_DATE, currentDate)
         }
-    }
 
     fun showPeriodDialog() {
         periodType?.let {
@@ -247,7 +246,11 @@ class EventDetailsViewModel(
         }
     }
 
-    fun onDateSet(year: Int, month: Int, day: Int) {
+    fun onDateSet(
+        year: Int,
+        month: Int,
+        day: Int,
+    ) {
         val calendar = Calendar.getInstance()
         calendar[year, month, day, 0, 0] = 0
         calendar[Calendar.MILLISECOND] = 0
@@ -255,14 +258,15 @@ class EventDetailsViewModel(
         val currentTimeZone: TimeZone = calendar.getTimeZone()
         val currentDt: Calendar = GregorianCalendar(currentTimeZone, Locale.getDefault())
 
-        var gmtOffset: Int = currentTimeZone.getOffset(
-            currentDt[Calendar.ERA],
-            currentDt[Calendar.YEAR],
-            currentDt[Calendar.MONTH],
-            currentDt[Calendar.DAY_OF_MONTH],
-            currentDt[Calendar.DAY_OF_WEEK],
-            currentDt[Calendar.MILLISECOND],
-        )
+        var gmtOffset: Int =
+            currentTimeZone.getOffset(
+                currentDt[Calendar.ERA],
+                currentDt[Calendar.YEAR],
+                currentDt[Calendar.MONTH],
+                currentDt[Calendar.DAY_OF_MONTH],
+                currentDt[Calendar.DAY_OF_WEEK],
+                currentDt[Calendar.MILLISECOND],
+            )
         gmtOffset /= (60 * 60 * 1000)
         calendar.add(Calendar.HOUR_OF_DAY, +gmtOffset)
         val selectedDate = calendar.time
@@ -298,11 +302,15 @@ class EventDetailsViewModel(
         )
     }
 
-    fun onLocationByMapSelected(featureType: FeatureType, coordinates: String?) {
-        val geometry: Geometry? = geometryController.generateLocationFromCoordinates(
-            featureType,
-            coordinates,
-        )
+    fun onLocationByMapSelected(
+        featureType: FeatureType,
+        coordinates: String?,
+    ) {
+        val geometry: Geometry? =
+            geometryController.generateLocationFromCoordinates(
+                featureType,
+                coordinates,
+            )
         geometry?.let { setUpCoordinates(it.coordinates()) }
     }
 
@@ -336,9 +344,7 @@ class EventDetailsViewModel(
         }
     }
 
-    fun getPeriodType(): PeriodType? {
-        return periodType
-    }
+    fun getPeriodType(): PeriodType? = periodType
 
     fun onReopenClick() {
         configureEventDetails.reopenEvent().mockSafeFold(
@@ -354,41 +360,44 @@ class EventDetailsViewModel(
         setUpCoordinates(value = eventCoordinates.value.model?.value)
     }
 
-    fun fetchPeriods(): Flow<PagingData<Period>> {
-        return configurePeriodSelector()
-    }
+    fun fetchPeriods(): Flow<PagingData<Period>> = configurePeriodSelector()
 }
 
 inline fun <R, reified T> Result<T>.mockSafeFold(
     onSuccess: (value: T) -> R,
     onFailure: (exception: Throwable) -> R,
-): R = when {
-    isSuccess -> {
-        val value = getOrNull()
-        try {
-            onSuccess(value as T)
-        } catch (e: ClassCastException) {
-            // This block of code is only executed in testing environment, when we are mocking a
-            // function that returns a `Result` object.
-            val valueNotNull = value!!
-            if ((value as Result<*>).isSuccess) {
-                valueNotNull::class.java.getDeclaredField("value").let {
-                    it.isAccessible = true
-                    it[value] as T
-                }.let(onSuccess)
-            } else {
-                valueNotNull::class.java.getDeclaredField("value").let {
-                    it.isAccessible = true
-                    it[value]
-                }.let { failure ->
-                    failure!!::class.java.getDeclaredField("exception").let {
-                        it.isAccessible = true
-                        it[failure] as Exception
-                    }
-                }.let(onFailure)
+): R =
+    when {
+        isSuccess -> {
+            val value = getOrNull()
+            try {
+                onSuccess(value as T)
+            } catch (e: ClassCastException) {
+                // This block of code is only executed in testing environment, when we are mocking a
+                // function that returns a `Result` object.
+                val valueNotNull = value!!
+                if ((value as Result<*>).isSuccess) {
+                    valueNotNull::class.java
+                        .getDeclaredField("value")
+                        .let {
+                            it.isAccessible = true
+                            it[value] as T
+                        }.let(onSuccess)
+                } else {
+                    valueNotNull::class.java
+                        .getDeclaredField("value")
+                        .let {
+                            it.isAccessible = true
+                            it[value]
+                        }.let { failure ->
+                            failure!!::class.java.getDeclaredField("exception").let {
+                                it.isAccessible = true
+                                it[failure] as Exception
+                            }
+                        }.let(onFailure)
+                }
             }
         }
-    }
 
-    else -> onFailure(exceptionOrNull() ?: Exception())
-}
+        else -> onFailure(exceptionOrNull() ?: Exception())
+    }

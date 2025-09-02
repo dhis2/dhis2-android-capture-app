@@ -32,9 +32,7 @@ DeleteBottomSheetDialog(
     private val mainButtonText: String,
     private val deleteForever: Boolean = false,
     private val onMainButtonClick: () -> Unit,
-
 ) : BottomSheetDialogFragment() {
-
     companion object {
         const val TAG: String = "DELETE_DIALOG"
     }
@@ -43,22 +41,22 @@ DeleteBottomSheetDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
                 BottomSheetShell(
-                    uiState = BottomSheetShellUIState(
-                        bottomPadding = bottomSheetLowerPadding(),
-                        title = title,
-                        showTopSectionDivider = true,
-                        showBottomSectionDivider = false,
-                        description = description,
-                    ),
+                    uiState =
+                        BottomSheetShellUIState(
+                            bottomPadding = bottomSheetLowerPadding(),
+                            title = title,
+                            showTopSectionDivider = true,
+                            showBottomSectionDivider = false,
+                            description = description,
+                        ),
                     windowInsets = { bottomSheetInsets() },
-
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Info,
@@ -82,11 +80,12 @@ DeleteBottomSheetDialog(
                                     style = ButtonStyle.FILLED,
                                     icon = {
                                         Icon(
-                                            imageVector = if (deleteForever) {
-                                                Icons.Filled.DeleteForever
-                                            } else {
-                                                Icons.Filled.Delete
-                                            },
+                                            imageVector =
+                                                if (deleteForever) {
+                                                    Icons.Filled.DeleteForever
+                                                } else {
+                                                    Icons.Filled.Delete
+                                                },
                                             contentDescription = "Button",
                                         )
                                     },
@@ -96,8 +95,9 @@ DeleteBottomSheetDialog(
                                         dismiss()
                                         onMainButtonClick()
                                     },
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth(),
                                 )
                             },
                         )
@@ -111,5 +111,4 @@ DeleteBottomSheetDialog(
                 )
             }
         }
-    }
 }

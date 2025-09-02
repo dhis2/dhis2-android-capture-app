@@ -10,7 +10,6 @@ import org.maplibre.geojson.Point
 import java.util.UUID
 
 class PolygonViewModel : ViewModel() {
-
     private val _response = MutableLiveData<MutableList<PolygonPoint>>(arrayListOf())
     val response: LiveData<MutableList<PolygonPoint>>
         get() = _response
@@ -31,9 +30,7 @@ class PolygonViewModel : ViewModel() {
         _response.postValue(list)
     }
 
-    fun createPolygonPoint(): PolygonPoint {
-        return PolygonPoint()
-    }
+    fun createPolygonPoint(): PolygonPoint = PolygonPoint()
 
     fun getPointAsString(): String? {
         val list = mutableListOf<MutableList<MutableList<Double>>>()
@@ -60,6 +57,7 @@ class PolygonViewModel : ViewModel() {
         var selected: Boolean = true,
     ) {
         val uuid = UUID.randomUUID().toString()
+
         override fun toString(): String {
             point?.let {
                 return "${it.longitude().toString().take(8)}, ${it.latitude().toString().take(8)}"

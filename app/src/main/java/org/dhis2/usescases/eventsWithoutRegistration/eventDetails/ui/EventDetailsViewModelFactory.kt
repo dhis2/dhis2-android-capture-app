@@ -28,9 +28,8 @@ class EventDetailsViewModelFactory(
     private val eventDetailResourcesProvider: EventDetailResourcesProvider,
     private val configurePeriodSelector: ConfigurePeriodSelector,
 ) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return EventDetailsViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        EventDetailsViewModel(
             configureEventDetails,
             configureEventReportDate,
             configureOrgUnit,
@@ -44,5 +43,4 @@ class EventDetailsViewModelFactory(
             eventDetailResourcesProvider,
             configurePeriodSelector,
         ) as T
-    }
 }

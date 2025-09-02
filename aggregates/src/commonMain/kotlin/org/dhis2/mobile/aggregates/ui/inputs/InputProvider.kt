@@ -121,8 +121,9 @@ internal fun InputProvider(
     val scope = rememberCoroutineScope()
 
     val focusRequester = remember { FocusRequester() }
-    val modifierWithFocus = modifier
-        .focusRequester(focusRequester)
+    val modifierWithFocus =
+        modifier
+            .focusRequester(focusRequester)
 
     LaunchedEffect(inputData) {
         if (inputData.inputType.isText() or inputData.inputType.isNumeric() or inputData.inputType.isDate()) {
@@ -136,12 +137,13 @@ internal fun InputProvider(
                 mutableStateOf(
                     when (inputData.value) {
                         null -> AgeInputType.None
-                        else -> AgeInputType.DateOfBirth(
-                            TextFieldValue(
-                                text = inputData.value,
-                                selection = TextRange(inputData.value.length),
-                            ),
-                        )
+                        else ->
+                            AgeInputType.DateOfBirth(
+                                TextFieldValue(
+                                    text = inputData.value,
+                                    selection = TextRange(inputData.value.length),
+                                ),
+                            )
                     },
                 )
             }
@@ -152,10 +154,11 @@ internal fun InputProvider(
                         if (!inputData.value.isNullOrEmpty()) {
                             inputData.value.let {
                                 (inputType as AgeInputType.Age).copy(
-                                    value = TextFieldValue(
-                                        it,
-                                        TextRange(it.length),
-                                    ),
+                                    value =
+                                        TextFieldValue(
+                                            it,
+                                            TextRange(it.length),
+                                        ),
                                 )
                             }
                         }
@@ -164,10 +167,11 @@ internal fun InputProvider(
                         if (!inputData.value.isNullOrEmpty()) {
                             inputData.value.let {
                                 (inputType as AgeInputType.DateOfBirth).copy(
-                                    value = TextFieldValue(
-                                        it,
-                                        TextRange(it.length),
-                                    ),
+                                    value =
+                                        TextFieldValue(
+                                            it,
+                                            TextRange(it.length),
+                                        ),
                                 )
                             }
                         }
@@ -182,36 +186,39 @@ internal fun InputProvider(
                 }
             }
             InputAge(
-                state = rememberInputAgeState(
-                    inputAgeData = InputAgeData(
-                        title = inputData.label,
-                        inputStyle = inputData.inputStyle,
-                        isRequired = inputData.isRequired,
-                        imeAction = imeAction,
-                        dateOfBirthLabel = stringResource(Res.string.input_age_date_of_birth),
-                        orLabel = stringResource(Res.string.input_age_or),
-                        ageLabel = stringResource(Res.string.input_age),
-                        acceptText = stringResource(Res.string.input_action_accept),
-                        cancelText = stringResource(Res.string.input_action_cancel),
-                        is24hourFormat = true,
+                state =
+                    rememberInputAgeState(
+                        inputAgeData =
+                            InputAgeData(
+                                title = inputData.label,
+                                inputStyle = inputData.inputStyle,
+                                isRequired = inputData.isRequired,
+                                imeAction = imeAction,
+                                dateOfBirthLabel = stringResource(Res.string.input_age_date_of_birth),
+                                orLabel = stringResource(Res.string.input_age_or),
+                                ageLabel = stringResource(Res.string.input_age),
+                                acceptText = stringResource(Res.string.input_action_accept),
+                                cancelText = stringResource(Res.string.input_action_cancel),
+                                is24hourFormat = true,
+                            ),
+                        inputType = inputType,
+                        inputState = inputData.inputShellState,
+                        legendData = inputData.legendData,
+                        supportingText = inputData.supportingText,
                     ),
-                    inputType = inputType,
-                    inputState = inputData.inputShellState,
-                    legendData = inputData.legendData,
-                    supportingText = inputData.supportingText,
-                ),
                 onValueChanged = { ageInputType ->
                     if (ageInputType != null) {
                         inputType = ageInputType
                     }
-                    val value = when (val type = inputType) {
-                        is AgeInputType.Age -> {
-                            type.value.text.getDateFromAge(type)
-                        }
+                    val value =
+                        when (val type = inputType) {
+                            is AgeInputType.Age -> {
+                                type.value.text.getDateFromAge(type)
+                            }
 
-                        is AgeInputType.DateOfBirth -> type.value.text
-                        else -> null
-                    }
+                            is AgeInputType.DateOfBirth -> type.value.text
+                            else -> null
+                        }
                     if (value == null || value.hasDateFormat()) {
                         onAction(UiAction.OnValueChanged(inputData.id, value))
                     }
@@ -230,18 +237,20 @@ internal fun InputProvider(
                 supportingText = inputData.supportingText,
                 legendData = inputData.legendData,
                 isRequired = inputData.isRequired,
-                itemSelected = inputData.value?.let {
-                    when (it.toBoolean()) {
-                        true -> InputYesNoFieldValues.YES
-                        false -> InputYesNoFieldValues.NO
-                    }
-                },
+                itemSelected =
+                    inputData.value?.let {
+                        when (it.toBoolean()) {
+                            true -> InputYesNoFieldValues.YES
+                            false -> InputYesNoFieldValues.NO
+                        }
+                    },
                 onItemChange = {
-                    val value = when (it) {
-                        InputYesNoFieldValues.YES -> true
-                        InputYesNoFieldValues.NO -> false
-                        null -> null
-                    }
+                    val value =
+                        when (it) {
+                            InputYesNoFieldValues.YES -> true
+                            InputYesNoFieldValues.NO -> false
+                            null -> null
+                        }
                     onAction(UiAction.OnValueChanged(inputData.id, value?.toString()))
                 },
             )
@@ -285,33 +294,36 @@ internal fun InputProvider(
                 )
             }
             InputDateTime(
-                state = rememberInputDateTimeState(
-                    inputDateTimeData = InputDateTimeData(
-                        title = inputData.label,
-                        inputStyle = inputData.inputStyle,
-                        imeAction = imeAction,
-                        isRequired = inputData.isRequired,
-                        actionType = when (inputData.inputType) {
-                            InputType.Date -> DateTimeActionType.DATE
-                            InputType.DateTime -> DateTimeActionType.DATE_TIME
-                            InputType.Time -> DateTimeActionType.TIME
-                            else -> throw IllegalArgumentException("Invalid input type")
-                        },
-                        allowsManualInput = inputData.dateExtras().allowManualInput,
-                        visualTransformation = inputData.dateExtras().visualTransformation,
-                        is24hourFormat = inputData.dateExtras().is24HourFormat,
-                        acceptText = stringResource(Res.string.input_action_accept),
-                        cancelText = stringResource(Res.string.input_action_cancel),
-                        outOfRangeText = stringResource(Res.string.input_date_out_of_range),
-                        incorrectHourFormatText = stringResource(Res.string.format_error),
-                        selectableDates = inputData.dateExtras().selectableDates,
-                        yearRange = inputData.dateExtras().yearRange,
+                state =
+                    rememberInputDateTimeState(
+                        inputDateTimeData =
+                            InputDateTimeData(
+                                title = inputData.label,
+                                inputStyle = inputData.inputStyle,
+                                imeAction = imeAction,
+                                isRequired = inputData.isRequired,
+                                actionType =
+                                    when (inputData.inputType) {
+                                        InputType.Date -> DateTimeActionType.DATE
+                                        InputType.DateTime -> DateTimeActionType.DATE_TIME
+                                        InputType.Time -> DateTimeActionType.TIME
+                                        else -> throw IllegalArgumentException("Invalid input type")
+                                    },
+                                allowsManualInput = inputData.dateExtras().allowManualInput,
+                                visualTransformation = inputData.dateExtras().visualTransformation,
+                                is24hourFormat = inputData.dateExtras().is24HourFormat,
+                                acceptText = stringResource(Res.string.input_action_accept),
+                                cancelText = stringResource(Res.string.input_action_cancel),
+                                outOfRangeText = stringResource(Res.string.input_date_out_of_range),
+                                incorrectHourFormatText = stringResource(Res.string.format_error),
+                                selectableDates = inputData.dateExtras().selectableDates,
+                                yearRange = inputData.dateExtras().yearRange,
+                            ),
+                        inputTextFieldValue = dateTextValue,
+                        inputState = inputData.inputShellState,
+                        legendData = inputData.legendData,
+                        supportingText = inputData.supportingText,
                     ),
-                    inputTextFieldValue = dateTextValue,
-                    inputState = inputData.inputShellState,
-                    legendData = inputData.legendData,
-                    supportingText = inputData.supportingText,
-                ),
                 onFocusChanged = { onAction.invoke(UiAction.OnFocusChanged(inputData.id, it)) },
                 onValueChanged = {
                     dateTextValue = it ?: TextFieldValue()
@@ -395,7 +407,12 @@ internal fun InputProvider(
                 )
             }
 
-            val painter = inputData.fileExtras().filePath?.toImageBitmap()?.let { BitmapPainter(it) }
+            val painter =
+                inputData
+                    .fileExtras()
+                    .filePath
+                    ?.toImageBitmap()
+                    ?.let { BitmapPainter(it) }
 
             InputImage(
                 title = inputData.label,
@@ -566,7 +583,7 @@ internal fun InputProvider(
                                 currentSearchQuery,
                                 true,
                             ) == true
-                            )
+                        )
                     }
                 }
             }
@@ -576,10 +593,11 @@ internal fun InputProvider(
                     onAction(UiAction.OnFetchOptions(inputData.id))
                 }
                 Box(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .background(color = inputData.inputStyle.backGroundColor)
-                        .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
+                    modifier =
+                        modifier
+                            .fillMaxWidth()
+                            .background(color = inputData.inputStyle.backGroundColor)
+                            .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
                     contentAlignment = Alignment.Center,
                 ) {
                     ProgressIndicator(
@@ -664,10 +682,11 @@ internal fun InputProvider(
 
             if (inputData.value == null && !multiTextExtras.optionsFetched) {
                 Box(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .background(color = inputData.inputStyle.backGroundColor)
-                        .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
+                    modifier =
+                        modifier
+                            .fillMaxWidth()
+                            .background(color = inputData.inputStyle.backGroundColor)
+                            .clip(shape = RoundedCornerShape(Radius.XS, Radius.XS)),
                     contentAlignment = Alignment.Center,
                 ) {
                     ProgressIndicator(
@@ -688,15 +707,17 @@ internal fun InputProvider(
                     inputStyle = inputData.inputStyle,
                     onItemChange = { updatedCheckBoxData ->
                         scope.launch {
-                            data = data.map {
-                                async {
-                                    if (it.uid == updatedCheckBoxData.uid) {
-                                        it.copy(checked = !it.checked)
-                                    } else {
-                                        it
-                                    }
-                                }
-                            }.awaitAll()
+                            data =
+                                data
+                                    .map {
+                                        async {
+                                            if (it.uid == updatedCheckBoxData.uid) {
+                                                it.copy(checked = !it.checked)
+                                            } else {
+                                                it
+                                            }
+                                        }
+                                    }.awaitAll()
                             val selectedData = data.filter { it.checked }
                             onAction(
                                 UiAction.OnValueChanged(
@@ -860,12 +881,13 @@ internal fun InputProvider(
 
         InputType.TrueOnly -> {
             InputYesOnlyCheckBox(
-                checkBoxData = CheckBoxData(
-                    uid = inputData.id,
-                    checked = inputData.value?.toBoolean() ?: false,
-                    enabled = true,
-                    textInput = inputData.label,
-                ),
+                checkBoxData =
+                    CheckBoxData(
+                        uid = inputData.id,
+                        checked = inputData.value?.toBoolean() ?: false,
+                        enabled = true,
+                        textInput = inputData.label,
+                    ),
                 modifier = modifierWithFocus,
                 state = inputData.inputShellState,
                 inputStyle = inputData.inputStyle,

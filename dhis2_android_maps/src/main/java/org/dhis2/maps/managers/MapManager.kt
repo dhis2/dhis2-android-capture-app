@@ -48,7 +48,6 @@ abstract class MapManager(
     val mapView: MapView,
     private val locationEngine: LocationEngine?,
 ) : LifecycleEventObserver {
-
     var map: MapLibreMap? = null
     lateinit var mapLayerManager: MapLayerManager
     private var markerViewManager: MarkerViewManager? = null
@@ -69,12 +68,13 @@ abstract class MapManager(
     open var defaultUiIconBottomMargin = 0.dp
     open var defaultUiIconSize = 40.dp
 
-    private val _locationState = MutableStateFlow(
-        when (locationProvider.hasLocationEnabled()) {
-            true -> LocationState.NOT_FIXED
-            false -> LocationState.OFF
-        },
-    )
+    private val _locationState =
+        MutableStateFlow(
+            when (locationProvider.hasLocationEnabled()) {
+                true -> LocationState.NOT_FIXED
+                false -> LocationState.OFF
+            },
+        )
     val locationState = _locationState.asStateFlow()
 
     private val _dataFinishedLoading = MutableStateFlow(false)
@@ -102,14 +102,15 @@ abstract class MapManager(
                     ),
                 ) { styleLoaded ->
                     this.style = styleLoaded
-                    mapLayerManager = MapLayerManager(mapLoaded, baseMapManager, colorUtils).apply {
-                        styleChangeCallback = { newStyle ->
-                            style = newStyle
-                            mapLayerManager.clearLayers()
-                            loadDataForStyle()
-                            setSource()
+                    mapLayerManager =
+                        MapLayerManager(mapLoaded, baseMapManager, colorUtils).apply {
+                            styleChangeCallback = { newStyle ->
+                                style = newStyle
+                                mapLayerManager.clearLayers()
+                                loadDataForStyle()
+                                setSource()
+                            }
                         }
-                    }
                     onMapClickListener?.let { mapClickListener ->
                         map?.addOnMapClickListener(mapClickListener)
                     }
@@ -162,20 +163,22 @@ abstract class MapManager(
     }
 
     abstract fun loadDataForStyle()
+
     abstract fun setSource()
+
     abstract fun setLayer()
 
     fun initCameraPosition(boundingBox: BoundingBox) {
-        val bounds = LatLngBounds.Builder()
-            .include(pointToLatLn(boundingBox.northeast()))
-            .include(pointToLatLn(boundingBox.southwest()))
-            .build()
+        val bounds =
+            LatLngBounds
+                .Builder()
+                .include(pointToLatLn(boundingBox.northeast()))
+                .include(pointToLatLn(boundingBox.southwest()))
+                .build()
         map?.initCameraToViewAllElements(bounds)
     }
 
-    private fun pointToLatLn(point: Point): LatLng {
-        return LatLng(point.latitude(), point.longitude())
-    }
+    private fun pointToLatLn(point: Point): LatLng = LatLng(point.latitude(), point.longitude())
 
     fun onLocationButtonClicked(
         isLocationEnabled: Boolean,
@@ -218,27 +221,28 @@ abstract class MapManager(
         mapView.onLowMemory()
     }
 
-    abstract fun findFeature(source: String, propertyName: String, propertyValue: String): Feature?
+    abstract fun findFeature(
+        source: String,
+        propertyName: String,
+        propertyValue: String,
+    ): Feature?
+
     open fun findFeatures(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): List<Feature>? {
-        return emptyList()
-    }
+    ): List<Feature>? = emptyList()
 
     abstract fun findFeature(propertyValue: String): Feature?
-    open fun findFeatures(propertyValue: String): List<Feature>? {
-        return emptyList()
-    }
 
-    open fun getLayerName(source: String): String {
-        return source
-    }
+    open fun findFeatures(propertyValue: String): List<Feature>? = emptyList()
 
-    open fun markFeatureAsSelected(point: LatLng, layer: String? = null): Feature? {
-        return null
-    }
+    open fun getLayerName(source: String): String = source
+
+    open fun markFeatureAsSelected(
+        point: LatLng,
+        layer: String? = null,
+    ): Feature? = null
 
     @SuppressLint("MissingPermission")
     private fun enableLocationComponent(
@@ -258,66 +262,73 @@ abstract class MapManager(
                     { updateLocationState() },
                 )
             } else {
-                permissionsManager = PermissionsManager(object : PermissionsListener {
-                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+                permissionsManager =
+                    PermissionsManager(
+                        object : PermissionsListener {
+                            override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
 
-                    override fun onPermissionResult(granted: Boolean) {
-                        if (granted) {
-                            enableLocationComponent(style, onMissingPermission, locationListener)
-                        }
-                    }
-                })
+                            override fun onPermissionResult(granted: Boolean) {
+                                if (granted) {
+                                    enableLocationComponent(style, onMissingPermission, locationListener)
+                                }
+                            }
+                        },
+                    )
                 onMissingPermission(permissionsManager)
             }
         }
     }
 
-    private fun getLocationComponentActivationOptions(style: Style) = if (locationEngine != null) {
-        LocationComponentActivationOptions
-            .builder(mapView.context, style)
-            .locationComponentOptions(
-                LocationComponentOptions.builder(mapView.context)
-                    .accuracyAnimationEnabled(true)
-                    .build(),
-            ).useDefaultLocationEngine(false)
-            .locationEngine(locationEngine)
-            .build()
-    } else {
-        LocationComponentActivationOptions
-            .builder(mapView.context, style)
-            .locationComponentOptions(
-                LocationComponentOptions.builder(mapView.context)
-                    .accuracyAnimationEnabled(true)
-                    .build(),
-            )
-            .useDefaultLocationEngine(true)
-            .build()
-    }
+    private fun getLocationComponentActivationOptions(style: Style) =
+        if (locationEngine != null) {
+            LocationComponentActivationOptions
+                .builder(mapView.context, style)
+                .locationComponentOptions(
+                    LocationComponentOptions
+                        .builder(mapView.context)
+                        .accuracyAnimationEnabled(true)
+                        .build(),
+                ).useDefaultLocationEngine(false)
+                .locationEngine(locationEngine)
+                .build()
+        } else {
+            LocationComponentActivationOptions
+                .builder(mapView.context, style)
+                .locationComponentOptions(
+                    LocationComponentOptions
+                        .builder(mapView.context)
+                        .accuracyAnimationEnabled(true)
+                        .build(),
+                ).useDefaultLocationEngine(true)
+                .build()
+        }
 
     @SuppressLint("MissingPermission")
-    private fun enableLocationComponentAndCenterCamera(
-        onMissingPermission: (PermissionsManager?) -> Unit,
-    ) {
+    private fun enableLocationComponentAndCenterCamera(onMissingPermission: (PermissionsManager?) -> Unit) {
         map?.locationComponent?.apply {
             if (PermissionsManager.areLocationPermissionsGranted(mapView.context)) {
                 activateLocationComponent(
-                    LocationComponentActivationOptions.builder(
-                        mapView.context,
-                        style!!,
-                    ).build(),
+                    LocationComponentActivationOptions
+                        .builder(
+                            mapView.context,
+                            style!!,
+                        ).build(),
                 )
                 isLocationComponentEnabled = true
                 centerCameraOnMyPosition(onMissingPermission)
             } else {
-                permissionsManager = PermissionsManager(object : PermissionsListener {
-                    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+                permissionsManager =
+                    PermissionsManager(
+                        object : PermissionsListener {
+                            override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
 
-                    override fun onPermissionResult(granted: Boolean) {
-                        if (granted) {
-                            centerCameraOnMyPosition(onMissingPermission)
-                        }
-                    }
-                })
+                            override fun onPermissionResult(granted: Boolean) {
+                                if (granted) {
+                                    centerCameraOnMyPosition(onMissingPermission)
+                                }
+                            }
+                        },
+                    )
                 onMissingPermission(permissionsManager)
             }
         }
@@ -326,39 +337,41 @@ abstract class MapManager(
     private fun updateLocationState() {
         map?.apply {
             locationComponent.isLocationComponentActivated
-            val currentLocation = with(locationComponent) {
-                if (isLocationComponentActivated) {
-                    lastKnownLocation?.let { LatLng(it) }
-                } else {
-                    null
+            val currentLocation =
+                with(locationComponent) {
+                    if (isLocationComponentActivated) {
+                        lastKnownLocation?.let { LatLng(it) }
+                    } else {
+                        null
+                    }
                 }
-            }
             val mapCenter = cameraPosition.target
-            val locationState = when {
-                !locationProvider.hasLocationEnabled() ||
-                    mapCenter == null || currentLocation == null ->
-                    LocationState.OFF
+            val locationState =
+                when {
+                    !locationProvider.hasLocationEnabled() ||
+                        mapCenter == null ||
+                        currentLocation == null ->
+                        LocationState.OFF
 
-                locationProvider.hasUpdatesEnabled() &&
-                    mapCenter.distanceTo(currentLocation) < (1f) ->
-                    LocationState.FIXED
+                    locationProvider.hasUpdatesEnabled() &&
+                        mapCenter.distanceTo(currentLocation) < (1f) ->
+                        LocationState.FIXED
 
-                else ->
-                    LocationState.NOT_FIXED
-            }
+                    else ->
+                        LocationState.NOT_FIXED
+                }
             CoroutineScope(dispatcherProvider.io()).launch {
                 _locationState.emit(locationState)
             }
         }
     }
 
-    fun requestMapLayerManager(): MapLayerManager? {
-        return if (::mapLayerManager.isInitialized) {
+    fun requestMapLayerManager(): MapLayerManager? =
+        if (::mapLayerManager.isInitialized) {
             mapLayerManager
         } else {
             null
         }
-    }
 
     fun updateLayersVisibility(layerVisibility: HashMap<String, Boolean>): HashMap<String, MapLayer> {
         layerVisibility.forEach { (sourceId, visible) ->
@@ -368,7 +381,10 @@ abstract class MapManager(
     }
 
     @SuppressLint("MissingPermission")
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+    override fun onStateChanged(
+        source: LifecycleOwner,
+        event: Lifecycle.Event,
+    ) {
         when (event) {
             Lifecycle.Event.ON_CREATE -> {
                 mapView.onCreate(null)

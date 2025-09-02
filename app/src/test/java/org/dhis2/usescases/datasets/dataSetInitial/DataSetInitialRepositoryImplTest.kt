@@ -23,7 +23,6 @@ import java.util.Date
 import java.util.UUID
 
 class DataSetInitialRepositoryImplTest {
-
     private lateinit var repository: DataSetInitialRepositoryImpl
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dataSetUid = UUID.randomUUID().toString()
@@ -38,25 +37,32 @@ class DataSetInitialRepositoryImplTest {
         val dataSet = dummyDataSet()
         val categoryCombo = dummyCategoryCombo()
         whenever(
-            d2.dataSetModule().dataSets().uid(dataSetUid).get(),
+            d2
+                .dataSetModule()
+                .dataSets()
+                .uid(dataSetUid)
+                .get(),
         ) doReturn Single.just(dataSet)
 
         whenever(
-            d2.categoryModule()
-                .categoryCombos().withCategories()
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .withCategories()
                 .uid(dataSet.categoryCombo()!!.uid())
                 .blockingGet(),
         ) doReturn categoryCombo
 
-        val dataSetInitialModel = DataSetInitialModel(
-            displayName = dataSet.displayName()!!,
-            description = null,
-            categoryCombo = dataSet.categoryCombo()!!.uid(),
-            categoryComboName = categoryCombo.displayName()!!,
-            periodType = dataSet.periodType()!!,
-            categories = categoryCombo.categories()!!,
-            openFuturePeriods = dataSet.openFuturePeriods(),
-        )
+        val dataSetInitialModel =
+            DataSetInitialModel(
+                displayName = dataSet.displayName()!!,
+                description = null,
+                categoryCombo = dataSet.categoryCombo()!!.uid(),
+                categoryComboName = categoryCombo.displayName()!!,
+                periodType = dataSet.periodType()!!,
+                categories = categoryCombo.categories()!!,
+                openFuturePeriods = dataSet.openFuturePeriods(),
+            )
         val testObserver = repository.dataSet().test()
 
         testObserver.assertNoErrors()
@@ -70,7 +76,9 @@ class DataSetInitialRepositoryImplTest {
     fun `Should return organization units for dataSet`() {
         val orgUnits = listOf(dummyOrganisationUnit(), dummyOrganisationUnit())
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byDataSetUids(listOf(dataSetUid))
                 .byOrganisationUnitScope(OrganisationUnit.Scope.SCOPE_DATA_CAPTURE)
                 .get(),
@@ -89,8 +97,11 @@ class DataSetInitialRepositoryImplTest {
     fun `Should return category combos for category`() {
         val category = dummyCategory()
         whenever(
-            d2.categoryModule().categories()
-                .withCategoryOptions().uid(category.uid())
+            d2
+                .categoryModule()
+                .categories()
+                .withCategoryOptions()
+                .uid(category.uid())
                 .get(),
         ) doReturn Single.just(category)
 
@@ -105,12 +116,17 @@ class DataSetInitialRepositoryImplTest {
 
     @Test
     fun `Should not return category combos for category with no access data write`() {
-        val category = dummyCategory().toBuilder()
-            .categoryOptions(mutableListOf(dummyCategoryOptionNoAccess()))
-            .build()
+        val category =
+            dummyCategory()
+                .toBuilder()
+                .categoryOptions(mutableListOf(dummyCategoryOptionNoAccess()))
+                .build()
         whenever(
-            d2.categoryModule().categories()
-                .withCategoryOptions().uid(category.uid())
+            d2
+                .categoryModule()
+                .categories()
+                .withCategoryOptions()
+                .uid(category.uid())
                 .get(),
         ) doReturn Single.just(category)
 
@@ -140,39 +156,54 @@ class DataSetInitialRepositoryImplTest {
 
         testObserver.dispose()
     }
-    private fun dummyDataSet(): DataSet = DataSet.builder()
-        .uid(UUID.randomUUID().toString())
-        .displayName("dataSet")
-        .periodType(PeriodType.Monthly)
-        .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
-        .build()
 
-    private fun dummyPeriod(): Period = Period.builder()
-        .periodId(UUID.randomUUID().toString())
-        .build()
+    private fun dummyDataSet(): DataSet =
+        DataSet
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .displayName("dataSet")
+            .periodType(PeriodType.Monthly)
+            .categoryCombo(ObjectWithUid.create(UUID.randomUUID().toString()))
+            .build()
 
-    private fun dummyCategoryCombo(): CategoryCombo = CategoryCombo.builder()
-        .displayName("categoryCombo")
-        .uid(UUID.randomUUID().toString())
-        .categories(listOf(dummyCategory(), dummyCategory()))
-        .build()
+    private fun dummyPeriod(): Period =
+        Period
+            .builder()
+            .periodId(UUID.randomUUID().toString())
+            .build()
 
-    private fun dummyOrganisationUnit(): OrganisationUnit = OrganisationUnit.builder()
-        .uid(UUID.randomUUID().toString())
-        .build()
+    private fun dummyCategoryCombo(): CategoryCombo =
+        CategoryCombo
+            .builder()
+            .displayName("categoryCombo")
+            .uid(UUID.randomUUID().toString())
+            .categories(listOf(dummyCategory(), dummyCategory()))
+            .build()
 
-    private fun dummyCategory(): Category = Category.builder()
-        .uid(UUID.randomUUID().toString())
-        .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
-        .build()
+    private fun dummyOrganisationUnit(): OrganisationUnit =
+        OrganisationUnit
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .build()
 
-    private fun dummyCategoryOption(): CategoryOption = CategoryOption.builder()
-        .uid(UUID.randomUUID().toString())
-        .access(Access.create(true, true, DataAccess.create(true, true)))
-        .build()
+    private fun dummyCategory(): Category =
+        Category
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .categoryOptions(listOf(dummyCategoryOption(), dummyCategoryOption()))
+            .build()
 
-    private fun dummyCategoryOptionNoAccess(): CategoryOption = CategoryOption.builder()
-        .uid(UUID.randomUUID().toString())
-        .access(Access.create(true, true, DataAccess.create(false, false)))
-        .build()
+    private fun dummyCategoryOption(): CategoryOption =
+        CategoryOption
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(true, true, DataAccess.create(true, true)))
+            .build()
+
+    private fun dummyCategoryOptionNoAccess(): CategoryOption =
+        CategoryOption
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .access(Access.create(true, true, DataAccess.create(false, false)))
+            .build()
 }

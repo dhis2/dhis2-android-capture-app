@@ -12,23 +12,25 @@ class OUTreeRepository(
         return availableOrgUnits.order().sortedBy { it.displayNamePath()?.joinToString(" ") }
     }
 
-    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> = availableOrgUnits
-        .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
-        .sortedBy { it.displayNamePath()?.joinToString(" ") }
+    fun childrenOrgUnits(parentUid: String): List<OrganisationUnit> =
+        availableOrgUnits
+            .filter { it.uid() != parentUid && it.path()?.contains(parentUid) == true }
+            .sortedBy { it.displayNamePath()?.joinToString(" ") }
+
     fun orgUnit(uid: String): OrganisationUnit? = availableOrgUnits.firstOrNull { it.uid() == uid }
 
-    fun canBeSelected(orgUnitUid: String): Boolean =
-        availableOrgUnits.any { it.uid() == orgUnitUid }
+    fun canBeSelected(orgUnitUid: String): Boolean = availableOrgUnits.any { it.uid() == orgUnitUid }
 
-    fun orgUnitHasChildren(uid: String): Boolean =
-        availableOrgUnits.filter { it.uid() != uid }.any { it.path()?.contains(uid) == true }
+    fun orgUnitHasChildren(uid: String): Boolean = availableOrgUnits.filter { it.uid() != uid }.any { it.path()?.contains(uid) == true }
 
-    fun countSelectedChildren(parentOrgUnitUid: String, selectedOrgUnits: List<String>): Int {
-        return orgUnitRepositoryConfiguration.countChildren(
+    fun countSelectedChildren(
+        parentOrgUnitUid: String,
+        selectedOrgUnits: List<String>,
+    ): Int =
+        orgUnitRepositoryConfiguration.countChildren(
             parentOrgUnitUid,
             selectedOrgUnits,
         )
-    }
 
     private fun List<OrganisationUnit>.order(): List<OrganisationUnit> {
         val listWithParents = this.toMutableList()

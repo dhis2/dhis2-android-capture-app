@@ -26,53 +26,57 @@ internal class ProgramRepositoryImpl(
     private val metadataIconProvider: MetadataIconProvider,
     private val schedulerProvider: SchedulerProvider,
 ) : ProgramRepository {
-
     private val programViewModelMapper = ProgramViewModelMapper()
     private var lastSyncStatus: SyncStatusData? = null
     private var baseProgramCache: List<ProgramUiModel> = emptyList()
 
-    override fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> {
-        return programModels(syncStatusData).onErrorReturn { arrayListOf() }
+    override fun homeItems(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> =
+        programModels(syncStatusData)
+            .onErrorReturn { arrayListOf() }
             .mergeWith(aggregatesModels(syncStatusData).onErrorReturn { arrayListOf() })
             .flatMapIterable { data -> data }
             .sorted { p1, p2 -> p1.title.compareTo(p2.title, ignoreCase = true) }
-            .toList().toFlowable()
+            .toList()
+            .toFlowable()
             .subscribeOn(schedulerProvider.io())
             .onErrorReturn { arrayListOf() }
             .doOnNext {
                 lastSyncStatus = syncStatusData
             }
-    }
 
-    override fun aggregatesModels(
-        syncStatusData: SyncStatusData,
-    ): Flowable<List<ProgramUiModel>> {
-        return Flowable.fromCallable {
-            aggregatesModels().blockingFirst()
+    override fun aggregatesModels(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> =
+        Flowable.fromCallable {
+            aggregatesModels()
+                .blockingFirst()
                 .applySync(syncStatusData)
         }
-    }
 
     override fun clearCache() {
         baseProgramCache = emptyList()
     }
 
-    private fun aggregatesModels(): Flowable<List<ProgramUiModel>> {
-        return filterPresenter.filteredDataSetInstances().get()
+    private fun aggregatesModels(): Flowable<List<ProgramUiModel>> =
+        filterPresenter
+            .filteredDataSetInstances()
+            .get()
             .toFlowable()
             .map { dataSetSummaries ->
                 dataSetSummaries.mapNotNull {
-                    d2.dataSetModule().dataSets()
+                    d2
+                        .dataSetModule()
+                        .dataSets()
                         .uid(it.dataSetUid())
-                        .blockingGet()?.let { dataSet ->
+                        .blockingGet()
+                        ?.let { dataSet ->
                             programViewModelMapper.map(
                                 dataSet = dataSet,
                                 dataSetInstanceSummary = it,
-                                recordCount = if (filterPresenter.isAssignedToMeApplied()) {
-                                    0
-                                } else {
-                                    it.dataSetInstanceCount()
-                                },
+                                recordCount =
+                                    if (filterPresenter.isAssignedToMeApplied()) {
+                                        0
+                                    } else {
+                                        it.dataSetInstanceCount()
+                                    },
                                 dataSetLabel = resourceManager.defaultDataSetLabel(),
                                 filtersAreActive = filterPresenter.areFiltersActive(),
                                 metadataIconData = metadataIconProvider(dataSet.style(), SurfaceColor.Primary),
@@ -80,26 +84,26 @@ internal class ProgramRepositoryImpl(
                         }
                 }
             }
-    }
 
-    override fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> {
-        return Flowable.fromCallable {
-            baseProgramCache.ifEmpty {
-                baseProgramCache = basePrograms()
-                baseProgramCache
-            }.applyFilters()
+    override fun programModels(syncStatusData: SyncStatusData): Flowable<List<ProgramUiModel>> =
+        Flowable.fromCallable {
+            baseProgramCache
+                .ifEmpty {
+                    baseProgramCache = basePrograms()
+                    baseProgramCache
+                }.applyFilters()
                 .applySync(syncStatusData)
         }
-    }
 
-    private fun basePrograms(): List<ProgramUiModel> {
-        return dhisProgramUtils.getProgramsInCaptureOrgUnits()
+    private fun basePrograms(): List<ProgramUiModel> =
+        dhisProgramUtils
+            .getProgramsInCaptureOrgUnits()
             .flatMap { programs ->
-                ParallelFlowable.from(Flowable.fromIterable(programs))
+                ParallelFlowable
+                    .from(Flowable.fromIterable(programs))
                     .runOn(schedulerProvider.io())
                     .sequential()
-            }
-            .map { program ->
+            }.map { program ->
                 val recordLabel =
                     dhisProgramUtils.getProgramRecordLabel(
                         program,
@@ -108,23 +112,30 @@ internal class ProgramRepositoryImpl(
                     )
                 val state = dhisProgramUtils.getProgramState(program)
 
-                programViewModelMapper.map(
-                    program,
-                    0,
-                    recordLabel,
-                    state,
-                    hasOverdue = false,
-                    filtersAreActive = false,
-                    metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
-                ).copy(
-                    isStockUseCase = d2.isStockProgram(program.uid()),
-                )
-            }.toList().toFlowable().blockingFirst()
-    }
+                programViewModelMapper
+                    .map(
+                        program,
+                        0,
+                        recordLabel,
+                        state,
+                        hasOverdue = false,
+                        filtersAreActive = false,
+                        metadataIconData = metadataIconProvider(program.style(), SurfaceColor.Primary),
+                    ).copy(
+                        isStockUseCase = d2.isStockProgram(program.uid()),
+                    )
+            }.toList()
+            .toFlowable()
+            .blockingFirst()
 
-    private fun List<ProgramUiModel>.applyFilters(): List<ProgramUiModel> {
-        return map { programModel ->
-            val program = d2.programModule().programs().uid(programModel.uid).blockingGet()
+    private fun List<ProgramUiModel>.applyFilters(): List<ProgramUiModel> =
+        map { programModel ->
+            val program =
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(programModel.uid)
+                    .blockingGet()
             val (count, hasOverdue) =
                 if (program?.programType() == WITHOUT_REGISTRATION) {
                     getSingleEventCount(program)
@@ -139,42 +150,44 @@ internal class ProgramRepositoryImpl(
                 filtersAreActive = filterPresenter.areFiltersActive(),
             )
         }
-    }
 
-    private fun List<ProgramUiModel>.applySync(
-        syncStatusData: SyncStatusData,
-    ): List<ProgramUiModel> {
-        return map { programModel ->
+    private fun List<ProgramUiModel>.applySync(syncStatusData: SyncStatusData): List<ProgramUiModel> =
+        map { programModel ->
             programModel.copy(
-                downloadState = when {
-                    syncStatusData.hasDownloadError(programModel.uid) ->
-                        ProgramDownloadState.ERROR
+                downloadState =
+                    when {
+                        syncStatusData.hasDownloadError(programModel.uid) ->
+                            ProgramDownloadState.ERROR
 
-                    syncStatusData.isProgramDownloading(programModel.uid) ->
-                        ProgramDownloadState.DOWNLOADING
+                        syncStatusData.isProgramDownloading(programModel.uid) ->
+                            ProgramDownloadState.DOWNLOADING
 
-                    syncStatusData.isProgramDownloaded(programModel.uid) ->
-                        ProgramDownloadState.DOWNLOADED
+                        syncStatusData.isProgramDownloaded(programModel.uid) ->
+                            ProgramDownloadState.DOWNLOADED
 
-                    else ->
-                        ProgramDownloadState.NONE
-                },
+                        else ->
+                            ProgramDownloadState.NONE
+                    },
                 downloadActive = syncStatusData.running ?: false,
             )
         }
-    }
 
-    private fun getSingleEventCount(program: Program): Pair<Int, Boolean> {
-        return Pair(
-            filterPresenter.filteredEventProgram(program)
-                .blockingGet().filter { event -> event.syncState() != State.RELATIONSHIP }.size,
+    private fun getSingleEventCount(program: Program): Pair<Int, Boolean> =
+        Pair(
+            filterPresenter
+                .filteredEventProgram(program)
+                .blockingGet()
+                .filter { event -> event.syncState() != State.RELATIONSHIP }
+                .size,
             false,
         )
-    }
 
     private fun getTrackerTeiCount(program: Program): Pair<Int, Boolean> {
-        val teiIds = filterPresenter.filteredTrackerProgram(program)
-            .offlineFirst().blockingGetUids()
+        val teiIds =
+            filterPresenter
+                .filteredTrackerProgram(program)
+                .offlineFirst()
+                .blockingGetUids()
         val mCount = teiIds.size
         val mOverdue = dhisTeiUtils.hasOverdueInProgram(teiIds, program)
 

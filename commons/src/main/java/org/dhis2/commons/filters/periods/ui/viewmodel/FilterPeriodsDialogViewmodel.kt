@@ -29,19 +29,19 @@ class FilterPeriodsDialogViewmodel(
     private val resourceManager: ResourceManager,
     private val periodTypeLabelProvider: PeriodTypeLabelProvider,
     private val launchMode: FilterDialogLaunchMode,
-
 ) : ViewModel() {
-
-    private val _filterPeriodsScreenState = MutableStateFlow(
-        FilterPeriodsScreenState(
-            periodTypes = emptyList(),
-            periods = emptyList(),
-            selectedPeriodType = null,
-            title = resourceManager.getString(
-                R.string.select_period,
+    private val _filterPeriodsScreenState =
+        MutableStateFlow(
+            FilterPeriodsScreenState(
+                periodTypes = emptyList(),
+                periods = emptyList(),
+                selectedPeriodType = null,
+                title =
+                    resourceManager.getString(
+                        R.string.select_period,
+                    ),
             ),
-        ),
-    )
+        )
     val filterPeriodsScreenState = _filterPeriodsScreenState.asStateFlow()
 
     init {
@@ -72,20 +72,20 @@ class FilterPeriodsDialogViewmodel(
                 _filterPeriodsScreenState.update {
                     filterPeriodsScreenState.value.copy(
                         selectedPeriodType = periodType,
-                        title = resourceManager.getString(
-                            periodTypeLabelProvider.invoke(periodType),
-                        ),
+                        title =
+                            resourceManager.getString(
+                                periodTypeLabelProvider.invoke(periodType),
+                            ),
                     )
                 }
             }
         }
     }
 
-    fun fetchPeriods(): Flow<PagingData<Period>> {
-        return getFilterPeriods(
+    fun fetchPeriods(): Flow<PagingData<Period>> =
+        getFilterPeriods(
             filterPeriodType = _filterPeriodsScreenState.value.selectedPeriodType!!,
         )
-    }
 
     fun onPeriodSelected(period: Period) {
         viewModelScope.launch {
@@ -114,7 +114,8 @@ class FilterPeriodsDialogViewmodel(
                 }
 
                 is FilterDialogLaunchMode.NewDataSetPeriodDialog -> {
-                    FilterManager.getInstance()
+                    FilterManager
+                        .getInstance()
                         .addPeriod(listOf(DatePeriod.create(period.startDate, period.endDate)))
                 }
             }
@@ -147,7 +148,10 @@ class FilterPeriodsDialogViewmodel(
         }
     }
 
-    fun setFromToFilter(fromSelectedDateMillis: Long?, toSelectedDateMillis: Long?) {
+    fun setFromToFilter(
+        fromSelectedDateMillis: Long?,
+        toSelectedDateMillis: Long?,
+    ) {
         viewModelScope.launch {
             CoroutineTracker.increment()
             val fromSelectedDate = Calendar.getInstance()
@@ -177,7 +181,5 @@ class FilterPeriodsDialogViewmodel(
         }
     }
 
-    fun getPeriodTypeName(filterPeriodType: FilterPeriodType): String {
-        return resourceManager.getString(periodTypeLabelProvider(filterPeriodType))
-    }
+    fun getPeriodTypeName(filterPeriodType: FilterPeriodType): String = resourceManager.getString(periodTypeLabelProvider(filterPeriodType))
 }

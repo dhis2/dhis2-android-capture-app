@@ -7,17 +7,11 @@ sealed class SettingsAnalyticModel(
     val programUid: String,
     val type: ChartType,
 ) {
-    open fun dataElements(): List<DataElementData> {
-        return emptyList()
-    }
+    open fun dataElements(): List<DataElementData> = emptyList()
 
-    open fun indicators(): List<IndicatorData> {
-        return emptyList()
-    }
+    open fun indicators(): List<IndicatorData> = emptyList()
 
-    open fun period(): String {
-        return PeriodType.Daily.name
-    }
+    open fun period(): String = PeriodType.Daily.name
 }
 
 data class NutritionSettingsAnalyticsModel(
@@ -40,31 +34,29 @@ data class DefaultSettingsAnalyticModel(
     val indicatorList: List<IndicatorData>,
     val stagePeriod: String,
 ) : SettingsAnalyticModel(name, program, chartType) {
-    override fun dataElements(): List<DataElementData> {
-        return dataElementList
-    }
+    override fun dataElements(): List<DataElementData> = dataElementList
 
-    override fun indicators(): List<IndicatorData> {
-        return indicatorList
-    }
+    override fun indicators(): List<IndicatorData> = indicatorList
 
-    override fun period(): String {
-        return stagePeriod
-    }
+    override fun period(): String = stagePeriod
 }
 
-data class DataElementData(val stageUid: String, val dataElementUid: String)
-data class IndicatorData(val stageUid: String, val indicatorUid: String)
+data class DataElementData(
+    val stageUid: String,
+    val dataElementUid: String,
+)
+
+data class IndicatorData(
+    val stageUid: String,
+    val indicatorUid: String,
+)
+
 data class NutritionGenderData(
     val attributeUid: String,
     private val femaleValue: String,
     private val maleValue: String,
 ) {
-    fun isFemale(value: String?): Boolean {
-        return value == femaleValue
-    }
+    fun isFemale(value: String?): Boolean = value == femaleValue
 
-    fun isMale(value: String?): Boolean {
-        return value == maleValue
-    }
+    fun isMale(value: String?): Boolean = value == maleValue
 }

@@ -18,11 +18,9 @@ data class MapItemModel(
     val relatedInfo: RelatedInfo?,
     val state: State,
 ) {
-    fun isProfilePictureAvailable() =
-        avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.ProfilePic::class)
+    fun isProfilePictureAvailable() = avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.ProfilePic::class)
 
-    fun isCustomIcon() =
-        avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.Metadata::class)
+    fun isCustomIcon() = avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.Metadata::class)
 
     fun profilePicturePath() =
         avatarProviderConfiguration.takeIf { it is AvatarProviderConfiguration.ProfilePic }?.let {

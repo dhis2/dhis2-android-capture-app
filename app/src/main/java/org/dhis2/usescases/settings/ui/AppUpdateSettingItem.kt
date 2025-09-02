@@ -22,15 +22,16 @@ internal fun AppUpdateSettingItem(
 ) {
     SettingItem(
         title = stringResource(id = R.string.settingsCheckVersion),
-        subtitle = buildAnnotatedString {
-            val description = "${stringResource(R.string.app_version)} ${BuildConfig.VERSION_NAME}"
-            append(description)
-            addStyle(
-                style = SpanStyle(MaterialTheme.colorScheme.primary),
-                start = description.indexOf(BuildConfig.VERSION_NAME),
-                end = description.length,
-            )
-        },
+        subtitle =
+            buildAnnotatedString {
+                val description = "${stringResource(R.string.app_version)} ${BuildConfig.VERSION_NAME}"
+                append(description)
+                addStyle(
+                    style = SpanStyle(MaterialTheme.colorScheme.primary),
+                    start = description.indexOf(BuildConfig.VERSION_NAME),
+                    end = description.length,
+                )
+            },
         icon = Icons.Outlined.SystemUpdate,
         extraActions = {
             Button(

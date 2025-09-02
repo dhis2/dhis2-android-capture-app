@@ -20,13 +20,14 @@ class GetProgramSpecificSettings(
                 val style = settingsProgramRepository.programStyle(programSetting.uid())
                 SpecificSettings(
                     name = programSetting.name(),
-                    description = if (programSetting.eventsDownload() != null) {
-                        "${programSetting.eventsDownload()} ${resourceManager.getString(R.string.events)} " +
-                            trailingText(programSetting.settingDownload())
-                    } else {
-                        "${programSetting.teiDownload()} ${resourceManager.getString(R.string.teis)} " +
-                            trailingText(programSetting.settingDownload())
-                    },
+                    description =
+                        if (programSetting.eventsDownload() != null) {
+                            "${programSetting.eventsDownload()} ${resourceManager.getString(R.string.events)} " +
+                                trailingText(programSetting.settingDownload())
+                        } else {
+                            "${programSetting.teiDownload()} ${resourceManager.getString(R.string.teis)} " +
+                                trailingText(programSetting.settingDownload())
+                        },
                     metadataIconData = metadataIconProvider(style),
                 )
             } ?: emptyList()
@@ -36,8 +37,9 @@ class GetProgramSpecificSettings(
                 val style = settingsProgramRepository.dataSetStyle(dataSetSetting.uid())
                 SpecificSettings(
                     name = dataSetSetting.name(),
-                    description = "${dataSetSetting.periodDSDownload()} " +
-                        resourceManager.getString(R.string.period),
+                    description =
+                        "${dataSetSetting.periodDSDownload()} " +
+                            resourceManager.getString(R.string.period),
                     metadataIconData = metadataIconProvider(style),
                 )
             } ?: emptyList()
@@ -45,13 +47,12 @@ class GetProgramSpecificSettings(
         return (programs + dataSets).sortedBy { it.name?.lowercase() }
     }
 
-    private fun trailingText(limitScope: LimitScope?): String {
-        return when (limitScope) {
+    private fun trailingText(limitScope: LimitScope?): String =
+        when (limitScope) {
             LimitScope.ALL_ORG_UNITS -> resourceManager.getString(R.string.limit_scope_all_ou_trailing)
             LimitScope.PER_ORG_UNIT -> resourceManager.getString(R.string.limit_scope_ou_trailing)
             LimitScope.PER_PROGRAM -> resourceManager.getString(R.string.limit_scope_program_trailing)
             LimitScope.PER_OU_AND_PROGRAM -> resourceManager.getString(R.string.limit_scope_ou_program_trailing)
             else -> resourceManager.getString(R.string.limit_scope_global_trailing)
         }
-    }
 }

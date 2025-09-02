@@ -12,15 +12,15 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 class EventCatComboOptionSelectorTest {
-
     private val catComboUid: String = "catComboUid"
     private val fragmentManager: FragmentManager = mock()
     private val categoryDialogInteractions: CategoryDialogInteractions = mock()
-    private val eventCatComboOptionSelector = EventCatComboOptionSelector(
-        catComboUid,
-        fragmentManager,
-        categoryDialogInteractions,
-    )
+    private val eventCatComboOptionSelector =
+        EventCatComboOptionSelector(
+            catComboUid,
+            fragmentManager,
+            categoryDialogInteractions,
+        )
 
     @Test
     fun should_set_events() {
@@ -45,13 +45,15 @@ class EventCatComboOptionSelectorTest {
 
     @Test
     fun should_request_cat_option_combo() {
-        val mockedEvent = mock<Event> {
-            on { eventDate() } doReturn mock()
-            on { uid() } doReturn "eventUid"
-        }
-        val mockedEventViewModel = mock<EventViewModel> {
-            on { event } doReturn mockedEvent
-        }
+        val mockedEvent =
+            mock<Event> {
+                on { eventDate() } doReturn mock()
+                on { uid() } doReturn "eventUid"
+            }
+        val mockedEventViewModel =
+            mock<EventViewModel> {
+                on { event } doReturn mockedEvent
+            }
         val list = listOf(mockedEventViewModel)
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(list)
         eventCatComboOptionSelector.requestCatComboOption { eventUid, selectedCatOptComboUid -> }

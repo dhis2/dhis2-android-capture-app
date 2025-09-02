@@ -58,13 +58,15 @@ class EventInitialPresenter(
         if (eventId != null) {
             compositeDisposable
                 .add(
-                    Flowable.zip(
-                        eventInitialRepository.getProgramWithId(programId)
-                            .toFlowable(BackpressureStrategy.LATEST),
-                        eventInitialRepository.programStageForEvent(eventId),
-                        { program, programStage -> Pair(program, programStage) },
-                    )
-                        .subscribeOn(schedulerProvider.io()).observeOn(schedulerProvider.ui())
+                    Flowable
+                        .zip(
+                            eventInitialRepository
+                                .getProgramWithId(programId)
+                                .toFlowable(BackpressureStrategy.LATEST),
+                            eventInitialRepository.programStageForEvent(eventId),
+                            { program, programStage -> Pair(program, programStage) },
+                        ).subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
                         .subscribe(
                             { (program, programStage) ->
                                 this.program = program
@@ -76,7 +78,8 @@ class EventInitialPresenter(
                 )
         } else {
             compositeDisposable.add(
-                eventInitialRepository.getProgramWithId(programId)
+                eventInitialRepository
+                    .getProgramWithId(programId)
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
@@ -95,13 +98,12 @@ class EventInitialPresenter(
     }
 
     @VisibleForTesting
-    fun getCurrentOrgUnit(orgUnitUid: String?): String? {
-        return if (preferences.contains(Preference.CURRENT_ORG_UNIT)) {
+    fun getCurrentOrgUnit(orgUnitUid: String?): String? =
+        if (preferences.contains(Preference.CURRENT_ORG_UNIT)) {
             preferences.getString(Preference.CURRENT_ORG_UNIT, null)
         } else {
             orgUnitUid
         }
-    }
 
     fun onShareClick() {
         view.showQR()
@@ -121,7 +123,8 @@ class EventInitialPresenter(
 
     fun getProgramStage(programStageUid: String?) {
         compositeDisposable.add(
-            eventInitialRepository.programStageWithId(programStageUid)
+            eventInitialRepository
+                .programStageWithId(programStageUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -131,7 +134,10 @@ class EventInitialPresenter(
         )
     }
 
-    private fun getProgramStages(programUid: String?, programStageUid: String?) {
+    private fun getProgramStages(
+        programUid: String?,
+        programStageUid: String?,
+    ) {
         compositeDisposable.add(
             (
                 if (isEmpty(programStageId)) {
@@ -139,8 +145,7 @@ class EventInitialPresenter(
                 } else {
                     eventInitialRepository.programStageWithId(programStageUid)
                 }
-                )
-                .subscribeOn(schedulerProvider.io())
+            ).subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { programStage -> view.setProgramStage(programStage) },
@@ -173,17 +178,17 @@ class EventInitialPresenter(
         if (program != null) {
             preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid)
             compositeDisposable.add(
-                eventInitialRepository.createEvent(
-                    enrollmentUid,
-                    trackedEntityInstance,
-                    program!!.uid(),
-                    programStageModel,
-                    date,
-                    orgUnitUid,
-                    categoryOptionsUid,
-                    geometry,
-                )
-                    .subscribeOn(schedulerProvider.io())
+                eventInitialRepository
+                    .createEvent(
+                        enrollmentUid,
+                        trackedEntityInstance,
+                        program!!.uid(),
+                        programStageModel,
+                        date,
+                        orgUnitUid,
+                        categoryOptionsUid,
+                        geometry,
+                    ).subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { eventUid -> view.onEventCreated(eventUid) },
@@ -204,17 +209,17 @@ class EventInitialPresenter(
         if (program != null) {
             preferences.setValue(Preference.CURRENT_ORG_UNIT, orgUnitUid)
             compositeDisposable.add(
-                eventInitialRepository.scheduleEvent(
-                    enrollmentUid,
-                    null,
-                    program!!.uid(),
-                    programStageModel,
-                    dueDate,
-                    orgUnitUid,
-                    categoryOptionsUid,
-                    geometry,
-                )
-                    .subscribeOn(schedulerProvider.io())
+                eventInitialRepository
+                    .scheduleEvent(
+                        enrollmentUid,
+                        null,
+                        program!!.uid(),
+                        programStageModel,
+                        dueDate,
+                        orgUnitUid,
+                        categoryOptionsUid,
+                        geometry,
+                    ).subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { eventUid -> view.onEventCreated(eventUid) },
@@ -233,7 +238,8 @@ class EventInitialPresenter(
             val fieldsFlowable =
                 eventInitialRepository.list()
             val ruleEffectFlowable =
-                eventInitialRepository.calculate()
+                eventInitialRepository
+                    .calculate()
                     .subscribeOn(schedulerProvider.computation())
                     .onErrorReturn { throwable -> Result.failure(Exception(throwable)) }
 
@@ -246,7 +252,8 @@ class EventInitialPresenter(
                 )
 
             compositeDisposable.add(
-                eventInitialRepository.eventSections()
+                eventInitialRepository
+                    .eventSections()
                     .flatMap { sectionList ->
                         viewModelsFlowable
                             .map { fields ->
@@ -260,8 +267,7 @@ class EventInitialPresenter(
                                     showErrors = Pair(false, false),
                                 )
                             }
-                    }
-                    .subscribeOn(schedulerProvider.io())
+                    }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { _ ->
@@ -312,8 +318,10 @@ class EventInitialPresenter(
     }
 
     val isEventEditable: Boolean
-        get() = eventInitialRepository.getEditableStatus()
-            .blockingFirst() is EventEditableStatus.Editable
+        get() =
+            eventInitialRepository
+                .getEditableStatus()
+                .blockingFirst() is EventEditableStatus.Editable
 
     companion object {
         private fun toMap(fieldViewModels: List<FieldUiModel>): Map<String, FieldUiModel> {

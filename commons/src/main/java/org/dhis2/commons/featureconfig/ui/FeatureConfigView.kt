@@ -43,7 +43,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import javax.inject.Inject
 
 class FeatureConfigView : AppCompatActivity() {
-
     @Inject
     lateinit var viewModelFactory: FeatureConfigViewModelFactory
 
@@ -62,11 +61,12 @@ class FeatureConfigView : AppCompatActivity() {
                 modifier = Modifier.fillMaxSize(),
                 topBar = {
                     TopAppBar(
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = colorResource(id = R.color.colorPrimary),
-                            titleContentColor = Color.White,
-                            navigationIconContentColor = Color.White,
-                        ),
+                        colors =
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = colorResource(id = R.color.colorPrimary),
+                                titleContentColor = Color.White,
+                                navigationIconContentColor = Color.White,
+                            ),
                         title = { Text(text = stringResource(id = R.string.feature_configuration)) },
                         navigationIcon = {
                             IconButton(onClick = { onBackPressedDispatcher.onBackPressed() }) {
@@ -113,10 +113,11 @@ class FeatureConfigView : AppCompatActivity() {
                                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                             onValueChange = { value ->
                                                 currentValue = value
-                                                currentFeature = currentFeature.copy(
-                                                    extras = options.copy(totalItems = value.toIntOrNull()),
-                                                    canBeEnabled = value.toIntOrNull() != null,
-                                                )
+                                                currentFeature =
+                                                    currentFeature.copy(
+                                                        extras = options.copy(totalItems = value.toIntOrNull()),
+                                                        canBeEnabled = value.toIntOrNull() != null,
+                                                    )
                                             },
                                         )
                                     }

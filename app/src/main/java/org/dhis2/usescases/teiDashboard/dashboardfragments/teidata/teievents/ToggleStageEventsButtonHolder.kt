@@ -16,27 +16,28 @@ class ToggleStageEventsButtonHolder(
     val composeView: ComposeView,
     private val stageSelector: FlowableProcessor<StageSection>,
 ) : RecyclerView.ViewHolder(composeView) {
-    fun bind(
-        eventViewModel: EventViewModel,
-    ) {
+    fun bind(eventViewModel: EventViewModel) {
         composeView.setContent {
             Button(
-                modifier = Modifier.padding(
-                    start = if (eventViewModel.groupedByStage == true) {
-                        Spacing.Spacing48
-                    } else {
-                        Spacing.Spacing0
-                    },
-                ),
+                modifier =
+                    Modifier.padding(
+                        start =
+                            if (eventViewModel.groupedByStage == true) {
+                                Spacing.Spacing48
+                            } else {
+                                Spacing.Spacing0
+                            },
+                    ),
                 style = ButtonStyle.TEXT,
-                text = if (eventViewModel.showAllEvents) {
-                    composeView.context.getString(R.string.show_less_events)
-                } else {
-                    composeView.context.getString(
-                        R.string.show_more_events,
-                        (eventViewModel.eventCount - eventViewModel.maxEventsToShow).toString(),
-                    )
-                },
+                text =
+                    if (eventViewModel.showAllEvents) {
+                        composeView.context.getString(R.string.show_less_events)
+                    } else {
+                        composeView.context.getString(
+                            R.string.show_more_events,
+                            (eventViewModel.eventCount - eventViewModel.maxEventsToShow).toString(),
+                        )
+                    },
             ) {
                 stageSelector.onNext(
                     StageSection(

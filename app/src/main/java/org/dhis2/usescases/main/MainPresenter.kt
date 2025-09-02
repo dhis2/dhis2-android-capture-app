@@ -77,7 +77,6 @@ class MainPresenter(
     val dispatcherProvider: DispatcherProvider,
     private val forceToNotSynced: Boolean,
 ) : CoroutineScope {
-
     private var job = Job()
     override val coroutineContext: CoroutineContext
         get() = job + dispatcherProvider.io()
@@ -88,17 +87,20 @@ class MainPresenter(
     val downloadingVersion = MutableLiveData(false)
 
     private val _singleProgramNavigationChannel = Channel<HomeItemData>()
-    val singleProgramNavigationChannel = _singleProgramNavigationChannel.receiveAsFlow()
-        .onEach {
-            singleProgramNavigationDone.store(true)
-        }
+    val singleProgramNavigationChannel =
+        _singleProgramNavigationChannel
+            .receiveAsFlow()
+            .onEach {
+                singleProgramNavigationDone.store(true)
+            }
 
     private var singleProgramNavigationDone = AtomicBoolean(false)
 
     fun init() {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         disposable.add(
-            repository.user()
+            repository
+                .user()
                 .map { username(it) }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -109,7 +111,8 @@ class MainPresenter(
         )
 
         disposable.add(
-            repository.defaultCatCombo()
+            repository
+                .defaultCatCombo()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryCombo ->
@@ -120,7 +123,8 @@ class MainPresenter(
         )
 
         disposable.add(
-            repository.defaultCatOptCombo()
+            repository
+                .defaultCatOptCombo()
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
                     { categoryOptionCombo ->
@@ -137,7 +141,8 @@ class MainPresenter(
 
     fun initFilters() {
         disposable.add(
-            Flowable.just(filterRepository.homeFilters())
+            Flowable
+                .just(filterRepository.homeFilters())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -153,7 +158,8 @@ class MainPresenter(
         )
 
         disposable.add(
-            filterManager.asFlowable()
+            filterManager
+                .asFlowable()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -173,7 +179,8 @@ class MainPresenter(
         )
 
         disposable.add(
-            filterManager.ouTreeFlowable()
+            filterManager
+                .ouTreeFlowable()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -185,7 +192,8 @@ class MainPresenter(
 
     fun trackDhis2Server() {
         disposable.add(
-            repository.getServerVersion()
+            repository
+                .getServerVersion()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -215,27 +223,34 @@ class MainPresenter(
         filterManager.addOrgUnits(selectedOrgUnits)
     }
 
-    private fun getUserUid(): String {
-        return try {
-            userManager.d2.userModule().user().blockingGet()?.uid() ?: ""
+    private fun getUserUid(): String =
+        try {
+            userManager.d2
+                .userModule()
+                .user()
+                .blockingGet()
+                ?.uid() ?: ""
         } catch (e: Exception) {
             ""
         }
-    }
 
     fun logOut() {
         disposable.add(
-            Completable.fromCallable {
-                workManagerController.cancelAllWork()
-                syncStatusController.restore()
-                filterManager.clearAllFilters()
-                preferences.setValue(Preference.SESSION_LOCKED, false)
-                preferences.setValue(Preference.PIN_ENABLED, false)
-                userManager.d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
-            }.andThen(
-                repository.logOut(),
-            )
-                .subscribeOn(schedulerProvider.ui())
+            Completable
+                .fromCallable {
+                    workManagerController.cancelAllWork()
+                    syncStatusController.restore()
+                    filterManager.clearAllFilters()
+                    preferences.setValue(Preference.SESSION_LOCKED, false)
+                    preferences.setValue(Preference.PIN_ENABLED, false)
+                    userManager.d2
+                        .dataStoreModule()
+                        .localDataStore()
+                        .value(PIN)
+                        .blockingDeleteIfExist()
+                }.andThen(
+                    repository.logOut(),
+                ).subscribeOn(schedulerProvider.ui())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
@@ -253,7 +268,10 @@ class MainPresenter(
             syncStatusController.restore()
             deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
             userManager.d2?.wipeModule()?.wipeEverything()
-            userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
+            userManager.d2
+                ?.userModule()
+                ?.accountManager()
+                ?.deleteCurrentAccount()
             view.cancelNotifications()
 
             view.goToLogin(repository.accountsCount(), isDeletion = true)
@@ -283,13 +301,12 @@ class MainPresenter(
         view.openDrawer(Gravity.START)
     }
 
-    private fun username(user: User): String {
-        return String.format(
+    private fun username(user: User): String =
+        String.format(
             "%s %s",
             if (user.firstName().isNullOrEmpty()) "" else user.firstName(),
             if (user.surname().isNullOrEmpty()) "" else user.surname(),
         )
-    }
 
     fun onNavigateBackToHome() {
         view.goToHome()
@@ -308,9 +325,7 @@ class MainPresenter(
             .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
     }
 
-    fun observeDataSync(): StateFlow<SyncStatusData> {
-        return syncStatusController.observeDownloadProcess()
-    }
+    fun observeDataSync(): StateFlow<SyncStatusData> = syncStatusController.observeDownloadProcess()
 
     fun wasSyncAlreadyDone(): Boolean {
         if (forceToNotSynced) {
@@ -321,7 +336,10 @@ class MainPresenter(
 
     fun onDataSuccess() {
         launch(dispatcherProvider.io()) {
-            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(WAS_INITIAL_SYNC_DONE)
                 .blockingSet(TRUE)
         }
     }
@@ -345,12 +363,13 @@ class MainPresenter(
     }
 
     fun remindLaterAlertNewVersion() {
-        val workerItem = WorkerItem(
-            Constants.NEW_APP_VERSION,
-            WorkerType.NEW_VERSION,
-            delayInSeconds = 24 * 60 * 60,
-            policy = ExistingWorkPolicy.REPLACE,
-        )
+        val workerItem =
+            WorkerItem(
+                Constants.NEW_APP_VERSION,
+                WorkerType.NEW_VERSION,
+                delayInSeconds = 24 * 60 * 60,
+                policy = ExistingWorkPolicy.REPLACE,
+            )
         workManagerController.beginUniqueWork(workerItem)
         versionRepository.removeVersionInfo()
     }
@@ -385,9 +404,7 @@ class MainPresenter(
         }
     }
 
-    fun hasFilters(): Boolean {
-        return filterRepository.homeFilters().isNotEmpty()
-    }
+    fun hasFilters(): Boolean = filterRepository.homeFilters().isNotEmpty()
 
     fun updateSingleProgramNavigationDone(done: Boolean) {
         singleProgramNavigationDone.store(done)

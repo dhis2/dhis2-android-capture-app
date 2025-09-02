@@ -26,13 +26,12 @@ class EventMapModule(
         programEventDetailRepository: ProgramEventDetailRepository,
         preferences: PreferenceProvider,
         schedulers: SchedulerProvider,
-    ): EventMapPresenter {
-        return EventMapPresenter(
+    ): EventMapPresenter =
+        EventMapPresenter(
             view,
             filterManager,
             programEventDetailRepository,
             preferences,
             schedulers,
         )
-    }
 }

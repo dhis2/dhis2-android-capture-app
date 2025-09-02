@@ -41,8 +41,9 @@ import org.dhis2.data.service.SyncGranularWorker
 import org.dhis2.data.service.SyncMetadataWorker
 import java.util.concurrent.TimeUnit
 
-class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkManagerController {
-
+class WorkManagerControllerImpl(
+    private val workManager: WorkManager,
+) : WorkManagerController {
     override fun syncDataForWorker(workerItem: WorkerItem) {
         val syncBuilder = createOneTimeBuilder(workerItem).build()
 
@@ -53,7 +54,10 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
         }
     }
 
-    override fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String) {
+    override fun syncMetaDataForWorker(
+        metadataWorkerTag: String,
+        workName: String,
+    ) {
         val workerOneBuilder = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
         workerOneBuilder
             .addTag(metadataWorkerTag)
@@ -63,7 +67,10 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
             .enqueue()
     }
 
-    override fun syncDataForWorker(dataWorkerTag: String, workName: String) {
+    override fun syncDataForWorker(
+        dataWorkerTag: String,
+        workName: String,
+    ) {
         val workerTwoBuilder = OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
         workerTwoBuilder
             .addTag(dataWorkerTag)
@@ -87,20 +94,18 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
         }
     }
 
-    override fun getWorkInfosForUniqueWorkLiveData(workerName: String) =
-        workManager.getWorkInfosForUniqueWorkLiveData(workerName)
+    override fun getWorkInfosForUniqueWorkLiveData(workerName: String) = workManager.getWorkInfosForUniqueWorkLiveData(workerName)
 
     override fun getWorkInfosByTagLiveData(tag: String) = workManager.getWorkInfosByTagLiveData(tag)
 
-    override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> {
-        return MediatorLiveData<List<WorkInfo>>().apply {
+    override fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>> =
+        MediatorLiveData<List<WorkInfo>>().apply {
             tags.forEach { tag ->
                 addSource(getWorkInfosByTagLiveData(tag)) {
                     this.value = it
                 }
             }
         }
-    }
 
     override fun cancelAllWork() {
         workManager.cancelAllWork()
@@ -119,12 +124,13 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
     }
 
     private fun createOneTimeBuilder(workerItem: WorkerItem): OneTimeWorkRequest.Builder {
-        val syncBuilder = when (workerItem.workerType) {
-            WorkerType.METADATA -> OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
-            WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
-            WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
-            WorkerType.NEW_VERSION -> OneTimeWorkRequest.Builder(CheckVersionWorker::class.java)
-        }
+        val syncBuilder =
+            when (workerItem.workerType) {
+                WorkerType.METADATA -> OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
+                WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
+                WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
+                WorkerType.NEW_VERSION -> OneTimeWorkRequest.Builder(CheckVersionWorker::class.java)
+            }
 
         syncBuilder.apply {
             addTag(workerItem.workerName)
@@ -141,35 +147,36 @@ class WorkManagerControllerImpl(private val workManager: WorkManager) : WorkMana
     private fun createPeriodicBuilder(workerItem: WorkerItem): PeriodicWorkRequest.Builder {
         val seconds = workerItem.delayInSeconds ?: 0
 
-        val syncBuilder = when (workerItem.workerType) {
-            WorkerType.METADATA -> {
-                PeriodicWorkRequest.Builder(
-                    SyncMetadataWorker::class.java,
-                    seconds,
-                    TimeUnit.SECONDS,
-                )
+        val syncBuilder =
+            when (workerItem.workerType) {
+                WorkerType.METADATA -> {
+                    PeriodicWorkRequest.Builder(
+                        SyncMetadataWorker::class.java,
+                        seconds,
+                        TimeUnit.SECONDS,
+                    )
+                }
+                WorkerType.DATA -> {
+                    PeriodicWorkRequest.Builder(
+                        SyncDataWorker::class.java,
+                        seconds,
+                        TimeUnit.SECONDS,
+                    )
+                }
+                WorkerType.GRANULAR -> {
+                    PeriodicWorkRequest.Builder(
+                        SyncGranularWorker::class.java,
+                        seconds,
+                        TimeUnit.SECONDS,
+                    )
+                }
+                WorkerType.NEW_VERSION ->
+                    PeriodicWorkRequest.Builder(
+                        CheckVersionWorker::class.java,
+                        seconds,
+                        TimeUnit.SECONDS,
+                    )
             }
-            WorkerType.DATA -> {
-                PeriodicWorkRequest.Builder(
-                    SyncDataWorker::class.java,
-                    seconds,
-                    TimeUnit.SECONDS,
-                )
-            }
-            WorkerType.GRANULAR -> {
-                PeriodicWorkRequest.Builder(
-                    SyncGranularWorker::class.java,
-                    seconds,
-                    TimeUnit.SECONDS,
-                )
-            }
-            WorkerType.NEW_VERSION ->
-                PeriodicWorkRequest.Builder(
-                    CheckVersionWorker::class.java,
-                    seconds,
-                    TimeUnit.SECONDS,
-                )
-        }
 
         syncBuilder.apply {
             addTag(workerItem.workerName)

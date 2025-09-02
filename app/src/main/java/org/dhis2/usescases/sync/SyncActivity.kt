@@ -18,8 +18,9 @@ import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
 import javax.inject.Inject
 
-class SyncActivity : ActivityGlobalAbstract(), SyncView {
-
+class SyncActivity :
+    ActivityGlobalAbstract(),
+    SyncView {
     lateinit var binding: ActivitySynchronizationBinding
 
     @Inject

@@ -46,8 +46,8 @@ class EventCapturePresenterImpl(
     private val preferences: PreferenceProvider,
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourceManager: ResourceManager,
-) : ViewModel(), EventCaptureContract.Presenter {
-
+) : ViewModel(),
+    EventCaptureContract.Presenter {
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     private var hasExpired = false
     private val notesCounterProcessor: PublishProcessor<Unit> = PublishProcessor.create()
@@ -56,9 +56,7 @@ class EventCapturePresenterImpl(
 
     private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
 
-    override fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>> {
-        return _navigationBarUIState
-    }
+    override fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>> = _navigationBarUIState
 
     override fun observeActions(): LiveData<EventCaptureAction> = actions
 
@@ -68,7 +66,8 @@ class EventCapturePresenterImpl(
 
     override fun init() {
         compositeDisposable.add(
-            eventCaptureRepository.eventIntegrityCheck()
+            eventCaptureRepository
+                .eventIntegrityCheck()
                 .filter { check -> !check }
                 .defaultSubscribe(
                     schedulerProvider,
@@ -77,23 +76,24 @@ class EventCapturePresenterImpl(
                 ),
         )
         compositeDisposable.add(
-            Flowable.zip(
-                eventCaptureRepository.programStageName(),
-                eventCaptureRepository.orgUnit(),
-                ::EventCaptureInitialInfo,
-            ).defaultSubscribe(
-                schedulerProvider,
-                { initialInfo ->
-                    preferences.setValue(
-                        Preference.CURRENT_ORG_UNIT,
-                        initialInfo.organisationUnit.uid(),
-                    )
-                    view.renderInitialInfo(
-                        initialInfo.programStageName,
-                    )
-                },
-                Timber::e,
-            ),
+            Flowable
+                .zip(
+                    eventCaptureRepository.programStageName(),
+                    eventCaptureRepository.orgUnit(),
+                    ::EventCaptureInitialInfo,
+                ).defaultSubscribe(
+                    schedulerProvider,
+                    { initialInfo ->
+                        preferences.setValue(
+                            Preference.CURRENT_ORG_UNIT,
+                            initialInfo.organisationUnit.uid(),
+                        )
+                        view.renderInitialInfo(
+                            initialInfo.programStageName,
+                        )
+                    },
+                    Timber::e,
+                ),
         )
         checkExpiration()
 
@@ -149,9 +149,10 @@ class EventCapturePresenterImpl(
             )
         }
 
-        _navigationBarUIState.value = _navigationBarUIState.value.copy(
-            items = navItems.takeIf { it.size > 1 }.orEmpty(),
-        )
+        _navigationBarUIState.value =
+            _navigationBarUIState.value.copy(
+                items = navItems.takeIf { it.size > 1 }.orEmpty(),
+            )
     }
 
     override fun onNavigationPageChanged(page: NavigationPage) {
@@ -159,53 +160,56 @@ class EventCapturePresenterImpl(
     }
 
     override fun onSetNavigationPage(index: Int) {
-        val navigationPageAtIndex = _navigationBarUIState
-            .value
-            .items
-            .getOrNull(index)
-            ?.id
+        val navigationPageAtIndex =
+            _navigationBarUIState
+                .value
+                .items
+                .getOrNull(index)
+                ?.id
 
         if (navigationPageAtIndex != null) {
             onNavigationPageChanged(navigationPageAtIndex)
         }
     }
 
-    override fun isDataEntrySelected(): Boolean {
-        return _navigationBarUIState.value.selectedItem == NavigationPage.DATA_ENTRY
-    }
+    override fun isDataEntrySelected(): Boolean = _navigationBarUIState.value.selectedItem == NavigationPage.DATA_ENTRY
 
     override fun updateNotesBadge(numberOfNotes: Int) {
         val navigationBarUIState = _navigationBarUIState.value
-        val indexOfNotesNavigationItem = navigationBarUIState
-            .items
-            .indexOfFirst { it.id == NavigationPage.NOTES }
+        val indexOfNotesNavigationItem =
+            navigationBarUIState
+                .items
+                .indexOfFirst { it.id == NavigationPage.NOTES }
 
-        val notesNavigationItem = navigationBarUIState
-            .items
-            .getOrNull(indexOfNotesNavigationItem)
+        val notesNavigationItem =
+            navigationBarUIState
+                .items
+                .getOrNull(indexOfNotesNavigationItem)
 
         if (notesNavigationItem != null) {
             val updatedList = navigationBarUIState.items.toMutableList()
-            updatedList[indexOfNotesNavigationItem] = notesNavigationItem.copy(
-                showBadge = numberOfNotes > 0,
-            )
+            updatedList[indexOfNotesNavigationItem] =
+                notesNavigationItem.copy(
+                    showBadge = numberOfNotes > 0,
+                )
 
-            _navigationBarUIState.value = _navigationBarUIState.value.copy(
-                items = updatedList,
-            )
+            _navigationBarUIState.value =
+                _navigationBarUIState.value.copy(
+                    items = updatedList,
+                )
         }
     }
 
     private fun checkExpiration() {
         if (eventStatus == EventStatus.COMPLETED) {
             compositeDisposable.add(
-                Flowable.fromCallable {
-                    val isCompletedEventExpired =
-                        eventCaptureRepository.isCompletedEventExpired(eventUid).blockingFirst()
-                    val isEventEditable = eventCaptureRepository.isEventEditable(eventUid)
-                    isCompletedEventExpired && !isEventEditable
-                }
-                    .defaultSubscribe(
+                Flowable
+                    .fromCallable {
+                        val isCompletedEventExpired =
+                            eventCaptureRepository.isCompletedEventExpired(eventUid).blockingFirst()
+                        val isEventEditable = eventCaptureRepository.isEventEditable(eventUid)
+                        isCompletedEventExpired && !isEventEditable
+                    }.defaultSubscribe(
                         schedulerProvider,
                         this::setHasExpired,
                         Timber::e,
@@ -232,14 +236,13 @@ class EventCapturePresenterImpl(
         }
     }
 
-    override fun isEnrollmentOpen(): Boolean {
-        return eventCaptureRepository.isEnrollmentOpen
-    }
+    override fun isEnrollmentOpen(): Boolean = eventCaptureRepository.isEnrollmentOpen
 
     override fun completeEvent(addNew: Boolean) {
         EventIdlingResourceSingleton.increment()
         compositeDisposable.add(
-            eventCaptureRepository.completeEvent()
+            eventCaptureRepository
+                .completeEvent()
                 .defaultSubscribe(
                     schedulerProvider,
                     onNext = {
@@ -263,7 +266,8 @@ class EventCapturePresenterImpl(
         val programStage = programStage()
         EventIdlingResourceSingleton.increment()
         compositeDisposable.add(
-            eventCaptureRepository.deleteEvent()
+            eventCaptureRepository
+                .deleteEvent()
                 .defaultSubscribe(
                     schedulerProvider,
                     onNext = { result ->
@@ -286,7 +290,8 @@ class EventCapturePresenterImpl(
 
     override fun skipEvent() {
         compositeDisposable.add(
-            eventCaptureRepository.updateEventStatus(EventStatus.SKIPPED)
+            eventCaptureRepository
+                .updateEventStatus(EventStatus.SKIPPED)
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.showSnackBar(R.string.event_label_was_skipped, programStage()) },
@@ -298,7 +303,8 @@ class EventCapturePresenterImpl(
 
     override fun rescheduleEvent(time: Date) {
         compositeDisposable.add(
-            eventCaptureRepository.rescheduleEvent(time)
+            eventCaptureRepository
+                .rescheduleEvent(time)
                 .defaultSubscribe(
                     schedulerProvider,
                     { view.finishDataEntry() },
@@ -307,13 +313,9 @@ class EventCapturePresenterImpl(
         )
     }
 
-    override fun canWrite(): Boolean {
-        return eventCaptureRepository.accessDataWrite
-    }
+    override fun canWrite(): Boolean = eventCaptureRepository.accessDataWrite
 
-    override fun hasExpired(): Boolean {
-        return hasExpired
-    }
+    override fun hasExpired(): Boolean = hasExpired
 
     override fun onDettach() {
         compositeDisposable.clear()
@@ -326,7 +328,8 @@ class EventCapturePresenterImpl(
     override fun initNoteCounter() {
         if (!notesCounterProcessor.hasSubscribers()) {
             compositeDisposable.add(
-                notesCounterProcessor.startWith(Unit())
+                notesCounterProcessor
+                    .startWith(Unit())
                     .flatMapSingle { eventCaptureRepository.noteCount }
                     .defaultSubscribe(
                         schedulerProvider,
@@ -351,20 +354,14 @@ class EventCapturePresenterImpl(
         view.showProgress()
     }
 
-    override fun getCompletionPercentageVisibility(): Boolean {
-        return eventCaptureRepository.showCompletionPercentage()
-    }
+    override fun getCompletionPercentageVisibility(): Boolean = eventCaptureRepository.showCompletionPercentage()
 
     private val eventStatus: EventStatus
         get() = eventCaptureRepository.eventStatus().blockingFirst()
 
     override fun programStage(): String = eventCaptureRepository.programStage().blockingFirst()
 
-    override fun getEnrollmentUid(): String? {
-        return eventCaptureRepository.getEnrollmentUid()
-    }
+    override fun getEnrollmentUid(): String? = eventCaptureRepository.getEnrollmentUid()
 
-    override fun getTeiUid(): String? {
-        return eventCaptureRepository.getTeiUid()
-    }
+    override fun getTeiUid(): String? = eventCaptureRepository.getTeiUid()
 }

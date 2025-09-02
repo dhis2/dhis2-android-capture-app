@@ -23,20 +23,19 @@ fun TableCorner(
 ) {
     val isSelected = LocalTableSelection.current is TableSelection.AllCellSelection
     Box(
-        modifier = modifier
-            .cornerBackground(
-                isSelected = isSelected,
-                selectedColor = LocalTableColors.current.primaryLight,
-                defaultColor = LocalTableColors.current.tableBackground,
-            )
-            .width(
-                with(LocalDensity.current) {
-                    TableTheme.dimensions
-                        .rowHeaderWidth(tableId)
-                        .toDp()
-                },
-            )
-            .clickable { onClick() },
+        modifier =
+            modifier
+                .cornerBackground(
+                    isSelected = isSelected,
+                    selectedColor = LocalTableColors.current.primaryLight,
+                    defaultColor = LocalTableColors.current.tableBackground,
+                ).width(
+                    with(LocalDensity.current) {
+                        TableTheme.dimensions
+                            .rowHeaderWidth(tableId)
+                            .toDp()
+                    },
+                ).clickable { onClick() },
         contentAlignment = Alignment.CenterEnd,
     ) {
         Divider(
@@ -47,9 +46,10 @@ fun TableCorner(
         )
         if (isSelected) {
             VerticalResizingRule(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .zIndex(1f),
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterEnd)
+                        .zIndex(1f),
                 checkMaxMinCondition = { dimensions, currentOffsetX ->
                     if (tableCornerUiState.singleValueTable) {
                         dimensions.canUpdateRowHeaderWidth(

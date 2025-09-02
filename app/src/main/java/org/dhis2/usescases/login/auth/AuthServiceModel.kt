@@ -12,17 +12,14 @@ data class AuthServiceModel(
     val authorizationUrl: String?,
     val tokenUrl: String?,
 ) {
-    fun toOpenIdConfig(): OpenIDConnectConfig {
-        return OpenIDConnectConfig(
+    fun toOpenIdConfig(): OpenIDConnectConfig =
+        OpenIDConnectConfig(
             clientId,
             Uri.parse(redirectUri),
             discoveryUri?.let { Uri.parse(discoveryUri) },
             authorizationUrl,
             tokenUrl,
         )
-    }
 
-    fun hasConfiguration(): Boolean {
-        return discoveryUri != null || (authorizationUrl != null && tokenUrl != null)
-    }
+    fun hasConfiguration(): Boolean = discoveryUri != null || (authorizationUrl != null && tokenUrl != null)
 }

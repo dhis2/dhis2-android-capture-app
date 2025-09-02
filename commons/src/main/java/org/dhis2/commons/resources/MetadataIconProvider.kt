@@ -15,8 +15,9 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 import java.io.File
 
-class MetadataIconProvider(private val d2: D2) {
-
+class MetadataIconProvider(
+    private val d2: D2,
+) {
     operator fun invoke(
         color: String?,
         icon: String?,
@@ -30,33 +31,43 @@ class MetadataIconProvider(private val d2: D2) {
 
     operator fun invoke(style: ObjectStyle) = invoke(style, SurfaceColor.Primary)
 
-    operator fun invoke(style: ObjectStyle, defaultColor: Color? = SurfaceColor.Primary) =
-        style.icon()?.let {
-            d2.iconModule().icons().key(it).blockingGet()
+    operator fun invoke(
+        style: ObjectStyle,
+        defaultColor: Color? = SurfaceColor.Primary,
+    ) = style
+        .icon()
+        ?.let {
+            d2
+                .iconModule()
+                .icons()
+                .key(it)
+                .blockingGet()
         }.let { icon ->
-            val imageCardData = when {
-                (icon is Icon.Custom) -> {
-                    provideImageBitmap(icon.path)?.let { imageBitmap ->
-                        ImageCardData.CustomIconData(
+            val imageCardData =
+                when {
+                    (icon is Icon.Custom) -> {
+                        provideImageBitmap(icon.path)?.let { imageBitmap ->
+                            ImageCardData.CustomIconData(
+                                uid = "",
+                                label = "",
+                                image = imageBitmap,
+                            )
+                        } ?: ImageCardData.IconCardData(
                             uid = "",
                             label = "",
-                            image = imageBitmap,
+                            iconRes = FILE_NOT_LOADED,
+                            iconTint = style.color()?.toColor() ?: defaultColor ?: Color.Unspecified,
                         )
-                    } ?: ImageCardData.IconCardData(
-                        uid = "",
-                        label = "",
-                        iconRes = FILE_NOT_LOADED,
-                        iconTint = style.color()?.toColor() ?: defaultColor ?: Color.Unspecified,
-                    )
-                }
+                    }
 
-                else -> ImageCardData.IconCardData(
-                    uid = "",
-                    label = "",
-                    iconRes = provideIconRes(style.icon()),
-                    iconTint = style.color()?.toColor() ?: Color.Unspecified,
-                )
-            }
+                    else ->
+                        ImageCardData.IconCardData(
+                            uid = "",
+                            label = "",
+                            iconRes = provideIconRes(style.icon()),
+                            iconTint = style.color()?.toColor() ?: Color.Unspecified,
+                        )
+                }
             MetadataIconData(
                 imageCardData = imageCardData,
                 color = style.color()?.toColor() ?: defaultColor ?: Color.Unspecified,

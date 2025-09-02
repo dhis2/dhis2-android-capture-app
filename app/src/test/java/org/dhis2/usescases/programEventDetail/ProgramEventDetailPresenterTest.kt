@@ -47,17 +47,18 @@ class ProgramEventDetailPresenterTest {
     fun setUp() {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
 
-        presenter = ProgramEventDetailPresenter(
-            view,
-            repository,
-            scheduler,
-            filterManager,
-            workingListMapper,
-            filterRepository,
-            disableHomeFilters,
-            matomoAnalyticsController,
-            preferences,
-        )
+        presenter =
+            ProgramEventDetailPresenter(
+                view,
+                repository,
+                scheduler,
+                filterManager,
+                workingListMapper,
+                filterRepository,
+                disableHomeFilters,
+                matomoAnalyticsController,
+                preferences,
+            )
     }
 
     @After
@@ -144,6 +145,5 @@ class ProgramEventDetailPresenterTest {
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
 
-    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> =
-        listOf(CategoryOptionCombo.builder().uid("uid").build())
+    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> = listOf(CategoryOptionCombo.builder().uid("uid").build())
 }

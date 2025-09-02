@@ -49,13 +49,12 @@ import java.util.Date
 const val ENROLLMENT_ICONS_TO_SHOW = 3
 const val MAX_NUMBER_REMAINING_ENROLLMENTS = 99
 
-fun List<Enrollment>.hasFollowUp(): Boolean {
-    return firstOrNull { enrollment ->
+fun List<Enrollment>.hasFollowUp(): Boolean =
+    firstOrNull { enrollment ->
         enrollment.followUp() == true
     }?.let {
         it.followUp() == true
     } ?: false
-}
 
 fun List<Program>.getEnrollmentIconsData(
     currentProgram: String?,
@@ -64,7 +63,8 @@ fun List<Program>.getEnrollmentIconsData(
     val enrollmentIconDataList: MutableList<EnrollmentIconData> = mutableListOf()
 
     val filteredList = filter { it.uid() != currentProgram }
-    this.filter { it.uid() != currentProgram }
+    this
+        .filter { it.uid() != currentProgram }
         .forEachIndexed { index, program ->
             if (filteredList.size <= 4) {
                 enrollmentIconDataList.add(
@@ -103,9 +103,10 @@ fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
                     forEach { enrollmentIcon ->
                         if (enrollmentIcon.isIcon) {
                             MetadataAvatar(
-                                modifier = Modifier
-                                    .size(56.dp)
-                                    .alpha(0.5f),
+                                modifier =
+                                    Modifier
+                                        .size(56.dp)
+                                        .alpha(0.5f),
                                 icon = {
                                     if (enrollmentIcon.metadataIconData.isFileLoaded()) {
                                         MetadataIcon(
@@ -134,10 +135,11 @@ fun List<EnrollmentIconData>.paintAllEnrollmentIcons(parent: ComposeView) {
 @Composable
 private fun SquareWithNumber(number: Int) {
     Box(
-        modifier = Modifier
-            .size(25.dp)
-            .clip(RoundedCornerShape(4.dp))
-            .background("#f2f2f2".toColor()),
+        modifier =
+            Modifier
+                .size(25.dp)
+                .clip(RoundedCornerShape(4.dp))
+                .background("#f2f2f2".toColor()),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -149,13 +151,12 @@ private fun SquareWithNumber(number: Int) {
     }
 }
 
-fun getRemainingEnrollmentsForTei(teiEnrollmentCount: Int): Int {
-    return if (teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW > MAX_NUMBER_REMAINING_ENROLLMENTS) {
+fun getRemainingEnrollmentsForTei(teiEnrollmentCount: Int): Int =
+    if (teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW > MAX_NUMBER_REMAINING_ENROLLMENTS) {
         MAX_NUMBER_REMAINING_ENROLLMENTS
     } else {
         teiEnrollmentCount - ENROLLMENT_ICONS_TO_SHOW
     }
-}
 
 fun Enrollment.setStatusText(
     context: Context,

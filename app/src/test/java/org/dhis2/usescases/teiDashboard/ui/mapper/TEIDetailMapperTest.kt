@@ -21,7 +21,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class TEIDetailMapperTest {
-
     private val resourceManager: ResourceManager = mock()
     private lateinit var mapper: TeiDashboardCardMapper
 
@@ -37,14 +36,14 @@ class TEIDetailMapperTest {
     fun shouldReturnCardFull() {
         val model = createFakeModel()
 
-        val result = mapper.map(
-            dashboardModel = model,
-            phoneCallback = {},
-            emailCallback = {},
-            programsCallback = {},
-            onImageClick = {},
-
-        )
+        val result =
+            mapper.map(
+                dashboardModel = model,
+                phoneCallback = {},
+                emailCallback = {},
+                programsCallback = {},
+                onImageClick = {},
+            )
 
         assertEquals(result.title, model.teiHeader)
         assertEquals(result.additionalInfo[0].value, model.trackedEntityAttributes[0].second.value())
@@ -56,89 +55,107 @@ class TEIDetailMapperTest {
     fun shouldShowOwnedAndEnrolledOrgUnit() {
         val model = createFakeModel(otherOrgUnit())
 
-        val result = mapper.map(
-            dashboardModel = model,
-            phoneCallback = {},
-            emailCallback = {},
-            programsCallback = {},
-            onImageClick = {},
-        )
+        val result =
+            mapper.map(
+                dashboardModel = model,
+                phoneCallback = {},
+                emailCallback = {},
+                programsCallback = {},
+                onImageClick = {},
+            )
 
         assertEquals(result.additionalInfo[3].value, otherOrgUnit().displayName())
         assertEquals(result.additionalInfo[4].value, model.orgUnits.first().displayName())
     }
 
     private fun createFakeModel(ownerOrgUnit: OrganisationUnit = orgUnit()): DashboardEnrollmentModel {
-        val attributeValues = listOf(
-            Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
-            Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
-        )
+        val attributeValues =
+            listOf(
+                Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
+                Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+            )
 
-        val model = DashboardEnrollmentModel(
-            setEnrollment(),
-            emptyList<ProgramStage>(),
-            setTei(),
-            attributeValues,
-            emptyList<TrackedEntityAttributeValue>(),
-            setPrograms(),
-            listOf(orgUnit()),
-            "header",
-            "avatarFilepath",
-            ownerOrgUnit,
-            emptyList(),
-        )
+        val model =
+            DashboardEnrollmentModel(
+                setEnrollment(),
+                emptyList<ProgramStage>(),
+                setTei(),
+                attributeValues,
+                emptyList<TrackedEntityAttributeValue>(),
+                setPrograms(),
+                listOf(orgUnit()),
+                "header",
+                "avatarFilepath",
+                ownerOrgUnit,
+                emptyList(),
+            )
 
         return model
     }
 
     private fun getTEAValue(value: String) =
-        TrackedEntityAttributeValue.builder()
+        TrackedEntityAttributeValue
+            .builder()
             .value(value)
             .build()
 
-    private fun getTEA(uid: String, value: String) =
-        TrackedEntityAttribute.builder()
-            .uid(uid)
-            .displayFormName(value)
+    private fun getTEA(
+        uid: String,
+        value: String,
+    ) = TrackedEntityAttribute
+        .builder()
+        .uid(uid)
+        .displayFormName(value)
+        .build()
+
+    private fun setTei() =
+        TrackedEntityInstance
+            .builder()
+            .uid("TEIUid")
+            .organisationUnit("OrgUnit")
+            .aggregatedSyncState(State.SYNCED)
             .build()
 
-    private fun setTei() = TrackedEntityInstance.builder()
-        .uid("TEIUid")
-        .organisationUnit("OrgUnit")
-        .aggregatedSyncState(State.SYNCED)
-        .build()
+    private fun setEnrollment() =
+        Enrollment
+            .builder()
+            .uid("EnrollmentUid")
+            .status(EnrollmentStatus.COMPLETED)
+            .program("Program1Uid")
+            .organisationUnit("orgUnitUid")
+            .build()
 
-    private fun setEnrollment() = Enrollment.builder()
-        .uid("EnrollmentUid")
-        .status(EnrollmentStatus.COMPLETED)
-        .program("Program1Uid")
-        .organisationUnit("orgUnitUid")
-        .build()
+    private fun setPrograms() =
+        listOf<Pair<Program, MetadataIconData>>(
+            Pair(
+                Program
+                    .builder()
+                    .uid("Program1Uid")
+                    .displayName("Program 1")
+                    .build(),
+                MetadataIconData.defaultIcon(),
+            ),
+            Pair(
+                Program
+                    .builder()
+                    .uid("Program2Uid")
+                    .displayName("Program 2")
+                    .build(),
+                MetadataIconData.defaultIcon(),
+            ),
+        )
 
-    private fun setPrograms() = listOf<Pair<Program, MetadataIconData>>(
-        Pair(
-            Program.builder()
-                .uid("Program1Uid")
-                .displayName("Program 1")
-                .build(),
-            MetadataIconData.defaultIcon(),
-        ),
-        Pair(
-            Program.builder()
-                .uid("Program2Uid")
-                .displayName("Program 2")
-                .build(),
-            MetadataIconData.defaultIcon(),
-        ),
-    )
+    private fun orgUnit() =
+        OrganisationUnit
+            .builder()
+            .uid("orgUnitUid")
+            .displayName("orgUnitName")
+            .build()
 
-    private fun orgUnit() = OrganisationUnit.builder()
-        .uid("orgUnitUid")
-        .displayName("orgUnitName")
-        .build()
-
-    private fun otherOrgUnit() = OrganisationUnit.builder()
-        .uid("otherOrgUnitUid")
-        .displayName("otherOrgUnitName")
-        .build()
+    private fun otherOrgUnit() =
+        OrganisationUnit
+            .builder()
+            .uid("otherOrgUnitUid")
+            .displayName("otherOrgUnitName")
+            .build()
 }

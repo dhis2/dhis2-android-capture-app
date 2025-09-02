@@ -31,10 +31,17 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.option.Option
 
-class ScanRepository(private val d2: D2, private val optionsSetUid: String?) {
-
+class ScanRepository(
+    private val d2: D2,
+    private val optionsSetUid: String?,
+) {
     fun getOptions(): List<Option> =
-        d2.optionModule().options().byOptionSetUid().eq(optionsSetUid).orderBySortOrder(
-            RepositoryScope.OrderByDirection.ASC,
-        ).blockingGet()
+        d2
+            .optionModule()
+            .options()
+            .byOptionSetUid()
+            .eq(optionsSetUid)
+            .orderBySortOrder(
+                RepositoryScope.OrderByDirection.ASC,
+            ).blockingGet()
 }

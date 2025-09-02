@@ -7,8 +7,8 @@ class ReservedValueMapper(
     private val refillProcessor: FlowableProcessor<String>,
     private val leftValueLabel: String,
 ) {
-    fun map(reservedValueSummaries: List<ReservedValueSummary>): List<ReservedValueModel> {
-        return reservedValueSummaries.map {
+    fun map(reservedValueSummaries: List<ReservedValueSummary>): List<ReservedValueModel> =
+        reservedValueSummaries.map {
             ReservedValueModel(
                 it.trackedEntityAttribute().uid(),
                 it.trackedEntityAttribute().displayFormName() ?: "",
@@ -19,5 +19,4 @@ class ReservedValueMapper(
                 refillProcessor,
             )
         }
-    }
 }

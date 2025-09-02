@@ -29,7 +29,6 @@ class NominatimGeocoderApi(
     private val d2: D2,
     private val localeSelector: LocaleSelector,
 ) : GeocoderApi {
-
     override suspend fun searchFor(
         query: String,
         visibleRegion: AvailableLatLngBounds?,
@@ -102,9 +101,10 @@ class NominatimGeocoderApi(
     override suspend fun getLocationFromLatLng(
         latitude: Double,
         longitude: Double,
-    ): LocationItemModel.SearchResult {
-        return try {
-            d2.httpServiceClient()
+    ): LocationItemModel.SearchResult =
+        try {
+            d2
+                .httpServiceClient()
                 .get<NominatimLocation> {
                     url(REVERSE_API)
                     customHeaders()
@@ -123,7 +123,6 @@ class NominatimGeocoderApi(
                 searchedLongitude = longitude,
             )
         }
-    }
 
     private fun RequestBuilder.customHeaders() {
         header(
@@ -141,12 +140,14 @@ class NominatimGeocoderApi(
             nominatimLocation.toLocationItem()
         }
 
-    private fun NominatimLocation.toLocationItem() = LocationItemModel.SearchResult(
-        searchedTitle = name,
-        searchedSubtitle = displayName?.removePrefix("$name, ") ?: "Lat:${
-            lat.toDouble().truncate()
-        } Lon:${lon.toDouble().truncate()}",
-        searchedLatitude = lat.toDouble(),
-        searchedLongitude = lon.toDouble(),
-    )
+    private fun NominatimLocation.toLocationItem() =
+        LocationItemModel.SearchResult(
+            searchedTitle = name,
+            searchedSubtitle =
+                displayName?.removePrefix("$name, ") ?: "Lat:${
+                    lat.toDouble().truncate()
+                } Lon:${lon.toDouble().truncate()}",
+            searchedLatitude = lat.toDouble(),
+            searchedLongitude = lon.toDouble(),
+        )
 }

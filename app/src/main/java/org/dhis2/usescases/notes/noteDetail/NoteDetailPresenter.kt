@@ -10,12 +10,12 @@ class NoteDetailPresenter(
     private val noteId: String?,
     private val repository: NoteDetailRepository,
 ) {
-
     val disposable = CompositeDisposable()
 
     fun init() {
         disposable.add(
-            repository.getNote(noteId!!)
+            repository
+                .getNote(noteId!!)
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(
@@ -31,7 +31,8 @@ class NoteDetailPresenter(
         val uid = data.second
         val message = data.third
         disposable.add(
-            repository.saveNote(noteType, uid, message)
+            repository
+                .saveNote(noteType, uid, message)
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(

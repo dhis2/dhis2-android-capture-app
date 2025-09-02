@@ -21,7 +21,8 @@ class ReservedValuePresenter(
 
     fun init() {
         disposable.add(
-            updateProcessor.startWith(true)
+            updateProcessor
+                .startWith(true)
                 .flatMapSingle { repository.reservedValues() }
                 .defaultSubscribe(
                     schedulerProvider,
@@ -36,10 +37,10 @@ class ReservedValuePresenter(
                 .parallel()
                 .runOn(schedulerProvider.io())
                 .flatMap {
-                    repository.refillReservedValues(it)
+                    repository
+                        .refillReservedValues(it)
                         .toFlowable(BackpressureStrategy.BUFFER)
-                }
-                .sequential()
+                }.sequential()
                 .subscribe(
                     {
                         Timber.d("Reserved value manager: %s".format(it.percentage()))

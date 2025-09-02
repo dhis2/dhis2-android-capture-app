@@ -15,7 +15,6 @@ class SMSSyncProviderImpl(
     override val syncContext: SyncContext,
     override val resourceManager: ResourceManager,
 ) : SMSSyncProvider {
-
     override var smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
 
     override fun isPlayServicesEnabled() = false
@@ -26,33 +25,34 @@ class SMSSyncProviderImpl(
     ): Completable {
         val startDate = Date()
 
-        return smsSender.send().doOnNext { state ->
+        return smsSender
+            .send()
+            .doOnNext { state ->
 
-            doOnNext(
-                reportState(
-                    if (state.sent == 0) {
-                        SmsSendingService.State.STARTED
-                    } else {
-                        SmsSendingService.State.SENDING
-                    },
-                    state.sent,
-                    state.total,
-                ),
-            )
-        }
-            .ignoreElements()
+                doOnNext(
+                    reportState(
+                        if (state.sent == 0) {
+                            SmsSendingService.State.STARTED
+                        } else {
+                            SmsSendingService.State.SENDING
+                        },
+                        state.sent,
+                        state.total,
+                    ),
+                )
+            }.ignoreElements()
             .doOnComplete {
                 doOnNewState(
                     reportState(SmsSendingService.State.SENT, 0, 0),
                 )
-            }
-            .andThen(d2.smsModule().configCase().getSmsModuleConfig())
+            }.andThen(d2.smsModule().configCase().getSmsModuleConfig())
             .flatMapCompletable { config ->
                 if (config.isWaitingForResult) {
                     doOnNewState(
                         reportState(SmsSendingService.State.WAITING_RESULT, 0, 0),
                     )
-                    smsSender.checkConfirmationSms(startDate)
+                    smsSender
+                        .checkConfirmationSms(startDate)
                         .doOnError { throwable ->
                             if (throwable is SmsRepository.ResultResponseException) {
                                 val reason = throwable.reason
@@ -77,27 +77,27 @@ class SMSSyncProviderImpl(
             }
     }
 
-    override fun convertSimpleEvent(): Single<ConvertTaskResult> {
-        return smsSender.convertSimpleEvent(syncContext.recordUid())
+    override fun convertSimpleEvent(): Single<ConvertTaskResult> =
+        smsSender
+            .convertSimpleEvent(syncContext.recordUid())
             .map { count -> ConvertTaskResult.Count(count) }
-    }
 
-    override fun convertTrackerEvent(): Single<ConvertTaskResult> {
-        return smsSender.convertTrackerEvent(syncContext.recordUid())
+    override fun convertTrackerEvent(): Single<ConvertTaskResult> =
+        smsSender
+            .convertTrackerEvent(syncContext.recordUid())
             .map { count -> ConvertTaskResult.Count(count) }
-    }
 
-    override fun convertEnrollment(): Single<ConvertTaskResult> {
-        return smsSender.convertEnrollment(syncContext.recordUid())
+    override fun convertEnrollment(): Single<ConvertTaskResult> =
+        smsSender
+            .convertEnrollment(syncContext.recordUid())
             .map { count -> ConvertTaskResult.Count(count) }
-    }
 
-    override fun convertDataSet(): Single<ConvertTaskResult> {
-        return with(syncContext as SyncContext.DataSetInstance) {
-            smsSender.convertDataSet(dataSetUid, orgUnitUid, periodId, attributeOptionComboUid)
+    override fun convertDataSet(): Single<ConvertTaskResult> =
+        with(syncContext as SyncContext.DataSetInstance) {
+            smsSender
+                .convertDataSet(dataSetUid, orgUnitUid, periodId, attributeOptionComboUid)
                 .map { count -> ConvertTaskResult.Count(count) }
         }
-    }
 
     private fun reportState(
         state: SmsSendingService.State,
@@ -108,7 +108,5 @@ class SMSSyncProviderImpl(
         return SmsSendingService.SendingStatus(submissionId, state, null, sent, total)
     }
 
-    override fun onSmsNotAccepted(): SmsSendingService.SendingStatus {
-        return reportState(SmsSendingService.State.COUNT_NOT_ACCEPTED, 0, 0)
-    }
+    override fun onSmsNotAccepted(): SmsSendingService.SendingStatus = reportState(SmsSendingService.State.COUNT_NOT_ACCEPTED, 0, 0)
 }

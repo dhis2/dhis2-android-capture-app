@@ -3,7 +3,6 @@ package org.dhis2.bindings
 import org.junit.Test
 
 class StringExtensionsTest {
-
     @Test
     fun `Should return one initial for a string with one word`() {
         val user = "Rick"

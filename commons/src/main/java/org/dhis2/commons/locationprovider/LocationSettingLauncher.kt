@@ -16,8 +16,7 @@ object LocationSettingLauncher {
             .setMessage(activityContext.getString(R.string.enable_location_message))
             .setPositiveButton(activityContext.getString(R.string.action_ok)) { _, _ ->
                 onAccept?.invoke() ?: onAccept(activityContext)
-            }
-            .setNegativeButton(activityContext.getString(R.string.cancel)) { _, _ -> onCancel() }
+            }.setNegativeButton(activityContext.getString(R.string.cancel)) { _, _ -> onCancel() }
             .show()
     }
 

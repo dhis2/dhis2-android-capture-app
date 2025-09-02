@@ -115,10 +115,11 @@ internal fun SMSSettingItem(
                     title = stringResource(R.string.settings_sms_receiver_number),
                     onCallActionClicked = {},
                     state = gateWayState,
-                    inputTextFieldValue = TextFieldValue(
-                        text = gatewayNumber,
-                        selection = TextRange(gatewayNumber.length),
-                    ),
+                    inputTextFieldValue =
+                        TextFieldValue(
+                            text = gatewayNumber,
+                            selection = TextRange(gatewayNumber.length),
+                        ),
                     onValueChanged = {
                         gateWayTimeLeft = 3
                         gatewayValidation = GatewayValidator.GatewayValidationResult.Valid
@@ -130,10 +131,11 @@ internal fun SMSSettingItem(
                 InputPositiveIntegerOrZero(
                     title = stringResource(R.string.settings_sms_result_timeout),
                     state = smsSettings.timeoutState(),
-                    inputTextFieldValue = TextFieldValue(
-                        text = resultTimeout.toString(),
-                        selection = TextRange(resultTimeout.toString().length),
-                    ),
+                    inputTextFieldValue =
+                        TextFieldValue(
+                            text = resultTimeout.toString(),
+                            selection = TextRange(resultTimeout.toString().length),
+                        ),
                     onValueChanged = {
                         timeoutTimeLeft = 3
                         resultTimeout = it?.text?.toIntOrNull() ?: 0
@@ -157,10 +159,11 @@ internal fun SMSSettingItem(
                     title = stringResource(R.string.settings_sms_result_sender_number),
                     onCallActionClicked = {},
                     state = smsSettings.responseState(),
-                    inputTextFieldValue = TextFieldValue(
-                        text = resultSender,
-                        selection = TextRange(resultSender.length),
-                    ),
+                    inputTextFieldValue =
+                        TextFieldValue(
+                            text = resultSender,
+                            selection = TextRange(resultSender.length),
+                        ),
                     onValueChanged = {
                         resultSenderTimeLeft = 3
                         resultSender = it?.text ?: ""

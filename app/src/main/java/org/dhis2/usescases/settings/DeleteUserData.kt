@@ -10,7 +10,6 @@ class DeleteUserData(
     private val filterManager: FilterManager,
     private val preferencesProvider: PreferenceProvider,
 ) {
-
     fun wipeCacheAndPreferences(file: File?) {
         filterManager.clearAllFilters()
         workManagerController.cancelAllWork()

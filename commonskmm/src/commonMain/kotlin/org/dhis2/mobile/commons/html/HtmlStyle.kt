@@ -9,10 +9,10 @@ data class HtmlStyle(
     /**
      * Optional style for hyperlinks (<a> tags). Default is a simple underline.
      */
-    val textLinkStyles: TextLinkStyles? = TextLinkStyles(
-        style = SpanStyle(textDecoration = TextDecoration.Underline, color = SurfaceColor.Primary),
-    ),
-
+    val textLinkStyles: TextLinkStyles? =
+        TextLinkStyles(
+            style = SpanStyle(textDecoration = TextDecoration.Underline, color = SurfaceColor.Primary),
+        ),
 ) {
     companion object {
         val DEFAULT: HtmlStyle = HtmlStyle()

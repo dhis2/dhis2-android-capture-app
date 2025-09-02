@@ -28,14 +28,13 @@ class DatasetCardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
 ) {
-
     fun map(
         dataset: DataSetDetailModel,
         editable: Boolean,
         onSyncIconClick: () -> Unit,
         onCardCLick: () -> Unit,
-    ): ListCardUiModel {
-        return ListCardUiModel(
+    ): ListCardUiModel =
+        ListCardUiModel(
             title = dataset.namePeriod,
             lastUpdated = dataset.lastUpdated.toDateSpan(context),
             additionalInfo = getAdditionalInfoList(dataset, editable),
@@ -49,7 +48,6 @@ class DatasetCardMapper(
             shrinkLabelText = resourceManager.getString(R.string.show_less),
             onCardCLick = onCardCLick,
         )
-    }
 
     private fun getAdditionalInfoList(
         dataset: DataSetDetailModel,
@@ -126,75 +124,79 @@ class DatasetCardMapper(
         list: MutableList<AdditionalInfoItem>,
         state: State,
     ) {
-        val item = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = resourceManager.getString(R.string.not_synced),
-                            tint = AdditionalInfoItemColor.DISABLED.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.not_synced),
-                    color = AdditionalInfoItemColor.DISABLED.color,
-                    isConstantItem = true,
-                )
-            }
+        val item =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncDisabled,
+                                contentDescription = resourceManager.getString(R.string.not_synced),
+                                tint = AdditionalInfoItemColor.DISABLED.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.not_synced),
+                        color = AdditionalInfoItemColor.DISABLED.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.UPLOADING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Sync,
-                            contentDescription = "Icon Button",
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.syncing),
-                    color = SurfaceColor.Primary,
-                    isConstantItem = true,
-                )
-            }
+                State.UPLOADING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Sync,
+                                contentDescription = "Icon Button",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.syncing),
+                        color = SurfaceColor.Primary,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.ERROR -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_error_title),
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_error_title),
-                    color = AdditionalInfoItemColor.ERROR.color,
-                    isConstantItem = true,
-                )
-            }
+                State.ERROR -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_error_title),
+                                tint = AdditionalInfoItemColor.ERROR.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_error_title),
+                        color = AdditionalInfoItemColor.ERROR.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.WARNING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
-                            tint = AdditionalInfoItemColor.WARNING.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_dialog_title_warning),
-                    color = AdditionalInfoItemColor.WARNING.color,
-                    isConstantItem = true,
-                )
-            }
+                State.WARNING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
+                                tint = AdditionalInfoItemColor.WARNING.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_dialog_title_warning),
+                        color = AdditionalInfoItemColor.WARNING.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            else -> null
-        }
+                else -> null
+            }
         item?.let { list.add(it) }
     }
 
-    private fun checkDatasetCompletion(list: MutableList<AdditionalInfoItem>, completed: Boolean) {
+    private fun checkDatasetCompletion(
+        list: MutableList<AdditionalInfoItem>,
+        completed: Boolean,
+    ) {
         if (completed) {
             list.add(
                 AdditionalInfoItem(
@@ -229,22 +231,26 @@ class DatasetCardMapper(
     }
 
     @Composable
-    private fun ProvideSyncButton(state: State?, onSyncIconClick: () -> Unit) {
-        val buttonText = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                resourceManager.getString(R.string.sync)
-            }
+    private fun ProvideSyncButton(
+        state: State?,
+        onSyncIconClick: () -> Unit,
+    ) {
+        val buttonText =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> {
+                    resourceManager.getString(R.string.sync)
+                }
 
-            State.ERROR,
-            State.WARNING,
-            -> {
-                resourceManager.getString(R.string.sync_retry)
-            }
+                State.ERROR,
+                State.WARNING,
+                -> {
+                    resourceManager.getString(R.string.sync_retry)
+                }
 
-            else -> null
-        }
+                else -> null
+            }
         buttonText?.let {
             Button(
                 style = ButtonStyle.TONAL,

@@ -4,5 +4,9 @@ import androidx.lifecycle.LifecycleCoroutineScope
 
 interface SessionManagerService {
     fun onUserInteraction()
-    fun checkSessionTimeout(navigateAction: (Int) -> Unit, scope: LifecycleCoroutineScope): Boolean
+
+    fun checkSessionTimeout(
+        navigateAction: (Int) -> Unit,
+        scope: LifecycleCoroutineScope,
+    ): Boolean
 }

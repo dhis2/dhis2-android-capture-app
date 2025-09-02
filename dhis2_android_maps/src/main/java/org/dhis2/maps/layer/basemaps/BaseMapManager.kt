@@ -31,58 +31,59 @@ class BaseMapManager(
     private val context: Context,
     val baseMapStyles: List<BaseMapStyle>,
 ) {
-    fun getBaseMaps() = baseMapStyles.map {
-        BaseMap(
-            baseMapStyle = it,
-            basemapName = baseMapName(it.id),
-            basemapImage = baseMapImage(it.id),
-        )
-    }
+    fun getBaseMaps() =
+        baseMapStyles.map {
+            BaseMap(
+                baseMapStyle = it,
+                basemapName = baseMapName(it.id),
+                basemapImage = baseMapImage(it.id),
+            )
+        }
 
     private fun baseMapName(basemapId: String): String {
-        val id = when (basemapId) {
-            OSM_LIGHT -> R.string.dialog_layer_base_map_osm_light
-            OSM_DETAILED -> R.string.dialog_layer_base_map_osm_detailed
-            BING_ROAD -> R.string.dialog_layer_base_map_bing_road
-            BING_DARK -> R.string.dialog_layer_base_map_bing_dark
-            BING_AERIAL -> R.string.dialog_layer_base_map_bing_aerial
-            BING_AERIAL_LABELS -> R.string.dialog_layer_base_map_bing_aerial_label
-            AZURE_ROAD -> R.string.dialog_layer_base_map_azure_road
-            AZURE_DARK -> R.string.dialog_layer_base_map_azure_dark
-            AZURE_AERIAL -> R.string.dialog_layer_base_map_azure_aerial
-            AZURE_AERIAL_LABELS -> R.string.dialog_layer_base_map_azure_aerial_label
-            else -> null
-        }
+        val id =
+            when (basemapId) {
+                OSM_LIGHT -> R.string.dialog_layer_base_map_osm_light
+                OSM_DETAILED -> R.string.dialog_layer_base_map_osm_detailed
+                BING_ROAD -> R.string.dialog_layer_base_map_bing_road
+                BING_DARK -> R.string.dialog_layer_base_map_bing_dark
+                BING_AERIAL -> R.string.dialog_layer_base_map_bing_aerial
+                BING_AERIAL_LABELS -> R.string.dialog_layer_base_map_bing_aerial_label
+                AZURE_ROAD -> R.string.dialog_layer_base_map_azure_road
+                AZURE_DARK -> R.string.dialog_layer_base_map_azure_dark
+                AZURE_AERIAL -> R.string.dialog_layer_base_map_azure_aerial
+                AZURE_AERIAL_LABELS -> R.string.dialog_layer_base_map_azure_aerial_label
+                else -> null
+            }
         return id?.let {
             context.getString(it)
         } ?: basemapId
     }
 
     private fun baseMapImage(basemapId: String): Drawable? {
-        val id = when (basemapId) {
-            OSM_LIGHT -> R.drawable.basemap_osm_light
-            OSM_DETAILED -> R.drawable.basemap_osm_detailed
-            BING_ROAD -> R.drawable.basemap_bing_road
-            BING_DARK -> R.drawable.basemap_bing_dark
-            BING_AERIAL -> R.drawable.basemap_bing_aerial
-            BING_AERIAL_LABELS -> R.drawable.basemap_bing_aerial_labels
-            AZURE_ROAD -> R.drawable.basemap_azure_road
-            AZURE_DARK -> R.drawable.basemap_azure_dark
-            AZURE_AERIAL -> R.drawable.basemap_azure_aerial
-            AZURE_AERIAL_LABELS -> R.drawable.basemap_azure_hybrid
-            else -> null
-        }
+        val id =
+            when (basemapId) {
+                OSM_LIGHT -> R.drawable.basemap_osm_light
+                OSM_DETAILED -> R.drawable.basemap_osm_detailed
+                BING_ROAD -> R.drawable.basemap_bing_road
+                BING_DARK -> R.drawable.basemap_bing_dark
+                BING_AERIAL -> R.drawable.basemap_bing_aerial
+                BING_AERIAL_LABELS -> R.drawable.basemap_bing_aerial_labels
+                AZURE_ROAD -> R.drawable.basemap_azure_road
+                AZURE_DARK -> R.drawable.basemap_azure_dark
+                AZURE_AERIAL -> R.drawable.basemap_azure_aerial
+                AZURE_AERIAL_LABELS -> R.drawable.basemap_azure_hybrid
+                else -> null
+            }
         return id?.let {
             AppCompatResources.getDrawable(context, it)
         }
     }
 
-    fun styleJson(baseMapStyle: BaseMapStyle): Style.Builder {
-        return Style.Builder()
+    fun styleJson(baseMapStyle: BaseMapStyle): Style.Builder =
+        Style
+            .Builder()
             .fromJson(Gson().toJson(baseMapStyle.copy(glyphs = DEFAULT_GLYPH_URL)))
-    }
 
-    fun getDefaultBasemap(): BaseMapStyle {
-        return baseMapStyles.firstOrNull() ?: internalBaseMap()
-    }
+    fun getDefaultBasemap(): BaseMapStyle = baseMapStyles.firstOrNull() ?: internalBaseMap()
 }

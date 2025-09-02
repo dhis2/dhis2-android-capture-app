@@ -23,7 +23,6 @@ class EventMapLayer(
     val eventColor: Int?,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-
     private val POINT_LAYER_ID = "POINT_LAYER"
     private var SELECTED_POINT_LAYER_ID: String = "SELECTED_TEI_POINT_LAYER_ID"
     private val POLYGON_LAYER_ID = "POLYGON_LAYER"
@@ -50,34 +49,38 @@ class EventMapLayer(
     }
 
     private val pointLayer: Layer
-        get() = style.getLayer(POINT_LAYER_ID)
-            ?: SymbolLayer(POINT_LAYER_ID, EventMapManager.EVENTS)
-                .withProperties(
-                    PropertyFactory.iconImage(EventMapManager.ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                ).apply { minZoom = 0f }
+        get() =
+            style.getLayer(POINT_LAYER_ID)
+                ?: SymbolLayer(POINT_LAYER_ID, EventMapManager.EVENTS)
+                    .withProperties(
+                        PropertyFactory.iconImage(EventMapManager.ICON_ID),
+                        PropertyFactory.iconAllowOverlap(true),
+                    ).apply { minZoom = 0f }
 
     private val selectedPointLayer: Layer
-        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
-            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage(EventMapManager.ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                ).apply { minZoom = 0f }
+        get() =
+            style.getLayer(SELECTED_POINT_LAYER_ID)
+                ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.iconImage(EventMapManager.ICON_ID),
+                        PropertyFactory.iconAllowOverlap(true),
+                    ).apply { minZoom = 0f }
 
     private val polygonLayer: Layer
-        get() = style.getLayer(POLYGON_LAYER_ID)
-            ?: FillLayer(POLYGON_LAYER_ID, EventMapManager.EVENTS)
-                .withProperties(
-                    PropertyFactory.fillColor(eventColor ?: -1),
-                )
+        get() =
+            style.getLayer(POLYGON_LAYER_ID)
+                ?: FillLayer(POLYGON_LAYER_ID, EventMapManager.EVENTS)
+                    .withProperties(
+                        PropertyFactory.fillColor(eventColor ?: -1),
+                    )
 
     private val selectedPolygonLayer: Layer
-        get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
-            ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
-                )
+        get() =
+            style.getLayer(SELECTED_POLYGON_LAYER_ID)
+                ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
+                    )
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
@@ -143,7 +146,6 @@ class EventMapLayer(
         selectedPolygonLayer.setProperties(
             PropertyFactory.fillColor(colorUtils.withAlpha(Color.WHITE)),
             PropertyFactory.visibility(Property.VISIBLE),
-
         )
     }
 
@@ -161,23 +163,23 @@ class EventMapLayer(
         }
     }
 
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? =
+        style
+            .getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty),
-            )?.firstOrNull()?.let {
+            )?.firstOrNull()
+            ?.let {
                 setSelectedItem(it)
                 it
             }
-    }
 
-    override fun getId(): String {
-        return if (featureType == FeatureType.POINT) {
+    override fun getId(): String =
+        if (featureType == FeatureType.POINT) {
             POINT_LAYER_ID
         } else {
             POLYGON_LAYER_ID
         }
-    }
 
     override fun layerIdsToSearch(): Array<String> = arrayOf(POINT_LAYER_ID)
 }

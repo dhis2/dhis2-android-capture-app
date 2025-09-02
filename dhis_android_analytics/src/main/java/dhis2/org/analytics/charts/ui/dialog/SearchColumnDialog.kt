@@ -48,7 +48,6 @@ class SearchColumnDialog(
     private val title: String,
     private val onSearch: (String?) -> Unit,
 ) : BottomSheetDialogFragment() {
-
     companion object {
         const val TAG: String = "SEARCH_COLUM_DIALOG"
     }
@@ -57,8 +56,8 @@ class SearchColumnDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
@@ -79,7 +78,6 @@ class SearchColumnDialog(
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -91,16 +89,17 @@ fun SearchColumnInput(
     var textValue: TextFieldValue? by remember { mutableStateOf(TextFieldValue("")) }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(
-                    topStart = Spacing.Spacing16,
-                    topEnd = Spacing.Spacing16,
-                ),
-            )
-            .padding(Spacing.Spacing8),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White,
+                    shape =
+                        RoundedCornerShape(
+                            topStart = Spacing.Spacing16,
+                            topEnd = Spacing.Spacing16,
+                        ),
+                ).padding(Spacing.Spacing8),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(

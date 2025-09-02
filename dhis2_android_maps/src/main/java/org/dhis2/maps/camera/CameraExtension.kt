@@ -15,12 +15,16 @@ import org.maplibre.geojson.Polygon
 const val DEFAULT_BOUND_PADDING = 50
 
 fun MapLibreMap.initCameraToViewAllElements(bounds: LatLngBounds) {
-    if (bounds.latitudeNorth == 0.0 && bounds.latitudeSouth == 0.0 &&
-        bounds.longitudeEast == 0.0 && bounds.longitudeWest == 0.0
+    if (bounds.latitudeNorth == 0.0 &&
+        bounds.latitudeSouth == 0.0 &&
+        bounds.longitudeEast == 0.0 &&
+        bounds.longitudeWest == 0.0
     ) {
-        this.cameraPosition = CameraPosition.Builder()
-            .zoom(2.0)
-            .build()
+        this.cameraPosition =
+            CameraPosition
+                .Builder()
+                .zoom(2.0)
+                .build()
     } else {
         zoomInToLanLngBoundsAnimation(bounds)
     }
@@ -52,15 +56,16 @@ fun MapLibreMap.moveCameraToPosition(latLng: LatLng) {
             13.0,
         ),
     )
-    val cameraPosition = CameraPosition.Builder()
-        .target(
-            LatLng(
-                latLng.latitude,
-                latLng.longitude,
-            ),
-        )
-        .zoom(15.0)
-        .build()
+    val cameraPosition =
+        CameraPosition
+            .Builder()
+            .target(
+                LatLng(
+                    latLng.latitude,
+                    latLng.longitude,
+                ),
+            ).zoom(15.0)
+            .build()
     this.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 }
 
@@ -73,50 +78,54 @@ fun MapLibreMap.moveCameraToDevicePosition(latLng: LatLng) {
             ),
         ),
     )
-    val cameraPosition = CameraPosition.Builder()
-        .target(
-            LatLng(
-                latLng.latitude,
-                latLng.longitude,
-            ),
-        )
-        .build()
+    val cameraPosition =
+        CameraPosition
+            .Builder()
+            .target(
+                LatLng(
+                    latLng.latitude,
+                    latLng.longitude,
+                ),
+            ).build()
     this.easeCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
 }
 
 fun MapLibreMap.centerCameraOnFeatures(features: List<Feature>) {
-    val latLongs = mutableListOf<LatLng>().apply {
-        features.forEach {
-            addAll(
-                when (val geometry = it.geometry()) {
-                    is Point -> arrayListOf(LatLng(geometry.latitude(), geometry.longitude()))
-                    is Polygon -> geometry.coordinates()[0].map { point ->
-                        LatLng(
-                            point.latitude(),
-                            point.longitude(),
-                        )
-                    }
+    val latLongs =
+        mutableListOf<LatLng>().apply {
+            features.forEach {
+                addAll(
+                    when (val geometry = it.geometry()) {
+                        is Point -> arrayListOf(LatLng(geometry.latitude(), geometry.longitude()))
+                        is Polygon ->
+                            geometry.coordinates()[0].map { point ->
+                                LatLng(
+                                    point.latitude(),
+                                    point.longitude(),
+                                )
+                            }
 
-                    is LineString -> geometry.coordinates().map { point ->
-                        LatLng(
-                            point.latitude(),
-                            point.longitude(),
-                        )
-                    }
+                        is LineString ->
+                            geometry.coordinates().map { point ->
+                                LatLng(
+                                    point.latitude(),
+                                    point.longitude(),
+                                )
+                            }
 
-                    else -> emptyList<LatLng>()
-                },
-            )
+                        else -> emptyList<LatLng>()
+                    },
+                )
+            }
         }
-    }
     val bbox = GetBoundingBox().getEnclosingBoundingBox(latLongs)
-    val bounds = LatLngBounds.Builder()
-        .include(pointToLatLn(bbox.northeast()))
-        .include(pointToLatLn(bbox.southwest()))
-        .build()
+    val bounds =
+        LatLngBounds
+            .Builder()
+            .include(pointToLatLn(bbox.northeast()))
+            .include(pointToLatLn(bbox.southwest()))
+            .build()
     initCameraToViewAllElements(bounds)
 }
 
-fun pointToLatLn(point: Point): LatLng {
-    return LatLng(point.latitude(), point.longitude())
-}
+fun pointToLatLn(point: Point): LatLng = LatLng(point.latitude(), point.longitude())

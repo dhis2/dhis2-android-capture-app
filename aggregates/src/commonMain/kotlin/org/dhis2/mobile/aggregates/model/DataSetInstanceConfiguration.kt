@@ -12,22 +12,25 @@ internal data class DataSetInstanceConfiguration(
         categoryOptionComboUid: String?,
         categoryOptionComboUids: List<String>?,
     ): Boolean {
-        val isGreyedOut = greyedOutFields.any {
-            if (categoryOptionComboUid != null) {
-                it.dataElementUid == dataElementUid && it.categoryOptionComboUid == categoryOptionComboUid
-            } else {
-                it.dataElementUid == dataElementUid && it.categoryOptionUids == categoryOptionComboUids
+        val isGreyedOut =
+            greyedOutFields.any {
+                if (categoryOptionComboUid != null) {
+                    it.dataElementUid == dataElementUid && it.categoryOptionComboUid == categoryOptionComboUid
+                } else {
+                    it.dataElementUid == dataElementUid && it.categoryOptionUids == categoryOptionComboUids
+                }
             }
-        }
 
         return editable && isGreyedOut.not()
     }
 
-    fun isMandatory(rowId: String, columnId: String) =
-        compulsoryDataElements.any {
-            it.categoryOptionComboUid == columnId &&
-                it.uid == rowId
-        }
+    fun isMandatory(
+        rowId: String,
+        columnId: String,
+    ) = compulsoryDataElements.any {
+        it.categoryOptionComboUid == columnId &&
+            it.uid == rowId
+    }
 }
 
 internal data class CellElement(

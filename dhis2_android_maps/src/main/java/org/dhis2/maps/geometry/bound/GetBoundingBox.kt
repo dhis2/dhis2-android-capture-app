@@ -5,7 +5,6 @@ import org.maplibre.android.geometry.LatLng
 import org.maplibre.geojson.BoundingBox
 
 class GetBoundingBox {
-
     fun getEnclosingBoundingBox(coordinates: List<LatLng>): BoundingBox {
         if (coordinates.isEmpty()) {
             return BoundingBox.fromLngLats(0.0, 0.0, 0.0, 0.0)

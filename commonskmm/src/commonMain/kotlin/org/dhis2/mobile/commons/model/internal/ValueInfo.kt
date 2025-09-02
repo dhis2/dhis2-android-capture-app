@@ -16,6 +16,8 @@ data class ValueInfo(
     val isBooleanType: Boolean,
 ) {
     fun parseToOptionName() = !isMultiText and valueIsValidOption
+
     fun parseToOrgUnitName() = isOrganisationUnit and valueIsAValidOrgUnit
+
     fun parseToFileName() = isFile and valueIsAValidFile
 }

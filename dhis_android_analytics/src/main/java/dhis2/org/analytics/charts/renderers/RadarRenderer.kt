@@ -15,7 +15,11 @@ class RadarRenderer(
     xAxis: XAxis?,
     chart: RadarChart?,
 ) : XAxisRendererRadarChart(viewPortHandler, xAxis, chart) {
-    override fun drawLabels(c: Canvas, pos: Float, anchor: MPPointF) {
+    override fun drawLabels(
+        c: Canvas,
+        pos: Float,
+        anchor: MPPointF,
+    ) {
         super.drawLabels(c, pos, anchor)
     }
 
@@ -30,11 +34,12 @@ class RadarRenderer(
         val labelSize = Utils.calcTextSize(mAxisLabelPaint, longest)
         val labelWidth = labelSize.width
         val labelHeight = Utils.calcTextHeight(mAxisLabelPaint, "Q").toFloat()
-        val labelRotatedSize = Utils.getSizeOfRotatedRectangleByDegrees(
-            labelWidth,
-            labelHeight,
-            mXAxis.labelRotationAngle,
-        )
+        val labelRotatedSize =
+            Utils.getSizeOfRotatedRectangleByDegrees(
+                labelWidth,
+                labelHeight,
+                mXAxis.labelRotationAngle,
+            )
         mXAxis.mLabelWidth = labelWidth.roundToInt()
         mXAxis.mLabelHeight = labelHeight.roundToInt()
         mXAxis.mLabelRotatedWidth = labelRotatedSize.width.roundToInt()
@@ -84,9 +89,10 @@ class RadarRenderer(
         return if (blankIndex.isEmpty()) {
             arrayOf(label)
         } else {
-            val splitIndex = blankIndex.lastOrNull {
-                it * 2 <= totalLenght
-            } ?: blankIndex.first()
+            val splitIndex =
+                blankIndex.lastOrNull {
+                    it * 2 <= totalLenght
+                } ?: blankIndex.first()
             arrayOf(label.substring(0, splitIndex), label.substring(splitIndex + 1, label.length))
         }
     }

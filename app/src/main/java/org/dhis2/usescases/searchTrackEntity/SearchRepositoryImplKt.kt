@@ -50,7 +50,6 @@ class SearchRepositoryImplKt(
     private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
 ) : SearchRepositoryKt {
-
     private lateinit var savedSearchParameters: SearchParametersModel
 
     private lateinit var savedFilters: FilterManager
@@ -62,10 +61,9 @@ class SearchRepositoryImplKt(
     override fun searchTrackedEntities(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
-    ): Flow<PagingData<TrackedEntitySearchItem>> {
-        return trackedEntitySearchQuery(searchParametersModel, isOnline)
+    ): Flow<PagingData<TrackedEntitySearchItem>> =
+        trackedEntitySearchQuery(searchParametersModel, isOnline)
             .getPagingData(10)
-    }
 
     private fun trackedEntitySearchQuery(
         searchParametersModel: SearchParametersModel,
@@ -75,7 +73,9 @@ class SearchRepositoryImplKt(
         savedSearchParameters = searchParametersModel.copy()
         savedFilters = FilterManager.getInstance().copy()
 
-        if (searchParametersModel != savedSearchParameters || !FilterManager.getInstance()
+        if (searchParametersModel != savedSearchParameters ||
+            !FilterManager
+                .getInstance()
                 .sameFilters(savedFilters)
         ) {
             trackedEntityInstanceQuery =
@@ -91,11 +91,12 @@ class SearchRepositoryImplKt(
                 trackedEntityInstanceQuery.excludeUids().`in`(fetchedTeiUids.toList())
         }
 
-        val pagerFlow = if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
-            trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
-        } else {
-            trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
-        }
+        val pagerFlow =
+            if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
+                trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
+            } else {
+                trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
+            }
 
         return pagerFlow
     }
@@ -105,35 +106,37 @@ class SearchRepositoryImplKt(
         teiTypeUid: String,
     ): List<FieldUiModel> =
         withContext(dispatcher.io()) {
-            val searchParameters = programUid?.let {
-                programTrackedEntityAttributes(programUid)
-            } ?: trackedEntitySearchFields(teiTypeUid)
+            val searchParameters =
+                programUid?.let {
+                    programTrackedEntityAttributes(programUid)
+                } ?: trackedEntitySearchFields(teiTypeUid)
 
             sortSearchParameters(searchParameters)
         }
 
-    fun sortSearchParameters(parameters: List<FieldUiModel>): List<FieldUiModel> {
-        return parameters.sortedWith(
+    fun sortSearchParameters(parameters: List<FieldUiModel>): List<FieldUiModel> =
+        parameters.sortedWith(
             compareByDescending<FieldUiModel> {
                 it.renderingType?.isQROrBarcode() == true && isUnique(it.uid)
             }.thenByDescending {
                 it.renderingType?.isQROrBarcode() == true
             }.thenByDescending { isUnique(it.uid) },
         )
-    }
 
-    private fun isUnique(teaUid: String): Boolean {
-        return d2.trackedEntityModule().trackedEntityAttributes().uid(teaUid)
-            .blockingGet()?.unique() ?: false
-    }
+    private fun isUnique(teaUid: String): Boolean =
+        d2
+            .trackedEntityModule()
+            .trackedEntityAttributes()
+            .uid(teaUid)
+            .blockingGet()
+            ?.unique() ?: false
 
     override suspend fun searchTrackedEntitiesImmediate(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
-    ): List<TrackedEntitySearchItem> {
-        return trackedEntitySearchQuery(searchParametersModel, isOnline)
+    ): List<TrackedEntitySearchItem> =
+        trackedEntitySearchQuery(searchParametersModel, isOnline)
             .blockingGet()
-    }
 
     override fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,
@@ -148,8 +151,11 @@ class SearchRepositoryImplKt(
         }
 
         return if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
-            trackedEntityInstanceQuery.allowOnlineCache()
-                .eq(allowCache).offlineFirst().blockingGet()
+            trackedEntityInstanceQuery
+                .allowOnlineCache()
+                .eq(allowCache)
+                .offlineFirst()
+                .blockingGet()
                 .map { tei ->
                     transformForMap(
                         tei,
@@ -157,7 +163,10 @@ class SearchRepositoryImplKt(
                     )
                 }
         } else {
-            trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
+            trackedEntityInstanceQuery
+                .allowOnlineCache()
+                .eq(allowCache)
+                .offlineOnly()
                 .blockingGet()
                 .map { tei ->
                     transformForMap(
@@ -173,38 +182,50 @@ class SearchRepositoryImplKt(
         selectedProgram: Program?,
     ): MapItemModel {
         fetchedTeiUids.add(searchItem.uid())
-        val tei = if (searchItem.isOnline) {
-            d2.trackedEntityModule().trackedEntityInstances()
-                .uid(searchItem.uid()).blockingGet()!!
-        } else {
-            toTrackedEntityInstance(searchItem)
-        }
+        val tei =
+            if (searchItem.isOnline) {
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid(searchItem.uid())
+                    .blockingGet()!!
+            } else {
+                toTrackedEntityInstance(searchItem)
+            }
 
-        val attributeValues = trackedEntityInstanceInfoProvider.getTeiAdditionalInfoList(
-            searchItem.attributeValues ?: emptyList(),
-        )
+        val attributeValues =
+            trackedEntityInstanceInfoProvider.getTeiAdditionalInfoList(
+                searchItem.attributeValues ?: emptyList(),
+            )
 
         return MapItemModel(
             uid = searchItem.uid,
-            avatarProviderConfiguration = trackedEntityInstanceInfoProvider.getAvatar(
-                tei,
-                selectedProgram?.uid(),
-                attributeValues.firstOrNull(),
-            ),
-            title = trackedEntityInstanceInfoProvider.getTeiTitle(
-                searchItem.header,
-                attributeValues,
-            ),
+            avatarProviderConfiguration =
+                trackedEntityInstanceInfoProvider.getAvatar(
+                    tei,
+                    selectedProgram?.uid(),
+                    attributeValues.firstOrNull(),
+                ),
+            title =
+                trackedEntityInstanceInfoProvider.getTeiTitle(
+                    searchItem.header,
+                    attributeValues,
+                ),
             description = null,
             lastUpdated = trackedEntityInstanceInfoProvider.getTeiLastUpdated(searchItem),
             additionalInfoList = attributeValues,
-            isOnline = d2.trackedEntityModule().trackedEntityInstances().uid(searchItem.uid)
-                .blockingGet() == null,
+            isOnline =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid(searchItem.uid)
+                    .blockingGet() == null,
             geometry = searchItem.geometry,
-            relatedInfo = trackedEntityInstanceInfoProvider.getRelatedInfo(
-                searchItem,
-                selectedProgram,
-            ),
+            relatedInfo =
+                trackedEntityInstanceInfoProvider.getRelatedInfo(
+                    searchItem,
+                    selectedProgram,
+                ),
             state = searchItem.syncState ?: State.SYNCED,
         )
     }
@@ -212,19 +233,25 @@ class SearchRepositoryImplKt(
     override fun searchRelationshipsForMap(
         teis: List<MapItemModel>,
         selectedProgram: Program?,
-    ): List<MapItemModel> {
-        return buildList {
+    ): List<MapItemModel> =
+        buildList {
             teis.forEach { tei ->
-                d2.relationshipModule().relationships().getByItem(
-                    searchItem = RelationshipItem.builder().trackedEntityInstance(
-                        RelationshipItemTrackedEntityInstance.builder()
-                            .trackedEntityInstance(tei.uid)
-                            .build(),
-                    ).build(),
-                    includeDeleted = false,
-                    onlyAccessible = false,
-                )
-                    .forEach { relationship ->
+                d2
+                    .relationshipModule()
+                    .relationships()
+                    .getByItem(
+                        searchItem =
+                            RelationshipItem
+                                .builder()
+                                .trackedEntityInstance(
+                                    RelationshipItemTrackedEntityInstance
+                                        .builder()
+                                        .trackedEntityInstance(tei.uid)
+                                        .build(),
+                                ).build(),
+                        includeDeleted = false,
+                        onlyAccessible = false,
+                    ).forEach { relationship ->
                         add(
                             trackedEntityInstanceInfoProvider.updateRelationshipInfo(
                                 tei,
@@ -232,26 +259,35 @@ class SearchRepositoryImplKt(
                             ),
                         )
 
-                        val relationshipTarget = if (relationship.to()?.trackedEntityInstance()
-                                ?.trackedEntityInstance() == tei.uid
-                        ) {
-                            relationship.from()
-                        } else {
-                            relationship.to()
-                        }
+                        val relationshipTarget =
+                            if (relationship
+                                    .to()
+                                    ?.trackedEntityInstance()
+                                    ?.trackedEntityInstance() == tei.uid
+                            ) {
+                                relationship.from()
+                            } else {
+                                relationship.to()
+                            }
 
                         when {
                             relationshipTarget?.trackedEntityInstance() != null &&
                                 teis.none { it.uid == relationshipTarget.elementUid() } -> {
                                 val trackedEntityType =
-                                    d2.trackedEntityModule().trackedEntityInstances()
+                                    d2
+                                        .trackedEntityModule()
+                                        .trackedEntityInstances()
                                         .uid(relationshipTarget.elementUid())
                                         .blockingGet()
                                         ?.trackedEntityType()
-                                val relationshipTei = d2.trackedEntityModule().trackedEntitySearch()
-                                    .byTrackedEntityType().eq(trackedEntityType)
-                                    .uid(relationshipTarget.elementUid())
-                                    .blockingGet()
+                                val relationshipTei =
+                                    d2
+                                        .trackedEntityModule()
+                                        .trackedEntitySearch()
+                                        .byTrackedEntityType()
+                                        .eq(trackedEntityType)
+                                        .uid(relationshipTarget.elementUid())
+                                        .blockingGet()
 
                                 relationshipTei?.let {
                                     add(
@@ -264,25 +300,31 @@ class SearchRepositoryImplKt(
                             }
 
                             relationshipTarget?.event() != null -> {
-                                Timber.tag("MAP RELATIONSHIP BUILDER")
+                                Timber
+                                    .tag("MAP RELATIONSHIP BUILDER")
                                     .d("Event need to be added and updated with relationship info")
                             }
                         }
                     }
             }
         }
-    }
 
     override fun searchEventForMap(
         teiUids: List<String>,
         selectedProgram: Program?,
-    ): List<MapItemModel> {
-        return d2.eventModule().events()
+    ): List<MapItemModel> =
+        d2
+            .eventModule()
+            .events()
             .byTrackedEntityInstanceUids(teiUids)
-            .byProgramUid().eq(selectedProgram?.uid())
-            .byStatus().`in`(listOf(EventStatus.ACTIVE, EventStatus.OVERDUE, EventStatus.COMPLETED))
-            .byDeleted().isFalse
-            .blockingGet().map { event ->
+            .byProgramUid()
+            .eq(selectedProgram?.uid())
+            .byStatus()
+            .`in`(listOf(EventStatus.ACTIVE, EventStatus.OVERDUE, EventStatus.COMPLETED))
+            .byDeleted()
+            .isFalse
+            .blockingGet()
+            .map { event ->
                 with(eventInfoProvider) {
                     MapItemModel(
                         uid = event.uid(),
@@ -298,116 +340,153 @@ class SearchRepositoryImplKt(
                     )
                 }
             }
-    }
 
     private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
-        val searchableAttributes = d2.programModule().programTrackedEntityAttributes()
-            .withRenderType()
-            .byProgram().eq(programUid).orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            .blockingGet().filter { programAttribute ->
-                val isSearchable = programAttribute.searchable()!!
-                val isUnique = d2.trackedEntityModule().trackedEntityAttributes()
+        val searchableAttributes =
+            d2
+                .programModule()
+                .programTrackedEntityAttributes()
+                .withRenderType()
+                .byProgram()
+                .eq(programUid)
+                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet()
+                .filter { programAttribute ->
+                    val isSearchable = programAttribute.searchable()!!
+                    val isUnique =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityAttributes()
+                            .uid(programAttribute.trackedEntityAttribute()!!.uid())
+                            .blockingGet()
+                            ?.unique() === java.lang.Boolean.TRUE
+                    isSearchable || isUnique
+                }
+
+        val program =
+            d2
+                .programModule()
+                .programs()
+                .uid(programUid)
+                .blockingGet()
+
+        return searchableAttributes
+            .mapNotNull { programAttribute ->
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityAttributes()
                     .uid(programAttribute.trackedEntityAttribute()!!.uid())
-                    .blockingGet()?.unique() === java.lang.Boolean.TRUE
-                isSearchable || isUnique
-            }
-
-        val program = d2.programModule().programs().uid(programUid).blockingGet()
-
-        return searchableAttributes.mapNotNull { programAttribute ->
-            d2.trackedEntityModule().trackedEntityAttributes()
-                .uid(programAttribute.trackedEntityAttribute()!!.uid())
-                .blockingGet()?.let { attribute ->
-                    val searchFlow = MutableStateFlow("")
-                    val optionSetConfiguration = attribute.optionSet()?.let {
-                        OptionSetConfiguration(
-                            searchEmitter = searchFlow,
-                            optionFlow = searchFlow.debounce(300).flatMapLatest {
-                                d2.optionModule().options()
-                                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                    .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                    .getPagingData(10)
-                                    .map { pagingData ->
-                                        pagingData.map { option ->
-                                            OptionSetConfiguration.OptionData(
-                                                option,
-                                                metadataIconProvider(
-                                                    option.style(),
-                                                    program?.style()?.color()?.toColor()
-                                                        ?: SurfaceColor.Primary,
-                                                ),
-                                            )
-                                        }
-                                    }
-                            },
-                            onSearch = { searchFlow.value = it },
+                    .blockingGet()
+                    ?.let { attribute ->
+                        val searchFlow = MutableStateFlow("")
+                        val optionSetConfiguration =
+                            attribute.optionSet()?.let {
+                                OptionSetConfiguration(
+                                    searchEmitter = searchFlow,
+                                    optionFlow =
+                                        searchFlow.debounce(300).flatMapLatest {
+                                            d2
+                                                .optionModule()
+                                                .options()
+                                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                                .byOptionSetUid()
+                                                .eq(attribute.optionSet()!!.uid())
+                                                .getPagingData(10)
+                                                .map { pagingData ->
+                                                    pagingData.map { option ->
+                                                        OptionSetConfiguration.OptionData(
+                                                            option,
+                                                            metadataIconProvider(
+                                                                option.style(),
+                                                                program?.style()?.color()?.toColor()
+                                                                    ?: SurfaceColor.Primary,
+                                                            ),
+                                                        )
+                                                    }
+                                                }
+                                        },
+                                    onSearch = { searchFlow.value = it },
+                                )
+                            }
+                        createField(
+                            trackedEntityAttribute = attribute,
+                            programTrackedEntityAttribute = programAttribute,
+                            optionSetConfiguration = optionSetConfiguration,
                         )
                     }
-                    createField(
-                        trackedEntityAttribute = attribute,
-                        programTrackedEntityAttribute = programAttribute,
-                        optionSetConfiguration = optionSetConfiguration,
-                    )
-                }
-        }.filter { parameter ->
-            parameter.valueType !== ValueType.IMAGE &&
-                parameter.valueType !== ValueType.COORDINATE &&
-                parameter.valueType !== ValueType.FILE_RESOURCE
-        }
+            }.filter { parameter ->
+                parameter.valueType !== ValueType.IMAGE &&
+                    parameter.valueType !== ValueType.COORDINATE &&
+                    parameter.valueType !== ValueType.FILE_RESOURCE
+            }
     }
 
     private fun trackedEntitySearchFields(teiTypeUid: String): List<FieldUiModel> {
-        val teTypeAttributes = d2.trackedEntityModule().trackedEntityTypeAttributes()
-            .byTrackedEntityTypeUid().eq(teiTypeUid)
-            .bySearchable().isTrue
-            .blockingGet()
+        val teTypeAttributes =
+            d2
+                .trackedEntityModule()
+                .trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid()
+                .eq(teiTypeUid)
+                .bySearchable()
+                .isTrue
+                .blockingGet()
 
-        return teTypeAttributes.mapNotNull { typeAttribute ->
-            d2.trackedEntityModule().trackedEntityAttributes()
-                .uid(typeAttribute.trackedEntityAttribute()!!.uid())
-                .blockingGet()?.let { attribute ->
-                    val searchEmitter = MutableStateFlow("")
-                    val optionSetConfiguration = attribute.optionSet()?.let {
-                        OptionSetConfiguration(
-                            searchEmitter = searchEmitter,
-                            optionFlow = d2.optionModule().options()
-                                .byOptionSetUid().eq(attribute.optionSet()!!.uid())
-                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                .getPagingData(10)
-                                .map { pagingData ->
-                                    pagingData.map { option ->
-                                        OptionSetConfiguration.OptionData(
-                                            option,
-                                            metadataIconProvider(
-                                                option.style(),
-                                                SurfaceColor.Primary,
-                                            ),
-                                        )
-                                    }
-                                },
-                            onSearch = { searchEmitter.value = it },
+        return teTypeAttributes
+            .mapNotNull { typeAttribute ->
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityAttributes()
+                    .uid(typeAttribute.trackedEntityAttribute()!!.uid())
+                    .blockingGet()
+                    ?.let { attribute ->
+                        val searchEmitter = MutableStateFlow("")
+                        val optionSetConfiguration =
+                            attribute.optionSet()?.let {
+                                OptionSetConfiguration(
+                                    searchEmitter = searchEmitter,
+                                    optionFlow =
+                                        d2
+                                            .optionModule()
+                                            .options()
+                                            .byOptionSetUid()
+                                            .eq(attribute.optionSet()!!.uid())
+                                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                                            .getPagingData(10)
+                                            .map { pagingData ->
+                                                pagingData.map { option ->
+                                                    OptionSetConfiguration.OptionData(
+                                                        option,
+                                                        metadataIconProvider(
+                                                            option.style(),
+                                                            SurfaceColor.Primary,
+                                                        ),
+                                                    )
+                                                }
+                                            },
+                                    onSearch = { searchEmitter.value = it },
+                                )
+                            }
+
+                        createField(
+                            trackedEntityAttribute = attribute,
+                            programTrackedEntityAttribute = null,
+                            optionSetConfiguration = optionSetConfiguration,
                         )
                     }
-
-                    createField(
-                        trackedEntityAttribute = attribute,
-                        programTrackedEntityAttribute = null,
-                        optionSetConfiguration = optionSetConfiguration,
-                    )
-                }
-        }.filter { parameter ->
-            parameter.valueType !== ValueType.IMAGE &&
-                parameter.valueType !== ValueType.COORDINATE &&
-                parameter.valueType !== ValueType.FILE_RESOURCE
-        }
+            }.filter { parameter ->
+                parameter.valueType !== ValueType.IMAGE &&
+                    parameter.valueType !== ValueType.COORDINATE &&
+                    parameter.valueType !== ValueType.FILE_RESOURCE
+            }
     }
 
     private fun createField(
         trackedEntityAttribute: TrackedEntityAttribute,
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
         optionSetConfiguration: OptionSetConfiguration?,
-    ): FieldUiModel {
-        return fieldViewModelFactory.create(
+    ): FieldUiModel =
+        fieldViewModelFactory.create(
             id = trackedEntityAttribute.uid(),
             label = trackedEntityAttribute.displayFormName() ?: "",
             valueType = trackedEntityAttribute.valueType()!!,
@@ -425,5 +504,4 @@ class SearchRepositoryImplKt(
             optionSetConfiguration = optionSetConfiguration,
             featureType = null,
         )
-    }
 }

@@ -6,23 +6,13 @@ class EventPageConfigurator(
     private val eventCaptureRepository: EventCaptureContract.EventCaptureRepository,
     val isPortrait: Boolean,
 ) : NavigationPageConfigurator {
-    override fun displayDetails(): Boolean {
-        return true
-    }
+    override fun displayDetails(): Boolean = true
 
-    override fun displayDataEntry(): Boolean {
-        return isPortrait
-    }
+    override fun displayDataEntry(): Boolean = isPortrait
 
-    override fun displayAnalytics(): Boolean {
-        return eventCaptureRepository.hasAnalytics()
-    }
+    override fun displayAnalytics(): Boolean = eventCaptureRepository.hasAnalytics()
 
-    override fun displayRelationships(): Boolean {
-        return eventCaptureRepository.hasRelationships()
-    }
+    override fun displayRelationships(): Boolean = eventCaptureRepository.hasRelationships()
 
-    override fun displayNotes(): Boolean {
-        return true
-    }
+    override fun displayNotes(): Boolean = true
 }

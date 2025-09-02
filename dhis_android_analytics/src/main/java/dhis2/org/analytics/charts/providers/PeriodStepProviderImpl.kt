@@ -24,32 +24,32 @@ import kotlin.coroutines.CoroutineContext
 class PeriodStepProviderImpl(
     val d2: D2,
     val dispatcherProvider: DispatcherProvider,
-) :
-    PeriodStepProvider, CoroutineScope {
-
+) : PeriodStepProvider,
+    CoroutineScope {
     private var job = Job()
     override val coroutineContext: CoroutineContext
         get() = job + dispatcherProvider.io()
 
     override fun periodStep(periodType: PeriodType?): Long {
         val currentDate = Date()
-        val result = async(dispatcherProvider.io()) {
-            val initialPeriodDate =
-                getPeriodForPeriodTypeAndDate(
-                    periodType ?: PeriodType.Daily,
-                    currentDate,
-                    -1,
-                ).startDate()?.time ?: 0L
+        val result =
+            async(dispatcherProvider.io()) {
+                val initialPeriodDate =
+                    getPeriodForPeriodTypeAndDate(
+                        periodType ?: PeriodType.Daily,
+                        currentDate,
+                        -1,
+                    ).startDate()?.time ?: 0L
 
-            val currentPeriodDate =
-                getPeriodForPeriodTypeAndDate(
-                    periodType ?: PeriodType.Daily,
-                    currentDate,
-                    0,
-                ).startDate()?.time ?: 0L
+                val currentPeriodDate =
+                    getPeriodForPeriodTypeAndDate(
+                        periodType ?: PeriodType.Daily,
+                        currentDate,
+                        0,
+                    ).startDate()?.time ?: 0L
 
-            initialPeriodDate - currentPeriodDate
-        }
+                initialPeriodDate - currentPeriodDate
+            }
 
         return runBlocking { result.await() }
     }
@@ -58,17 +58,19 @@ class PeriodStepProviderImpl(
         periodType: PeriodType,
         currentDate: Date,
         offset: Int,
-    ): Period {
-        return withContext(dispatcherProvider.io()) {
+    ): Period =
+        withContext(dispatcherProvider.io()) {
             d2.periodModule().periodHelper().blockingGetPeriodForPeriodTypeAndDate(
                 periodType,
                 currentDate,
                 offset,
             )
         }
-    }
 
-    override fun periodUIString(locale: Locale, period: Period): String {
+    override fun periodUIString(
+        locale: Locale,
+        period: Period,
+    ): String {
         val formattedDate: String
         var periodString = DEFAULT_PERIOD
         when (period.periodType()) {
@@ -79,17 +81,18 @@ class PeriodStepProviderImpl(
             PeriodType.WeeklySunday,
             -> {
                 periodString = DEFAULT_PERIOD_WEEK
-                formattedDate = periodString.format(
-                    weekOfTheYear(period.periodType()!!, period.periodId()!!),
-                    SimpleDateFormat(
-                        DATE_FORMAT_EXPRESSION,
-                        locale,
-                    ).format(period.startDate()!!),
-                    SimpleDateFormat(
-                        DATE_FORMAT_EXPRESSION,
-                        locale,
-                    ).format(period.endDate()!!),
-                )
+                formattedDate =
+                    periodString.format(
+                        weekOfTheYear(period.periodType()!!, period.periodId()!!),
+                        SimpleDateFormat(
+                            DATE_FORMAT_EXPRESSION,
+                            locale,
+                        ).format(period.startDate()!!),
+                        SimpleDateFormat(
+                            DATE_FORMAT_EXPRESSION,
+                            locale,
+                        ).format(period.endDate()!!),
+                    )
             }
 
             PeriodType.BiWeekly -> {
@@ -111,16 +114,18 @@ class PeriodStepProviderImpl(
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
-            -> formattedDate = periodString.format(
-                SimpleDateFormat(
-                    MONTHLY_FORMAT_EXPRESSION,
-                    locale,
-                ).format(period.startDate()!!),
-                SimpleDateFormat(
-                    MONTHLY_FORMAT_EXPRESSION,
-                    locale,
-                ).format(period.endDate()!!),
-            )
+            ->
+                formattedDate =
+                    periodString.format(
+                        SimpleDateFormat(
+                            MONTHLY_FORMAT_EXPRESSION,
+                            locale,
+                        ).format(period.startDate()!!),
+                        SimpleDateFormat(
+                            MONTHLY_FORMAT_EXPRESSION,
+                            locale,
+                        ).format(period.endDate()!!),
+                    )
 
             PeriodType.Yearly ->
                 formattedDate =
@@ -139,7 +144,10 @@ class PeriodStepProviderImpl(
         return WordUtils.capitalize(formattedDate)
     }
 
-    private fun weekOfTheYear(periodType: PeriodType, periodId: String): Int {
+    private fun weekOfTheYear(
+        periodType: PeriodType,
+        periodId: String,
+    ): Int {
         val pattern =
             Pattern.compile(periodType.pattern)
         val matcher = pattern.matcher(periodId)
@@ -150,67 +158,84 @@ class PeriodStepProviderImpl(
         return weekNumber
     }
 
-    override fun getPeriodDiff(initialPeriod: Period, currentPeriod: Period): Int {
-        return when (initialPeriod.periodType()) {
-            PeriodType.Daily -> Days.daysBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).days
+    override fun getPeriodDiff(
+        initialPeriod: Period,
+        currentPeriod: Period,
+    ): Int =
+        when (initialPeriod.periodType()) {
+            PeriodType.Daily ->
+                Days
+                    .daysBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).days
 
             PeriodType.Weekly,
             PeriodType.WeeklyWednesday,
             PeriodType.WeeklyThursday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
-            -> Weeks.weeksBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).weeks
+            ->
+                Weeks
+                    .weeksBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).weeks
 
-            PeriodType.BiWeekly -> Weeks.weeksBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).weeks / 2
+            PeriodType.BiWeekly ->
+                Weeks
+                    .weeksBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).weeks / 2
 
-            PeriodType.Monthly -> Months.monthsBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).months
+            PeriodType.Monthly ->
+                Months
+                    .monthsBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).months
 
-            PeriodType.BiMonthly -> Months.monthsBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).months / 2
+            PeriodType.BiMonthly ->
+                Months
+                    .monthsBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).months / 2
 
             PeriodType.Quarterly,
             PeriodType.QuarterlyNov,
-            -> Months.monthsBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).months / 3
+            ->
+                Months
+                    .monthsBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).months / 3
 
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
             PeriodType.SixMonthlyNov,
             ->
-                Months.monthsBetween(
-                    DateTime(initialPeriod.startDate()),
-                    DateTime(currentPeriod.startDate()),
-                ).months / 6
+                Months
+                    .monthsBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).months / 6
 
             PeriodType.Yearly,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
-            -> Years.yearsBetween(
-                DateTime(initialPeriod.startDate()),
-                DateTime(currentPeriod.startDate()),
-            ).years
+            ->
+                Years
+                    .yearsBetween(
+                        DateTime(initialPeriod.startDate()),
+                        DateTime(currentPeriod.startDate()),
+                    ).years
 
             null -> 0
         }
-    }
 
     // TODO:Some of these strings need to be localized
     companion object {

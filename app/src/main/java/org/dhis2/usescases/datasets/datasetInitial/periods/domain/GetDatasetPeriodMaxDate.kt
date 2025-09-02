@@ -10,7 +10,5 @@ class GetDatasetPeriodMaxDate(
     operator fun invoke(
         periodType: PeriodType,
         openFuturePeriods: Int,
-    ): Date {
-        return repository.getPeriodMaxDate(periodType, openFuturePeriods)
-    }
+    ): Date = repository.getPeriodMaxDate(periodType, openFuturePeriods)
 }

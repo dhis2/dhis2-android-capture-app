@@ -21,7 +21,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class TeiProgramListPresenterTest {
-
     lateinit var presenter: TeiProgramListPresenter
     private val view: TeiProgramListContract.View = mock()
     private val interactor: TeiProgramListContract.Interactor = mock()
@@ -31,14 +30,15 @@ class TeiProgramListPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = TeiProgramListPresenter(
-            view,
-            interactor,
-            "teiUid",
-            preferenceProvider,
-            analyticsHelper,
-            enrollmentService,
-        )
+        presenter =
+            TeiProgramListPresenter(
+                view,
+                interactor,
+                "teiUid",
+                preferenceProvider,
+                analyticsHelper,
+                enrollmentService,
+            )
     }
 
     @Test
@@ -156,19 +156,21 @@ class TeiProgramListPresenterTest {
         verify(view).displayMessage("This is a test message")
     }
 
-    private fun mockedProgramViewModel(): ProgramUiModel {
-        return ProgramUiModel(
+    private fun mockedProgramViewModel(): ProgramUiModel =
+        ProgramUiModel(
             uid = "uid",
             title = "programName",
-            metadataIconData = MetadataIconData(
-                imageCardData = ImageCardData.IconCardData(
-                    "",
-                    "",
-                    "ic_home_positive",
-                    "#84FFFF".toColor(),
+            metadataIconData =
+                MetadataIconData(
+                    imageCardData =
+                        ImageCardData.IconCardData(
+                            "",
+                            "",
+                            "ic_home_positive",
+                            "#84FFFF".toColor(),
+                        ),
+                    color = "#84FFFF".toColor(),
                 ),
-                color = "#84FFFF".toColor(),
-            ),
             count = 0,
             type = "type",
             typeName = "typeName",
@@ -183,10 +185,9 @@ class TeiProgramListPresenterTest {
             filtersAreActive = false,
             hasOverdueEvent = false,
         )
-    }
 
-    private fun mockedEnrollmentViewModel(): EnrollmentViewModel {
-        return EnrollmentViewModel(
+    private fun mockedEnrollmentViewModel(): EnrollmentViewModel =
+        EnrollmentViewModel(
             uid = "uid",
             enrollmentDate = "2020-01-01",
             metadataIconData = null,
@@ -195,5 +196,4 @@ class TeiProgramListPresenterTest {
             followUp = false,
             programUid = "programUid",
         )
-    }
 }

@@ -8,20 +8,23 @@ class UpdateSmsResponse(
     private val gatewayValidator: GatewayValidator,
 ) {
     sealed interface ResponseSetting {
-        data class Enable(val resultSender: String) : ResponseSetting
+        data class Enable(
+            val resultSender: String,
+        ) : ResponseSetting
+
         data object Disable : ResponseSetting
     }
 
     sealed interface UpdateSmsResponseResult {
         data object Success : UpdateSmsResponseResult
-        data class ValidationError(val validationResult: GatewayValidator.GatewayValidationResult) :
-            UpdateSmsResponseResult
+
+        data class ValidationError(
+            val validationResult: GatewayValidator.GatewayValidationResult,
+        ) : UpdateSmsResponseResult
     }
 
-    suspend operator fun invoke(
-        enableWaitForResponse: ResponseSetting,
-    ): UpdateSmsResponseResult {
-        return when (enableWaitForResponse) {
+    suspend operator fun invoke(enableWaitForResponse: ResponseSetting): UpdateSmsResponseResult =
+        when (enableWaitForResponse) {
             ResponseSetting.Disable -> {
                 settingsRepository.saveWaitForSmsResponse(false)
                 UpdateSmsResponseResult.Success
@@ -42,5 +45,4 @@ class UpdateSmsResponse(
                 }
             }
         }
-    }
 }

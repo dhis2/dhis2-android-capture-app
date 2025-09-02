@@ -20,7 +20,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class EventCardMapperTest {
-
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
     private val currentDate = Date()
@@ -45,13 +44,14 @@ class EventCardMapperTest {
     fun shouldReturnCardFull() {
         val model = createFakeModel()
 
-        val result = mapper.map(
-            event = model,
-            editable = true,
-            displayOrgUnit = true,
-            onSyncIconClick = {},
-            onCardClick = {},
-        )
+        val result =
+            mapper.map(
+                event = model,
+                editable = true,
+                displayOrgUnit = true,
+                onSyncIconClick = {},
+                onCardClick = {},
+            )
 
         assertEquals(result.title, model.displayDate)
         assertEquals(result.lastUpdated, model.lastUpdate.toDateSpan(context))
@@ -73,12 +73,14 @@ class EventCardMapperTest {
         return EventViewModel(
             type = EventViewModelType.EVENT,
             stage = null,
-            event = Event.builder()
-                .uid("EventUi")
-                .status(EventStatus.COMPLETED)
-                .dueDate(currentDate)
-                .aggregatedSyncState(State.SYNCED)
-                .build(),
+            event =
+                Event
+                    .builder()
+                    .uid("EventUi")
+                    .status(EventStatus.COMPLETED)
+                    .dueDate(currentDate)
+                    .aggregatedSyncState(State.SYNCED)
+                    .build(),
             eventCount = 0,
             lastUpdate = currentDate,
             isSelected = false,

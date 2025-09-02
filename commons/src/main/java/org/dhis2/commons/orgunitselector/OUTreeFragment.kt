@@ -33,7 +33,6 @@ const val ARG_SCOPE = "OUTreeFragment.ARG_SCOPE"
 const val ARG_PRE_SELECTED_OU = "OUTreeFragment.ARG_PRE_SELECTED_OU"
 
 class OUTreeFragment : BottomSheetDialogFragment() {
-
     class Builder {
         private var preselectedOrgUnits = listOf<String>()
         private var singleSelection = false
@@ -41,47 +40,52 @@ class OUTreeFragment : BottomSheetDialogFragment() {
         private var orgUnitScope: OrgUnitSelectorScope = OrgUnitSelectorScope.UserSearchScope()
         private var ouTreeModel: OUTreeModel = OUTreeModel()
 
-        fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) = apply {
-            require(!(singleSelection && preselectedOrgUnits.size > 1)) {
-                throw IllegalArgumentException(
-                    "Single selection only admits one pre-selected org. unit",
-                )
+        fun withPreselectedOrgUnits(preselectedOrgUnits: List<String>) =
+            apply {
+                require(!(singleSelection && preselectedOrgUnits.size > 1)) {
+                    throw IllegalArgumentException(
+                        "Single selection only admits one pre-selected org. unit",
+                    )
+                }
+                this.preselectedOrgUnits = preselectedOrgUnits
             }
-            this.preselectedOrgUnits = preselectedOrgUnits
-        }
 
-        fun singleSelection() = apply {
-            require(preselectedOrgUnits.size <= 1) {
-                throw IllegalArgumentException(
-                    "Single selection only admits one pre-selected org. unit",
-                )
+        fun singleSelection() =
+            apply {
+                require(preselectedOrgUnits.size <= 1) {
+                    throw IllegalArgumentException(
+                        "Single selection only admits one pre-selected org. unit",
+                    )
+                }
+                singleSelection = true
             }
-            singleSelection = true
-        }
 
-        fun orgUnitScope(orgUnitScope: OrgUnitSelectorScope) = apply {
-            this.orgUnitScope = orgUnitScope
-        }
+        fun orgUnitScope(orgUnitScope: OrgUnitSelectorScope) =
+            apply {
+                this.orgUnitScope = orgUnitScope
+            }
 
         fun onSelection(selectionListener: (selectedOrgUnits: List<OrganisationUnit>) -> Unit) =
             apply {
                 this.selectionListener = selectionListener
             }
 
-        fun withModel(model: OUTreeModel) = apply {
-            ouTreeModel = model
-        }
+        fun withModel(model: OUTreeModel) =
+            apply {
+                ouTreeModel = model
+            }
 
         fun build(): OUTreeFragment {
             CoroutineTracker.increment()
             return OUTreeFragment().apply {
                 selectionCallback = selectionListener
                 model = ouTreeModel
-                arguments = Bundle().apply {
-                    putBoolean(ARG_SINGLE_SELECTION, singleSelection)
-                    putSerializableScope(ARG_SCOPE, orgUnitScope)
-                    putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
-                }
+                arguments =
+                    Bundle().apply {
+                        putBoolean(ARG_SINGLE_SELECTION, singleSelection)
+                        putSerializableScope(ARG_SCOPE, orgUnitScope)
+                        putStringArrayList(ARG_PRE_SELECTED_OU, ArrayList(preselectedOrgUnits))
+                    }
                 CoroutineTracker.decrement()
             }
         }
@@ -99,15 +103,18 @@ class OUTreeFragment : BottomSheetDialogFragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        (context.applicationContext as OUTreeComponentProvider).provideOUTreeComponent(
-            OUTreeModule(
-                model = model,
-                preselectedOrgUnits = requireArguments().getStringArrayList(ARG_PRE_SELECTED_OU)
-                    ?.toList() ?: emptyList(),
-                singleSelection = requireArguments().getBoolean(ARG_SINGLE_SELECTION, false),
-                orgUnitSelectorScope = requireArguments().getSerializableScope(ARG_SCOPE)!!,
-            ),
-        )?.inject(this)
+        (context.applicationContext as OUTreeComponentProvider)
+            .provideOUTreeComponent(
+                OUTreeModule(
+                    model = model,
+                    preselectedOrgUnits =
+                        requireArguments()
+                            .getStringArrayList(ARG_PRE_SELECTED_OU)
+                            ?.toList() ?: emptyList(),
+                    singleSelection = requireArguments().getBoolean(ARG_SINGLE_SELECTION, false),
+                    orgUnitSelectorScope = requireArguments().getSerializableScope(ARG_SCOPE)!!,
+                ),
+            )?.inject(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,8 +134,8 @@ class OUTreeFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val list by viewmodel.treeNodes.collectAsState()
@@ -152,7 +159,6 @@ class OUTreeFragment : BottomSheetDialogFragment() {
                 )
             }
         }
-    }
 
     private fun confirmOuSelection() {
         viewmodel.confirmSelection()
@@ -178,15 +184,20 @@ data class OUTreeModel(
     val hideOrgUnits: List<OrganisationUnit>? = null,
 )
 
-private val json = Json {
-    classDiscriminator = "type"
-    encodeDefaults = true
-}
+private val json =
+    Json {
+        classDiscriminator = "type"
+        encodeDefaults = true
+    }
 
-private fun Bundle.putSerializableScope(key: String, value: OrgUnitSelectorScope) {
+private fun Bundle.putSerializableScope(
+    key: String,
+    value: OrgUnitSelectorScope,
+) {
     putString(key, json.encodeToString(value))
 }
 
-private fun Bundle.getSerializableScope(key: String): OrgUnitSelectorScope? {
-    return getString(key)?.let { json.decodeFromString<OrgUnitSelectorScope>(it) }
-}
+private fun Bundle.getSerializableScope(key: String): OrgUnitSelectorScope? =
+    getString(key)?.let {
+        json.decodeFromString<OrgUnitSelectorScope>(it)
+    }
