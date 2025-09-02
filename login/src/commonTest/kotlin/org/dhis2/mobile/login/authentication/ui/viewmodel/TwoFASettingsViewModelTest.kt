@@ -73,8 +73,7 @@ class TwoFASettingsViewModelTest {
 
     @Test
     fun `retry calls checkTwoFAStatus`() = runTest {
-        val noConnectionStatus = TwoFAStatus.NoConnection
-        val noConnectionUiState = TwoFAUiState.NoConnection
+        val noConnectionUiState = TwoFAStatus.NoConnection
         val disabledStatus = TwoFAStatus.Disabled(secretCode = "SECRETCODE")
         val enableUiState = TwoFAUiState.Enable(
             secretCode = "SECRETCODE",
