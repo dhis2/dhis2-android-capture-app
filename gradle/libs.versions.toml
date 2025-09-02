@@ -92,6 +92,7 @@ playservicesauth = "21.4.0"
 playservicesphone = "18.2.0"
 ksp = "2.2.10-2.0.2"
 commonsText = "1.14.0"
+ktlint = "13.1.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -221,6 +222,8 @@ kotlin-serialization = { id = "kotlinx-serialization" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePluginVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
 uicomponents-api = ["dhis2-mobile-designsystem", "androidx-compose-constraintlayout", "androidx-compose-preview", "androidx-compose-ui", "google-material3-themeadapter"]
