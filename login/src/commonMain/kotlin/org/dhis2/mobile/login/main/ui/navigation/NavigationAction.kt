@@ -4,7 +4,6 @@ import androidx.navigation.NavOptionsBuilder
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 
 sealed interface NavigationAction {
-
     data class Navigate(
         val destination: LoginScreenState,
         val navOptions: NavOptionsBuilder.() -> Unit = {},

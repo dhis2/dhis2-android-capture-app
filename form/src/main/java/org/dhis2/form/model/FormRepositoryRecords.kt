@@ -11,14 +11,14 @@ class EnrollmentRecords(
     val enrollmentUid: String,
     val enrollmentMode: EnrollmentMode,
 ) : FormRepositoryRecords(
-    recordUid = enrollmentUid,
-    entryMode = EntryMode.ATTR,
-)
+        recordUid = enrollmentUid,
+        entryMode = EntryMode.ATTR,
+    )
 
 class EventRecords(
     val eventUid: String,
     val eventMode: EventMode,
 ) : FormRepositoryRecords(
-    recordUid = eventUid,
-    entryMode = EntryMode.DE,
-)
+        recordUid = eventUid,
+        entryMode = EntryMode.DE,
+    )

@@ -46,16 +46,13 @@ data class SectionUiModelImpl(
     override val periodSelector: PeriodSelector? = null,
     override var customIntent: CustomIntentModel? = null,
 ) : FieldUiModel {
-
     private var sectionNumber: Int = 0
     private var showBottomShadow: Boolean = false
     private var lastPositionShouldChangeHeight: Boolean = false
 
     private var callback: FieldUiModel.Callback? = null
 
-    fun hasToShowDescriptionIcon(isTitleEllipsed: Boolean): Boolean {
-        return !description.isNullOrEmpty() || isTitleEllipsed
-    }
+    fun hasToShowDescriptionIcon(isTitleEllipsed: Boolean): Boolean = !description.isNullOrEmpty() || isTitleEllipsed
 
     private fun isClosingSection(): Boolean = uid == CLOSING_SECTION_UID
 
@@ -65,9 +62,7 @@ data class SectionUiModelImpl(
         this.showBottomShadow = showBottomShadow
     }
 
-    fun showNextButton(): Boolean {
-        return showBottomShadow && !isClosingSection()
-    }
+    fun showNextButton(): Boolean = showBottomShadow && !isClosingSection()
 
     override val formattedLabel: String
         get() = label

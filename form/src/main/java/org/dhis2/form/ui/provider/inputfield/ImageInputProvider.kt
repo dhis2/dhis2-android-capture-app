@@ -52,21 +52,22 @@ internal fun ProvideInputImage(
 
     val filePicker = rememberFilePicker(onFileSelected)
 
-    val (tempFileUri, imagePicker, cameraPermission) = rememberCameraPicker(
-        onSuccess = { filePath ->
-            onFileSelected(filePath)
-            uploadState = getUploadState(fieldUiModel.displayName, false)
-        },
-        onError = {
-            uploadState = getUploadState(fieldUiModel.displayName, false)
-            intentHandler.invoke(
-                FormIntent.OnAddImageFinished(fieldUiModel.uid),
-            )
-        },
-        onPermissionAccepted = {
-            uploadState = getUploadState(fieldUiModel.displayName, true)
-        },
-    )
+    val (tempFileUri, imagePicker, cameraPermission) =
+        rememberCameraPicker(
+            onSuccess = { filePath ->
+                onFileSelected(filePath)
+                uploadState = getUploadState(fieldUiModel.displayName, false)
+            },
+            onError = {
+                uploadState = getUploadState(fieldUiModel.displayName, false)
+                intentHandler.invoke(
+                    FormIntent.OnAddImageFinished(fieldUiModel.uid),
+                )
+            },
+            onPermissionAccepted = {
+                uploadState = getUploadState(fieldUiModel.displayName, true)
+            },
+        )
 
     InputImage(
         modifier = modifier.fillMaxWidth(),
@@ -133,12 +134,14 @@ internal fun ProvideInputImage(
     )
 }
 
-internal fun getUploadState(value: String?, isLoading: Boolean): UploadState {
-    return if (isLoading && value.isNullOrEmpty()) {
+internal fun getUploadState(
+    value: String?,
+    isLoading: Boolean,
+): UploadState =
+    if (isLoading && value.isNullOrEmpty()) {
         UploadState.UPLOADING
     } else if (value.isNullOrEmpty()) {
         UploadState.ADD
     } else {
         UploadState.LOADED
     }
-}

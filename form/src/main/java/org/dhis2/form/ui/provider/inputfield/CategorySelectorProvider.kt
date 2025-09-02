@@ -29,11 +29,12 @@ internal fun ProvideCategorySelectorInput(
     val selectedCategoryOptions: Map<String, EventCategoryOption?> by remember(fieldUiModel.value) {
         mutableStateOf(
             fieldUiModel.eventCategories?.associate { category ->
-                category.options.find { option ->
-                    fieldUiModel.value?.split(",")?.contains(option.uid) == true
-                }?.let {
-                    category.uid to it
-                } ?: (category.uid to null)
+                category.options
+                    .find { option ->
+                        fieldUiModel.value?.split(",")?.contains(option.uid) == true
+                    }?.let {
+                        category.uid to it
+                    } ?: (category.uid to null)
             } ?: emptyMap(),
         )
     }
@@ -110,11 +111,12 @@ private fun ProvideCategorySelector(
             fetchItem = { index -> dropdownItems[index] },
             itemCount = dropdownItems.size,
             onSearchOption = { query ->
-                dropdownItems = if (query.isNotEmpty()) {
-                    dropdownItems.filter { it.label.contains(query) }
-                } else {
-                    category.options.map { DropdownItem(it.name) }
-                }
+                dropdownItems =
+                    if (query.isNotEmpty()) {
+                        dropdownItems.filter { it.label.contains(query) }
+                    } else {
+                        category.options.map { DropdownItem(it.name) }
+                    }
             },
             isRequiredField = fieldUiModel.mandatory,
             legendData = fieldUiModel.legend(),
@@ -168,8 +170,8 @@ fun ProvideEmptyCategorySelector(
 private fun getInputState(
     inputState: InputShellState,
     isEmpty: Boolean,
-): InputShellState {
-    return when (inputState) {
+): InputShellState =
+    when (inputState) {
         InputShellState.ERROR -> {
             if (isEmpty) {
                 inputState
@@ -180,4 +182,3 @@ private fun getInputState(
 
         else -> inputState
     }
-}

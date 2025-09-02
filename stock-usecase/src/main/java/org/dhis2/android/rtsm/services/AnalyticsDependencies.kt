@@ -13,25 +13,14 @@ class AnalyticsDependencies(
     private val featureConfigRepository: FeatureConfigRepository,
     private val colorUtils: ColorUtils,
     private val dispatcherProvider: DispatcherProvider,
-
 ) : Charts.Dependencies {
-    override fun getContext(): Context {
-        return appContext
-    }
+    override fun getContext(): Context = appContext
 
-    override fun getD2(): D2 {
-        return d2
-    }
+    override fun getD2(): D2 = d2
 
-    override fun getFeatureConfigRepository(): FeatureConfigRepository {
-        return featureConfigRepository
-    }
+    override fun getFeatureConfigRepository(): FeatureConfigRepository = featureConfigRepository
 
-    override fun getColorUtils(): ColorUtils {
-        return colorUtils
-    }
+    override fun getColorUtils(): ColorUtils = colorUtils
 
-    override fun getChartDispatcher(): DispatcherProvider {
-        return dispatcherProvider
-    }
+    override fun getChartDispatcher(): DispatcherProvider = dispatcherProvider
 }

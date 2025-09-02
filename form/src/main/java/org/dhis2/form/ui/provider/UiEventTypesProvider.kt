@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.common.ValueTypeRenderingType
 import org.hisp.dhis.android.core.program.SectionRenderingType
 
 interface UiEventTypesProvider {
-
     fun provideUiRenderType(
         featureType: FeatureType?,
         valueTypeRenderingType: ValueTypeRenderingType?,

@@ -9,15 +9,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class RelationshipTopBarIconState(
     val icon: ImageVector,
 ) {
-    class List : RelationshipTopBarIconState(
-        icon = Icons.Outlined.Map,
-    )
+    class List :
+        RelationshipTopBarIconState(
+            icon = Icons.Outlined.Map,
+        )
 
-    class Map : RelationshipTopBarIconState(
-        icon = Icons.AutoMirrored.Outlined.List,
-    )
+    class Map :
+        RelationshipTopBarIconState(
+            icon = Icons.AutoMirrored.Outlined.List,
+        )
 
-    data class Selecting(val onClickListener: () -> Unit) : RelationshipTopBarIconState(
-        icon = Icons.Outlined.DeleteOutline,
-    )
+    data class Selecting(
+        val onClickListener: () -> Unit,
+    ) : RelationshipTopBarIconState(
+            icon = Icons.Outlined.DeleteOutline,
+        )
 }

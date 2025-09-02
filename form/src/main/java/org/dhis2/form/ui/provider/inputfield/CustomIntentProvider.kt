@@ -36,29 +36,32 @@ fun ProvideCustomIntentInput(
     resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    var values = remember(fieldUiModel) {
-        fieldUiModel.value?.takeIf { it.isNotEmpty() }?.let { value ->
-            mutableStateListOf(*value.split(",").toTypedArray())
-        } ?: mutableStateListOf()
-    }
+    var values =
+        remember(fieldUiModel) {
+            fieldUiModel.value?.takeIf { it.isNotEmpty() }?.let { value ->
+                mutableStateListOf(*value.split(",").toTypedArray())
+            } ?: mutableStateListOf()
+        }
     var customIntentState by remember(values) {
         mutableStateOf(getCustomIntentState(values))
     }
-    val errorGettingDataMessage = SupportingTextData(
-        state = SupportingTextState.ERROR,
-        text = resources.getString(R.string.custom_intent_error),
-    )
+    val errorGettingDataMessage =
+        SupportingTextData(
+            state = SupportingTextState.ERROR,
+            text = resources.getString(R.string.custom_intent_error),
+        )
     val supportingTextList = remember { fieldUiModel.supportingText()?.toMutableList() ?: mutableListOf() }
     var inputShellState by remember { mutableStateOf(fieldUiModel.inputState()) }
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
-                val recoveredData = fieldUiModel.customIntent?.customIntentResponse?.let {
-                    mapIntentResponseData(
-                        it,
-                        result,
-                    )
-                }
+                val recoveredData =
+                    fieldUiModel.customIntent?.customIntentResponse?.let {
+                        mapIntentResponseData(
+                            it,
+                            result,
+                        )
+                    }
                 if (recoveredData.isNullOrEmpty()) {
                     values = mutableStateListOf()
                     inputShellState = InputShellState.ERROR
@@ -94,10 +97,11 @@ fun ProvideCustomIntentInput(
                 supportingTextList.remove(errorGettingDataMessage)
             }
             val intentData = fieldUiModel.customIntent?.let { mapIntentData(it) }
-            val intent = Intent.createChooser(
-                intentData,
-                fieldUiModel.customIntent?.name ?: resources.getString(R.string.select_app_intent),
-            )
+            val intent =
+                Intent.createChooser(
+                    intentData,
+                    fieldUiModel.customIntent?.name ?: resources.getString(R.string.select_app_intent),
+                )
             launcher.launch(intent)
         },
         onClear = {
@@ -109,8 +113,8 @@ fun ProvideCustomIntentInput(
     )
 }
 
-fun mapIntentData(customIntent: CustomIntentModel): Intent {
-    return Intent(customIntent.packageName).apply {
+fun mapIntentData(customIntent: CustomIntentModel): Intent =
+    Intent(customIntent.packageName).apply {
         customIntent.customIntentRequest.forEach { argument ->
             when (val value = argument.value) {
                 is String -> putExtra(argument.key, value)
@@ -123,7 +127,6 @@ fun mapIntentData(customIntent: CustomIntentModel): Intent {
             }
         }
     }
-}
 
 fun mapIntentResponseData(
     customIntentResponse: List<CustomIntentResponseDataModel>,
@@ -151,8 +154,8 @@ private fun extractValue(
     intent: Intent,
     objectCache: Map<String, JsonObject?>,
     listCache: Map<String, List<JsonObject>?>,
-): List<String>? {
-    return when (extra.extraType) {
+): List<String>? =
+    when (extra.extraType) {
         CustomIntentResponseExtraType.STRING ->
             intent.getStringExtra(extra.name)?.let { listOf(it) }
 
@@ -171,7 +174,6 @@ private fun extractValue(
         CustomIntentResponseExtraType.LIST_OF_OBJECTS ->
             extractListValues(extra, intent, listCache)
     }
-}
 
 private fun extractObjectValue(
     extra: CustomIntentResponseDataModel,
@@ -202,31 +204,31 @@ private fun extractListValues(
         .takeIf { it.isNotEmpty() }
 }
 
-fun getComplexObject(jsonString: String): JsonObject? {
-    return try {
+fun getComplexObject(jsonString: String): JsonObject? =
+    try {
         val gson = Gson()
         gson.fromJson(jsonString, JsonObject::class.java)
     } catch (e: Exception) {
         Timber.d(e.message)
         null
     }
-}
 
-fun getListOfObjects(jsonString: String): List<JsonObject>? {
-    return try {
+fun getListOfObjects(jsonString: String): List<JsonObject>? =
+    try {
         val gson = Gson()
-        val listType = com.google.gson.reflect.TypeToken.getParameterized(List::class.java, JsonObject::class.java).type
+        val listType =
+            com.google.gson.reflect.TypeToken
+                .getParameterized(List::class.java, JsonObject::class.java)
+                .type
         gson.fromJson(jsonString, listType)
     } catch (e: Exception) {
         Timber.d(e.message)
         null
     }
-}
 
-fun getCustomIntentState(values: SnapshotStateList<String>): CustomIntentState {
-    return if (values.isEmpty()) {
+fun getCustomIntentState(values: SnapshotStateList<String>): CustomIntentState =
+    if (values.isEmpty()) {
         CustomIntentState.LAUNCH
     } else {
         CustomIntentState.LOADED
     }
-}

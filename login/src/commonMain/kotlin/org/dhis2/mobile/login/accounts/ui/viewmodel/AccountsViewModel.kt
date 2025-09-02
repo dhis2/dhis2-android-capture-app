@@ -16,15 +16,16 @@ class AccountsViewModel(
     private val navigator: Navigator,
     private val repository: AccountRepository,
 ) : ViewModel() {
-
     private var _accounts = MutableStateFlow<List<AccountModel>>(emptyList())
-    val accounts = _accounts.onStart {
-        getAccounts()
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        emptyList(),
-    )
+    val accounts =
+        _accounts
+            .onStart {
+                getAccounts()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList(),
+            )
 
     private fun getAccounts() {
         viewModelScope.launch {

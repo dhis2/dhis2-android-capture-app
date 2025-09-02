@@ -75,25 +75,28 @@ class FieldViewModelFactoryImpl(
             legend = legendValueProvider.provideLegendValue(id, value),
             optionSet = if (valueType == ValueType.MULTI_TEXT) null else optionSet,
             allowFutureDates = allowFutureDates,
-            uiEventFactory = UiEventFactoryImpl(
-                id,
-                label,
-                description,
-                valueType,
-                allowFutureDates,
-                optionSet,
-            ),
-            displayName = displayNameProvider.provideDisplayName(
-                valueType,
-                value,
-                optionSet,
-                periodSelector?.type,
-            ),
-            renderingType = uiEventTypesProvider.provideUiRenderType(
-                featureType,
-                fieldRendering?.type(),
-                renderingType,
-            ),
+            uiEventFactory =
+                UiEventFactoryImpl(
+                    id,
+                    label,
+                    description,
+                    valueType,
+                    allowFutureDates,
+                    optionSet,
+                ),
+            displayName =
+                displayNameProvider.provideDisplayName(
+                    valueType,
+                    value,
+                    optionSet,
+                    periodSelector?.type,
+                ),
+            renderingType =
+                uiEventTypesProvider.provideUiRenderType(
+                    featureType,
+                    fieldRendering?.type(),
+                    renderingType,
+                ),
             optionSetConfiguration = optionSetConfiguration,
             keyboardActionType = keyboardActionProvider.provideKeyboardAction(valueType),
             fieldMask = fieldMask,
@@ -106,8 +109,8 @@ class FieldViewModelFactoryImpl(
         )
     }
 
-    override fun createSingleSection(singleSectionName: String): FieldUiModel {
-        return SectionUiModelImpl(
+    override fun createSingleSection(singleSectionName: String): FieldUiModel =
+        SectionUiModelImpl(
             SectionUiModelImpl.SINGLE_SECTION_UID,
             null,
             false,
@@ -136,7 +139,6 @@ class FieldViewModelFactoryImpl(
             SectionRenderingType.LISTING.name,
             currentSection,
         )
-    }
 
     override fun createSection(
         sectionUid: String,
@@ -146,8 +148,8 @@ class FieldViewModelFactoryImpl(
         totalFields: Int,
         completedFields: Int,
         rendering: String?,
-    ): FieldUiModel {
-        return SectionUiModelImpl(
+    ): FieldUiModel =
+        SectionUiModelImpl(
             sectionUid,
             null,
             false,
@@ -176,10 +178,9 @@ class FieldViewModelFactoryImpl(
             rendering,
             currentSection,
         )
-    }
 
-    override fun createClosingSection(): FieldUiModel {
-        return SectionUiModelImpl(
+    override fun createClosingSection(): FieldUiModel =
+        SectionUiModelImpl(
             SectionUiModelImpl.CLOSING_SECTION_UID,
             null,
             false,
@@ -208,5 +209,4 @@ class FieldViewModelFactoryImpl(
             SectionRenderingType.LISTING.name,
             currentSection,
         )
-    }
 }

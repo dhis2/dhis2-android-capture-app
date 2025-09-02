@@ -65,7 +65,7 @@ internal fun SyncParametersSettingItem(
                             stringResource(R.string.settings_limit_ou_program),
                         )
                     InputDropDown(
-                        modifier = Modifier.testTag(TestTag_SyncParameters_LimitScope),
+                        modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE),
                         title = stringResource(R.string.settings_limit_scope),
                         state = InputShellState.FOCUSED,
                         itemCount = downloadLimitScopes.size,
@@ -104,7 +104,7 @@ internal fun SyncParametersSettingItem(
                     )
 
                     InputPositiveIntegerOrZero(
-                        modifier = Modifier.testTag(TestTag_SyncParameters_EventMaxCount),
+                        modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT),
                         title = stringResource(R.string.events_to_download),
                         state = InputShellState.FOCUSED,
                         inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfEventsToDownload.toString()),
@@ -117,7 +117,7 @@ internal fun SyncParametersSettingItem(
                     )
 
                     InputPositiveIntegerOrZero(
-                        modifier = Modifier.testTag(TestTag_SyncParameters_TeiMaxCount),
+                        modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT),
                         title = stringResource(R.string.teis_to_download),
                         state = InputShellState.FOCUSED,
                         inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfTeiToDownload.toString()),

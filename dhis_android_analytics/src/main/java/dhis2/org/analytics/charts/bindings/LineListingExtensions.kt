@@ -177,14 +177,9 @@ fun TrackerLineListItem.withOUFilters(
     }
 
 object Label {
-    const val OrganisationUnit = "ou"
-    const val LastUpdated = "lastUpdated"
-    const val IncidentDate = "incidentDate"
-    const val EnrollmentDate = "enrollmentDate"
-    const val ScheduledDate = "scheduledDate"
-    const val EventDate = "eventDate"
-    const val CreatedBy = "createdBy"
-    const val LastUpdatedBy = "lastUpdatedBy"
-    const val ProgramStatus = "programStatus"
-    const val EventStatus = "eventStatus"
+    const val ORGANISATION_UNIT = "ou"
+    const val LAST_UPDATED = "lastUpdated"
+    const val INCIDENT_DATE = "incidentDate"
+    const val ENROLLMENT_DATE = "enrollmentDate"
+    const val SCHEDULED_DATE = "scheduledDate"
 }

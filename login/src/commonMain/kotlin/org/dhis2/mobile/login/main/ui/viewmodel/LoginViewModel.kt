@@ -21,14 +21,15 @@ class LoginViewModel(
     val getInitialScreen: GetInitialScreen,
     val validateServer: ValidateServer,
 ) : ViewModel() {
-
     private val _currentScreen = MutableStateFlow<LoginScreenState>(LoginScreenState.Loading)
-    val currentScreen = _currentScreen.onStart {
-        goToInitialScreen()
-    }.shareIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-    )
+    val currentScreen =
+        _currentScreen
+            .onStart {
+                goToInitialScreen()
+            }.shareIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+            )
 
     private var serverValidationJob: Job? = null
 
@@ -44,27 +45,28 @@ class LoginViewModel(
                 validationRunning = true,
             ) ?: it
         }
-        serverValidationJob = viewModelScope.launch {
-            val result = withMinimumDuration { validateServer(serverUrl) }
-            when (result) {
-                is ServerValidationResult.Error ->
-                    _currentScreen.update {
-                        (it as? LoginScreenState.ServerValidation)?.copy(
-                            currentServer = serverUrl,
-                            error = result.message,
-                            validationRunning = false,
-                        ) ?: it
+        serverValidationJob =
+            viewModelScope.launch {
+                val result = withMinimumDuration { validateServer(serverUrl) }
+                when (result) {
+                    is ServerValidationResult.Error ->
+                        _currentScreen.update {
+                            (it as? LoginScreenState.ServerValidation)?.copy(
+                                currentServer = serverUrl,
+                                error = result.message,
+                                validationRunning = false,
+                            ) ?: it
+                        }
+                    ServerValidationResult.Legacy -> {
+                        updateIsValidationRunning()
+                        navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
                     }
-                ServerValidationResult.Legacy -> {
-                    updateIsValidationRunning()
-                    navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
-                }
-                ServerValidationResult.Oauth -> {
-                    updateIsValidationRunning()
-                    navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                    ServerValidationResult.Oauth -> {
+                        updateIsValidationRunning()
+                        navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                    }
                 }
             }
-        }
     }
 
     fun cancelServerValidation() {

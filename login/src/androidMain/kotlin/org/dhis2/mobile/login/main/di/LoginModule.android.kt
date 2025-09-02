@@ -8,14 +8,15 @@ import org.dhis2.mobile.login.main.data.LoginRepositoryImpl
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-internal actual val accountModule = module {
-    factory<AccountRepository> {
-        AccountRepositoryImpl(
-            get(),
-        )
+internal actual val accountModule =
+    module {
+        factory<AccountRepository> {
+            AccountRepositoryImpl(
+                get(),
+            )
+        }
+        factory<LoginRepository> {
+            LoginRepositoryImpl(get())
+        }
+        viewModelOf(::AccountsViewModel)
     }
-    factory<LoginRepository> {
-        LoginRepositoryImpl(get())
-    }
-    viewModelOf(::AccountsViewModel)
-}

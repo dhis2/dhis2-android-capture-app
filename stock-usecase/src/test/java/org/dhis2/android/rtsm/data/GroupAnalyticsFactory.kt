@@ -14,16 +14,15 @@ object GroupAnalyticsFactory {
     fun create(id: Long): AnalyticsDhisVisualizationsGroup {
         val name = faker.address().streetName()
 
-        return AnalyticsDhisVisualizationsGroup.builder()
+        return AnalyticsDhisVisualizationsGroup
+            .builder()
             .id(uidGenerator.generate())
             .name(name)
             .visualizations(VisualizationsFactory.getListOf(3))
             .build()
     }
 
-    fun getListOf(num: Int): List<AnalyticsDhisVisualizationsGroup> {
-        return (1..num).map { create(it.toLong()) }
-    }
+    fun getListOf(num: Int): List<AnalyticsDhisVisualizationsGroup> = (1..num).map { create(it.toLong()) }
 }
 
 object VisualizationsFactory {
@@ -33,14 +32,13 @@ object VisualizationsFactory {
     fun create(id: Long): AnalyticsDhisVisualization {
         val name = faker.address().streetName()
 
-        return AnalyticsDhisVisualization.builder()
+        return AnalyticsDhisVisualization
+            .builder()
             .name(name)
             .uid(uidGenerator.generate())
             .type(AnalyticsDhisVisualizationType.VISUALIZATION)
             .build()
     }
 
-    fun getListOf(num: Int): List<AnalyticsDhisVisualization> {
-        return (1..num).map { create(it.toLong()) }
-    }
+    fun getListOf(num: Int): List<AnalyticsDhisVisualization> = (1..num).map { create(it.toLong()) }
 }

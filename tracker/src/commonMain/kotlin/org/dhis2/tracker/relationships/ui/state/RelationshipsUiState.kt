@@ -12,7 +12,14 @@ sealed class RelationshipsUiState {
     }
 
     data object Loading : RelationshipsUiState()
+
     data object Empty : RelationshipsUiState()
-    data class Success(val data: List<RelationshipSectionUiState>) : RelationshipsUiState()
-    data class Error(val message: String) : RelationshipsUiState()
+
+    data class Success(
+        val data: List<RelationshipSectionUiState>,
+    ) : RelationshipsUiState()
+
+    data class Error(
+        val message: String,
+    ) : RelationshipsUiState()
 }

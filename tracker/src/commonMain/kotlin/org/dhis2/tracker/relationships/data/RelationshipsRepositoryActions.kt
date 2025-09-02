@@ -12,6 +12,7 @@ interface RelationshipsRepositoryActions {
     abstract suspend fun getRelationships(): List<RelationshipModel>
 
     suspend fun deleteRelationship(relationshipUid: String)
+
     suspend fun addRelationship(
         selectedTeiUid: String,
         relationshipTypeUid: String,

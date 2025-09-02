@@ -62,7 +62,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-const val turn_on_button_test_tag = "turn_on_button_test_tag"
+const val TURN_ON_BUTTON_TEST_TAG = "turn_on_button_test_tag"
 
 @Composable
 fun TwoFAToEnableScreen(
@@ -104,12 +104,12 @@ fun TwoFAToEnableScreen(
 @Composable
 fun TwoFAAuthStepOne(onAuthenticatorButtonClicked: () -> Unit) {
     Column(
-        modifier = Modifier
-            .background(
-                color = SurfaceColor.ContainerLow,
-                shape = RoundedCornerShape(Radius.M),
-            )
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .background(
+                    color = SurfaceColor.ContainerLow,
+                    shape = RoundedCornerShape(Radius.M),
+                ).padding(16.dp),
     ) {
         Row {
             Text(
@@ -124,9 +124,10 @@ fun TwoFAAuthStepOne(onAuthenticatorButtonClicked: () -> Unit) {
                 )
 
                 Button(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
                     style = ButtonStyle.ELEVATED,
                     text = stringResource(Res.string.two_fa_to_enable_google_authenticator),
                     icon = {
@@ -149,12 +150,12 @@ fun TwoFAAuthStepTwo(
     onCopyCodeButtonClicked: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .background(
-                color = SurfaceColor.ContainerLow,
-                shape = RoundedCornerShape(Radius.M),
-            )
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .background(
+                    color = SurfaceColor.ContainerLow,
+                    shape = RoundedCornerShape(Radius.M),
+                ).padding(16.dp),
     ) {
         Row {
             Text(
@@ -169,22 +170,24 @@ fun TwoFAAuthStepTwo(
                 )
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp)
+                            .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = CenterVertically,
                 ) {
                     SelectionContainer {
                         Text(
                             text = secretCode,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                color = TextColor.OnPrimaryContainer,
-                                fontWeight = FontWeight.Bold,
-                                lineHeight = 24.sp,
-                                letterSpacing = 0.15.sp,
-                            ),
+                            style =
+                                MaterialTheme.typography.titleMedium.copy(
+                                    color = TextColor.OnPrimaryContainer,
+                                    fontWeight = FontWeight.Bold,
+                                    lineHeight = 24.sp,
+                                    letterSpacing = 0.15.sp,
+                                ),
                         )
                     }
 
@@ -217,12 +220,12 @@ fun TwoFAAuthStepThree(
     }
 
     Column(
-        modifier = Modifier
-            .background(
-                color = SurfaceColor.ContainerLow,
-                shape = RoundedCornerShape(Radius.M),
-            )
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .background(
+                    color = SurfaceColor.ContainerLow,
+                    shape = RoundedCornerShape(Radius.M),
+                ).padding(16.dp),
         verticalArrangement = spacedBy(Spacing.Spacing12),
     ) {
         Row {
@@ -238,24 +241,26 @@ fun TwoFAAuthStepThree(
         }
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
             verticalArrangement = spacedBy(12.dp),
         ) {
             InputText(
                 title = stringResource(Res.string.two_fa_authentication_code),
-                supportingText = when (enableUiState) {
-                    is TwoFaEnableUiState.Failure -> {
-                        listOf(
-                            SupportingTextData(
-                                text = stringResource(Res.string.two_fa_failed_to_turn_on),
-                                state = SupportingTextState.ERROR,
-                            ),
-                        )
-                    }
-                    else -> null
-                },
+                supportingText =
+                    when (enableUiState) {
+                        is TwoFaEnableUiState.Failure -> {
+                            listOf(
+                                SupportingTextData(
+                                    text = stringResource(Res.string.two_fa_failed_to_turn_on),
+                                    state = SupportingTextState.ERROR,
+                                ),
+                            )
+                        }
+                        else -> null
+                    },
                 inputTextFieldValue = textValue,
                 onValueChanged = {
                     if (it != null) {
@@ -266,23 +271,28 @@ fun TwoFAAuthStepThree(
             )
 
             Button(
-                enabled = when (enableUiState) {
-                    is TwoFaEnableUiState.Enabling -> false
-                    else -> { textValue.text.length == 6 }
-                },
-                modifier = Modifier
-                    .testTag(turn_on_button_test_tag)
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
+                enabled =
+                    when (enableUiState) {
+                        is TwoFaEnableUiState.Enabling -> false
+                        else -> {
+                            textValue.text.length == 6
+                        }
+                    },
+                modifier =
+                    Modifier
+                        .testTag(TURN_ON_BUTTON_TEST_TAG)
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
-                text = when (enableUiState) {
-                    is TwoFaEnableUiState.Enabling -> {
-                        stringResource(Res.string.two_fa_turning_on_button)
-                    }
-                    else -> {
-                        stringResource(Res.string.two_fa_turn_on_button)
-                    }
-                },
+                text =
+                    when (enableUiState) {
+                        is TwoFaEnableUiState.Enabling -> {
+                            stringResource(Res.string.two_fa_turning_on_button)
+                        }
+                        else -> {
+                            stringResource(Res.string.two_fa_turn_on_button)
+                        }
+                    },
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Key,

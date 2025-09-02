@@ -69,7 +69,6 @@ import timber.log.Timber
 import java.io.File
 
 class FormView : Fragment() {
-
     private var onItemChangeListener: ((action: RowAction) -> Unit)? = null
     private var locationProvider: LocationProvider? = null
     private var onLoadingListener: ((loading: Boolean) -> Unit)? = null
@@ -83,16 +82,18 @@ class FormView : Fragment() {
     private var useCompose = false
     private var programUid: String? = null
 
-    private val qrScanContent = registerForActivityResult(ScanContract()) { result ->
-        result.contents?.let { qrData ->
-            val intent = FormIntent.OnSave(
-                result.originalIntent.getStringExtra(Constants.UID)!!,
-                qrData,
-                ValueType.TEXT,
-            )
-            intentHandler(intent)
+    private val qrScanContent =
+        registerForActivityResult(ScanContract()) { result ->
+            result.contents?.let { qrData ->
+                val intent =
+                    FormIntent.OnSave(
+                        result.originalIntent.getStringExtra(Constants.UID)!!,
+                        qrData,
+                        ValueType.TEXT,
+                    )
+                intentHandler(intent)
+            }
         }
-    }
 
     private val mapContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -102,11 +103,12 @@ class FormView : Fragment() {
                 val featureType = it.data?.getStringExtra(LOCATION_TYPE_EXTRA)
                 val coordinates = it.data?.getStringExtra(DATA_EXTRA)
                 if (uid != null && featureType != null) {
-                    val intent = FormIntent.SelectLocationFromMap(
-                        uid,
-                        featureType,
-                        coordinates,
-                    )
+                    val intent =
+                        FormIntent.SelectLocationFromMap(
+                            uid,
+                            featureType,
+                            coordinates,
+                        )
                     intentHandler(intent)
                 }
             }
@@ -120,19 +122,21 @@ class FormView : Fragment() {
                 downloadFile(viewModel.filePath)
                 viewModel.filePath = null
             } else {
-                Toast.makeText(
-                    requireContext(),
-                    requireContext().getString(R.string.storage_permission_denied),
-                    Toast.LENGTH_LONG,
-                ).show()
+                Toast
+                    .makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.storage_permission_denied),
+                        Toast.LENGTH_LONG,
+                    ).show()
             }
         }
 
     private val viewModel: FormViewModel by viewModels {
         Injector.provideFormViewModelFactory(
             context = requireContext(),
-            repositoryRecords = arguments?.serializable(RECORDS)
-                ?: throw RepositoryRecordsException(),
+            repositoryRecords =
+                arguments?.serializable(RECORDS)
+                    ?: throw RepositoryRecordsException(),
             openErrorLocation = openErrorLocation,
             useCompose = useCompose,
         )
@@ -159,9 +163,10 @@ class FormView : Fragment() {
             )
             setContent {
                 val items by viewModel.items.observeAsState()
-                val sections = items?.let {
-                    formSectionMapper.mapFromFieldUiModelList(it)
-                } ?: emptyList()
+                val sections =
+                    items?.let {
+                        formSectionMapper.mapFromFieldUiModelList(it)
+                    } ?: emptyList()
 
                 var resultDialogData: FormViewModel.FormActions.ShowResultDialog? by remember {
                     mutableStateOf(null)
@@ -199,7 +204,7 @@ class FormView : Fragment() {
                                 }
 
                                 else -> {
-                                    /*Do nothing*/
+                                    // Do nothing
                                 }
                             }
                         },
@@ -216,7 +221,10 @@ class FormView : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         FormCountingIdlingResource.increment()
 
@@ -317,10 +325,11 @@ class FormView : Fragment() {
 
     private fun showPeriodDialog(uiEvent: RecyclerViewUiEvents.SelectPeriod) {
         BottomSheetDialog(
-            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = uiEvent.title,
-                iconResource = -1,
-            ),
+            bottomSheetDialogUiModel =
+                BottomSheetDialogUiModel(
+                    title = uiEvent.title,
+                    iconResource = -1,
+                ),
             onSecondaryButtonClicked = {
             },
             onMainButtonClicked = { _ ->
@@ -359,43 +368,46 @@ class FormView : Fragment() {
             )
         } else if (actionIconsActivate && !currentValue.value.isNullOrEmpty()) {
             view?.closeKeyboard()
-            val intent = Intent(uiEvent.action).apply {
-                when (uiEvent.action) {
-                    Intent.ACTION_DIAL -> {
-                        data = "tel:${currentValue.value}".toUri()
-                    }
+            val intent =
+                Intent(uiEvent.action).apply {
+                    when (uiEvent.action) {
+                        Intent.ACTION_DIAL -> {
+                            data = "tel:${currentValue.value}".toUri()
+                        }
 
-                    Intent.ACTION_SENDTO -> {
-                        data = "mailto:${currentValue.value}".toUri()
-                    }
+                        Intent.ACTION_SENDTO -> {
+                            data = "mailto:${currentValue.value}".toUri()
+                        }
 
-                    Intent.ACTION_VIEW -> {
-                        data =
-                            if (!currentValue.value.startsWith("http://") && !currentValue.value.startsWith(
-                                    "https://",
+                        Intent.ACTION_VIEW -> {
+                            data =
+                                if (!currentValue.value.startsWith("http://") &&
+                                    !currentValue.value.startsWith(
+                                        "https://",
+                                    )
+                                ) {
+                                    "http://${currentValue.value}".toUri()
+                                } else {
+                                    currentValue.value.toUri()
+                                }
+                        }
+
+                        Intent.ACTION_SEND -> {
+                            val contentUri =
+                                FileProvider.getUriForFile(
+                                    requireContext(),
+                                    FormFileProvider.fileProviderAuthority,
+                                    File(currentValue.value),
                                 )
-                            ) {
-                                "http://${currentValue.value}".toUri()
-                            } else {
-                                currentValue.value.toUri()
-                            }
-                    }
-
-                    Intent.ACTION_SEND -> {
-                        val contentUri = FileProvider.getUriForFile(
-                            requireContext(),
-                            FormFileProvider.fileProviderAuthority,
-                            File(currentValue.value),
-                        )
-                        setDataAndType(
-                            contentUri,
-                            requireContext().contentResolver.getType(contentUri),
-                        )
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        putExtra(Intent.EXTRA_STREAM, contentUri)
+                            setDataAndType(
+                                contentUri,
+                                requireContext().contentResolver.getType(contentUri),
+                            )
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            putExtra(Intent.EXTRA_STREAM, contentUri)
+                        }
                     }
                 }
-            }
 
             val title = resources.getString(R.string.open_with)
             val chooser = Intent.createChooser(intent, title)
@@ -433,13 +445,14 @@ class FormView : Fragment() {
     private fun requestQRScan(event: RecyclerViewUiEvents.ScanQRCode) {
         viewModel.clearFocus()
         onActivityForResult?.invoke()
-        val valueTypeRenderingType: ValueTypeRenderingType = event.renderingType.let {
-            when (it) {
-                UiRenderType.QR_CODE -> ValueTypeRenderingType.QR_CODE
-                UiRenderType.BAR_CODE -> ValueTypeRenderingType.BAR_CODE
-                else -> ValueTypeRenderingType.DEFAULT
+        val valueTypeRenderingType: ValueTypeRenderingType =
+            event.renderingType.let {
+                when (it) {
+                    UiRenderType.QR_CODE -> ValueTypeRenderingType.QR_CODE
+                    UiRenderType.BAR_CODE -> ValueTypeRenderingType.BAR_CODE
+                    else -> ValueTypeRenderingType.DEFAULT
+                }
             }
-        }
 
         qrScanContent.launch(
             ScanOptions().apply {
@@ -466,11 +479,12 @@ class FormView : Fragment() {
     private fun downloadFile(fileName: String?) {
         fileName?.let { filePath ->
             fileHandler.copyAndOpen(File(filePath)) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.file_downloaded),
-                    Toast.LENGTH_SHORT,
-                ).show()
+                Toast
+                    .makeText(
+                        requireContext(),
+                        getString(R.string.file_downloaded),
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     }
@@ -497,11 +511,11 @@ class FormView : Fragment() {
     }
 
     private fun showOrgUnitDialog(uiEvent: RecyclerViewUiEvents.OpenOrgUnitDialog) {
-        OUTreeFragment.Builder()
+        OUTreeFragment
+            .Builder()
             .withPreselectedOrgUnits(
                 uiEvent.value?.let { listOf(it) } ?: emptyList(),
-            )
-            .singleSelection()
+            ).singleSelection()
             .onSelection { selectedOrgUnits ->
                 intentHandler(
                     FormIntent.OnSave(
@@ -510,15 +524,12 @@ class FormView : Fragment() {
                         ValueType.ORGANISATION_UNIT,
                     ),
                 )
-            }
-            .orgUnitScope(uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope())
+            }.orgUnitScope(uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope())
             .build()
             .show(childFragmentManager, uiEvent.label)
     }
 
-    private fun displayConfigurationErrors(
-        configurationError: List<RulesUtilsProviderConfigurationError>,
-    ) {
+    private fun displayConfigurationErrors(configurationError: List<RulesUtilsProviderConfigurationError>) {
         if (displayConfErrors && configurationError.isNotEmpty()) {
             MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
                 .setTitle(R.string.warning_error_on_complete_title)
@@ -595,20 +606,17 @@ class FormView : Fragment() {
          * If you want to handle the behaviour of the form and be notified when any item is updated,
          * implement this listener.
          */
-        fun onItemChangeListener(callback: (action: RowAction) -> Unit) =
-            apply { this.onItemChangeListener = callback }
+        fun onItemChangeListener(callback: (action: RowAction) -> Unit) = apply { this.onItemChangeListener = callback }
 
         /**
          *
          */
-        fun locationProvider(locationProvider: LocationProvider) =
-            apply { this.locationProvider = locationProvider }
+        fun locationProvider(locationProvider: LocationProvider) = apply { this.locationProvider = locationProvider }
 
         /**
          * Sets if loading started or finished to handle loadingfeedback
          * */
-        fun onLoadingListener(callback: (loading: Boolean) -> Unit) =
-            apply { this.onLoadingListener = callback }
+        fun onLoadingListener(callback: (loading: Boolean) -> Unit) = apply { this.onLoadingListener = callback }
 
         /**
          * It's triggered when form gets focus
@@ -622,13 +630,11 @@ class FormView : Fragment() {
 
         fun onFinishDataEntry(callback: () -> Unit) = apply { this.onFinishDataEntry = callback }
 
-        fun onPercentageUpdate(callback: (percentage: Float) -> Unit) =
-            apply { this.onPercentageUpdate = callback }
+        fun onPercentageUpdate(callback: (percentage: Float) -> Unit) = apply { this.onPercentageUpdate = callback }
 
         fun setRecords(records: FormRepositoryRecords) = apply { this.records = records }
 
-        fun openErrorLocation(openErrorLocation: Boolean) =
-            apply { this.openErrorLocation = openErrorLocation }
+        fun openErrorLocation(openErrorLocation: Boolean) = apply { this.openErrorLocation = openErrorLocation }
 
         fun setProgramUid(programUid: String?) = apply { this.programUid = programUid }
 
@@ -654,14 +660,16 @@ class FormView : Fragment() {
                     programUid,
                 )
 
-            val fragment = fragmentManager!!.fragmentFactory.instantiate(
-                this.javaClass.classLoader!!,
-                FormView::class.java.name,
-            ) as FormView
+            val fragment =
+                fragmentManager!!.fragmentFactory.instantiate(
+                    this.javaClass.classLoader!!,
+                    FormView::class.java.name,
+                ) as FormView
 
-            val bundle = Bundle().apply {
-                putSerializable(RECORDS, records)
-            }
+            val bundle =
+                Bundle().apply {
+                    putSerializable(RECORDS, records)
+                }
             fragment.arguments = bundle
             return fragment
         }

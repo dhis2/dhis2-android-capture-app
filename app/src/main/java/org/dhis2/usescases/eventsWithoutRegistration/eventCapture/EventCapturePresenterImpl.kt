@@ -54,9 +54,9 @@ class EventCapturePresenterImpl(
 
     val actions = MutableLiveData<EventCaptureAction>()
 
-    private val _navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
+    private val navigationBarUIState = mutableStateOf(NavigationBarUIState<NavigationPage>())
 
-    override fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>> = _navigationBarUIState
+    override fun observeNavigationBarUIState(): State<NavigationBarUIState<NavigationPage>> = navigationBarUIState
 
     override fun observeActions(): LiveData<EventCaptureAction> = actions
 
@@ -149,19 +149,19 @@ class EventCapturePresenterImpl(
             )
         }
 
-        _navigationBarUIState.value =
-            _navigationBarUIState.value.copy(
+        navigationBarUIState.value =
+            navigationBarUIState.value.copy(
                 items = navItems.takeIf { it.size > 1 }.orEmpty(),
             )
     }
 
     override fun onNavigationPageChanged(page: NavigationPage) {
-        _navigationBarUIState.value = _navigationBarUIState.value.copy(selectedItem = page)
+        navigationBarUIState.value = navigationBarUIState.value.copy(selectedItem = page)
     }
 
     override fun onSetNavigationPage(index: Int) {
         val navigationPageAtIndex =
-            _navigationBarUIState
+            navigationBarUIState
                 .value
                 .items
                 .getOrNull(index)
@@ -172,10 +172,10 @@ class EventCapturePresenterImpl(
         }
     }
 
-    override fun isDataEntrySelected(): Boolean = _navigationBarUIState.value.selectedItem == NavigationPage.DATA_ENTRY
+    override fun isDataEntrySelected(): Boolean = navigationBarUIState.value.selectedItem == NavigationPage.DATA_ENTRY
 
     override fun updateNotesBadge(numberOfNotes: Int) {
-        val navigationBarUIState = _navigationBarUIState.value
+        val navigationBarUIState = navigationBarUIState.value
         val indexOfNotesNavigationItem =
             navigationBarUIState
                 .items
@@ -193,8 +193,8 @@ class EventCapturePresenterImpl(
                     showBadge = numberOfNotes > 0,
                 )
 
-            _navigationBarUIState.value =
-                _navigationBarUIState.value.copy(
+            navigationBarUIState.value =
+                navigationBarUIState.value.copy(
                     items = updatedList,
                 )
         }

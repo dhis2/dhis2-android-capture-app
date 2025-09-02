@@ -18,27 +18,30 @@ class FormViewFragmentFactory(
     private val openErrorLocation: Boolean = false,
     private val programUid: String? = null,
 ) : FragmentFactory() {
-    override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-        return when (className) {
-            FormView::class.java.name -> FormView().apply {
-                setCallbackConfiguration(
-                    onItemChangeListener = onItemChangeListener,
-                    onLoadingListener = onLoadingListener,
-                    onFocused = onFocused,
-                    onFinishDataEntry = onFinishDataEntry,
-                    onActivityForResult = onActivityForResult,
-                    onFieldItemsRendered = onFieldItemsRendered,
-                )
-                setConfiguration(
-                    locationProvider = locationProvider,
-                    completionListener = completionListener,
-                    actionIconsActivate = actionIconsActivate,
-                    openErrorLocation = openErrorLocation,
-                    programUid = programUid,
-                )
-            }
+    override fun instantiate(
+        classLoader: ClassLoader,
+        className: String,
+    ): Fragment =
+        when (className) {
+            FormView::class.java.name ->
+                FormView().apply {
+                    setCallbackConfiguration(
+                        onItemChangeListener = onItemChangeListener,
+                        onLoadingListener = onLoadingListener,
+                        onFocused = onFocused,
+                        onFinishDataEntry = onFinishDataEntry,
+                        onActivityForResult = onActivityForResult,
+                        onFieldItemsRendered = onFieldItemsRendered,
+                    )
+                    setConfiguration(
+                        locationProvider = locationProvider,
+                        completionListener = completionListener,
+                        actionIconsActivate = actionIconsActivate,
+                        openErrorLocation = openErrorLocation,
+                        programUid = programUid,
+                    )
+                }
 
             else -> super.instantiate(classLoader, className)
         }
-    }
 }

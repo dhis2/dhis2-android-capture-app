@@ -38,25 +38,24 @@ data class RuleUtilsProviderResult(
         return map
     }
 
-    fun optionsToHide(fieldUid: String): List<String> {
-        return optionsToHide[fieldUid] ?: mutableListOf()
-    }
+    fun optionsToHide(fieldUid: String): List<String> = optionsToHide[fieldUid] ?: mutableListOf()
 
-    fun optionGroupsToHide(fieldUid: String): List<String> {
-        return optionGroupsToHide[fieldUid] ?: mutableListOf()
-    }
+    fun optionGroupsToHide(fieldUid: String): List<String> = optionGroupsToHide[fieldUid] ?: mutableListOf()
 
-    fun optionGroupsToShow(fieldUid: String): List<String> {
-        return optionGroupsToShow[fieldUid] ?: mutableListOf()
-    }
+    fun optionGroupsToShow(fieldUid: String): List<String> = optionGroupsToShow[fieldUid] ?: mutableListOf()
 
-    fun fieldsWithOptionEffects(): List<String> =
-        (optionsToHide.keys + optionGroupsToHide.keys + optionGroupsToShow.keys).toList()
+    fun fieldsWithOptionEffects(): List<String> = (optionsToHide.keys + optionGroupsToHide.keys + optionGroupsToShow.keys).toList()
 }
 
-data class FieldWithNewValue(val fieldUid: String, val newValue: String?)
+data class FieldWithNewValue(
+    val fieldUid: String,
+    val newValue: String?,
+)
 
-data class FieldWithError(val fieldUid: String, val errorMessage: String)
+data class FieldWithError(
+    val fieldUid: String,
+    val errorMessage: String,
+)
 
 data class RulesUtilsProviderConfigurationError(
     val programRuleUid: String?,
@@ -66,17 +65,20 @@ data class RulesUtilsProviderConfigurationError(
 )
 
 enum class ActionType {
-    ASSIGN, NONE
+    ASSIGN,
+    NONE,
 }
 
-enum class ConfigurationError(@StringRes val message: Int) {
+enum class ConfigurationError(
+    @StringRes val message: Int,
+) {
     VALUE_TO_ASSIGN_NOT_IN_OPTION_SET(R.string.conf_error_value_to_assign_option_set),
     CURRENT_VALUE_NOT_IN_OPTION_SET(R.string.conf_error_value_option_set),
 }
 
-fun List<RulesUtilsProviderConfigurationError>.toMessage(context: Context): String {
-    return joinToString(separator = "\n\n $bullet", prefix = "$bullet") { configurationError ->
-        context.getString(configurationError.error.message)
+fun List<RulesUtilsProviderConfigurationError>.toMessage(context: Context): String =
+    joinToString(separator = "\n\n $bullet", prefix = "$bullet") { configurationError ->
+        context
+            .getString(configurationError.error.message)
             .format(*configurationError.extraData.toTypedArray())
     }
-}

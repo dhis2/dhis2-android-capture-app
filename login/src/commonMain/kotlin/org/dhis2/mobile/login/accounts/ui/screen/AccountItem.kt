@@ -31,9 +31,10 @@ fun AccountItem(
     onItemClicked: (AccountModel) -> Unit,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(elevation = 4.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .shadow(elevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceBright),
         shape = RoundedCornerShape(8.dp),
         onClick = { onItemClicked(account) },
@@ -44,13 +45,18 @@ fun AccountItem(
         ) {
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary),
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary),
             ) {
                 Text(
-                    text = account.name.first().uppercaseChar().toString(),
+                    text =
+                        account.name
+                            .first()
+                            .uppercaseChar()
+                            .toString(),
                     color = Color.White,
                     fontSize = 20.sp,
                 )

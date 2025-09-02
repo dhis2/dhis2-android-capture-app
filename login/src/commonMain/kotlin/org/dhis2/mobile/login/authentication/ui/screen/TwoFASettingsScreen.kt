@@ -65,11 +65,12 @@ fun TwoFASettingsScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(uiState) {
-        val errorMessage = when (val state = uiState) {
-            is TwoFAUiState.Enable -> state.errorMessage
-            is TwoFAUiState.Disable -> state.errorMessage
-            else -> null
-        }
+        val errorMessage =
+            when (val state = uiState) {
+                is TwoFAUiState.Enable -> state.errorMessage
+                is TwoFAUiState.Disable -> state.errorMessage
+                else -> null
+            }
 
         errorMessage?.let { message ->
             snackbarHostState.showSnackbar(message)
@@ -99,10 +100,11 @@ fun TwoFASettingsScreen(
                         overflow = TextOverflow.Ellipsis,
                     )
                 },
-                colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors().copy(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         },
         snackbarHost = {
@@ -118,22 +120,23 @@ fun TwoFASettingsScreen(
         contentWindowInsets = WindowInsets.safeDrawing,
     ) { paddingValues ->
         Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = paddingValues.calculateTopPadding()),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding()),
             color = SurfaceColor.SurfaceBright,
             shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
         ) {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                        end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
-                        bottom = paddingValues.calculateBottomPadding(),
-                    )
-                    .padding(16.dp)
-                    .navigationBarsPadding(),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
+                            end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                            bottom = paddingValues.calculateBottomPadding(),
+                        ).padding(16.dp)
+                        .navigationBarsPadding(),
             ) {
                 when (uiState) {
                     is TwoFAUiState.Checking -> {

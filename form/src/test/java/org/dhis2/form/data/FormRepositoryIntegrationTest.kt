@@ -42,47 +42,52 @@ class FormRepositoryIntegrationTest {
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val conf: EnrollmentConfiguration = mock()
     private val preferenceProvider: PreferenceProvider = mock()
-    private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock {
-        on { provideEnrollmentOrgUnitLabel() } doReturn "OrgUnit label"
-        on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
-    }
+    private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider =
+        mock {
+            on { provideEnrollmentOrgUnitLabel() } doReturn "OrgUnit label"
+            on { provideEnrollmentDataSectionLabel(any()) } doReturn "Enrollment data"
+        }
     private val metadataIconProvider: MetadataIconProvider = mock()
 
-    private val program: Program = mock {
-        on { uid() } doReturn "programUid"
-        on { description() } doReturn "program description"
-        on { displayEnrollmentLabel() } doReturn "enrollment date label"
-        on { selectEnrollmentDatesInFuture() } doReturn false
-        on { displayIncidentDate() } doReturn false
-        on { access() } doReturn mock()
-        on { access().data() } doReturn mock()
-        on { access().data().write() } doReturn true
-        on { featureType() } doReturn FeatureType.NONE
-    }
+    private val program: Program =
+        mock {
+            on { uid() } doReturn "programUid"
+            on { description() } doReturn "program description"
+            on { displayEnrollmentLabel() } doReturn "enrollment date label"
+            on { selectEnrollmentDatesInFuture() } doReturn false
+            on { displayIncidentDate() } doReturn false
+            on { access() } doReturn mock()
+            on { access().data() } doReturn mock()
+            on { access().data().write() } doReturn true
+            on { featureType() } doReturn FeatureType.NONE
+        }
 
-    private val teType: TrackedEntityType = mock {
-        on { access() } doReturn mock()
-        on { access().data() } doReturn mock()
-        on { access().data().write() } doReturn true
-        on { featureType() } doReturn FeatureType.NONE
-    }
+    private val teType: TrackedEntityType =
+        mock {
+            on { access() } doReturn mock()
+            on { access().data() } doReturn mock()
+            on { access().data().write() } doReturn true
+            on { featureType() } doReturn FeatureType.NONE
+        }
 
     @Before
     fun setUp() {
         whenever(conf.sections()) doReturn emptyList()
-        val programAttribute: ProgramTrackedEntityAttribute = mock {
-            on { trackedEntityAttribute() } doReturn ObjectWithUid.create("teAttributeUid")
-            on { mandatory() } doReturn false
-        }
+        val programAttribute: ProgramTrackedEntityAttribute =
+            mock {
+                on { trackedEntityAttribute() } doReturn ObjectWithUid.create("teAttributeUid")
+                on { mandatory() } doReturn false
+            }
         whenever(conf.programAttributes()) doReturn listOf(programAttribute)
-        val teAttribute: TrackedEntityAttribute = mock {
-            on { uid() } doReturn "teAttributeUid"
-            on { valueType() } doReturn ValueType.TEXT
-            on { optionSet() } doReturn null
-            on { generated() } doReturn false
-            on { style() } doReturn ObjectStyle.builder().build()
-            on { fieldMask() } doReturn null
-        }
+        val teAttribute: TrackedEntityAttribute =
+            mock {
+                on { uid() } doReturn "teAttributeUid"
+                on { valueType() } doReturn ValueType.TEXT
+                on { optionSet() } doReturn null
+                on { generated() } doReturn false
+                on { style() } doReturn ObjectStyle.builder().build()
+                on { fieldMask() } doReturn null
+            }
         whenever(conf.trackedEntityAttribute("teAttributeUid")) doReturn teAttribute
         whenever(conf.attributeValue(any())) doReturn null
         whenever(conf.conflicts()) doReturn emptyList()
@@ -95,64 +100,70 @@ class FormRepositoryIntegrationTest {
     }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfIsNewAndNotCompleted() = runTest {
-        mockUncompletedEnrollment()
-        whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
+    fun shouldOpenEnrollmentDetailSectionIfIsNewAndNotCompleted() =
+        runTest {
+            mockUncompletedEnrollment()
+            whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
-        val repository = mockFormRepository()
+            val repository = mockFormRepository()
 
-        val fields = repository.fetchFormItems()
-        assertTrue((fields.first { it.isSection() } as SectionUiModelImpl).isOpen == true)
-    }
-
-    @Test
-    fun shouldOpenEnrollmentDetailSectionIfIsNewAndCompleted() = runTest {
-        mockCompletedEnrollment()
-        whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
-
-        val repository = mockFormRepository(EnrollmentMode.NEW)
-
-        val fields = repository.fetchFormItems()
-        assertTrue((fields.first { it.isSection() } as SectionUiModelImpl).isOpen == true)
-    }
+            val fields = repository.fetchFormItems()
+            assertTrue((fields.first { it.isSection() } as SectionUiModelImpl).isOpen == true)
+        }
 
     @Test
-    fun shouldOpenEnrollmentDetailSectionIfNotCompleted() = runTest {
-        mockUncompletedEnrollment()
-        whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
+    fun shouldOpenEnrollmentDetailSectionIfIsNewAndCompleted() =
+        runTest {
+            mockCompletedEnrollment()
+            whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
-        val repository = mockFormRepository(EnrollmentMode.CHECK)
+            val repository = mockFormRepository(EnrollmentMode.NEW)
 
-        val fields = repository.fetchFormItems()
-        assertTrue((fields.first { it.isSection() } as SectionUiModelImpl).isOpen == true)
-    }
+            val fields = repository.fetchFormItems()
+            assertTrue((fields.first { it.isSection() } as SectionUiModelImpl).isOpen == true)
+        }
 
     @Test
-    fun shouldNotOpenEnrollmentDetailSectionIfCompleted() = runTest {
-        mockCompletedEnrollment()
-        whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
+    fun shouldOpenEnrollmentDetailSectionIfNotCompleted() =
+        runTest {
+            mockUncompletedEnrollment()
+            whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
 
-        val repository = mockFormRepository(EnrollmentMode.CHECK)
+            val repository = mockFormRepository(EnrollmentMode.CHECK)
 
-        val fields = repository.fetchFormItems()
-        assertTrue(
-            (fields.filter { it.isSection() }[1] as SectionUiModelImpl).isOpen == true,
-        )
-    }
+            val fields = repository.fetchFormItems()
+            assertTrue((fields.first { it.isSection() } as SectionUiModelImpl).isOpen == true)
+        }
+
+    @Test
+    fun shouldNotOpenEnrollmentDetailSectionIfCompleted() =
+        runTest {
+            mockCompletedEnrollment()
+            whenever(conf.disableCollapsableSectionsInProgram(any())) doReturn false
+
+            val repository = mockFormRepository(EnrollmentMode.CHECK)
+
+            val fields = repository.fetchFormItems()
+            assertTrue(
+                (fields.filter { it.isSection() }[1] as SectionUiModelImpl).isOpen == true,
+            )
+        }
 
     private fun mockUncompletedEnrollment() {
-        val enrollment: Enrollment = mock {
-            on { enrollmentDate() } doReturn null
-            on { organisationUnit() } doReturn "orgUnitUid"
-        }
+        val enrollment: Enrollment =
+            mock {
+                on { enrollmentDate() } doReturn null
+                on { organisationUnit() } doReturn "orgUnitUid"
+            }
         whenever(conf.enrollment()) doReturn enrollment
     }
 
     private fun mockCompletedEnrollment() {
-        val enrollment: Enrollment = mock {
-            on { enrollmentDate() } doReturn Date()
-            on { organisationUnit() } doReturn "orgUnitUid"
-        }
+        val enrollment: Enrollment =
+            mock {
+                on { enrollmentDate() } doReturn Date()
+                on { organisationUnit() } doReturn "orgUnitUid"
+            }
         whenever(conf.enrollment()) doReturn enrollment
     }
 
@@ -164,22 +175,24 @@ class FormRepositoryIntegrationTest {
         val legendValueProvider: LegendValueProvider = mock()
         val autoCompleteProvider: AutoCompleteProvider = mock()
 
-        val fieldFactory = FieldViewModelFactoryImpl(
-            hintProvider,
-            displayNameProvider,
-            uiEventTypesProvider,
-            keyboardActionProvider,
-            legendValueProvider,
-            autoCompleteProvider,
-        )
+        val fieldFactory =
+            FieldViewModelFactoryImpl(
+                hintProvider,
+                displayNameProvider,
+                uiEventTypesProvider,
+                keyboardActionProvider,
+                legendValueProvider,
+                autoCompleteProvider,
+            )
 
-        val dataEntryRepository = EnrollmentRepository(
-            fieldFactory,
-            conf,
-            enrollmentMode,
-            enrollmentFormLabelsProvider,
-            metadataIconProvider,
-        )
+        val dataEntryRepository =
+            EnrollmentRepository(
+                fieldFactory,
+                conf,
+                enrollmentMode,
+                enrollmentFormLabelsProvider,
+                metadataIconProvider,
+            )
 
         return FormRepositoryImpl(
             formValueStore,

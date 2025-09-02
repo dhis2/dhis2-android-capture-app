@@ -37,7 +37,6 @@ data class FieldUiModelImpl(
     override val periodSelector: PeriodSelector? = null,
     override var customIntent: CustomIntentModel? = null,
 ) : FieldUiModel {
-
     private var callback: FieldUiModel.Callback? = null
 
     override val formattedLabel: String
@@ -83,14 +82,14 @@ data class FieldUiModelImpl(
 
     override fun setValue(value: String?) = this.copy(value = value)
 
-    override fun setSelectableDates(selectableDates: SelectableDates?) =
-        this.copy(selectableDates = selectableDates)
+    override fun setSelectableDates(selectableDates: SelectableDates?) = this.copy(selectableDates = selectableDates)
 
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 
     override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
+
     override fun isSectionWithFields(): Boolean = false
 
     override fun setFocus() = this.copy(focused = true)

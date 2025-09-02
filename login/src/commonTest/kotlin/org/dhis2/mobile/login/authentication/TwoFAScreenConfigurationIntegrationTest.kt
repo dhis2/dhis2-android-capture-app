@@ -62,13 +62,14 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus,
-                getTwoFASecretCode,
-                enableTwoFA,
-                disableTwoFA,
-                mapper,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus,
+                    getTwoFASecretCode,
+                    enableTwoFA,
+                    disableTwoFA,
+                    mapper,
+                )
 
             // Then: Loading screen is displayed followed by enable 2FA screen
             viewModel.uiState.test {
@@ -91,13 +92,14 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus,
-                getTwoFASecretCode,
-                enableTwoFA,
-                disableTwoFA,
-                mapper,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus,
+                    getTwoFASecretCode,
+                    enableTwoFA,
+                    disableTwoFA,
+                    mapper,
+                )
 
             // Then: Loading screen is displayed followed by disable 2FA screen
             viewModel.uiState.test {
@@ -120,13 +122,14 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus,
-                getTwoFASecretCode,
-                enableTwoFA,
-                disableTwoFA,
-                mapper,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus,
+                    getTwoFASecretCode,
+                    enableTwoFA,
+                    disableTwoFA,
+                    mapper,
+                )
 
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {
@@ -141,19 +144,20 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given user in 2FA settings with 2FA status enabled, When correct code is entered and button clicked, Then enable 2FA screen is displayed`() =
+    fun `Given 2FA enabled, When correct code is entered, Then enable 2FA screen is displayed`() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
                 TwoFAStatus.Enabled(),
             )
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus,
-                getTwoFASecretCode,
-                enableTwoFA,
-                disableTwoFA,
-                mapper,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus,
+                    getTwoFASecretCode,
+                    enableTwoFA,
+                    disableTwoFA,
+                    mapper,
+                )
 
             // When: 2FA code is entered correctly"
             whenever(repository.disableTwoFAs("123456")).thenReturn(
@@ -178,26 +182,27 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given user in 2FA settings with 2FA status enabled, When incorrect code is entered and button clicked, Then disable 2FA screen is displayed with error`() =
+    fun `Given 2FA enabled, When incorrect code, Then disable screen is displayed with error`() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
                 TwoFAStatus.Enabled(),
             )
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus,
-                getTwoFASecretCode,
-                enableTwoFA,
-                disableTwoFA,
-                mapper,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus,
+                    getTwoFASecretCode,
+                    enableTwoFA,
+                    disableTwoFA,
+                    mapper,
+                )
 
-            // When: 2FA code is entered correctly"
+            // When: 2FA incorrect code is entered"
             whenever(repository.disableTwoFAs("123456")).thenReturn(
                 flowOf(TwoFAStatus.Enabled("error")),
             )
 
-            // Then: enable 2FA screen is displayed after disable
+            // Then: disable 2FA screen is displayed with error
             viewModel.uiState.test {
                 // Loading screen is displayed
                 assertEquals(TwoFAUiState.Checking, awaitItem())
@@ -225,13 +230,14 @@ class TwoFAScreenConfigurationIntegrationTest {
             whenever(repository.enableTwoFA("123456")) doReturn flowOf(true)
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                getTwoFASecretCode = getTwoFASecretCode,
-                enableTwoFA = enableTwoFA,
-                disableTwoFA = disableTwoFA,
-                mapper = mapper,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFASecretCode,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
+                    mapper = mapper,
+                )
 
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {

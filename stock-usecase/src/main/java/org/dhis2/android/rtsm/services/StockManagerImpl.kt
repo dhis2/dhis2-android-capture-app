@@ -39,57 +39,69 @@ class StockManagerImpl(
     private val ruleValidationHelper: RuleValidationHelper,
     private val dispatcher: StockDispatcherProvider,
 ) : StockManager {
-
     override suspend fun search(
         query: SearchParametersModel,
         ou: String?,
         config: StockUseCase,
     ): SearchResult {
-        val list = withContext(dispatcher.io()) {
-            var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
+        val list =
+            withContext(dispatcher.io()) {
+                var teiRepository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
-            if (!ou.isNullOrEmpty()) {
-                teiRepository.byOrgUnits()
-                    .eq(ou)
-                    .byOrgUnitMode()
-                    .eq(OrganisationUnitMode.SELECTED)
-                    .also { teiRepository = it }
-            }
+                if (!ou.isNullOrEmpty()) {
+                    teiRepository
+                        .byOrgUnits()
+                        .eq(ou)
+                        .byOrgUnitMode()
+                        .eq(OrganisationUnitMode.SELECTED)
+                        .also { teiRepository = it }
+                }
 
-            teiRepository.byProgram()
-                .eq(config.programUid)
-                .also { teiRepository = it }
-
-            if (!query.name.isNullOrEmpty()) {
                 teiRepository
-                    .byQuery()
-                    .like(query.name).also { teiRepository = it }
-            }
-
-            if (!query.code.isNullOrEmpty()) {
-                teiRepository
-                    .byQuery()
-                    .eq(query.code)
+                    .byProgram()
+                    .eq(config.programUid)
                     .also { teiRepository = it }
+
+                if (!query.name.isNullOrEmpty()) {
+                    teiRepository
+                        .byQuery()
+                        .like(query.name)
+                        .also { teiRepository = it }
+                }
+
+                if (!query.code.isNullOrEmpty()) {
+                    teiRepository
+                        .byQuery()
+                        .eq(query.code)
+                        .also { teiRepository = it }
+                }
+
+                teiRepository
+                    .orderByAttribute(config.itemDescription)
+                    .eq(RepositoryScope.OrderByDirection.ASC)
+                    .also { teiRepository = it }
+
+                val teiList =
+                    teiRepository
+                        .blockingGet()
+                        .filter { it.deleted() == null || !it.deleted()!! }
+                        .map { transform(it, config) }
+
+                teiList
             }
-
-            teiRepository.orderByAttribute(config.itemDescription)
-                .eq(RepositoryScope.OrderByDirection.ASC)
-                .also { teiRepository = it }
-
-            val teiList = teiRepository.blockingGet()
-                .filter { it.deleted() == null || !it.deleted()!! }
-                .map { transform(it, config) }
-
-            teiList
-        }
 
         return SearchResult(liveData { emit(list) })
     }
 
-    private fun transform(tei: TrackedEntityInstance, config: StockUseCase): StockItem {
+    private fun transform(
+        tei: TrackedEntityInstance,
+        config: StockUseCase,
+    ): StockItem {
         val optionSet =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(config.itemDescription)
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(config.itemDescription)
                 .blockingGet()
                 ?.optionSet()
 
@@ -100,23 +112,37 @@ class StockManagerImpl(
                 config.itemDescription,
                 optionSet != null,
             ) { code ->
-                d2.optionModule().options()
-                    .byOptionSetUid().eq(optionSet?.uid())
-                    .byCode().eq(code).one().blockingGet()?.displayName() ?: ""
+                d2
+                    .optionModule()
+                    .options()
+                    .byOptionSetUid()
+                    .eq(optionSet?.uid())
+                    .byCode()
+                    .eq(code)
+                    .one()
+                    .blockingGet()
+                    ?.displayName() ?: ""
             } ?: "",
             getStockOnHand(tei, config.stockOnHand) ?: "",
         )
     }
 
-    private fun getStockOnHand(tei: TrackedEntityInstance, stockOnHandUid: String): String? {
-        val events = d2.eventModule()
-            .events()
-            .byTrackedEntityInstanceUids(Collections.singletonList(tei.uid()))
-            .byDataValue(stockOnHandUid).like("")
-            .byDeleted().isFalse
-            .withTrackedEntityDataValues()
-            .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
-            .blockingGet()
+    private fun getStockOnHand(
+        tei: TrackedEntityInstance,
+        stockOnHandUid: String,
+    ): String? {
+        val events =
+            d2
+                .eventModule()
+                .events()
+                .byTrackedEntityInstanceUids(Collections.singletonList(tei.uid()))
+                .byDataValue(stockOnHandUid)
+                .like("")
+                .byDeleted()
+                .isFalse
+                .withTrackedEntityDataValues()
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
+                .blockingGet()
 
         events.forEach { event ->
             event.trackedEntityDataValues()?.forEach { dataValue ->
@@ -144,7 +170,8 @@ class StockManagerImpl(
                 "OU: ${facility.uid}\n",
         )
         return d2.eventModule().events().blockingAdd(
-            EventCreateProjection.builder()
+            EventCreateProjection
+                .builder()
                 .enrollment(enrollment.uid())
                 .program(programUid)
                 .programStage(programStage.uid())
@@ -160,12 +187,14 @@ class StockManagerImpl(
     ): Single<Unit> {
         Timber.i("SAVING TRANSACTION")
 
-        val programStage = d2.programModule()
-            .programStages()
-            .byProgramUid()
-            .eq(stockUseCase.programUid)
-            .one()
-            .blockingGet() ?: return Single.just(Unit)
+        val programStage =
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(stockUseCase.programUid)
+                .one()
+                .blockingGet() ?: return Single.just(Unit)
 
         items.forEach { entry ->
             getEnrollment(entry.item.id)?.let { enrollment ->
@@ -175,9 +204,10 @@ class StockManagerImpl(
         return Single.just(Unit)
     }
 
-    override suspend fun stockUseCase(program: String) = withContext(dispatcher.io()) {
-        return@withContext d2.stockUseCase(program)
-    }
+    override suspend fun stockUseCase(program: String) =
+        withContext(dispatcher.io()) {
+            return@withContext d2.stockUseCase(program)
+        }
 
     private fun createEvent(
         item: StockEntry,
@@ -186,26 +216,31 @@ class StockManagerImpl(
         transaction: Transaction,
         stockUseCase: StockUseCase,
     ) {
-        val eventUid = try {
-            createEventProjection(
-                transaction.facility,
-                programStage,
-                enrollment,
-                stockUseCase.programUid,
-            )
-        } catch (e: Exception) {
-            if (e is D2Error) {
-                Timber.e(e.originalException())
-                Timber.e("Unable to save event: %s", e.errorCode().toString())
-            } else {
-                Timber.e(e)
+        val eventUid =
+            try {
+                createEventProjection(
+                    transaction.facility,
+                    programStage,
+                    enrollment,
+                    stockUseCase.programUid,
+                )
+            } catch (e: Exception) {
+                if (e is D2Error) {
+                    Timber.e(e.originalException())
+                    Timber.e("Unable to save event: %s", e.errorCode().toString())
+                } else {
+                    Timber.e(e)
+                }
+                null
             }
-            null
-        }
         if (eventUid != null) {
             try {
                 // Set the event date
-                d2.eventModule().events().uid(eventUid).setEventDate(item.date)
+                d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .setEventDate(item.date)
             } catch (e: Exception) {
                 if (e is D2Error) {
                     Timber.e(e.originalException())
@@ -219,10 +254,13 @@ class StockManagerImpl(
                 Timber.i("event:$eventUid")
                 Timber.i("de:${getTransactionDataElement(transaction.transactionType, stockUseCase)}")
                 Timber.i("data to save:${item.qty}")
-                d2.trackedEntityModule().trackedEntityDataValues().value(
-                    eventUid,
-                    getTransactionDataElement(transaction.transactionType, stockUseCase),
-                ).blockingSet(item.qty.toString())
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityDataValues()
+                    .value(
+                        eventUid,
+                        getTransactionDataElement(transaction.transactionType, stockUseCase),
+                    ).blockingSet(item.qty.toString())
             } catch (e: Exception) {
                 if (e is D2Error) {
                     Timber.e(e.originalException())
@@ -234,15 +272,20 @@ class StockManagerImpl(
 
             try {
                 transaction.distributedTo?.let {
-                    val destination = d2.optionModule()
-                        .options()
-                        .uid(it.uid)
-                        .blockingGet()
+                    val destination =
+                        d2
+                            .optionModule()
+                            .options()
+                            .uid(it.uid)
+                            .blockingGet()
 
-                    d2.trackedEntityModule().trackedEntityDataValues().value(
-                        eventUid,
-                        stockUseCase.distributedTo(),
-                    ).blockingSet(destination?.code())
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityDataValues()
+                        .value(
+                            eventUid,
+                            stockUseCase.distributedTo(),
+                        ).blockingSet(destination?.code())
                 }
             } catch (e: Exception) {
                 if (e is D2Error) {
@@ -274,7 +317,8 @@ class StockManagerImpl(
         stockUseCase: StockUseCase,
     ) {
         disposable.add(
-            ruleValidationHelper.evaluate(entry, program, transaction, eventUid, stockUseCase)
+            ruleValidationHelper
+                .evaluate(entry, program, transaction, eventUid, stockUseCase)
                 .doOnError { e -> Timber.e(e) }
                 .observeOn(schedulerProvider.io())
                 .subscribeOn(schedulerProvider.ui())
@@ -282,7 +326,10 @@ class StockManagerImpl(
         )
     }
 
-    private fun performRuleActions(ruleEffects: List<RuleEffect>?, eventUid: String) {
+    private fun performRuleActions(
+        ruleEffects: List<RuleEffect>?,
+        eventUid: String,
+    ) {
         Timber.d("Rule Effects: %s", ruleEffects)
         ruleEffects?.forEach { ruleEffect ->
             if (ruleEffect.ruleAction.type == ProgramRuleActionType.ASSIGN.name) {
@@ -295,7 +342,8 @@ class StockManagerImpl(
 
                     if (NumberUtils.isCreatable(value)) {
                         try {
-                            d2.trackedEntityModule()
+                            d2
+                                .trackedEntityModule()
                                 .trackedEntityDataValues()
                                 .value(eventUid, de)
                                 .blockingSet(value)
@@ -319,12 +367,12 @@ class StockManagerImpl(
         }
     }
 
-    private fun getEnrollment(teiUid: String): Enrollment? {
-        return d2.enrollmentModule()
+    private fun getEnrollment(teiUid: String): Enrollment? =
+        d2
+            .enrollmentModule()
             .enrollments()
             .byTrackedEntityInstance()
             .eq(teiUid)
             .one()
             .blockingGet()
-    }
 }

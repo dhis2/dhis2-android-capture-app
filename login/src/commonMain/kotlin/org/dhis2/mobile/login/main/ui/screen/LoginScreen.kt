@@ -84,11 +84,12 @@ fun LoginScreen(
 
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
-                is NavigationAction.Navigate -> navController.navigate(
-                    action.destination,
-                ) {
-                    action.navOptions(this)
-                }
+                is NavigationAction.Navigate ->
+                    navController.navigate(
+                        action.destination,
+                    ) {
+                        action.navOptions(this)
+                    }
 
                 NavigationAction.NavigateUp -> navController.navigateUp()
             }
@@ -99,20 +100,19 @@ fun LoginScreen(
         NavHost(
             navController = navController,
             startDestination = initialScreen,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = padding.calculateTopPadding(),
-                    start = padding.calculateStartPadding(layoutDirection),
-                    end = padding.calculateEndPadding(layoutDirection),
-                    bottom = 0.dp,
-                )
-                .consumeWindowInsets(padding)
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                )
-                .padding(bottom = padding.calculateBottomPadding()),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = padding.calculateTopPadding(),
+                        start = padding.calculateStartPadding(layoutDirection),
+                        end = padding.calculateEndPadding(layoutDirection),
+                        bottom = 0.dp,
+                    ).consumeWindowInsets(padding)
+                    .background(
+                        Color.White,
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    ).padding(bottom = padding.calculateBottomPadding()),
         ) {
             composable<LoginScreenState.Loading> {
                 displayMoreActions = false
@@ -148,19 +148,23 @@ fun LoginTopBar(
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal)),
     ) {
         Box(
-            modifier = Modifier.height(80.dp)
-                .fillMaxWidth()
-                .padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
+            modifier =
+                Modifier
+                    .height(80.dp)
+                    .fillMaxWidth()
+                    .padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
         ) {
             Image(
-                modifier = Modifier
-                    .height(48.dp)
-                    .align(Alignment.Center),
+                modifier =
+                    Modifier
+                        .height(48.dp)
+                        .align(Alignment.Center),
                 imageVector = vectorResource(resource = Res.drawable.ic_dhis_logo),
                 contentDescription = "dhis2 logo",
             )
@@ -188,10 +192,11 @@ fun LoginTopBar(
                             },
                             text = {
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(48.dp)
-                                        .padding(horizontal = 16.dp),
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(48.dp)
+                                            .padding(horizontal = 16.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = spacedBy(16.dp),
                                 ) {
@@ -213,8 +218,10 @@ fun LoginTopBar(
             }
 
             Text(
-                modifier = Modifier.align(Alignment.BottomEnd)
-                    .offset(x = -(8.dp)),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = -(8.dp)),
                 text = version,
                 color = MaterialTheme.colorScheme.surfaceContainerHighest,
                 style = MaterialTheme.typography.bodySmall,

@@ -66,8 +66,6 @@ class SearchTEList : FragmentGlobalAbstract() {
 
     private val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
 
-    private val KEY_SCROLL_POSITION = "scroll_position"
-
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
     }
@@ -119,6 +117,8 @@ class SearchTEList : FragmentGlobalAbstract() {
             SearchTEList().apply {
                 arguments = bundleArguments(fromRelationships)
             }
+
+        private const val KEY_SCROLL_POSITION = "scroll_position"
     }
 
     private fun bundleArguments(fromRelationships: Boolean): Bundle =

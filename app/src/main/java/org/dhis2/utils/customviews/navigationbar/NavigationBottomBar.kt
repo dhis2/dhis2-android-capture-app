@@ -23,7 +23,7 @@ import org.dhis2.R
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 
-const val itemIndicatorTag = "ITEM_INDICATOR"
+const val ITEM_INDICATOR_TAG = "ITEM_INDICATOR"
 
 class NavigationBottomBar
     @JvmOverloads
@@ -120,7 +120,7 @@ class NavigationBottomBar
                 y = 0f
                 setImageDrawable(itemIndicatorDrawable)
                 DrawableCompat.setTint(DrawableCompat.wrap(drawable), currentItemIndicatorColor)
-                tag = itemIndicatorTag
+                tag = ITEM_INDICATOR_TAG
             }
 
         private fun animateItemIndicatorPosition(selectedItemView: View) {
@@ -149,7 +149,7 @@ class NavigationBottomBar
             currentItemIndicator.x != -itemIndicatorSize / 2f &&
                 currentItemIndicator.y != -itemIndicatorSize / 2f
 
-        private fun isItemIndicatorAdded(): Boolean = findViewWithTag<View?>(itemIndicatorTag) != null
+        private fun isItemIndicatorAdded(): Boolean = findViewWithTag<View?>(ITEM_INDICATOR_TAG) != null
 
         fun isHidden(): Boolean = hidden
 

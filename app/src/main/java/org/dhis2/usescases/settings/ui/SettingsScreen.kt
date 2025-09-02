@@ -34,11 +34,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import java.io.File
 
-const val TestTag_DataPeriod = "TestTag_DataPeriod"
-const val TestTag_MetaPeriod = "TestTag_MetaPeriod"
-const val TestTag_SyncParameters_LimitScope = "TestTag_SyncParameters_LimitScope"
-const val TestTag_SyncParameters_EventMaxCount = "TestTag_SyncParameters_EventMaxCount"
-const val TestTag_SyncParameters_TeiMaxCount = "TestTag_SyncParameters_TeiMaxCount"
+const val TEST_TAG_DATA_PERIOD = "TestTag_DataPeriod"
+const val TEST_TAG_META_PERIOD = "TestTag_MetaPeriod"
+const val TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE = "TestTag_SyncParameters_LimitScope"
+const val TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT = "TestTag_SyncParameters_EventMaxCount"
+const val TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT = "TestTag_SyncParameters_TeiMaxCount"
 
 @Composable
 fun SettingsScreen(

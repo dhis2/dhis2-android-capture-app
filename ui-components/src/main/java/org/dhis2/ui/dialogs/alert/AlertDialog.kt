@@ -60,7 +60,6 @@ class AlertDialog(
     val dismissButton: ButtonUiModel,
     val confirmButton: ButtonUiModel,
 ) : DialogFragment() {
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window!!.requestFeature(Window.FEATURE_NO_TITLE)
@@ -72,8 +71,8 @@ class AlertDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
@@ -85,23 +84,24 @@ class AlertDialog(
                         iconResource = iconResource,
                         spanText = spanText,
                         animationRes = animationRes,
-                        confirmButton = confirmButton.copy(
-                            onClick = {
-                                confirmButton.onClick()
-                                dismiss()
-                            },
-                        ),
-                        dismissButton = dismissButton.copy(
-                            onClick = {
-                                dismissButton.onClick()
-                                dismiss()
-                            },
-                        ),
+                        confirmButton =
+                            confirmButton.copy(
+                                onClick = {
+                                    confirmButton.onClick()
+                                    dismiss()
+                                },
+                            ),
+                        dismissButton =
+                            dismissButton.copy(
+                                onClick = {
+                                    dismissButton.onClick()
+                                    dismiss()
+                                },
+                            ),
                     )
                 }
             }
         }
-    }
 
     fun show(manager: FragmentManager) {
         super.show(manager, TAG)
@@ -130,39 +130,43 @@ fun Dhis2AlertDialogUi(
             text = {
                 Column {
                     Text(
-                        text = buildAnnotatedString {
-                            append(descriptionText)
-                            spanText?.let {
-                                addStyle(
-                                    style = SpanStyle(MaterialTheme.colorScheme.primary),
-                                    start = descriptionText.indexOf(spanText),
-                                    end = descriptionText.indexOf(spanText) + spanText.length,
-                                )
-                            }
-                        },
+                        text =
+                            buildAnnotatedString {
+                                append(descriptionText)
+                                spanText?.let {
+                                    addStyle(
+                                        style = SpanStyle(MaterialTheme.colorScheme.primary),
+                                        start = descriptionText.indexOf(spanText),
+                                        end = descriptionText.indexOf(spanText) + spanText.length,
+                                    )
+                                }
+                            },
                     )
                     animationRes?.let {
                         Spacer(modifier = Modifier.size(16.dp))
                         if (!confirmButtonClick.value) {
                             LottieAnimation(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
                                 composition = composition,
                                 iterations = LottieConstants.IterateForever,
                             )
                         } else {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 ProgressIndicator(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .height(100.dp),
+                                    modifier =
+                                        Modifier
+                                            .width(100.dp)
+                                            .height(100.dp),
                                     type = ProgressIndicatorType.CIRCULAR,
                                 )
                             }

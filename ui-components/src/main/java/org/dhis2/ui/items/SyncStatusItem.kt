@@ -27,15 +27,15 @@ fun SyncStatusItem(
     title: String,
     subtitle: String? = null,
     onClick: () -> Unit,
-    syncStatusIcon: @Composable
-    () -> Unit,
+    syncStatusIcon: @Composable () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.White)
-            .clip(RoundedCornerShape(8.dp))
-            .clickable { onClick() },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(color = Color.White)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onClick() },
         horizontalArrangement = spacedBy(8.dp),
     ) {
         syncStatusIcon()
@@ -43,16 +43,18 @@ fun SyncStatusItem(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = title,
-                style = MaterialTheme.typography.bodyMedium
-                    .copy(color = textPrimary),
+                style =
+                    MaterialTheme.typography.bodyMedium
+                        .copy(color = textPrimary),
             )
             subtitle?.let {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = textSecondary,
-                    ),
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            color = textSecondary,
+                        ),
                 )
             }
         }

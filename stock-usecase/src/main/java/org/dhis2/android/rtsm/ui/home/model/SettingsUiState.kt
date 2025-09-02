@@ -23,32 +23,37 @@ data class SettingsUiState(
     val programName: String = "",
     val selectedScreen: BottomNavigation = BottomNavigation.DATA_ENTRY,
 ) {
-
     fun hasFacilitySelected() = facility != null
+
     fun hasDestinationSelected() = destination != null
-    fun fromFacilitiesLabel(): UIText = facility?.let {
-        val orgUnitName = it.displayName().toString()
-        return when (selectedTransactionItem.type) {
-            DISTRIBUTION -> {
-                UIText.StringRes(R.string.subtitle, orgUnitName)
+
+    fun fromFacilitiesLabel(): UIText =
+        facility?.let {
+            val orgUnitName = it.displayName().toString()
+            return when (selectedTransactionItem.type) {
+                DISTRIBUTION -> {
+                    UIText.StringRes(R.string.subtitle, orgUnitName)
+                }
+                DISCARD -> {
+                    UIText.StringRes(R.string.subtitle, orgUnitName)
+                }
+                CORRECTION -> {
+                    UIText.StringRes(R.string.subtitle, orgUnitName)
+                }
             }
-            DISCARD -> {
-                UIText.StringRes(R.string.subtitle, orgUnitName)
-            }
-            CORRECTION -> {
-                UIText.StringRes(R.string.subtitle, orgUnitName)
-            }
+        } ?: UIText.StringRes(R.string.from_facility)
+
+    fun deliverToLabel(): UIText? =
+        when (selectedTransactionItem.type) {
+            DISTRIBUTION ->
+                destination?.let {
+                    UIText.StringRes(R.string.subtitle, it.displayName().toString())
+                } ?: UIText.StringRes(R.string.to_facility)
+            else -> null
         }
-    } ?: UIText.StringRes(R.string.from_facility)
 
-    fun deliverToLabel(): UIText? = when (selectedTransactionItem.type) {
-        DISTRIBUTION -> destination?.let {
-            UIText.StringRes(R.string.subtitle, it.displayName().toString())
-        } ?: UIText.StringRes(R.string.to_facility)
-        else -> null
-    }
-
-    fun facilityName() = facility?.let {
-        it.displayName().toString()
-    } ?: ""
+    fun facilityName() =
+        facility?.let {
+            it.displayName().toString()
+        } ?: ""
 }

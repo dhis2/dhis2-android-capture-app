@@ -149,7 +149,7 @@ internal fun SyncDataSettingItem(
                             stringResource(R.string.Manual),
                         )
                     InputDropDown(
-                        modifier = Modifier.testTag(TestTag_DataPeriod),
+                        modifier = Modifier.testTag(TEST_TAG_DATA_PERIOD),
                         title = stringResource(R.string.settings_sync_period),
                         state = InputShellState.FOCUSED,
                         itemCount = dataSyncPeriods.size,
