@@ -12,27 +12,28 @@ import org.koin.dsl.module
 
 internal expect val twoFARepositoryModule: Module
 
-internal val twoFAModule = module {
-    // Repository
-    includes(twoFARepositoryModule)
+internal val twoFAModule =
+    module {
+        // Repository
+        includes(twoFARepositoryModule)
 
-    // Use Cases
-    single<GetTwoFAStatus> { GetTwoFAStatus(get()) }
-    single<GetTwoFASecretCode> { GetTwoFASecretCode(get()) }
-    single<EnableTwoFA> { EnableTwoFA(get()) }
-    single<DisableTwoFA> { DisableTwoFA(get()) }
+        // Use Cases
+        single<GetTwoFAStatus> { GetTwoFAStatus(get()) }
+        single<GetTwoFASecretCode> { GetTwoFASecretCode(get()) }
+        single<EnableTwoFA> { EnableTwoFA(get()) }
+        single<DisableTwoFA> { DisableTwoFA(get()) }
 
-    // Mappers
-    single<TwoFAUiStateMapper> { TwoFAUiStateMapper() }
+        // Mappers
+        single<TwoFAUiStateMapper> { TwoFAUiStateMapper() }
 
-    // ViewModels
-    viewModel {
-        TwoFASettingsViewModel(
-            getTwoFAStatus = get(),
-            getTwoFASecretCode = get(),
-            enableTwoFA = get(),
-            disableTwoFA = get(),
-            mapper = get(),
-        )
+        // ViewModels
+        viewModel {
+            TwoFASettingsViewModel(
+                getTwoFAStatus = get(),
+                getTwoFASecretCode = get(),
+                enableTwoFA = get(),
+                disableTwoFA = get(),
+                mapper = get(),
+            )
+        }
     }
-}

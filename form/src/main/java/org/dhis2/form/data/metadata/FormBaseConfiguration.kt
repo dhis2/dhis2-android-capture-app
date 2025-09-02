@@ -17,26 +17,34 @@ open class FormBaseConfiguration(
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
 ) {
-    fun optionGroups(optionGroupUids: List<String>) = d2.optionModule().optionGroups()
-        .withOptions()
-        .byUid().`in`(optionGroupUids)
-        .blockingGet()
+    fun optionGroups(optionGroupUids: List<String>) =
+        d2
+            .optionModule()
+            .optionGroups()
+            .withOptions()
+            .byUid()
+            .`in`(optionGroupUids)
+            .blockingGet()
 
     val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
 
     fun evaluateCustomIntentRequestParams(
         customIntent: CustomIntent,
         context: CustomIntentContext,
-    ): Map<String, Any?> {
-        return d2.settingModule().customIntentService()
+    ): Map<String, Any?> =
+        d2
+            .settingModule()
+            .customIntentService()
             .blockingEvaluateRequestParams(customIntent, context)
-    }
 
-    fun disableCollapsableSectionsInProgram(programUid: String) =
-        d2.disableCollapsableSectionsInProgram(programUid)
+    fun disableCollapsableSectionsInProgram(programUid: String) = d2.disableCollapsableSectionsInProgram(programUid)
 
     fun dateFormatConfiguration() =
-        d2.systemInfoModule().systemInfo().blockingGet()?.dateFormat()
+        d2
+            .systemInfoModule()
+            .systemInfo()
+            .blockingGet()
+            ?.dateFormat()
 
     fun options(
         optionSetUid: String,
@@ -44,47 +52,63 @@ open class FormBaseConfiguration(
         optionsToHide: List<String>,
         optionGroupsToHide: List<String>,
         optionGroupsToShow: List<String>,
-    ): Flow<PagingData<Option>> {
-        return when {
-            query.isEmpty() -> d2.optionModule()
-                .options()
-                .byOptionSetUid().eq(optionSetUid)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .getPagingData(10)
+    ): Flow<PagingData<Option>> =
+        when {
+            query.isEmpty() ->
+                d2
+                    .optionModule()
+                    .options()
+                    .byOptionSetUid()
+                    .eq(optionSetUid)
+                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+                    .getPagingData(10)
 
             else ->
-                d2.optionModule()
+                d2
+                    .optionModule()
                     .options()
-                    .byOptionSetUid().eq(optionSetUid)
+                    .byOptionSetUid()
+                    .eq(optionSetUid)
                     .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                    .byDisplayName().like("%$query%")
+                    .byDisplayName()
+                    .like("%$query%")
                     .getPagingData(10)
         }.map { pagingData ->
             pagingData.filter { option ->
                 withContext(dispatcher.io()) {
-                    val optionInGroupToHide = d2.optionModule().optionGroups()
-                        .withOptions()
-                        .byUid().`in`(optionGroupsToHide)
-                        .blockingGet().any { optionGroup ->
-                            optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
-                        }
+                    val optionInGroupToHide =
+                        d2
+                            .optionModule()
+                            .optionGroups()
+                            .withOptions()
+                            .byUid()
+                            .`in`(optionGroupsToHide)
+                            .blockingGet()
+                            .any { optionGroup ->
+                                optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                            }
 
-                    val optionInGroupToShow = d2.optionModule().optionGroups()
-                        .withOptions()
-                        .byUid().`in`(optionGroupsToShow)
-                        .blockingGet().any { optionGroup ->
-                            optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
-                        }
+                    val optionInGroupToShow =
+                        d2
+                            .optionModule()
+                            .optionGroups()
+                            .withOptions()
+                            .byUid()
+                            .`in`(optionGroupsToShow)
+                            .blockingGet()
+                            .any { optionGroup ->
+                                optionGroup.options()?.map { it.uid() }?.contains(option.uid()) == true
+                            }
 
-                    val hideOption = if (optionGroupsToShow.isEmpty()) {
-                        optionsToHide.contains(option.uid()) || optionInGroupToHide
-                    } else {
-                        !optionInGroupToShow
-                    }
+                    val hideOption =
+                        if (optionGroupsToShow.isEmpty()) {
+                            optionsToHide.contains(option.uid()) || optionInGroupToHide
+                        } else {
+                            !optionInGroupToShow
+                        }
 
                     !hideOption
                 }
             }
         }
-    }
 }

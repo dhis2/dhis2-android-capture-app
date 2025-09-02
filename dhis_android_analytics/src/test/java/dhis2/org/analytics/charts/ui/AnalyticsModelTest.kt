@@ -12,7 +12,6 @@ import org.junit.Test
 import java.util.GregorianCalendar
 
 class AnalyticsModelTest {
-
     @Test
     fun `Chart model show error and hide chart`() {
         val chartModel = ChartModel(mockedGraphWithError())
@@ -39,9 +38,10 @@ class AnalyticsModelTest {
 
     @Test
     fun `Pie chart should not display zero data message if error`() {
-        val chartModel = ChartModel(
-            mockedPieChartWithZeroData().copy(hasError = true, errorMessage = "Has error"),
-        )
+        val chartModel =
+            ChartModel(
+                mockedPieChartWithZeroData().copy(hasError = true, errorMessage = "Has error"),
+            )
         assertTrue(!chartModel.pieChartDataIsZero())
     }
 
@@ -52,83 +52,91 @@ class AnalyticsModelTest {
         assertTrue(chartModel.hideChart())
     }
 
-    private fun mockedGraphWithError() = Graph(
-        title = "Visualization Title",
-        series = emptyList(),
-        periodToDisplayDefault = null,
-        eventPeriodType = PeriodType.Monthly,
-        periodStep = 0L,
-        chartType = ChartType.LINE_CHART,
-        categories = emptyList(),
-        visualizationUid = "Visualization Uid",
-        graphFilters = null,
-        hasError = true,
-    )
+    private fun mockedGraphWithError() =
+        Graph(
+            title = "Visualization Title",
+            series = emptyList(),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = 0L,
+            chartType = ChartType.LINE_CHART,
+            categories = emptyList(),
+            visualizationUid = "Visualization Uid",
+            graphFilters = null,
+            hasError = true,
+        )
 
-    private fun mockedPieChartWithZeroData() = Graph(
-        title = "Visualization Title",
-        series = listOf(
-            SerieData(
-                "serie",
+    private fun mockedPieChartWithZeroData() =
+        Graph(
+            title = "Visualization Title",
+            series =
                 listOf(
-                    GraphPoint(
-                        GregorianCalendar(2021, 0, 1).time,
-                        0f,
-                        GraphFieldValue.Numeric(0f),
-                        null,
-                    ),
-                    GraphPoint(
-                        GregorianCalendar(2021, 0, 1).time,
-                        1f,
-                        GraphFieldValue.Numeric(0f),
-                        null,
+                    SerieData(
+                        "serie",
+                        listOf(
+                            GraphPoint(
+                                GregorianCalendar(2021, 0, 1).time,
+                                0f,
+                                GraphFieldValue.Numeric(0f),
+                                null,
+                            ),
+                            GraphPoint(
+                                GregorianCalendar(2021, 0, 1).time,
+                                1f,
+                                GraphFieldValue.Numeric(0f),
+                                null,
+                            ),
+                        ),
                     ),
                 ),
-            ),
-        ),
-        periodToDisplayDefault = null,
-        eventPeriodType = PeriodType.Monthly,
-        periodStep = 0L,
-        chartType = ChartType.PIE_CHART,
-        categories = emptyList(),
-        visualizationUid = "Visualization Uid",
-        hasError = false,
-    )
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = 0L,
+            chartType = ChartType.PIE_CHART,
+            categories = emptyList(),
+            visualizationUid = "Visualization Uid",
+            hasError = false,
+        )
 
-    private fun mockedChartModelWithEmptyData() = Graph(
-        title = "Visualization Title",
-        series = listOf(
-            SerieData(
-                "serie",
-                emptyList(),
-            ),
-        ),
-        periodToDisplayDefault = null,
-        eventPeriodType = PeriodType.Monthly,
-        periodStep = 0L,
-        chartType = ChartType.LINE_CHART,
-        categories = emptyList(),
-        visualizationUid = "Visualization Uid",
-        hasError = false,
-    )
+    private fun mockedChartModelWithEmptyData() =
+        Graph(
+            title = "Visualization Title",
+            series =
+                listOf(
+                    SerieData(
+                        "serie",
+                        emptyList(),
+                    ),
+                ),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = 0L,
+            chartType = ChartType.LINE_CHART,
+            categories = emptyList(),
+            visualizationUid = "Visualization Uid",
+            hasError = false,
+        )
 
-    private fun mockedChartModelWithEmptyDataForFilters() = Graph(
-        title = "Visualization Title",
-        series = listOf(
-            SerieData(
-                "serie",
-                emptyList(),
-            ),
-        ),
-        periodToDisplayDefault = null,
-        eventPeriodType = PeriodType.Monthly,
-        periodStep = 0L,
-        chartType = ChartType.LINE_CHART,
-        categories = emptyList(),
-        visualizationUid = "Visualization Uid",
-        graphFilters = GraphFilters.Visualization(
-            orgUnitsSelected = listOf("selectedOUUid"),
-        ),
-        hasError = false,
-    )
+    private fun mockedChartModelWithEmptyDataForFilters() =
+        Graph(
+            title = "Visualization Title",
+            series =
+                listOf(
+                    SerieData(
+                        "serie",
+                        emptyList(),
+                    ),
+                ),
+            periodToDisplayDefault = null,
+            eventPeriodType = PeriodType.Monthly,
+            periodStep = 0L,
+            chartType = ChartType.LINE_CHART,
+            categories = emptyList(),
+            visualizationUid = "Visualization Uid",
+            graphFilters =
+                GraphFilters.Visualization(
+                    orgUnitsSelected = listOf("selectedOUUid"),
+                ),
+            hasError = false,
+        )
 }

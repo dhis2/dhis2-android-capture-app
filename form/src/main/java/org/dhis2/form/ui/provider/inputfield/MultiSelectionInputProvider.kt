@@ -19,22 +19,23 @@ internal fun ProvideMultiSelectionInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val dataMap = buildMap {
-        fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
-            repeat(paging.itemCount) { index ->
-                val optionData = paging[index]
-                put(
-                    optionData?.option?.code() ?: "",
-                    CheckBoxData(
-                        uid = optionData?.option?.uid() ?: "",
-                        checked = optionData?.option?.code()?.let { fieldUiModel.value?.split(",")?.contains(it) } ?: false,
-                        enabled = true,
-                        textInput = optionData?.option?.displayName() ?: "",
-                    ),
-                )
+    val dataMap =
+        buildMap {
+            fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+                repeat(paging.itemCount) { index ->
+                    val optionData = paging[index]
+                    put(
+                        optionData?.option?.code() ?: "",
+                        CheckBoxData(
+                            uid = optionData?.option?.uid() ?: "",
+                            checked = optionData?.option?.code()?.let { fieldUiModel.value?.split(",")?.contains(it) } ?: false,
+                            enabled = true,
+                            textInput = optionData?.option?.displayName() ?: "",
+                        ),
+                    )
+                }
             }
         }
-    }
 
     val (codeList, data) = dataMap.toList().unzip()
 
@@ -49,14 +50,15 @@ internal fun ProvideMultiSelectionInput(
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         onItemsSelected = {
-            val checkedValues = it.mapNotNull { checkBoxData ->
-                if (checkBoxData.checked) {
-                    val selectedIndex = data.indexOfFirst { originalData -> originalData.uid == checkBoxData.uid }
-                    codeList[selectedIndex]
-                } else {
-                    null
+            val checkedValues =
+                it.mapNotNull { checkBoxData ->
+                    if (checkBoxData.checked) {
+                        val selectedIndex = data.indexOfFirst { originalData -> originalData.uid == checkBoxData.uid }
+                        codeList[selectedIndex]
+                    } else {
+                        null
+                    }
                 }
-            }
 
             intentHandler(
                 FormIntent.OnSave(

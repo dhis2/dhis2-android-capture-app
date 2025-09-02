@@ -26,7 +26,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.commons.dialogs.bottomsheet.CLICKABLE_TEXT_TAG
-import org.dhis2.mobile.login.main.ui.screen.ServerValidationContentButtonTag
+import org.dhis2.mobile.login.main.ui.screen.SERVER_VALIDATION_CONTENT_BUTTON_TAG
 import org.dhis2.usescases.BaseTest.Companion.MOCK_SERVER_URL
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
@@ -52,10 +52,10 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     @OptIn(ExperimentalTestApi::class)
     fun clickOnValidateServerButton() {
         composeTestRule.waitUntilExactlyOneExists(
-            hasTestTag(ServerValidationContentButtonTag),
+            hasTestTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG),
             TIMEOUT,
         )
-        composeTestRule.onNodeWithTag(ServerValidationContentButtonTag).performClick()
+        composeTestRule.onNodeWithTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG).performClick()
     }
 
     fun typeServer(server: String) {

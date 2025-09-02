@@ -13,7 +13,7 @@ class PolicyView : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_about_policy)
         initToolbar()
-        binding.webviewPolicy.loadUrl(policyAssets)
+        binding.webviewPolicy.loadUrl(POLICY_ASSETS)
     }
 
     private fun initToolbar() {
@@ -22,6 +22,6 @@ class PolicyView : AppCompatActivity() {
     }
 
     companion object {
-        const val policyAssets = "file:///android_asset/policy.html"
+        const val POLICY_ASSETS = "file:///android_asset/policy.html"
     }
 }

@@ -45,8 +45,8 @@ class GraphCoordinatesToBarEntry {
     ): Float =
         index +
             (
-                default_bar_group_space * serieIndex.toFloat() / seriesCount.toFloat() -
-                    default_gap / 2f +
-                    default_bar_group_separation
+                DEFAULT_BAR_GROUP_SPACE * serieIndex.toFloat() / seriesCount.toFloat() -
+                    DEFAULT_GAP / 2f +
+                    DEFAULT_BAR_GROUP_SEPARATION
             )
 }

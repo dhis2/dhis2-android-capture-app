@@ -55,20 +55,6 @@ class SettingsRepositoryTest {
             on { getSmsModuleConfig() } doReturn Single.just(smsConfig)
         }
 
-    private val SETTINGS_METADATA_PERIOD = MetadataSyncPeriod.EVERY_7_DAYS
-    private val SETTINGS_DATA_PERIOD = DataSyncPeriod.EVERY_HOUR
-    private val SETTINGS_ENCRYPT = false
-    private val SETTINGS_RV = 50
-    private val SETTINGS_TEI_DOWNLOAD = 100
-    private val SETTINGS_EVENT_DOWNLOAD = 100
-    private val SETTINGS_LIMIT_SCOPE = LimitScope.PER_OU_AND_PROGRAM
-
-    private val SETTINGS_PREF_METADATA_PERIOD = TIME_DAILY
-    private val SETTINGS_PREF_DATA_PERIOD = TIME_15M
-    private val SETTINGS_PREF_RV = 25
-    private val SETTINGS_PREF_TEI_DOWNLOAD = 50
-    private val SETTINGS_PREF_EVENT_DOWNLOAD = 50
-
     @Before
     fun setUp() {
         settingsRepository =
@@ -514,4 +500,19 @@ class SettingsRepositoryTest {
                     ),
                 ),
             ).build()
+
+    companion object {
+        private val SETTINGS_PREF_EVENT_DOWNLOAD = 50
+        private val SETTINGS_PREF_TEI_DOWNLOAD = 50
+        private val SETTINGS_METADATA_PERIOD = MetadataSyncPeriod.EVERY_7_DAYS
+        private val SETTINGS_DATA_PERIOD = DataSyncPeriod.EVERY_HOUR
+        private val SETTINGS_ENCRYPT = false
+        private val SETTINGS_RV = 50
+        private val SETTINGS_TEI_DOWNLOAD = 100
+        private val SETTINGS_EVENT_DOWNLOAD = 100
+        private val SETTINGS_LIMIT_SCOPE = LimitScope.PER_OU_AND_PROGRAM
+        private val SETTINGS_PREF_METADATA_PERIOD = TIME_DAILY
+        private val SETTINGS_PREF_DATA_PERIOD = TIME_15M
+        private val SETTINGS_PREF_RV = 25
+    }
 }

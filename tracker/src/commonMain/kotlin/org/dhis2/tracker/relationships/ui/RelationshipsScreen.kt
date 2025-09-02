@@ -111,10 +111,11 @@ fun RelationShipsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { contentPadding ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.White, shape = Shape.LargeTop)
-                .padding(),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(color = Color.White, shape = Shape.LargeTop)
+                    .padding(),
             verticalArrangement = spacedBy(Spacing.Spacing4),
             contentPadding = contentPadding,
         ) {
@@ -122,9 +123,10 @@ fun RelationShipsScreen(
                 is RelationshipsUiState.Loading -> {
                     item {
                         Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp),
                             contentAlignment = Alignment.Center,
                         ) {
                             ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
@@ -142,11 +144,12 @@ fun RelationShipsScreen(
                     items(uiState.data) { item ->
                         RelationShipTypeSection(
                             title = item.title,
-                            description = if (item.relationships.isEmpty()) {
-                                stringResource(resource = Res.string.no_data)
-                            } else {
-                                null
-                            },
+                            description =
+                                if (item.relationships.isEmpty()) {
+                                    stringResource(resource = Res.string.no_data)
+                                } else {
+                                    null
+                                },
                             relationships = item.relationships,
                             canAddRelationship = item.entityToAdd != null,
                             relationshipSelectionState = relationshipSelectionState,
@@ -181,24 +184,27 @@ private fun RelationShipTypeSection(
     val displayedItems = if (expanded) relationships else relationships.take(3)
 
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(Spacing.Spacing12),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(Spacing.Spacing12),
         verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
         Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .defaultMinSize(minHeight = Spacing.Spacing48)
-                .wrapContentHeight(),
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = Spacing.Spacing48)
+                    .wrapContentHeight(),
             horizontalArrangement = spacedBy(Spacing.Spacing16),
         ) {
             Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .align(Alignment.CenterVertically),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .align(Alignment.CenterVertically),
             ) {
                 Title(text = title)
 
@@ -227,53 +233,60 @@ private fun RelationShipTypeSection(
 
         displayedItems.forEach { item ->
             ListCard(
-                listCardState = rememberListCardState(
-                    title = ListCardTitleModel(text = item.title),
-                    description = item.description?.let { ListCardDescriptionModel(text = it) },
-                    lastUpdated = item.lastUpdated,
-                    selectionState = relationshipSelectionState.isSelected(
-                        item.uid,
-                        item.canOpen,
+                listCardState =
+                    rememberListCardState(
+                        title = ListCardTitleModel(text = item.title),
+                        description = item.description?.let { ListCardDescriptionModel(text = it) },
+                        lastUpdated = item.lastUpdated,
+                        selectionState =
+                            relationshipSelectionState.isSelected(
+                                item.uid,
+                                item.canOpen,
+                            ),
+                        additionalInfoColumnState =
+                            rememberAdditionalInfoColumnState(
+                                additionalInfoList =
+                                    item.attributes.map {
+                                        AdditionalInfoItem(
+                                            key = it.first,
+                                            value = it.second,
+                                        )
+                                    },
+                                syncProgressItem =
+                                    AdditionalInfoItem(
+                                        key = stringResource(resource = Res.string.syncing),
+                                        value = "",
+                                    ),
+                                minItemsToShow = 3,
+                                expandLabelText = stringResource(resource = Res.string.show_more),
+                                shrinkLabelText = stringResource(resource = Res.string.show_less),
+                                scrollableContent = false,
+                            ),
                     ),
-                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                        additionalInfoList = item.attributes.map {
-                            AdditionalInfoItem(
-                                key = it.first,
-                                value = it.second,
-                            )
-                        },
-                        syncProgressItem = AdditionalInfoItem(
-                            key = stringResource(resource = Res.string.syncing),
-                            value = "",
-                        ),
-                        minItemsToShow = 3,
-                        expandLabelText = stringResource(resource = Res.string.show_more),
-                        shrinkLabelText = stringResource(resource = Res.string.show_less),
-                        scrollableContent = false,
-                    ),
-                ),
                 listAvatar = {
                     Avatar(
-                        style = when (
-                            val config = item.avatar
-                        ) {
-                            is AvatarProviderConfiguration.MainValueLabel ->
-                                AvatarStyleData.Text(
-                                    config.firstMainValue.firstOrNull()
-                                        ?.toString()
-                                        ?: "?",
-                                )
+                        style =
+                            when (
+                                val config = item.avatar
+                            ) {
+                                is AvatarProviderConfiguration.MainValueLabel ->
+                                    AvatarStyleData.Text(
+                                        config.firstMainValue
+                                            .firstOrNull()
+                                            ?.toString()
+                                            ?: "?",
+                                    )
 
-                            is AvatarProviderConfiguration.Metadata ->
-                                AvatarStyleData.Metadata(
-                                    imageCardData = config.metadataIconData.imageCardData,
-                                    avatarSize = config.size,
-                                    tintColor = config.metadataIconData.color,
-                                )
+                                is AvatarProviderConfiguration.Metadata ->
+                                    AvatarStyleData.Metadata(
+                                        imageCardData = config.metadataIconData.imageCardData,
+                                        avatarSize = config.size,
+                                        tintColor = config.metadataIconData.color,
+                                    )
 
-                            is AvatarProviderConfiguration.ProfilePic ->
-                                AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
-                        },
+                                is AvatarProviderConfiguration.ProfilePic ->
+                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                            },
                         onImageClick = {},
                     )
                 },
@@ -292,11 +305,12 @@ private fun RelationShipTypeSection(
             val showLessText = stringResource(resource = Res.string.show_less) + "..."
             Button(
                 style = ButtonStyle.TEXT,
-                text = if (expanded) {
-                    showLessText
-                } else {
-                    showMoreText
-                },
+                text =
+                    if (expanded) {
+                        showLessText
+                    } else {
+                        showMoreText
+                    },
             ) {
                 expanded = !expanded
             }
@@ -307,24 +321,27 @@ private fun RelationShipTypeSection(
 @Composable
 internal fun NoRelationships() {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(Spacing.Spacing48),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(Spacing.Spacing48),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
-            modifier = Modifier
-                .padding(Spacing.Spacing1)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(Spacing.Spacing1)
+                    .fillMaxWidth(),
             painter = rememberVectorPainter(vectorResource(resource = Res.drawable.no_relationships)),
             contentDescription = stringResource(resource = Res.string.empty_relationships),
         )
         Spacer(
-            modifier = Modifier
-                .height(Spacing.Spacing16)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .height(Spacing.Spacing16)
+                    .fillMaxWidth(),
         )
         Text(
             text = stringResource(resource = Res.string.empty_relationships),
@@ -340,27 +357,31 @@ fun DeleteRelationshipsConfirmation(
     onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
-        uiState = BottomSheetShellUIState(
-            bottomPadding = BottomSheetShellDefaults.lowerPadding(true),
-            headerTextAlignment = TextAlign.Start,
-            showTopSectionDivider = true,
-            title = when (relationships.size) {
-                1 -> stringResource(Res.string.remove_relationship_title, relationships[0])
-                else -> stringResource(
-                    Res.string.remove_some_relationships_title,
-                    relationships.size,
-                )
-            },
-            description = when (relationships.size) {
-                1 -> stringResource(Res.string.remove_relationship_desc, relationships[0])
-                else -> stringResource(
-                    Res.string.remove_some_relationships_desc,
-                    relationships.size,
-                )
-            },
-        ),
+        uiState =
+            BottomSheetShellUIState(
+                bottomPadding = BottomSheetShellDefaults.lowerPadding(true),
+                headerTextAlignment = TextAlign.Start,
+                showTopSectionDivider = true,
+                title =
+                    when (relationships.size) {
+                        1 -> stringResource(Res.string.remove_relationship_title, relationships[0])
+                        else ->
+                            stringResource(
+                                Res.string.remove_some_relationships_title,
+                                relationships.size,
+                            )
+                    },
+                description =
+                    when (relationships.size) {
+                        1 -> stringResource(Res.string.remove_relationship_desc, relationships[0])
+                        else ->
+                            stringResource(
+                                Res.string.remove_some_relationships_desc,
+                                relationships.size,
+                            )
+                    },
+            ),
         windowInsets = { BottomSheetShellDefaults.windowInsets(true) },
-
         icon = {
             Icon(
                 Icons.Outlined.ErrorOutline,

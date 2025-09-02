@@ -33,7 +33,7 @@ class LaunchSync(
             ),
         )
 
-    private val _metadataWorkInfo =
+    private val metadataWorkInfo =
         workManagerController
             .getWorkInfosByTagLiveData(Constants.META_NOW)
             .asFlow()
@@ -42,7 +42,7 @@ class LaunchSync(
                 onWorkStatusesUpdate(workState, Constants.META_NOW)
             }
 
-    private val _dataWorkInfo =
+    private val dataWorkInfo =
         workManagerController
             .getWorkInfosByTagLiveData(Constants.DATA_NOW)
             .asFlow()
@@ -51,7 +51,7 @@ class LaunchSync(
                 onWorkStatusesUpdate(workState, Constants.DATA_NOW)
             }
 
-    val syncWorkInfo = merge(_metadataWorkInfo, _dataWorkInfo)
+    val syncWorkInfo = merge(metadataWorkInfo, dataWorkInfo)
 
     sealed interface SyncAction {
         data object SyncData : SyncAction

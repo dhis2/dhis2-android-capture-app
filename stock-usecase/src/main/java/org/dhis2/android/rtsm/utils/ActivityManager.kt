@@ -18,7 +18,11 @@ import org.dhis2.android.rtsm.R
 class ActivityManager {
     companion object {
         @JvmStatic
-        fun startActivity(activity: Activity, intent: Intent, closeCurrentActivity: Boolean) {
+        fun startActivity(
+            activity: Activity,
+            intent: Intent,
+            closeCurrentActivity: Boolean,
+        ) {
             activity.startActivity(intent)
 
             if (closeCurrentActivity) {
@@ -27,49 +31,68 @@ class ActivityManager {
         }
 
         @JvmStatic
-        private fun showMessage(view: View, message: String, isError: Boolean) {
-            val color = if (isError) {
-                R.color.error
-            } else {
-                R.color.primary_color
-            }
+        private fun showMessage(
+            view: View,
+            message: String,
+            isError: Boolean,
+        ) {
+            val color =
+                if (isError) {
+                    R.color.error
+                } else {
+                    R.color.primary_color
+                }
 
             if (message.isNotEmpty()) {
-                Snackbar.make(view, message, LENGTH_LONG).setBackgroundTint(
-                    ContextCompat.getColor(view.context, color),
-                ).apply {
-                    this.view.findViewById<TextView>(
-                        com.google.android.material.R.id.snackbar_text,
-                    )?.maxLines = 2
-                }.show()
+                Snackbar
+                    .make(view, message, LENGTH_LONG)
+                    .setBackgroundTint(
+                        ContextCompat.getColor(view.context, color),
+                    ).apply {
+                        this.view
+                            .findViewById<TextView>(
+                                com.google.android.material.R.id.snackbar_text,
+                            )?.maxLines = 2
+                    }.show()
             }
         }
 
         @JvmStatic
-        fun showErrorMessage(view: View, message: String) {
+        fun showErrorMessage(
+            view: View,
+            message: String,
+        ) {
             showMessage(view, message, true)
         }
 
         @JvmStatic
-        fun showInfoMessage(view: View, message: String) {
+        fun showInfoMessage(
+            view: View,
+            message: String,
+        ) {
             showMessage(view, message, false)
         }
 
         @JvmStatic
-        fun showToast(context: Context, messageRes: Int) {
+        fun showToast(
+            context: Context,
+            messageRes: Int,
+        ) {
             showToast(context, context.getString(messageRes))
         }
 
         @JvmStatic
-        fun showToast(context: Context, message: String) {
+        fun showToast(
+            context: Context,
+            message: String,
+        ) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
 
         @JvmStatic
-        fun hasFlash(context: Context): Boolean {
-            return context.packageManager
+        fun hasFlash(context: Context): Boolean =
+            context.packageManager
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)
-        }
 
         @JvmStatic
         fun showDialog(
@@ -88,7 +111,10 @@ class ActivityManager {
         }
 
         @JvmStatic
-        fun checkPermission(activity: Activity, requestCode: Int) {
+        fun checkPermission(
+            activity: Activity,
+            requestCode: Int,
+        ) {
             if (ContextCompat.checkSelfPermission(
                     activity.applicationContext,
                     Manifest.permission.RECORD_AUDIO,

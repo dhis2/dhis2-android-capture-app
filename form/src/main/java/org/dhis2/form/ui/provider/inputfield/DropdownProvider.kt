@@ -32,8 +32,11 @@ fun ProvideDropdownInput(
 
     val optionSetConfiguration = fieldUiModel.optionSetConfiguration
 
-    val optionsData = optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()
-        ?.also { LaunchedEffect(optionSetConfiguration) { it.refresh() } }
+    val optionsData =
+        optionSetConfiguration
+            ?.optionFlow
+            ?.collectAsLazyPagingItems()
+            ?.also { LaunchedEffect(optionSetConfiguration) { it.refresh() } }
 
     val useDropdown by remember {
         derivedStateOf {

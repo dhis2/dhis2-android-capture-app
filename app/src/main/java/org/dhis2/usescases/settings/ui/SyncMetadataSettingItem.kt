@@ -88,7 +88,7 @@ internal fun SyncMetadataSettingItem(
                         )
 
                     InputDropDown(
-                        modifier = Modifier.testTag(TestTag_MetaPeriod),
+                        modifier = Modifier.testTag(TEST_TAG_META_PERIOD),
                         title = "Title",
                         state = InputShellState.FOCUSED,
                         itemCount = metaSyncPeriods.size,

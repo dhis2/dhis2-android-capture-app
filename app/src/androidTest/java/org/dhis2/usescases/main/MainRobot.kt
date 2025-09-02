@@ -18,7 +18,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.program.HOME_ITEMS
-import org.dhis2.usescases.main.program.HasPrograms
+import org.dhis2.usescases.main.program.hasPrograms
 import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
@@ -54,10 +54,10 @@ class MainRobot : BaseRobot() {
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
         composeTestRule.waitUntil() {
             composeTestRule.onNodeWithTag(HOME_ITEMS)
-                .fetchSemanticsNode().config.getOrNull(HasPrograms) == true
+                .fetchSemanticsNode().config.getOrNull(hasPrograms) == true
         }
         composeTestRule.onNodeWithTag(HOME_ITEMS).assert(
-            SemanticsMatcher.expectValue(HasPrograms, true)
+            SemanticsMatcher.expectValue(hasPrograms, true)
         )
     }
 

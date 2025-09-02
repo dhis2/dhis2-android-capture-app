@@ -17,7 +17,7 @@ interface Navigator {
     suspend fun navigateUp()
 }
 
-class DefaultNavigator() : Navigator {
+class DefaultNavigator : Navigator {
     private val _navigationActions = Channel<NavigationAction>()
     override val navigationActions = _navigationActions.receiveAsFlow()
 

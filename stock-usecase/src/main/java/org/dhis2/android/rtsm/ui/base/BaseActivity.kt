@@ -106,8 +106,9 @@ abstract class BaseActivity : AppCompatActivity() {
      */
     open fun onVoiceInputStateChanged() {}
 
-    private fun isVoiceInputEnabled(viewModel: ViewModel) = (viewModel as BaseViewModel)
-        .isVoiceInputEnabled(resources.getString(R.string.use_mic_pref_key))
+    private fun isVoiceInputEnabled(viewModel: ViewModel) =
+        (viewModel as BaseViewModel)
+            .isVoiceInputEnabled(resources.getString(R.string.use_mic_pref_key))
 
     override fun onDestroy() {
         disposable.clear()
@@ -213,33 +214,37 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    open fun handleSpeechError(code: Int, data: String?) {
-        val resId: Int = when (code) {
-            SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ->
-                R.string.insufficient_speech_permissions_error
-            SpeechRecognizer.ERROR_AUDIO ->
-                R.string.speech_audio_error
-            SpeechRecognizer.ERROR_CLIENT ->
-                R.string.speech_client_error
-            SpeechRecognizer.ERROR_NETWORK ->
-                R.string.speech_network_error
-            SpeechRecognizer.ERROR_NETWORK_TIMEOUT ->
-                R.string.speech_network_timeout_error
-            SpeechRecognizer.ERROR_NO_MATCH ->
-                R.string.no_speech_match_error
-            SpeechRecognizer.ERROR_RECOGNIZER_BUSY ->
-                R.string.speech_recognition_service_busy_error
-            SpeechRecognizer.ERROR_SERVER ->
-                R.string.speech_server_error
-            SpeechRecognizer.ERROR_SPEECH_TIMEOUT ->
-                R.string.speech_timeout_error
-            Constants.NON_NUMERIC_SPEECH_INPUT_ERROR ->
-                R.string.non_numeric_speech_input_error
-            Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR ->
-                R.string.negative_number_speech_input_error
-            else ->
-                R.string.unknown_speech_error
-        }
+    open fun handleSpeechError(
+        code: Int,
+        data: String?,
+    ) {
+        val resId: Int =
+            when (code) {
+                SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS ->
+                    R.string.insufficient_speech_permissions_error
+                SpeechRecognizer.ERROR_AUDIO ->
+                    R.string.speech_audio_error
+                SpeechRecognizer.ERROR_CLIENT ->
+                    R.string.speech_client_error
+                SpeechRecognizer.ERROR_NETWORK ->
+                    R.string.speech_network_error
+                SpeechRecognizer.ERROR_NETWORK_TIMEOUT ->
+                    R.string.speech_network_timeout_error
+                SpeechRecognizer.ERROR_NO_MATCH ->
+                    R.string.no_speech_match_error
+                SpeechRecognizer.ERROR_RECOGNIZER_BUSY ->
+                    R.string.speech_recognition_service_busy_error
+                SpeechRecognizer.ERROR_SERVER ->
+                    R.string.speech_server_error
+                SpeechRecognizer.ERROR_SPEECH_TIMEOUT ->
+                    R.string.speech_timeout_error
+                Constants.NON_NUMERIC_SPEECH_INPUT_ERROR ->
+                    R.string.non_numeric_speech_input_error
+                Constants.NEGATIVE_NUMBER_NOT_ALLOWED_INPUT_ERROR ->
+                    R.string.negative_number_speech_input_error
+                else ->
+                    R.string.unknown_speech_error
+            }
 
         val message =
             if (code == Constants.NON_NUMERIC_SPEECH_INPUT_ERROR ||
@@ -254,7 +259,10 @@ abstract class BaseActivity : AppCompatActivity() {
         showErrorMessage(binding.root, message)
     }
 
-    fun displayError(view: View, messageRes: Int) {
+    fun displayError(
+        view: View,
+        messageRes: Int,
+    ) {
         showErrorMessage(view, getString(messageRes))
     }
 

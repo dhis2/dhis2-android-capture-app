@@ -8,7 +8,6 @@ import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
 
 sealed class RecyclerViewUiEvents {
-
     data class RequestLocationByMap(
         val uid: String,
         val featureType: FeatureType,

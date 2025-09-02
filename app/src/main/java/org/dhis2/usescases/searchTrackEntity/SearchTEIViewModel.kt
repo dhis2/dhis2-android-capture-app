@@ -84,7 +84,7 @@ class SearchTEIViewModel(
 ) : ViewModel() {
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
 
-    private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
+    private val pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
 
     private val _navigationBarUIState =
         mutableStateOf(
@@ -117,7 +117,7 @@ class SearchTEIViewModel(
     val isScrollingDown = MutableLiveData(false)
 
     private var searching: Boolean = false
-    private val _filtersActive = MutableLiveData(false)
+    private val filtersActive = MutableLiveData(false)
 
     private val _downloadResult = MutableLiveData<TeiDownloadResult>()
     val downloadResult: LiveData<TeiDownloadResult> = _downloadResult
@@ -176,7 +176,7 @@ class SearchTEIViewModel(
 
     private fun loadNavigationBarItems() {
         val pageConfigurator = searchNavPageConfigurator.initVariables()
-        _pageConfiguration.postValue(pageConfigurator)
+        pageConfiguration.postValue(pageConfigurator)
 
         val enrollmentItems = mutableListOf<NavigationBarItem<NavigationPage>>()
 
@@ -238,7 +238,7 @@ class SearchTEIViewModel(
             !displayFrontPageList &&
                 !searchRepository.canCreateInProgramWithoutSearch() &&
                 !searching &&
-                _filtersActive.value == false
+                filtersActive.value == false
 
         createButtonScrollVisibility.postValue(
             if (searching) {
@@ -277,7 +277,7 @@ class SearchTEIViewModel(
         )
     }
 
-    private fun hasActiveFilters() = _filtersActive.value == true
+    private fun hasActiveFilters() = filtersActive.value == true
 
     fun setMapScreen() {
         _screenState.value.takeIf { it?.screenState == SearchScreenState.LIST }?.let {
@@ -366,8 +366,8 @@ class SearchTEIViewModel(
     }
 
     fun updateActiveFilters(filtersActive: Boolean) {
-        if (_filtersActive.value != filtersActive) searchRepository.clearFetchedList()
-        _filtersActive.postValue(filtersActive)
+        if (filtersActive.value != filtersActive) searchRepository.clearFetchedList()
+        filtersActive.postValue(filtersActive)
     }
 
     fun refreshData() {
@@ -773,7 +773,7 @@ class SearchTEIViewModel(
                 else -> listOf(SearchResult(SearchResult.SearchResultType.NO_MORE_RESULTS_OFFLINE))
             }
 
-        if (result.isEmpty() && _filtersActive.value == false) {
+        if (result.isEmpty() && filtersActive.value == false) {
             setSearchScreen()
         }
 
@@ -911,7 +911,7 @@ class SearchTEIViewModel(
     }
 
     fun isBottomNavigationBarVisible(): Boolean =
-        _pageConfiguration.value?.let {
+        pageConfiguration.value?.let {
             it.displayMapView() || it.displayAnalytics()
         } ?: false
 

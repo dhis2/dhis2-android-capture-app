@@ -27,107 +27,159 @@ class TrackerRelationshipsRepository(
     private val enrollmentUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
 ) : RelationshipsRepository(d2, resources) {
-
     override suspend fun getRelationshipTypes(): List<RelationshipSection> {
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(teiUid).blockingGet() ?: return emptyList()
-        val programUid = d2.enrollmentModule().enrollments()
-            .uid(enrollmentUid).blockingGet()?.program()
+        val tei =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(teiUid)
+                .blockingGet() ?: return emptyList()
+        val programUid =
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid(enrollmentUid)
+                .blockingGet()
+                ?.program()
 
-        return d2.relationshipModule().relationshipService()
+        return d2
+            .relationshipModule()
+            .relationshipService()
             .getRelationshipTypesForTrackedEntities(
                 trackedEntityType = tei.trackedEntityType()!!,
                 programUid = programUid,
             ).map { relationshipWithEntitySide ->
                 RelationshipSection(
                     uid = relationshipWithEntitySide.relationshipType.uid(),
-                    title = getRelationshipTitle(
-                        relationshipWithEntitySide.relationshipType,
-                        relationshipWithEntitySide.entitySide,
-                    ),
+                    title =
+                        getRelationshipTitle(
+                            relationshipWithEntitySide.relationshipType,
+                            relationshipWithEntitySide.entitySide,
+                        ),
                     relationships = emptyList(),
-                    side = when (relationshipWithEntitySide.entitySide) {
-                        RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
-                        RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
-                    },
-                    entityToAdd = when (relationshipWithEntitySide.entitySide) {
-                        RelationshipConstraintType.FROM ->
-                            relationshipWithEntitySide.relationshipType.toConstraint()
-                                ?.trackedEntityType()?.uid()
+                    side =
+                        when (relationshipWithEntitySide.entitySide) {
+                            RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
+                            RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
+                        },
+                    entityToAdd =
+                        when (relationshipWithEntitySide.entitySide) {
+                            RelationshipConstraintType.FROM ->
+                                relationshipWithEntitySide.relationshipType
+                                    .toConstraint()
+                                    ?.trackedEntityType()
+                                    ?.uid()
 
-                        RelationshipConstraintType.TO ->
-                            relationshipWithEntitySide.relationshipType.fromConstraint()
-                                ?.trackedEntityType()?.uid()
-                    },
+                            RelationshipConstraintType.TO ->
+                                relationshipWithEntitySide.relationshipType
+                                    .fromConstraint()
+                                    ?.trackedEntityType()
+                                    ?.uid()
+                        },
                 )
             }
     }
 
     override suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection {
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(teiUid).blockingGet()
-        val programUid = d2.enrollmentModule().enrollments()
-            .uid(enrollmentUid).blockingGet()?.program()
-        val constraintType = when (relationshipSection.side) {
-            RelationshipConstraintSide.FROM -> RelationshipConstraintType.FROM
-            RelationshipConstraintSide.TO -> RelationshipConstraintType.TO
-        }
-        val relationshipType = d2.relationshipModule().relationshipTypes()
-            .withConstraints()
-            .uid(relationshipSection.uid)
-            .blockingGet()
-
-        val relationships = d2.relationshipModule().relationships()
-            .byItem(
-                RelationshipItem.builder()
-                    .trackedEntityInstance(
-                        RelationshipItemTrackedEntityInstance.builder()
-                            .trackedEntityInstance(teiUid)
-                            .build(),
-                    ).relationshipItemType(constraintType)
-                    .build(),
-            )
-            .byRelationshipType().eq(relationshipSection.uid)
-            .byDeleted().isFalse
-            .withItems()
-            .blockingGet()
-            .mapNotNull { relationship ->
-                mapToRelationshipModel(
-                    relationship = relationship,
-                    relationshipType = relationshipType,
-                    tei = tei,
-                    programUid = programUid,
-                )
+        val tei =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(teiUid)
+                .blockingGet()
+        val programUid =
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid(enrollmentUid)
+                .blockingGet()
+                ?.program()
+        val constraintType =
+            when (relationshipSection.side) {
+                RelationshipConstraintSide.FROM -> RelationshipConstraintType.FROM
+                RelationshipConstraintSide.TO -> RelationshipConstraintType.TO
             }
+        val relationshipType =
+            d2
+                .relationshipModule()
+                .relationshipTypes()
+                .withConstraints()
+                .uid(relationshipSection.uid)
+                .blockingGet()
+
+        val relationships =
+            d2
+                .relationshipModule()
+                .relationships()
+                .byItem(
+                    RelationshipItem
+                        .builder()
+                        .trackedEntityInstance(
+                            RelationshipItemTrackedEntityInstance
+                                .builder()
+                                .trackedEntityInstance(teiUid)
+                                .build(),
+                        ).relationshipItemType(constraintType)
+                        .build(),
+                ).byRelationshipType()
+                .eq(relationshipSection.uid)
+                .byDeleted()
+                .isFalse
+                .withItems()
+                .blockingGet()
+                .mapNotNull { relationship ->
+                    mapToRelationshipModel(
+                        relationship = relationship,
+                        relationshipType = relationshipType,
+                        tei = tei,
+                        programUid = programUid,
+                    )
+                }
         return relationshipSection.copy(
             relationships = relationships,
         )
     }
 
     override suspend fun getRelationships(): List<RelationshipModel> {
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .uid(teiUid).blockingGet()
-        val programUid = d2.enrollmentModule().enrollments()
-            .uid(enrollmentUid).blockingGet()?.program()
+        val tei =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(teiUid)
+                .blockingGet()
+        val programUid =
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid(enrollmentUid)
+                .blockingGet()
+                ?.program()
 
-        return d2.relationshipModule().relationships().getByItem(
-            RelationshipItem.builder().trackedEntityInstance(
-                RelationshipItemTrackedEntityInstance.builder().trackedEntityInstance(teiUid)
-                    .build(),
-            ).build(),
-        ).mapNotNull { relationship ->
-            // maps each relationship to a model
-            getRelationshipTypeByUid(
-                relationship.relationshipType(),
-            )?.let { type ->
-                mapToRelationshipModel(
-                    relationship = relationship,
-                    relationshipType = type,
-                    tei = tei,
-                    programUid = programUid,
-                )
+        return d2
+            .relationshipModule()
+            .relationships()
+            .getByItem(
+                RelationshipItem
+                    .builder()
+                    .trackedEntityInstance(
+                        RelationshipItemTrackedEntityInstance
+                            .builder()
+                            .trackedEntityInstance(teiUid)
+                            .build(),
+                    ).build(),
+            ).mapNotNull { relationship ->
+                // maps each relationship to a model
+                getRelationshipTypeByUid(
+                    relationship.relationshipType(),
+                )?.let { type ->
+                    mapToRelationshipModel(
+                        relationship = relationship,
+                        relationshipType = type,
+                        tei = tei,
+                        programUid = programUid,
+                    )
+                }
             }
-        }
     }
 
     override fun createRelationship(
@@ -135,10 +187,11 @@ class TrackerRelationshipsRepository(
         relationshipTypeUid: String,
         relationshipSide: RelationshipConstraintSide,
     ): Relationship {
-        val (fromUid, toUid) = when (relationshipSide) {
-            RelationshipConstraintSide.FROM -> Pair(teiUid, selectedTeiUid)
-            RelationshipConstraintSide.TO -> Pair(selectedTeiUid, teiUid)
-        }
+        val (fromUid, toUid) =
+            when (relationshipSide) {
+                RelationshipConstraintSide.FROM -> Pair(teiUid, selectedTeiUid)
+                RelationshipConstraintSide.TO -> Pair(selectedTeiUid, teiUid)
+            }
         return RelationshipHelper.teiToTeiRelationship(
             fromUid,
             toUid,
@@ -174,11 +227,12 @@ class TrackerRelationshipsRepository(
             relationship.from()?.trackedEntityInstance()?.trackedEntityInstance() -> {
                 direction = RelationshipDirection.TO
                 fromGeometry = tei?.geometry()
-                fromValues = getTeiAttributesForRelationship(
-                    teiUid,
-                    relationshipType?.fromConstraint(),
-                    relationship.created(),
-                )
+                fromValues =
+                    getTeiAttributesForRelationship(
+                        teiUid,
+                        relationshipType?.fromConstraint(),
+                        relationship.created(),
+                    )
                 fromProfilePic = tei?.let { profilePictureProvider(it, programUid) }
                 fromDefaultPicRes = getTeiDefaultRes(tei)
                 fromLastUpdated = tei?.lastUpdated()
@@ -188,14 +242,19 @@ class TrackerRelationshipsRepository(
                     relationshipOwnerType = RelationshipOwnerType.TEI
                     relationshipOwnerUid =
                         relationship.to()?.trackedEntityInstance()?.trackedEntityInstance()
-                    val toTei = d2.trackedEntityModule().trackedEntityInstances()
-                        .uid(relationshipOwnerUid).blockingGet()
+                    val toTei =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityInstances()
+                            .uid(relationshipOwnerUid)
+                            .blockingGet()
                     toGeometry = toTei?.geometry()
-                    toValues = getTeiAttributesForRelationship(
-                        toTei?.uid(),
-                        relationshipType?.toConstraint(),
-                        relationship.created(),
-                    )
+                    toValues =
+                        getTeiAttributesForRelationship(
+                            toTei?.uid(),
+                            relationshipType?.toConstraint(),
+                            relationship.created(),
+                        )
                     toProfilePic = toTei?.let { profilePictureProvider(it, programUid) }
                     toDefaultPicRes = getTeiDefaultRes(toTei)
                     canBoOpened = toTei?.syncState() != State.RELATIONSHIP &&
@@ -207,33 +266,40 @@ class TrackerRelationshipsRepository(
                     relationshipOwnerType = RelationshipOwnerType.EVENT
                     relationshipOwnerUid =
                         relationship.to()?.event()?.event()
-                    val toEvent = d2.eventModule().events()
-                        .uid(relationshipOwnerUid).blockingGet()
+                    val toEvent =
+                        d2
+                            .eventModule()
+                            .events()
+                            .uid(relationshipOwnerUid)
+                            .blockingGet()
                     toGeometry = toEvent?.geometry()
-                    toValues = getEventValuesForRelationship(
-                        toEvent?.uid(),
-                        relationshipType?.toConstraint(),
-                        relationship.created(),
-                    )
+                    toValues =
+                        getEventValuesForRelationship(
+                            toEvent?.uid(),
+                            relationshipType?.toConstraint(),
+                            relationship.created(),
+                        )
                     toProfilePic = ""
                     toDefaultPicRes = getEventDefaultRes(toEvent)
                     canBoOpened = toEvent?.syncState() != State.RELATIONSHIP &&
                         orgUnitInScope(toEvent?.organisationUnit())
                     toLastUpdated = toEvent?.lastUpdated()
-                    toDescription = toEvent?.programStage()?.let { stage ->
-                        getStage(stage)?.displayDescription()
-                    }
+                    toDescription =
+                        toEvent?.programStage()?.let { stage ->
+                            getStage(stage)?.displayDescription()
+                        }
                 }
             }
 
             relationship.to()?.trackedEntityInstance()?.trackedEntityInstance() -> {
                 direction = RelationshipDirection.FROM
                 toGeometry = tei?.geometry()
-                toValues = getTeiAttributesForRelationship(
-                    teiUid,
-                    relationshipType?.toConstraint(),
-                    relationship.created(),
-                )
+                toValues =
+                    getTeiAttributesForRelationship(
+                        teiUid,
+                        relationshipType?.toConstraint(),
+                        relationship.created(),
+                    )
                 toProfilePic = tei?.let { profilePictureProvider(it, programUid) }
                 toDefaultPicRes = getTeiDefaultRes(tei)
                 toLastUpdated = tei?.lastUpdated()
@@ -241,16 +307,23 @@ class TrackerRelationshipsRepository(
                 if (relationship.from()?.trackedEntityInstance() != null) {
                     relationshipOwnerType = RelationshipOwnerType.TEI
                     relationshipOwnerUid =
-                        relationship.from()?.trackedEntityInstance()
+                        relationship
+                            .from()
                             ?.trackedEntityInstance()
-                    val fromTei = d2.trackedEntityModule().trackedEntityInstances()
-                        .uid(relationshipOwnerUid).blockingGet()
+                            ?.trackedEntityInstance()
+                    val fromTei =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityInstances()
+                            .uid(relationshipOwnerUid)
+                            .blockingGet()
                     fromGeometry = fromTei?.geometry()
-                    fromValues = getTeiAttributesForRelationship(
-                        fromTei?.uid(),
-                        relationshipType?.fromConstraint(),
-                        relationship.created(),
-                    )
+                    fromValues =
+                        getTeiAttributesForRelationship(
+                            fromTei?.uid(),
+                            relationshipType?.fromConstraint(),
+                            relationship.created(),
+                        )
                     fromProfilePic = fromTei?.let { profilePictureProvider(it, programUid) }
                     fromDefaultPicRes = getTeiDefaultRes(fromTei)
                     canBoOpened = fromTei?.syncState() != State.RELATIONSHIP &&
@@ -261,22 +334,28 @@ class TrackerRelationshipsRepository(
                     relationshipOwnerType = RelationshipOwnerType.EVENT
                     relationshipOwnerUid =
                         relationship.from()?.event()?.event()
-                    val fromEvent = d2.eventModule().events()
-                        .uid(relationshipOwnerUid).blockingGet()
+                    val fromEvent =
+                        d2
+                            .eventModule()
+                            .events()
+                            .uid(relationshipOwnerUid)
+                            .blockingGet()
                     fromGeometry = fromEvent?.geometry()
-                    fromValues = getEventValuesForRelationship(
-                        fromEvent?.uid(),
-                        relationshipType?.fromConstraint(),
-                        relationship.created(),
-                    )
+                    fromValues =
+                        getEventValuesForRelationship(
+                            fromEvent?.uid(),
+                            relationshipType?.fromConstraint(),
+                            relationship.created(),
+                        )
                     fromProfilePic = ""
                     fromDefaultPicRes = getEventDefaultRes(fromEvent)
                     canBoOpened = fromEvent?.syncState() != State.RELATIONSHIP &&
                         orgUnitInScope(fromEvent?.organisationUnit())
                     fromLastUpdated = fromEvent?.lastUpdated()
-                    fromDescription = fromEvent?.programStage()?.let { stage ->
-                        getStage(stage)?.displayDescription()
-                    }
+                    fromDescription =
+                        fromEvent?.programStage()?.let { stage ->
+                            getStage(stage)?.displayDescription()
+                        }
                 }
             }
 

@@ -18,7 +18,11 @@ interface StockManager {
      * and total count of matched items
      */
 
-    suspend fun search(query: SearchParametersModel, ou: String?, config: StockUseCase): SearchResult
+    suspend fun search(
+        query: SearchParametersModel,
+        ou: String?,
+        config: StockUseCase,
+    ): SearchResult
 
     fun saveTransaction(
         items: List<StockEntry>,

@@ -12,12 +12,11 @@ class FormViewModelFactory(
     private val openErrorLocation: Boolean,
     private val resultDialogUiProvider: FormResultDialogProvider,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return FormViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        FormViewModel(
             repository = repository,
             dispatcher = dispatcher,
             openErrorLocation = openErrorLocation,
             resultDialogUiProvider = resultDialogUiProvider,
         ) as T
-    }
 }

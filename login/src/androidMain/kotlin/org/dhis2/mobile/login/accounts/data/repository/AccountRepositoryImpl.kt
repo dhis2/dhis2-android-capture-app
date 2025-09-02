@@ -9,20 +9,20 @@ import org.hisp.dhis.android.core.D2
 class AccountRepositoryImpl(
     private val d2: D2,
 ) : AccountRepository {
-    override suspend fun getLoggedInAccounts(): List<AccountModel> {
-        return d2.userModule().accountManager().getAccounts().map {
+    override suspend fun getLoggedInAccounts(): List<AccountModel> =
+        d2.userModule().accountManager().getAccounts().map {
             AccountModel(it.username(), it.serverUrl())
         }
-    }
 
     override suspend fun availableServers(): List<String> {
-        val providedServers = if (BuildConfig.DEBUG) {
-            defaultTestingCredentials
-        } else if (BuildConfig.FLAVOR == "dhis2Training") {
-            trainingTestingCredentials
-        } else {
-            emptyList()
-        }
+        val providedServers =
+            if (BuildConfig.DEBUG) {
+                defaultTestingCredentials
+            } else if (BuildConfig.FLAVOR == "dhis2Training") {
+                trainingTestingCredentials
+            } else {
+                emptyList()
+            }
         return providedServers.map { it.server }
     }
 }

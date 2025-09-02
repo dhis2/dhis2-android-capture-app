@@ -71,28 +71,30 @@ fun FieldProvider(
     val scope = rememberCoroutineScope()
     val keyboardState by keyboardAsState()
 
-    var modifierWithFocus = modifier
-        .bringIntoViewRequester(bringIntoViewRequester)
-        .onSizeChanged { intSize ->
-            visibleArea = Rect(
-                size = Size(intSize.width.toFloat(), intSize.height.toFloat()),
-                offset = Offset(0f, 200f),
-            )
-        }
-        .onFocusChanged {
-            if (it.isFocused && !fieldUiModel.focused) {
-                scope.launch {
-                    fieldUiModel.onItemClick()
-                    delay(10)
-                    bringIntoViewRequester.bringIntoView(visibleArea)
+    var modifierWithFocus =
+        modifier
+            .bringIntoViewRequester(bringIntoViewRequester)
+            .onSizeChanged { intSize ->
+                visibleArea =
+                    Rect(
+                        size = Size(intSize.width.toFloat(), intSize.height.toFloat()),
+                        offset = Offset(0f, 200f),
+                    )
+            }.onFocusChanged {
+                if (it.isFocused && !fieldUiModel.focused) {
+                    scope.launch {
+                        fieldUiModel.onItemClick()
+                        delay(10)
+                        bringIntoViewRequester.bringIntoView(visibleArea)
+                    }
                 }
             }
-        }
 
     if (!fieldUiModel.needKeyboard()) {
-        modifierWithFocus = modifierWithFocus
-            .focusRequester(focusRequester)
-            .focusable()
+        modifierWithFocus =
+            modifierWithFocus
+                .focusRequester(focusRequester)
+                .focusable()
     }
 
     LaunchedEffect(keyboardState) {
@@ -102,21 +104,22 @@ fun FieldProvider(
     }
 
     when {
-        fieldUiModel.optionSet != null -> ProvideByOptionSet(
-            modifier = modifierWithFocus,
-            inputStyle = inputStyle,
-            fieldUiModel = fieldUiModel,
-            intentHandler = intentHandler,
-            fetchOptions = {
-                intentHandler(
-                    FormIntent.FetchOptions(
-                        fieldUiModel.uid,
-                        fieldUiModel.optionSet!!,
-                        value = fieldUiModel.value,
-                    ),
-                )
-            },
-        )
+        fieldUiModel.optionSet != null ->
+            ProvideByOptionSet(
+                modifier = modifierWithFocus,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                fetchOptions = {
+                    intentHandler(
+                        FormIntent.FetchOptions(
+                            fieldUiModel.uid,
+                            fieldUiModel.optionSet!!,
+                            value = fieldUiModel.value,
+                        ),
+                    )
+                },
+            )
 
         fieldUiModel.customIntent != null -> {
             ProvideCustomIntentInput(
@@ -126,24 +129,26 @@ fun FieldProvider(
             )
         }
 
-        fieldUiModel.eventCategories != null -> ProvideCategorySelectorInput(
-            modifier = modifierWithFocus,
-            inputStyle = inputStyle,
-            fieldUiModel = fieldUiModel,
-        )
+        fieldUiModel.eventCategories != null ->
+            ProvideCategorySelectorInput(
+                modifier = modifierWithFocus,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+            )
 
-        else -> ProvideByValueType(
-            modifier = modifierWithFocus,
-            inputStyle = inputStyle,
-            fieldUiModel = fieldUiModel,
-            intentHandler = intentHandler,
-            uiEventHandler = uiEventHandler,
-            resources = resources,
-            focusRequester = focusRequester,
-            onNextClicked = onNextClicked,
-            focusManager = focusManager,
-            onFileSelected = onFileSelected,
-        )
+        else ->
+            ProvideByValueType(
+                modifier = modifierWithFocus,
+                inputStyle = inputStyle,
+                fieldUiModel = fieldUiModel,
+                intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
+                resources = resources,
+                focusRequester = focusRequester,
+                onNextClicked = onNextClicked,
+                focusManager = focusManager,
+                onFileSelected = onFileSelected,
+            )
     }
 }
 
@@ -192,7 +197,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -204,7 +208,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -216,7 +219,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -228,7 +230,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -240,7 +241,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -252,7 +252,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -264,7 +263,6 @@ fun ProvideByValueType(
                 intentHandler = intentHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -297,7 +295,6 @@ fun ProvideByValueType(
                 uiEventHandler = uiEventHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -320,7 +317,6 @@ fun ProvideByValueType(
                 uiEventHandler = uiEventHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -381,7 +377,6 @@ fun ProvideByValueType(
                 uiEventHandler = uiEventHandler,
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
-
             )
         }
 
@@ -601,7 +596,6 @@ private fun ProvideIntegerPositiveOrZero(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -649,7 +643,6 @@ private fun ProvidePercentage(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -697,7 +690,6 @@ private fun ProvideNumber(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -746,7 +738,6 @@ private fun ProvideIntegerNegative(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -798,7 +789,6 @@ private fun ProvideLongText(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -846,7 +836,6 @@ private fun ProvideLetter(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -893,7 +882,6 @@ private fun ProvideInteger(
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -999,7 +987,6 @@ private fun ProvideInputPhoneNumber(
     focusManager: FocusManager,
     modifier: Modifier = Modifier,
     onNextClicked: () -> Unit,
-
 ) {
     var savedTextSelection by remember {
         mutableStateOf(
@@ -1148,9 +1135,9 @@ private fun ProvideOrgUnitInput(
                 ),
             )
         },
-
     )
 }
 
-private fun FieldUiModel.needKeyboard() = optionSet == null &&
-    valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false
+private fun FieldUiModel.needKeyboard() =
+    optionSet == null &&
+        valueType?.let { it.isText || it.isNumeric || it.isDate } ?: false

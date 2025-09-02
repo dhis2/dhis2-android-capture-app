@@ -25,99 +25,127 @@ class EventRelationshipsRepository(
     private val eventUid: String,
     private val profilePictureProvider: ProfilePictureProvider,
 ) : RelationshipsRepository(d2, resources) {
-
     override suspend fun getRelationshipTypes(): List<RelationshipSection> {
-        val event = d2.eventModule().events().uid(eventUid).blockingGet()
+        val event =
+            d2
+                .eventModule()
+                .events()
+                .uid(eventUid)
+                .blockingGet()
         val programStageUid = event?.programStage() ?: ""
 
-        return d2.relationshipModule().relationshipService()
+        return d2
+            .relationshipModule()
+            .relationshipService()
             .getRelationshipTypesForEvents(
                 programStageUid = programStageUid,
             ).map { relationshipWithEntitySide ->
                 RelationshipSection(
                     uid = relationshipWithEntitySide.relationshipType.uid(),
-                    title = getRelationshipTitle(
-                        relationshipWithEntitySide.relationshipType,
-                        relationshipWithEntitySide.entitySide,
-                    ),
+                    title =
+                        getRelationshipTitle(
+                            relationshipWithEntitySide.relationshipType,
+                            relationshipWithEntitySide.entitySide,
+                        ),
                     relationships = emptyList(),
-                    side = when (relationshipWithEntitySide.entitySide) {
-                        RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
-                        RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
-                    },
-                    entityToAdd = when (relationshipWithEntitySide.entitySide) {
-                        RelationshipConstraintType.FROM ->
-                            relationshipWithEntitySide.relationshipType.toConstraint()
-                                ?.trackedEntityType()?.uid()
+                    side =
+                        when (relationshipWithEntitySide.entitySide) {
+                            RelationshipConstraintType.TO -> RelationshipConstraintSide.TO
+                            RelationshipConstraintType.FROM -> RelationshipConstraintSide.FROM
+                        },
+                    entityToAdd =
+                        when (relationshipWithEntitySide.entitySide) {
+                            RelationshipConstraintType.FROM ->
+                                relationshipWithEntitySide.relationshipType
+                                    .toConstraint()
+                                    ?.trackedEntityType()
+                                    ?.uid()
 
-                        RelationshipConstraintType.TO ->
-                            relationshipWithEntitySide.relationshipType.fromConstraint()
-                                ?.trackedEntityType()?.uid()
-                    },
+                            RelationshipConstraintType.TO ->
+                                relationshipWithEntitySide.relationshipType
+                                    .fromConstraint()
+                                    ?.trackedEntityType()
+                                    ?.uid()
+                        },
                 )
             }
     }
 
     override suspend fun getRelationshipsGroupedByTypeAndSide(relationshipSection: RelationshipSection): RelationshipSection {
-        val constraintType = when (relationshipSection.side) {
-            RelationshipConstraintSide.FROM -> RelationshipConstraintType.FROM
-            RelationshipConstraintSide.TO -> RelationshipConstraintType.TO
-        }
-        val relationshipType = d2.relationshipModule().relationshipTypes()
-            .withConstraints()
-            .uid(relationshipSection.uid)
-            .blockingGet()
-
-        val relationships = d2.relationshipModule().relationships()
-            .byItem(
-                RelationshipItem.builder()
-                    .event(
-                        RelationshipItemEvent.builder().event(eventUid).build(),
-                    ).relationshipItemType(constraintType)
-                    .build(),
-            ).byRelationshipType().eq(relationshipSection.uid)
-            .byDeleted().isFalse
-            .withItems()
-            .blockingGet()
-            .mapNotNull { relationship ->
-                mapToRelationshipModel(
-                    relationship = relationship,
-                    relationshipType = relationshipType,
-                    eventUid = eventUid,
-                )
+        val constraintType =
+            when (relationshipSection.side) {
+                RelationshipConstraintSide.FROM -> RelationshipConstraintType.FROM
+                RelationshipConstraintSide.TO -> RelationshipConstraintType.TO
             }
+        val relationshipType =
+            d2
+                .relationshipModule()
+                .relationshipTypes()
+                .withConstraints()
+                .uid(relationshipSection.uid)
+                .blockingGet()
+
+        val relationships =
+            d2
+                .relationshipModule()
+                .relationships()
+                .byItem(
+                    RelationshipItem
+                        .builder()
+                        .event(
+                            RelationshipItemEvent.builder().event(eventUid).build(),
+                        ).relationshipItemType(constraintType)
+                        .build(),
+                ).byRelationshipType()
+                .eq(relationshipSection.uid)
+                .byDeleted()
+                .isFalse
+                .withItems()
+                .blockingGet()
+                .mapNotNull { relationship ->
+                    mapToRelationshipModel(
+                        relationship = relationship,
+                        relationshipType = relationshipType,
+                        eventUid = eventUid,
+                    )
+                }
         return relationshipSection.copy(
             relationships = relationships,
         )
     }
 
-    override suspend fun getRelationships(): List<RelationshipModel> {
-        return d2.relationshipModule().relationships().getByItem(
-            RelationshipItem.builder().event(
-                RelationshipItemEvent.builder().event(eventUid).build(),
-            ).build(),
-        ).mapNotNull { relationship ->
-            getRelationshipTypeByUid(
-                relationship.relationshipType(),
-            )?.let { type ->
-                mapToRelationshipModel(
-                    relationship = relationship,
-                    relationshipType = type,
-                    eventUid = eventUid,
-                )
+    override suspend fun getRelationships(): List<RelationshipModel> =
+        d2
+            .relationshipModule()
+            .relationships()
+            .getByItem(
+                RelationshipItem
+                    .builder()
+                    .event(
+                        RelationshipItemEvent.builder().event(eventUid).build(),
+                    ).build(),
+            ).mapNotNull { relationship ->
+                getRelationshipTypeByUid(
+                    relationship.relationshipType(),
+                )?.let { type ->
+                    mapToRelationshipModel(
+                        relationship = relationship,
+                        relationshipType = type,
+                        eventUid = eventUid,
+                    )
+                }
             }
-        }
-    }
 
     override fun createRelationship(
         selectedTeiUid: String,
         relationshipTypeUid: String,
         relationshipSide: RelationshipConstraintSide,
     ): Relationship {
-        val (fromUid, toUid) = when (relationshipSide) {
-            RelationshipConstraintSide.FROM -> Pair(eventUid, selectedTeiUid)
-            RelationshipConstraintSide.TO -> Pair(selectedTeiUid, eventUid)
-        }
+        val (fromUid, toUid) =
+            when (relationshipSide) {
+                RelationshipConstraintSide.FROM -> Pair(eventUid, selectedTeiUid)
+                RelationshipConstraintSide.TO -> Pair(selectedTeiUid, eventUid)
+            }
         return RelationshipHelper.eventToTeiRelationship(
             fromUid,
             toUid,
@@ -143,52 +171,70 @@ class EventRelationshipsRepository(
         }
         if (relationshipOwnerUid == null) return null
 
-        val event = d2.eventModule().events()
-            .withTrackedEntityDataValues().uid(eventUid).blockingGet()
-        val tei = d2.trackedEntityModule().trackedEntityInstances()
-            .withTrackedEntityAttributeValues().uid(relationshipOwnerUid).blockingGet()
+        val event =
+            d2
+                .eventModule()
+                .events()
+                .withTrackedEntityDataValues()
+                .uid(eventUid)
+                .blockingGet()
+        val tei =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .withTrackedEntityAttributeValues()
+                .uid(relationshipOwnerUid)
+                .blockingGet()
 
-        val eventDescription = event?.programStage()?.let { stage ->
-            getStage(stage)?.displayDescription()
-        }
+        val eventDescription =
+            event?.programStage()?.let { stage ->
+                getStage(stage)?.displayDescription()
+            }
 
-        val (fromGeometry, toGeometry) = getGeometries(
-            direction = direction,
-            tei = tei,
-            event = event,
-        )
-        val (fromValues, toValues) = getValues(
-            direction = direction,
-            relationshipOwnerUid = relationshipOwnerUid,
-            relationshipType = relationshipType,
-            relationship = relationship,
-        )
-        val (fromProfilePic, toProfilePic) = getProfilePics(
-            direction = direction,
-            tei = tei,
-        )
-        val (fromDefaultPic, toDefaultPic) = getDefaultPics(
-            direction = direction,
-            tei = tei,
-            event = event,
-        )
+        val (fromGeometry, toGeometry) =
+            getGeometries(
+                direction = direction,
+                tei = tei,
+                event = event,
+            )
+        val (fromValues, toValues) =
+            getValues(
+                direction = direction,
+                relationshipOwnerUid = relationshipOwnerUid,
+                relationshipType = relationshipType,
+                relationship = relationship,
+            )
+        val (fromProfilePic, toProfilePic) =
+            getProfilePics(
+                direction = direction,
+                tei = tei,
+            )
+        val (fromDefaultPic, toDefaultPic) =
+            getDefaultPics(
+                direction = direction,
+                tei = tei,
+                event = event,
+            )
 
-        val canBeOpened = canBeOpened(
-            direction = direction,
-            tei = tei,
-            event = event,
-        )
+        val canBeOpened =
+            canBeOpened(
+                direction = direction,
+                tei = tei,
+                event = event,
+            )
 
-        val (fromLastUpdated, toLastUpdated) = getLastUpdatedInfo(
-            direction = direction,
-            tei = tei,
-            event = event,
-        )
+        val (fromLastUpdated, toLastUpdated) =
+            getLastUpdatedInfo(
+                direction = direction,
+                tei = tei,
+                event = event,
+            )
 
-        val (fromDescription, toDescription) = getDescriptions(
-            direction = direction,
-            eventDescription = eventDescription,
-        )
+        val (fromDescription, toDescription) =
+            getDescriptions(
+                direction = direction,
+                eventDescription = eventDescription,
+            )
 
         val ownerStyle = getOwnerStyle(relationshipOwnerUid, RelationshipOwnerType.TEI)
 

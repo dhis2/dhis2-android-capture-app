@@ -46,21 +46,26 @@ private fun TwoFANoConnectionScreenPreview() {
     }
 }
 
-fun openPlayStore(context: Context, packageName: String) {
+fun openPlayStore(
+    context: Context,
+    packageName: String,
+) {
     try {
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = "market://details?id=$packageName".toUri()
-            setPackage("com.android.vending")
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
+        val intent =
+            Intent(Intent.ACTION_VIEW).apply {
+                data = "market://details?id=$packageName".toUri()
+                setPackage("com.android.vending")
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         context.startActivity(intent)
     } catch (e: ActivityNotFoundException) {
         // Fallback for when Play Store app is not installed
         // play.google.com/store/apps/details?id=com.google.android.apps.authenticator2
-        val intent = Intent(Intent.ACTION_VIEW).apply {
-            data = "https://play.google.com/store/apps/details?id=$packageName".toUri()
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
+        val intent =
+            Intent(Intent.ACTION_VIEW).apply {
+                data = "https://play.google.com/store/apps/details?id=$packageName".toUri()
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
         context.startActivity(intent)
     }
 }

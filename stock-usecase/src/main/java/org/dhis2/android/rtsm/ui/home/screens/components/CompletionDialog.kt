@@ -28,25 +28,29 @@ import org.dhis2.android.rtsm.ui.home.model.DataEntryUiState
 @Composable
 fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
     ConstraintLayout(
-        modifier = Modifier
-            .height(56.dp)
-            .fillMaxSize(),
+        modifier =
+            Modifier
+                .height(56.dp)
+                .fillMaxSize(),
     ) {
         val (snackbar) = createRefs()
-        val painterResource = painterResource(
-            id = dataEntryUiState.snackBarUiState.icon,
-        )
+        val painterResource =
+            painterResource(
+                id = dataEntryUiState.snackBarUiState.icon,
+            )
         Snackbar(
-            backgroundColor = Color(
-                colorResource(
-                    id = dataEntryUiState.snackBarUiState.color,
-                ).toArgb(),
-            ),
+            backgroundColor =
+                Color(
+                    colorResource(
+                        id = dataEntryUiState.snackBarUiState.color,
+                    ).toArgb(),
+                ),
             content = {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -56,24 +60,25 @@ fun CompletionDialog(dataEntryUiState: DataEntryUiState) {
                         modifier = Modifier.padding(end = (11.23).dp),
                     )
                     Text(
-                        text = stringResource(
-                            id = dataEntryUiState.snackBarUiState.message,
-                        ),
+                        text =
+                            stringResource(
+                                id = dataEntryUiState.snackBarUiState.message,
+                            ),
                     )
                 }
             },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .height(56.dp)
-                .background(
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp)),
-                    color = Color(0xFF4CAF50),
-                )
-                .constrainAs(snackbar) {
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                    start.linkTo(parent.start, margin = 16.dp)
-                    end.linkTo(parent.end, margin = 16.dp)
-                },
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .height(56.dp)
+                    .background(
+                        shape = MaterialTheme.shapes.medium.copy(CornerSize(8.dp)),
+                        color = Color(0xFF4CAF50),
+                    ).constrainAs(snackbar) {
+                        bottom.linkTo(parent.bottom, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+                        end.linkTo(parent.end, margin = 16.dp)
+                    },
             action = {
             },
         )

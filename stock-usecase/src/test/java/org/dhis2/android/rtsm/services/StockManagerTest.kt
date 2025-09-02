@@ -31,24 +31,25 @@ import java.util.Collections
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StockManagerTest {
-
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
     private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
 
     private val testingDispatcher = UnconfinedTestDispatcher()
-    private val testDispatcher: StockDispatcherProvider = mock {
-        on { io() } doReturn testingDispatcher
-    }
+    private val testDispatcher: StockDispatcherProvider =
+        mock {
+            on { io() } doReturn testingDispatcher
+        }
 
-    private val stockManager = StockManagerImpl(
-        d2 = d2,
-        disposable = mock(),
-        schedulerProvider = mock(),
-        ruleValidationHelper = mock(),
-        dispatcher = testDispatcher,
-    )
+    private val stockManager =
+        StockManagerImpl(
+            d2 = d2,
+            disposable = mock(),
+            schedulerProvider = mock(),
+            ruleValidationHelper = mock(),
+            dispatcher = testDispatcher,
+        )
 
     @Before
     fun setUp() {
@@ -61,55 +62,66 @@ class StockManagerTest {
     }
 
     @Test
-    fun shouldSetCorrectLabel() = runTest {
-        mockTeiSearch()
+    fun shouldSetCorrectLabel() =
+        runTest {
+            mockTeiSearch()
 
-        mockOptionValue()
+            mockOptionValue()
 
-        mockAttribute()
+            mockAttribute()
 
-        mockStockOnHand()
+            mockStockOnHand()
 
-        val stockItem = stockManager.search(
-            query = SearchParametersModel(name = null, code = null, ou = "ou"),
-            ou = null,
-            config = StockUseCase(
-                programType = "programType",
-                description = "description",
-                transactions = emptyList(),
-                programUid = "programUid",
-                itemCode = "itemCode",
-                itemDescription = "attributeUid",
-                stockOnHand = "dataElementUid",
-            ),
-        )
+            val stockItem =
+                stockManager.search(
+                    query = SearchParametersModel(name = null, code = null, ou = "ou"),
+                    ou = null,
+                    config =
+                        StockUseCase(
+                            programType = "programType",
+                            description = "description",
+                            transactions = emptyList(),
+                            programUid = "programUid",
+                            itemCode = "itemCode",
+                            itemDescription = "attributeUid",
+                            stockOnHand = "dataElementUid",
+                        ),
+                )
 
-        stockItem.items.observeForever {
-            assertTrue(it?.isNotEmpty() == true)
-            assertTrue(it?.first()?.name == "optionName")
+            stockItem.items.observeForever {
+                assertTrue(it?.isNotEmpty() == true)
+                assertTrue(it?.first()?.name == "optionName")
+            }
         }
-    }
 
     private fun mockTeiSearch() {
-        val mockedAttributeValue = mock<TrackedEntityAttributeValue> {
-            on { trackedEntityAttribute() } doReturn "attributeUid"
-            on { value() } doReturn "optionCode"
-        }
-        val mockedTei = mock<TrackedEntityInstance> {
-            on { uid() } doReturn "teiUid"
-            on { deleted() } doReturn false
-            on { trackedEntityAttributeValues() } doReturn listOf(mockedAttributeValue)
-        }
+        val mockedAttributeValue =
+            mock<TrackedEntityAttributeValue> {
+                on { trackedEntityAttribute() } doReturn "attributeUid"
+                on { value() } doReturn "optionCode"
+            }
+        val mockedTei =
+            mock<TrackedEntityInstance> {
+                on { uid() } doReturn "teiUid"
+                on { deleted() } doReturn false
+                on { trackedEntityAttributeValues() } doReturn listOf(mockedAttributeValue)
+            }
 
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery()
-                .byProgram().eq(any())
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .byProgram()
+                .eq(any())
                 .orderByAttribute(any())
                 .eq(RepositoryScope.OrderByDirection.ASC),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery()
-                .byProgram().eq(any())
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .byProgram()
+                .eq(any())
                 .orderByAttribute(any())
                 .eq(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet(),
@@ -117,111 +129,155 @@ class StockManagerTest {
     }
 
     private fun mockOptionValue() {
-        val mockedOption = mock<Option> {
-            on { displayName() } doReturn "optionName"
-        }
+        val mockedOption =
+            mock<Option> {
+                on { displayName() } doReturn "optionName"
+            }
 
         whenever(
-            d2.optionModule().options()
+            d2
+                .optionModule()
+                .options()
                 .byOptionSetUid(),
         ) doReturn mock()
 
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid"),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid"),
         ) doReturn mock()
 
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
                 .byCode(),
         ) doReturn mock()
 
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("optionCode"),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode"),
         ) doReturn mock()
 
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("optionCode").one(),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode")
+                .one(),
         ) doReturn mock()
 
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("optionCode").one().blockingGet(),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode")
+                .one()
+                .blockingGet(),
         ) doReturn mockedOption
     }
 
     private fun mockAttribute() {
-        val mockedAttribute = mock<TrackedEntityAttribute> {
-            on { optionSet() } doReturn ObjectWithUid.create("optionSetUid")
-        }
+        val mockedAttribute =
+            mock<TrackedEntityAttribute> {
+                on { optionSet() } doReturn ObjectWithUid.create("optionSetUid")
+            }
 
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("attributeUid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("attributeUid")
                 .blockingGet(),
         ) doReturn mockedAttribute
     }
 
     private fun mockStockOnHand() {
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any())),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any()))
                 .byDataValue(any()),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any()))
-                .byDataValue(any()).like("")
+                .byDataValue(any())
+                .like("")
                 .byDeleted(),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any()))
-                .byDataValue(any()).like("")
-                .byDeleted().isFalse,
+                .byDataValue(any())
+                .like("")
+                .byDeleted()
+                .isFalse,
         ) doReturn mock()
 
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any()))
-                .byDataValue(any()).like("")
-                .byDeleted().isFalse
+                .byDataValue(any())
+                .like("")
+                .byDeleted()
+                .isFalse
                 .withTrackedEntityDataValues(),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any()))
-                .byDataValue(any()).like("")
-                .byDeleted().isFalse
+                .byDataValue(any())
+                .like("")
+                .byDeleted()
+                .isFalse
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule()
+            d2
+                .eventModule()
                 .events()
                 .byTrackedEntityInstanceUids(Collections.singletonList(any()))
-                .byDataValue(any()).like("")
-                .byDeleted().isFalse
+                .byDataValue(any())
+                .like("")
+                .byDeleted()
+                .isFalse
                 .withTrackedEntityDataValues()
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet(),

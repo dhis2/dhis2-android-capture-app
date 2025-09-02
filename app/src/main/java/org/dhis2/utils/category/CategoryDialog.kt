@@ -137,8 +137,7 @@ class CategoryDialog(
             .map { it.toString() }
 
     companion object {
-        @JvmField
-        var DEFAULT_COUNT_LIMIT: Int = 15
+        const val DEFAULT_COUNT_LIMIT: Int = 15
         val TAG: String = this::class.java.name
     }
 }

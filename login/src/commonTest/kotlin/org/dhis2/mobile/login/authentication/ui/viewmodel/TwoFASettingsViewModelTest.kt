@@ -23,7 +23,6 @@ import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class TwoFASettingsViewModelTest {
-
     private lateinit var viewModel: TwoFASettingsViewModel
     private val getTwoFAStatus: GetTwoFAStatus = mock()
     private val mapper: TwoFAUiStateMapper = mock()
@@ -38,63 +37,69 @@ class TwoFASettingsViewModelTest {
     }
 
     @Test
-    fun `TwoFAStatus is enabled`() = runTest {
-        val enabledStatus = TwoFAStatus.Enabled()
-        val disableUiState = TwoFAUiState.Disable()
+    fun `TwoFAStatus is enabled`() =
+        runTest {
+            val enabledStatus = TwoFAStatus.Enabled()
+            val disableUiState = TwoFAUiState.Disable()
 
-        whenever(getTwoFAStatus()).thenReturn(enabledStatus)
-        whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
+            whenever(getTwoFAStatus()).thenReturn(enabledStatus)
+            whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
-        viewModel = TwoFASettingsViewModel(
-            getTwoFAStatus,
-            getTwoFASecretCode,
-            enableTwoFA,
-            disableTwoFA,
-            mapper,
-        )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus,
+                    getTwoFASecretCode,
+                    enableTwoFA,
+                    disableTwoFA,
+                    mapper,
+                )
 
-        viewModel.uiState.test {
-            assert(awaitItem() is TwoFAUiState.Checking)
+            viewModel.uiState.test {
+                assert(awaitItem() is TwoFAUiState.Checking)
 
-            assert(awaitItem() == disableUiState)
+                assert(awaitItem() == disableUiState)
 
-            cancelAndIgnoreRemainingEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 
     @Test
-    fun `retry calls checkTwoFAStatus`() = runTest {
-        val noConnectionUiState = TwoFAStatus.NoConnection
-        val disabledStatus = TwoFAStatus.Disabled()
-        val enableUiState = TwoFAUiState.Enable()
+    fun `retry calls checkTwoFAStatus`() =
+        runTest {
+            val noConnectionUiState = TwoFAStatus.NoConnection
+            val disabledStatus = TwoFAStatus.Disabled()
+            val enableUiState = TwoFAUiState.Enable()
 
-        whenever(getTwoFAStatus()) doReturnConsecutively listOf(
-            noConnectionUiState, disabledStatus,
-        )
-        whenever(mapper.mapToUiState(noConnectionUiState)) doReturn TwoFAUiState.NoConnection
+            whenever(getTwoFAStatus()) doReturnConsecutively
+                listOf(
+                    noConnectionUiState,
+                    disabledStatus,
+                )
+            whenever(mapper.mapToUiState(noConnectionUiState)) doReturn TwoFAUiState.NoConnection
 
-        whenever(mapper.mapToUiState(disabledStatus)) doReturn enableUiState
+            whenever(mapper.mapToUiState(disabledStatus)) doReturn enableUiState
 
-        viewModel = TwoFASettingsViewModel(
-            getTwoFAStatus = getTwoFAStatus,
-            getTwoFASecretCode = getTwoFASecretCode,
-            enableTwoFA = enableTwoFA,
-            disableTwoFA = disableTwoFA,
-            mapper = mapper,
-        )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    getTwoFASecretCode = getTwoFASecretCode,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
+                    mapper = mapper,
+                )
 
-        viewModel.uiState.test {
-            assertEquals(TwoFAUiState.Checking, awaitItem())
+            viewModel.uiState.test {
+                assertEquals(TwoFAUiState.Checking, awaitItem())
 
-            assertEquals(TwoFAUiState.NoConnection, awaitItem())
+                assertEquals(TwoFAUiState.NoConnection, awaitItem())
 
-            viewModel.retry()
+                viewModel.retry()
 
-            assertEquals(TwoFAUiState.Checking, awaitItem())
+                assertEquals(TwoFAUiState.Checking, awaitItem())
 
-            assertEquals(enableUiState, awaitItem())
+                assertEquals(enableUiState, awaitItem())
 
-            cancelAndIgnoreRemainingEvents()
+                cancelAndIgnoreRemainingEvents()
+            }
         }
-    }
 }

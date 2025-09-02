@@ -10,11 +10,10 @@ class AddRelationship(
         selectedTeiUid: String,
         relationshipTypeUid: String,
         relationshipSide: RelationshipConstraintSide,
-    ): Result<String> {
-        return repository.addRelationship(
+    ): Result<String> =
+        repository.addRelationship(
             selectedTeiUid = selectedTeiUid,
             relationshipTypeUid = relationshipTypeUid,
             relationshipSide = relationshipSide,
         )
-    }
 }

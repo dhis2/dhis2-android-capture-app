@@ -534,11 +534,11 @@ data class ChartModel(
 
                             else -> {
                                 when (graph.categories[itemId]) {
-                                    Label.OrganisationUnit -> {
+                                    Label.ORGANISATION_UNIT -> {
                                         showOrgUntFilters(view, itemId)
                                     }
 
-                                    Label.EnrollmentDate, Label.ScheduledDate, Label.LastUpdated, Label.IncidentDate -> {
+                                    Label.ENROLLMENT_DATE, Label.SCHEDULED_DATE, Label.LAST_UPDATED, Label.INCIDENT_DATE -> {
                                         showPeriodFilters(view, itemId)
                                     }
 

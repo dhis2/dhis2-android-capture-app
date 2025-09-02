@@ -4,9 +4,11 @@ import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
 
-class LoginRepositoryImpl(private val d2: D2) : LoginRepository {
-    override suspend fun validateServer(server: String): ServerValidationResult {
-        return when (val result = d2.serverModule().blockingCheckServerUrl(server)) {
+class LoginRepositoryImpl(
+    private val d2: D2,
+) : LoginRepository {
+    override suspend fun validateServer(server: String): ServerValidationResult =
+        when (val result = d2.serverModule().blockingCheckServerUrl(server)) {
             is Result.Success -> {
                 if (result.value.isOauthEnabled()) {
                     ServerValidationResult.Oauth
@@ -17,5 +19,4 @@ class LoginRepositoryImpl(private val d2: D2) : LoginRepository {
             is Result.Failure ->
                 ServerValidationResult.Error(result.failure.errorDescription())
         }
-    }
 }

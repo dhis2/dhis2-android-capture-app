@@ -39,9 +39,10 @@ fun AccountsScreen() {
     val accounts by viewModel.accounts.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
         verticalArrangement = spacedBy(16.dp),
     ) {
         val scrollState = rememberLazyListState()
@@ -90,22 +91,24 @@ fun Modifier.drawFadingEdgesBasic(
 
             if (scrollableState.canScrollBackward && topEdgeHeightPx >= 1f) {
                 drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.White),
-                        startY = 0f,
-                        endY = topEdgeHeightPx,
-                    ),
+                    brush =
+                        Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.White),
+                            startY = 0f,
+                            endY = topEdgeHeightPx,
+                        ),
                     blendMode = BlendMode.DstIn,
                 )
             }
 
             if (scrollableState.canScrollForward && topEdgeHeightPx >= 1f) {
                 drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.White, Color.Transparent),
-                        startY = size.height - topEdgeHeightPx,
-                        endY = size.height,
-                    ),
+                    brush =
+                        Brush.verticalGradient(
+                            colors = listOf(Color.White, Color.Transparent),
+                            startY = size.height - topEdgeHeightPx,
+                            endY = size.height,
+                        ),
                     blendMode = BlendMode.DstIn,
                 )
             }

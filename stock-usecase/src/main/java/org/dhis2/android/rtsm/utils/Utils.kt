@@ -50,22 +50,23 @@ class Utils {
         }
 
         @JvmStatic
-        fun capitalizeText(text: String): String {
-            return text.lowercase()
+        fun capitalizeText(text: String): String =
+            text
+                .lowercase()
                 .replaceFirstChar {
                     it.uppercase()
                 }
-        }
 
         @JvmStatic
-        fun emptyStockUseCase() = StockUseCase(
-            programType = "",
-            programUid = "",
-            itemCode = "",
-            itemDescription = "",
-            description = "",
-            stockOnHand = "",
-            transactions = emptyList(),
-        )
+        fun emptyStockUseCase() =
+            StockUseCase(
+                programType = "",
+                programUid = "",
+                itemCode = "",
+                itemDescription = "",
+                description = "",
+                stockOnHand = "",
+                transactions = emptyList(),
+            )
     }
 }

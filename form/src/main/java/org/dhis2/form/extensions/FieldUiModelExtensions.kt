@@ -11,63 +11,68 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
-fun FieldUiModel.supportingText() = listOfNotNull(
-    error?.let {
-        SupportingTextData(
-            it,
-            SupportingTextState.ERROR,
-        )
-    },
-    warning?.let {
-        SupportingTextData(
-            it,
-            SupportingTextState.WARNING,
-        )
-    },
-    description?.let {
-        SupportingTextData(
-            it,
-            SupportingTextState.DEFAULT,
-        )
-    },
-).ifEmpty { null }
+fun FieldUiModel.supportingText() =
+    listOfNotNull(
+        error?.let {
+            SupportingTextData(
+                it,
+                SupportingTextState.ERROR,
+            )
+        },
+        warning?.let {
+            SupportingTextData(
+                it,
+                SupportingTextState.WARNING,
+            )
+        },
+        description?.let {
+            SupportingTextData(
+                it,
+                SupportingTextState.DEFAULT,
+            )
+        },
+    ).ifEmpty { null }
 
-fun FieldUiModel.legend() = legend?.let {
-    LegendData(
-        Color(it.color),
-        it.label ?: "",
-        it.legendsInfo,
-        windowInsets = { bottomSheetInsets() },
-        bottomSheetLowerPadding = bottomSheetLowerPadding(),
-    )
-}
-
-fun FieldUiModel.orientation() = when (renderingType) {
-    UiRenderType.VERTICAL_RADIOBUTTONS,
-    UiRenderType.VERTICAL_CHECKBOXES,
-    -> {
-        Orientation.VERTICAL
+fun FieldUiModel.legend() =
+    legend?.let {
+        LegendData(
+            Color(it.color),
+            it.label ?: "",
+            it.legendsInfo,
+            windowInsets = { bottomSheetInsets() },
+            bottomSheetLowerPadding = bottomSheetLowerPadding(),
+        )
     }
 
-    UiRenderType.HORIZONTAL_RADIOBUTTONS,
-    UiRenderType.HORIZONTAL_CHECKBOXES,
-    -> {
-        Orientation.HORIZONTAL
+fun FieldUiModel.orientation() =
+    when (renderingType) {
+        UiRenderType.VERTICAL_RADIOBUTTONS,
+        UiRenderType.VERTICAL_CHECKBOXES,
+        -> {
+            Orientation.VERTICAL
+        }
+
+        UiRenderType.HORIZONTAL_RADIOBUTTONS,
+        UiRenderType.HORIZONTAL_CHECKBOXES,
+        -> {
+            Orientation.HORIZONTAL
+        }
+
+        else -> Orientation.HORIZONTAL
     }
 
-    else -> Orientation.HORIZONTAL
-}
-
-fun FieldUiModel.inputState() = when {
-    !editable -> InputShellState.DISABLED
-    error != null -> InputShellState.ERROR
-    focused -> InputShellState.FOCUSED
-    else -> InputShellState.UNFOCUSED
-}
-
-fun FieldUiModel.autocompleteList() = when (renderingType) {
-    UiRenderType.AUTOCOMPLETE -> {
-        autocompleteList
+fun FieldUiModel.inputState() =
+    when {
+        !editable -> InputShellState.DISABLED
+        error != null -> InputShellState.ERROR
+        focused -> InputShellState.FOCUSED
+        else -> InputShellState.UNFOCUSED
     }
-    else -> null
-}
+
+fun FieldUiModel.autocompleteList() =
+    when (renderingType) {
+        UiRenderType.AUTOCOMPLETE -> {
+            autocompleteList
+        }
+        else -> null
+    }

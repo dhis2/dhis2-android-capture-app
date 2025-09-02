@@ -37,38 +37,41 @@ internal fun DataEntryBottomSheet(
     onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
-        uiState = BottomSheetShellUIState(
-            title = model.title,
-            subtitle = model.subtitle,
-            description = model.message,
-            showTopSectionDivider = true,
-            showBottomSectionDivider = fieldsWithIssues.isNotEmpty(),
-            bottomPadding = bottomSheetLowerPadding(),
-            headerTextAlignment = model.headerTextAlignment,
-        ),
-        content = if (fieldsWithIssues.isEmpty()) {
-            null
-        } else {
-            {
-                ErrorFieldList(
-                    fieldsWithIssues = fieldsWithIssues,
-                    onItemClick = {
-                        onDismiss()
-                    },
-                )
-            }
-        },
+        uiState =
+            BottomSheetShellUIState(
+                title = model.title,
+                subtitle = model.subtitle,
+                description = model.message,
+                showTopSectionDivider = true,
+                showBottomSectionDivider = fieldsWithIssues.isNotEmpty(),
+                bottomPadding = bottomSheetLowerPadding(),
+                headerTextAlignment = model.headerTextAlignment,
+            ),
+        content =
+            if (fieldsWithIssues.isEmpty()) {
+                null
+            } else {
+                {
+                    ErrorFieldList(
+                        fieldsWithIssues = fieldsWithIssues,
+                        onItemClick = {
+                            onDismiss()
+                        },
+                    )
+                }
+            },
         windowInsets = { bottomSheetInsets() },
-        icon = model.iconResource.takeIf { it != -1 }?.let { iconResource ->
-            {
-                Icon(
-                    modifier = Modifier.size(Spacing24),
-                    painter = painterResource(iconResource),
-                    contentDescription = "Icon",
-                    tint = SurfaceColor.Primary,
-                )
-            }
-        },
+        icon =
+            model.iconResource.takeIf { it != -1 }?.let { iconResource ->
+                {
+                    Icon(
+                        modifier = Modifier.size(Spacing24),
+                        painter = painterResource(iconResource),
+                        contentDescription = "Icon",
+                        tint = SurfaceColor.Primary,
+                    )
+                }
+            },
         buttonBlock = {
             DataEntryButtonBlock(
                 model = model,
@@ -98,12 +101,14 @@ private fun DataEntryButtonBlock(
             primaryButton = {
                 model.secondaryButton?.let { secondaryButton ->
                     Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag(SECONDARY_BUTTON_TAG),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag(SECONDARY_BUTTON_TAG),
                         style = secondaryButton.buttonStyle,
-                        text = secondaryButton.textLabel
-                            ?: stringResource(secondaryButton.textResource),
+                        text =
+                            secondaryButton.textLabel
+                                ?: stringResource(secondaryButton.textResource),
                         colorStyle = getColorStyle(secondaryButton),
                         onClick = {
                             onDiscardChanges.takeIf { allowDiscard }?.invoke()
@@ -116,13 +121,15 @@ private fun DataEntryButtonBlock(
             secondaryButton = {
                 model.mainButton?.let { mainButton ->
                     Button(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag(MAIN_BUTTON_TAG),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag(MAIN_BUTTON_TAG),
                         style = mainButton.buttonStyle,
-                        text = mainButton.textLabel ?: stringResource(
-                            mainButton.textResource,
-                        ),
+                        text =
+                            mainButton.textLabel ?: stringResource(
+                                mainButton.textResource,
+                            ),
                         colorStyle = getColorStyle(mainButton),
                         onClick = {
                             onPrimaryButtonClick()
@@ -135,7 +142,8 @@ private fun DataEntryButtonBlock(
     }
 }
 
-private fun getColorStyle(style: DialogButtonStyle) = when (style) {
-    is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
-    else -> ColorStyle.DEFAULT
-}
+private fun getColorStyle(style: DialogButtonStyle) =
+    when (style) {
+        is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
+        else -> ColorStyle.DEFAULT
+    }

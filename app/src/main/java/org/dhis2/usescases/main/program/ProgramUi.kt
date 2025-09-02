@@ -111,7 +111,7 @@ fun ProgramList(
                 .fillMaxSize()
                 .testTag(HOME_ITEMS)
                 .semantics {
-                    HasPrograms = programs?.isNotEmpty() ?: false
+                    hasPrograms = programs?.isNotEmpty() ?: false
                 },
     ) {
         DownloadMessage(
@@ -727,8 +727,8 @@ private fun testingProgramModel() =
         lastUpdated = Date(),
     )
 
-val HasPrograms = SemanticsPropertyKey<Boolean>("HasPrograms")
-var SemanticsPropertyReceiver.HasPrograms by HasPrograms
+val hasPrograms = SemanticsPropertyKey<Boolean>("HasPrograms")
+var SemanticsPropertyReceiver.hasPrograms by hasPrograms
 
 const val HOME_ITEMS = "HOME_ITEMS"
 const val HOME_ITEM = "HOME_ITEMS_%s"

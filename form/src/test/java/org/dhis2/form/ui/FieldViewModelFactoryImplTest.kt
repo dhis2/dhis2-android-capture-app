@@ -19,7 +19,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 
 class FieldViewModelFactoryImplTest {
-
     private val valueTypeHintMap = HashMap<ValueType, String>()
     private lateinit var fieldViewModelFactoryImpl: FieldViewModelFactoryImpl
     private val programTrackedEntityAttribute: ProgramTrackedEntityAttribute = mock()
@@ -29,23 +28,25 @@ class FieldViewModelFactoryImplTest {
     private val autoCompleteProvider: AutoCompleteProvider = mock()
     private val keyboardActionProvider: KeyboardActionProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
-    private val trackedEntityAttribute: TrackedEntityAttribute = mock {
-        on { uid() } doReturn "1234"
-        on { displayFormName() } doReturn "First name"
-        on { valueType() } doReturn ValueType.TEXT
-    }
+    private val trackedEntityAttribute: TrackedEntityAttribute =
+        mock {
+            on { uid() } doReturn "1234"
+            on { displayFormName() } doReturn "First name"
+            on { valueType() } doReturn ValueType.TEXT
+        }
 
     @Before
     fun setUp() {
         valueTypeHintMap[ValueType.TEXT] = "Enter text"
-        fieldViewModelFactoryImpl = FieldViewModelFactoryImpl(
-            hintProvider,
-            displayNameProvider,
-            uiEventTypesProvider,
-            keyboardActionProvider,
-            legendValueProvider,
-            autoCompleteProvider,
-        )
+        fieldViewModelFactoryImpl =
+            FieldViewModelFactoryImpl(
+                hintProvider,
+                displayNameProvider,
+                uiEventTypesProvider,
+                keyboardActionProvider,
+                legendValueProvider,
+                autoCompleteProvider,
+            )
     }
 
     @Test

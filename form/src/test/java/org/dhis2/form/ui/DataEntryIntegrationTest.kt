@@ -50,59 +50,63 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class DataEntryIntegrationTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
     private val testingDispatcher = UnconfinedTestDispatcher()
-    private val dispatcher: DispatcherProvider = mock {
-        on { io() } doReturn testingDispatcher
-        on { ui() } doReturn testingDispatcher
-    }
+    private val dispatcher: DispatcherProvider =
+        mock {
+            on { io() } doReturn testingDispatcher
+            on { ui() } doReturn testingDispatcher
+        }
     private val geometryController: GeometryController = mock()
     private val preferenceProvider: PreferenceProvider = mock()
 
-    private val formValueStore: FormValueStore = mock {
-        on {
-            save(
-                any<String>(),
-                anyOrNull(),
-                anyOrNull(),
-            )
-        } doAnswer { invocationOnMock ->
-            StoreResult(
-                uid = invocationOnMock.getArgument(0) as String,
-                valueStoreResult = ValueStoreResult.VALUE_CHANGED,
-            )
+    private val formValueStore: FormValueStore =
+        mock {
+            on {
+                save(
+                    any<String>(),
+                    anyOrNull(),
+                    anyOrNull(),
+                )
+            } doAnswer { invocationOnMock ->
+                StoreResult(
+                    uid = invocationOnMock.getArgument(0) as String,
+                    valueStoreResult = ValueStoreResult.VALUE_CHANGED,
+                )
+            }
         }
-    }
     private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val legendValueProvider: LegendValueProvider = mock()
-    private val dataEntryRepository: DataEntryRepository = mock {
-        on { list() } doReturn Flowable.just(provideMalariaCaseRegistrationEventItems())
-    }
+    private val dataEntryRepository: DataEntryRepository =
+        mock {
+            on { list() } doReturn Flowable.just(provideMalariaCaseRegistrationEventItems())
+        }
 
-    private val legendValueItem: LegendValue = LegendValue(
-        color = 0,
-        label = "Legend",
-        emptyList(),
-    )
+    private val legendValueItem: LegendValue =
+        LegendValue(
+            color = 0,
+            label = "Legend",
+            emptyList(),
+        )
 
     private val ruleEngineRepository: RuleEngineHelper = mock()
     private val rulesUtilsProvider: RulesUtilsProvider = mock()
 
-    private val repository: FormRepository = FormRepositoryImpl(
-        formValueStore = formValueStore,
-        fieldErrorMessageProvider = fieldErrorMessageProvider,
-        displayNameProvider = displayNameProvider,
-        dataEntryRepository = dataEntryRepository,
-        ruleEngineRepository = ruleEngineRepository,
-        rulesUtilsProvider = rulesUtilsProvider,
-        legendValueProvider = legendValueProvider,
-        useCompose = true,
-        preferenceProvider = preferenceProvider,
-    )
+    private val repository: FormRepository =
+        FormRepositoryImpl(
+            formValueStore = formValueStore,
+            fieldErrorMessageProvider = fieldErrorMessageProvider,
+            displayNameProvider = displayNameProvider,
+            dataEntryRepository = dataEntryRepository,
+            ruleEngineRepository = ruleEngineRepository,
+            rulesUtilsProvider = rulesUtilsProvider,
+            legendValueProvider = legendValueProvider,
+            useCompose = true,
+            preferenceProvider = preferenceProvider,
+        )
 
     private val resultDialogUiProvider: FormResultDialogProvider = mock()
 
@@ -153,128 +157,148 @@ class DataEntryIntegrationTest {
             legendValueItem
         }
 
-        formViewModel = FormViewModel(
-            repository = repository,
-            dispatcher = dispatcher,
-            geometryController = geometryController,
-            openErrorLocation = false,
-            resultDialogUiProvider = resultDialogUiProvider,
-        )
+        formViewModel =
+            FormViewModel(
+                repository = repository,
+                dispatcher = dispatcher,
+                geometryController = geometryController,
+                openErrorLocation = false,
+                resultDialogUiProvider = resultDialogUiProvider,
+            )
     }
 
     @Test
-    fun shouldAllowDataEntryCorrectly() = runTest {
-        val observedItems = mutableListOf<List<FieldUiModel>>()
-        val observer = Observer<List<FieldUiModel>> { items ->
-            observedItems.add(items)
+    fun shouldAllowDataEntryCorrectly() =
+        runTest {
+            val observedItems = mutableListOf<List<FieldUiModel>>()
+            val observer =
+                Observer<List<FieldUiModel>> { items ->
+                    observedItems.add(items)
+                }
+
+            formViewModel.items.observeForever(observer)
+
+            val focusOnReportDateIntent =
+                FormIntent.OnFocus(
+                    uid = "EVENT_REPORT_DATE_UID",
+                    value = "",
+                )
+            formViewModel.submitIntent(focusOnReportDateIntent)
+
+            assert(
+                observedItems
+                    .last()
+                    .find { it.uid == "EVENT_REPORT_DATE_UID" }
+                    ?.value
+                    .isNullOrEmpty(),
+            )
+
+            val enterReportDateIntent =
+                FormIntent.OnTextChange(
+                    uid = "EVENT_REPORT_DATE_UID",
+                    value = "2024-03-20",
+                    valueType = ValueType.DATE,
+                )
+            formViewModel.submitIntent(enterReportDateIntent)
+
+            val focusOnOrgUnitIntent =
+                FormIntent.OnFocus(
+                    uid = "EVENT_ORG_UNIT_UID",
+                    value = "",
+                )
+            formViewModel.submitIntent(focusOnOrgUnitIntent)
+
+            val enterOrgUnitIntent =
+                FormIntent.OnTextChange(
+                    uid = "EVENT_ORG_UNIT_UID",
+                    value = "g8upMTyEZGZ",
+                    valueType = ValueType.ORGANISATION_UNIT,
+                )
+            formViewModel.submitIntent(enterOrgUnitIntent)
+
+            val focusOnCoordinatesIntent =
+                FormIntent.OnFocus(
+                    uid = "EVENT_COORDINATE_UID",
+                    value = "",
+                )
+            formViewModel.submitIntent(focusOnCoordinatesIntent)
+
+            // Change section
+            formViewModel.submitIntent(FormIntent.OnSection(sectionUid = "EVENT_DATA_SECTION_UID"))
+
+            // Focus on age
+            val focusOnAgeIntent =
+                FormIntent.OnFocus(
+                    uid = "qrur9Dvnyt5",
+                    value = "",
+                )
+            formViewModel.submitIntent(focusOnAgeIntent)
+
+            // Enter age
+            val enterAgeIntent =
+                FormIntent.OnTextChange(
+                    uid = "qrur9Dvnyt5",
+                    value = "20",
+                    valueType = ValueType.AGE,
+                )
+            formViewModel.submitIntent(enterAgeIntent)
+
+            // focus on input field with legend
+            val focusOnLegendFieldIntent =
+                FormIntent.OnFocus(
+                    uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+                    value = "",
+                )
+            formViewModel.submitIntent(focusOnLegendFieldIntent)
+
+            // enter value on input field with legend
+            val enterValueOnLegendFieldIntent =
+                FormIntent.OnTextChange(
+                    uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+                    value = "25",
+                    valueType = ValueType.NUMBER,
+                )
+
+            formViewModel.submitIntent(enterValueOnLegendFieldIntent)
+
+            // Focus on gender
+            val focusOnGenderIntent =
+                FormIntent.OnFocus(
+                    uid = "oZg33kd9taw",
+                    value = "",
+                )
+            formViewModel.submitIntent(focusOnGenderIntent)
+
+            val enterGenderIntent =
+                FormIntent.OnSave(
+                    uid = "oZg33kd9taw",
+                    value = "Female",
+                    valueType = ValueType.MULTI_TEXT,
+                )
+            formViewModel.submitIntent(enterGenderIntent)
+
+            assert(
+                observedItems.last().find { it.uid == "EVENT_REPORT_DATE_UID" }?.value == "2024-03-20",
+            )
+            assert(
+                observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
+            )
+            assert(
+                observedItems
+                    .last()
+                    .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }
+                    ?.legend == legendValueItem,
+            )
+            assert(
+                observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
+            )
+            assert(
+                observedItems.last().find { it.uid == "oZg33kd9taw" }?.value == "Female",
+            )
+
+            // Clean up
+            formViewModel.items.removeObserver(observer)
         }
-
-        formViewModel.items.observeForever(observer)
-
-        val focusOnReportDateIntent = FormIntent.OnFocus(
-            uid = "EVENT_REPORT_DATE_UID",
-            value = "",
-        )
-        formViewModel.submitIntent(focusOnReportDateIntent)
-
-        assert(
-            observedItems.last().find { it.uid == "EVENT_REPORT_DATE_UID" }?.value.isNullOrEmpty(),
-        )
-
-        val enterReportDateIntent = FormIntent.OnTextChange(
-            uid = "EVENT_REPORT_DATE_UID",
-            value = "2024-03-20",
-            valueType = ValueType.DATE,
-        )
-        formViewModel.submitIntent(enterReportDateIntent)
-
-        val focusOnOrgUnitIntent = FormIntent.OnFocus(
-            uid = "EVENT_ORG_UNIT_UID",
-            value = "",
-        )
-        formViewModel.submitIntent(focusOnOrgUnitIntent)
-
-        val enterOrgUnitIntent = FormIntent.OnTextChange(
-            uid = "EVENT_ORG_UNIT_UID",
-            value = "g8upMTyEZGZ",
-            valueType = ValueType.ORGANISATION_UNIT,
-        )
-        formViewModel.submitIntent(enterOrgUnitIntent)
-
-        val focusOnCoordinatesIntent = FormIntent.OnFocus(
-            uid = "EVENT_COORDINATE_UID",
-            value = "",
-        )
-        formViewModel.submitIntent(focusOnCoordinatesIntent)
-
-        // Change section
-        formViewModel.submitIntent(FormIntent.OnSection(sectionUid = "EVENT_DATA_SECTION_UID"))
-
-        // Focus on age
-        val focusOnAgeIntent = FormIntent.OnFocus(
-            uid = "qrur9Dvnyt5",
-            value = "",
-        )
-        formViewModel.submitIntent(focusOnAgeIntent)
-
-        // Enter age
-        val enterAgeIntent = FormIntent.OnTextChange(
-            uid = "qrur9Dvnyt5",
-            value = "20",
-            valueType = ValueType.AGE,
-        )
-        formViewModel.submitIntent(enterAgeIntent)
-
-        // focus on input field with legend
-        val focusOnLegendFieldIntent = FormIntent.OnFocus(
-            uid = "INPUT_NUMBER_WITH_LEGEND_UID",
-            value = "",
-        )
-        formViewModel.submitIntent(focusOnLegendFieldIntent)
-
-        // enter value on input field with legend
-        val enterValueOnLegendFieldIntent = FormIntent.OnTextChange(
-            uid = "INPUT_NUMBER_WITH_LEGEND_UID",
-            value = "25",
-            valueType = ValueType.NUMBER,
-        )
-
-        formViewModel.submitIntent(enterValueOnLegendFieldIntent)
-
-        // Focus on gender
-        val focusOnGenderIntent = FormIntent.OnFocus(
-            uid = "oZg33kd9taw",
-            value = "",
-        )
-        formViewModel.submitIntent(focusOnGenderIntent)
-
-        val enterGenderIntent = FormIntent.OnSave(
-            uid = "oZg33kd9taw",
-            value = "Female",
-            valueType = ValueType.MULTI_TEXT,
-        )
-        formViewModel.submitIntent(enterGenderIntent)
-
-        assert(
-            observedItems.last().find { it.uid == "EVENT_REPORT_DATE_UID" }?.value == "2024-03-20",
-        )
-        assert(
-            observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
-        )
-        assert(
-            observedItems.last()
-                .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }?.legend == legendValueItem,
-        )
-        assert(
-            observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
-        )
-        assert(
-            observedItems.last().find { it.uid == "oZg33kd9taw" }?.value == "Female",
-        )
-
-        // Clean up
-        formViewModel.items.removeObserver(observer)
-    }
 
     private fun provideMalariaCaseRegistrationEventItems(): List<FieldUiModel> {
         val optionSearchFlow = MutableStateFlow("")
@@ -345,38 +369,41 @@ class DataEntryIntegrationTest {
                 label = "Gender",
                 programStageSection = "EVENT_DATA_SECTION_UID",
                 autocompleteList = emptyList(),
-                optionSetConfiguration = OptionSetConfiguration(
-                    optionSearchFlow,
-                    { optionSearchFlow.value = it },
-                    optionSearchFlow.flatMapLatest {
-                        flow {
-                            PagingData.from(
-                                listOf(
-                                    OptionSetConfiguration.OptionData(
-                                        Option.builder()
-                                            .uid("rBvjJYbMCVx")
-                                            .code("Male")
-                                            .displayName("Male")
-                                            .name("Male")
-                                            .sortOrder(1)
-                                            .build(),
-                                        MetadataIconData.defaultIcon(),
+                optionSetConfiguration =
+                    OptionSetConfiguration(
+                        optionSearchFlow,
+                        { optionSearchFlow.value = it },
+                        optionSearchFlow.flatMapLatest {
+                            flow {
+                                PagingData.from(
+                                    listOf(
+                                        OptionSetConfiguration.OptionData(
+                                            Option
+                                                .builder()
+                                                .uid("rBvjJYbMCVx")
+                                                .code("Male")
+                                                .displayName("Male")
+                                                .name("Male")
+                                                .sortOrder(1)
+                                                .build(),
+                                            MetadataIconData.defaultIcon(),
+                                        ),
+                                        OptionSetConfiguration.OptionData(
+                                            Option
+                                                .builder()
+                                                .uid("Mnp3oXrpAbK")
+                                                .code("Female")
+                                                .displayName("Female")
+                                                .name("Female")
+                                                .sortOrder(2)
+                                                .build(),
+                                            MetadataIconData.defaultIcon(),
+                                        ),
                                     ),
-                                    OptionSetConfiguration.OptionData(
-                                        Option.builder()
-                                            .uid("Mnp3oXrpAbK")
-                                            .code("Female")
-                                            .displayName("Female")
-                                            .name("Female")
-                                            .sortOrder(2)
-                                            .build(),
-                                        MetadataIconData.defaultIcon(),
-                                    ),
-                                ),
-                            )
-                        }
-                    },
-                ),
+                                )
+                            }
+                        },
+                    ),
                 valueType = ValueType.MULTI_TEXT,
                 mandatory = true,
                 keyboardActionType = KeyboardActionType.NEXT,

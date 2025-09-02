@@ -16,44 +16,53 @@ import org.hisp.dhis.android.core.common.valuetype.validation.failures.IntegerZe
 
 const val STOCK_TABLE_ID = "STOCK"
 
-class TableModelMapper(private val resources: ResourceManager) {
-    fun map(entries: List<StockEntry>, stockLabel: String, qtdLabel: String): List<TableModel> {
+class TableModelMapper(
+    private val resources: ResourceManager,
+) {
+    fun map(
+        entries: List<StockEntry>,
+        stockLabel: String,
+        qtdLabel: String,
+    ): List<TableModel> {
         val tableRowModels = mutableListOf<TableRowModel>()
 
         entries.forEachIndexed { index, entry ->
             val item = entry.item
-            val tableRowModel = TableRowModel(
-                rowHeader = RowHeader(
-                    id = item.id,
-                    title = item.name,
-                    row = index,
-                ),
-                values = mapOf(
-                    Pair(
-                        0,
-                        TableCell(
-                            id = "${item.id}_soh",
+            val tableRowModel =
+                TableRowModel(
+                    rowHeader =
+                        RowHeader(
+                            id = item.id,
+                            title = item.name,
                             row = index,
-                            column = 0,
-                            editable = false,
-                            value = entry.stockOnHand ?: item.stockOnHand,
                         ),
-                    ),
-                    Pair(
-                        1,
-                        TableCell(
-                            id = "${item.id}_gty",
-                            row = index,
-                            column = 1,
-                            value = entry.qty,
-                            editable = true,
-                            error = entry.errorMessage,
+                    values =
+                        mapOf(
+                            Pair(
+                                0,
+                                TableCell(
+                                    id = "${item.id}_soh",
+                                    row = index,
+                                    column = 0,
+                                    editable = false,
+                                    value = entry.stockOnHand ?: item.stockOnHand,
+                                ),
+                            ),
+                            Pair(
+                                1,
+                                TableCell(
+                                    id = "${item.id}_gty",
+                                    row = index,
+                                    column = 1,
+                                    value = entry.qty,
+                                    editable = true,
+                                    error = entry.errorMessage,
+                                ),
+                            ),
                         ),
-                    ),
-                ),
-                isLastRow = index == entries.lastIndex,
-                maxLines = 3,
-            )
+                    isLastRow = index == entries.lastIndex,
+                    maxLines = 3,
+                )
 
             tableRowModels.add(tableRowModel)
         }
@@ -61,30 +70,34 @@ class TableModelMapper(private val resources: ResourceManager) {
         return mutableListOf(
             TableModel(
                 id = STOCK_TABLE_ID,
-                tableHeaderModel = TableHeader(
-                    rows = mutableListOf(
-                        TableHeaderRow(
+                tableHeaderModel =
+                    TableHeader(
+                        rows =
                             mutableListOf(
-                                TableHeaderCell(stockLabel),
-                                TableHeaderCell(qtdLabel),
+                                TableHeaderRow(
+                                    mutableListOf(
+                                        TableHeaderCell(stockLabel),
+                                        TableHeaderCell(qtdLabel),
+                                    ),
+                                ),
                             ),
-                        ),
                     ),
-                ),
                 tableRows = tableRowModels,
             ),
         )
     }
 
-    fun validate(value: String?) = when (
-        val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value ?: "0")
-    ) {
-        is Result.Failure -> getIntegerZeroOrPositiveErrorMessage(
-            result.failure as IntegerZeroOrPositiveFailure,
-        )
+    fun validate(value: String?) =
+        when (
+            val result = ValueType.INTEGER_ZERO_OR_POSITIVE.validator.validate(value ?: "0")
+        ) {
+            is Result.Failure ->
+                getIntegerZeroOrPositiveErrorMessage(
+                    result.failure as IntegerZeroOrPositiveFailure,
+                )
 
-        else -> null
-    }
+            else -> null
+        }
 
     private fun getIntegerZeroOrPositiveErrorMessage(error: IntegerZeroOrPositiveFailure) =
         when (error) {
