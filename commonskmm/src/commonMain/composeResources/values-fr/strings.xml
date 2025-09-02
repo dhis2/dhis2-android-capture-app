@@ -121,4 +121,36 @@
     <string name="no_results_found">Aucun résultat trouvé</string>
     <string name="action_done">Terminé</string>
     <string name="input_not_supported">Non supporté</string>
+    <!--*******************->
+        D2 Error Messages
+    **********************-->
+    <string name="login_error_null_pass">Le mot de passe est manquant. Veuillez entrer le mot de passe.</string>
+    <string name="login_error_null_username">Le nom d\'utilisateur est manquant. Veuillez entrer le nom d\'utilisateur.</string>
+    <string name="login_error_dhis_version">Ce serveur a une version différente de 2.29. Mettre à jour la version ou utiliser un environnement d\'essai pour continuer</string>
+    <string name="login_error_no_dhis_instance">L\'URL fournie n\'est pas un serveur DHIS2.</string>
+    <string name="login_error_bad_credentials">Nom d\'utilisateur ou le mot de passe sont incorrects</string>
+    <string name="login_error_unknown_host">Serveur inconnu</string>
+    <string name="online_search_parsing_error">Erreur lors de l\'analyse des résultats</string>
+    <string name="error_unexpected">Un probème inattendu s\'est produit</string>
+    <string name="error_too_manu_org_units">Votre utilisateur possède plusieurs unités d\'organisation . Vérifiez votre configuration ou contactez votre administrateur.</string>
+    <string name="error_many_requests">Le serveur est un peu occupé en ce moment. Veuillez essayer un peu plus tard.</string>
+    <string name="error_already_authenticated">L\'utilisateur est déjà connecté</string>
+    <string name="error_api_invalid_query">La requête du serveur n\'est pas valide.</string>
+    <string name="error_reserve_value_on_server">Nous ne pouvions pas réserver de valeurs pour ces enregistrements. Veuillez contacter votre administrateur.</string>
+    <string name="error_import_logout">Veuillez vous déconnecter pour importer une nouvelle base de données.</string>
+    <string name="error_low_on_available_values">Vous êtes peut-être à court de valeurs disponibles.</string>
+    <string name="error_user_no_authenticated">Il n\'y a pas d\'utilisateur authentifié.</string>
+    <string name="error_user_no_authenticated_offline">Aucun utilisateur n\'est authentifié hors ligne.</string>
+    <string name="error_no_values_left_on_server">Il n\'y a pas assez de valeurs à réserver sur le serveur. Veuillez contacter votre administrateur.</string>
+    <string name="error_different_offline_user">Vous essayez de vous connecter hors ligne avec un autre utilisateur.</string>
+    <string name="error_no_reserved_values">Aucune valeur réservée n\'est disponible. Accédez aux paramètres et remplissez les valeurs lorsque vous disposez d\'une connexion Internet.</string>
+    <string name="error_ownership_access">Vous n\'avez pas accès.</string>
+    <string name="error_null_url">L\'URL du serveur est manquante. Veuillez saisir l\'URL.</string>
+    <string name="error_server_malformed">L\'URL du serveur n\'est pas bien formée. S\'il te plaît vérifie l\' addresse</string>
+    <string name="error_account_disabled">Votre compte utilisateur a été désactivé. S\'il s\'agit d\'une erreur, contactez votre administrateur.</string>
+    <string name="error_account_locked">Votre compte utilisateur est verrouillé. S\'il s\'agit d\'une erreur, contactez votre administrateur.</string>
+    <string name="error_ssl">Il y a un problème avec les certificats du serveur. Veuillez contacter votre administrateur.</string>
+    <string name="error_min_attributes">Il n\'y a pas assez d\'attributs pour effectuer la recherche. Veuillez affiner votre recherche avec plus d\'attributs.</string>
+    <string name="error_org_unit_scope">La recherche en ligne n\'est disponible que pour vos unités organisationnelles de recherche d\'utilisateurs.</string>
+    <string name="error_no_internet_connection">Vous n\'êtes pas connecté. Veuillez-vous connecter et réssayer.</string>
 </resources>
