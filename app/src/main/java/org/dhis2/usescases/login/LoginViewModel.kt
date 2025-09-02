@@ -64,8 +64,8 @@ class LoginViewModel(
     private val network: NetworkUtils,
     private var userManager: UserManager?,
     private val repository: LoginRepository,
-) : ViewModel(), KoinComponent {
-
+) : ViewModel(),
+    KoinComponent {
     private val navigator: Navigator by inject()
 
     private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
@@ -130,14 +130,20 @@ class LoginViewModel(
     }
 
     private fun trackServerVersion() {
-        userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version()
+        userManager
+            ?.d2
+            ?.systemInfoModule()
+            ?.systemInfo()
+            ?.blockingGet()
+            ?.version()
             ?.let { analyticsHelper.trackMatomoEvent(USER_PROPERTY_SERVER, VERSION, it) }
     }
 
     fun checkServerInfoAndShowBiometricButton() {
         userManager?.let { userManager ->
             disposable.add(
-                Observable.just(getSystemInfoIfUserIsLogged(userManager))
+                Observable
+                    .just(getSystemInfoIfUserIsLogged(userManager))
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
@@ -172,27 +178,39 @@ class LoginViewModel(
         }
     }
 
-    private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo {
-        return if (userManager.isUserLoggedIn.blockingFirst() &&
-            userManager.d2.systemInfoModule().systemInfo().blockingGet() != null
+    private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo =
+        if (userManager.isUserLoggedIn.blockingFirst() &&
+            userManager.d2
+                .systemInfoModule()
+                .systemInfo()
+                .blockingGet() != null
         ) {
-            userManager.d2.systemInfoModule().systemInfo().blockingGet() ?: SystemInfo.builder()
+            userManager.d2
+                .systemInfoModule()
+                .systemInfo()
+                .blockingGet() ?: SystemInfo
+                .builder()
                 .build()
         } else {
             SystemInfo.builder().build()
         }
-    }
 
     fun checkBiometricVisibility() {
         _canLoginWithBiometrics.value =
             biometricAuthenticator.hasBiometric() &&
-            userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() == 1 &&
-            preferenceProvider.getString(SECURE_SERVER_URL)
+            userManager
+                ?.d2
+                ?.userModule()
+                ?.accountManager()
+                ?.getAccounts()
+                ?.count() == 1 &&
+            preferenceProvider
+                .getString(SECURE_SERVER_URL)
                 ?.let { it == serverUrl.value } ?: false &&
             (
                 preferenceProvider.contains(SECURE_PASS) ||
                     cryptographyManager.isKeyReady()
-                )
+            )
     }
 
     fun onLoginButtonClick() {
@@ -209,16 +227,17 @@ class LoginViewModel(
     private fun logIn() {
         _loginProgressVisible.postValue(true)
         disposable.add(
-            Observable.just(view.initLogin())
+            Observable
+                .just(view.initLogin())
                 .flatMap { userManager ->
                     LoginIdlingResource.increment()
                     this.userManager = userManager
-                    userManager.logIn(
-                        userName.value!!.trim { it <= ' ' },
-                        password.value!!,
-                        serverUrl.value!!,
-                    )
-                        .map {
+                    userManager
+                        .logIn(
+                            userName.value!!.trim { it <= ' ' },
+                            password.value!!,
+                            serverUrl.value!!,
+                        ).map {
                             run {
                                 with(preferenceProvider) {
                                     setValue(SESSION_LOCKED, false)
@@ -227,15 +246,12 @@ class LoginViewModel(
                                 Result.success(null)
                             }
                         }
-                }
-                .doOnError {
+                }.doOnError {
                     LoginIdlingResource.decrement()
-                }
-                .doOnTerminate {
+                }.doOnTerminate {
                     LoginIdlingResource.decrement()
                     _loginProgressVisible.postValue(false)
-                }
-                .subscribeOn(schedulers.io())
+                }.subscribeOn(schedulers.io())
                 .observeOn(schedulers.ui())
                 .subscribe(
                     this::handleResponse,
@@ -247,12 +263,12 @@ class LoginViewModel(
     fun openIdLogin(config: OpenIDConnectConfig) {
         try {
             disposable.add(
-                Observable.just(view.initLogin())
+                Observable
+                    .just(view.initLogin())
                     .flatMap { userManager ->
                         this.userManager = userManager
                         userManager.logIn(config)
-                    }
-                    .subscribeOn(schedulers.io())
+                    }.subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
                         {
@@ -269,10 +285,15 @@ class LoginViewModel(
         }
     }
 
-    fun handleAuthResponseData(serverUrl: String, data: Intent, requestCode: Int) {
+    fun handleAuthResponseData(
+        serverUrl: String,
+        data: Intent,
+        requestCode: Int,
+    ) {
         userManager?.let { userManager ->
             disposable.add(
-                userManager.handleAuthData(serverUrl, data, requestCode)
+                userManager
+                    .handleAuthData(serverUrl, data, requestCode)
                     .map {
                         run {
                             with(preferenceProvider) {
@@ -293,7 +314,12 @@ class LoginViewModel(
 
     private fun trackUserInfo() {
         val serverVersion =
-            userManager?.d2?.systemInfoModule()?.systemInfo()?.blockingGet()?.version() ?: ""
+            userManager
+                ?.d2
+                ?.systemInfoModule()
+                ?.systemInfo()
+                ?.blockingGet()
+                ?.version() ?: ""
         crashReportController.trackServer(serverUrl.value, serverVersion)
         crashReportController.trackUser(userName.value, serverUrl.value)
     }
@@ -310,7 +336,9 @@ class LoginViewModel(
     fun logOut() {
         userManager?.let {
             disposable.add(
-                it.d2.userModule().logOut()
+                it.d2
+                    .userModule()
+                    .logOut()
                     .subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
@@ -366,17 +394,21 @@ class LoginViewModel(
         }
     }
 
-    private fun hasToDisplayTrackingMessage(): Boolean {
-        return userManager?.d2?.dataStoreModule()?.localDataStore()
+    private fun hasToDisplayTrackingMessage(): Boolean =
+        userManager
+            ?.d2
+            ?.dataStoreModule()
+            ?.localDataStore()
             ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.blockingGet()?.value() == null
-    }
+            ?.blockingGet()
+            ?.value() == null
 
-    fun canEnableBiometric(): Boolean {
-        return biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
-    }
+    fun canEnableBiometric(): Boolean = biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
 
-    fun saveUserCredentials(userPass: String? = null, onDone: () -> Unit) {
+    fun saveUserCredentials(
+        userPass: String? = null,
+        onDone: () -> Unit,
+    ) {
         val serverUrl = serverUrl.value ?: ""
         val userName = userName.value ?: ""
         if (serverUrl.isEmpty() or userName.isEmpty()) return
@@ -414,15 +446,17 @@ class LoginViewModel(
         val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
         if (ciphertextWrapper != null) {
             val cryptoObject =
-                cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
+                cryptographyManager
+                    .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
                     ?.let { cipher ->
                         BiometricPrompt.CryptoObject(cipher)
                     }
             biometricAuthenticator.authenticate({
-                password.value = cryptographyManager.decryptData(
-                    ciphertextWrapper.ciphertext,
-                    it.cryptoObject?.cipher!!,
-                )
+                password.value =
+                    cryptographyManager.decryptData(
+                        ciphertextWrapper.ciphertext,
+                        it.cryptoObject?.cipher!!,
+                    )
                 logIn()
             }, cryptoObject)
         }
@@ -465,7 +499,13 @@ class LoginViewModel(
     }
 
     fun displayManageAccount() {
-        val users = userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
+        val users =
+            userManager
+                ?.d2
+                ?.userModule()
+                ?.accountManager()
+                ?.getAccounts()
+                ?.count() ?: 0
         _hasAccounts.value = (users >= 1)
     }
 
@@ -476,7 +516,10 @@ class LoginViewModel(
     }
 
     fun grantTrackingPermissions(granted: Boolean) {
-        userManager?.d2?.dataStoreModule()?.localDataStore()
+        userManager
+            ?.d2
+            ?.dataStoreModule()
+            ?.localDataStore()
             ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
             ?.blockingSet(granted.toString())
         if (granted) {
@@ -486,7 +529,9 @@ class LoginViewModel(
     }
 
     private fun deletePin() {
-        userManager?.d2?.dataStoreModule()
+        userManager
+            ?.d2
+            ?.dataStoreModule()
             ?.localDataStore()
             ?.value(PIN)
             ?.blockingDeleteIfExist()
@@ -497,7 +542,12 @@ class LoginViewModel(
         const val AUTH_ERROR = "AUTH ERROR"
     }
 
-    fun onServerChanged(serverUrl: CharSequence, start: Int, before: Int, count: Int) {
+    fun onServerChanged(
+        serverUrl: CharSequence,
+        start: Int,
+        before: Int,
+        count: Int,
+    ) {
         if (serverUrl.toString() != this.serverUrl.value) {
             this.serverUrl.value = serverUrl.toString()
             checkData()
@@ -507,7 +557,12 @@ class LoginViewModel(
         }
     }
 
-    fun onUserChanged(userName: CharSequence, start: Int, before: Int, count: Int) {
+    fun onUserChanged(
+        userName: CharSequence,
+        start: Int,
+        before: Int,
+        count: Int,
+    ) {
         LoginIdlingResource.increment()
         if (userName.toString() != this.userName.value) {
             this.userName.value = userName.toString()
@@ -516,7 +571,12 @@ class LoginViewModel(
         LoginIdlingResource.decrement()
     }
 
-    fun onPassChanged(password: CharSequence, start: Int, before: Int, count: Int) {
+    fun onPassChanged(
+        password: CharSequence,
+        start: Int,
+        before: Int,
+        count: Int,
+    ) {
         LoginIdlingResource.increment()
         if (password.toString() != this.password.value) {
             this.password.value = password.toString()
@@ -526,9 +586,10 @@ class LoginViewModel(
     }
 
     private fun checkData() {
-        val newValue = !serverUrl.value.isNullOrEmpty() &&
-            !userName.value.isNullOrEmpty() &&
-            !password.value.isNullOrEmpty()
+        val newValue =
+            !serverUrl.value.isNullOrEmpty() &&
+                !userName.value.isNullOrEmpty() &&
+                !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
@@ -537,15 +598,19 @@ class LoginViewModel(
 
     private fun checkTestingEnvironment(serverUrl: String) {
         testingCredentials.find { it.server_url == serverUrl }?.let { credentials ->
-            isTestingEnvironment.value = Triple(
-                serverUrl,
-                credentials.user_name,
-                credentials.user_pass,
-            )
+            isTestingEnvironment.value =
+                Triple(
+                    serverUrl,
+                    credentials.user_name,
+                    credentials.user_pass,
+                )
         }
     }
 
-    fun setAccountInfo(serverUrl: String?, userName: String?) {
+    fun setAccountInfo(
+        serverUrl: String?,
+        userName: String?,
+    ) {
         this.serverUrl.value = serverUrl
         this.userName.value = userName
         view.setUrl(serverUrl)
@@ -555,15 +620,19 @@ class LoginViewModel(
     fun onImportDataBase(file: File) {
         userManager?.let {
             viewModelScope.launch {
-                val resultJob = async {
-                    try {
-                        val importedMetadata =
-                            it.d2.maintenanceModule().databaseImportExport().importDatabase(file)
-                        Result.success(importedMetadata)
-                    } catch (e: Exception) {
-                        Result.failure(e)
+                val resultJob =
+                    async {
+                        try {
+                            val importedMetadata =
+                                it.d2
+                                    .maintenanceModule()
+                                    .databaseImportExport()
+                                    .importDatabase(file)
+                            Result.success(importedMetadata)
+                        } catch (e: Exception) {
+                            Result.failure(e)
+                        }
                     }
-                }
 
                 val result = resultJob.await()
 

@@ -79,9 +79,10 @@ fun MapItemHorizontalPager(
 
     Column(modifier = modifier) {
         AnimatedVisibility(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .align(alignment = Alignment.End),
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .align(alignment = Alignment.End),
             visible = !state.isScrollInProgress && items.isNotEmpty() && currentItem?.geometry != null,
         ) {
             FAB(
@@ -116,17 +117,19 @@ fun MapItemHorizontalListPreview() {
         items.add(
             MapItemModel(
                 uid = UUID.randomUUID().toString(),
-                avatarProviderConfiguration = AvatarProviderConfiguration.MainValueLabel(
-                    "Tem",
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.MainValueLabel(
+                        "Tem",
+                    ),
                 title = "Title",
                 description = null,
                 lastUpdated = "5 min ago",
-                additionalInfoList = buildList {
-                    repeat(8) {
-                        add(AdditionalInfoItem(key = "key:", value = "Hello there"))
-                    }
-                },
+                additionalInfoList =
+                    buildList {
+                        repeat(8) {
+                            add(AdditionalInfoItem(key = "key:", value = "Hello there"))
+                        }
+                    },
                 isOnline = false,
                 geometry = null,
                 relatedInfo = null,
@@ -137,14 +140,16 @@ fun MapItemHorizontalListPreview() {
 
     Scaffold { contentPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
         ) {
             MapItemHorizontalPager(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
                 state = rememberLazyListState(),
                 items = items,
                 onItemScrolled = {},
@@ -153,49 +158,54 @@ fun MapItemHorizontalListPreview() {
 
                 ListCard(
                     modifier = Modifier.fillParentMaxWidth(),
-                    listCardState = rememberListCardState(
-                        title = ListCardTitleModel(text = item.title, allowOverflow = false),
-                        description = item.description?.let {
-                            ListCardDescriptionModel(
-                                text = it,
-                            )
-                        },
-                        lastUpdated = item.lastUpdated,
-                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                            additionalInfoList = item.additionalInfoList,
-                            syncProgressItem = AdditionalInfoItem(
-                                key = stringResource(id = R.string.sync),
-                                value = "",
-                            ),
-                            expandLabelText = stringResource(id = R.string.show_more),
-                            shrinkLabelText = stringResource(id = R.string.show_less),
-                            scrollableContent = true,
+                    listCardState =
+                        rememberListCardState(
+                            title = ListCardTitleModel(text = item.title, allowOverflow = false),
+                            description =
+                                item.description?.let {
+                                    ListCardDescriptionModel(
+                                        text = it,
+                                    )
+                                },
+                            lastUpdated = item.lastUpdated,
+                            additionalInfoColumnState =
+                                rememberAdditionalInfoColumnState(
+                                    additionalInfoList = item.additionalInfoList,
+                                    syncProgressItem =
+                                        AdditionalInfoItem(
+                                            key = stringResource(id = R.string.sync),
+                                            value = "",
+                                        ),
+                                    expandLabelText = stringResource(id = R.string.show_more),
+                                    shrinkLabelText = stringResource(id = R.string.show_less),
+                                    scrollableContent = true,
+                                ),
                         ),
-                    ),
                     onCardClick = {
                     },
                     listAvatar = {
                         Avatar(
-                            style = when (
-                                val config =
-                                    item.avatarProviderConfiguration
-                            ) {
-                                is AvatarProviderConfiguration.MainValueLabel ->
-                                    AvatarStyleData.Text(
-                                        config.firstMainValue.firstOrNull()?.toString()
-                                            ?: "?",
-                                    )
+                            style =
+                                when (
+                                    val config =
+                                        item.avatarProviderConfiguration
+                                ) {
+                                    is AvatarProviderConfiguration.MainValueLabel ->
+                                        AvatarStyleData.Text(
+                                            config.firstMainValue.firstOrNull()?.toString()
+                                                ?: "?",
+                                        )
 
-                                is AvatarProviderConfiguration.Metadata ->
-                                    AvatarStyleData.Metadata(
-                                        imageCardData = config.metadataIconData.imageCardData,
-                                        avatarSize = config.size,
-                                        tintColor = config.metadataIconData.color,
-                                    )
+                                    is AvatarProviderConfiguration.Metadata ->
+                                        AvatarStyleData.Metadata(
+                                            imageCardData = config.metadataIconData.imageCardData,
+                                            avatarSize = config.size,
+                                            tintColor = config.metadataIconData.color,
+                                        )
 
-                                is AvatarProviderConfiguration.ProfilePic ->
-                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
-                            },
+                                    is AvatarProviderConfiguration.ProfilePic ->
+                                        AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                },
                             onImageClick = {},
                         )
                     },

@@ -38,17 +38,25 @@ class ValueStoreImpl(
         overrideProgramUid = programUid
     }
 
-    override fun validate(dataElementUid: String, value: String?): Result<String, Throwable> {
+    override fun validate(
+        dataElementUid: String,
+        value: String?,
+    ): Result<String, Throwable> {
         if (value.isNullOrEmpty()) return Result.Success("")
-        val dataElement = d2.dataElementModule()
-            .dataElements()
-            .uid(dataElementUid)
-            .blockingGet()
+        val dataElement =
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(dataElementUid)
+                .blockingGet()
         return dataElement?.valueType()?.validator?.validate(value) ?: Result.Success("")
     }
 
-    override fun save(uid: String, value: String?): Flowable<StoreResult> {
-        return when (entryMode) {
+    override fun save(
+        uid: String,
+        value: String?,
+    ): Flowable<StoreResult> =
+        when (entryMode) {
             EntryMode.DE -> saveDataElement(uid, value)
             EntryMode.ATTR -> saveAttribute(uid, value)
             EntryMode.DV ->
@@ -56,7 +64,6 @@ class ValueStoreImpl(
                     resourceManager.getString(R.string.data_values_save_error),
                 )
         }
-    }
 
     override suspend fun save(
         orgUnitUid: String,
@@ -66,16 +73,23 @@ class ValueStoreImpl(
         categoryOptionComboUid: String,
         value: String?,
     ): Flowable<StoreResult> {
-        val dataValueObject = d2.dataValueModule().dataValues().value(
-            periodId,
-            orgUnitUid,
-            dataElementUid,
-            categoryOptionComboUid,
-            attributeOptionComboUid,
-        )
+        val dataValueObject =
+            d2.dataValueModule().dataValues().value(
+                periodId,
+                orgUnitUid,
+                dataElementUid,
+                categoryOptionComboUid,
+                attributeOptionComboUid,
+            )
 
-        val validator = d2.dataElementModule().dataElements()
-            .uid(dataElementUid).blockingGet()?.valueType()?.validator
+        val validator =
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(dataElementUid)
+                .blockingGet()
+                ?.valueType()
+                ?.validator
 
         return if (!value.isNullOrEmpty()) {
             if (dataValueObject.blockingExists() &&
@@ -84,30 +98,36 @@ class ValueStoreImpl(
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
             } else {
                 when (val validation = validator?.validate(value)) {
-                    is Result.Failure -> Flowable.just(
-                        StoreResult(
-                            uid = "",
-                            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                            valueStoreResultMessage = fieldErrorMessageProvider
-                                .getFriendlyErrorMessage(validation.failure),
-                        ),
-                    )
+                    is Result.Failure ->
+                        Flowable.just(
+                            StoreResult(
+                                uid = "",
+                                valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                                valueStoreResultMessage =
+                                    fieldErrorMessageProvider
+                                        .getFriendlyErrorMessage(validation.failure),
+                            ),
+                        )
                     is Result.Success ->
-                        dataValueObject.set(value)
+                        dataValueObject
+                            .set(value)
                             .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
-                    else -> Flowable.just(
-                        StoreResult(
-                            uid = "",
-                            valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                            valueStoreResultMessage = fieldErrorMessageProvider
-                                .defaultValidationErrorMessage(),
-                        ),
-                    )
+                    else ->
+                        Flowable.just(
+                            StoreResult(
+                                uid = "",
+                                valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
+                                valueStoreResultMessage =
+                                    fieldErrorMessageProvider
+                                        .defaultValidationErrorMessage(),
+                            ),
+                        )
                 }
             }
         } else {
             if (dataValueObject.blockingExists()) {
-                dataValueObject.deleteIfExist()
+                dataValueObject
+                    .deleteIfExist()
                     .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
             } else {
                 Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
@@ -115,23 +135,45 @@ class ValueStoreImpl(
         }
     }
 
-    override fun saveWithTypeCheck(uid: String, value: String?): Flowable<StoreResult> {
-        return when {
-            d2.dataElementModule().dataElements().uid(uid).blockingExists() ->
+    override fun saveWithTypeCheck(
+        uid: String,
+        value: String?,
+    ): Flowable<StoreResult> =
+        when {
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(uid)
+                .blockingExists() ->
                 saveDataElement(uid, value)
-            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists() ->
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(uid)
+                .blockingExists() ->
                 saveAttribute(uid, value)
             else -> Flowable.just(StoreResult(uid, ValueStoreResult.UID_IS_NOT_DE_OR_ATTR))
         }
-    }
 
-    private fun saveAttribute(uid: String, value: String?): Flowable<StoreResult> {
+    private fun saveAttribute(
+        uid: String,
+        value: String?,
+    ): Flowable<StoreResult> {
         val teiUid =
             when (entryMode) {
                 EntryMode.DE -> {
-                    val event = d2.eventModule().events().uid(recordUid).blockingGet()
-                    val enrollment = d2.enrollmentModule().enrollments()
-                        .uid(event?.enrollment()).blockingGet()
+                    val event =
+                        d2
+                            .eventModule()
+                            .events()
+                            .uid(recordUid)
+                            .blockingGet()
+                    val enrollment =
+                        d2
+                            .enrollmentModule()
+                            .enrollments()
+                            .uid(event?.enrollment())
+                            .blockingGet()
                     enrollment?.trackedEntityInstance()
                 }
                 EntryMode.ATTR -> recordUid
@@ -143,9 +185,17 @@ class ValueStoreImpl(
             return Flowable.just(StoreResult(uid, ValueStoreResult.VALUE_NOT_UNIQUE))
         }
 
-        val valueRepository = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .value(uid, teiUid)
-        val attr = d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()
+        val valueRepository =
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .value(uid, teiUid)
+        val attr =
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(uid)
+                .blockingGet()
         val valueType = attr?.valueType()
         val optionSet = attr?.optionSet()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
@@ -163,11 +213,12 @@ class ValueStoreImpl(
             }
         }
 
-        val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet()?.value().withValueTypeCheck(valueType)
-        } else {
-            ""
-        }
+        val currentValue =
+            if (valueRepository.blockingExists()) {
+                valueRepository.blockingGet()?.value().withValueTypeCheck(valueType)
+            } else {
+                ""
+            }
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
                 valueRepository.blockingSetCheck(d2, uid, newValue) { _attrUid, _value ->
@@ -186,10 +237,21 @@ class ValueStoreImpl(
         }
     }
 
-    private fun saveDataElement(uid: String, value: String?): Flowable<StoreResult> {
-        val valueRepository = d2.trackedEntityModule().trackedEntityDataValues()
-            .value(recordUid, uid)
-        val de = d2.dataElementModule().dataElements().uid(uid).blockingGet()
+    private fun saveDataElement(
+        uid: String,
+        value: String?,
+    ): Flowable<StoreResult> {
+        val valueRepository =
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .value(recordUid, uid)
+        val de =
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(uid)
+                .blockingGet()
         val valueType = de?.valueType()
         val optionSet = de?.optionSet()
         var newValue = value.withValueTypeCheck(valueType) ?: ""
@@ -207,11 +269,12 @@ class ValueStoreImpl(
             }
         }
 
-        val currentValue = if (valueRepository.blockingExists()) {
-            valueRepository.blockingGet()?.value().withValueTypeCheck(valueType)
-        } else {
-            ""
-        }
+        val currentValue =
+            if (valueRepository.blockingExists()) {
+                valueRepository.blockingGet()?.value().withValueTypeCheck(valueType)
+            } else {
+                ""
+            }
 
         return if (currentValue != newValue) {
             if (!DhisTextUtils.isEmpty(value)) {
@@ -229,26 +292,36 @@ class ValueStoreImpl(
         }
     }
 
-    private fun checkUniqueFilter(uid: String, value: String?, teiUid: String): Boolean {
-        return if (!networkUtils.isOnline()) {
+    private fun checkUniqueFilter(
+        uid: String,
+        value: String?,
+        teiUid: String,
+    ): Boolean =
+        if (!networkUtils.isOnline()) {
             dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
         } else {
             val programUid = overrideProgramUid ?: enrollmentRepository?.blockingGet()?.program()
             searchTEIRepository.isUniqueTEIAttributeOnline(uid, value, teiUid, programUid)
         }
-    }
 
-    private fun saveFileResource(path: String, resize: Boolean): String {
-        val file = if (resize) {
-            FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
-        } else {
-            File(path)
-        }
+    private fun saveFileResource(
+        path: String,
+        resize: Boolean,
+    ): String {
+        val file =
+            if (resize) {
+                FileResizerHelper.resizeFile(File(path), FileResizerHelper.Dimension.MEDIUM)
+            } else {
+                File(path)
+            }
         return d2.fileResourceModule().fileResources().blockingAdd(file)
     }
 
-    override fun deleteOptionValueIfSelected(field: String, optionUid: String): StoreResult {
-        return when (entryMode) {
+    override fun deleteOptionValueIfSelected(
+        field: String,
+        optionUid: String,
+    ): StoreResult =
+        when (entryMode) {
             EntryMode.DE -> deleteDataElementValue(field, optionUid)
             EntryMode.ATTR -> deleteAttributeValue(field, optionUid)
             EntryMode.DV,
@@ -256,10 +329,17 @@ class ValueStoreImpl(
                 resourceManager.getString(R.string.data_values_save_error),
             )
         }
-    }
 
-    private fun deleteDataElementValue(field: String, optionUid: String): StoreResult {
-        val option = d2.optionModule().options().uid(optionUid).blockingGet()
+    private fun deleteDataElementValue(
+        field: String,
+        optionUid: String,
+    ): StoreResult {
+        val option =
+            d2
+                .optionModule()
+                .options()
+                .uid(optionUid)
+                .blockingGet()
         val possibleValues = arrayListOf(option?.name(), option?.code()).filterNotNull()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityDataValues().value(recordUid, field)
@@ -272,8 +352,16 @@ class ValueStoreImpl(
         }
     }
 
-    private fun deleteAttributeValue(field: String, optionUid: String): StoreResult {
-        val option = d2.optionModule().options().uid(optionUid).blockingGet()
+    private fun deleteAttributeValue(
+        field: String,
+        optionUid: String,
+    ): StoreResult {
+        val option =
+            d2
+                .optionModule()
+                .options()
+                .uid(optionUid)
+                .blockingGet()
         val possibleValues = arrayListOf(option?.name(), option?.code()).filterNotNull()
         val valueRepository =
             d2.trackedEntityModule().trackedEntityAttributeValues().value(field, recordUid)
@@ -289,9 +377,10 @@ class ValueStoreImpl(
     override fun deleteOptionValues(optionCodeValuesToDelete: List<String>) {
         when (entryMode) {
             EntryMode.DE -> deleteOptionValuesForEvents(optionCodeValuesToDelete)
-            EntryMode.ATTR -> deleteOptionValuesForEnrollment(
-                optionCodeValuesToDelete,
-            )
+            EntryMode.ATTR ->
+                deleteOptionValuesForEnrollment(
+                    optionCodeValuesToDelete,
+                )
             EntryMode.DV,
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one.",
@@ -300,11 +389,18 @@ class ValueStoreImpl(
     }
 
     private fun deleteOptionValuesForEvents(optionCodeValuesToDelete: List<String>) {
-        d2.trackedEntityModule().trackedEntityDataValues()
-            .byEvent().eq(recordUid)
-            .byValue().`in`(optionCodeValuesToDelete)
-            .blockingGet().filter {
-                d2.dataElementModule().dataElements()
+        d2
+            .trackedEntityModule()
+            .trackedEntityDataValues()
+            .byEvent()
+            .eq(recordUid)
+            .byValue()
+            .`in`(optionCodeValuesToDelete)
+            .blockingGet()
+            .filter {
+                d2
+                    .dataElementModule()
+                    .dataElements()
                     .uid(it.dataElement())
                     .blockingGet()
                     ?.optionSetUid() != null
@@ -314,18 +410,26 @@ class ValueStoreImpl(
     }
 
     private fun deleteOptionValuesForEnrollment(optionCodeValuesToDelete: List<String>) {
-        d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().eq(recordUid)
-            .byValue().`in`(optionCodeValuesToDelete)
-            .blockingGet().filter {
-                d2.trackedEntityModule().trackedEntityAttributes()
-                    .uid(it.trackedEntityAttribute()).blockingGet()?.optionSet()?.uid() != null
+        d2
+            .trackedEntityModule()
+            .trackedEntityAttributeValues()
+            .byTrackedEntityInstance()
+            .eq(recordUid)
+            .byValue()
+            .`in`(optionCodeValuesToDelete)
+            .blockingGet()
+            .filter {
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityAttributes()
+                    .uid(it.trackedEntityAttribute())
+                    .blockingGet()
+                    ?.optionSet()
+                    ?.uid() != null
             }.forEach {
                 saveAttribute(it.trackedEntityAttribute()!!, null)
             }
     }
 
-    private fun isFile(valueType: ValueType?): Boolean {
-        return valueType == ValueType.IMAGE || valueType?.isFile == true
-    }
+    private fun isFile(valueType: ValueType?): Boolean = valueType == ValueType.IMAGE || valueType?.isFile == true
 }

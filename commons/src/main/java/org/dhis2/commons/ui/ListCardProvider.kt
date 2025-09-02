@@ -24,31 +24,36 @@ fun ListCardProvider(
 ) {
     ListCard(
         modifier = modifier,
-        listCardState = rememberListCardState(
-            title = ListCardTitleModel(
-                text = card.title,
-                style = LocalTextStyle.current.copy(
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight(500),
-                    lineHeight = 20.sp,
-                ),
-                color = TextColor.OnSurface,
+        listCardState =
+            rememberListCardState(
+                title =
+                    ListCardTitleModel(
+                        text = card.title,
+                        style =
+                            LocalTextStyle.current.copy(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight(500),
+                                lineHeight = 20.sp,
+                            ),
+                        color = TextColor.OnSurface,
+                    ),
+                description = ListCardDescriptionModel(text = card.description),
+                lastUpdated = card.lastUpdated,
+                additionalInfoColumnState =
+                    rememberAdditionalInfoColumnState(
+                        additionalInfoList = card.additionalInfo,
+                        syncProgressItem =
+                            AdditionalInfoItem(
+                                key = stringResource(id = syncingResourceId),
+                                value = "",
+                            ),
+                        expandLabelText = card.expandLabelText,
+                        shrinkLabelText = card.shrinkLabelText,
+                        scrollableContent = true,
+                    ),
+                loading = false,
+                expandable = false,
             ),
-            description = ListCardDescriptionModel(text = card.description),
-            lastUpdated = card.lastUpdated,
-            additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                additionalInfoList = card.additionalInfo,
-                syncProgressItem = AdditionalInfoItem(
-                    key = stringResource(id = syncingResourceId),
-                    value = "",
-                ),
-                expandLabelText = card.expandLabelText,
-                shrinkLabelText = card.shrinkLabelText,
-                scrollableContent = true,
-            ),
-            loading = false,
-            expandable = false,
-        ),
         listAvatar = card.avatar,
         onCardClick = card.onCardCLick,
         actionButton = card.actionButton,

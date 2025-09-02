@@ -15,15 +15,26 @@ interface TeiDataRepository {
     ): Single<List<EventViewModel>>
 
     fun getEnrollment(): Single<Enrollment?>
+
     fun getEnrollmentProgram(): Single<Program?>
+
     fun getTrackedEntityInstance(): Single<TrackedEntityInstance?>
+
     fun enrollingOrgUnit(): Single<OrganisationUnit>
+
     fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
+
     fun getOrgUnitName(orgUnitUid: String): String
+
     fun getTeiProfilePath(): String?
+
     fun getTeiHeader(): String?
+
     fun isEventEditable(eventUid: String): Boolean
+
     fun displayOrganisationUnit(programUid: String): Boolean
+
     fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean
+
     fun programOrgListInCaptureScope(programUid: String): List<OrganisationUnit>
 }

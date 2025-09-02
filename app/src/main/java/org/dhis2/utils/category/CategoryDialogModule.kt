@@ -39,15 +39,14 @@ class CategoryDialogModule(
     private val accessControl: Boolean,
     private val dateControl: Date?,
 ) {
-
     @Provides
     fun providesPresenter(
         d2: D2,
         schedulerProvider: SchedulerProvider,
         catOptionMapper: CategoryOptionCategoryDialogItemMapper,
         catOptComboMapper: CategoryOptionComboCategoryDialogItemMapper,
-    ): CategoryDialogPresenter {
-        return CategoryDialogPresenter(
+    ): CategoryDialogPresenter =
+        CategoryDialogPresenter(
             view,
             d2,
             type,
@@ -58,15 +57,10 @@ class CategoryDialogModule(
             catOptComboMapper,
             schedulerProvider,
         )
-    }
 
     @Provides
-    fun categoryOptionMapper(): CategoryOptionCategoryDialogItemMapper {
-        return CategoryOptionCategoryDialogItemMapper()
-    }
+    fun categoryOptionMapper(): CategoryOptionCategoryDialogItemMapper = CategoryOptionCategoryDialogItemMapper()
 
     @Provides
-    fun categoryOptionComboMapper(): CategoryOptionComboCategoryDialogItemMapper {
-        return CategoryOptionComboCategoryDialogItemMapper()
-    }
+    fun categoryOptionComboMapper(): CategoryOptionComboCategoryDialogItemMapper = CategoryOptionComboCategoryDialogItemMapper()
 }

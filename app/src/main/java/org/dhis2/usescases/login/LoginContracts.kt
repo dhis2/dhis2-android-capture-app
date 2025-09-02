@@ -6,7 +6,6 @@ import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 
 class LoginContracts {
-
     interface View : AbstractActivityContracts.View {
         @UiThread
         fun showUnlockButton()
@@ -21,7 +20,10 @@ class LoginContracts {
         fun setAutocompleteAdapters()
 
         @UiThread
-        fun saveUsersData(displayTrackingMessage: Boolean, isInitialSyncDone: Boolean)
+        fun saveUsersData(
+            displayTrackingMessage: Boolean,
+            isInitialSyncDone: Boolean,
+        )
 
         fun handleLogout()
 
@@ -45,13 +47,21 @@ class LoginContracts {
         fun openAccountRecovery()
 
         fun alreadyAuthenticated()
+
         fun showCredentialsData(vararg args: String)
+
         fun showEmptyCredentialsMessage()
+
         fun getDefaultServerProtocol(): String
+
         fun isNetworkAvailable(): Boolean
+
         fun openOpenIDActivity(it: IntentWithRequestCode?)
+
         fun showNoConnectionDialog()
+
         fun initLogin(): UserManager?
+
         fun onDbImportFinished(isSuccess: Boolean)
     }
 }

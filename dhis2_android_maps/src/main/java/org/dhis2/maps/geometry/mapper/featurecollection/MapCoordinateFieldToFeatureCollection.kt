@@ -8,11 +8,9 @@ import org.maplibre.geojson.FeatureCollection
 class MapCoordinateFieldToFeatureCollection(
     private val mapDataElementToFeature: MapDataElementToFeature,
     private val mapAttributeToFeature: MapAttributeToFeature,
-
 ) {
-
-    fun map(coordinateFieldInfos: List<CoordinateFieldInfo>): Map<String, FeatureCollection> {
-        return when {
+    fun map(coordinateFieldInfos: List<CoordinateFieldInfo>): Map<String, FeatureCollection> =
+        when {
             coordinateFieldInfos.any { it is CoordinateDataElementInfo } -> {
                 mapDataElementToFeature.mapDataElement(
                     coordinateFieldInfos as List<CoordinateDataElementInfo>,
@@ -27,7 +25,6 @@ class MapCoordinateFieldToFeatureCollection(
                 emptyMap()
             }
         }
-    }
 
     companion object {
         const val EVENT = "eventUid"

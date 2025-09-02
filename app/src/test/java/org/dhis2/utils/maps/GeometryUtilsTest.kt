@@ -8,7 +8,6 @@ import org.maplibre.geojson.Point
 import org.maplibre.geojson.Polygon
 
 class GeometryUtilsTest {
-
     @Test
     fun testSDKPolygonTOMapLibrePolygon() {
         val geometyCoordinates =
@@ -17,10 +16,12 @@ class GeometryUtilsTest {
                 " [40.39949197211405, -3.683772308499641], " +
                 "[40.39066727410409, -3.6919262238280623]]]"
 
-        val geometry = Geometry.builder()
-            .coordinates(geometyCoordinates)
-            .type(FeatureType.POLYGON)
-            .build()
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates(geometyCoordinates)
+                .type(FeatureType.POLYGON)
+                .build()
         val sdkPolygon = GeometryHelper.getPolygon(geometry)
         val pointList = ArrayList<Point>()
         sdkPolygon.forEach {

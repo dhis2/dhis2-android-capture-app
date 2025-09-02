@@ -23,57 +23,63 @@ import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProgramEventDetailViewModelTest {
-
     private var viewModel: ProgramEventDetailViewModel? = null
 
     private val testingDispatcher = UnconfinedTestDispatcher()
 
-    private val dispatcher: DispatcherProvider = mock {
-        on { io() } doReturn testingDispatcher
-    }
+    private val dispatcher: DispatcherProvider =
+        mock {
+            on { io() } doReturn testingDispatcher
+        }
 
     @Before
     fun setup() {
         Dispatchers.setMain(testingDispatcher)
 
-        viewModel = ProgramEventDetailViewModel(
-            mapStyleConfig = mock(),
-            eventRepository = mock(),
-            dispatcher = dispatcher,
-            createEventUseCase = mock(),
-            pageConfigurator = mock {
-                on { displayListView() } doReturn true
-                on { displayMapView() } doReturn false
-                on { displayAnalytics() } doReturn true
-            },
-            resourceManager = mock {
-                on { getString(R.string.navigation_list_view) } doReturn "List"
-                on { getString(R.string.navigation_charts) } doReturn "Charts"
-            },
-        )
+        viewModel =
+            ProgramEventDetailViewModel(
+                mapStyleConfig = mock(),
+                eventRepository = mock(),
+                dispatcher = dispatcher,
+                createEventUseCase = mock(),
+                pageConfigurator =
+                    mock {
+                        on { displayListView() } doReturn true
+                        on { displayMapView() } doReturn false
+                        on { displayAnalytics() } doReturn true
+                    },
+                resourceManager =
+                    mock {
+                        on { getString(R.string.navigation_list_view) } doReturn "List"
+                        on { getString(R.string.navigation_charts) } doReturn "Charts"
+                    },
+            )
 
-        val navBarUIState = viewModel
-            ?.navigationBarUIState
-            ?.value
-        val navigationItems = navBarUIState
-            ?.items
-            .orEmpty()
+        val navBarUIState =
+            viewModel
+                ?.navigationBarUIState
+                ?.value
+        val navigationItems =
+            navBarUIState
+                ?.items
+                .orEmpty()
 
         assertTrue(
-            navigationItems == listOf(
-                NavigationBarItem(
-                    id = NavigationPage.LIST_VIEW,
-                    icon = Icons.AutoMirrored.Outlined.List,
-                    selectedIcon = Icons.AutoMirrored.Filled.List,
-                    label = "List",
+            navigationItems ==
+                listOf(
+                    NavigationBarItem(
+                        id = NavigationPage.LIST_VIEW,
+                        icon = Icons.AutoMirrored.Outlined.List,
+                        selectedIcon = Icons.AutoMirrored.Filled.List,
+                        label = "List",
+                    ),
+                    NavigationBarItem(
+                        id = NavigationPage.ANALYTICS,
+                        icon = Icons.Outlined.BarChart,
+                        selectedIcon = Icons.Filled.BarChart,
+                        label = "Charts",
+                    ),
                 ),
-                NavigationBarItem(
-                    id = NavigationPage.ANALYTICS,
-                    icon = Icons.Outlined.BarChart,
-                    selectedIcon = Icons.Filled.BarChart,
-                    label = "Charts",
-                ),
-            ),
         )
         assertTrue(navBarUIState?.selectedItem == NavigationPage.LIST_VIEW)
     }
@@ -81,9 +87,10 @@ class ProgramEventDetailViewModelTest {
     @Test
     fun changingNavigationPageShouldWorkCorrectly() {
         // given
-        val navBarUIState = viewModel
-            ?.navigationBarUIState
-            ?.value
+        val navBarUIState =
+            viewModel
+                ?.navigationBarUIState
+                ?.value
 
         assertTrue(navBarUIState?.selectedItem == NavigationPage.LIST_VIEW)
 
@@ -91,9 +98,10 @@ class ProgramEventDetailViewModelTest {
         viewModel?.onNavigationPageChanged(NavigationPage.ANALYTICS)
 
         // then
-        val changedNavBarUIState = viewModel
-            ?.navigationBarUIState
-            ?.value
+        val changedNavBarUIState =
+            viewModel
+                ?.navigationBarUIState
+                ?.value
 
         assertTrue(changedNavBarUIState?.selectedItem == NavigationPage.ANALYTICS)
     }

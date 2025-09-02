@@ -5,7 +5,6 @@ import org.junit.Before
 import org.junit.Test
 
 class GatewayValidatorTest {
-
     private lateinit var validator: GatewayValidator
 
     @Before

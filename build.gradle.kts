@@ -94,7 +94,6 @@ allprojects {
     }
 
     ktlint {
-        version.set("0.50.0")
         debug.set(true)
         verbose.set(true)
         android.set(true)

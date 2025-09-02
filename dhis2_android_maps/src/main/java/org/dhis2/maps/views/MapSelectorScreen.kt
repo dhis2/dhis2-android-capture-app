@@ -101,17 +101,19 @@ fun MapSelectorScreen(
     screenState: MapSelectorScreenState,
     mapSelectorScreenActions: MapSelectorScreenActions,
 ) {
-    val useTwoPaneLayout = when (windowSizeClass.windowWidthSizeClass) {
-        WindowWidthSizeClass.MEDIUM -> false
-        WindowWidthSizeClass.COMPACT -> false
-        WindowWidthSizeClass.EXPANDED -> true
-        else -> false
-    }
+    val useTwoPaneLayout =
+        when (windowSizeClass.windowWidthSizeClass) {
+            WindowWidthSizeClass.MEDIUM -> false
+            WindowWidthSizeClass.COMPACT -> false
+            WindowWidthSizeClass.EXPANDED -> true
+            else -> false
+        }
 
     Scaffold(
-        modifier = Modifier
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .fillMaxSize(),
+        modifier =
+            Modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = { Box {} },
@@ -139,10 +141,11 @@ fun SinglePaneMapSelector(
     paddingValues: PaddingValues,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .background(MaterialTheme.colorScheme.surfaceBright),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .background(MaterialTheme.colorScheme.surfaceBright),
     ) {
         if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
             MapTopBar(screenActions.onBackClicked)
@@ -157,20 +160,22 @@ fun SinglePaneMapSelector(
                 SearchBar(
                     searching = screenState.searching,
                     locationItems = screenState.locationItems,
-                    searchBarActions = SearchBarActions(
-                        onBackClicked = screenActions.onBackClicked,
-                        onClearLocation = screenActions.onClearLocation,
-                        onSearchLocation = screenActions.onSearchLocation,
-                        onLocationSelected = screenActions.onLocationSelected,
-                        onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                        onButtonMode = screenActions.onButtonMode,
-                    ),
+                    searchBarActions =
+                        SearchBarActions(
+                            onBackClicked = screenActions.onBackClicked,
+                            onClearLocation = screenActions.onClearLocation,
+                            onSearchLocation = screenActions.onSearchLocation,
+                            onLocationSelected = screenActions.onLocationSelected,
+                            onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                            onButtonMode = screenActions.onButtonMode,
+                        ),
                 )
             }
 
             Map(
-                modifier = Modifier
-                    .weight(1f),
+                modifier =
+                    Modifier
+                        .weight(1f),
                 captureMode = screenState.captureMode,
                 selectedLocation = screenState.selectedLocation,
                 searchOnThisAreaVisible = screenState.searchOnAreaVisible,
@@ -206,34 +211,36 @@ private fun TwoPaneMapSelector(
     paddingValues: PaddingValues,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = 0.dp,
-                top = paddingValues.calculateTopPadding(),
-                end = 0.dp,
-                bottom = paddingValues.calculateBottomPadding(),
-            )
-            .background(MaterialTheme.colorScheme.surfaceBright),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 0.dp,
+                    top = paddingValues.calculateTopPadding(),
+                    end = 0.dp,
+                    bottom = paddingValues.calculateBottomPadding(),
+                ).background(MaterialTheme.colorScheme.surfaceBright),
     ) {
         val localLayoutDirection = LocalLayoutDirection.current
 
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    top = 16.dp,
-                    start = paddingValues.calculateStartPadding(localLayoutDirection) + 16.dp,
-                    end = paddingValues.calculateEndPadding(localLayoutDirection) + 16.dp,
-                    bottom = 16.dp,
-                ),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(
+                        top = 16.dp,
+                        start = paddingValues.calculateStartPadding(localLayoutDirection) + 16.dp,
+                        end = paddingValues.calculateEndPadding(localLayoutDirection) + 16.dp,
+                        bottom = 16.dp,
+                    ),
             horizontalArrangement = spacedBy(16.dp),
         ) {
             Column(
-                modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxHeight()
-                    .fillMaxSize(),
+                modifier =
+                    Modifier
+                        .weight(0.3f)
+                        .fillMaxHeight()
+                        .fillMaxSize(),
                 verticalArrangement = spacedBy(16.dp),
             ) {
                 if (!screenState.isManualCaptureEnabled || screenState.displayPolygonInfo) {
@@ -244,16 +251,17 @@ private fun TwoPaneMapSelector(
                     SearchBar(
                         searching = screenState.searching,
                         locationItems = screenState.locationItems,
-                        searchBarActions = SearchBarActions(
-                            onBackClicked = screenActions.onBackClicked,
-                            onClearLocation = screenActions.onClearLocation,
-                            onSearchLocation = screenActions.onSearchLocation,
-                            onLocationSelected = screenActions.onLocationSelected,
-                            onSearchCaptureMode = screenActions.onSearchCaptureMode,
-                            onButtonMode = {
-                                // no-op
-                            },
-                        ),
+                        searchBarActions =
+                            SearchBarActions(
+                                onBackClicked = screenActions.onBackClicked,
+                                onClearLocation = screenActions.onClearLocation,
+                                onSearchLocation = screenActions.onSearchLocation,
+                                onLocationSelected = screenActions.onLocationSelected,
+                                onSearchCaptureMode = screenActions.onSearchCaptureMode,
+                                onButtonMode = {
+                                    // no-op
+                                },
+                            ),
                     )
                 }
 
@@ -280,8 +288,9 @@ private fun TwoPaneMapSelector(
 
             Column(Modifier.weight(0.7f)) {
                 Map(
-                    modifier = Modifier
-                        .weight(1f),
+                    modifier =
+                        Modifier
+                            .weight(1f),
                     captureMode = screenState.captureMode,
                     selectedLocation = screenState.selectedLocation,
                     searchOnThisAreaVisible = screenState.searchOnAreaVisible,
@@ -359,16 +368,18 @@ private fun LocationInfoContent(
     configurePolygonInfoRecycler: (RecyclerView) -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(64.dp),
     ) {
         when {
             displayPolygonInfo -> {
                 AndroidView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 200.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 200.dp),
                     factory = { context ->
                         RecyclerView(context).also {
                             configurePolygonInfoRecycler(it)
@@ -380,18 +391,21 @@ private fun LocationInfoContent(
                 )
             }
 
-            (captureMode.isManual() or captureMode.isNone() || captureMode.isSearchManual()) && selectedLocation is SelectedLocation.ManualResult -> {
+            (captureMode.isManual() or captureMode.isNone() || captureMode.isSearchManual()) &&
+                selectedLocation is SelectedLocation.ManualResult -> {
                 LocationItem(
-                    locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = stringResource(R.string.selected_location),
-                        searchedSubtitle = stringResource(
-                            R.string.latitude_longitude,
-                            selectedLocation.latitude.truncate(),
-                            selectedLocation.longitude.truncate(),
+                    locationItemModel =
+                        LocationItemModel.SearchResult(
+                            searchedTitle = stringResource(R.string.selected_location),
+                            searchedSubtitle =
+                                stringResource(
+                                    R.string.latitude_longitude,
+                                    selectedLocation.latitude.truncate(),
+                                    selectedLocation.longitude.truncate(),
+                                ),
+                            searchedLatitude = selectedLocation.latitude,
+                            searchedLongitude = selectedLocation.longitude,
                         ),
-                        searchedLatitude = selectedLocation.latitude,
-                        searchedLongitude = selectedLocation.longitude,
-                    ),
                     icon = {
                         LocationItemIcon(
                             icon = Icons.Outlined.Place,
@@ -404,16 +418,18 @@ private fun LocationInfoContent(
 
             captureMode.isSwipe() || captureMode.isSearchSwipe() -> {
                 LocationItem(
-                    locationItemModel = LocationItemModel.SearchResult(
-                        searchedTitle = stringResource(R.string.drop_to_select),
-                        searchedSubtitle = stringResource(
-                            R.string.latitude_longitude,
-                            selectedLocation.latitude.truncate(),
-                            selectedLocation.longitude.truncate(),
+                    locationItemModel =
+                        LocationItemModel.SearchResult(
+                            searchedTitle = stringResource(R.string.drop_to_select),
+                            searchedSubtitle =
+                                stringResource(
+                                    R.string.latitude_longitude,
+                                    selectedLocation.latitude.truncate(),
+                                    selectedLocation.longitude.truncate(),
+                                ),
+                            searchedLatitude = selectedLocation.latitude,
+                            searchedLongitude = selectedLocation.longitude,
                         ),
-                        searchedLatitude = selectedLocation.latitude,
-                        searchedLongitude = selectedLocation.longitude,
-                    ),
                     icon = {
                         LocationItemIcon(
                             icon = Icons.Outlined.TouchApp,
@@ -426,8 +442,9 @@ private fun LocationInfoContent(
 
             captureMode.isGps() -> {
                 Box(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
+                    modifier =
+                        Modifier
+                            .padding(horizontal = 16.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     AccuracyIndicator(accuracyRange = accuracyRange)
@@ -437,12 +454,13 @@ private fun LocationInfoContent(
             captureMode.isSearch() || captureMode.isSearchManual() -> {
                 if (selectedLocation is SelectedLocation.None) {
                     LocationItem(
-                        locationItemModel = LocationItemModel.SearchResult(
-                            searchedTitle = stringResource(R.string.select_location_title),
-                            searchedSubtitle = stringResource(R.string.selet_location_subtitle),
-                            searchedLatitude = 0.0,
-                            searchedLongitude = 0.0,
-                        ),
+                        locationItemModel =
+                            LocationItemModel.SearchResult(
+                                searchedTitle = stringResource(R.string.select_location_title),
+                                searchedSubtitle = stringResource(R.string.selet_location_subtitle),
+                                searchedLatitude = 0.0,
+                                searchedLongitude = 0.0,
+                            ),
                         icon = {
                             LocationItemIcon(
                                 icon = Icons.Outlined.TouchApp,
@@ -455,20 +473,23 @@ private fun LocationInfoContent(
                 } else if (selectedLocation is SelectedLocation.SearchResult) {
                     with(selectedLocation) {
                         LocationItem(
-                            locationItemModel = LocationItemModel.SearchResult(
-                                searchedTitle = title
-                                    .takeIf { it.isNotBlank() }
-                                    ?: stringResource(R.string.selected_location),
-                                searchedSubtitle = address
-                                    .takeIf { it.isNotBlank() }
-                                    ?: stringResource(
-                                        R.string.latitude_longitude,
-                                        selectedLocation.latitude.truncate(),
-                                        selectedLocation.longitude.truncate(),
-                                    ),
-                                searchedLatitude = latitude,
-                                searchedLongitude = longitude,
-                            ),
+                            locationItemModel =
+                                LocationItemModel.SearchResult(
+                                    searchedTitle =
+                                        title
+                                            .takeIf { it.isNotBlank() }
+                                            ?: stringResource(R.string.selected_location),
+                                    searchedSubtitle =
+                                        address
+                                            .takeIf { it.isNotBlank() }
+                                            ?: stringResource(
+                                                R.string.latitude_longitude,
+                                                selectedLocation.latitude.truncate(),
+                                                selectedLocation.longitude.truncate(),
+                                            ),
+                                    searchedLatitude = latitude,
+                                    searchedLongitude = longitude,
+                                ),
                             icon = {
                                 LocationItemIcon(
                                     icon = Icons.Outlined.Place,
@@ -499,9 +520,10 @@ private fun Map(
     onMyLocationButtonClicked: () -> Unit,
 ) {
     Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .background(SurfaceColor.ContainerLow),
+        modifier =
+            modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(SurfaceColor.ContainerLow),
         contentAlignment = Alignment.Center,
     ) {
         MapScreen(
@@ -533,22 +555,27 @@ private fun Map(
             },
             extraContent = {
                 AnimatedVisibility(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .offset(y = 60.dp),
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .offset(y = 60.dp),
                     visible = searchOnThisAreaVisible or searching,
-                    enter = scaleIn(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = Spring.StiffnessMediumLow,
+                    enter =
+                        scaleIn(
+                            animationSpec =
+                                spring(
+                                    dampingRatio = Spring.DampingRatioLowBouncy,
+                                    stiffness = Spring.StiffnessMediumLow,
+                                ),
                         ),
-                    ),
-                    exit = scaleOut(
-                        animationSpec = spring(
-                            dampingRatio = Spring.DampingRatioLowBouncy,
-                            stiffness = Spring.StiffnessMediumLow,
+                    exit =
+                        scaleOut(
+                            animationSpec =
+                                spring(
+                                    dampingRatio = Spring.DampingRatioLowBouncy,
+                                    stiffness = Spring.StiffnessMediumLow,
+                                ),
                         ),
-                    ),
                 ) {
                     SearchInAreaButton(
                         searching = searching,
@@ -568,17 +595,15 @@ private fun Map(
 }
 
 @Composable
-private fun SwipeToChangeLocationInfo(
-    modifier: Modifier = Modifier,
-) {
+private fun SwipeToChangeLocationInfo(modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = Color.White.copy(alpha = 0.6f),
-                shape = Shape.Full,
-            )
-            .padding(8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(
+                    color = Color.White.copy(alpha = 0.6f),
+                    shape = Shape.Full,
+                ).padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = spacedBy(8.dp),
     ) {
@@ -604,17 +629,19 @@ private fun SearchInAreaButton(
     Button(
         style = ButtonStyle.TONAL,
         text = if (searching) "" else stringResource(R.string.search_on_this_area),
-        icon = if (searching) {
-            { ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL) }
-        } else {
-            null
-        },
-        paddingValues = PaddingValues(
-            Spacing.Spacing24,
-            Spacing.Spacing10,
-            if (searching) Spacing.Spacing24 - Spacing.Spacing8 else Spacing.Spacing24,
-            Spacing.Spacing10,
-        ),
+        icon =
+            if (searching) {
+                { ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL) }
+            } else {
+                null
+            },
+        paddingValues =
+            PaddingValues(
+                Spacing.Spacing24,
+                Spacing.Spacing10,
+                if (searching) Spacing.Spacing24 - Spacing.Spacing8 else Spacing.Spacing24,
+                Spacing.Spacing10,
+            ),
         onClick = { if (searching.not()) onClick() },
     )
 }
@@ -650,19 +677,20 @@ private fun DraggableSelectedIcon(
             } else {
                 0.dp
             },
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessMediumLow,
-            ),
+            animationSpec =
+                spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow,
+                ),
             label = "offset",
         )
         Box(
-            modifier = Modifier
-                .offset(y = heightOffset)
-                .onGloballyPositioned {
-                    heightOffset = -with(density) { it.size.height.toDp() } / 2
-                }
-                .graphicsLayer { clip = false },
+            modifier =
+                Modifier
+                    .offset(y = heightOffset)
+                    .onGloballyPositioned {
+                        heightOffset = -with(density) { it.size.height.toDp() } / 2
+                    }.graphicsLayer { clip = false },
         ) {
             Icon(
                 modifier = Modifier.offset(y = iconOffset),
@@ -698,9 +726,10 @@ private fun MapTopBar(onBackClicked: () -> Unit) {
             Text(text = stringResource(R.string.select_location_title))
         },
         actions = {},
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = SurfaceColor.ContainerLow,
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = SurfaceColor.ContainerLow,
+            ),
     )
 }
 
@@ -731,76 +760,84 @@ fun TestLandscapeMap(
 
 private class ScreenStateParamProvider : PreviewParameterProvider<MapSelectorScreenState> {
     override val values: Sequence<MapSelectorScreenState>
-        get() = sequenceOf(
-            searchScreenState,
-            gpsScreenState,
-            gpsScreenState.copy(searching = true),
-        )
+        get() =
+            sequenceOf(
+                searchScreenState,
+                gpsScreenState,
+                gpsScreenState.copy(searching = true),
+            )
 }
 
-private val searchScreenState = MapSelectorScreenState(
-    mapData = MapData(
-        featureCollection = FeatureCollection.fromFeatures(emptyList()),
-        boundingBox = null,
-    ),
-    locationItems = listOf(
-        LocationItemModel.StoredResult(
-            storedTitle = "title",
-            storedSubtitle = "subtitle",
-            storedLatitude = 0.0,
-            storedLongitude = 0.0,
-        ),
-        LocationItemModel.SearchResult(
-            searchedTitle = "title",
-            searchedSubtitle = "subtitle",
-            searchedLatitude = 0.0,
-            searchedLongitude = 0.0,
-        ),
-    ),
-    selectedLocation = SelectedLocation.None(),
-    captureMode = MapSelectorViewModel.CaptureMode.SEARCH,
-    accuracyRange = AccuracyRange.None(),
-    searchOnAreaVisible = true,
-    displayPolygonInfo = false,
-    locationState = LocationState.OFF,
-    isManualCaptureEnabled = true,
-    forcedLocationAccuracy = 10,
-    lastGPSLocation = null,
-    searching = false,
-)
+private val searchScreenState =
+    MapSelectorScreenState(
+        mapData =
+            MapData(
+                featureCollection = FeatureCollection.fromFeatures(emptyList()),
+                boundingBox = null,
+            ),
+        locationItems =
+            listOf(
+                LocationItemModel.StoredResult(
+                    storedTitle = "title",
+                    storedSubtitle = "subtitle",
+                    storedLatitude = 0.0,
+                    storedLongitude = 0.0,
+                ),
+                LocationItemModel.SearchResult(
+                    searchedTitle = "title",
+                    searchedSubtitle = "subtitle",
+                    searchedLatitude = 0.0,
+                    searchedLongitude = 0.0,
+                ),
+            ),
+        selectedLocation = SelectedLocation.None(),
+        captureMode = MapSelectorViewModel.CaptureMode.SEARCH,
+        accuracyRange = AccuracyRange.None(),
+        searchOnAreaVisible = true,
+        displayPolygonInfo = false,
+        locationState = LocationState.OFF,
+        isManualCaptureEnabled = true,
+        forcedLocationAccuracy = 10,
+        lastGPSLocation = null,
+        searching = false,
+    )
 
-private val gpsScreenState = MapSelectorScreenState(
-    mapData = MapData(
-        featureCollection = FeatureCollection.fromFeatures(emptyList()),
-        boundingBox = null,
-    ),
-    locationItems = emptyList(),
-    selectedLocation = SelectedLocation.GPSResult(
-        selectedLatitude = 0.0,
-        selectedLongitude = 0.0,
-        accuracy = 5f,
-    ),
-    captureMode = MapSelectorViewModel.CaptureMode.GPS,
-    accuracyRange = AccuracyRange.VeryGood(5),
-    searchOnAreaVisible = true,
-    displayPolygonInfo = false,
-    locationState = LocationState.FIXED,
-    isManualCaptureEnabled = true,
-    forcedLocationAccuracy = 10,
-    lastGPSLocation = null,
-    searching = false,
-)
+private val gpsScreenState =
+    MapSelectorScreenState(
+        mapData =
+            MapData(
+                featureCollection = FeatureCollection.fromFeatures(emptyList()),
+                boundingBox = null,
+            ),
+        locationItems = emptyList(),
+        selectedLocation =
+            SelectedLocation.GPSResult(
+                selectedLatitude = 0.0,
+                selectedLongitude = 0.0,
+                accuracy = 5f,
+            ),
+        captureMode = MapSelectorViewModel.CaptureMode.GPS,
+        accuracyRange = AccuracyRange.VeryGood(5),
+        searchOnAreaVisible = true,
+        displayPolygonInfo = false,
+        locationState = LocationState.FIXED,
+        isManualCaptureEnabled = true,
+        forcedLocationAccuracy = 10,
+        lastGPSLocation = null,
+        searching = false,
+    )
 
-private val previewActions = MapSelectorScreenActions(
-    onBackClicked = { },
-    loadMap = {},
-    configurePolygonInfoRecycler = {},
-    onClearLocation = {},
-    onSearchLocation = {},
-    onLocationSelected = {},
-    onSearchCaptureMode = {},
-    onButtonMode = {},
-    onSearchOnAreaClick = {},
-    onMyLocationButtonClick = {},
-    onDoneButtonClick = {},
-)
+private val previewActions =
+    MapSelectorScreenActions(
+        onBackClicked = { },
+        loadMap = {},
+        configurePolygonInfoRecycler = {},
+        onClearLocation = {},
+        onSearchLocation = {},
+        onLocationSelected = {},
+        onSearchCaptureMode = {},
+        onButtonMode = {},
+        onSearchOnAreaClick = {},
+        onMyLocationButtonClick = {},
+        onDoneButtonClick = {},
+    )

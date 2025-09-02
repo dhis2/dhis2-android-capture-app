@@ -85,13 +85,17 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Date
 
 enum class ProgramLayout {
-    DEFAULT, MEDIUM, LARGE;
+    DEFAULT,
+    MEDIUM,
+    LARGE,
+    ;
 
-    fun metadataAvatarSize() = when (this) {
-        DEFAULT -> MetadataAvatarSize.S()
-        MEDIUM -> MetadataAvatarSize.L()
-        LARGE -> MetadataAvatarSize.XL()
-    }
+    fun metadataAvatarSize() =
+        when (this) {
+            DEFAULT -> MetadataAvatarSize.S()
+            MEDIUM -> MetadataAvatarSize.L()
+            LARGE -> MetadataAvatarSize.XL()
+        }
 }
 
 @Composable
@@ -102,12 +106,13 @@ fun ProgramList(
     downLoadState: SyncStatusData?,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .testTag(HOME_ITEMS)
-            .semantics {
-                HasPrograms = programs?.isNotEmpty() ?: false
-            },
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .testTag(HOME_ITEMS)
+                .semantics {
+                    HasPrograms = programs?.isNotEmpty() ?: false
+                },
     ) {
         DownloadMessage(
             downLoadState = downLoadState,
@@ -120,8 +125,9 @@ fun ProgramList(
             }
 
             ExpandableItemColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
                 itemList = programs,
             ) { program, verticalPadding, onSizeChanged ->
 
@@ -147,29 +153,36 @@ fun ProgramList(
     }
 }
 
-private fun getProgramLayout(programs: List<ProgramUiModel>) = when {
-    programs.size < 3 -> ProgramLayout.LARGE
-    programs.size < 4 -> ProgramLayout.MEDIUM
-    else -> ProgramLayout.DEFAULT
-}
+private fun getProgramLayout(programs: List<ProgramUiModel>) =
+    when {
+        programs.size < 3 -> ProgramLayout.LARGE
+        programs.size < 4 -> ProgramLayout.MEDIUM
+        else -> ProgramLayout.DEFAULT
+    }
 
 @Composable
-private fun DownloadMessage(downLoadState: SyncStatusData?, isDownloading: Boolean) {
-    val visibility = when {
-        downLoadState?.running == false -> timeVisibility(isDownloading)
-        else -> downLoadState?.canDisplayMessage() == true
-    }
+private fun DownloadMessage(
+    downLoadState: SyncStatusData?,
+    isDownloading: Boolean,
+) {
+    val visibility =
+        when {
+            downLoadState?.running == false -> timeVisibility(isDownloading)
+            else -> downLoadState?.canDisplayMessage() == true
+        }
 
     AnimatedVisibility(
         visible = visibility,
-        enter = expandVertically(
-            expandFrom = Alignment.Top,
-            animationSpec = tween(
-                easing = {
-                    OvershootInterpolator().getInterpolation(it)
-                },
+        enter =
+            expandVertically(
+                expandFrom = Alignment.Top,
+                animationSpec =
+                    tween(
+                        easing = {
+                            OvershootInterpolator().getInterpolation(it)
+                        },
+                    ),
             ),
-        ),
         exit = shrinkVertically(shrinkTowards = Alignment.Top),
     ) {
         Box(
@@ -183,41 +196,46 @@ private fun DownloadMessage(downLoadState: SyncStatusData?, isDownloading: Boole
                 ),
         ) {
             InfoBar(
-                infoBarData = InfoBarData(
-                    text = downloadInfoText(downLoadState),
-                    icon = {
-                        Icon(
-                            imageVector = when {
-                                downLoadState?.running == false ->
-                                    Icons.Outlined.Celebration
+                infoBarData =
+                    InfoBarData(
+                        text = downloadInfoText(downLoadState),
+                        icon = {
+                            Icon(
+                                imageVector =
+                                    when {
+                                        downLoadState?.running == false ->
+                                            Icons.Outlined.Celebration
 
-                                else -> Icons.Outlined.Info
-                            },
-                            contentDescription = "error",
-                            tint = when {
+                                        else -> Icons.Outlined.Info
+                                    },
+                                contentDescription = "error",
+                                tint =
+                                    when {
+                                        downLoadState?.running == false ->
+                                            SurfaceColor.CustomGreen
+
+                                        else -> TextColor.OnSurfaceLight
+                                    },
+                            )
+                        },
+                        color =
+                            when {
                                 downLoadState?.running == false ->
                                     SurfaceColor.CustomGreen
 
                                 else -> TextColor.OnSurfaceLight
                             },
-                        )
-                    },
-                    color = when {
-                        downLoadState?.running == false ->
-                            SurfaceColor.CustomGreen
-
-                        else -> TextColor.OnSurfaceLight
-                    },
-                    backgroundColor = SurfaceColor.Surface,
-                ),
+                        backgroundColor = SurfaceColor.Surface,
+                    ),
             )
             if (downLoadState?.running == true) {
                 ProgressIndicator(
-                    modifier = Modifier
-                        .zIndex(1f)
-                        .align(Alignment.CenterEnd)
-                        .padding(Spacing.Spacing8)
-                        .size(Spacing.Spacing24),
+                    modifier =
+                        Modifier
+                            .zIndex(1f)
+                            .align(Alignment.CenterEnd)
+                            .padding(Spacing.Spacing8)
+                            .size(Spacing.Spacing24),
                     type = ProgressIndicatorType.CIRCULAR_SMALL,
                 )
             }
@@ -226,30 +244,35 @@ private fun DownloadMessage(downLoadState: SyncStatusData?, isDownloading: Boole
 }
 
 @Composable
-private fun downloadInfoText(downLoadState: SyncStatusData?) = when {
-    downLoadState?.running == false -> stringResource(R.string.successful_sync)
-    downLoadState?.downloadingEvents == true -> stringResource(
-        id = R.string.syncing_something,
-        stringResource(id = R.string.events).lowercase(),
-    )
+private fun downloadInfoText(downLoadState: SyncStatusData?) =
+    when {
+        downLoadState?.running == false -> stringResource(R.string.successful_sync)
+        downLoadState?.downloadingEvents == true ->
+            stringResource(
+                id = R.string.syncing_something,
+                stringResource(id = R.string.events).lowercase(),
+            )
 
-    downLoadState?.downloadingTracker == true -> stringResource(
-        id = R.string.syncing_something,
-        stringResource(id = R.string.programs).lowercase(),
-    )
+        downLoadState?.downloadingTracker == true ->
+            stringResource(
+                id = R.string.syncing_something,
+                stringResource(id = R.string.programs).lowercase(),
+            )
 
-    downLoadState?.downloadingDataSetValues == true -> stringResource(
-        id = R.string.syncing_something,
-        stringResource(id = R.string.data_sets).lowercase(),
-    )
+        downLoadState?.downloadingDataSetValues == true ->
+            stringResource(
+                id = R.string.syncing_something,
+                stringResource(id = R.string.data_sets).lowercase(),
+            )
 
-    downLoadState?.downloadingMedia == true -> stringResource(
-        id = R.string.syncing_something,
-        stringResource(id = R.string.file_resources).lowercase(),
-    )
+        downLoadState?.downloadingMedia == true ->
+            stringResource(
+                id = R.string.syncing_something,
+                stringResource(id = R.string.file_resources).lowercase(),
+            )
 
-    else -> ""
-}
+        else -> ""
+    }
 
 @Composable
 fun StateIcon(
@@ -289,7 +312,10 @@ fun DownloadErrorIcon() {
 }
 
 @Composable
-fun timeVisibility(initialVisibility: Boolean, hideAfterMillis: Long = 3000): Boolean {
+fun timeVisibility(
+    initialVisibility: Boolean,
+    hideAfterMillis: Long = 3000,
+): Boolean {
     var visible by remember { mutableStateOf(initialVisibility) }
     DisposableEffect(Unit) {
         val handler = Handler(Looper.getMainLooper())
@@ -309,10 +335,11 @@ fun DownloadMedia() {
         modifier = Modifier.padding(vertical = 16.dp),
     ) {
         Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 13.dp),
             colors = CardDefaults.cardColors(containerColor = SurfaceColor.SurfaceBright),
             shape = RoundedCornerShape(8.dp),
@@ -329,10 +356,11 @@ fun DownloadMedia() {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(R.string.downloading_image_resources),
-                    style = LocalTextStyle.current.copy(
-                        color = Color.Black.copy(alpha = 0.87f),
-                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                    ),
+                    style =
+                        LocalTextStyle.current.copy(
+                            color = Color.Black.copy(alpha = 0.87f),
+                            fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                        ),
                 )
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
             }
@@ -345,18 +373,19 @@ fun DownloadMedia() {
 fun NoAccessMessage() {
     InfoBar(
         modifier = Modifier.padding(Spacing.Spacing16),
-        infoBarData = InfoBarData(
-            text = stringResource(id = R.string.no_data_access),
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.ErrorOutline,
-                    contentDescription = "error",
-                    tint = SurfaceColor.Warning,
-                )
-            },
-            color = SurfaceColor.Warning,
-            backgroundColor = SurfaceColor.WarningContainer,
-        ),
+        infoBarData =
+            InfoBarData(
+                text = stringResource(id = R.string.no_data_access),
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.ErrorOutline,
+                        contentDescription = "error",
+                        tint = SurfaceColor.Warning,
+                    )
+                },
+                color = SurfaceColor.Warning,
+                backgroundColor = SurfaceColor.WarningContainer,
+            ),
     )
 }
 
@@ -370,12 +399,14 @@ fun ProgramItem(
     onItemClick: (programUiModel: ProgramUiModel) -> Unit,
     onGranularSyncClick: (programUiModel: ProgramUiModel) -> Unit,
 ) {
-    val title = ListCardTitleModel(
-        text = program.title,
-        color = TextColor.OnPrimaryContainer.copy(
-            alpha = program.getAlphaValue(),
-        ),
-    )
+    val title =
+        ListCardTitleModel(
+            text = program.title,
+            color =
+                TextColor.OnPrimaryContainer.copy(
+                    alpha = program.getAlphaValue(),
+                ),
+        )
 
     val lastUpdated = program.lastUpdated.toDateSpan(LocalContext.current)
 
@@ -385,48 +416,50 @@ fun ProgramItem(
         ProgramLayout.DEFAULT ->
             ListCard(
                 modifier = modifier,
-                listCardState = rememberListCardState(
-                    title = title,
-                    lastUpdated = lastUpdated,
-                    description = description,
-                    loading = program.isDownloading(),
-                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                        additionalInfoList = buildList {
-                            program.description?.let { description ->
-                                add(
-                                    AdditionalInfoItem(
-                                        value = description,
-                                        color = TextColor.OnSurfaceLight,
-                                        truncate = false,
-                                    ),
-                                )
-                            }
-                            addIf(
-                                !program.isDownloading() &&
-                                    listOf(
-                                        State.TO_POST,
-                                        State.TO_UPDATE,
-                                        State.ERROR,
-                                        State.WARNING,
-                                    ).contains(program.state),
-                                stateAdditionalInfoItem(program.state),
-                            )
-                        },
-                        syncProgressItem = syncingAdditionalInfoItem(program),
-                        expandLabelText = stringResource(R.string.show_description),
-                        shrinkLabelText = stringResource(R.string.hide_description),
-                        minItemsToShow = 0,
+                listCardState =
+                    rememberListCardState(
+                        title = title,
+                        lastUpdated = lastUpdated,
+                        description = description,
+                        loading = program.isDownloading(),
+                        additionalInfoColumnState =
+                            rememberAdditionalInfoColumnState(
+                                additionalInfoList =
+                                    buildList {
+                                        program.description?.let { description ->
+                                            add(
+                                                AdditionalInfoItem(
+                                                    value = description,
+                                                    color = TextColor.OnSurfaceLight,
+                                                    truncate = false,
+                                                ),
+                                            )
+                                        }
+                                        addIf(
+                                            !program.isDownloading() &&
+                                                listOf(
+                                                    State.TO_POST,
+                                                    State.TO_UPDATE,
+                                                    State.ERROR,
+                                                    State.WARNING,
+                                                ).contains(program.state),
+                                            stateAdditionalInfoItem(program.state),
+                                        )
+                                    },
+                                syncProgressItem = syncingAdditionalInfoItem(program),
+                                expandLabelText = stringResource(R.string.show_description),
+                                shrinkLabelText = stringResource(R.string.hide_description),
+                                minItemsToShow = 0,
+                            ),
+                        expandable = true,
+                        itemVerticalPadding = verticalPadding,
                     ),
-                    expandable = true,
-                    itemVerticalPadding = verticalPadding,
-                ),
                 listAvatar = {
                     ProgramAvatar(
                         program = program,
                         avatarSize = programLayout.metadataAvatarSize(),
                     )
                 },
-
                 onCardClick = {
                     if (!program.isDownloading()) {
                         onItemClick(program)
@@ -445,41 +478,44 @@ fun ProgramItem(
         else ->
             VerticalInfoListCard(
                 modifier = modifier,
-                listCardState = rememberListCardState(
-                    title = title,
-                    lastUpdated = lastUpdated,
-                    description = description,
-                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                        additionalInfoList = buildList {
-                            program.description?.let { description ->
-                                add(
-                                    AdditionalInfoItem(
-                                        value = description,
-                                        color = TextColor.OnSurfaceLight,
-                                        truncate = false,
-                                    ),
-                                )
-                            }
-                            addIf(
-                                !program.isDownloading() &&
-                                    listOf(
-                                        State.TO_POST,
-                                        State.TO_UPDATE,
-                                        State.ERROR,
-                                        State.WARNING,
-                                    ).contains(program.state),
-                                stateAdditionalInfoItem(program.state),
-                            )
-                        },
-                        expandLabelText = stringResource(R.string.show_description),
-                        shrinkLabelText = stringResource(R.string.hide_description),
-                        syncProgressItem = syncingAdditionalInfoItem(program),
-                        minItemsToShow = 0,
+                listCardState =
+                    rememberListCardState(
+                        title = title,
+                        lastUpdated = lastUpdated,
+                        description = description,
+                        additionalInfoColumnState =
+                            rememberAdditionalInfoColumnState(
+                                additionalInfoList =
+                                    buildList {
+                                        program.description?.let { description ->
+                                            add(
+                                                AdditionalInfoItem(
+                                                    value = description,
+                                                    color = TextColor.OnSurfaceLight,
+                                                    truncate = false,
+                                                ),
+                                            )
+                                        }
+                                        addIf(
+                                            !program.isDownloading() &&
+                                                listOf(
+                                                    State.TO_POST,
+                                                    State.TO_UPDATE,
+                                                    State.ERROR,
+                                                    State.WARNING,
+                                                ).contains(program.state),
+                                            stateAdditionalInfoItem(program.state),
+                                        )
+                                    },
+                                expandLabelText = stringResource(R.string.show_description),
+                                shrinkLabelText = stringResource(R.string.hide_description),
+                                syncProgressItem = syncingAdditionalInfoItem(program),
+                                minItemsToShow = 0,
+                            ),
+                        expandable = true,
+                        itemVerticalPadding = verticalPadding,
+                        loading = program.isDownloading(),
                     ),
-                    expandable = true,
-                    itemVerticalPadding = verticalPadding,
-                    loading = program.isDownloading(),
-                ),
                 listAvatar = {
                     ProgramAvatar(
                         program = program,
@@ -504,86 +540,97 @@ fun ProgramItem(
 }
 
 @Composable
-private fun syncingAdditionalInfoItem(program: ProgramUiModel) = AdditionalInfoItem(
-    icon = {
-        when (program.downloadState) {
-            ProgramDownloadState.DOWNLOADING ->
-                ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
+private fun syncingAdditionalInfoItem(program: ProgramUiModel) =
+    AdditionalInfoItem(
+        icon = {
+            when (program.downloadState) {
+                ProgramDownloadState.DOWNLOADING ->
+                    ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
 
-            ProgramDownloadState.DOWNLOADED ->
-                DownloadedIcon()
+                ProgramDownloadState.DOWNLOADED ->
+                    DownloadedIcon()
 
-            ProgramDownloadState.ERROR ->
-                DownloadErrorIcon()
+                ProgramDownloadState.ERROR ->
+                    DownloadErrorIcon()
 
-            ProgramDownloadState.NONE -> {
+                ProgramDownloadState.NONE -> {
 //                no-op
+                }
             }
-        }
-    },
-    value = when (program.downloadState) {
-        ProgramDownloadState.DOWNLOADING ->
-            stringResource(id = R.string.syncing_resource, program.typeName)
+        },
+        value =
+            when (program.downloadState) {
+                ProgramDownloadState.DOWNLOADING ->
+                    stringResource(id = R.string.syncing_resource, program.typeName)
 
-        ProgramDownloadState.DOWNLOADED ->
-            program.countDescription()
+                ProgramDownloadState.DOWNLOADED ->
+                    program.countDescription()
 
-        ProgramDownloadState.ERROR ->
-            program.countDescription()
+                ProgramDownloadState.ERROR ->
+                    program.countDescription()
 
-        ProgramDownloadState.NONE ->
-            ""
-    },
-    color = when (program.downloadState) {
-        ProgramDownloadState.DOWNLOADING ->
-            SurfaceColor.Primary
+                ProgramDownloadState.NONE ->
+                    ""
+            },
+        color =
+            when (program.downloadState) {
+                ProgramDownloadState.DOWNLOADING ->
+                    SurfaceColor.Primary
 
-        ProgramDownloadState.DOWNLOADED ->
-            SurfaceColor.CustomGreen
+                ProgramDownloadState.DOWNLOADED ->
+                    SurfaceColor.CustomGreen
 
-        else ->
-            TextColor.OnSurfaceLight
-    },
-    isConstantItem = true,
-)
-
-@Composable
-private fun stateAdditionalInfoItem(state: State) = AdditionalInfoItem(
-    icon = {
-        StateIcon(
-            state = state,
-            enabled = false,
-        ) {
-            // no-op
-        }
-    },
-    value = when (state) {
-        State.TO_POST,
-        State.TO_UPDATE,
-        -> stringResource(id = R.string.not_synced)
-
-        State.ERROR -> stringResource(id = R.string.sync_error_title)
-        State.WARNING -> stringResource(id = R.string.sync_warning)
-        else -> stringResource(id = R.string.sync_dialog_title_synced)
-    },
-    color = when (state) {
-        State.ERROR -> TextColor.OnErrorContainer
-        State.WARNING -> TextColor.OnWarningContainer
-        else -> TextColor.OnSurfaceLight
-    },
-    isConstantItem = true,
-)
+                else ->
+                    TextColor.OnSurfaceLight
+            },
+        isConstantItem = true,
+    )
 
 @Composable
-private fun ProgramAvatar(program: ProgramUiModel, avatarSize: MetadataAvatarSize) {
+private fun stateAdditionalInfoItem(state: State) =
+    AdditionalInfoItem(
+        icon = {
+            StateIcon(
+                state = state,
+                enabled = false,
+            ) {
+                // no-op
+            }
+        },
+        value =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> stringResource(id = R.string.not_synced)
+
+                State.ERROR -> stringResource(id = R.string.sync_error_title)
+                State.WARNING -> stringResource(id = R.string.sync_warning)
+                else -> stringResource(id = R.string.sync_dialog_title_synced)
+            },
+        color =
+            when (state) {
+                State.ERROR -> TextColor.OnErrorContainer
+                State.WARNING -> TextColor.OnWarningContainer
+                else -> TextColor.OnSurfaceLight
+            },
+        isConstantItem = true,
+    )
+
+@Composable
+private fun ProgramAvatar(
+    program: ProgramUiModel,
+    avatarSize: MetadataAvatarSize,
+) {
     Avatar(
-        style = AvatarStyleData.Metadata(
-            imageCardData = program.metadataIconData.imageCardData,
-            avatarSize = avatarSize,
-            tintColor = program.metadataIconData.color.copy(
-                alpha = program.getAlphaValue(),
+        style =
+            AvatarStyleData.Metadata(
+                imageCardData = program.metadataIconData.imageCardData,
+                avatarSize = avatarSize,
+                tintColor =
+                    program.metadataIconData.color.copy(
+                        alpha = program.getAlphaValue(),
+                    ),
             ),
-        ),
     )
 }
 
@@ -592,21 +639,22 @@ private fun ProvideSyncButton(
     state: State?,
     onSyncIconClick: () -> Unit,
 ) {
-    val buttonText = when (state) {
-        State.TO_POST,
-        State.TO_UPDATE,
-        -> {
-            stringResource(R.string.sync)
-        }
+    val buttonText =
+        when (state) {
+            State.TO_POST,
+            State.TO_UPDATE,
+            -> {
+                stringResource(R.string.sync)
+            }
 
-        State.ERROR,
-        State.WARNING,
-        -> {
-            stringResource(R.string.sync_retry)
-        }
+            State.ERROR,
+            State.WARNING,
+            -> {
+                stringResource(R.string.sync_retry)
+            }
 
-        else -> null
-    }
+            else -> null
+        }
     buttonText?.let {
         Button(
             style = ButtonStyle.TONAL,
@@ -628,51 +676,56 @@ private fun ProvideSyncButton(
 @Composable
 fun ListPreview() {
     ProgramList(
-        programs = listOf(
-            testingProgramModel().copy(state = State.WARNING),
-            testingProgramModel().copy(state = State.ERROR),
-            testingProgramModel().copy(state = State.SYNCED),
-            testingProgramModel().copy(state = State.TO_POST),
-            testingProgramModel().copy(state = State.TO_UPDATE),
-            testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
-            testingProgramModel().copy(state = State.SENT_VIA_SMS),
-        ),
+        programs =
+            listOf(
+                testingProgramModel().copy(state = State.WARNING),
+                testingProgramModel().copy(state = State.ERROR),
+                testingProgramModel().copy(state = State.SYNCED),
+                testingProgramModel().copy(state = State.TO_POST),
+                testingProgramModel().copy(state = State.TO_UPDATE),
+                testingProgramModel().copy(state = State.SYNCED_VIA_SMS),
+                testingProgramModel().copy(state = State.SENT_VIA_SMS),
+            ),
         onItemClick = {},
         onGranularSyncClick = {},
-        downLoadState = SyncStatusData(
-            true,
-            downloadingMedia = true,
-            programSyncStatusMap = emptyMap(),
-        ),
+        downLoadState =
+            SyncStatusData(
+                true,
+                downloadingMedia = true,
+                programSyncStatusMap = emptyMap(),
+            ),
     )
 }
 
-private fun testingProgramModel() = ProgramUiModel(
-    uid = "qweqwe",
-    title = "Program title",
-    metadataIconData = MetadataIconData(
-        imageCardData = ImageCardData.IconCardData(
-            uid = "",
-            label = "",
-            iconRes = "dhis2_positive_negative",
-            iconTint = Color("#00BCD4".toColorInt()),
-        ),
-        color = Color("#00BCD4".toColorInt()),
-    ),
-    count = 12,
-    type = "type",
-    typeName = "Persons",
-    programType = "WITH_REGISTRATION",
-    description = null,
-    onlyEnrollOnce = false,
-    accessDataWrite = true,
-    state = State.SYNCED,
-    hasOverdueEvent = false,
-    filtersAreActive = false,
-    downloadState = ProgramDownloadState.NONE,
-    isStockUseCase = false,
-    lastUpdated = Date(),
-)
+private fun testingProgramModel() =
+    ProgramUiModel(
+        uid = "qweqwe",
+        title = "Program title",
+        metadataIconData =
+            MetadataIconData(
+                imageCardData =
+                    ImageCardData.IconCardData(
+                        uid = "",
+                        label = "",
+                        iconRes = "dhis2_positive_negative",
+                        iconTint = Color("#00BCD4".toColorInt()),
+                    ),
+                color = Color("#00BCD4".toColorInt()),
+            ),
+        count = 12,
+        type = "type",
+        typeName = "Persons",
+        programType = "WITH_REGISTRATION",
+        description = null,
+        onlyEnrollOnce = false,
+        accessDataWrite = true,
+        state = State.SYNCED,
+        hasOverdueEvent = false,
+        filtersAreActive = false,
+        downloadState = ProgramDownloadState.NONE,
+        isStockUseCase = false,
+        lastUpdated = Date(),
+    )
 
 val HasPrograms = SemanticsPropertyKey<Boolean>("HasPrograms")
 var SemanticsPropertyReceiver.HasPrograms by HasPrograms

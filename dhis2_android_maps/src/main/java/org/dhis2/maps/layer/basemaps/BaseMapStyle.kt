@@ -3,43 +3,51 @@ package org.dhis2.maps.layer.basemaps
 import com.google.gson.annotations.SerializedName
 
 object BaseMapStyleBuilder {
-    fun build(id: String, tileUrls: List<String>, attribution: String, isDefault: Boolean) = BaseMapStyle(
+    fun build(
+        id: String,
+        tileUrls: List<String>,
+        attribution: String,
+        isDefault: Boolean,
+    ) = BaseMapStyle(
         version = 8,
-        sources = StyleSources(
-            rasterTiles = RasterTiles(
-                type = "raster",
-                tiles = tileUrls,
-                tileSize = 256,
+        sources =
+            StyleSources(
+                rasterTiles =
+                    RasterTiles(
+                        type = "raster",
+                        tiles = tileUrls,
+                        tileSize = 256,
+                    ),
+                attribution = attribution,
             ),
-            attribution = attribution,
-        ),
-        layers = listOf(
-            StyleLayers(
-                id = "simple-tiles",
-                type = "raster",
-                source = "raster-tiles",
-                minZoom = 0,
-                maxZoom = 22,
+        layers =
+            listOf(
+                StyleLayers(
+                    id = "simple-tiles",
+                    type = "raster",
+                    source = "raster-tiles",
+                    minZoom = 0,
+                    maxZoom = 22,
+                ),
             ),
-        ),
         id = id,
         glyphs = DEFAULT_GLYPH_URL,
         isDefault = isDefault,
     )
 
-    fun internalBaseMap(): BaseMapStyle {
-        return build(
+    fun internalBaseMap(): BaseMapStyle =
+        build(
             id = OSM_LIGHT,
-            tileUrls = listOf(
-                DEFAULT_TILE_URL.replace("{s}", "a"),
-                DEFAULT_TILE_URL.replace("{s}", "b"),
-                DEFAULT_TILE_URL.replace("{s}", "c"),
-                DEFAULT_TILE_URL.replace("{s}", "d"),
-            ),
+            tileUrls =
+                listOf(
+                    DEFAULT_TILE_URL.replace("{s}", "a"),
+                    DEFAULT_TILE_URL.replace("{s}", "b"),
+                    DEFAULT_TILE_URL.replace("{s}", "c"),
+                    DEFAULT_TILE_URL.replace("{s}", "d"),
+                ),
             attribution = DEFAULT_ATTRIBUTION,
             isDefault = true,
         )
-    }
 }
 
 data class BaseMapStyle(

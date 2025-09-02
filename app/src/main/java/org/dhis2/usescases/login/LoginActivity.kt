@@ -83,8 +83,9 @@ const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 const val FROM_SPLASH = "FROM_SPLASH"
 
-class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
-
+class LoginActivity :
+    ActivityGlobalAbstract(),
+    LoginContracts.View {
     override var handleEdgeToEdge = false
 
     private lateinit var binding: ActivityLoginBinding
@@ -107,9 +108,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     private val filePickerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             result.data?.data?.let { uri ->
-                val fileType = with(contentResolver) {
-                    MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
-                }
+                val fileType =
+                    with(contentResolver) {
+                        MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
+                    }
                 val file = File.createTempFile("importedDb", fileType)
                 val inputStream = contentResolver.openInputStream(uri)!!
                 try {
@@ -143,25 +145,25 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             isDeletion: Boolean = false,
             logOutReason: OpenIdSession.LogOutReason? = null,
             fromSplash: Boolean = false,
-        ): Bundle {
-            return Bundle().apply {
+        ): Bundle =
+            Bundle().apply {
                 putBoolean(EXTRA_SKIP_SYNC, skipSync)
                 putBoolean(IS_DELETION, isDeletion)
                 putInt(ACCOUNTS_COUNT, accountsCount)
                 putBoolean(FROM_SPLASH, fromSplash)
                 when (logOutReason) {
                     OpenIdSession.LogOutReason.OPEN_ID -> putBoolean(EXTRA_SESSION_EXPIRED, true)
-                    OpenIdSession.LogOutReason.DISABLED_ACCOUNT -> putBoolean(
-                        EXTRA_ACCOUNT_DISABLED,
-                        true,
-                    )
+                    OpenIdSession.LogOutReason.DISABLED_ACCOUNT ->
+                        putBoolean(
+                            EXTRA_ACCOUNT_DISABLED,
+                            true,
+                        )
 
                     null -> {
                         // Nothing to do in this case
                     }
                 }
             }
-        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -169,13 +171,14 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(SurfaceColor.Primary.toArgb()),
         )
-        val loginComponent = app().loginComponent() ?: app().createLoginComponent(
-            LoginModule(
-                view = this,
-                viewModelStoreOwner = this,
-                userManager = app().serverComponent?.userManager(),
-            ),
-        )
+        val loginComponent =
+            app().loginComponent() ?: app().createLoginComponent(
+                LoginModule(
+                    view = this,
+                    viewModelStoreOwner = this,
+                    userManager = app().serverComponent?.userManager(),
+                ),
+            )
 
         loginComponent.inject(this)
 
@@ -198,15 +201,18 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                     },
                     legacyLoginContent = { server, username ->
                         AndroidView(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L)),
+                            modifier =
+                                Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L)),
                             factory = {
-                                ActivityLoginBinding.inflate(LayoutInflater.from(this)).also {
-                                    binding = it
-                                    initLegacy(isDeletion, accountsCount)
-                                    setAccount(server, username)
-                                }.root
+                                ActivityLoginBinding
+                                    .inflate(LayoutInflater.from(this))
+                                    .also {
+                                        binding = it
+                                        initLegacy(isDeletion, accountsCount)
+                                        setAccount(server, username)
+                                    }.root
                             },
                             update = {
                                 // no-op
@@ -218,7 +224,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    private fun initLegacy(isDeletion: Boolean, accountsCount: Int) {
+    private fun initLegacy(
+        isDeletion: Boolean,
+        accountsCount: Int,
+    ) {
         val fromSplash = intent.getBooleanExtra(FROM_SPLASH, false)
 
         provideBiometricButton()
@@ -241,25 +250,37 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
             showLoginOptions(it.takeIf { it.hasConfiguration() })
         }
 
-        binding.serverUrlEdit.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                if (checkUrl(binding.serverUrlEdit.text.toString())) {
-                    binding.accountRecovery.visibility = View.VISIBLE
-                    binding.loginOpenId.isEnabled = true
-                } else {
-                    binding.accountRecovery.visibility = View.GONE
-                    binding.loginOpenId.isEnabled = false
+        binding.serverUrlEdit.addTextChangedListener(
+            object : TextWatcher {
+                override fun afterTextChanged(p0: Editable?) {
+                    if (checkUrl(binding.serverUrlEdit.text.toString())) {
+                        binding.accountRecovery.visibility = View.VISIBLE
+                        binding.loginOpenId.isEnabled = true
+                    } else {
+                        binding.accountRecovery.visibility = View.GONE
+                        binding.loginOpenId.isEnabled = false
+                    }
                 }
-            }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                // nothing
-            }
+                override fun beforeTextChanged(
+                    p0: CharSequence?,
+                    p1: Int,
+                    p2: Int,
+                    p3: Int,
+                ) {
+                    // nothing
+                }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                // nothing
-            }
-        })
+                override fun onTextChanged(
+                    p0: CharSequence?,
+                    p1: Int,
+                    p2: Int,
+                    p3: Int,
+                ) {
+                    // nothing
+                }
+            },
+        )
 
         binding.serverUrlEdit.onRightDrawableClicked { presenter.onQRClick() }
 
@@ -308,10 +329,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    private fun checkUrl(urlString: String): Boolean {
-        return URLUtil.isValidUrl(urlString) &&
-            Patterns.WEB_URL.matcher(urlString).matches() && urlString.toHttpUrlOrNull() != null
-    }
+    private fun checkUrl(urlString: String): Boolean =
+        URLUtil.isValidUrl(urlString) &&
+            Patterns.WEB_URL.matcher(urlString).matches() &&
+            urlString.toHttpUrlOrNull() != null
 
     override fun onPause() {
         presenter.onDestroy()
@@ -331,9 +352,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun isNetworkAvailable(): Boolean {
-        return NetworkUtils.isOnline(this)
-    }
+    override fun isNetworkAvailable(): Boolean = NetworkUtils.isOnline(this)
 
     override fun setUrl(url: String?) {
         binding.serverUrlEdit.setText(if (!isEmpty(qrUrl)) qrUrl else url)
@@ -367,7 +386,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.login.isEnabled = isVisible
     }
 
-    private fun showLoginProgress(showLogin: Boolean, message: String? = null) {
+    private fun showLoginProgress(
+        showLogin: Boolean,
+        message: String? = null,
+    ) {
         if (showLogin) {
             window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
@@ -396,10 +418,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 iconResource = R.drawable.ic_line_chart,
                 headerTextAlignment = TextAlign.Start,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(
-                    textResource = R.string.not_now,
-                    buttonStyle = ButtonStyle.OUTLINED,
-                ),
+                secondaryButton =
+                    DialogButtonStyle.SecondaryButton(
+                        textResource = R.string.not_now,
+                        buttonStyle = ButtonStyle.OUTLINED,
+                    ),
             ),
             onMainButtonClicked = {
                 presenter.grantTrackingPermissions(true)
@@ -430,8 +453,7 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 binding.unlock.visibility = View.GONE
                 binding.logout.visibility = View.GONE
             },
-        )
-            .show(supportFragmentManager, PIN_DIALOG_TAG)
+        ).show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     override fun onLogoutClick(android: View) {
@@ -456,7 +478,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         }
     }
 
-    override fun saveUsersData(displayTrackingMessage: Boolean, isInitialSyncDone: Boolean) {
+    override fun saveUsersData(
+        displayTrackingMessage: Boolean,
+        isInitialSyncDone: Boolean,
+    ) {
         app().createUserComponent()
         skipSync = isInitialSyncDone
         onLoginDataUpdated(displayTrackingMessage)
@@ -481,10 +506,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
                 message = getString(R.string.biometrics_login_text),
                 iconResource = R.drawable.ic_fingerprint,
                 mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton = DialogButtonStyle.SecondaryButton(
-                    textResource = R.string.not_now,
-                    buttonStyle = ButtonStyle.OUTLINED,
-                ),
+                secondaryButton =
+                    DialogButtonStyle.SecondaryButton(
+                        textResource = R.string.not_now,
+                        buttonStyle = ButtonStyle.OUTLINED,
+                    ),
             ),
             showTopDivider = true,
             onMainButtonClicked = {
@@ -512,7 +538,11 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(
+        requestCode: Int,
+        resultCode: Int,
+        data: Intent?,
+    ) {
         if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
                 presenter.handleAuthResponseData(
@@ -529,18 +559,17 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.biometricButton.visibility = View.VISIBLE
     }
 
-    private val requestQRScanner = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) {
-        if (it.resultCode == RESULT_OK) {
-            qrUrl = it.data?.getStringExtra(EXTRA_DATA)
-            qrUrl?.let { setUrl(it) }
+    private val requestQRScanner =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+        ) {
+            if (it.resultCode == RESULT_OK) {
+                qrUrl = it.data?.getStringExtra(EXTRA_DATA)
+                qrUrl?.let { setUrl(it) }
+            }
         }
-    }
 
-    override fun initLogin(): UserManager {
-        return app().createServerComponent().userManager()
-    }
+    override fun initLogin(): UserManager = app().createServerComponent().userManager()
 
     private fun resetLoginInfo() {
         binding.serverUrlEdit.alpha = 1f
@@ -560,7 +589,10 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
         binding.clearUserNameButton.visibility = View.GONE
     }
 
-    private fun setAccount(serverUrl: String?, userName: String?) {
+    private fun setAccount(
+        serverUrl: String?,
+        userName: String?,
+    ) {
         binding.serverUrlEdit.setText(serverUrl ?: "")
         binding.userNameEdit.setText(userName ?: "")
         presenter.setAccountInfo(serverUrl, userName)
@@ -630,43 +662,46 @@ class LoginActivity : ActivityGlobalAbstract(), LoginContracts.View {
     }
 
     private fun showSessionExpired() {
-        val sessionDialog = CustomDialog(
-            this,
-            getString(R.string.openid_session_expired),
-            getString(R.string.openid_session_expired_message),
-            getString(R.string.action_accept),
-            null,
-            SESSION_DIALOG_RQ,
-            null,
-        )
+        val sessionDialog =
+            CustomDialog(
+                this,
+                getString(R.string.openid_session_expired),
+                getString(R.string.openid_session_expired_message),
+                getString(R.string.action_accept),
+                null,
+                SESSION_DIALOG_RQ,
+                null,
+            )
         sessionDialog.setCancelable(false)
         sessionDialog.show()
     }
 
     private fun showAccountDisabled() {
-        val sessionDialog = CustomDialog(
-            this,
-            getString(R.string.account_disable_title),
-            getString(R.string.account_disable_message),
-            getString(R.string.action_accept),
-            null,
-            SESSION_DIALOG_RQ,
-            null,
-        )
+        val sessionDialog =
+            CustomDialog(
+                this,
+                getString(R.string.account_disable_title),
+                getString(R.string.account_disable_message),
+                getString(R.string.action_accept),
+                null,
+                SESSION_DIALOG_RQ,
+                null,
+            )
         sessionDialog.setCancelable(false)
         sessionDialog.show()
     }
 
     override fun showNoConnectionDialog() {
-        val dialog = CustomDialog(
-            this,
-            getString(R.string.network_unavailable),
-            getString(R.string.no_network_to_recover_account),
-            getString(R.string.action_ok),
-            null,
-            CustomDialog.NO_RQ_CODE,
-            null,
-        )
+        val dialog =
+            CustomDialog(
+                this,
+                getString(R.string.network_unavailable),
+                getString(R.string.no_network_to_recover_account),
+                getString(R.string.action_ok),
+                null,
+                CustomDialog.NO_RQ_CODE,
+                null,
+            )
         dialog.show()
     }
 }

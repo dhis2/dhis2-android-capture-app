@@ -32,11 +32,9 @@ internal class ResourceManager {
 
     suspend fun provideSaved() = getString(Res.string.saved)
 
-    suspend fun provideMandatoryFieldsMessage() =
-        getString(Res.string.field_mandatory)
+    suspend fun provideMandatoryFieldsMessage() = getString(Res.string.field_mandatory)
 
-    suspend fun provideMandatoryFieldsCombinationMessage() =
-        getString(Res.string.field_required)
+    suspend fun provideMandatoryFieldsCombinationMessage() = getString(Res.string.field_required)
 
     suspend fun provideSavedAndCompleted() = getString(Res.string.dataset_saved_completed)
 
@@ -44,13 +42,12 @@ internal class ResourceManager {
 
     suspend fun provideAskRunValidations() = getString(Res.string.run_validation_rules)
 
-    suspend fun provideValidationErrorDescription(errors: Int): String {
-        return if (errors == 1) {
+    suspend fun provideValidationErrorDescription(errors: Int): String =
+        if (errors == 1) {
             getString(Res.string.error)
         } else {
             getString(Res.string.errors)
         }
-    }
 
     suspend fun actionCantBePerformed(): String = getString(Res.string.action_can_not_be_performed)
 

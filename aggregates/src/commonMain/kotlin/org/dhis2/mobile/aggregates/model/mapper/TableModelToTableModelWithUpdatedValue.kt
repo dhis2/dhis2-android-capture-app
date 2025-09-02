@@ -18,38 +18,48 @@ internal suspend fun TableModel.updateValue(
     CoroutineTracker.increment()
     val hasTotalColumn = tableHeaderModel.extraColumns.isNotEmpty()
     val hasTotalRow = tableRows.last().id() == totalHeaderRowId(id)
-    val tableRows = tableRows.map { tableRowModel ->
-        val cell = tableRowModel.values.values.find { tableCell ->
-            tableCell.id == cellId
-        }
-        val totalsColumnCell =
-            tableRowModel.values.values.lastOrNull().takeIf { hasTotalColumn }
-        if (cell != null) {
-            val updatedValues = tableRowModel.values.toMutableMap()
-            updatedValues[cell.column] = cell.copy(
-                content = when (cell.content) {
-                    is TableCellContent.Text -> TableCellContent.Text(updatedValue)
-                    is TableCellContent.Checkbox -> TableCellContent.Checkbox(
-                        isChecked = updatedValue?.toBoolean() ?: false,
+    val tableRows =
+        tableRows.map { tableRowModel ->
+            val cell =
+                tableRowModel.values.values.find { tableCell ->
+                    tableCell.id == cellId
+                }
+            val totalsColumnCell =
+                tableRowModel.values.values
+                    .lastOrNull()
+                    .takeIf { hasTotalColumn }
+            if (cell != null) {
+                val updatedValues = tableRowModel.values.toMutableMap()
+                updatedValues[cell.column] =
+                    cell.copy(
+                        content =
+                            when (cell.content) {
+                                is TableCellContent.Text -> TableCellContent.Text(updatedValue)
+                                is TableCellContent.Checkbox ->
+                                    TableCellContent.Checkbox(
+                                        isChecked = updatedValue?.toBoolean() ?: false,
+                                    )
+                            },
+                        error = error,
+                        legendColor = legendData?.color?.toArgb(),
                     )
-                },
-                error = error,
-                legendColor = legendData?.color?.toArgb(),
-            )
-            totalsColumnCell?.let { totalCell ->
-                val totalValue = updatedValues.values.toList().dropLast(1)
-                    .sumOf { tableCell ->
-                        tableCell.value?.toDoubleOrNull() ?: 0.0
-                    }
+                totalsColumnCell?.let { totalCell ->
+                    val totalValue =
+                        updatedValues.values
+                            .toList()
+                            .dropLast(1)
+                            .sumOf { tableCell ->
+                                tableCell.value?.toDoubleOrNull() ?: 0.0
+                            }
 
-                updatedValues[tableRowModel.values.size - 1] =
-                    totalCell.copy(content = TableCellContent.Text(totalValue.toString()))
+                    updatedValues[tableRowModel.values.size - 1] =
+                        totalCell.copy(content = TableCellContent.Text(totalValue.toString()))
+                }
+                tableRowModel.copy(values = updatedValues)
+            } else {
+                tableRowModel
             }
-            tableRowModel.copy(values = updatedValues)
-        } else {
-            tableRowModel
         }
-    }
 
     return if (hasTotalRow) {
         CoroutineTracker.decrement()

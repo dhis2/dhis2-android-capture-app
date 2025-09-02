@@ -10,7 +10,6 @@ class WorkingListViewModel(
     programUid: String?,
     filterRepository: FilterRepository,
 ) : ViewModel() {
-
     private val _workingListFilter = MutableLiveData<WorkingListFilter?>()
     val workingListFilter: LiveData<WorkingListFilter?> = _workingListFilter
 

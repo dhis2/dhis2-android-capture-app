@@ -41,36 +41,38 @@ internal fun SyncMetadataSettingItem(
     SettingItem(
         modifier = Modifier.testTag(SettingItem.META_SYNC.name),
         title = stringResource(id = R.string.settingsSyncMetadata),
-        subtitle = buildAnnotatedString {
-            val currentMetadataSyncPeriod = syncPeriodLabel(metadataSettings.metadataSyncPeriod)
-            when {
-                metadataSettings.syncInProgress -> {
-                    append(
-                        currentMetadataSyncPeriod + "\n" + stringResource(R.string.syncing_configuration),
-                    )
-                }
+        subtitle =
+            buildAnnotatedString {
+                val currentMetadataSyncPeriod = syncPeriodLabel(metadataSettings.metadataSyncPeriod)
+                when {
+                    metadataSettings.syncInProgress -> {
+                        append(
+                            currentMetadataSyncPeriod + "\n" + stringResource(R.string.syncing_configuration),
+                        )
+                    }
 
-                metadataSettings.hasErrors -> {
-                    val message =
-                        currentMetadataSyncPeriod + "\n" + stringResource(R.string.metadata_sync_error)
-                    append(message)
-                    addStyle(
-                        style = SpanStyle(color = colorResource(R.color.red_060)),
-                        start = 0,
-                        end = message.length,
-                    )
-                }
+                    metadataSettings.hasErrors -> {
+                        val message =
+                            currentMetadataSyncPeriod + "\n" + stringResource(R.string.metadata_sync_error)
+                        append(message)
+                        addStyle(
+                            style = SpanStyle(color = colorResource(R.color.red_060)),
+                            start = 0,
+                            end = message.length,
+                        )
+                    }
 
-                else -> {
-                    append(
-                        currentMetadataSyncPeriod + "\n" + String.format(
-                            stringResource(R.string.last_data_sync_date),
-                            metadataSettings.lastMetadataSync,
-                        ),
-                    )
+                    else -> {
+                        append(
+                            currentMetadataSyncPeriod + "\n" +
+                                String.format(
+                                    stringResource(R.string.last_data_sync_date),
+                                    metadataSettings.lastMetadataSync,
+                                ),
+                        )
+                    }
                 }
-            }
-        },
+            },
         icon = Icons.Outlined.CloudSync,
         extraActions = {
             Column(
@@ -78,11 +80,12 @@ internal fun SyncMetadataSettingItem(
                 verticalArrangement = spacedBy(8.dp),
             ) {
                 if (metadataSettings.canEdit) {
-                    val metaSyncPeriods = listOf(
-                        stringResource(R.string.a_day),
-                        stringResource(R.string.a_week),
-                        stringResource(R.string.Manual),
-                    )
+                    val metaSyncPeriods =
+                        listOf(
+                            stringResource(R.string.a_day),
+                            stringResource(R.string.a_week),
+                            stringResource(R.string.Manual),
+                        )
 
                     InputDropDown(
                         modifier = Modifier.testTag(TestTag_MetaPeriod),
@@ -93,9 +96,10 @@ internal fun SyncMetadataSettingItem(
                         fetchItem = { index ->
                             DropdownItem(metaSyncPeriods[index])
                         },
-                        selectedItem = DropdownItem(
-                            label = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
-                        ),
+                        selectedItem =
+                            DropdownItem(
+                                label = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
+                            ),
                         onResetButtonClicked = { },
                         onItemSelected = { index, _ ->
                             when (index) {
@@ -103,7 +107,7 @@ internal fun SyncMetadataSettingItem(
                                 1 -> onSyncMetaPeriodChanged(EVERY_7_DAYS)
                                 2 -> onSyncMetaPeriodChanged(Constants.TIME_MANUAL)
                                 else -> {
-                                    /*do nothing*/
+                                    // do nothing
                                 }
                             }
                         },
@@ -118,9 +122,10 @@ internal fun SyncMetadataSettingItem(
                 }
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.SYNC_META)
-                        .lowercase()
-                        .capitalize(Locale.current),
+                    text =
+                        stringResource(R.string.SYNC_META)
+                            .lowercase()
+                            .capitalize(Locale.current),
                     style = ButtonStyle.TONAL,
                     enabled = canInitSync,
                     onClick = onSyncMetadataClick,

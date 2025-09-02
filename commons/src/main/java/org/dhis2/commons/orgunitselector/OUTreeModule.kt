@@ -40,23 +40,19 @@ class OUTreeModule(
     private val singleSelection: Boolean,
     private val orgUnitSelectorScope: OrgUnitSelectorScope,
 ) {
-
     @Provides
     internal fun providesPresenter(
         ouTreeRepository: OUTreeRepository,
         dispatcherProvider: DispatcherProvider,
-    ): OUTreeViewModelFactory {
-        return OUTreeViewModelFactory(
+    ): OUTreeViewModelFactory =
+        OUTreeViewModelFactory(
             ouTreeRepository,
             dispatcherProvider,
             preselectedOrgUnits.toMutableList(),
             singleSelection,
             model,
         )
-    }
 
     @Provides
-    internal fun providesOUTreeRepository(d2: D2): OUTreeRepository {
-        return OUTreeRepository(OURepositoryConfiguration(d2, orgUnitSelectorScope))
-    }
+    internal fun providesOUTreeRepository(d2: D2): OUTreeRepository = OUTreeRepository(OURepositoryConfiguration(d2, orgUnitSelectorScope))
 }

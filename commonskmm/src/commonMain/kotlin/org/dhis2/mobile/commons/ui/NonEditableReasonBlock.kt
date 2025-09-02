@@ -27,21 +27,23 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun NonEditableReasonBlock(
     modifier: Modifier = Modifier,
-    paddingValues: PaddingValues = PaddingValues(
-        start = Spacing.Spacing16,
-        top = Spacing.Spacing8,
-        end = Spacing.Spacing16,
-        bottom = Spacing.Spacing8,
-    ),
+    paddingValues: PaddingValues =
+        PaddingValues(
+            start = Spacing.Spacing16,
+            top = Spacing.Spacing8,
+            end = Spacing.Spacing16,
+            bottom = Spacing.Spacing8,
+        ),
     reason: String,
     canBeReopened: Boolean,
     onReopenClick: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(Spacing.Spacing10),
-        modifier = modifier
-            .background(SurfaceColor.Container)
-            .padding(paddingValues),
+        modifier =
+            modifier
+                .background(SurfaceColor.Container)
+                .padding(paddingValues),
     ) {
         if (reason.isNotEmpty()) {
             Text(
@@ -54,9 +56,10 @@ fun NonEditableReasonBlock(
         }
         if (canBeReopened) {
             Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .testTag("REOPEN_BUTTON"),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .testTag("REOPEN_BUTTON"),
                 text = stringResource(Res.string.re_open_to_edit),
                 style = ButtonStyle.FILLED,
                 icon = {
@@ -66,10 +69,11 @@ fun NonEditableReasonBlock(
                         tint = TextColor.OnPrimary,
                     )
                 },
-                paddingValues = PaddingValues(
-                    start = Spacing.Spacing16,
-                    end = Spacing.Spacing24,
-                ),
+                paddingValues =
+                    PaddingValues(
+                        start = Spacing.Spacing16,
+                        end = Spacing.Spacing24,
+                    ),
             ) {
                 onReopenClick()
             }

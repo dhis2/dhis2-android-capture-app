@@ -7,17 +7,11 @@ import javax.inject.Singleton
 
 @Module
 class AnalyticsModule internal constructor() {
-
     @Provides
     @Singleton
-    fun providesAnalyticsHelper(
-        matomoAnalyticsController: MatomoAnalyticsController,
-    ): AnalyticsHelper {
-        return AnalyticsHelper(matomoAnalyticsController)
-    }
+    fun providesAnalyticsHelper(matomoAnalyticsController: MatomoAnalyticsController): AnalyticsHelper =
+        AnalyticsHelper(matomoAnalyticsController)
 
     @Provides
-    fun providesAnalyticsInterceptor(analyticHelper: AnalyticsHelper): AnalyticsInterceptor {
-        return AnalyticsInterceptor(analyticHelper)
-    }
+    fun providesAnalyticsInterceptor(analyticHelper: AnalyticsHelper): AnalyticsInterceptor = AnalyticsInterceptor(analyticHelper)
 }

@@ -17,7 +17,6 @@ class SplashPresenter internal constructor(
     private val preferenceProvider: PreferenceProvider,
     private val crashReportController: CrashReportController,
 ) {
-
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     fun destroy() {
@@ -39,7 +38,10 @@ class SplashPresenter internal constructor(
                         { userLogged ->
                             if (userLogged && trackingPermissionGranted()) {
                                 val systemInfo =
-                                    userManager.d2.systemInfoModule().systemInfo().blockingGet()
+                                    userManager.d2
+                                        .systemInfoModule()
+                                        .systemInfo()
+                                        .blockingGet()
                                 trackUserInfo(
                                     serverUrl = systemInfo?.contextPath() ?: "",
                                     serverVersion = systemInfo?.version() ?: "",
@@ -73,18 +75,29 @@ class SplashPresenter internal constructor(
         )
     }
 
-    private fun trackingPermissionGranted(): Boolean {
-        return userManager?.d2?.dataStoreModule()?.localDataStore()
+    private fun trackingPermissionGranted(): Boolean =
+        userManager
+            ?.d2
+            ?.dataStoreModule()
+            ?.localDataStore()
             ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.blockingGet()?.value() == true.toString()
-    }
+            ?.blockingGet()
+            ?.value() == true.toString()
 
-    private fun trackUserInfo(serverUrl: String, serverVersion: String, userName: String) {
+    private fun trackUserInfo(
+        serverUrl: String,
+        serverVersion: String,
+        userName: String,
+    ) {
         crashReportController.trackServer(serverUrl, serverVersion)
         crashReportController.trackUser(userName, serverUrl)
     }
 
-    fun getAccounts(): Int {
-        return userManager?.d2?.userModule()?.accountManager()?.getAccounts()?.count() ?: 0
-    }
+    fun getAccounts(): Int =
+        userManager
+            ?.d2
+            ?.userModule()
+            ?.accountManager()
+            ?.getAccounts()
+            ?.count() ?: 0
 }

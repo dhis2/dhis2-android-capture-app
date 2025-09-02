@@ -8,10 +8,7 @@ import javax.inject.Singleton
 
 @Module
 class CrashReportModule internal constructor() {
-
     @Provides
     @Singleton
-    fun provideCrashReportController(): CrashReportController {
-        return CrashReportControllerImpl()
-    }
+    fun provideCrashReportController(): CrashReportController = CrashReportControllerImpl()
 }

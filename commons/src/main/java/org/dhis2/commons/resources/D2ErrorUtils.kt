@@ -12,17 +12,15 @@ class D2ErrorUtils(
     private val context: Context,
     private val networkUtils: NetworkUtils,
 ) {
-
-    fun getErrorMessage(throwable: Throwable): String? {
-        return when {
+    fun getErrorMessage(throwable: Throwable): String? =
+        when {
             throwable.cause is D2Error -> handleD2Error(throwable.cause as D2Error)
             throwable is D2Error -> handleD2Error(throwable)
             else -> throwable.localizedMessage
         }
-    }
 
-    private fun handleD2Error(d2Error: D2Error?): String {
-        return when (d2Error!!.errorCode()) {
+    private fun handleD2Error(d2Error: D2Error?): String =
+        when (d2Error!!.errorCode()) {
             D2ErrorCode.LOGIN_PASSWORD_NULL ->
                 context.getString(R.string.login_error_null_pass)
             D2ErrorCode.LOGIN_USERNAME_NULL ->
@@ -159,8 +157,6 @@ class D2ErrorUtils(
             D2ErrorCode.NOT_IN_TOTP_2FA_ENROLLMENT_MODE ->
                 context.getString(R.string.not_in_totp_2fa_enrollment_mode)
         }
-    }
 
-    private fun defaultError() =
-        context.getString(R.string.error_unexpected)
+    private fun defaultError() = context.getString(R.string.error_unexpected)
 }

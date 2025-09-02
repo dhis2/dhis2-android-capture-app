@@ -46,22 +46,26 @@ fun FilterPeriodsDialogUI(
     val screenState by viewModel.filterPeriodsScreenState.collectAsState()
     var showDatePicker by remember(screenState.showDatePicker) { mutableStateOf(launchMode.isFromToFilter || screenState.showDatePicker) }
     var showToDatePicker by remember { mutableStateOf(false) }
-    val fromDatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = Date().time,
-    )
+    val fromDatePickerState =
+        rememberDatePickerState(
+            initialSelectedDateMillis = Date().time,
+        )
 
-    val toDatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = Date().time,
-    )
+    val toDatePickerState =
+        rememberDatePickerState(
+            initialSelectedDateMillis = Date().time,
+        )
 
     AnimatedVisibility(
         visible = (showDatePicker),
-        enter = fadeIn(
-            animationSpec = tween(durationMillis = 400),
-        ),
-        exit = fadeOut(
-            animationSpec = tween(durationMillis = 400),
-        ),
+        enter =
+            fadeIn(
+                animationSpec = tween(durationMillis = 400),
+            ),
+        exit =
+            fadeOut(
+                animationSpec = tween(durationMillis = 400),
+            ),
     ) {
         DatePicker(
             title = "Select Date",
@@ -80,18 +84,19 @@ fun FilterPeriodsDialogUI(
             },
             onDismissRequest = { onDismiss() },
             modifier = Modifier.wrapContentSize(),
-
         )
     }
 
     AnimatedVisibility(
         visible = showToDatePicker,
-        enter = fadeIn(
-            animationSpec = tween(durationMillis = 400),
-        ),
-        exit = fadeOut(
-            animationSpec = tween(durationMillis = 400),
-        ),
+        enter =
+            fadeIn(
+                animationSpec = tween(durationMillis = 400),
+            ),
+        exit =
+            fadeOut(
+                animationSpec = tween(durationMillis = 400),
+            ),
     ) {
         DatePicker(
             title = "Select Date",
@@ -108,32 +113,34 @@ fun FilterPeriodsDialogUI(
             },
             onDismissRequest = { onDismiss() },
             modifier = Modifier.wrapContentSize(),
-
         )
     }
 
     AnimatedVisibility(
         visible = (!showDatePicker && !launchMode.isFromToFilter),
-        enter = slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = tween(durationMillis = 500),
-        ),
-        exit = slideOutVertically(
-            targetOffsetY = { it },
-            animationSpec = tween(durationMillis = 500),
-        ),
+        enter =
+            slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = tween(durationMillis = 500),
+            ),
+        exit =
+            slideOutVertically(
+                targetOffsetY = { it },
+                animationSpec = tween(durationMillis = 500),
+            ),
     ) {
         val scrollState = rememberLazyListState()
 
         BottomSheetShell(
-            uiState = BottomSheetShellUIState(
-                bottomPadding = bottomSheetLowerPadding(),
-                showTopSectionDivider = true,
-                showBottomSectionDivider = true,
-                title = screenState.title,
-                headerTextAlignment = TextAlign.Center,
-                animateHeaderOnKeyboardAppearance = false,
-            ),
+            uiState =
+                BottomSheetShellUIState(
+                    bottomPadding = bottomSheetLowerPadding(),
+                    showTopSectionDivider = true,
+                    showBottomSectionDivider = true,
+                    title = screenState.title,
+                    headerTextAlignment = TextAlign.Center,
+                    animateHeaderOnKeyboardAppearance = false,
+                ),
             windowInsets = { bottomSheetInsets() },
             contentScrollState = scrollState,
             content = {
@@ -146,9 +153,10 @@ fun FilterPeriodsDialogUI(
                         ) {
                             items(periodTypes.count()) { index ->
                                 DropdownListItem(
-                                    item = DropdownItem(
-                                        label = viewModel.getPeriodTypeName(periodTypes[index]),
-                                    ),
+                                    item =
+                                        DropdownItem(
+                                            label = viewModel.getPeriodTypeName(periodTypes[index]),
+                                        ),
                                     contentPadding = PaddingValues(Spacing8),
                                     selected = false,
                                     enabled = true,
@@ -165,7 +173,8 @@ fun FilterPeriodsDialogUI(
                     else -> {
                         if (screenState.selectedPeriodType != FilterPeriodType.DAILY) {
                             val periods =
-                                viewModel.fetchPeriods()
+                                viewModel
+                                    .fetchPeriods()
                                     .collectAsLazyPagingItems()
                             PeriodSelectorContent(
                                 periods = periods,

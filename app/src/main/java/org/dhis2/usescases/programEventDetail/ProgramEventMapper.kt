@@ -28,13 +28,21 @@ class ProgramEventMapper(
     val periodUtils: DhisPeriodUtils,
     val metadataIconProvider: MetadataIconProvider,
 ) {
-
     fun eventToEventViewModel(event: Event): EventViewModel {
         val programStage =
-            d2.programModule().programStages().uid(event.programStage()).blockingGet()
+            d2
+                .programModule()
+                .programStages()
+                .uid(event.programStage())
+                .blockingGet()
 
         val eventDate = event.eventDate() ?: event.dueDate()
-        val program = d2.programModule().programs().uid(event.program()).blockingGet()
+        val program =
+            d2
+                .programModule()
+                .programs()
+                .uid(event.program())
+                .blockingGet()
 
         return EventViewModel(
             EventViewModelType.EVENT,
@@ -44,38 +52,49 @@ class ProgramEventMapper(
             event.lastUpdated(),
             isSelected = false,
             canAddNewEvent = true,
-            orgUnitName = d2.organisationUnitModule().organisationUnits()
-                .uid(event.organisationUnit())
-                .blockingGet()?.displayName() ?: "-",
+            orgUnitName =
+                d2
+                    .organisationUnitModule()
+                    .organisationUnits()
+                    .uid(event.organisationUnit())
+                    .blockingGet()
+                    ?.displayName() ?: "-",
             catComboName = getCatOptionComboName(event.attributeOptionCombo()),
             dataElementValues = getEventValues(event.uid(), event.programStage()!!),
             groupedByStage = true,
-            displayDate = eventDate?.let {
-                periodUtils.getPeriodUIString(
-                    programStage?.periodType() ?: PeriodType.Daily,
-                    it,
-                    Locale.getDefault(),
-                )
-            },
+            displayDate =
+                eventDate?.let {
+                    periodUtils.getPeriodUIString(
+                        programStage?.periodType() ?: PeriodType.Daily,
+                        it,
+                        Locale.getDefault(),
+                    )
+                },
             nameCategoryOptionCombo =
-            getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
-            metadataIconData = metadataIconProvider(
-                programStage?.style() ?: ObjectStyle.builder().build(),
-                program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
-            ),
+                getCategoryComboFromOptionCombo(event.attributeOptionCombo())?.displayName(),
+            metadataIconData =
+                metadataIconProvider(
+                    programStage?.style() ?: ObjectStyle.builder().build(),
+                    program?.style()?.color()?.toColor() ?: SurfaceColor.Primary,
+                ),
         )
     }
 
     private fun getCategoryComboFromOptionCombo(categoryOptionComboUid: String?): CategoryCombo? {
-        val catOptionComboUid = categoryOptionComboUid?.let {
-            d2.categoryModule()
-                .categoryOptionCombos()
-                .uid(it)
-                .blockingGet()?.categoryCombo()?.uid()
-        }
+        val catOptionComboUid =
+            categoryOptionComboUid?.let {
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .uid(it)
+                    .blockingGet()
+                    ?.categoryCombo()
+                    ?.uid()
+            }
 
         return catOptionComboUid?.let {
-            d2.categoryModule()
+            d2
+                .categoryModule()
                 .categoryCombos()
                 .uid(it)
                 .blockingGet()
@@ -93,11 +112,12 @@ class ProgramEventMapper(
                 }
             }
         }
-        val data = getData(
-            event.trackedEntityDataValues(),
-            showInReportsDataElements,
-            event.programStage(),
-        )
+        val data =
+            getData(
+                event.trackedEntityDataValues(),
+                showInReportsDataElements,
+                event.programStage(),
+            )
         val hasExpired = isExpired(event)
         val inOrgUnitRange = checkOrgUnitRange(event.organisationUnit(), event.eventDate()!!)
         val catOptComb = getCategoryOptionCombo(event.attributeOptionCombo())
@@ -124,17 +144,28 @@ class ProgramEventMapper(
         )
     }
 
-    fun eventsToProgramEvents(events: List<Event>): List<ProgramEventViewModel> {
-        return events.filter { it.geometry() != null }.map { event -> eventToProgramEvent(event) }
-    }
+    fun eventsToProgramEvents(events: List<Event>): List<ProgramEventViewModel> =
+        events
+            .filter {
+                it.geometry() != null
+            }.map { event -> eventToProgramEvent(event) }
 
     private fun getOrgUnitName(orgUnitUid: String?) =
-        d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()?.displayName()
+        d2
+            .organisationUnitModule()
+            .organisationUnits()
+            .uid(orgUnitUid)
+            .blockingGet()
+            ?.displayName()
 
     private fun getProgramStageDataElements(programStageUid: String?) =
-        d2.programModule().programStageDataElements()
-            .byProgramStage().eq(programStageUid)
-            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC).blockingGet()
+        d2
+            .programModule()
+            .programStageDataElements()
+            .byProgramStage()
+            .eq(programStageUid)
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+            .blockingGet()
 
     private fun getData(
         dataValues: List<TrackedEntityDataValue>?,
@@ -161,37 +192,44 @@ class ProgramEventMapper(
                 }
             }
 
-            dataValues.sortedWith(
-                Comparator { de1, de2 ->
-                    val pos1 = dataElementsOrder.indexOf(de1.dataElement())
-                    val pos2 = dataElementsOrder.indexOf(de2.dataElement())
-                    pos1.compareTo(pos2)
-                },
-            ).forEach {
-                val dataElement = getDataElement(it.dataElement())
-                if (dataElement != null && showInReportsDataElements.contains(dataElement.uid())) {
-                    val displayName = if (!dataElement.displayFormName().isNullOrEmpty()) {
-                        dataElement.displayFormName()
-                    } else if (!dataElement.displayName().isNullOrEmpty()) {
-                        dataElement.displayName()
-                    } else if (!dataElement.name().isNullOrEmpty()) {
-                        dataElement.name()
-                    } else {
-                        dataElement.uid()
-                    }
-                    val value = it.userFriendlyValue(d2) ?: ""
-                    if (displayName != null) {
-                        data.add(Pair(displayName, value))
+            dataValues
+                .sortedWith(
+                    Comparator { de1, de2 ->
+                        val pos1 = dataElementsOrder.indexOf(de1.dataElement())
+                        val pos2 = dataElementsOrder.indexOf(de2.dataElement())
+                        pos1.compareTo(pos2)
+                    },
+                ).forEach {
+                    val dataElement = getDataElement(it.dataElement())
+                    if (dataElement != null && showInReportsDataElements.contains(dataElement.uid())) {
+                        val displayName =
+                            if (!dataElement.displayFormName().isNullOrEmpty()) {
+                                dataElement.displayFormName()
+                            } else if (!dataElement.displayName().isNullOrEmpty()) {
+                                dataElement.displayName()
+                            } else if (!dataElement.name().isNullOrEmpty()) {
+                                dataElement.name()
+                            } else {
+                                dataElement.uid()
+                            }
+                        val value = it.userFriendlyValue(d2) ?: ""
+                        if (displayName != null) {
+                            data.add(Pair(displayName, value))
+                        }
                     }
                 }
-            }
         }
 
         return data
     }
 
     private fun isExpired(event: Event): Boolean {
-        val program = d2.programModule().programs().uid(event.program()).blockingGet()
+        val program =
+            d2
+                .programModule()
+                .programs()
+                .uid(event.program())
+                .blockingGet()
         return DateUtils.getInstance().isEventExpired(
             event.eventDate(),
             event.completedDate(),
@@ -202,9 +240,17 @@ class ProgramEventMapper(
         )
     }
 
-    private fun checkOrgUnitRange(orgUnitUid: String?, eventDate: Date): Boolean {
+    private fun checkOrgUnitRange(
+        orgUnitUid: String?,
+        eventDate: Date,
+    ): Boolean {
         var inRange = true
-        val orgUnit = d2.organisationUnitModule().organisationUnits().uid(orgUnitUid).blockingGet()
+        val orgUnit =
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
+                .uid(orgUnitUid)
+                .blockingGet()
         if (orgUnit?.openingDate() != null && eventDate.before(orgUnit.openingDate())) {
             inRange = false
         }
@@ -216,32 +262,57 @@ class ProgramEventMapper(
     }
 
     private fun getDataElement(dataElement: String?) =
-        d2.dataElementModule().dataElements().uid(dataElement).blockingGet()
+        d2
+            .dataElementModule()
+            .dataElements()
+            .uid(dataElement)
+            .blockingGet()
 
-    private fun getStageSections(programStage: String?) = d2.programModule().programStageSections()
-        .byProgramStageUid().eq(programStage)
-        .withDataElements()
-        .blockingGet()
+    private fun getStageSections(programStage: String?) =
+        d2
+            .programModule()
+            .programStageSections()
+            .byProgramStageUid()
+            .eq(programStage)
+            .withDataElements()
+            .blockingGet()
 
     private fun getCategoryOptionCombo(attributeOptionCombo: String?) =
-        d2.categoryModule().categoryOptionCombos().uid(attributeOptionCombo).blockingGet()
+        d2
+            .categoryModule()
+            .categoryOptionCombos()
+            .uid(attributeOptionCombo)
+            .blockingGet()
 
     private fun getEventValues(
         eventUid: String,
         stageUid: String,
     ): List<kotlin.Pair<String, String?>> {
-        val displayInListDataElements = d2.programModule().programStageDataElements()
-            .byProgramStage().eq(stageUid)
-            .byDisplayInReports().isTrue
-            .blockingGet().map {
-                it.dataElement()?.uid()!!
-            }
+        val displayInListDataElements =
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq(stageUid)
+                .byDisplayInReports()
+                .isTrue
+                .blockingGet()
+                .map {
+                    it.dataElement()?.uid()!!
+                }
         return if (displayInListDataElements.isNotEmpty()) {
             displayInListDataElements.mapNotNull {
-                val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
-                    .value(eventUid, it)
-                val de = d2.dataElementModule().dataElements()
-                    .uid(it).blockingGet()
+                val valueRepo =
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityDataValues()
+                        .value(eventUid, it)
+                val de =
+                    d2
+                        .dataElementModule()
+                        .dataElements()
+                        .uid(it)
+                        .blockingGet()
                 if (isAcceptedValueType(de?.valueType())) {
                     Pair(
                         de?.displayFormName() ?: de?.displayName() ?: "",
@@ -260,17 +331,19 @@ class ProgramEventMapper(
         }
     }
 
-    private fun isAcceptedValueType(valueType: ValueType?): Boolean {
-        return when (valueType) {
+    private fun isAcceptedValueType(valueType: ValueType?): Boolean =
+        when (valueType) {
             ValueType.IMAGE, ValueType.COORDINATE, ValueType.FILE_RESOURCE -> false
             else -> true
         }
-    }
 
-    private fun getCatOptionComboName(categoryOptionComboUid: String?): String? {
-        return categoryOptionComboUid?.let {
-            d2.categoryModule().categoryOptionCombos().uid(categoryOptionComboUid).blockingGet()
+    private fun getCatOptionComboName(categoryOptionComboUid: String?): String? =
+        categoryOptionComboUid?.let {
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .uid(categoryOptionComboUid)
+                .blockingGet()
                 ?.displayName()
         }
-    }
 }

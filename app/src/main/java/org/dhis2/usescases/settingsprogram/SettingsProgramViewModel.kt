@@ -12,15 +12,16 @@ import org.dhis2.usescases.settingsprogram.model.SpecificSettings
 class SettingsProgramViewModel(
     private val getProgramSpecificSettings: GetProgramSpecificSettings,
 ) : ViewModel() {
-
     private val _programSettings = MutableStateFlow(emptyList<SpecificSettings>())
-    val programSettings = _programSettings.onStart {
-        loadData()
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        emptyList(),
-    )
+    val programSettings =
+        _programSettings
+            .onStart {
+                loadData()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                emptyList(),
+            )
 
     private suspend fun loadData() {
         _programSettings.emit(getProgramSpecificSettings())

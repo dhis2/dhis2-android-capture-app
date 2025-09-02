@@ -8,7 +8,6 @@ import org.maplibre.android.style.sources.GeoJsonSource
 import org.maplibre.geojson.Point
 
 class PointViewModel : ViewModel() {
-
     var layer: SymbolLayer? = null
     var source: GeoJsonSource? = null
     val lat = ObservableField<String>()
@@ -19,8 +18,8 @@ class PointViewModel : ViewModel() {
         lng.set(p.longitude().toString())
     }
 
-    fun getPointAsString(): String? {
-        return try {
+    fun getPointAsString(): String? =
+        try {
             val list = mutableListOf<Double>()
             list.add(lng.get()!!.toDouble())
             list.add(lat.get()!!.toDouble())
@@ -28,9 +27,6 @@ class PointViewModel : ViewModel() {
         } catch (e: Exception) {
             null
         }
-    }
 
-    fun getId(): String {
-        return "point_marker_id"
-    }
+    fun getId(): String = "point_marker_id"
 }

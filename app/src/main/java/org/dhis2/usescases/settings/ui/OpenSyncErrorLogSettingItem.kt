@@ -10,16 +10,14 @@ import org.dhis2.R
 import org.dhis2.usescases.settings.SettingItem
 
 @Composable
-internal fun OpenSyncErrorLogSettingItem(
-    onClick: () -> Unit,
-) {
+internal fun OpenSyncErrorLogSettingItem(onClick: () -> Unit) {
     SettingItem(
         modifier = Modifier.testTag(SettingItem.ERROR_LOG.name),
         title = stringResource(id = R.string.settingsErrorLog),
         subtitle = stringResource(R.string.settingsErrorLog_descr),
         icon = Icons.Outlined.ErrorOutline,
         extraActions = {
-            /*no extra actions*/
+            // no extra actions
         },
         showExtraActions = false,
         onClick = onClick,

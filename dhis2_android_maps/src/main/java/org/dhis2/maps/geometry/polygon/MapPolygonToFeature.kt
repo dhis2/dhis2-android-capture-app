@@ -9,8 +9,10 @@ import org.maplibre.geojson.Point
 import org.maplibre.geojson.Polygon
 
 class MapPolygonToFeature {
-
-    fun map(geometry: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
+    fun map(
+        geometry: Geometry,
+        bounds: BoundsGeometry,
+    ): Pair<Feature, BoundsGeometry>? {
         val sdkPolygon = GeometryHelper.getPolygon(geometry)
         val pointList = ArrayList<Point>()
 
@@ -24,9 +26,10 @@ class MapPolygonToFeature {
             }
         }
 
-        val polygonArray = ArrayList<ArrayList<Point>>().apply {
-            add(pointList)
-        }
+        val polygonArray =
+            ArrayList<ArrayList<Point>>().apply {
+                add(pointList)
+            }
 
         val polygon = Polygon.fromLngLats(polygonArray as List<MutableList<Point>>)
         return Pair(Feature.fromGeometry(polygon), bounds)
@@ -45,9 +48,10 @@ class MapPolygonToFeature {
             }
         }
 
-        val polygonArray = ArrayList<ArrayList<Point>>().apply {
-            add(pointList)
-        }
+        val polygonArray =
+            ArrayList<ArrayList<Point>>().apply {
+                add(pointList)
+            }
 
         val polygon = Polygon.fromLngLats(polygonArray as List<MutableList<Point>>)
         return Feature.fromGeometry(polygon)

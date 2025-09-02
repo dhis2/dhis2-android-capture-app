@@ -57,7 +57,8 @@ suspend fun String.userFriendlyValue(
             }
 
             valueInfo.isBooleanType -> {
-                valueParser.valueFromBooleanType(this)
+                valueParser
+                    .valueFromBooleanType(this)
                     .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
             }
 
@@ -71,43 +72,41 @@ suspend fun String.userFriendlyValue(
     }
 }
 
-private fun String.toDateTimeFormat(
-    crashReportController: CrashReportController = getKoin().get<CrashReportController>(),
-) = try {
-    LocalDateTime.parse(this).format(dateTimeFormat)
-} catch (e: Exception) {
-    crashReportController.trackError(e, e.message)
-    this
-}
+private fun String.toDateTimeFormat(crashReportController: CrashReportController = getKoin().get<CrashReportController>()) =
+    try {
+        LocalDateTime.parse(this).format(dateTimeFormat)
+    } catch (e: Exception) {
+        crashReportController.trackError(e, e.message)
+        this
+    }
 
-private fun String.toDateFormat(
-    crashReportController: CrashReportController = getKoin().get<CrashReportController>(),
-) = try {
-    LocalDate.parse(this).format(dateFormat)
-} catch (e: Exception) {
-    crashReportController.trackError(e, e.message)
-    this
-}
+private fun String.toDateFormat(crashReportController: CrashReportController = getKoin().get<CrashReportController>()) =
+    try {
+        LocalDate.parse(this).format(dateFormat)
+    } catch (e: Exception) {
+        crashReportController.trackError(e, e.message)
+        this
+    }
 
-private fun String.toTimeFormat(
-    crashReportController: CrashReportController = getKoin().get<CrashReportController>(),
-) = try {
-    LocalTime.parse(this).format(timeFormat)
-} catch (e: Exception) {
-    crashReportController.trackError(e, e.message)
-    this
-}
+private fun String.toTimeFormat(crashReportController: CrashReportController = getKoin().get<CrashReportController>()) =
+    try {
+        LocalTime.parse(this).format(timeFormat)
+    } catch (e: Exception) {
+        crashReportController.trackError(e, e.message)
+        this
+    }
 
 fun String.toColor(): Color {
     val color = this.replace("#", "")
-    val colorLong = when (color.length) {
-        6 -> {
-            (0xFF shl 24).toLong() or color.toLong(16)
-        }
+    val colorLong =
+        when (color.length) {
+            6 -> {
+                (0xFF shl 24).toLong() or color.toLong(16)
+            }
 
-        8 -> color.toLong(16)
-        else -> throw IllegalArgumentException("Unknown color: $this")
-    }
+            8 -> color.toLong(16)
+            else -> throw IllegalArgumentException("Unknown color: $this")
+        }
     return Color(colorLong)
 }
 
@@ -132,14 +131,13 @@ fun String.getDateFromAge(age: AgeInputType.Age): String? {
     }
 }
 
-fun String.hasDateFormat(format: String = DB_FORMAT): Boolean {
-    return try {
+fun String.hasDateFormat(format: String = DB_FORMAT): Boolean =
+    try {
         val dateFormat = SimpleDateFormat(format, Locale.ENGLISH)
         dateFormat.parse(this)
         true
     } catch (e: Exception) {
         false
     }
-}
 
 private const val DB_FORMAT = "yyyy-MM-dd"

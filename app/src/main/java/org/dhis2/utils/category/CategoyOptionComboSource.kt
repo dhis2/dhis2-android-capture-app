@@ -15,7 +15,6 @@ class CategoyOptionComboSource(
     val withAccessControl: Boolean,
     val date: Date?,
 ) : ItemKeyedDataSource<CategoryOptionCombo, CategoryOptionCombo>() {
-
     private var isComplete = false
 
     override fun loadInitial(
@@ -39,17 +38,17 @@ class CategoyOptionComboSource(
         // do nothing
     }
 
-    override fun getKey(item: CategoryOptionCombo): CategoryOptionCombo {
-        return item
-    }
+    override fun getKey(item: CategoryOptionCombo): CategoryOptionCombo = item
 
-    private fun loadPages(requestedLoadSize: Int): List<CategoryOptionCombo> {
-        return if (isComplete) {
+    private fun loadPages(requestedLoadSize: Int): List<CategoryOptionCombo> =
+        if (isComplete) {
             emptyList()
         } else {
             isComplete = true
-            catOptComboRepository.orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet().filter { catOptionCombo ->
+            catOptComboRepository
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+                .blockingGet()
+                .filter { catOptionCombo ->
                     var hasOption = categoryOptionComboHasOptions(catOptionCombo.uid())
                     var writeAccess = true
                     var openAccess = true
@@ -63,28 +62,33 @@ class CategoyOptionComboSource(
                     hasOption && writeAccess && openAccess
                 }
         }
-    }
 
-    private fun categoryOptionComboHasOptions(categoryOptionComboUid: String): Boolean {
-        return d2.categoryModule().categoryOptionCombos().withCategoryOptions()
+    private fun categoryOptionComboHasOptions(categoryOptionComboUid: String): Boolean =
+        d2
+            .categoryModule()
+            .categoryOptionCombos()
+            .withCategoryOptions()
             .uid(categoryOptionComboUid)
-            .blockingGet()?.categoryOptions()?.isNotEmpty() ?: false
-    }
+            .blockingGet()
+            ?.categoryOptions()
+            ?.isNotEmpty() ?: false
 
-    private fun categoryOptions(categoryOptionComboUid: String): List<CategoryOption> {
-        return d2.categoryModule().categoryOptions()
+    private fun categoryOptions(categoryOptionComboUid: String): List<CategoryOption> =
+        d2
+            .categoryModule()
+            .categoryOptions()
             .byCategoryOptionComboUid(categoryOptionComboUid)
             .blockingGet()
-    }
 
-    private fun canWriteInCatOptCombo(categoryOptionComboUid: String): Boolean {
-        return d2.categoryModule().categoryOptions()
+    private fun canWriteInCatOptCombo(categoryOptionComboUid: String): Boolean =
+        d2
+            .categoryModule()
+            .categoryOptions()
             .byCategoryOptionComboUid(categoryOptionComboUid)
-            .byAccessDataWrite().isFalse
+            .byAccessDataWrite()
+            .isFalse
             .blockingIsEmpty()
-    }
 
-    private fun doesNotHaveFilteredByDate(options: List<CategoryOption>): Boolean {
-        return options.size == options.filter { it.inDateRange(date) }.size
-    }
+    private fun doesNotHaveFilteredByDate(options: List<CategoryOption>): Boolean =
+        options.size == options.filter { it.inDateRange(date) }.size
 }

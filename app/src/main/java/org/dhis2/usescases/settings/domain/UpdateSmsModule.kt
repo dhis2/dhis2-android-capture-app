@@ -15,24 +15,39 @@ class UpdateSmsModule(
     private val settingsMessages: SettingsMessages,
     private val resourceManager: ResourceManager,
 ) {
-
     sealed interface SmsSetting {
-        data class SaveGatewayNumber(val smsGateway: String) : SmsSetting
-        data class SaveTimeout(val timeout: Int) : SmsSetting
-        data class SaveResultNumber(val resultNumber: String) : SmsSetting
-        data class Enable(val smsGateway: String, val timeout: Int) : SmsSetting
+        data class SaveGatewayNumber(
+            val smsGateway: String,
+        ) : SmsSetting
+
+        data class SaveTimeout(
+            val timeout: Int,
+        ) : SmsSetting
+
+        data class SaveResultNumber(
+            val resultNumber: String,
+        ) : SmsSetting
+
+        data class Enable(
+            val smsGateway: String,
+            val timeout: Int,
+        ) : SmsSetting
+
         data object Disable : SmsSetting
     }
 
     sealed interface EnableSmsResult {
         data object Success : EnableSmsResult
+
         data object Error : EnableSmsResult
-        data class ValidationError(val validationResult: GatewayValidator.GatewayValidationResult) :
-            EnableSmsResult
+
+        data class ValidationError(
+            val validationResult: GatewayValidator.GatewayValidationResult,
+        ) : EnableSmsResult
     }
 
-    suspend operator fun invoke(smsSetting: SmsSetting): EnableSmsResult {
-        return when (smsSetting) {
+    suspend operator fun invoke(smsSetting: SmsSetting): EnableSmsResult =
+        when (smsSetting) {
             is SmsSetting.Enable -> {
                 when (val validation = gatewayValidator(smsSetting.smsGateway)) {
                     GatewayValidator.GatewayValidationResult.Empty,
@@ -54,38 +69,39 @@ class UpdateSmsModule(
                 updateSmsModule(false)
             }
 
-            is SmsSetting.SaveGatewayNumber -> when (val validation = gatewayValidator(smsSetting.smsGateway)) {
-                GatewayValidator.GatewayValidationResult.Invalid ->
-                    ValidationError(validation)
-                GatewayValidator.GatewayValidationResult.Empty,
-                GatewayValidator.GatewayValidationResult.Valid,
-                -> {
-                    settingsRepository.saveGatewayNumber(smsSetting.smsGateway)
-                    settingsMessages.sendMessage("Gateway saved")
-                    Success
+            is SmsSetting.SaveGatewayNumber ->
+                when (val validation = gatewayValidator(smsSetting.smsGateway)) {
+                    GatewayValidator.GatewayValidationResult.Invalid ->
+                        ValidationError(validation)
+                    GatewayValidator.GatewayValidationResult.Empty,
+                    GatewayValidator.GatewayValidationResult.Valid,
+                    -> {
+                        settingsRepository.saveGatewayNumber(smsSetting.smsGateway)
+                        settingsMessages.sendMessage("Gateway saved")
+                        Success
+                    }
                 }
-            }
-            is SmsSetting.SaveResultNumber -> when (val validation = gatewayValidator(smsSetting.resultNumber)) {
-                GatewayValidator.GatewayValidationResult.Invalid ->
-                    ValidationError(validation)
-                GatewayValidator.GatewayValidationResult.Empty,
-                GatewayValidator.GatewayValidationResult.Valid,
-                -> {
-                    settingsRepository.saveGatewayNumber(smsSetting.resultNumber)
-                    settingsMessages.sendMessage("Result sender saved")
-                    Success
+            is SmsSetting.SaveResultNumber ->
+                when (val validation = gatewayValidator(smsSetting.resultNumber)) {
+                    GatewayValidator.GatewayValidationResult.Invalid ->
+                        ValidationError(validation)
+                    GatewayValidator.GatewayValidationResult.Empty,
+                    GatewayValidator.GatewayValidationResult.Valid,
+                    -> {
+                        settingsRepository.saveGatewayNumber(smsSetting.resultNumber)
+                        settingsMessages.sendMessage("Result sender saved")
+                        Success
+                    }
                 }
-            }
             is SmsSetting.SaveTimeout -> {
                 settingsRepository.saveSmsResponseTimeout(smsSetting.timeout)
                 settingsMessages.sendMessage("Timeout updated")
                 Success
             }
         }
-    }
 
-    private suspend fun updateSmsModule(enableSms: Boolean): EnableSmsResult {
-        return try {
+    private suspend fun updateSmsModule(enableSms: Boolean): EnableSmsResult =
+        try {
             settingsRepository.enableSmsModule(enableSms)
             settingsMessages.sendMessage(
                 if (enableSms) {
@@ -104,5 +120,4 @@ class UpdateSmsModule(
             }
             Error
         }
-    }
 }

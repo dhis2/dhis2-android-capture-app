@@ -43,37 +43,43 @@ class EventAdapter(
     private val cardMapper: TEIEventCardMapper,
     private val initialSelectedEventUid: String? = null,
 ) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<EventViewModel>() {
-        override fun areItemsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-            val oldItemId = if (oldItem.type == EVENT) {
-                oldItem.event!!.uid()
-            } else {
-                oldItem.stage!!.uid()
+        object : DiffUtil.ItemCallback<EventViewModel>() {
+            override fun areItemsTheSame(
+                oldItem: EventViewModel,
+                newItem: EventViewModel,
+            ): Boolean {
+                val oldItemId =
+                    if (oldItem.type == EVENT) {
+                        oldItem.event!!.uid()
+                    } else {
+                        oldItem.stage!!.uid()
+                    }
+                val newItemId =
+                    if (newItem.type == EVENT) {
+                        newItem.event!!.uid()
+                    } else {
+                        newItem.stage!!.uid()
+                    }
+                return oldItemId == newItemId
             }
-            val newItemId = if (newItem.type == EVENT) {
-                newItem.event!!.uid()
-            } else {
-                newItem.stage!!.uid()
-            }
-            return oldItemId == newItemId
-        }
 
-        override fun areContentsTheSame(oldItem: EventViewModel, newItem: EventViewModel): Boolean {
-            return oldItem == newItem
-        }
-    },
-) {
-
+            override fun areContentsTheSame(
+                oldItem: EventViewModel,
+                newItem: EventViewModel,
+            ): Boolean = oldItem == newItem
+        },
+    ) {
     private var stageSelector: FlowableProcessor<StageSection> = PublishProcessor.create()
 
     private var previousSelectedPosition: Int = RecyclerView.NO_POSITION
 
-    fun stageSelector(): Flowable<StageSection> {
-        return stageSelector
-    }
+    fun stageSelector(): Flowable<StageSection> = stageSelector
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (EventViewModelType.entries[viewType]) {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): RecyclerView.ViewHolder =
+        when (EventViewModelType.entries[viewType]) {
             STAGE -> {
                 StageViewHolder(
                     ComposeView(parent.context),
@@ -84,12 +90,13 @@ class EventAdapter(
             }
 
             EVENT -> {
-                val binding = DataBindingUtil.inflate<ItemEventBinding>(
-                    LayoutInflater.from(parent.context),
-                    R.layout.item_event,
-                    parent,
-                    false,
-                )
+                val binding =
+                    DataBindingUtil.inflate<ItemEventBinding>(
+                        LayoutInflater.from(parent.context),
+                        R.layout.item_event,
+                        parent,
+                        false,
+                    )
                 EventViewHolder(
                     binding,
                     program,
@@ -112,13 +119,13 @@ class EventAdapter(
                 )
             }
         }
-    }
 
-    override fun getItemViewType(position: Int): Int {
-        return getItem(position).type.ordinal
-    }
+    override fun getItemViewType(position: Int): Int = getItem(position).type.ordinal
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+    ) {
         when (holder) {
             is EventViewHolder -> {
                 getItem(position)?.let {
@@ -129,58 +136,61 @@ class EventAdapter(
                     composeView.setContent {
                         val leftSpacing =
                             if (it.groupedByStage == true) Spacing.Spacing64 else Spacing.Spacing16
-                        val bottomSpacing = if (it.showBottomShadow) {
-                            Spacing.Spacing16
-                        } else {
-                            Spacing.Spacing4
-                        }
-                        val card = cardMapper.map(
-                            event = it,
-                            editable = it.editable,
-                            displayOrgUnit = it.displayOrgUnit,
-                            onCardClick = {
-                                it.event?.let { event ->
-                                    when (event.status()) {
-                                        EventStatus.SCHEDULE, EventStatus.OVERDUE -> {
-                                            presenter.onScheduleSelected(
-                                                event.uid(),
-                                                composeView,
-                                            )
-                                        }
+                        val bottomSpacing =
+                            if (it.showBottomShadow) {
+                                Spacing.Spacing16
+                            } else {
+                                Spacing.Spacing4
+                            }
+                        val card =
+                            cardMapper.map(
+                                event = it,
+                                editable = it.editable,
+                                displayOrgUnit = it.displayOrgUnit,
+                                onCardClick = {
+                                    it.event?.let { event ->
+                                        when (event.status()) {
+                                            EventStatus.SCHEDULE, EventStatus.OVERDUE -> {
+                                                presenter.onScheduleSelected(
+                                                    event.uid(),
+                                                    composeView,
+                                                )
+                                            }
 
-                                        else -> {
-                                            presenter.onEventSelected(
-                                                event.uid(),
-                                                event.status()!!,
-                                            )
+                                            else -> {
+                                                presenter.onEventSelected(
+                                                    event.uid(),
+                                                    event.status()!!,
+                                                )
 
-                                            if (isLandscape()) {
-                                                if (previousSelectedPosition != RecyclerView.NO_POSITION) {
-                                                    currentList[previousSelectedPosition].isClicked =
-                                                        false
-                                                    notifyItemChanged(previousSelectedPosition)
+                                                if (isLandscape()) {
+                                                    if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                                                        currentList[previousSelectedPosition].isClicked =
+                                                            false
+                                                        notifyItemChanged(previousSelectedPosition)
+                                                    }
+                                                    previousSelectedPosition = position
+                                                    getItem(position).isClicked = true
+                                                    notifyItemChanged(position)
                                                 }
-                                                previousSelectedPosition = position
-                                                getItem(position).isClicked = true
-                                                notifyItemChanged(position)
                                             }
                                         }
                                     }
-                                }
-                            },
-                        )
+                                },
+                            )
 
                         if (it.event?.uid() == initialSelectedEventUid && previousSelectedPosition == RecyclerView.NO_POSITION) {
                             it.isClicked = true
                             previousSelectedPosition = position
                         }
                         Box(
-                            modifier = Modifier
-                                .padding(
-                                    start = leftSpacing,
-                                    end = Spacing.Spacing16,
-                                    bottom = bottomSpacing,
-                                ),
+                            modifier =
+                                Modifier
+                                    .padding(
+                                        start = leftSpacing,
+                                        end = Spacing.Spacing16,
+                                        bottom = bottomSpacing,
+                                    ),
                         ) {
                             ListCardProvider(
                                 card = card,
@@ -189,12 +199,13 @@ class EventAdapter(
 
                             if (it.isClicked) {
                                 Box(
-                                    modifier = Modifier
-                                        .matchParentSize()
-                                        .background(
-                                            color = SurfaceColor.Primary.copy(alpha = 0.1f),
-                                            shape = RoundedCornerShape(Radius.S),
-                                        ),
+                                    modifier =
+                                        Modifier
+                                            .matchParentSize()
+                                            .background(
+                                                color = SurfaceColor.Primary.copy(alpha = 0.1f),
+                                                shape = RoundedCornerShape(Radius.S),
+                                            ),
                                 )
                             }
                         }
@@ -217,7 +228,5 @@ class EventAdapter(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return getItem(position).hashCode().toLong()
-    }
+    override fun getItemId(position: Int): Long = getItem(position).hashCode().toLong()
 }

@@ -74,40 +74,43 @@ fun SettingsProgramScreen(
                     )
                 },
                 colors =
-                TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                    TopAppBarDefaults.topAppBarColors().copy(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         },
     ) { paddingValues ->
         val settings by settingsViewModel.programSettings.collectAsState(emptyList())
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .clip(
-                    shape =
-                    RoundedCornerShape(
-                        topStart = Radius.L,
-                        topEnd = Radius.L,
-                    ),
-                ).background(color = MaterialTheme.colorScheme.background),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .clip(
+                        shape =
+                            RoundedCornerShape(
+                                topStart = Radius.L,
+                                topEnd = Radius.L,
+                            ),
+                    ).background(color = MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(Spacing.Spacing16),
             verticalArrangement = spacedBy(Spacing.Spacing4),
         ) {
             items(items = settings) { setting ->
-                val additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                    additionalInfoList = emptyList(),
-                    syncProgressItem = AdditionalInfoItem(value = ""),
-                )
-                val listCardState = rememberListCardState(
-                    title = ListCardTitleModel(text = setting.name ?: ""),
-                    description = ListCardDescriptionModel(text = setting.description),
-                    additionalInfoColumnState = additionalInfoColumnState,
-                    shadow = false,
-                )
+                val additionalInfoColumnState =
+                    rememberAdditionalInfoColumnState(
+                        additionalInfoList = emptyList(),
+                        syncProgressItem = AdditionalInfoItem(value = ""),
+                    )
+                val listCardState =
+                    rememberListCardState(
+                        title = ListCardTitleModel(text = setting.name ?: ""),
+                        description = ListCardDescriptionModel(text = setting.description),
+                        additionalInfoColumnState = additionalInfoColumnState,
+                        shadow = false,
+                    )
                 ListCard(
                     modifier = Modifier,
                     listCardState = listCardState,

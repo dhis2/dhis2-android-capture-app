@@ -13,7 +13,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class CheckVersionUpdateTest {
-
     private lateinit var checkVersionUpdate: CheckVersionUpdate
     private val versionRepository: VersionRepository = mock()
     private val settingsMessages: SettingsMessages = mock()
@@ -21,27 +20,30 @@ class CheckVersionUpdateTest {
 
     @Before
     fun setUp() {
-        checkVersionUpdate = CheckVersionUpdate(
-            versionRepository = versionRepository,
-            settingsMessages = settingsMessages,
-            resourceManager = resourceManager,
-        )
+        checkVersionUpdate =
+            CheckVersionUpdate(
+                versionRepository = versionRepository,
+                settingsMessages = settingsMessages,
+                resourceManager = resourceManager,
+            )
     }
 
     @Test
-    fun `should check version update`() = runTest {
-        whenever(versionRepository.getLatestVersionInfo()) doReturn "new.version.name"
-        checkVersionUpdate()
-        verify(versionRepository, times(1)).checkVersionUpdates()
-    }
+    fun `should check version update`() =
+        runTest {
+            whenever(versionRepository.getLatestVersionInfo()) doReturn "new.version.name"
+            checkVersionUpdate()
+            verify(versionRepository, times(1)).checkVersionUpdates()
+        }
 
     @Test
-    fun `should send no new version message`() = runTest {
-        val noUpdateMsg = "No updates"
-        whenever(versionRepository.getLatestVersionInfo()) doReturn null
-        whenever(resourceManager.getString(R.string.no_updates)) doReturn noUpdateMsg
-        checkVersionUpdate()
-        verify(settingsMessages, times(1)).sendMessage(noUpdateMsg)
-        verify(versionRepository, times(0)).checkVersionUpdates()
-    }
+    fun `should send no new version message`() =
+        runTest {
+            val noUpdateMsg = "No updates"
+            whenever(versionRepository.getLatestVersionInfo()) doReturn null
+            whenever(resourceManager.getString(R.string.no_updates)) doReturn noUpdateMsg
+            checkVersionUpdate()
+            verify(settingsMessages, times(1)).sendMessage(noUpdateMsg)
+            verify(versionRepository, times(0)).checkVersionUpdates()
+        }
 }

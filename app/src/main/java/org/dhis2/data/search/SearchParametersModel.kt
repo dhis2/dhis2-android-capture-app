@@ -6,7 +6,8 @@ data class SearchParametersModel(
     val selectedProgram: Program?,
     val queryData: MutableMap<String, String>?,
 ) {
-    fun copy(): SearchParametersModel = copy(
-        queryData = hashMapOf<String, String>().apply { queryData?.let { putAll(it) } },
-    )
+    fun copy(): SearchParametersModel =
+        copy(
+            queryData = hashMapOf<String, String>().apply { queryData?.let { putAll(it) } },
+        )
 }

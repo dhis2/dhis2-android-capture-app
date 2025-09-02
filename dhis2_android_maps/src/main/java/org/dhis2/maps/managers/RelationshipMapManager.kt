@@ -25,7 +25,6 @@ class RelationshipMapManager(
     mapView: MapView,
     locationEngine: LocationEngine,
 ) : MapManager(mapView, locationEngine) {
-
     companion object {
         const val RELATIONSHIP_ICON = "RELATIONSHIP_ICON"
         const val RELATIONSHIP_ARROW = "RELATIONSHIP_ARROW"
@@ -35,7 +34,10 @@ class RelationshipMapManager(
     private var boundingBox: BoundingBox = GetBoundingBox().getEnclosingBoundingBox(emptyList())
     private var featureCollections: Map<String, FeatureCollection> = emptyMap()
 
-    fun update(featureCollections: Map<String, FeatureCollection>, boundingBox: BoundingBox) {
+    fun update(
+        featureCollections: Map<String, FeatureCollection>,
+        boundingBox: BoundingBox,
+    ) {
         this.featureCollections = featureCollections
         this.boundingBox = boundingBox
         if (isMapReady()) {
@@ -92,15 +94,18 @@ class RelationshipMapManager(
     }
 
     private fun getTintedDrawable(sourceId: String): Drawable {
-        val (drawable, color) = mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
-            R.drawable.map_marker,
-            Color.parseColor("#E71409"),
-        )
+        val (drawable, color) =
+            mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
+                R.drawable.map_marker,
+                Color.parseColor("#E71409"),
+            )
 
-        val initialDrawable = AppCompatResources.getDrawable(
-            mapView.context,
-            drawable,
-        )?.mutate()
+        val initialDrawable =
+            AppCompatResources
+                .getDrawable(
+                    mapView.context,
+                    drawable,
+                )?.mutate()
         val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
         DrawableCompat.setTint(wrappedDrawable, color)
 
@@ -129,19 +134,19 @@ class RelationshipMapManager(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): Feature? {
-        return featureCollections[source]?.features()?.firstOrNull {
+    ): Feature? =
+        featureCollections[source]?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
         }
-    }
 
     override fun findFeature(propertyValue: String): Feature? {
-        val mainProperties = arrayListOf(
-            MapTeisToFeatureCollection.TEI_UID,
-            MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT,
-        )
+        val mainProperties =
+            arrayListOf(
+                MapTeisToFeatureCollection.TEI_UID,
+                MapTeisToFeatureCollection.ENROLLMENT_UID,
+                MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                MapEventToFeatureCollection.EVENT,
+            )
         var featureToReturn: Feature? = null
         for (source in featureCollections.keys) {
             for (propertyLabel in mainProperties) {
@@ -163,36 +168,43 @@ class RelationshipMapManager(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): List<Feature> {
-        return mutableListOf<Feature>().apply {
+    ): List<Feature> =
+        mutableListOf<Feature>().apply {
             featureCollections.map { (key, collection) ->
-                collection.features()?.filter {
-                    mapLayerManager.getLayer(key)?.visible == true &&
-                        it.getStringProperty(propertyName) == propertyValue
-                }?.map {
-                    mapLayerManager.getLayer(key)?.setSelectedItem(it)
-                    it
-                }?.let {
-                    mapLayerManager.getLayer(key)?.setSelectedItem(it)
-                    addAll(it)
-                }
+                collection
+                    .features()
+                    ?.filter {
+                        mapLayerManager.getLayer(key)?.visible == true &&
+                            it.getStringProperty(propertyName) == propertyValue
+                    }?.map {
+                        mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                        it
+                    }?.let {
+                        mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                        addAll(it)
+                    }
             }
         }
-    }
 
     override fun findFeatures(propertyValue: String): List<Feature>? {
-        val mainProperties = arrayListOf(
-            MapTeisToFeatureCollection.TEI_UID,
-            MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT,
-        )
-        return mainProperties.map { property ->
-            findFeatures("", property, propertyValue)
-        }.flatten().distinct()
+        val mainProperties =
+            arrayListOf(
+                MapTeisToFeatureCollection.TEI_UID,
+                MapTeisToFeatureCollection.ENROLLMENT_UID,
+                MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                MapEventToFeatureCollection.EVENT,
+            )
+        return mainProperties
+            .map { property ->
+                findFeatures("", property, propertyValue)
+            }.flatten()
+            .distinct()
     }
 
-    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
+    override fun markFeatureAsSelected(
+        point: LatLng,
+        layer: String?,
+    ): Feature? {
         val pointf: PointF = map?.projection?.toScreenLocation(point)!!
         val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
 

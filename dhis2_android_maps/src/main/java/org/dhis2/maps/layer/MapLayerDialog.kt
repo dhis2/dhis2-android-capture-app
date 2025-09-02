@@ -73,7 +73,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.getTextStyle
 
 class MapLayerDialog : BottomSheetDialogFragment() {
-
     var mapManager: MapManager? = null
     private var programUid: String? = null
     private var onLayersVisibility: (layersVisibility: HashMap<String, MapLayer>) -> Unit = {}
@@ -96,21 +95,22 @@ class MapLayerDialog : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            color = SurfaceColor.SurfaceBright,
-                            shape = RoundedCornerShape(
-                                topStart = Radius.XL,
-                                topEnd = Radius.XL,
-                            ),
-                        )
-                        .padding(horizontal = Spacing.Spacing24, vertical = Spacing.Spacing16),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = SurfaceColor.SurfaceBright,
+                                shape =
+                                    RoundedCornerShape(
+                                        topStart = Radius.XL,
+                                        topEnd = Radius.XL,
+                                    ),
+                            ).padding(horizontal = Spacing.Spacing24, vertical = Spacing.Spacing16),
                 ) {
                     Text(
                         text = stringResource(id = R.string.map_layers),
@@ -124,32 +124,34 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                                 ?: emptyList(),
                         ) { index, baseMap ->
                             AndroidView(
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .clickable {
-                                        mapManager?.mapLayerManager?.changeStyle(index)
-                                        currentStyle.set(index)
-                                    },
+                                modifier =
+                                    Modifier
+                                        .width(100.dp)
+                                        .clickable {
+                                            mapManager?.mapLayerManager?.changeStyle(index)
+                                            currentStyle.set(index)
+                                        },
                                 factory = { context ->
-                                    BasemapItemBinding.inflate(
-                                        LayoutInflater.from(context),
-                                    ).also { binding ->
-                                        binding.apply {
-                                            currentSelectedStyle = currentStyle
-                                            itemStyle = index
-                                            if (baseMap.basemapImage != null) {
-                                                baseMapImage.setImageDrawable(baseMap.basemapImage)
-                                                baseMapImage.scaleType =
-                                                    ImageView.ScaleType.CENTER_CROP
-                                            } else {
-                                                baseMapImage.setBackgroundColor(android.graphics.Color.GRAY)
-                                                baseMapImage.setImageResource(R.drawable.unknown_base_map)
-                                                baseMapImage.scaleType =
-                                                    ImageView.ScaleType.FIT_CENTER
+                                    BasemapItemBinding
+                                        .inflate(
+                                            LayoutInflater.from(context),
+                                        ).also { binding ->
+                                            binding.apply {
+                                                currentSelectedStyle = currentStyle
+                                                itemStyle = index
+                                                if (baseMap.basemapImage != null) {
+                                                    baseMapImage.setImageDrawable(baseMap.basemapImage)
+                                                    baseMapImage.scaleType =
+                                                        ImageView.ScaleType.CENTER_CROP
+                                                } else {
+                                                    baseMapImage.setBackgroundColor(android.graphics.Color.GRAY)
+                                                    baseMapImage.setImageResource(R.drawable.unknown_base_map)
+                                                    baseMapImage.scaleType =
+                                                        ImageView.ScaleType.FIT_CENTER
+                                                }
+                                                basemapName.text = baseMap.basemapName
                                             }
-                                            basemapName.text = baseMap.basemapName
-                                        }
-                                    }.root
+                                        }.root
                                 },
                                 update = {},
                             )
@@ -172,10 +174,12 @@ class MapLayerDialog : BottomSheetDialogFragment() {
                 }
             }
         }
-    }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver.addOnGlobalLayoutListener {
             val dialog = dialog as BottomSheetDialog
@@ -201,15 +205,23 @@ class MapLayerDialog : BottomSheetDialogFragment() {
             val behavior = BottomSheetBehavior.from(bottomSheet!!)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(
+                        bottomSheet: View,
+                        newState: Int,
+                    ) {
+                        if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        }
                     }
-                }
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
-            })
+                    override fun onSlide(
+                        bottomSheet: View,
+                        slideOffset: Float,
+                    ) {}
+                },
+            )
         }
         return dialog
     }
@@ -227,80 +239,88 @@ class MapLayerDialog : BottomSheetDialogFragment() {
     companion object {
         private const val ARG_PROGRAM_UID = "programUid"
 
-        fun newInstance(programUid: String?): MapLayerDialog {
-            return MapLayerDialog().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PROGRAM_UID, programUid)
-                }
+        fun newInstance(programUid: String?): MapLayerDialog =
+            MapLayerDialog().apply {
+                arguments =
+                    Bundle().apply {
+                        putString(ARG_PROGRAM_UID, programUid)
+                    }
             }
-        }
     }
 
     private fun getMapLayer(): LinkedHashMap<String, MutableList<MapLayerItem>> {
-        val layerMap = linkedMapOf<String, MutableList<MapLayerItem>>(
-            "TEI" to mutableListOf(),
-            "ENROLLMENT" to mutableListOf(),
-            "TRACKER_EVENT" to mutableListOf(),
-            "RELATIONSHIP" to mutableListOf(),
-            "EVENT" to mutableListOf(),
-            "DE" to mutableListOf(),
-            "HEATMAP" to mutableListOf(),
-        )
+        val layerMap =
+            linkedMapOf<String, MutableList<MapLayerItem>>(
+                "TEI" to mutableListOf(),
+                "ENROLLMENT" to mutableListOf(),
+                "TRACKER_EVENT" to mutableListOf(),
+                "RELATIONSHIP" to mutableListOf(),
+                "EVENT" to mutableListOf(),
+                "DE" to mutableListOf(),
+                "HEATMAP" to mutableListOf(),
+            )
 
         mapManager?.mapLayerManager?.mapLayers?.toSortedMap()?.forEach { (source, layer) ->
             layerVisibility[source] ?: run { layerVisibility[source] = layer.visible }
             when (layer) {
-                is TeiMapLayer -> layerMap["TEI"]?.add(
-                    MapLayerItem(
-                        source,
-                        requireContext().getString(R.string.dialog_layer_tei_coordinates),
-                        MapLayerManager.TEI_ICON_ID,
-                    ),
-                )
-
-                is EnrollmentMapLayer -> layerMap["ENROLLMENT"]?.add(
-                    MapLayerItem(
-                        source,
-                        resourceManager.formatWithEnrollmentLabel(
-                            programUid = programUid,
-                            stringResource = R.string.dialog_layer_enrollment_coordinates_v2,
-                            1,
+                is TeiMapLayer ->
+                    layerMap["TEI"]?.add(
+                        MapLayerItem(
+                            source,
+                            requireContext().getString(R.string.dialog_layer_tei_coordinates),
+                            MapLayerManager.TEI_ICON_ID,
                         ),
-                        MapLayerManager.ENROLLMENT_ICON_ID,
-                    ),
-                )
+                    )
 
-                is TeiEventMapLayer -> layerMap["TRACKER_EVENT"]?.add(
-                    MapLayerItem(source, image = "${MapLayerManager.STAGE_ICON_ID}_$source"),
-                )
+                is EnrollmentMapLayer ->
+                    layerMap["ENROLLMENT"]?.add(
+                        MapLayerItem(
+                            source,
+                            resourceManager.formatWithEnrollmentLabel(
+                                programUid = programUid,
+                                stringResource = R.string.dialog_layer_enrollment_coordinates_v2,
+                                1,
+                            ),
+                            MapLayerManager.ENROLLMENT_ICON_ID,
+                        ),
+                    )
 
-                is HeatmapMapLayer -> layerMap["HEATMAP"]?.add(
-                    MapLayerItem(
-                        source,
-                        requireContext().getString(R.string.dialog_layer_heatmap),
-                        HEATMAP_ICON,
-                    ),
-                )
+                is TeiEventMapLayer ->
+                    layerMap["TRACKER_EVENT"]?.add(
+                        MapLayerItem(source, image = "${MapLayerManager.STAGE_ICON_ID}_$source"),
+                    )
 
-                is RelationshipMapLayer -> layerMap["RELATIONSHIP"]?.add(
-                    MapLayerItem(source, null, "${RELATIONSHIP_ICON}_$source"),
-                )
+                is HeatmapMapLayer ->
+                    layerMap["HEATMAP"]?.add(
+                        MapLayerItem(
+                            source,
+                            requireContext().getString(R.string.dialog_layer_heatmap),
+                            HEATMAP_ICON,
+                        ),
+                    )
 
-                is EventMapLayer -> layerMap["EVENT"]?.add(
-                    MapLayerItem(
-                        source,
-                        requireContext().getString(R.string.dialog_layer_event),
-                        EventMapManager.ICON_ID,
-                    ),
-                )
+                is RelationshipMapLayer ->
+                    layerMap["RELATIONSHIP"]?.add(
+                        MapLayerItem(source, null, "${RELATIONSHIP_ICON}_$source"),
+                    )
 
-                is FieldMapLayer -> layerMap["DE"]?.add(
-                    MapLayerItem(
-                        source,
-                        mapManager?.getLayerName(source),
-                        "${EventMapManager.DE_ICON_ID}_$source",
-                    ),
-                )
+                is EventMapLayer ->
+                    layerMap["EVENT"]?.add(
+                        MapLayerItem(
+                            source,
+                            requireContext().getString(R.string.dialog_layer_event),
+                            EventMapManager.ICON_ID,
+                        ),
+                    )
+
+                is FieldMapLayer ->
+                    layerMap["DE"]?.add(
+                        MapLayerItem(
+                            source,
+                            mapManager?.getLayerName(source),
+                            "${EventMapManager.DE_ICON_ID}_$source",
+                        ),
+                    )
             }
         }
         return layerMap
@@ -312,9 +332,10 @@ class MapLayerDialog : BottomSheetDialogFragment() {
         layerVisibility: HashMap<String, Boolean>,
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 300.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 300.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(2.dp),
         ) {
@@ -340,8 +361,9 @@ class MapLayerDialog : BottomSheetDialogFragment() {
         var isChecked by remember { mutableStateOf(layerVisibility[item.source] ?: false) }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Checkbox(
@@ -359,14 +381,19 @@ class MapLayerDialog : BottomSheetDialogFragment() {
             )
 
             item.image?.let {
-                val bitmap = if (it == HEATMAP_ICON) {
-                    BitmapFactory.decodeResource(
-                        LocalContext.current.resources,
-                        R.drawable.ic_heatmap_icon,
-                    )
-                } else {
-                    mapManager?.mapLayerManager?.maplibreMap?.style?.getImage(item.image)
-                }
+                val bitmap =
+                    if (it == HEATMAP_ICON) {
+                        BitmapFactory.decodeResource(
+                            LocalContext.current.resources,
+                            R.drawable.ic_heatmap_icon,
+                        )
+                    } else {
+                        mapManager
+                            ?.mapLayerManager
+                            ?.maplibreMap
+                            ?.style
+                            ?.getImage(item.image)
+                    }
 
                 bitmap?.let { bmp ->
                     Image(

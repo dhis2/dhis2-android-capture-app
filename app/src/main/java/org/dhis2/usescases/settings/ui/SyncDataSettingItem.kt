@@ -50,85 +50,88 @@ internal fun SyncDataSettingItem(
 ) {
     val context = LocalContext.current
     SettingItem(
-        modifier = Modifier.semantics {
-            testTag = SettingItem.DATA_SYNC.name
-        },
+        modifier =
+            Modifier.semantics {
+                testTag = SettingItem.DATA_SYNC.name
+            },
         title = stringResource(id = R.string.settingsSyncData),
-        subtitle = buildAnnotatedString {
-            val currentDataSyncPeriod = syncPeriodLabel(dataSettings.dataSyncPeriod)
-            when {
-                dataSettings.syncInProgress -> {
-                    append(currentDataSyncPeriod + "\n" + stringResource(R.string.syncing_data))
-                }
+        subtitle =
+            buildAnnotatedString {
+                val currentDataSyncPeriod = syncPeriodLabel(dataSettings.dataSyncPeriod)
+                when {
+                    dataSettings.syncInProgress -> {
+                        append(currentDataSyncPeriod + "\n" + stringResource(R.string.syncing_data))
+                    }
 
-                dataSettings.dataHasErrors -> {
-                    val src =
-                        currentDataSyncPeriod + "\n" + stringResource(R.string.data_sync_error)
-                    val str = SpannableString(src)
-                    val wIndex = src.indexOf('@')
-                    val eIndex = src.indexOf('$')
-                    str.setSpan(
-                        ImageSpan(context, R.drawable.ic_sync_warning),
-                        wIndex,
-                        wIndex + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
-                    )
-                    str.setSpan(
-                        ImageSpan(context, R.drawable.ic_sync_problem_red),
-                        eIndex,
-                        eIndex + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
-                    )
-                    append(str)
-                    addStyle(
-                        style = SpanStyle(color = colorResource(R.color.red_060)),
-                        start = 0,
-                        end = str.length,
-                    )
-                }
+                    dataSettings.dataHasErrors -> {
+                        val src =
+                            currentDataSyncPeriod + "\n" + stringResource(R.string.data_sync_error)
+                        val str = SpannableString(src)
+                        val wIndex = src.indexOf('@')
+                        val eIndex = src.indexOf('$')
+                        str.setSpan(
+                            ImageSpan(context, R.drawable.ic_sync_warning),
+                            wIndex,
+                            wIndex + 1,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                        )
+                        str.setSpan(
+                            ImageSpan(context, R.drawable.ic_sync_problem_red),
+                            eIndex,
+                            eIndex + 1,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                        )
+                        append(str)
+                        addStyle(
+                            style = SpanStyle(color = colorResource(R.color.red_060)),
+                            start = 0,
+                            end = str.length,
+                        )
+                    }
 
-                dataSettings.dataHasWarnings -> {
-                    val src =
-                        currentDataSyncPeriod + "\n" + stringResource(R.string.data_sync_warning)
-                    val str = SpannableString(src)
-                    val wIndex = src.indexOf('@')
-                    str.setSpan(
-                        ImageSpan(context, R.drawable.ic_sync_warning),
-                        wIndex,
-                        wIndex + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
-                    )
-                    append(str)
-                    addStyle(
-                        style = SpanStyle(color = colorResource(R.color.colorPrimaryOrange)),
-                        start = 0,
-                        end = str.length,
-                    )
-                }
+                    dataSettings.dataHasWarnings -> {
+                        val src =
+                            currentDataSyncPeriod + "\n" + stringResource(R.string.data_sync_warning)
+                        val str = SpannableString(src)
+                        val wIndex = src.indexOf('@')
+                        str.setSpan(
+                            ImageSpan(context, R.drawable.ic_sync_warning),
+                            wIndex,
+                            wIndex + 1,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+                        )
+                        append(str)
+                        addStyle(
+                            style = SpanStyle(color = colorResource(R.color.colorPrimaryOrange)),
+                            start = 0,
+                            end = str.length,
+                        )
+                    }
 
-                dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.INCOMPLETE -> {
-                    append(stringResource(R.string.sync_incomplete_error_text))
-                }
+                    dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.INCOMPLETE -> {
+                        append(stringResource(R.string.sync_incomplete_error_text))
+                    }
 
-                dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.ERROR -> {
-                    append(stringResource(R.string.sync_error_text))
-                    addStyle(
-                        style = SpanStyle(color = colorResource(R.color.red_060)),
-                        start = 0,
-                        end = stringResource(R.string.sync_error_text).length,
-                    )
-                }
+                    dataSettings.syncHasErrors && dataSettings.syncResult == SyncResult.ERROR -> {
+                        append(stringResource(R.string.sync_error_text))
+                        addStyle(
+                            style = SpanStyle(color = colorResource(R.color.red_060)),
+                            start = 0,
+                            end = stringResource(R.string.sync_error_text).length,
+                        )
+                    }
 
-                else -> {
-                    append(
-                        currentDataSyncPeriod + "\n" + String.format(
-                            stringResource(R.string.last_data_sync_date),
-                            dataSettings.lastDataSync,
-                        ),
-                    )
+                    else -> {
+                        append(
+                            currentDataSyncPeriod + "\n" +
+                                String.format(
+                                    stringResource(R.string.last_data_sync_date),
+                                    dataSettings.lastDataSync,
+                                ),
+                        )
+                    }
                 }
-            }
-        },
+            },
         icon = Icons.Outlined.Update,
         extraActions = {
             Column(
@@ -136,14 +139,15 @@ internal fun SyncDataSettingItem(
                 verticalArrangement = spacedBy(8.dp),
             ) {
                 if (dataSettings.canEdit) {
-                    val dataSyncPeriods = listOf(
-                        stringResource(R.string.thirty_minutes),
-                        stringResource(R.string.a_hour),
-                        stringResource(R.string.every_6_hours),
-                        stringResource(R.string.every_12_hours),
-                        stringResource(R.string.a_day),
-                        stringResource(R.string.Manual),
-                    )
+                    val dataSyncPeriods =
+                        listOf(
+                            stringResource(R.string.thirty_minutes),
+                            stringResource(R.string.a_hour),
+                            stringResource(R.string.every_6_hours),
+                            stringResource(R.string.every_12_hours),
+                            stringResource(R.string.a_day),
+                            stringResource(R.string.Manual),
+                        )
                     InputDropDown(
                         modifier = Modifier.testTag(TestTag_DataPeriod),
                         title = stringResource(R.string.settings_sync_period),
@@ -153,9 +157,10 @@ internal fun SyncDataSettingItem(
                         fetchItem = { index ->
                             DropdownItem(dataSyncPeriods[index])
                         },
-                        selectedItem = DropdownItem(
-                            label = syncPeriodLabel(dataSettings.dataSyncPeriod),
-                        ),
+                        selectedItem =
+                            DropdownItem(
+                                label = syncPeriodLabel(dataSettings.dataSyncPeriod),
+                            ),
                         onResetButtonClicked = { },
                         onItemSelected = { index, _ ->
                             when (index) {
@@ -166,7 +171,7 @@ internal fun SyncDataSettingItem(
                                 4 -> onSyncDataPeriodChanged(EVERY_24_HOUR)
                                 5 -> onSyncDataPeriodChanged(Constants.TIME_MANUAL)
                                 else -> {
-                                    /*do nothing*/
+                                    // do nothing
                                 }
                             }
                         },
@@ -181,8 +186,10 @@ internal fun SyncDataSettingItem(
                 }
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.SYNC_DATA).lowercase()
-                        .capitalize(Locale.current),
+                    text =
+                        stringResource(R.string.SYNC_DATA)
+                            .lowercase()
+                            .capitalize(Locale.current),
                     style = ButtonStyle.TONAL,
                     enabled = canInitSync,
                     onClick = onSyncDataClick,

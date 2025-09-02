@@ -23,8 +23,10 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
 @Module
-class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
-
+class MainModule(
+    val view: MainView,
+    private val forceToNotSynced: Boolean,
+) {
     @Provides
     @PerActivity
     fun homePresenter(
@@ -41,8 +43,8 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
         syncStatusController: SyncStatusController,
         versionRepository: VersionRepository,
         dispatcherProvider: DispatcherProvider,
-    ): MainPresenter {
-        return MainPresenter(
+    ): MainPresenter =
+        MainPresenter(
             view,
             homeRepository,
             schedulerProvider,
@@ -59,36 +61,26 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
             dispatcherProvider,
             forceToNotSynced,
         )
-    }
 
     @Provides
     @PerActivity
-    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor {
-        return SyncIsPerformedInteractor(userManager)
-    }
+    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
 
     @Provides
     @PerActivity
     fun provideHomeRepository(
         d2: D2,
         charts: Charts?,
-    ): HomeRepository {
-        return HomeRepositoryImpl(d2, charts)
-    }
+    ): HomeRepository = HomeRepositoryImpl(d2, charts)
 
     @Provides
     @PerActivity
-    fun provideNewFiltersAdapter(): FiltersAdapter {
-        return FiltersAdapter()
-    }
+    fun provideNewFiltersAdapter(): FiltersAdapter = FiltersAdapter()
 
     @Provides
     @PerActivity
-    fun providePageConfigurator(
-        homeRepository: HomeRepository,
-    ): NavigationPageConfigurator {
-        return HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
-    }
+    fun providePageConfigurator(homeRepository: HomeRepository): NavigationPageConfigurator =
+        HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
 
     @Provides
     @PerActivity
@@ -96,11 +88,10 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
         workManagerController: WorkManagerController,
         preferencesProvider: PreferenceProvider,
         filterManager: FilterManager,
-    ): DeleteUserData {
-        return DeleteUserData(
+    ): DeleteUserData =
+        DeleteUserData(
             workManagerController,
             filterManager,
             preferencesProvider,
         )
-    }
 }

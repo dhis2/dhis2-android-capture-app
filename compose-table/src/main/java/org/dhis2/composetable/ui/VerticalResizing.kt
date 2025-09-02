@@ -35,7 +35,10 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 @Composable
-fun VerticalResizingView(modifier: Modifier = Modifier, provideResizingCell: () -> ResizingCell?) {
+fun VerticalResizingView(
+    modifier: Modifier = Modifier,
+    provideResizingCell: () -> ResizingCell?,
+) {
     val colorPrimary = TableTheme.colors.primary
     provideResizingCell()?.let { resizingCell ->
         val offsetX = resizingCell.initialPosition.x + resizingCell.draggingOffsetX
@@ -49,23 +52,21 @@ fun VerticalResizingView(modifier: Modifier = Modifier, provideResizingCell: () 
                         topLeft = Offset(0f, 0f),
                         size = Size(2.dp.toPx(), size.height),
                     )
-                }
-                .graphicsLayer(clip = false),
+                }.graphicsLayer(clip = false),
         ) {
             Icon(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset {
-                        IntOffset(
-                            -15.dp.value.toInt(),
-                            resizingCell.initialPosition.y.roundToInt(),
-                        )
-                    }
-                    .background(
-                        color = colorPrimary,
-                        shape = RoundedCornerShape(16.dp),
-                    )
-                    .size(14.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .offset {
+                            IntOffset(
+                                -15.dp.value.toInt(),
+                                resizingCell.initialPosition.y.roundToInt(),
+                            )
+                        }.background(
+                            color = colorPrimary,
+                            shape = RoundedCornerShape(16.dp),
+                        ).size(14.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
                 contentDescription = "",
                 tint = Color.White,
@@ -112,16 +113,16 @@ fun VerticalResizingRule(
             },
     ) {
         Icon(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .background(
-                    color = TableTheme.colors.primary,
-                    shape = RoundedCornerShape(16.dp),
-                )
-                .size(14.dp)
-                .onGloballyPositioned { coordinates ->
-                    positionInRoot = coordinates.positionInRoot()
-                },
+            modifier =
+                Modifier
+                    .align(Alignment.Center)
+                    .background(
+                        color = TableTheme.colors.primary,
+                        shape = RoundedCornerShape(16.dp),
+                    ).size(14.dp)
+                    .onGloballyPositioned { coordinates ->
+                        positionInRoot = coordinates.positionInRoot()
+                    },
             imageVector = ImageVector.vectorResource(id = R.drawable.ic_row_widener),
             contentDescription = "",
             tint = Color.White,

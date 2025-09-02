@@ -13,17 +13,12 @@ class HomePageConfigurator(
     private val homeRepository: HomeRepository,
     private val resourceManager: ResourceManager,
 ) : NavigationPageConfigurator {
+    override fun displayPrograms(): Boolean = true
 
-    override fun displayPrograms(): Boolean {
-        return true
-    }
+    override fun displayAnalytics(): Boolean = homeRepository.hasHomeAnalytics()
 
-    override fun displayAnalytics(): Boolean {
-        return homeRepository.hasHomeAnalytics()
-    }
-
-    override fun navigationItems(): List<NavigationBarItem<NavigationPage>> {
-        return buildList {
+    override fun navigationItems(): List<NavigationBarItem<NavigationPage>> =
+        buildList {
             add(
                 NavigationBarItem(
                     id = NavigationPage.PROGRAMS,
@@ -41,5 +36,4 @@ class HomePageConfigurator(
                 )
             }
         }
-    }
 }

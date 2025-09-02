@@ -9,13 +9,15 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 
 interface SearchRepositoryKt {
-
     fun searchTrackedEntities(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
     ): Flow<PagingData<TrackedEntitySearchItem>>
 
-    suspend fun searchParameters(programUid: String?, teiTypeUid: String): List<FieldUiModel>
+    suspend fun searchParameters(
+        programUid: String?,
+        teiTypeUid: String,
+    ): List<FieldUiModel>
 
     suspend fun searchTrackedEntitiesImmediate(
         searchParametersModel: SearchParametersModel,

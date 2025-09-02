@@ -33,7 +33,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @BindingAdapter(value = ["stateIcon", "showSynced"], requireAll = false)
-fun ImageView.setStateIcon(state: State?, showSynced: Boolean?) {
+fun ImageView.setStateIcon(
+    state: State?,
+    showSynced: Boolean?,
+) {
     when (state) {
         State.TO_POST, State.TO_UPDATE, State.UPLOADING -> {
             setImageResource(R.drawable.ic_sync_problem_grey)
@@ -84,30 +87,38 @@ fun ImageView.setEventIcon(
 ) {
     event?.let {
         val status = event.status() ?: EventStatus.ACTIVE
-        val isEnrollmentActive = enrollment?.let {
-            it.status() == EnrollmentStatus.ACTIVE
-        } ?: true
-        val drawableResource = when (status) {
-            EventStatus.ACTIVE -> getOpenIcon(
-                isEnrollmentActive && !event.isExpired(eventProgramStage, program),
-            )
+        val isEnrollmentActive =
+            enrollment?.let {
+                it.status() == EnrollmentStatus.ACTIVE
+            } ?: true
+        val drawableResource =
+            when (status) {
+                EventStatus.ACTIVE ->
+                    getOpenIcon(
+                        isEnrollmentActive && !event.isExpired(eventProgramStage, program),
+                    )
 
-            EventStatus.OVERDUE -> getOverdueIcon(isEnrollmentActive)
-            EventStatus.COMPLETED -> getCompletedIcon(isEnrollmentActive)
-            EventStatus.SKIPPED -> getSkippedIcon(isEnrollmentActive)
-            EventStatus.SCHEDULE -> getScheduleIcon(isEnrollmentActive)
-            else -> getOpenIcon(false)
-        }
+                EventStatus.OVERDUE -> getOverdueIcon(isEnrollmentActive)
+                EventStatus.COMPLETED -> getCompletedIcon(isEnrollmentActive)
+                EventStatus.SKIPPED -> getSkippedIcon(isEnrollmentActive)
+                EventStatus.SCHEDULE -> getScheduleIcon(isEnrollmentActive)
+                else -> getOpenIcon(false)
+            }
         setImageDrawable(AppCompatResources.getDrawable(context, drawableResource))
         tag = drawableResource
     }
 }
 
-private fun Event.isExpired(eventProgramStage: ProgramStage?, program: Program): Boolean {
+private fun Event.isExpired(
+    eventProgramStage: ProgramStage?,
+    program: Program,
+): Boolean {
     var eventDate = eventDate()
     if (eventProgramStage?.periodType()?.name?.contains(PeriodType.Weekly.name) == true) {
-        eventDate = DateUtils.getInstance()
-            .getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true)
+        eventDate =
+            DateUtils
+                .getInstance()
+                .getNextPeriod(eventProgramStage.periodType(), eventDate, 0, true)
     }
     return DateUtils.getInstance().isEventExpired(
         eventDate,
@@ -119,48 +130,54 @@ private fun Event.isExpired(eventProgramStage: ProgramStage?, program: Program):
     )
 }
 
-private fun getOpenIcon(isActive: Boolean) = when (isActive) {
-    true -> R.drawable.ic_event_status_open
-    false -> R.drawable.ic_event_status_open_read
-}
+private fun getOpenIcon(isActive: Boolean) =
+    when (isActive) {
+        true -> R.drawable.ic_event_status_open
+        false -> R.drawable.ic_event_status_open_read
+    }
 
-private fun getOverdueIcon(isActive: Boolean) = when (isActive) {
-    true -> R.drawable.ic_event_status_overdue
-    false -> R.drawable.ic_event_status_overdue_read
-}
+private fun getOverdueIcon(isActive: Boolean) =
+    when (isActive) {
+        true -> R.drawable.ic_event_status_overdue
+        false -> R.drawable.ic_event_status_overdue_read
+    }
 
-private fun getCompletedIcon(isActive: Boolean) = when (isActive) {
-    true -> R.drawable.ic_event_status_complete
-    false -> R.drawable.ic_event_status_complete_read
-}
+private fun getCompletedIcon(isActive: Boolean) =
+    when (isActive) {
+        true -> R.drawable.ic_event_status_complete
+        false -> R.drawable.ic_event_status_complete_read
+    }
 
-private fun getSkippedIcon(isActive: Boolean) = when (isActive) {
-    true -> R.drawable.ic_event_status_skipped
-    false -> R.drawable.ic_event_status_skipped_read
-}
+private fun getSkippedIcon(isActive: Boolean) =
+    when (isActive) {
+        true -> R.drawable.ic_event_status_skipped
+        false -> R.drawable.ic_event_status_skipped_read
+    }
 
-private fun getScheduleIcon(isActive: Boolean) = when (isActive) {
-    true -> R.drawable.ic_event_status_schedule
-    false -> R.drawable.ic_event_status_schedule_read
-}
+private fun getScheduleIcon(isActive: Boolean) =
+    when (isActive) {
+        true -> R.drawable.ic_event_status_schedule
+        false -> R.drawable.ic_event_status_schedule_read
+    }
 
 @BindingAdapter("eventWithoutRegistrationStatusIcon")
 fun ImageView.setEventWithoutRegistrationStatusIcon(event: ProgramEventViewModel) {
-    val drawableResource: Int = when (event.eventStatus) {
-        EventStatus.COMPLETED ->
-            if (event.canBeEdited) {
-                R.drawable.ic_event_status_complete
-            } else {
-                R.drawable.ic_event_status_complete_read
-            }
+    val drawableResource: Int =
+        when (event.eventStatus) {
+            EventStatus.COMPLETED ->
+                if (event.canBeEdited) {
+                    R.drawable.ic_event_status_complete
+                } else {
+                    R.drawable.ic_event_status_complete_read
+                }
 
-        else ->
-            if (event.canBeEdited) {
-                R.drawable.ic_event_status_open
-            } else {
-                R.drawable.ic_event_status_open_read
-            }
-    }
+            else ->
+                if (event.canBeEdited) {
+                    R.drawable.ic_event_status_open
+                } else {
+                    R.drawable.ic_event_status_open_read
+                }
+        }
     setImageResource(drawableResource)
 }
 
@@ -182,9 +199,10 @@ fun ComposeView.setIconStyle(metadataIconData: MetadataIconData?) {
         setContent {
             DHIS2Theme {
                 MetadataAvatar(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .alpha(0.5f),
+                    modifier =
+                        Modifier
+                            .size(56.dp)
+                            .alpha(0.5f),
                     icon = {
                         if (metadataIconData.isFileLoaded()) {
                             MetadataIcon(

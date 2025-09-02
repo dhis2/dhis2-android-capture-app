@@ -10,25 +10,18 @@ import javax.inject.Singleton
 
 @Module
 class MatomoAnalyticsModule {
-
     @Provides
     @Singleton
     fun providesMatomoAnalyticsController(
         matomo: Matomo,
         apkChecksum: DownloadTracker.Extra.ApkChecksum,
-    ): MatomoAnalyticsController {
-        return MatomoAnalyticsControllerImpl(matomo, apkChecksum)
-    }
+    ): MatomoAnalyticsController = MatomoAnalyticsControllerImpl(matomo, apkChecksum)
 
     @Provides
     @Singleton
-    fun provideMatomo(context: Context): Matomo {
-        return Matomo.getInstance(context)
-    }
+    fun provideMatomo(context: Context): Matomo = Matomo.getInstance(context)
 
     @Provides
     @Singleton
-    fun apkCheckSum(context: Context): DownloadTracker.Extra.ApkChecksum {
-        return DownloadTracker.Extra.ApkChecksum(context)
-    }
+    fun apkCheckSum(context: Context): DownloadTracker.Extra.ApkChecksum = DownloadTracker.Extra.ApkChecksum(context)
 }

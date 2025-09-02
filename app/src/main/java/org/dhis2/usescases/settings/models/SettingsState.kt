@@ -13,5 +13,6 @@ data class SettingsState(
     val isTwoFAConfigured: Boolean,
 ) {
     fun canInitDataSync() = hasConnection && !dataSettingsViewModel.syncInProgress
+
     fun canInitMetadataSync() = hasConnection && !metadataSettingsViewModel.syncInProgress
 }

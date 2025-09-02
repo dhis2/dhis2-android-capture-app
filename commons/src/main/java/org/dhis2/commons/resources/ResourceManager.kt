@@ -15,7 +15,6 @@ class ResourceManager(
     val context: Context,
     private val colorUtils: ColorUtils,
 ) {
-
     fun getString(
         @StringRes stringResource: Int,
     ) = getWrapperContext().getString(stringResource)
@@ -23,27 +22,23 @@ class ResourceManager(
     fun getString(
         @StringRes stringResource: Int,
         vararg arguments: String,
-    ) =
-        getWrapperContext().getString(stringResource).format(*arguments)
+    ) = getWrapperContext().getString(stringResource).format(*arguments)
 
     fun getString(
         @StringRes stringResource: Int,
         quantity: Int,
-    ) =
-        getWrapperContext().getString(stringResource).format(quantity)
+    ) = getWrapperContext().getString(stringResource).format(quantity)
 
     fun getPlural(
         @PluralsRes pluralResource: Int,
         quantity: Int,
-    ) =
-        getWrapperContext().resources.getQuantityString(pluralResource, quantity)
+    ) = getWrapperContext().resources.getQuantityString(pluralResource, quantity)
 
     fun getPlural(
         @PluralsRes pluralResource: Int,
         quantity: Int,
         vararg arguments: Any,
-    ) =
-        getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
+    ) = getWrapperContext().resources.getQuantityString(pluralResource, quantity, *arguments)
 
     fun formatWithEnrollmentLabel(
         programUid: String?,
@@ -65,12 +60,18 @@ class ResourceManager(
         capitalize: Boolean = false,
         quantity: Int = 1,
     ): String {
-        val enrollmentLabel = try {
-            D2Manager.getD2().programModule().programs().uid(programUid).blockingGet()
-                ?.displayEnrollmentLabel()
-        } catch (e: Exception) {
-            null
-        } ?: getPlural(R.plurals.enrollment, quantity)
+        val enrollmentLabel =
+            try {
+                D2Manager
+                    .getD2()
+                    .programModule()
+                    .programs()
+                    .uid(programUid)
+                    .blockingGet()
+                    ?.displayEnrollmentLabel()
+            } catch (e: Exception) {
+                null
+            } ?: getPlural(R.plurals.enrollment, quantity)
 
         return if (capitalize) {
             enrollmentLabel.capitalize(Locale.current)
@@ -82,8 +83,8 @@ class ResourceManager(
     fun getObjectStyleDrawableResource(
         icon: String?,
         @DrawableRes defaultResource: Int,
-    ): Int {
-        return icon?.let {
+    ): Int =
+        icon?.let {
             val iconName = if (icon.startsWith("ic_")) icon else "ic_$icon"
             val iconResource =
                 getWrapperContext().resources.getIdentifier(
@@ -98,52 +99,54 @@ class ResourceManager(
                 R.drawable.ic_default_icon
             }
         } ?: defaultResource
-    }
 
-    private fun drawableExists(iconResource: Int): Boolean {
-        return try {
+    private fun drawableExists(iconResource: Int): Boolean =
+        try {
             ContextCompat.getDrawable(getWrapperContext(), iconResource)
             true
         } catch (e: Exception) {
             false
         }
-    }
 
-    fun getColorFrom(hexColor: String?): Int {
-        return hexColor?.let {
+    fun getColorFrom(hexColor: String?): Int =
+        hexColor?.let {
             colorUtils.parseColor(it)
         } ?: -1
-    }
 
-    fun getColorOrDefaultFrom(hexColor: String?): Int {
-        return colorUtils.getColorFrom(
+    fun getColorOrDefaultFrom(hexColor: String?): Int =
+        colorUtils.getColorFrom(
             hexColor,
             colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
         )
-    }
 
     fun parseD2Error(throwable: Throwable) =
         D2ErrorUtils(getWrapperContext(), NetworkUtils(getWrapperContext()))
             .getErrorMessage(throwable)
 
     fun defaultEventLabel(): String = getWrapperContext().getString(R.string.events)
+
     fun defaultDataSetLabel(): String = getWrapperContext().getString(R.string.data_sets)
+
     fun defaultTeiLabel(): String = getWrapperContext().getString(R.string.tei)
+
     fun sectionFeedback(): String = getWrapperContext().getString(R.string.section_feedback)
+
     fun sectionIndicators(): String = getWrapperContext().getString(R.string.section_indicators)
+
     fun sectionCharts(): String = getWrapperContext().getString(R.string.section_charts)
-    fun sectionChartsAndIndicators(): String =
-        getWrapperContext().getString(R.string.section_charts_indicators)
+
+    fun sectionChartsAndIndicators(): String = getWrapperContext().getString(R.string.section_charts_indicators)
 
     fun defaultIndicatorLabel(): String = getWrapperContext().getString(R.string.info)
 
-    fun getWrapperContext() = try {
-        LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
-    } catch (exception: Exception) {
-        context
-    }
+    fun getWrapperContext() =
+        try {
+            LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
+        } catch (exception: Exception) {
+            context
+        }
 
     fun defaultTableLabel(): String = context.getString(R.string.default_table_header_label)
-    fun defaultEmptyDataSetSectionLabel(): String =
-        context.getString(R.string.default_empty_dataset_section_label)
+
+    fun defaultEmptyDataSetSectionLabel(): String = context.getString(R.string.default_empty_dataset_section_label)
 }

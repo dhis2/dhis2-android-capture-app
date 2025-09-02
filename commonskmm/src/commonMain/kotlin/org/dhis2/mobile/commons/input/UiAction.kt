@@ -1,6 +1,8 @@
 package org.dhis2.mobile.commons.input
 
-sealed class UiAction(open val id: String) {
+sealed class UiAction(
+    open val id: String,
+) {
     data class OnNextClick(
         override val id: String,
     ) : UiAction(id)
@@ -17,7 +19,6 @@ sealed class UiAction(open val id: String) {
     data class OnValueChanged(
         override val id: String,
         val newValue: String?,
-
         val showInputDialog: Boolean = true,
     ) : UiAction(id)
 
@@ -25,7 +26,6 @@ sealed class UiAction(open val id: String) {
         override val id: String,
         val locationType: String,
         val initialData: String?,
-
     ) : UiAction(id)
 
     data class OnEmailAction(

@@ -20,20 +20,28 @@ class AttributionManager(
     maplibreMap: MapLibreMap,
     private var currentBaseMapStyle: BaseMapStyle,
 ) : AttributionDialogManager(context, maplibreMap) {
-
     override fun showAttributionDialog(attributionTitles: Array<String>) {
-        val attributions: Array<String> = currentBaseMapStyle.sources.attribution.split(", ")
-            .map {
-                HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
-            }
-            .toTypedArray()
+        val attributions: Array<String> =
+            currentBaseMapStyle.sources.attribution
+                .split(", ")
+                .map {
+                    HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+                }.toTypedArray()
         super.showAttributionDialog(attributions)
     }
 
-    override fun onClick(dialog: DialogInterface?, which: Int) {
+    override fun onClick(
+        dialog: DialogInterface?,
+        which: Int,
+    ) {
         val selectedAttribution = currentBaseMapStyle.sources.attribution.split(", ")[which]
-        val url = HtmlCompat.fromHtml(selectedAttribution, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            .getSpans<URLSpan>().takeIf { it.isNotEmpty() }?.get(0)?.url
+        val url =
+            HtmlCompat
+                .fromHtml(selectedAttribution, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                .getSpans<URLSpan>()
+                .takeIf { it.isNotEmpty() }
+                ?.get(0)
+                ?.url
 
         if (url != null) {
             try {
@@ -41,12 +49,12 @@ class AttributionManager(
                 intent.data = Uri.parse(url)
                 context.startActivity(intent)
             } catch (exception: ActivityNotFoundException) {
-                Toast.makeText(
-                    context,
-                    R.string.map_attributionErrorNoBrowser,
-                    Toast.LENGTH_LONG,
-                )
-                    .show()
+                Toast
+                    .makeText(
+                        context,
+                        R.string.map_attributionErrorNoBrowser,
+                        Toast.LENGTH_LONG,
+                    ).show()
                 MapStrictMode.strictModeViolation(exception)
             }
         }

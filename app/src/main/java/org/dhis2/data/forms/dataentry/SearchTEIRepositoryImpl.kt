@@ -13,7 +13,6 @@ class SearchTEIRepositoryImpl(
     private val enrollmentUtils: DhisEnrollmentUtils,
     private val crashController: CrashReportController = CrashReportControllerImpl(),
 ) : SearchTEIRepository {
-
     override fun isUniqueTEIAttributeOnline(
         uid: String,
         value: String?,
@@ -25,20 +24,30 @@ class SearchTEIRepositoryImpl(
         }
 
         val attribute =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingGet()!!
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(uid)
+                .blockingGet()!!
         val isUnique = attribute.unique() ?: false
         val orgUnitScope = attribute.orgUnitScope() ?: false
 
         if (isUnique && !orgUnitScope) {
             try {
-                val teiList = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                    .allowOnlineCache()
-                    .eq(true)
-                    .byOrgUnitMode()
-                    .eq(OrganisationUnitMode.ACCESSIBLE)
-                    .byProgram()
-                    .eq(programUid)
-                    .byAttribute(attribute.uid()).eq(value).blockingGet()
+                val teiList =
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityInstanceQuery()
+                        .onlineOnly()
+                        .allowOnlineCache()
+                        .eq(true)
+                        .byOrgUnitMode()
+                        .eq(OrganisationUnitMode.ACCESSIBLE)
+                        .byProgram()
+                        .eq(programUid)
+                        .byAttribute(attribute.uid())
+                        .eq(value)
+                        .blockingGet()
 
                 if (teiList.isNullOrEmpty()) {
                     return true
@@ -51,18 +60,22 @@ class SearchTEIRepositoryImpl(
         } else if (isUnique && orgUnitScope) {
             val orgUnit = enrollmentUtils.getOrgUnit(teiUid)
 
-            val teiList = d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache()
-                .eq(true)
-                .byProgram()
-                .eq(programUid)
-                .byAttribute(attribute.uid())
-                .eq(value)
-                .byOrgUnitMode()
-                .eq(OrganisationUnitMode.DESCENDANTS)
-                .byOrgUnits()
-                .`in`(orgUnit)
-                .blockingGet()
+            val teiList =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstanceQuery()
+                    .onlineOnly()
+                    .allowOnlineCache()
+                    .eq(true)
+                    .byProgram()
+                    .eq(programUid)
+                    .byAttribute(attribute.uid())
+                    .eq(value)
+                    .byOrgUnitMode()
+                    .eq(OrganisationUnitMode.DESCENDANTS)
+                    .byOrgUnits()
+                    .`in`(orgUnit)
+                    .blockingGet()
 
             if (teiList.isNullOrEmpty()) {
                 return true
@@ -79,14 +92,15 @@ class SearchTEIRepositoryImpl(
         attribute: TrackedEntityAttribute,
         value: String?,
     ): Boolean {
-        val exception = if (e.cause != null && e.cause is D2Error) {
-            val d2Error = e.cause as D2Error
-            "component: ${d2Error.errorComponent()}," +
-                " code: ${d2Error.errorCode()}," +
-                " description: ${d2Error.errorDescription()}"
-        } else {
-            "No d2 Error"
-        }
+        val exception =
+            if (e.cause != null && e.cause is D2Error) {
+                val d2Error = e.cause as D2Error
+                "component: ${d2Error.errorComponent()}," +
+                    " code: ${d2Error.errorCode()}," +
+                    " description: ${d2Error.errorDescription()}"
+            } else {
+                "No d2 Error"
+            }
         crashController.addBreadCrumb(
             "SearchTEIRepositoryImpl.isUniqueAttribute",
             "programUid: $programUid ," +

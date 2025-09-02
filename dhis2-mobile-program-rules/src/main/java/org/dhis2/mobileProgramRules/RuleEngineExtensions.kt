@@ -33,20 +33,17 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import timber.log.Timber
 import java.util.Date
 
-fun Date.toRuleEngineInstant() =
-    Instant.fromEpochMilliseconds(this.time)
+fun Date.toRuleEngineInstant() = Instant.fromEpochMilliseconds(this.time)
 
-fun Date.toRuleEngineLocalDate() =
-    toRuleEngineInstant().toLocalDateTime(TimeZone.currentSystemDefault()).date
+fun Date.toRuleEngineLocalDate() = toRuleEngineInstant().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
-fun List<ProgramRule>.toRuleList(): List<Rule> {
-    return map {
+fun List<ProgramRule>.toRuleList(): List<Rule> =
+    map {
         it.toRuleEngineObject()
     }
-}
 
-fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
-    return map {
+fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> =
+    map {
         try {
             it.toRuleEngineObject()
         } catch (e: Exception) {
@@ -56,38 +53,38 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> {
             )
         }
     }
-}
 
 fun List<ProgramRuleVariable>.toRuleVariableList(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
-): List<RuleVariable> {
-    return mapNotNull {
-        val allowVariable = when {
-            it.dataElement() != null -> {
-                dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
-            }
+): List<RuleVariable> =
+    mapNotNull {
+        val allowVariable =
+            when {
+                it.dataElement() != null -> {
+                    dataElementRepository.uid(it.dataElement()?.uid()).blockingExists()
+                }
 
-            it.trackedEntityAttribute() != null -> {
-                attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
-            }
+                it.trackedEntityAttribute() != null -> {
+                    attributeRepository.uid(it.trackedEntityAttribute()?.uid()).blockingExists()
+                }
 
-            else -> isCalculatedValue(it)
-        }
+                else -> isCalculatedValue(it)
+            }
         if (allowVariable) {
             it.toRuleVariable(attributeRepository, dataElementRepository)
         } else {
             null
         }
     }
-}
 
-private fun isCalculatedValue(it: ProgramRuleVariable) = it.dataElement() == null &&
-    it.trackedEntityAttribute() == null &&
-    it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
+private fun isCalculatedValue(it: ProgramRuleVariable) =
+    it.dataElement() == null &&
+        it.trackedEntityAttribute() == null &&
+        it.programRuleVariableSourceType() == ProgramRuleVariableSourceType.CALCULATED_VALUE
 
-fun ProgramRule.toRuleEngineObject(): Rule {
-    return Rule(
+fun ProgramRule.toRuleEngineObject(): Rule =
+    Rule(
         condition = condition() ?: "",
         actions = programRuleActions()?.toRuleActionList() ?: ArrayList(),
         uid = uid(),
@@ -95,7 +92,6 @@ fun ProgramRule.toRuleEngineObject(): Rule {
         programStage = programStage()?.uid(),
         priority = priority(),
     )
-}
 
 fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
     val field =
@@ -112,33 +108,36 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             RuleAction(
                 data = null,
                 type = ProgramRuleActionType.HIDEFIELD.name,
-                values = mutableMapOf(
-                    Pair("field", field),
-                ).also { map ->
-                    contentToDisplay?.let { map["content"] = it }
-                },
+                values =
+                    mutableMapOf(
+                        Pair("field", field),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
             )
 
         ProgramRuleActionType.DISPLAYTEXT ->
             RuleAction(
                 data = data(),
                 type = ProgramRuleActionType.DISPLAYTEXT.name,
-                values = mutableMapOf(
-                    Pair("location", location() ?: "indicators"),
-                ).also { map ->
-                    contentToDisplay?.let { map["content"] = it }
-                },
+                values =
+                    mutableMapOf(
+                        Pair("location", location() ?: "indicators"),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
             )
 
         ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
             RuleAction(
                 data = data(),
                 type = ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name,
-                values = mutableMapOf(
-                    Pair("location", location()!!),
-                ).also { map ->
-                    contentToDisplay?.let { map["content"] = it }
-                },
+                values =
+                    mutableMapOf(
+                        Pair("location", location()!!),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
             )
 
         ProgramRuleActionType.HIDESECTION ->
@@ -146,9 +145,10 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = null,
                     type = ProgramRuleActionType.HIDESECTION.name,
-                    values = mutableMapOf(
-                        Pair("programStageSection", it.uid()),
-                    ),
+                    values =
+                        mutableMapOf(
+                            Pair("programStageSection", it.uid()),
+                        ),
                 )
             } ?: RuleAction(
                 "HIDE SECTION RULE IS MISSING PROGRAM STAGE SECTION",
@@ -160,9 +160,10 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data(),
                     type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                    values = mutableMapOf(
-                        Pair("programStage", it.uid()),
-                    ),
+                    values =
+                        mutableMapOf(
+                            Pair("programStage", it.uid()),
+                        ),
                 )
             } ?: RuleAction(
                 "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
@@ -179,63 +180,70 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data() ?: "",
                     type = ProgramRuleActionType.ASSIGN.name,
-                    values = if (field.isNotEmpty()) {
-                        mutableMapOf(
-                            Pair("field", field),
-                        ).also { map ->
-                            contentToDisplay?.let { map["content"] = it }
-                        }
-                    } else {
-                        contentToDisplay?.let {
+                    values =
+                        if (field.isNotEmpty()) {
                             mutableMapOf(
-                                Pair("content", it),
-                            )
-                        } ?: emptyMap()
-                    },
+                                Pair("field", field),
+                            ).also { map ->
+                                contentToDisplay?.let { map["content"] = it }
+                            }
+                        } else {
+                            contentToDisplay?.let {
+                                mutableMapOf(
+                                    Pair("content", it),
+                                )
+                            } ?: emptyMap()
+                        },
                 )
             }
         }
 
-        ProgramRuleActionType.SHOWWARNING -> RuleAction(
-            data = data(),
-            type = ProgramRuleActionType.SHOWWARNING.name,
-            values = mutableMapOf(
-                Pair("field", field),
-            ).also { map ->
-                contentToDisplay?.let { map["content"] = it }
-            },
-        )
+        ProgramRuleActionType.SHOWWARNING ->
+            RuleAction(
+                data = data(),
+                type = ProgramRuleActionType.SHOWWARNING.name,
+                values =
+                    mutableMapOf(
+                        Pair("field", field),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
+            )
 
-        ProgramRuleActionType.WARNINGONCOMPLETE -> RuleAction(
-            data = data(),
-            type = ProgramRuleActionType.WARNINGONCOMPLETE.name,
-            values = mutableMapOf(
-                Pair("field", field),
-            ).also { map ->
-                contentToDisplay?.let { map["content"] = it }
-            },
-        )
+        ProgramRuleActionType.WARNINGONCOMPLETE ->
+            RuleAction(
+                data = data(),
+                type = ProgramRuleActionType.WARNINGONCOMPLETE.name,
+                values =
+                    mutableMapOf(
+                        Pair("field", field),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
+            )
 
         ProgramRuleActionType.SHOWERROR ->
             RuleAction(
                 data = data(),
                 type = ProgramRuleActionType.SHOWERROR.name,
-                values = mutableMapOf(
-                    Pair("field", field),
-                ).also { map ->
-                    contentToDisplay?.let { map["content"] = it }
-                },
+                values =
+                    mutableMapOf(
+                        Pair("field", field),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
             )
 
         ProgramRuleActionType.ERRORONCOMPLETE ->
             RuleAction(
                 data = data(),
                 type = ProgramRuleActionType.ERRORONCOMPLETE.name,
-                values = mutableMapOf(
-                    Pair("field", field),
-                ).also { map ->
-                    contentToDisplay?.let { map["content"] = it }
-                },
+                values =
+                    mutableMapOf(
+                        Pair("field", field),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
             )
 
         ProgramRuleActionType.CREATEEVENT ->
@@ -243,11 +251,12 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data(),
                     type = ProgramRuleActionType.CREATEEVENT.name,
-                    values = mutableMapOf(
-                        Pair("programStage", stageUid),
-                    ).also { map ->
-                        contentToDisplay?.let { map["content"] = it }
-                    },
+                    values =
+                        mutableMapOf(
+                            Pair("programStage", stageUid),
+                        ).also { map ->
+                            contentToDisplay?.let { map["content"] = it }
+                        },
                 )
             } ?: RuleAction(
                 "CREATE EVENT RULE IS MISSING PROGRAM STAGE SECTION",
@@ -258,11 +267,12 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
             RuleAction(
                 data = data(),
                 type = ProgramRuleActionType.SETMANDATORYFIELD.name,
-                values = mutableMapOf(
-                    Pair("field", field),
-                ).also { map ->
-                    contentToDisplay?.let { map["content"] = it }
-                },
+                values =
+                    mutableMapOf(
+                        Pair("field", field),
+                    ).also { map ->
+                        contentToDisplay?.let { map["content"] = it }
+                    },
             )
 
         ProgramRuleActionType.HIDEOPTION ->
@@ -270,12 +280,13 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data(),
                     type = ProgramRuleActionType.HIDEOPTION.name,
-                    values = mutableMapOf(
-                        Pair("field", field),
-                        Pair("option", optionUid),
-                    ).also { map ->
-                        contentToDisplay?.let { map["content"] = it }
-                    },
+                    values =
+                        mutableMapOf(
+                            Pair("field", field),
+                            Pair("option", optionUid),
+                        ).also { map ->
+                            contentToDisplay?.let { map["content"] = it }
+                        },
                 )
             } ?: RuleAction(
                 "HIDE OPTION RULE IS MISSING OPTION",
@@ -287,12 +298,13 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data(),
                     type = ProgramRuleActionType.SHOWOPTIONGROUP.name,
-                    values = mutableMapOf(
-                        Pair("field", field),
-                        Pair("optionGroup", optionGroupUid),
-                    ).also { map ->
-                        contentToDisplay?.let { map["content"] = it }
-                    },
+                    values =
+                        mutableMapOf(
+                            Pair("field", field),
+                            Pair("optionGroup", optionGroupUid),
+                        ).also { map ->
+                            contentToDisplay?.let { map["content"] = it }
+                        },
                 )
             } ?: RuleAction(
                 "SHOW OPTION GROUP RULE IS MISSING OPTION GROUP",
@@ -304,12 +316,13 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                 RuleAction(
                     data = data(),
                     type = ProgramRuleActionType.HIDEOPTIONGROUP.name,
-                    values = mutableMapOf(
-                        Pair("field", field),
-                        Pair("optionGroup", optionGroupUid),
-                    ).also { map ->
-                        contentToDisplay?.let { map["content"] = it }
-                    },
+                    values =
+                        mutableMapOf(
+                            Pair("field", field),
+                            Pair("optionGroup", optionGroupUid),
+                        ).also { map ->
+                            contentToDisplay?.let { map["content"] = it }
+                        },
                 )
             } ?: RuleAction(
                 "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",
@@ -328,25 +341,32 @@ fun ProgramRuleVariable.toRuleVariable(
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
 ): RuleVariable {
-    val valueType = when (programRuleVariableSourceType()) {
-        ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
-        ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM,
-        ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT,
-        ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT,
-        ->
-            dataElement()?.let {
-                dataElementRepository.uid(it.uid()).blockingGet()
-                    ?.valueType()?.toRuleValueType()
-            } ?: RuleValueType.TEXT
+    val valueType =
+        when (programRuleVariableSourceType()) {
+            ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM_STAGE,
+            ProgramRuleVariableSourceType.DATAELEMENT_NEWEST_EVENT_PROGRAM,
+            ProgramRuleVariableSourceType.DATAELEMENT_CURRENT_EVENT,
+            ProgramRuleVariableSourceType.DATAELEMENT_PREVIOUS_EVENT,
+            ->
+                dataElement()?.let {
+                    dataElementRepository
+                        .uid(it.uid())
+                        .blockingGet()
+                        ?.valueType()
+                        ?.toRuleValueType()
+                } ?: RuleValueType.TEXT
 
-        ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
-            trackedEntityAttribute()?.let {
-                attributeRepository.uid(it.uid()).blockingGet()
-                    ?.valueType()?.toRuleValueType()
-            } ?: RuleValueType.TEXT
+            ProgramRuleVariableSourceType.TEI_ATTRIBUTE ->
+                trackedEntityAttribute()?.let {
+                    attributeRepository
+                        .uid(it.uid())
+                        .blockingGet()
+                        ?.valueType()
+                        ?.toRuleValueType()
+                } ?: RuleValueType.TEXT
 
-        ProgramRuleVariableSourceType.CALCULATED_VALUE, null -> RuleValueType.TEXT
-    }
+            ProgramRuleVariableSourceType.CALCULATED_VALUE, null -> RuleValueType.TEXT
+        }
 
     val useCodeForOptionSet = useCodeForOptionSet() ?: false
     val options = emptyList<Option>()
@@ -411,40 +431,49 @@ fun ProgramRuleVariable.toRuleVariable(
     }
 }
 
-fun ValueType.toRuleValueType(): RuleValueType {
-    return when {
+fun ValueType.toRuleValueType(): RuleValueType =
+    when {
         isInteger || isNumeric -> RuleValueType.NUMERIC
         isBoolean -> RuleValueType.BOOLEAN
         else -> RuleValueType.TEXT
     }
-}
 
 fun List<TrackedEntityDataValue>.toRuleDataValue(
     event: Event,
     dataElementRepository: DataElementCollectionRepository,
     ruleVariableRepository: ProgramRuleVariableCollectionRepository,
     optionRepository: OptionCollectionRepository,
-): List<RuleDataValue> {
-    return map {
+): List<RuleDataValue> =
+    map {
         var value = if (it.value() != null) it.value() else ""
         val de = dataElementRepository.uid(it.dataElement()).blockingGet()
         if (!de?.optionSetUid().isNullOrEmpty()) {
             if (ruleVariableRepository
-                    .byProgramUid().eq(event.program())
-                    .byDataElementUid().eq(it.dataElement())
-                    .byUseCodeForOptionSet().isTrue
+                    .byProgramUid()
+                    .eq(event.program())
+                    .byDataElementUid()
+                    .eq(it.dataElement())
+                    .byUseCodeForOptionSet()
+                    .isTrue
                     .blockingIsEmpty()
             ) {
                 value =
                     if (optionRepository
-                            .byOptionSetUid().eq(de?.optionSetUid())
-                            .byCode().eq(value)
-                            .one().blockingExists()
+                            .byOptionSetUid()
+                            .eq(de?.optionSetUid())
+                            .byCode()
+                            .eq(value)
+                            .one()
+                            .blockingExists()
                     ) {
                         optionRepository
-                            .byOptionSetUid().eq(de?.optionSetUid())
-                            .byCode().eq(value)
-                            .one().blockingGet()?.name()
+                            .byOptionSetUid()
+                            .eq(de?.optionSetUid())
+                            .byCode()
+                            .eq(value)
+                            .one()
+                            .blockingGet()
+                            ?.name()
                     } else {
                         ""
                     }
@@ -457,58 +486,77 @@ fun List<TrackedEntityDataValue>.toRuleDataValue(
             value = value!!,
         )
     }.filter { it.value.isNotEmpty() }
-}
 
 fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(
     d2: D2,
     program: String,
-): List<RuleAttributeValue> {
-    return map {
+): List<RuleAttributeValue> =
+    map {
         var value = if (it.value() != null) it.value() else ""
         val attr =
-            d2.trackedEntityModule().trackedEntityAttributes().uid(it.trackedEntityAttribute())
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(it.trackedEntityAttribute())
                 .blockingGet()
         if (!attr?.optionSet()?.uid().isNullOrEmpty()) {
-            if (d2.programModule().programRuleVariables()
-                    .byProgramUid().eq(program)
-                    .byTrackedEntityAttributeUid().eq(it.trackedEntityAttribute())
-                    .byUseCodeForOptionSet().isTrue
+            if (d2
+                    .programModule()
+                    .programRuleVariables()
+                    .byProgramUid()
+                    .eq(program)
+                    .byTrackedEntityAttributeUid()
+                    .eq(it.trackedEntityAttribute())
+                    .byUseCodeForOptionSet()
+                    .isTrue
                     .blockingIsEmpty()
             ) {
                 value =
-                    if (d2.optionModule().options().byOptionSetUid().eq(attr?.optionSet()?.uid())
-                            .byCode().eq(value)
-                            .one().blockingExists()
-                    ) {
-                        d2.optionModule().options().byOptionSetUid().eq(attr?.optionSet()?.uid())
-                            .byCode().eq(value)
+                    if (d2
+                            .optionModule()
+                            .options()
+                            .byOptionSetUid()
+                            .eq(attr?.optionSet()?.uid())
+                            .byCode()
+                            .eq(value)
                             .one()
-                            .blockingGet()?.name() ?: ""
+                            .blockingExists()
+                    ) {
+                        d2
+                            .optionModule()
+                            .options()
+                            .byOptionSetUid()
+                            .eq(attr?.optionSet()?.uid())
+                            .byCode()
+                            .eq(value)
+                            .one()
+                            .blockingGet()
+                            ?.name() ?: ""
                     } else {
                         ""
                     }
             }
         } else if (attr?.valueType()?.isNumeric == true) {
-            value = try {
-                when (attr.valueType()) {
-                    ValueType.INTEGER_NEGATIVE,
-                    ValueType.INTEGER_ZERO_OR_POSITIVE,
-                    ValueType.INTEGER_POSITIVE,
-                    ValueType.INTEGER,
-                    -> value?.toInt().toString()
+            value =
+                try {
+                    when (attr.valueType()) {
+                        ValueType.INTEGER_NEGATIVE,
+                        ValueType.INTEGER_ZERO_OR_POSITIVE,
+                        ValueType.INTEGER_POSITIVE,
+                        ValueType.INTEGER,
+                        -> value?.toInt().toString()
 
-                    ValueType.PERCENTAGE,
-                    ValueType.UNIT_INTERVAL,
-                    ValueType.NUMBER,
-                    -> value?.toFloat().toString()
+                        ValueType.PERCENTAGE,
+                        ValueType.UNIT_INTERVAL,
+                        ValueType.NUMBER,
+                        -> value?.toFloat().toString()
 
-                    else -> value
+                        else -> value
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    ""
                 }
-            } catch (e: Exception) {
-                Timber.e(e)
-                ""
-            }
         }
         RuleAttributeValue(it.trackedEntityAttribute()!!, value!!)
     }.filter { it.value.isNotEmpty() }
-}

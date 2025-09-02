@@ -11,7 +11,6 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 
 class UpdateSyncSettingsTest {
-
     private lateinit var updateSyncSettings: UpdateSyncSettings
     private val settingsRepository: SettingsRepository = mock()
     private val analyticsHelper: AnalyticsHelper = mock()
@@ -22,38 +21,43 @@ class UpdateSyncSettingsTest {
     }
 
     @Test
-    fun shouldSaveLimitScope() = runTest {
-        val limitScopeToSave = LimitScope.PER_PROGRAM
-        updateSyncSettings(UpdateSyncSettings.SyncSettings.Scope(limitScopeToSave))
-        verify(settingsRepository).saveLimitScope(limitScopeToSave)
-    }
+    fun shouldSaveLimitScope() =
+        runTest {
+            val limitScopeToSave = LimitScope.PER_PROGRAM
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.Scope(limitScopeToSave))
+            verify(settingsRepository).saveLimitScope(limitScopeToSave)
+        }
 
     @Test
-    fun shouldSaveEventMaxCount() = runTest {
-        val eventMaxCountToSave = 10
-        updateSyncSettings(UpdateSyncSettings.SyncSettings.EventMaxCount(eventMaxCountToSave))
-        verify(settingsRepository).saveEventsToDownload(eventMaxCountToSave)
-    }
+    fun shouldSaveEventMaxCount() =
+        runTest {
+            val eventMaxCountToSave = 10
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.EventMaxCount(eventMaxCountToSave))
+            verify(settingsRepository).saveEventsToDownload(eventMaxCountToSave)
+        }
 
     @Test
-    fun shouldSaveTeiMaxCount() = runTest {
-        val teiMaxCountToSave = 10
-        updateSyncSettings(UpdateSyncSettings.SyncSettings.TeiMaxCount(teiMaxCountToSave))
-        verify(settingsRepository).saveTeiToDownload(teiMaxCountToSave)
-    }
+    fun shouldSaveTeiMaxCount() =
+        runTest {
+            val teiMaxCountToSave = 10
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.TeiMaxCount(teiMaxCountToSave))
+            verify(settingsRepository).saveTeiToDownload(teiMaxCountToSave)
+        }
 
     @Test
-    fun shouldSaveReservedValues() = runTest {
-        val reservedValuesToSave = 10
-        updateSyncSettings(UpdateSyncSettings.SyncSettings.ReservedValues(reservedValuesToSave))
-        verify(settingsRepository).saveReservedValuesToDownload(reservedValuesToSave)
-    }
+    fun shouldSaveReservedValues() =
+        runTest {
+            val reservedValuesToSave = 10
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.ReservedValues(reservedValuesToSave))
+            verify(settingsRepository).saveReservedValuesToDownload(reservedValuesToSave)
+        }
 
     @Test
-    fun shouldResetSettings() = runTest {
-        updateSyncSettings(UpdateSyncSettings.SyncSettings.Reset)
-        verify(settingsRepository).saveLimitScope(LimitScope.GLOBAL)
-        verify(settingsRepository).saveEventsToDownload(Constants.EVENT_MAX_DEFAULT)
-        verify(settingsRepository).saveTeiToDownload(Constants.TEI_MAX_DEFAULT)
-    }
+    fun shouldResetSettings() =
+        runTest {
+            updateSyncSettings(UpdateSyncSettings.SyncSettings.Reset)
+            verify(settingsRepository).saveLimitScope(LimitScope.GLOBAL)
+            verify(settingsRepository).saveEventsToDownload(Constants.EVENT_MAX_DEFAULT)
+            verify(settingsRepository).saveTeiToDownload(Constants.TEI_MAX_DEFAULT)
+        }
 }

@@ -17,13 +17,14 @@ data class RuleValidation(
     val actionsError: List<String>? = null,
 ) {
     fun uid() = rule?.uid
+
     fun hasError() = conditionError != null || actionsError != null
-    fun errors(): List<String> {
-        return mutableListOf<String>().apply {
+
+    fun errors(): List<String> =
+        mutableListOf<String>().apply {
             conditionError?.let { add(it) }
             actionsError?.let { addAll(it) }
         }
-    }
 
     fun title() = rule?.name ?: rule?.uid ?: "-"
 }

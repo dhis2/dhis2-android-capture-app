@@ -23,7 +23,8 @@ class ValueUtils private constructor() {
                 transformValue(d2, attributeValue.value(), valueType, optionSetUid)
 
             return if (transformedValue != attributeValue.value()) {
-                attributeValue.toBuilder()
+                attributeValue
+                    .toBuilder()
                     .value(transformedValue)
                     .build()
             } else {
@@ -40,12 +41,22 @@ class ValueUtils private constructor() {
             var teAttrValue = value
             when (valueType) {
                 ValueType.ORGANISATION_UNIT -> {
-                    if (!d2.organisationUnitModule().organisationUnits().byUid().eq(value)
+                    if (!d2
+                            .organisationUnitModule()
+                            .organisationUnits()
+                            .byUid()
+                            .eq(value)
                             .blockingIsEmpty()
                     ) {
-                        val orgUnitName = d2.organisationUnitModule().organisationUnits()
-                            .byUid().eq(value)
-                            .one().blockingGet()!!.displayName()!!
+                        val orgUnitName =
+                            d2
+                                .organisationUnitModule()
+                                .organisationUnits()
+                                .byUid()
+                                .eq(value)
+                                .one()
+                                .blockingGet()!!
+                                .displayName()!!
                         teAttrValue = orgUnitName
                     }
                 }
@@ -66,14 +77,25 @@ class ValueUtils private constructor() {
             return teAttrValue
         }
 
-        private fun transformOptionSet(optionSetUid: String?, d2: D2, value: String?): String? {
+        private fun transformOptionSet(
+            optionSetUid: String?,
+            d2: D2,
+            value: String?,
+        ): String? {
             var teAttrValue = value
             if (optionSetUid != null) {
                 val optionCode = value
                 if (optionCode != null) {
                     val option =
-                        d2.optionModule().options().byOptionSetUid().eq(optionSetUid).byCode()
-                            .eq(optionCode).one().blockingGet()
+                        d2
+                            .optionModule()
+                            .options()
+                            .byOptionSetUid()
+                            .eq(optionSetUid)
+                            .byCode()
+                            .eq(optionCode)
+                            .one()
+                            .blockingGet()
                     if (option != null && (option.code() == optionCode || option.name() == optionCode)) {
                         teAttrValue = option.displayName()
                     }

@@ -39,26 +39,27 @@ internal class StageViewHolder(
     private val presenter: TEIDataPresenter,
     private val colorUtils: ColorUtils,
 ) : RecyclerView.ViewHolder(composeView) {
-
     fun bind(eventItem: EventViewModel) {
         val stage = eventItem.stage!!
 
         val resourceManager = ResourceManager(itemView.context, colorUtils)
         composeView.setContent {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color.White)
-                    .padding(
-                        start = Spacing.Spacing16,
-                        end = Spacing.Spacing16,
-                        top = Spacing.Spacing16,
-                        bottom = if (eventItem.eventCount < 1) {
-                            Spacing.Spacing16
-                        } else {
-                            Spacing.Spacing8
-                        },
-                    ),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .background(color = Color.White)
+                        .padding(
+                            start = Spacing.Spacing16,
+                            end = Spacing.Spacing16,
+                            top = Spacing.Spacing16,
+                            bottom =
+                                if (eventItem.eventCount < 1) {
+                                    Spacing.Spacing16
+                                } else {
+                                    Spacing.Spacing8
+                                },
+                        ),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 ProvideAvatar(
@@ -66,8 +67,9 @@ internal class StageViewHolder(
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
-                    modifier = Modifier
-                        .weight(1f),
+                    modifier =
+                        Modifier
+                            .weight(1f),
                 ) {
                     Title(text = stage.displayName() ?: "")
                     if (eventItem.eventCount < 1) {
@@ -79,16 +81,17 @@ internal class StageViewHolder(
                 }
                 if (eventItem.canShowAddButton()) {
                     Box(
-                        modifier = Modifier
-                            .clickable {
-                                stageSelector.onNext(
-                                    StageSection(
-                                        stageUid = stage.uid(),
-                                        showOptions = true,
-                                        showAllEvents = false,
-                                    ),
-                                )
-                            },
+                        modifier =
+                            Modifier
+                                .clickable {
+                                    stageSelector.onNext(
+                                        StageSection(
+                                            stageUid = stage.uid(),
+                                            showOptions = true,
+                                            showAllEvents = false,
+                                        ),
+                                    )
+                                },
                     ) {
                         NewEventOptions(presenter.getNewEventOptionsByStages(stage)) {
                             presenter.onAddNewEventOptionSelected(it, stage)
@@ -100,15 +103,14 @@ internal class StageViewHolder(
     }
 
     @Composable
-    private fun ProvideAvatar(
-        metadataIconData: MetadataIconData,
-    ) {
+    private fun ProvideAvatar(metadataIconData: MetadataIconData) {
         Avatar(
-            style = AvatarStyleData.Metadata(
-                imageCardData = metadataIconData.imageCardData,
-                avatarSize = MetadataAvatarSize.M(),
-                tintColor = metadataIconData.color,
-            ),
+            style =
+                AvatarStyleData.Metadata(
+                    imageCardData = metadataIconData.imageCardData,
+                    avatarSize = MetadataAvatarSize.M(),
+                    tintColor = metadataIconData.color,
+                ),
         )
     }
 }

@@ -44,7 +44,6 @@ import java.util.Date
 
 @ExperimentalCoroutinesApi
 class EventDetailsIntegrationTest {
-
     @get:Rule
     val coroutineScope = MainCoroutineScopeRule()
 
@@ -62,76 +61,87 @@ class EventDetailsIntegrationTest {
     // Preconditions, data source
     private val style: ObjectStyle = mock()
     private val eventDate = Date()
-    private val event: Event = mock {
-        on { organisationUnit() } doReturn ORG_UNIT_UID
-        on { eventDate() } doReturn eventDate
-    }
-    private val programStage: ProgramStage = mock {
-        on { displayName() } doReturn PROGRAM_STAGE_NAME
-        on { executionDateLabel() } doReturn EXECUTION_DATE
-        on { uid() } doReturn PROGRAM_STAGE
-    }
-    private val catCombo: CategoryCombo = mock {
-        on { uid() } doReturn CAT_COMBO_UID
-        on { isDefault } doReturn true
-    }
-    private val categoryOptionCombo: CategoryOptionCombo = mock {
-        on { uid() } doReturn CAT_OPTION_COMBO_UID
-    }
-    private val orgUnit: OrganisationUnit = mock {
-        on { uid() } doReturn ORG_UNIT_UID
-    }
-    private val geometryModel: FieldUiModel = mock {
-        on { value } doReturn COORDINATES
-    }
-    private val eventDetailsRepository: EventDetailsRepository = mock {
-        on { getProgramStage() } doReturn programStage
-        on { catCombo() } doReturn catCombo
-        on { getEvent() } doReturn event
-        on { getObjectStyle() } doReturn style
-        on { getOrganisationUnit(ORG_UNIT_UID) } doReturn orgUnit
-        on { getGeometryModel() } doReturn geometryModel
-        on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
-        on { getEditableStatus() } doReturn EventEditableStatus.Editable()
-    }
+    private val event: Event =
+        mock {
+            on { organisationUnit() } doReturn ORG_UNIT_UID
+            on { eventDate() } doReturn eventDate
+        }
+    private val programStage: ProgramStage =
+        mock {
+            on { displayName() } doReturn PROGRAM_STAGE_NAME
+            on { executionDateLabel() } doReturn EXECUTION_DATE
+            on { uid() } doReturn PROGRAM_STAGE
+        }
+    private val catCombo: CategoryCombo =
+        mock {
+            on { uid() } doReturn CAT_COMBO_UID
+            on { isDefault } doReturn true
+        }
+    private val categoryOptionCombo: CategoryOptionCombo =
+        mock {
+            on { uid() } doReturn CAT_OPTION_COMBO_UID
+        }
+    private val orgUnit: OrganisationUnit =
+        mock {
+            on { uid() } doReturn ORG_UNIT_UID
+        }
+    private val geometryModel: FieldUiModel =
+        mock {
+            on { value } doReturn COORDINATES
+        }
+    private val eventDetailsRepository: EventDetailsRepository =
+        mock {
+            on { getProgramStage() } doReturn programStage
+            on { catCombo() } doReturn catCombo
+            on { getEvent() } doReturn event
+            on { getObjectStyle() } doReturn style
+            on { getOrganisationUnit(ORG_UNIT_UID) } doReturn orgUnit
+            on { getGeometryModel() } doReturn geometryModel
+            on { getCatOptionCombos(CAT_COMBO_UID) } doReturn listOf(categoryOptionCombo)
+            on { getEditableStatus() } doReturn EventEditableStatus.Editable()
+        }
 
     private val metadataIconProvider: MetadataIconProvider = mock()
 
     private lateinit var viewModel: EventDetailsViewModel
 
     @Test
-    fun `should reopen a completed event`() = runBlocking {
-        // Given an event that can be reopened
-        whenever(eventDetailsRepository.getCanReopen()) doReturn true
+    fun `should reopen a completed event`() =
+        runBlocking {
+            // Given an event that can be reopened
+            whenever(eventDetailsRepository.getCanReopen()) doReturn true
 
-        // AND is completed
-        viewModel = initViewModel(
-            periodType = null,
-            enrollmentStatus = EnrollmentStatus.COMPLETED,
-        )
+            // AND is completed
+            viewModel =
+                initViewModel(
+                    periodType = null,
+                    enrollmentStatus = EnrollmentStatus.COMPLETED,
+                )
 
-        // When user taps on reopen
-        whenever(eventDetailsRepository.reopenEvent()) doReturn Result.success(Unit)
-        whenever(eventDetailsRepository.getCanReopen()) doReturn false
-        viewModel.onReopenClick()
+            // When user taps on reopen
+            whenever(eventDetailsRepository.reopenEvent()) doReturn Result.success(Unit)
+            whenever(eventDetailsRepository.getCanReopen()) doReturn false
+            viewModel.onReopenClick()
 
-        // Then event should be opened
-        assertFalse(viewModel.eventDetails.value.canReopen)
-    }
+            // Then event should be opened
+            assertFalse(viewModel.eventDetails.value.canReopen)
+        }
 
     private fun initViewModel(
         periodType: PeriodType?,
         eventCreationType: EventCreationType = EventCreationType.DEFAULT,
         enrollmentStatus: EnrollmentStatus,
     ) = EventDetailsViewModel(
-        configureEventDetails = createConfigureEventDetails(
-            eventCreationType,
-            enrollmentStatus,
-        ),
-        configureEventReportDate = createConfigureEventReportDate(
-            eventCreationType,
-            periodType,
-        ),
+        configureEventDetails =
+            createConfigureEventDetails(
+                eventCreationType,
+                enrollmentStatus,
+            ),
+        configureEventReportDate =
+            createConfigureEventReportDate(
+                eventCreationType,
+                periodType,
+            ),
         configureOrgUnit = createConfigureOrgUnit(eventCreationType),
         configureEventCoordinates = createConfigureEventCoordinates(),
         configureEventCatCombo = createConfigureEventCatCombo(),
@@ -141,28 +151,32 @@ class EventDetailsIntegrationTest {
         locationProvider = locationProvider,
         createOrUpdateEventDetails = createOrUpdateEventDetails(),
         resourcesProvider = provideEventResourcesProvider(),
-        configurePeriodSelector = ConfigurePeriodSelector(
-            ENROLLMENT_UID,
-            eventDetailsRepository,
-            periodUseCase,
-        ),
+        configurePeriodSelector =
+            ConfigurePeriodSelector(
+                ENROLLMENT_UID,
+                eventDetailsRepository,
+                periodUseCase,
+            ),
     )
 
-    private fun createConfigureEventCatCombo() = ConfigureEventCatCombo(
-        repository = eventDetailsRepository,
-    )
+    private fun createConfigureEventCatCombo() =
+        ConfigureEventCatCombo(
+            repository = eventDetailsRepository,
+        )
 
-    private fun createConfigureEventCoordinates() = ConfigureEventCoordinates(
-        repository = eventDetailsRepository,
-    )
+    private fun createConfigureEventCoordinates() =
+        ConfigureEventCoordinates(
+            repository = eventDetailsRepository,
+        )
 
-    private fun createConfigureOrgUnit(eventCreationType: EventCreationType) = ConfigureOrgUnit(
-        creationType = eventCreationType,
-        repository = eventDetailsRepository,
-        preferencesProvider = preferencesProvider,
-        programUid = PROGRAM_UID,
-        initialOrgUnitUid = INITIAL_ORG_UNIT_UID,
-    )
+    private fun createConfigureOrgUnit(eventCreationType: EventCreationType) =
+        ConfigureOrgUnit(
+            creationType = eventCreationType,
+            repository = eventDetailsRepository,
+            preferencesProvider = preferencesProvider,
+            programUid = PROGRAM_UID,
+            initialOrgUnitUid = INITIAL_ORG_UNIT_UID,
+        )
 
     private fun createConfigureEventReportDate(
         eventCreationType: EventCreationType,
@@ -188,17 +202,19 @@ class EventDetailsIntegrationTest {
         metadataIconProvider = metadataIconProvider,
     )
 
-    private fun provideEventResourcesProvider() = EventDetailResourcesProvider(
-        PROGRAM_UID,
-        programStage.uid(),
-        resourceManager,
-        eventResourcesProvider,
-    )
+    private fun provideEventResourcesProvider() =
+        EventDetailResourcesProvider(
+            PROGRAM_UID,
+            programStage.uid(),
+            resourceManager,
+            eventResourcesProvider,
+        )
 
-    private fun createOrUpdateEventDetails() = CreateOrUpdateEventDetails(
-        repository = eventDetailsRepository,
-        resourcesProvider = provideEventResourcesProvider(),
-    )
+    private fun createOrUpdateEventDetails() =
+        CreateOrUpdateEventDetails(
+            repository = eventDetailsRepository,
+            resourcesProvider = provideEventResourcesProvider(),
+        )
 
     private fun createGeometryController() = GeometryController(GeometryParserImpl())
 

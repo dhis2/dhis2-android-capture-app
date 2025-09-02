@@ -13,37 +13,39 @@ import org.junit.Before
 import org.junit.Test
 
 class EventFilterToWorkingListItemMapperTest {
-
     lateinit var mapper: EventFilterToWorkingListItemMapper
 
     @Before
     fun setUp() {
-        mapper = EventFilterToWorkingListItemMapper(
-            "defaultLabel",
-        )
+        mapper =
+            EventFilterToWorkingListItemMapper(
+                "defaultLabel",
+            )
     }
 
     @Test
     fun `Should map eventFilter to working list item`() {
-        val result = mapper.map(
-            EventFilter.builder()
-                .uid("filterUid")
-                .displayName("filterName")
-                .eventQueryCriteria(
-                    EventQueryCriteria.builder()
-                        .assignedUserMode(AssignedUserMode.CURRENT)
-                        .eventDate(
-                            DateFilterPeriod.builder()
-                                .type(DatePeriodType.RELATIVE)
-                                .period(RelativePeriod.LAST_3_DAYS)
-                                .build(),
-                        )
-                        .eventStatus(EventStatus.ACTIVE)
-                        .organisationUnit("orgUnitUid")
-                        .build(),
-                )
-                .build(),
-        )
+        val result =
+            mapper.map(
+                EventFilter
+                    .builder()
+                    .uid("filterUid")
+                    .displayName("filterName")
+                    .eventQueryCriteria(
+                        EventQueryCriteria
+                            .builder()
+                            .assignedUserMode(AssignedUserMode.CURRENT)
+                            .eventDate(
+                                DateFilterPeriod
+                                    .builder()
+                                    .type(DatePeriodType.RELATIVE)
+                                    .period(RelativePeriod.LAST_3_DAYS)
+                                    .build(),
+                            ).eventStatus(EventStatus.ACTIVE)
+                            .organisationUnit("orgUnitUid")
+                            .build(),
+                    ).build(),
+            )
 
         assertTrue(result.uid == "filterUid")
         assertTrue(result.label == "filterName")
@@ -51,11 +53,13 @@ class EventFilterToWorkingListItemMapperTest {
 
     @Test
     fun `Should set default values`() {
-        val result = mapper.map(
-            EventFilter.builder()
-                .uid("filterUid")
-                .build(),
-        )
+        val result =
+            mapper.map(
+                EventFilter
+                    .builder()
+                    .uid("filterUid")
+                    .build(),
+            )
 
         assertTrue(result.uid == "filterUid")
         assertTrue(result.label == "defaultLabel")

@@ -29,7 +29,7 @@ import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
-class SyncManagerFragment() : FragmentGlobalAbstract() {
+class SyncManagerFragment : FragmentGlobalAbstract() {
     @Inject
     lateinit var settingsViewModelFactory: SettingsViewModelFactory
 
@@ -42,7 +42,8 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        app().userComponent()
+        app()
+            .userComponent()
             ?.plus(SyncManagerModule())
             ?.inject(this)
     }
@@ -114,47 +115,52 @@ class SyncManagerFragment() : FragmentGlobalAbstract() {
     }
 
     private fun deleteLocalData() {
-        deleteLocalDataDialog = AlertDialog(
-            labelText = getString(R.string.delete_local_data),
-            descriptionText = getString(R.string.delete_local_data_message),
-            spanText = null,
-            iconResource = null,
-            animationRes = R.raw.warning,
-            dismissButton = ButtonUiModel(
-                getString(R.string.cancel),
-                true,
-            ) { null },
-            confirmButton = ButtonUiModel(
-                getString(R.string.action_accept),
-                true,
-            ) {
-                if (deleteLocalDataDialog!!.isAdded) {
-                    presenter.deleteLocalData()
-                }
-                null
-            },
-        )
+        deleteLocalDataDialog =
+            AlertDialog(
+                labelText = getString(R.string.delete_local_data),
+                descriptionText = getString(R.string.delete_local_data_message),
+                spanText = null,
+                iconResource = null,
+                animationRes = R.raw.warning,
+                dismissButton =
+                    ButtonUiModel(
+                        getString(R.string.cancel),
+                        true,
+                    ) { null },
+                confirmButton =
+                    ButtonUiModel(
+                        getString(R.string.action_accept),
+                        true,
+                    ) {
+                        if (deleteLocalDataDialog!!.isAdded) {
+                            presenter.deleteLocalData()
+                        }
+                        null
+                    },
+            )
         deleteLocalDataDialog!!.show(requireActivity().supportFragmentManager)
     }
 
     private fun showSyncErrors(data: List<ErrorViewModel>) {
-        ErrorDialog().setData(data)
+        ErrorDialog()
+            .setData(data)
             .show(getChildFragmentManager().beginTransaction(), ErrorDialog.TAG)
     }
 
     private fun shareDB(fileToShare: File) {
-        val contentUri = FileProvider.getUriForFile(
-            requireContext(),
-            FormFileProvider.fileProviderAuthority,
-            fileToShare,
-        )
-        val intentShare = Intent(Intent.ACTION_SEND)
-            .setDataAndType(
-                contentUri,
-                requireContext().contentResolver.getType(contentUri),
+        val contentUri =
+            FileProvider.getUriForFile(
+                requireContext(),
+                FormFileProvider.fileProviderAuthority,
+                fileToShare,
             )
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            .putExtra(Intent.EXTRA_STREAM, contentUri)
+        val intentShare =
+            Intent(Intent.ACTION_SEND)
+                .setDataAndType(
+                    contentUri,
+                    requireContext().contentResolver.getType(contentUri),
+                ).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                .putExtra(Intent.EXTRA_STREAM, contentUri)
         val chooser = Intent.createChooser(intentShare, getString(R.string.open_with))
         try {
             startActivity(chooser)

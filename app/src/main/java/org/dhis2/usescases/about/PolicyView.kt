@@ -7,7 +7,6 @@ import org.dhis2.R
 import org.dhis2.databinding.ActivityAboutPolicyBinding
 
 class PolicyView : AppCompatActivity() {
-
     private lateinit var binding: ActivityAboutPolicyBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

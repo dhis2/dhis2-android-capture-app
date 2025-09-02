@@ -27,8 +27,9 @@ fun AppCompatActivity.buildEnrollmentForm(
     locationProvider: LocationProvider,
     dateEditionWarningHandler: DateEditionWarningHandler,
     onFinish: () -> Unit,
-): FormView {
-    return FormView.Builder()
+): FormView =
+    FormView
+        .Builder()
         .locationProvider(locationProvider)
         .onItemChangeListener { action ->
             dateEditionWarningHandler.shouldShowWarning(
@@ -44,18 +45,17 @@ fun AppCompatActivity.buildEnrollmentForm(
                     saveButton = config.saveButton,
                 )
             }
-        }
-        .onFinishDataEntry(onFinish)
+        }.onFinishDataEntry(onFinish)
         .factory(supportFragmentManager)
         .setRecords(
             EnrollmentRecords(
                 enrollmentUid = config.enrollmentUid,
                 enrollmentMode = config.enrollmentMode,
             ),
-        )
-        .openErrorLocation(config.openErrorLocation)
+        ).openErrorLocation(config.openErrorLocation)
         .setProgramUid(config.programUid)
-        .build().also { formView ->
+        .build()
+        .also { formView ->
 
             config.saveButton.setOnClickListener { formView.onSaveClick() }
 
@@ -66,12 +66,12 @@ fun AppCompatActivity.buildEnrollmentForm(
             )
             fragmentTransition.commit()
         }
-}
 
 private fun AppCompatActivity.showDateEditionWarning(message: String) {
-    val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-        .setMessage(message)
-        .setPositiveButton(R.string.button_ok, null)
+    val dialog =
+        MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+            .setMessage(message)
+            .setPositiveButton(R.string.button_ok, null)
     dialog.show()
 }
 
@@ -89,7 +89,10 @@ private fun handleLoading(
     }
 }
 
-private fun handleSaveButtonVisibility(hasWriteAccess: Boolean, saveButton: FloatingActionButton) {
+private fun handleSaveButtonVisibility(
+    hasWriteAccess: Boolean,
+    saveButton: FloatingActionButton,
+) {
     if (hasWriteAccess) {
         saveButton.show()
     } else {

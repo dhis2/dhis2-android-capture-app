@@ -13,24 +13,38 @@ interface UiActionHandler {
         callback: (result: String?) -> Unit,
     )
 
-    fun onCall(phoneNumber: String, onActivityNotFound: () -> Unit)
-    fun onSendEmail(email: String, onActivityNotFound: () -> Unit)
-    fun onOpenLink(url: String, onActivityNotFound: () -> Unit)
+    fun onCall(
+        phoneNumber: String,
+        onActivityNotFound: () -> Unit,
+    )
+
+    fun onSendEmail(
+        email: String,
+        onActivityNotFound: () -> Unit,
+    )
+
+    fun onOpenLink(
+        url: String,
+        onActivityNotFound: () -> Unit,
+    )
 
     fun onSelectFile(
         fieldUid: String,
         callback: (result: String?) -> Unit,
         onFailure: () -> Unit,
     )
+
     fun onDownloadFile(
         fieldUid: String,
         filepath: String?,
         callback: (result: String?) -> Unit,
     )
+
     fun onAddImage(
         fieldUid: String,
         callback: (result: String?) -> Unit,
     )
+
     fun onTakePicture(callback: (result: String?) -> Unit)
 
     fun onShareImage(

@@ -34,7 +34,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class EnrollmentPresenterImplTest {
-
     private val enrollmentFormRepository: EnrollmentFormRepository = mock()
     private val programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program> = mock()
     private val teiRepository: TrackedEntityInstanceObjectRepository = mock()
@@ -51,32 +50,39 @@ class EnrollmentPresenterImplTest {
 
     @Before
     fun setUp() {
-        presenter = EnrollmentPresenterImpl(
-            enrollmentView,
-            d2,
-            enrollmentRepository,
-            teiRepository,
-            programRepository,
-            schedulers,
-            enrollmentFormRepository,
-            analyticsHelper,
-            matomoAnalyticsController,
-            eventCollectionRepository,
-            teiAttributesProvider,
-            dateEntryWarningHelper,
-        )
+        presenter =
+            EnrollmentPresenterImpl(
+                enrollmentView,
+                d2,
+                enrollmentRepository,
+                teiRepository,
+                programRepository,
+                schedulers,
+                enrollmentFormRepository,
+                analyticsHelper,
+                matomoAnalyticsController,
+                eventCollectionRepository,
+                teiAttributesProvider,
+                dateEntryWarningHelper,
+            )
     }
 
     @Test
     fun `Check updateEnrollmentStatus where write access is granted`() {
-        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
-            .access(
-                Access.builder()
-                    .data(
-                        DataAccess.builder().write(true)
-                            .build(),
-                    ).build(),
-            ).build()
+        whenever(programRepository.blockingGet()) doReturn
+            Program
+                .builder()
+                .uid("")
+                .access(
+                    Access
+                        .builder()
+                        .data(
+                            DataAccess
+                                .builder()
+                                .write(true)
+                                .build(),
+                        ).build(),
+                ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
         verify(enrollmentRepository).setStatus(EnrollmentStatus.ACTIVE)
         verify(enrollmentView).renderStatus(EnrollmentStatus.ACTIVE)
@@ -84,14 +90,20 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Check updateEnrollmentStatus where write access is denied`() {
-        whenever(programRepository.blockingGet()) doReturn Program.builder().uid("")
-            .access(
-                Access.builder()
-                    .data(
-                        DataAccess.builder().write(false)
-                            .build(),
-                    ).build(),
-            ).build()
+        whenever(programRepository.blockingGet()) doReturn
+            Program
+                .builder()
+                .uid("")
+                .access(
+                    Access
+                        .builder()
+                        .data(
+                            DataAccess
+                                .builder()
+                                .write(false)
+                                .build(),
+                        ).build(),
+                ).build()
         presenter.updateEnrollmentStatus(EnrollmentStatus.ACTIVE)
 
         verify(enrollmentView).displayMessage(null)
@@ -137,11 +149,18 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should show save button when the enrollment is editable`() {
-        val geometry = Geometry.builder()
-            .coordinates("[-30.00, 11.00]")
-            .type(FeatureType.POINT)
-            .build()
-        val tei = TrackedEntityInstance.builder().geometry(geometry).uid("random").build()
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates("[-30.00, 11.00]")
+                .type(FeatureType.POINT)
+                .build()
+        val tei =
+            TrackedEntityInstance
+                .builder()
+                .geometry(geometry)
+                .uid("random")
+                .build()
         val program = Program.builder().uid("tUID").build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
@@ -149,7 +168,9 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule()) doReturn mock()
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollmentService()
+            d2
+                .enrollmentModule()
+                .enrollmentService()
                 .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.WRITE_ACCESS
 
@@ -160,11 +181,18 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should hide save button when the enrollment is not editable`() {
-        val geometry = Geometry.builder()
-            .coordinates("[-30.00, 11.00]")
-            .type(FeatureType.POINT)
-            .build()
-        val tei = TrackedEntityInstance.builder().geometry(geometry).uid("random").build()
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates("[-30.00, 11.00]")
+                .type(FeatureType.POINT)
+                .build()
+        val tei =
+            TrackedEntityInstance
+                .builder()
+                .geometry(geometry)
+                .uid("random")
+                .build()
         val program = Program.builder().uid("tUID").build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
@@ -172,7 +200,9 @@ class EnrollmentPresenterImplTest {
         whenever(d2.enrollmentModule()) doReturn mock()
         whenever(d2.enrollmentModule().enrollmentService()) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollmentService()
+            d2
+                .enrollmentModule()
+                .enrollmentService()
                 .blockingGetEnrollmentAccess(tei.uid(), program.uid()),
         ) doReturn EnrollmentAccess.NO_ACCESS
 
@@ -183,7 +213,12 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should return true if event status is SCHEDULE`() {
-        val event = Event.builder().uid("uid").status(EventStatus.SCHEDULE).build()
+        val event =
+            Event
+                .builder()
+                .uid("uid")
+                .status(EventStatus.SCHEDULE)
+                .build()
 
         whenever(eventCollectionRepository.uid("uid")) doReturn mock()
         whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
@@ -192,7 +227,12 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should return true if event status is SKIPPED`() {
-        val event = Event.builder().uid("uid").status(EventStatus.SKIPPED).build()
+        val event =
+            Event
+                .builder()
+                .uid("uid")
+                .status(EventStatus.SKIPPED)
+                .build()
 
         whenever(eventCollectionRepository.uid("uid")) doReturn mock()
         whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
@@ -201,7 +241,12 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `Should return false if event status is ACTIVE`() {
-        val event = Event.builder().uid("uid").status(EventStatus.ACTIVE).build()
+        val event =
+            Event
+                .builder()
+                .uid("uid")
+                .status(EventStatus.ACTIVE)
+                .build()
 
         whenever(eventCollectionRepository.uid("uid")) doReturn mock()
         whenever(eventCollectionRepository.uid("uid").blockingGet()) doReturn event
@@ -210,12 +255,13 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `should create an event right after enrollment creation`() {
-        whenever(enrollmentFormRepository.generateEvents()) doReturn Single.just(
-            Pair(
-                "enrollmentUid",
-                "eventUid",
-            ),
-        )
+        whenever(enrollmentFormRepository.generateEvents()) doReturn
+            Single.just(
+                Pair(
+                    "enrollmentUid",
+                    "eventUid",
+                ),
+            )
 
         presenter.finish(NEW)
 
@@ -224,12 +270,13 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `should navigate to enrollment dashboard after enrollment creation`() {
-        whenever(enrollmentFormRepository.generateEvents()) doReturn Single.just(
-            Pair(
-                "enrollmentUid",
-                null,
-            ),
-        )
+        whenever(enrollmentFormRepository.generateEvents()) doReturn
+            Single.just(
+                Pair(
+                    "enrollmentUid",
+                    null,
+                ),
+            )
 
         presenter.finish(NEW)
 

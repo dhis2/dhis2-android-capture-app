@@ -11,31 +11,37 @@ import kotlinx.coroutines.flow.asStateFlow
 import org.dhis2.commons.R
 import timber.log.Timber
 
-class NetworkUtils(val context: Context) {
-    val manager = context.getSystemService(
-        Context.CONNECTIVITY_SERVICE,
-    ) as ConnectivityManager?
+class NetworkUtils(
+    val context: Context,
+) {
+    val manager =
+        context.getSystemService(
+            Context.CONNECTIVITY_SERVICE,
+        ) as ConnectivityManager?
     private val _connectionStatus = MutableStateFlow(false)
     val connectionStatus = _connectionStatus.asStateFlow()
 
-    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-            _connectionStatus.value = true
-        }
+    private val networkCallback =
+        object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                _connectionStatus.value = true
+            }
 
-        override fun onLost(network: Network) {
-            super.onLost(network)
-            _connectionStatus.value = false
-        }
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                _connectionStatus.value = false
+            }
 
-        // You can override other methods like onCapabilitiesChanged, onLinkPropertiesChanged
-    }
+            // You can override other methods like onCapabilitiesChanged, onLinkPropertiesChanged
+        }
 
     fun registerNetworkCallback() {
-        val networkRequest = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
+        val networkRequest =
+            NetworkRequest
+                .Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .build()
         manager?.registerNetworkCallback(networkRequest, networkCallback)
     }
 
@@ -46,9 +52,10 @@ class NetworkUtils(val context: Context) {
     fun isOnline(): Boolean {
         var isOnline = false
         try {
-            val manager = context.getSystemService(
-                Context.CONNECTIVITY_SERVICE,
-            ) as ConnectivityManager?
+            val manager =
+                context.getSystemService(
+                    Context.CONNECTIVITY_SERVICE,
+                ) as ConnectivityManager?
             if (manager != null) {
                 val netInfo = manager.activeNetworkInfo
                 isOnline = netInfo != null && netInfo.isConnectedOrConnecting
@@ -82,8 +89,7 @@ class NetworkUtils(val context: Context) {
             .setMessage(noNetworkMessage)
             .setPositiveButton(context.getString(R.string.action_accept)) { _, _ ->
                 onDialogDismissed()
-            }
-            .setCancelable(false)
+            }.setCancelable(false)
             .show()
     }
 }

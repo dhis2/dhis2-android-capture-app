@@ -23,7 +23,6 @@ class EventMapManager(
     mapView: MapView,
     locationEngine: LocationEngine,
 ) : MapManager(mapView, locationEngine) {
-
     private var featureCollection: FeatureCollection? = null
     private var deFeatureCollection: Map<String, FeatureCollection> = emptyMap()
     var featureType: FeatureType? = null
@@ -85,10 +84,12 @@ class EventMapManager(
     }
 
     private fun getTintedDrawable(sourceId: String): Drawable {
-        val initialDrawable = AppCompatResources.getDrawable(
-            mapView.context,
-            R.drawable.map_marker,
-        )?.mutate()
+        val initialDrawable =
+            AppCompatResources
+                .getDrawable(
+                    mapView.context,
+                    R.drawable.map_marker,
+                )?.mutate()
         val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
         mapLayerManager.getNextAvailableColor(sourceId)?.let { color ->
             DrawableCompat.setTint(wrappedDrawable, color)
@@ -108,8 +109,8 @@ class EventMapManager(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): Feature? {
-        return if (source == EVENTS) {
+    ): Feature? =
+        if (source == EVENTS) {
             featureCollection?.features()?.firstOrNull {
                 it.getStringProperty(propertyName) == propertyValue
             }
@@ -118,47 +119,52 @@ class EventMapManager(
                 it.getStringProperty(propertyName) == propertyValue
             }
         }
-    }
 
     override fun findFeatures(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): List<Feature>? {
-        return mutableListOf<Feature>().apply {
-            featureCollection?.features()?.filter {
-                mapLayerManager.getLayer(LayerType.EVENT_LAYER.name)?.visible == true &&
-                    it.getStringProperty(propertyName) == propertyValue
-            }?.map {
-                mapLayerManager.getLayer(LayerType.EVENT_LAYER.name)
-                    ?.setSelectedItem(it)
-                it
-            }?.let { addAll(it) }
-            deFeatureCollection.values.map { collection ->
-                collection.features()?.filter {
-                    mapLayerManager.getLayer(it.getStringProperty(FIELD_NAME))?.visible == true &&
+    ): List<Feature>? =
+        mutableListOf<Feature>().apply {
+            featureCollection
+                ?.features()
+                ?.filter {
+                    mapLayerManager.getLayer(LayerType.EVENT_LAYER.name)?.visible == true &&
                         it.getStringProperty(propertyName) == propertyValue
                 }?.map {
-                    mapLayerManager.getLayer(it.getStringProperty(FIELD_NAME))?.setSelectedItem(it)
+                    mapLayerManager
+                        .getLayer(LayerType.EVENT_LAYER.name)
+                        ?.setSelectedItem(it)
                     it
                 }?.let { addAll(it) }
+            deFeatureCollection.values.map { collection ->
+                collection
+                    .features()
+                    ?.filter {
+                        mapLayerManager.getLayer(it.getStringProperty(FIELD_NAME))?.visible == true &&
+                            it.getStringProperty(propertyName) == propertyValue
+                    }?.map {
+                        mapLayerManager.getLayer(it.getStringProperty(FIELD_NAME))?.setSelectedItem(it)
+                        it
+                    }?.let { addAll(it) }
             }
         }
-    }
 
     override fun findFeature(propertyValue: String): Feature? {
-        val mainProperties = arrayListOf(
-            MapTeisToFeatureCollection.TEI_UID,
-            MapTeisToFeatureCollection.ENROLLMENT_UID,
-            MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT,
-        )
+        val mainProperties =
+            arrayListOf(
+                MapTeisToFeatureCollection.TEI_UID,
+                MapTeisToFeatureCollection.ENROLLMENT_UID,
+                MapRelationshipsToFeatureCollection.RELATIONSHIP_UID,
+                MapEventToFeatureCollection.EVENT,
+            )
         var featureToReturn: Feature? = null
         for (propertyLabel in mainProperties) {
             val feature = findFeature(EVENTS, propertyLabel, propertyValue)
             if (feature != null) {
                 featureToReturn = feature
-                mapLayerManager.getLayer(LayerType.EVENT_LAYER.name, true)
+                mapLayerManager
+                    .getLayer(LayerType.EVENT_LAYER.name, true)
                     ?.setSelectedItem(featureToReturn)
                 break
             }
@@ -169,17 +175,21 @@ class EventMapManager(
         return featureToReturn
     }
 
-    override fun findFeatures(propertyValue: String): List<Feature>? {
-        return findFeatures("", MapEventToFeatureCollection.EVENT, propertyValue)
-    }
+    override fun findFeatures(propertyValue: String): List<Feature>? = findFeatures("", MapEventToFeatureCollection.EVENT, propertyValue)
 
-    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
-        val rectF = map?.projection?.toScreenLocation(point)?.let { pointf ->
-            RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
-        } ?: RectF()
+    override fun markFeatureAsSelected(
+        point: LatLng,
+        layer: String?,
+    ): Feature? {
+        val rectF =
+            map?.projection?.toScreenLocation(point)?.let { pointf ->
+                RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
+            } ?: RectF()
         var selectedFeature: Feature? = null
-        mapLayerManager.sourcesAndLayersForSearch()
-            .filter { it.value.isNotEmpty() }.forEach { (_, layer) ->
+        mapLayerManager
+            .sourcesAndLayersForSearch()
+            .filter { it.value.isNotEmpty() }
+            .forEach { (_, layer) ->
                 val features = map?.queryRenderedFeatures(rectF, layer.first()) ?: emptyList()
                 if (features.isNotEmpty()) {
                     mapLayerManager.selectFeature(null)

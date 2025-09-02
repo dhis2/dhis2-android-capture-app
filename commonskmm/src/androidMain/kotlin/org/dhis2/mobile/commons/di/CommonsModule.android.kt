@@ -14,20 +14,21 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual val commonsModule: Module
-    get() = module {
-        single<ValueParser> {
-            ValueParserImpl(get())
+    get() =
+        module {
+            single<ValueParser> {
+                ValueParserImpl(get())
+            }
+            single<FileController> {
+                FileControllerImpl()
+            }
+            single<FileHandler> {
+                FileHandlerImpl()
+            }
+            single<CrashReportController> {
+                CrashReportControllerImpl()
+            }
+            factory<TableDimensionRepository> { params ->
+                TableDimensionRepositoryImpl(get(), params.get())
+            }
         }
-        single<FileController> {
-            FileControllerImpl()
-        }
-        single<FileHandler> {
-            FileHandlerImpl()
-        }
-        single<CrashReportController> {
-            CrashReportControllerImpl()
-        }
-        factory<TableDimensionRepository> { params ->
-            TableDimensionRepositoryImpl(get(), params.get())
-        }
-    }

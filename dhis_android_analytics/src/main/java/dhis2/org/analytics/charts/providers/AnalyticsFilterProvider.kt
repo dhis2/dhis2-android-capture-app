@@ -8,8 +8,9 @@ import org.hisp.dhis.android.core.common.RelativePeriod
 import org.hisp.dhis.android.core.datastore.KeyValuePair
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 
-class AnalyticsFilterProvider(private val d2: D2) {
-
+class AnalyticsFilterProvider(
+    private val d2: D2,
+) {
     fun addOrgUnitFilter(
         visualizationUid: String,
         lineListingColumnId: Int?,
@@ -77,7 +78,10 @@ class AnalyticsFilterProvider(private val d2: D2) {
         }
     }
 
-    fun removeOrgUnitFilter(visualizationUid: String, lineListingColumnId: Int?) {
+    fun removeOrgUnitFilter(
+        visualizationUid: String,
+        lineListingColumnId: Int?,
+    ) {
         if (lineListingColumnId != null) {
             removeTrackerVisualizationOrgUnitFilter(visualizationUid, lineListingColumnId)
         } else {
@@ -148,7 +152,10 @@ class AnalyticsFilterProvider(private val d2: D2) {
         )
     }
 
-    fun removePeriodFilter(visualizationUid: String, lineListingColumnId: Int?) {
+    fun removePeriodFilter(
+        visualizationUid: String,
+        lineListingColumnId: Int?,
+    ) {
         if (lineListingColumnId != null) {
             removeTrackerVisualizationPeriodFilter(visualizationUid, lineListingColumnId)
         } else {
@@ -174,7 +181,11 @@ class AnalyticsFilterProvider(private val d2: D2) {
         }
     }
 
-    fun addColumnFilter(trackerVisualizationUid: String, columnIndex: Int, filterValue: String) {
+    fun addColumnFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+        filterValue: String,
+    ) {
         val currentColumnFilter =
             trackerVisualizationFilters(trackerVisualizationUid)?.toMutableMap() ?: mutableMapOf()
         currentColumnFilter[columnIndex] = filterValue
@@ -184,7 +195,10 @@ class AnalyticsFilterProvider(private val d2: D2) {
         )
     }
 
-    fun removeColumnFilter(trackerVisualizationUid: String, columnIndex: Int) {
+    fun removeColumnFilter(
+        trackerVisualizationUid: String,
+        columnIndex: Int,
+    ) {
         val currentColumnFilter =
             trackerVisualizationFilters(trackerVisualizationUid)?.toMutableMap() ?: mutableMapOf()
         if (currentColumnFilter.contains(columnIndex)) {
@@ -278,26 +292,35 @@ class AnalyticsFilterProvider(private val d2: D2) {
         }
     }
 
-    private fun setValue(key: String, value: String) {
-        d2.dataStoreModule().localDataStore()
+    private fun setValue(
+        key: String,
+        value: String,
+    ) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
             .value(key)
             .blockingSet(value)
     }
 
-    private fun isValueSaved(key: String): Boolean {
-        return d2.dataStoreModule().localDataStore()
+    private fun isValueSaved(key: String): Boolean =
+        d2
+            .dataStoreModule()
+            .localDataStore()
             .value(key)
             .blockingExists()
-    }
 
-    private fun valueFromKey(key: String): KeyValuePair? {
-        return d2.dataStoreModule().localDataStore()
+    private fun valueFromKey(key: String): KeyValuePair? =
+        d2
+            .dataStoreModule()
+            .localDataStore()
             .value(key)
             .blockingGet()
-    }
 
     private fun removeValue(key: String) {
-        d2.dataStoreModule().localDataStore()
+        d2
+            .dataStoreModule()
+            .localDataStore()
             .value(key)
             .blockingDeleteIfExist()
     }

@@ -20,7 +20,6 @@ class MapTeisToFeatureCollection(
     private val mapPolygonPointToFeature: MapPolygonPointToFeature,
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
 ) {
-
     fun map(
         mapItemList: List<MapItemModel>,
         shouldAddRelationships: Boolean,
@@ -98,14 +97,16 @@ class MapTeisToFeatureCollection(
         val polygon = mapPolygonToFeature.map(geometry, bounds)?.first
         polygon?.addTeiInfo(mapItemModel)?.also { featureMap[TEI]?.add(it) }
 
-        mapPolygonPointToFeature.map(geometry)?.apply {
-            addStringProperty(TEI_UID, mapItemModel.uid)
-            if (mapItemModel.isProfilePictureAvailable()) {
-                addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
-            } else if (mapItemModel.isCustomIcon()) {
-                addStringProperty(TEI_IMAGE, mapItemModel.getCustomIconRes())
-            }
-        }?.also { featureMap[TEI]?.add(it) }
+        mapPolygonPointToFeature
+            .map(geometry)
+            ?.apply {
+                addStringProperty(TEI_UID, mapItemModel.uid)
+                if (mapItemModel.isProfilePictureAvailable()) {
+                    addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
+                } else if (mapItemModel.isCustomIcon()) {
+                    addStringProperty(TEI_IMAGE, mapItemModel.getCustomIconRes())
+                }
+            }?.also { featureMap[TEI]?.add(it) }
     }
 
     private fun mapToPointEnrollment(

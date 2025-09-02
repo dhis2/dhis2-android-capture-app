@@ -14,7 +14,6 @@ class DeleteLocalData(
     private val resourceManager: ResourceManager,
     private val analyticsHelper: AnalyticsHelper,
 ) {
-
     suspend operator fun invoke() {
         analyticsHelper.setEvent(
             CONFIRM_DELETE_LOCAL_DATA,

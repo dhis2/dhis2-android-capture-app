@@ -10,8 +10,11 @@ class GraphToLineData {
     private val coordinateToEntryMapper by lazy { GraphCoordinatesToEntry() }
     private val serieColors = SerieColors.getColors()
 
-    fun map(graph: Graph, serieToHighlight: String? = null): LineData {
-        return LineData(
+    fun map(
+        graph: Graph,
+        serieToHighlight: String? = null,
+    ): LineData =
+        LineData(
             graph.series.mapIndexed { index: Int, serie: SerieData ->
                 LineDataSet(
                     coordinateToEntryMapper.map(graph, serie.coordinates, serie.fieldName),
@@ -28,5 +31,4 @@ class GraphToLineData {
                 }.withGlobalStyle()
             },
         )
-    }
 }

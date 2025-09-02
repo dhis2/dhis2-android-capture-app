@@ -32,18 +32,18 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.maplibre.android.maps.MapView
 
 class MapSelectorActivity : AppCompatActivity() {
-
     private val locationProvider = MapLocationEngine(this)
 
-    private val locationListener = LocationListenerCompat { location ->
-        mapSelectorViewModel.onNewLocation(
-            SelectedLocation.GPSResult(
-                location.latitude,
-                location.longitude,
-                location.accuracy,
-            ),
-        )
-    }
+    private val locationListener =
+        LocationListenerCompat { location ->
+            mapSelectorViewModel.onNewLocation(
+                SelectedLocation.GPSResult(
+                    location.latitude,
+                    location.longitude,
+                    location.accuracy,
+                ),
+            )
+        }
 
     private var fieldUid: String? = null
 
@@ -54,21 +54,24 @@ class MapSelectorActivity : AppCompatActivity() {
     private val mapSelectorViewModel: MapSelectorViewModel by viewModels<MapSelectorViewModel> {
         Injector.provideMapSelectorViewModelFactory(
             context = this,
-            locationType = intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
-                FeatureType.valueOf(featureName)
-            } ?: FeatureType.POINT,
+            locationType =
+                intent.getStringExtra(LOCATION_TYPE_EXTRA)?.let { featureName ->
+                    FeatureType.valueOf(featureName)
+                } ?: FeatureType.POINT,
             initialCoordinates = intent.getStringExtra(INITIAL_GEOMETRY_COORDINATES),
             uid = intent.getStringExtra(PROGRAM_UID),
-            scope = intent.getStringExtra(SCOPE)?.let { scope ->
-                MapScope.valueOf(scope)
-            } ?: MapScope.PROGRAM,
+            scope =
+                intent.getStringExtra(SCOPE)?.let { scope ->
+                    MapScope.valueOf(scope)
+                } ?: MapScope.PROGRAM,
         )
     }
 
-    private val polygonAdapter = PolygonAdapter(
-        onAddPolygonPoint = { mapSelectorViewModel.addPointToPolygon(it) },
-        onRemovePolygonPoint = { index, _ -> mapSelectorViewModel.removePointFromPolygon(index) },
-    )
+    private val polygonAdapter =
+        PolygonAdapter(
+            onAddPolygonPoint = { mapSelectorViewModel.addPointToPolygon(it) },
+            onRemovePolygonPoint = { index, _ -> mapSelectorViewModel.removePointFromPolygon(index) },
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,29 +89,30 @@ class MapSelectorActivity : AppCompatActivity() {
 
                 MapSelectorScreen(
                     screenState = screenState,
-                    mapSelectorScreenActions = MapSelectorScreenActions(
-                        onBackClicked = ::finish,
-                        loadMap = { loadMap(it, savedInstanceState) },
-                        configurePolygonInfoRecycler = {
-                            it.adapter = polygonAdapter
-                            it.layoutManager = GridLayoutManager(this, 2)
-                        },
-                        onClearLocation = mapSelectorViewModel::onClearSearchClicked,
-                        onSearchLocation = mapSelectorViewModel::onSearchLocation,
-                        onLocationSelected = mapSelectorViewModel::onLocationSelected,
-                        onSearchCaptureMode = mapSelectorViewModel::initSearchMode,
-                        onButtonMode = {
-                            if (::mapManager.isInitialized) {
-                                mapManager.updateCameraPosition()
-                            }
-                        },
-                        onSearchOnAreaClick = mapSelectorViewModel::onSearchOnAreaClick,
-                        onMyLocationButtonClick = {
-                            mapSelectorViewModel.onMyLocationButtonClick()
-                            onLocationButtonClicked()
-                        },
-                        onDoneButtonClick = mapSelectorViewModel::onDoneClick,
-                    ),
+                    mapSelectorScreenActions =
+                        MapSelectorScreenActions(
+                            onBackClicked = ::finish,
+                            loadMap = { loadMap(it, savedInstanceState) },
+                            configurePolygonInfoRecycler = {
+                                it.adapter = polygonAdapter
+                                it.layoutManager = GridLayoutManager(this, 2)
+                            },
+                            onClearLocation = mapSelectorViewModel::onClearSearchClicked,
+                            onSearchLocation = mapSelectorViewModel::onSearchLocation,
+                            onLocationSelected = mapSelectorViewModel::onLocationSelected,
+                            onSearchCaptureMode = mapSelectorViewModel::initSearchMode,
+                            onButtonMode = {
+                                if (::mapManager.isInitialized) {
+                                    mapManager.updateCameraPosition()
+                                }
+                            },
+                            onSearchOnAreaClick = mapSelectorViewModel::onSearchOnAreaClick,
+                            onMyLocationButtonClick = {
+                                mapSelectorViewModel.onMyLocationButtonClick()
+                                onLocationButtonClicked()
+                            },
+                            onDoneButtonClick = mapSelectorViewModel::onDoneClick,
+                        ),
                 )
 
                 LaunchedEffect(screenState.mapData) {
@@ -127,17 +131,21 @@ class MapSelectorActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission", "ClickableViewAccessibility")
-    private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
+    private fun loadMap(
+        mapView: MapView,
+        savedInstanceState: Bundle?,
+    ) {
         mapManager =
             DefaultMapManager(mapView, locationProvider, mapSelectorViewModel.featureType)
         mapManager.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
-            it.onMapClickListener = OnMapClickListener(
-                mapManager = it,
-                onFeatureClicked = mapSelectorViewModel::onPinClicked,
-                onPointClicked = mapSelectorViewModel::onPointClicked,
-            )
+            it.onMapClickListener =
+                OnMapClickListener(
+                    mapManager = it,
+                    onFeatureClicked = mapSelectorViewModel::onPinClicked,
+                    onPointClicked = mapSelectorViewModel::onPointClicked,
+                )
 
             val mapData = mapSelectorViewModel.screenState.value.mapData
             mapManager.init(

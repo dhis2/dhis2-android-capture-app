@@ -23,7 +23,7 @@ fun List<MapItemModel>.filterTeiByLayerVisibility(
                 layersVisibility,
                 coordinateAttributes,
             ) and mapItemModel.hasAttributeCoordinates(coordinateAttributes)
-            )
+        )
 }
 
 fun List<MapItemModel>.filterTrackerEventsByLayerVisibility(
@@ -38,7 +38,7 @@ fun List<MapItemModel>.filterTrackerEventsByLayerVisibility(
                 coordinateDataElements,
             ) and
                 mapItemModel.hasDataElementCoordinates(coordinateDataElements)
-            )
+        )
 }
 
 fun List<MapItemModel>.filterEventsByLayerVisibility(
@@ -53,94 +53,85 @@ fun List<MapItemModel>.filterEventsByLayerVisibility(
                 coordinateDataElements,
             ) and
                 mapItemModel.hasDataElementCoordinates(coordinateDataElements)
-            )
+        )
 }
+
 fun List<MapItemModel>.filterRelationshipsByLayerVisibility(layersVisibility: Map<String, MapLayer>) =
     filter { mapItemModel ->
         relationshipLayerIsVisible(mapItemModel, layersVisibility) and mapItemModel.hasCoordinates()
     }
 
-private fun MapItemModel.hasCoordinates(): Boolean {
-    return geometry != null
-}
+private fun MapItemModel.hasCoordinates(): Boolean = geometry != null
 
-private fun MapItemModel.hasEnrollmentCoordinates(): Boolean {
-    return relatedInfo?.enrollment?.geometry != null
-}
+private fun MapItemModel.hasEnrollmentCoordinates(): Boolean = relatedInfo?.enrollment?.geometry != null
 
-private fun MapItemModel.hasAttributeCoordinates(
-    coordinateAttributes: List<CoordinateAttributeInfo>,
-): Boolean {
-    return coordinateAttributes.any { it.tei.uid() == uid }
-}
+private fun MapItemModel.hasAttributeCoordinates(coordinateAttributes: List<CoordinateAttributeInfo>): Boolean =
+    coordinateAttributes.any { it.tei.uid() == uid }
 
-private fun MapItemModel.hasDataElementCoordinates(
-    coordinateDataElements: List<CoordinateDataElementInfo>,
-): Boolean {
-    return coordinateDataElements.any {
+private fun MapItemModel.hasDataElementCoordinates(coordinateDataElements: List<CoordinateDataElementInfo>): Boolean =
+    coordinateDataElements.any {
         it.enrollment?.uid() == relatedInfo?.enrollment?.uid
     }
-}
 
-private fun teiLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean {
-    return layersVisibility.values.find { it is TeiMapLayer }?.visible == true
-}
+private fun teiLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean =
+    layersVisibility.values
+        .find {
+            it is TeiMapLayer
+        }?.visible == true
 
-private fun enrollmentLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean {
-    return layersVisibility.values.find { it is EnrollmentMapLayer }?.visible == true
-}
+private fun enrollmentLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean =
+    layersVisibility.values
+        .find {
+            it is EnrollmentMapLayer
+        }?.visible == true
 
 private fun attributeLayerIsVisible(
     mapTeiModel: MapItemModel,
     layersVisibility: Map<String, MapLayer>,
     coordinateAttributes: List<CoordinateAttributeInfo>,
-): Boolean {
-    return layersVisibility.entries.any { (_, mapLayer) ->
+): Boolean =
+    layersVisibility.entries.any { (_, mapLayer) ->
         (mapLayer is FieldMapLayer) and
             mapLayer.visible and
             (coordinateAttributes.find { it.tei.uid() == mapTeiModel.uid } != null)
     }
-}
 
 private fun dataElementLayerIsVisible(
     mapTeiModel: MapItemModel,
     layersVisibility: Map<String, MapLayer>,
     coordinateDataElements: List<CoordinateDataElementInfo>,
-): Boolean {
-    return layersVisibility.entries.any { (_, mapLayer) ->
+): Boolean =
+    layersVisibility.entries.any { (_, mapLayer) ->
         (mapLayer is FieldMapLayer) and
             mapLayer.visible and
             (coordinateDataElements.find { it.event.uid() == mapTeiModel.uid } != null)
     }
-}
 
-private fun eventLayerIsVisible(
-    layersVisibility: Map<String, MapLayer>,
-): Boolean {
-    return layersVisibility.entries.filter {
-        it.value is EventMapLayer
-    }.find { (_, mapLayer) ->
-        mapLayer.visible
-    } != null
-}
+private fun eventLayerIsVisible(layersVisibility: Map<String, MapLayer>): Boolean =
+    layersVisibility.entries
+        .filter {
+            it.value is EventMapLayer
+        }.find { (_, mapLayer) ->
+            mapLayer.visible
+        } != null
 
 private fun trackerEventLayerIsVisible(
     mapItemModel: MapItemModel,
     layersVisibility: Map<String, MapLayer>,
-): Boolean {
-    return layersVisibility.entries.filter {
-        it.value is TeiEventMapLayer
-    }.find { (sourceId, mapLayer) ->
-        mapLayer.visible and (mapItemModel.relatedInfo?.event?.stageDisplayName == sourceId)
-    } != null
-}
+): Boolean =
+    layersVisibility.entries
+        .filter {
+            it.value is TeiEventMapLayer
+        }.find { (sourceId, mapLayer) ->
+            mapLayer.visible and (mapItemModel.relatedInfo?.event?.stageDisplayName == sourceId)
+        } != null
 
 private fun relationshipLayerIsVisible(
     mapItemModel: MapItemModel,
     layersVisibility: Map<String, MapLayer>,
-): Boolean {
-    return layersVisibility.entries.filter { it.value is RelationshipMapLayer }
+): Boolean =
+    layersVisibility.entries
+        .filter { it.value is RelationshipMapLayer }
         .find { (sourceId, mapLayer) ->
             mapLayer.visible and (mapItemModel.relatedInfo?.relationship?.displayName == sourceId)
         } != null
-}

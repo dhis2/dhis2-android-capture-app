@@ -13,7 +13,6 @@ import java.time.Instant
 import java.util.Date
 
 class CategoryOptionExtensionsKtTest {
-
     @Test
     fun `Should return true if date is null`() {
         assertTrue(
@@ -103,22 +102,25 @@ class CategoryOptionExtensionsKtTest {
         )
     }
 
-    private fun catOption(startDate: Date?, endDate: Date?): CategoryOption {
-        return CategoryOption.builder()
+    private fun catOption(
+        startDate: Date?,
+        endDate: Date?,
+    ): CategoryOption =
+        CategoryOption
+            .builder()
             .uid("CatOptUid")
             .displayName("CatOptName")
             .startDate(startDate)
             .endDate(endDate)
             .access(Access.create(true, true, DataAccess.create(true, true)))
             .build()
-    }
 
-    private fun catOption(orgUnits: List<ObjectWithUid>?): CategoryOption {
-        return CategoryOption.builder()
+    private fun catOption(orgUnits: List<ObjectWithUid>?): CategoryOption =
+        CategoryOption
+            .builder()
             .uid("CatOptUid")
             .displayName("CatOptName")
             .organisationUnits(orgUnits)
             .access(Access.create(true, true, DataAccess.create(true, true)))
             .build()
-    }
 }

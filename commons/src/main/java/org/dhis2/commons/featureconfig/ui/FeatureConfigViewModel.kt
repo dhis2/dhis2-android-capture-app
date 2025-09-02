@@ -9,7 +9,6 @@ import org.dhis2.commons.featureconfig.model.FeatureState
 class FeatureConfigViewModel(
     private val repository: FeatureConfigRepository,
 ) : ViewModel() {
-
     private val _featuresList = MutableLiveData<List<FeatureState>>()
     val featuresList: LiveData<List<FeatureState>> = _featuresList
 

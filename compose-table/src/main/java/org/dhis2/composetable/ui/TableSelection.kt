@@ -2,7 +2,9 @@ package org.dhis2.composetable.ui
 
 import androidx.compose.runtime.staticCompositionLocalOf
 
-sealed class TableSelection(open val tableId: String) {
+sealed class TableSelection(
+    open val tableId: String,
+) {
     data class Unselected(
         val previousSelectedTableId: String? = null,
     ) : TableSelection(previousSelectedTableId ?: "")
@@ -23,10 +25,12 @@ sealed class TableSelection(open val tableId: String) {
         val childrenOfSelectedHeader: Map<Int, HeaderCellRange>,
     ) : TableSelection(tableId)
 
-    data class HeaderCellRange(val size: Int, val firstIndex: Int, val lastIndex: Int) {
-        fun isInRange(columnIndex: Int): Boolean {
-            return columnIndex in firstIndex..lastIndex
-        }
+    data class HeaderCellRange(
+        val size: Int,
+        val firstIndex: Int,
+        val lastIndex: Int,
+    ) {
+        fun isInRange(columnIndex: Int): Boolean = columnIndex in firstIndex..lastIndex
     }
 
     data class CellSelection(
@@ -43,66 +47,87 @@ sealed class TableSelection(open val tableId: String) {
             -1
         }
 
-    fun isCornerSelected(selectedTableId: String) =
-        selectedTableId == tableId && (this is AllCellSelection)
+    fun isCornerSelected(selectedTableId: String) = selectedTableId == tableId && (this is AllCellSelection)
 
-    fun isHeaderSelected(selectedTableId: String, columnIndex: Int, columnHeaderRowIndex: Int) =
-        this.isCornerSelected(selectedTableId) ||
-            selectedTableId == tableId && (this is ColumnSelection) &&
-            this.columnIndex == columnIndex &&
-            this.columnHeaderRow == columnHeaderRowIndex
+    fun isHeaderSelected(
+        selectedTableId: String,
+        columnIndex: Int,
+        columnHeaderRowIndex: Int,
+    ) = this.isCornerSelected(selectedTableId) ||
+        selectedTableId == tableId &&
+        (this is ColumnSelection) &&
+        this.columnIndex == columnIndex &&
+        this.columnHeaderRow == columnHeaderRowIndex
 
     fun isParentHeaderSelected(
         selectedTableId: String,
         columnIndex: Int,
         columnHeaderRowIndex: Int,
-    ) = selectedTableId == tableId && (this is ColumnSelection) &&
+    ) = selectedTableId == tableId &&
+        (this is ColumnSelection) &&
         (
             when {
                 columnHeaderRowIndex < this.columnHeaderRow -> false
                 columnHeaderRowIndex == this.columnHeaderRow -> this.columnIndex != columnIndex
-                else -> this.childrenOfSelectedHeader[columnHeaderRowIndex]?.isInRange(
-                    columnIndex,
-                ) ?: false
+                else ->
+                    this.childrenOfSelectedHeader[columnHeaderRowIndex]?.isInRange(
+                        columnIndex,
+                    ) ?: false
             }
-            )
+        )
 
-    fun isRowSelected(selectedTableId: String, rowHeaderIndex: Int) =
-        this.isCornerSelected(selectedTableId) ||
-            selectedTableId == tableId && (this is RowSelection) &&
-            this.rowIndex == rowHeaderIndex
+    fun isRowSelected(
+        selectedTableId: String,
+        rowHeaderIndex: Int,
+    ) = this.isCornerSelected(selectedTableId) ||
+        selectedTableId == tableId &&
+        (this is RowSelection) &&
+        this.rowIndex == rowHeaderIndex
 
-    fun isOtherRowSelected(selectedTableId: String, rowHeaderIndex: Int) =
-        selectedTableId == tableId && (this is RowSelection) &&
-            this.rowIndex != rowHeaderIndex
+    fun isOtherRowSelected(
+        selectedTableId: String,
+        rowHeaderIndex: Int,
+    ) = selectedTableId == tableId &&
+        (this is RowSelection) &&
+        this.rowIndex != rowHeaderIndex
 
-    fun isCellSelected(selectedTableId: String, columnIndex: Int, rowIndex: Int) =
-        this.tableId == selectedTableId && (this is CellSelection) &&
-            this.columnIndex == columnIndex &&
-            this.rowIndex == rowIndex
+    fun isCellSelected(
+        selectedTableId: String,
+        columnIndex: Int,
+        rowIndex: Int,
+    ) = this.tableId == selectedTableId &&
+        (this is CellSelection) &&
+        this.columnIndex == columnIndex &&
+        this.rowIndex == rowIndex
 
-    fun isCellParentSelected(selectedTableId: String, columnIndex: Int, rowIndex: Int) =
-        when (this) {
-            is AllCellSelection -> isCornerSelected(selectedTableId)
-            is ColumnSelection ->
-                if (childrenOfSelectedHeader.isEmpty()) {
-                    isCellValid(columnIndex, rowIndex) &&
-                        this.columnIndex == columnIndex &&
-                        this.tableId == selectedTableId
-                } else {
-                    isCellValid(columnIndex, rowIndex) &&
-                        this.tableId == selectedTableId &&
-                        this.childrenOfSelectedHeader.values.last().isInRange(columnIndex)
-                }
-            is RowSelection -> {
-                isRowSelected(selectedTableId, rowIndex)
+    fun isCellParentSelected(
+        selectedTableId: String,
+        columnIndex: Int,
+        rowIndex: Int,
+    ) = when (this) {
+        is AllCellSelection -> isCornerSelected(selectedTableId)
+        is ColumnSelection ->
+            if (childrenOfSelectedHeader.isEmpty()) {
+                isCellValid(columnIndex, rowIndex) &&
+                    this.columnIndex == columnIndex &&
+                    this.tableId == selectedTableId
+            } else {
+                isCellValid(columnIndex, rowIndex) &&
+                    this.tableId == selectedTableId &&
+                    this.childrenOfSelectedHeader.values
+                        .last()
+                        .isInRange(columnIndex)
             }
-            else -> false
+        is RowSelection -> {
+            isRowSelected(selectedTableId, rowIndex)
         }
-
-    private fun isCellValid(columnIndex: Int, rowIndex: Int): Boolean {
-        return columnIndex != -1 && rowIndex != -1
+        else -> false
     }
+
+    private fun isCellValid(
+        columnIndex: Int,
+        rowIndex: Int,
+    ): Boolean = columnIndex != -1 && rowIndex != -1
 }
 
 val LocalTableSelection = staticCompositionLocalOf<TableSelection> { TableSelection.Unselected() }

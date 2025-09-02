@@ -7,16 +7,14 @@ import org.dhis2.commons.resources.ColorUtils
 import javax.inject.Singleton
 
 @Module
-class AppModule(private val application: App) {
+class AppModule(
+    private val application: App,
+) {
     @Provides
     @Singleton
-    fun context(): Context {
-        return application
-    }
+    fun context(): Context = application
 
     @Provides
     @Singleton
-    fun colorUtils(): ColorUtils {
-        return ColorUtils()
-    }
+    fun colorUtils(): ColorUtils = ColorUtils()
 }

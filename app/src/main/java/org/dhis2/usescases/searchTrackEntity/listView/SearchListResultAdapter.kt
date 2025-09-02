@@ -9,18 +9,23 @@ import org.dhis2.databinding.ResultSearchListBinding
 class SearchListResultAdapter(
     private val onSearchOutsideProgram: () -> Unit,
 ) : ListAdapter<SearchResult, SearchResultHolder>(
-    object : DiffUtil.ItemCallback<SearchResult>() {
-        override fun areItemsTheSame(oldItem: SearchResult, newItem: SearchResult): Boolean {
-            return oldItem == newItem
-        }
+        object : DiffUtil.ItemCallback<SearchResult>() {
+            override fun areItemsTheSame(
+                oldItem: SearchResult,
+                newItem: SearchResult,
+            ): Boolean = oldItem == newItem
 
-        override fun areContentsTheSame(oldItem: SearchResult, newItem: SearchResult): Boolean {
-            return oldItem == newItem
-        }
-    },
-) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchResultHolder {
-        return SearchResultHolder(
+            override fun areContentsTheSame(
+                oldItem: SearchResult,
+                newItem: SearchResult,
+            ): Boolean = oldItem == newItem
+        },
+    ) {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): SearchResultHolder =
+        SearchResultHolder(
             ResultSearchListBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -28,13 +33,13 @@ class SearchListResultAdapter(
             ),
             onSearchOutsideProgram,
         )
-    }
 
-    override fun onBindViewHolder(holder: SearchResultHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: SearchResultHolder,
+        position: Int,
+    ) {
         holder.bind(getItem(position))
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return getItem(position).type.ordinal
-    }
+    override fun getItemViewType(position: Int): Int = getItem(position).type.ordinal
 }

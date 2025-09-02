@@ -97,32 +97,36 @@ private fun SettingItem(
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .wrapContentHeight()
-            .background(color = Color.White, shape = Shape.Small)
-            .clip(Shape.Small)
-            .border(
-                width = 1.dp,
-                color = if (showExtraActions) {
-                    SurfaceColor.ContainerHighest
-                } else {
-                    Color.Transparent
-                },
-                shape = Shape.Small,
-            ),
+        modifier =
+            modifier
+                .wrapContentHeight()
+                .background(color = Color.White, shape = Shape.Small)
+                .clip(Shape.Small)
+                .border(
+                    width = 1.dp,
+                    color =
+                        if (showExtraActions) {
+                            SurfaceColor.ContainerHighest
+                        } else {
+                            Color.Transparent
+                        },
+                    shape = Shape.Small,
+                ),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clickable(onClick = onClick)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = spacedBy(16.dp),
         ) {
             Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(SurfaceColor.PrimaryContainer, CircleShape),
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .background(SurfaceColor.PrimaryContainer, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -145,25 +149,28 @@ private fun SettingItem(
 
         AnimatedVisibility(
             showExtraActions,
-            enter = expandVertically(
-                expandFrom = Alignment.Top,
-                animationSpec = tween(
-                    easing = {
-                        OvershootInterpolator().getInterpolation(it)
-                    },
+            enter =
+                expandVertically(
+                    expandFrom = Alignment.Top,
+                    animationSpec =
+                        tween(
+                            easing = {
+                                OvershootInterpolator().getInterpolation(it)
+                            },
+                        ),
                 ),
-            ),
             exit = shrinkVertically(shrinkTowards = Alignment.Top),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = 72.dp,
-                        top = 8.dp,
-                        bottom = 8.dp,
-                        end = 16.dp,
-                    ),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 72.dp,
+                            top = 8.dp,
+                            bottom = 8.dp,
+                            end = 16.dp,
+                        ),
             ) {
                 extraActions()
             }

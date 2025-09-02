@@ -31,8 +31,9 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import timber.log.Timber
 import javax.inject.Inject
 
-class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
-
+class ProgramFragment :
+    FragmentGlobalAbstract(),
+    ProgramView {
     @Inject
     lateinit var programViewModelFactory: ProgramViewModelFactory
 
@@ -58,8 +59,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
@@ -82,7 +83,6 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                 )
             }
         }
-    }
 
     override fun onResume() {
         super.onResume()
@@ -136,7 +136,8 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
     }
 
     override fun showSyncDialog(program: ProgramUiModel) {
-        SyncStatusDialog.Builder()
+        SyncStatusDialog
+            .Builder()
             .withContext(this)
             .withSyncContext(
                 when (program.programType) {
@@ -144,8 +145,7 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                     "WITHOUT_REGISTRATION" -> SyncContext.GlobalEventProgram(program.uid)
                     else -> SyncContext.GlobalDataSet(program.uid)
                 },
-            )
-            .onDismissListener(
+            ).onDismissListener(
                 object : OnDismissListener {
                     override fun onDismiss(hasChanged: Boolean) {
                         if (hasChanged) {
@@ -153,16 +153,15 @@ class ProgramFragment : FragmentGlobalAbstract(), ProgramView {
                         }
                     }
                 },
-            )
-            .onNoConnectionListener {
+            ).onNoConnectionListener {
                 val contextView = activity?.findViewById<View>(R.id.navigationBar)
-                Snackbar.make(
-                    contextView!!,
-                    R.string.sync_offline_check_connection,
-                    Snackbar.LENGTH_SHORT,
-                ).show()
-            }
-            .show(FRAGMENT_TAG)
+                Snackbar
+                    .make(
+                        contextView!!,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT,
+                    ).show()
+            }.show(FRAGMENT_TAG)
     }
 
     companion object {

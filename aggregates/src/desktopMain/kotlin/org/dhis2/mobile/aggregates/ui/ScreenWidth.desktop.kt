@@ -7,7 +7,8 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-actual fun getScreenWidth() = LocalWindowInfo.current
-    .containerSize
-    .width
-    .dp
+actual fun getScreenWidth() =
+    LocalWindowInfo.current
+        .containerSize
+        .width
+        .dp

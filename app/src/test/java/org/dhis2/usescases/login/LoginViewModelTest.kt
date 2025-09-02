@@ -58,7 +58,6 @@ import java.io.File
 import javax.crypto.Cipher
 
 class LoginViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -81,60 +80,58 @@ class LoginViewModelTest {
     private val openidconfig: OpenIDConnectConfig = mock()
     private val resourceManager: ResourceManager = mock()
     private val testingDispatcher = StandardTestDispatcher()
-    private val dispatcherProvider = object : DispatcherProvider {
-        override fun io(): CoroutineDispatcher {
-            return testingDispatcher
-        }
+    private val dispatcherProvider =
+        object : DispatcherProvider {
+            override fun io(): CoroutineDispatcher = testingDispatcher
 
-        override fun computation(): CoroutineDispatcher {
-            return testingDispatcher
-        }
+            override fun computation(): CoroutineDispatcher = testingDispatcher
 
-        override fun ui(): CoroutineDispatcher {
-            return testingDispatcher
+            override fun ui(): CoroutineDispatcher = testingDispatcher
         }
-    }
     private val repository: LoginRepository = mock()
 
     private fun instantiateLoginViewModel() {
-        loginViewModel = LoginViewModel(
-            view,
-            preferenceProvider,
-            resourceManager,
-            schedulers,
-            dispatcherProvider,
-            biometricController,
-            cryptographyManager,
-            analyticsHelper,
-            crashReportController,
-            network,
-            userManager,
-            repository,
-        )
+        loginViewModel =
+            LoginViewModel(
+                view,
+                preferenceProvider,
+                resourceManager,
+                schedulers,
+                dispatcherProvider,
+                biometricController,
+                cryptographyManager,
+                analyticsHelper,
+                crashReportController,
+                network,
+                userManager,
+                repository,
+            )
     }
 
     private fun instantiateLoginViewModelWithNullUserManager() {
-        loginViewModel = LoginViewModel(
-            view,
-            preferenceProvider,
-            resourceManager,
-            schedulers,
-            dispatcherProvider,
-            biometricController,
-            cryptographyManager,
-            analyticsHelper,
-            crashReportController,
-            network,
-            null,
-            repository,
-        )
+        loginViewModel =
+            LoginViewModel(
+                view,
+                preferenceProvider,
+                resourceManager,
+                schedulers,
+                dispatcherProvider,
+                biometricController,
+                cryptographyManager,
+                analyticsHelper,
+                crashReportController,
+                network,
+                null,
+                repository,
+            )
     }
 
-    val testingCredentials = listOf(
-        TestingCredential("testing_server_1", "testing_user1", "psw", ""),
-        TestingCredential("testing_server_2", "testing_user2", "psw", ""),
-        TestingCredential("testing_server_3", "testing_user3", "psw", ""),
-    )
+    val testingCredentials =
+        listOf(
+            TestingCredential("testing_server_1", "testing_user1", "psw", ""),
+            TestingCredential("testing_server_2", "testing_user2", "psw", ""),
+            TestingCredential("testing_server_3", "testing_user3", "psw", ""),
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -303,29 +300,30 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should load testing servers and users`() = runTest {
-        whenever(repository.getTestingCredentials()) doReturn testingCredentials
+    fun `Should load testing servers and users`() =
+        runTest {
+            whenever(repository.getTestingCredentials()) doReturn testingCredentials
 
-        instantiateLoginViewModel()
-        val urlSet = hashSetOf("url1", "url2", "url3")
-        val userSet = hashSetOf("user1", "user2")
+            instantiateLoginViewModel()
+            val urlSet = hashSetOf("url1", "url2", "url3")
+            val userSet = hashSetOf("user1", "user2")
 
-        whenever(preferenceProvider.getSet(PREFS_URLS, emptySet())) doReturn urlSet
-        whenever(preferenceProvider.getSet(PREFS_USERS, emptySet())) doReturn userSet
-        loginViewModel.autoCompleteData.observeForever { autocompleteData ->
-            val (urls, users) = autocompleteData
-            urlSet.forEach {
-                assertTrue(urls.contains(it))
-            }
-            userSet.forEach {
-                assertTrue(users.contains(it))
-            }
-            assertTrue(users.contains(USER_TEST_ANDROID))
-            testingCredentials.forEach {
-                assertTrue(urls.contains(it.server_url))
+            whenever(preferenceProvider.getSet(PREFS_URLS, emptySet())) doReturn urlSet
+            whenever(preferenceProvider.getSet(PREFS_USERS, emptySet())) doReturn userSet
+            loginViewModel.autoCompleteData.observeForever { autocompleteData ->
+                val (urls, users) = autocompleteData
+                urlSet.forEach {
+                    assertTrue(urls.contains(it))
+                }
+                userSet.forEach {
+                    assertTrue(users.contains(it))
+                }
+                assertTrue(users.contains(USER_TEST_ANDROID))
+                testingCredentials.forEach {
+                    assertTrue(urls.contains(it.server_url))
+                }
             }
         }
-    }
 
     @Test
     fun `Should handle log out when button is clicked`() {
@@ -338,25 +336,42 @@ class LoginViewModelTest {
     @Test
     fun `Should handle successfull response`() {
         instantiateLoginViewModel()
-        val response = Result.success(
-            User.builder()
-                .uid("userUid")
-                .build(),
-        )
+        val response =
+            Result.success(
+                User
+                    .builder()
+                    .uid("userUid")
+                    .build(),
+            )
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.systemInfoModule()) doReturn mock()
         whenever(userManager.d2.systemInfoModule().systemInfo()) doReturn mock()
-        whenever(userManager.d2.systemInfoModule().systemInfo().blockingGet()) doReturn mock()
         whenever(
-            userManager.d2.systemInfoModule().systemInfo().blockingGet()?.version(),
+            userManager.d2
+                .systemInfoModule()
+                .systemInfo()
+                .blockingGet(),
+        ) doReturn mock()
+        whenever(
+            userManager.d2
+                .systemInfoModule()
+                .systemInfo()
+                .blockingGet()
+                ?.version(),
         ) doReturn "1234"
         whenever(userManager.d2.dataStoreModule()) doReturn mock()
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone"),
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value("WasInitialSyncDone"),
         ) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value("WasInitialSyncDone")
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value("WasInitialSyncDone")
                 .blockingExists(),
         ) doReturn false
 
@@ -367,14 +382,20 @@ class LoginViewModelTest {
             userManager.d2.userModule().user(),
         ) doReturn mock()
         whenever(
-            userManager.d2.userModule().user().blockingGet(),
+            userManager.d2
+                .userModule()
+                .user()
+                .blockingGet(),
         ) doReturn null
         whenever(
             userManager.d2.userModule().accountManager(),
         ) doReturn mock()
 
         whenever(
-            userManager.d2.userModule().accountManager().getAccounts(),
+            userManager.d2
+                .userModule()
+                .accountManager()
+                .getAccounts(),
         ) doReturn listOf()
 
         loginViewModel.handleResponse(response)
@@ -437,39 +458,48 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should import database`() = runTest {
-        val mockedDatabase: File = mock()
-        whenever(repository.getTestingCredentials()) doReturn testingCredentials
+    fun `Should import database`() =
+        runTest {
+            val mockedDatabase: File = mock()
+            whenever(repository.getTestingCredentials()) doReturn testingCredentials
 
-        instantiateLoginViewModel()
-        whenever(resourceManager.getString(any())) doReturn "Import successful"
-        whenever(
-            userManager.d2.maintenanceModule().databaseImportExport()
-                .importDatabase(mockedDatabase),
-        ) doReturn DatabaseExportMetadata(
-            0,
-            "2024-01-01",
-            "serverUrl",
-            "userName",
-            false,
-        )
+            instantiateLoginViewModel()
+            whenever(resourceManager.getString(any())) doReturn "Import successful"
+            whenever(
+                userManager.d2
+                    .maintenanceModule()
+                    .databaseImportExport()
+                    .importDatabase(mockedDatabase),
+            ) doReturn
+                DatabaseExportMetadata(
+                    0,
+                    "2024-01-01",
+                    "serverUrl",
+                    "userName",
+                    false,
+                )
 
-        loginViewModel.onImportDataBase(mockedDatabase)
-        testingDispatcher.scheduler.advanceUntilIdle()
-        verify(view).setUrl("serverUrl")
-        verify(view).setUser("userName")
-        verify(view).displayMessage("Import successful")
-        verify(view).onDbImportFinished(true)
-    }
+            loginViewModel.onImportDataBase(mockedDatabase)
+            testingDispatcher.scheduler.advanceUntilIdle()
+            verify(view).setUrl("serverUrl")
+            verify(view).setUser("userName")
+            verify(view).displayMessage("Import successful")
+            verify(view).onDbImportFinished(true)
+        }
 
     private fun mockSystemInfo(isUserLoggedIn: Boolean = true) {
         whenever(userManager.isUserLoggedIn) doReturn Observable.just(isUserLoggedIn)
         if (isUserLoggedIn) {
             whenever(
-                userManager.d2.systemInfoModule().systemInfo().blockingGet(),
-            ) doReturn SystemInfo.builder()
-                .contextPath("contextPath")
-                .build()
+                userManager.d2
+                    .systemInfoModule()
+                    .systemInfo()
+                    .blockingGet(),
+            ) doReturn
+                SystemInfo
+                    .builder()
+                    .contextPath("contextPath")
+                    .build()
         }
     }
 
@@ -481,33 +511,43 @@ class LoginViewModelTest {
             userManager.d2.userModule().user(),
         ) doReturn mock()
         whenever(
-            userManager.d2.userModule().user().blockingGet(),
+            userManager.d2
+                .userModule()
+                .user()
+                .blockingGet(),
         ) doReturn null
         whenever(
             userManager.d2.userModule().accountManager(),
         ) doReturn mock()
 
         whenever(
-            userManager.d2.userModule().accountManager().getAccounts(),
-        ) doReturn mutableListOf<DatabaseAccount>().apply {
-            repeat(accounts) { this.add(dummyDatabaseAccount) }
-        }
+            userManager.d2
+                .userModule()
+                .accountManager()
+                .getAccounts(),
+        ) doReturn
+            mutableListOf<DatabaseAccount>().apply {
+                repeat(accounts) { this.add(dummyDatabaseAccount) }
+            }
     }
 
-    private val dummyDatabaseAccount = DatabaseAccount.builder()
-        .username("userName")
-        .serverUrl("serverUrl")
-        .databaseName("database")
-        .databaseCreationDate("")
-        .encrypted(false)
-        .build()
+    private val dummyDatabaseAccount =
+        DatabaseAccount
+            .builder()
+            .username("userName")
+            .serverUrl("serverUrl")
+            .databaseName("database")
+            .databaseCreationDate("")
+            .encrypted(false)
+            .build()
 
     private fun mockBiometrics() {
-        val cipherTextWrapperMock: CiphertextWrapper = mock {
-            on { initializationVector } doReturn byteArrayOf()
-        }
+        val cipherTextWrapperMock: CiphertextWrapper =
+            mock {
+                on { initializationVector } doReturn byteArrayOf()
+            }
         val cipherMock: Cipher = mock()
-        whenever(preferenceProvider.getBiometricCredentials())doReturn cipherTextWrapperMock
+        whenever(preferenceProvider.getBiometricCredentials()) doReturn cipherTextWrapperMock
         whenever(cryptographyManager.getInitializedCipherForDecryption(any())) doReturn cipherMock
     }
 }

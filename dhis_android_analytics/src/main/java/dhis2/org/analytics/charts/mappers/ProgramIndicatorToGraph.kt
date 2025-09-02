@@ -22,25 +22,27 @@ class ProgramIndicatorToGraph(
         selectedOrgUnits: List<String>?,
         isDefault: Boolean = false,
     ): Graph {
-        val coordinates = chartCoordinatesProvider.indicatorCoordinates(
-            stageUid,
-            teiUid,
-            programIndicator.uid(),
-            selectedRelativePeriod,
-            selectedOrgUnits,
-            isDefault,
-        )
-
-        val serie = if (coordinates.isNotEmpty()) {
-            listOf(
-                SerieData(
-                    programIndicator.displayName() ?: programIndicator.uid(),
-                    coordinates,
-                ),
+        val coordinates =
+            chartCoordinatesProvider.indicatorCoordinates(
+                stageUid,
+                teiUid,
+                programIndicator.uid(),
+                selectedRelativePeriod,
+                selectedOrgUnits,
+                isDefault,
             )
-        } else {
-            emptyList()
-        }
+
+        val serie =
+            if (coordinates.isNotEmpty()) {
+                listOf(
+                    SerieData(
+                        programIndicator.displayName() ?: programIndicator.uid(),
+                        coordinates,
+                    ),
+                )
+            } else {
+                emptyList()
+            }
 
         return Graph(
             title = "${stagePeriod.name}-${programIndicator.displayName()}",
@@ -49,10 +51,11 @@ class ProgramIndicatorToGraph(
             eventPeriodType = stagePeriod,
             periodStep = periodStepProvider.periodStep(stagePeriod),
             visualizationUid = "${teiUid}${stageUid}${programIndicator.uid()}",
-            graphFilters = GraphFilters.Visualization(
-                periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
-                orgUnitsSelected = selectedOrgUnits ?: emptyList(),
-            ),
+            graphFilters =
+                GraphFilters.Visualization(
+                    periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+                    orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+                ),
         )
     }
 }

@@ -26,7 +26,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class CreateEventUseCaseTest {
-
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
     private val eventRepository: EventObjectRepository = mock()
@@ -35,11 +34,12 @@ class CreateEventUseCaseTest {
 
     private val stringFilterConnector: StringFilterConnector<EventCollectionRepository> = mock()
 
-    val eventModule: EventModule = mock {
-        on { events() } doReturn mock()
-        on { events().uid(EVENT_ID) } doReturn eventRepository
-        on { events().uid(EVENT_ID) } doReturn eventRepository
-    }
+    val eventModule: EventModule =
+        mock {
+            on { events() } doReturn mock()
+            on { events().uid(EVENT_ID) } doReturn eventRepository
+            on { events().uid(EVENT_ID) } doReturn eventRepository
+        }
 
     private val dateUtils: DateUtils = DateUtils.getInstance()
 
@@ -78,9 +78,12 @@ class CreateEventUseCaseTest {
 
     @Test
     fun `create event with error`() {
-        val error = D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription("Error creating the event").build()
+        val error =
+            D2Error
+                .builder()
+                .errorCode(D2ErrorCode.UNEXPECTED)
+                .errorDescription("Error creating the event")
+                .build()
 
         whenever(
             d2.eventModule().events().blockingAdd(any<EventCreateProjection>()),
@@ -102,7 +105,10 @@ class CreateEventUseCaseTest {
         ) doReturn eventRepository
 
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
                 .eq(ENROLLMENT_ID),
         ) doReturn eventCollectionRepository
 
@@ -115,22 +121,49 @@ class CreateEventUseCaseTest {
         ) doReturn eventCollectionRepository
 
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted(),
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_ID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted(),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse,
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_ID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted()
+                .isFalse,
         ) doReturn mock()
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_ID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted()
+                .isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(ENROLLMENT_ID).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_ID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted()
+                .isFalse
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
 
@@ -139,29 +172,60 @@ class CreateEventUseCaseTest {
         ) doReturn eventRepository
 
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
                 .eq(null),
         ) doReturn eventCollectionRepository
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted(),
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(null)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted(),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse,
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(null)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted()
+                .isFalse,
         ) doReturn mock()
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(null)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted()
+                .isFalse
                 .orderByEventDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(null).byProgramStageUid().eq(PROGRAM_STAGE_ID).byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(null)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_ID)
+                .byDeleted()
+                .isFalse
                 .orderByDueDate(RepositoryScope.OrderByDirection.DESC),
         ) doReturn mock()
     }
+
     companion object {
         const val PROGRAM_STAGE_ID = "programStageId"
         const val ENROLLMENT_ID = "enrollmentId"

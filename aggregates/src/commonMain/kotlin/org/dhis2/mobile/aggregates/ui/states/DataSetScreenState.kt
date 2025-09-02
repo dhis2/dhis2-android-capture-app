@@ -6,7 +6,6 @@ import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.hisp.dhis.mobile.ui.designsystem.component.table.model.TableModel
 
 internal sealed class DataSetScreenState {
-
     data class Loaded(
         val dataSetDetails: DataSetDetails,
         val dataSetSections: List<DataSetSection>,
@@ -17,8 +16,7 @@ internal sealed class DataSetScreenState {
         val modalDialog: DataSetModalDialogUIState? = null,
         val validationBar: ValidationBarUiState? = null,
     ) : DataSetScreenState() {
-        override fun allowTwoPane(canUseTwoPane: Boolean) =
-            dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
+        override fun allowTwoPane(canUseTwoPane: Boolean) = dataSetSections.isNotEmpty() && canUseTwoPane && renderingConfig.useVerticalTabs
 
         override fun currentSection(): String? = dataSetSectionTable.id
 
@@ -27,7 +25,9 @@ internal sealed class DataSetScreenState {
 
     data object Loading : DataSetScreenState() {
         override fun allowTwoPane(canUseTwoPane: Boolean) = false
+
         override fun currentSection() = null
+
         override fun currentSectionData() = null
     }
 

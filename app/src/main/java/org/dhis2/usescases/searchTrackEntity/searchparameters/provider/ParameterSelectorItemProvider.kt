@@ -33,13 +33,14 @@ fun provideParameterSelectorItem(
 ): ParameterSelectorItemModel {
     val focusRequester = remember { FocusRequester() }
 
-    val status = if (fieldUiModel.focused) {
-        ParameterSelectorItemModel.Status.FOCUSED
-    } else if (fieldUiModel.value.isNullOrEmpty()) {
-        ParameterSelectorItemModel.Status.CLOSED
-    } else {
-        ParameterSelectorItemModel.Status.UNFOCUSED
-    }
+    val status =
+        if (fieldUiModel.focused) {
+            ParameterSelectorItemModel.Status.FOCUSED
+        } else if (fieldUiModel.value.isNullOrEmpty()) {
+            ParameterSelectorItemModel.Status.CLOSED
+        } else {
+            ParameterSelectorItemModel.Status.UNFOCUSED
+        }
 
     LaunchedEffect(key1 = status) {
         if (status == ParameterSelectorItemModel.Status.FOCUSED) {
@@ -53,8 +54,9 @@ fun provideParameterSelectorItem(
         helper = resources.getString(R.string.optional),
         inputField = {
             FieldProvider(
-                modifier = Modifier
-                    .focusRequester(focusRequester),
+                modifier =
+                    Modifier
+                        .focusRequester(focusRequester),
                 inputStyle = InputStyle.ParameterInputStyle(),
                 fieldUiModel = fieldUiModel,
                 uiEventHandler = callback::recyclerViewUiEvents,
@@ -63,7 +65,7 @@ fun provideParameterSelectorItem(
                 focusManager = focusManager,
                 onNextClicked = onNextClicked,
                 onFileSelected = {
-                    /*Not supported for search*/
+                    // Not supported for search
                 },
             )
         },
@@ -74,7 +76,10 @@ fun provideParameterSelectorItem(
     )
 }
 
-private fun performOnExpandActions(fieldUiModel: FieldUiModel, callback: FieldUiModel.Callback) {
+private fun performOnExpandActions(
+    fieldUiModel: FieldUiModel,
+    callback: FieldUiModel.Callback,
+) {
     fieldUiModel.onItemClick()
 
     if (fieldUiModel.renderingType == UiRenderType.QR_CODE ||
@@ -91,39 +96,42 @@ private fun performOnExpandActions(fieldUiModel: FieldUiModel, callback: FieldUi
 }
 
 @Composable
-private fun ProvideIcon(valueType: ValueType?, renderingType: UiRenderType?) =
-    when (valueType) {
-        ValueType.TEXT -> {
-            when (renderingType) {
-                UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
-                    Icon(
-                        imageVector = Icons.Outlined.QrCode2,
-                        contentDescription = "Icon Button",
-                        tint = SurfaceColor.Primary,
-                    )
-                }
+private fun ProvideIcon(
+    valueType: ValueType?,
+    renderingType: UiRenderType?,
+) = when (valueType) {
+    ValueType.TEXT -> {
+        when (renderingType) {
+            UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> {
+                Icon(
+                    imageVector = Icons.Outlined.QrCode2,
+                    contentDescription = "Icon Button",
+                    tint = SurfaceColor.Primary,
+                )
+            }
 
-                UiRenderType.BAR_CODE -> {
-                    Icon(
-                        painter = provideDHIS2Icon("material_barcode_scanner"),
-                        contentDescription = "Icon Button",
-                        tint = SurfaceColor.Primary,
-                    )
-                }
+            UiRenderType.BAR_CODE -> {
+                Icon(
+                    painter = provideDHIS2Icon("material_barcode_scanner"),
+                    contentDescription = "Icon Button",
+                    tint = SurfaceColor.Primary,
+                )
+            }
 
-                else -> {
-                    Icon(
-                        imageVector = Icons.Outlined.AddCircleOutline,
-                        contentDescription = "Icon Button",
-                        tint = SurfaceColor.Primary,
-                    )
-                }
+            else -> {
+                Icon(
+                    imageVector = Icons.Outlined.AddCircleOutline,
+                    contentDescription = "Icon Button",
+                    tint = SurfaceColor.Primary,
+                )
             }
         }
+    }
 
-        else -> Icon(
+    else ->
+        Icon(
             imageVector = Icons.Outlined.AddCircleOutline,
             contentDescription = "Icon Button",
             tint = SurfaceColor.Primary,
         )
-    }
+}
