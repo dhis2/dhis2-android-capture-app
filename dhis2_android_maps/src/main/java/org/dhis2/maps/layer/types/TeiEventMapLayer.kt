@@ -26,13 +26,11 @@ class TeiEventMapLayer(
     val eventColor: Int?,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-    private val POINT_LAYER_ID = "POINT_LAYER_$sourceId"
-    private val SELECTED_POINT_LAYER_ID = "SELECTED_POINT_LAYER_$sourceId"
-    private val POLYGON_LAYER_ID = "POLYGON_LAYER_$sourceId"
-
-    private val SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE_ID_$sourceId"
-
-    private var TEI_POINT_LAYER_ID = "EVENT_TEI_POINT_LAYER_ID_$sourceId"
+    private val pointLayerId = "POINT_LAYER_$sourceId"
+    private val selectedPointLayerId = "SELECTED_POINT_LAYER_$sourceId"
+    private val polygonLayerId = "POLYGON_LAYER_$sourceId"
+    private val selectedPointSourceID = "SELECTED_POINT_SOURCE_ID_$sourceId"
+    private var teiPointLayerId = "EVENT_TEI_POINT_LAYER_ID_$sourceId"
 
     override var visible = false
 
@@ -47,15 +45,15 @@ class TeiEventMapLayer(
             }
             else -> Unit
         }
-        style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
+        style.addSource(GeoJsonSource(selectedPointSourceID))
         style.addLayer(teiPointLayer)
         style.addLayer(selectedPointLayer)
     }
 
     private val pointLayer: Layer
         get() =
-            style.getLayer(POINT_LAYER_ID)
-                ?: SymbolLayer(POINT_LAYER_ID, sourceId)
+            style.getLayer(pointLayerId)
+                ?: SymbolLayer(pointLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.iconImage("${MapLayerManager.STAGE_ICON_ID}_$sourceId"),
                         PropertyFactory.iconAllowOverlap(true),
@@ -64,24 +62,24 @@ class TeiEventMapLayer(
 
     private val teiPointLayer: Layer
         get() =
-            style.getLayer(TEI_POINT_LAYER_ID)
-                ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
+            style.getLayer(teiPointLayerId)
+                ?: SymbolLayer(teiPointLayerId, sourceId)
                     .withTEIMarkerProperties()
                     .withInitialVisibility(Property.NONE)
                     .withFilter(isPoint())
 
     private val selectedPointLayer: Layer
         get() =
-            style.getLayer(SELECTED_POINT_LAYER_ID)
-                ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
+            style.getLayer(selectedPointLayerId)
+                ?: SymbolLayer(selectedPointLayerId, selectedPointSourceID)
                     .withTEIMarkerProperties()
                     .withInitialVisibility(Property.NONE)
                     .withFilter(isPoint())
 
     private val polygonLayer: Layer
         get() =
-            style.getLayer(POLYGON_LAYER_ID)
-                ?: FillLayer(POLYGON_LAYER_ID, sourceId)
+            style.getLayer(polygonLayerId)
+                ?: FillLayer(polygonLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
                         PropertyFactory.visibility(Property.NONE),
@@ -89,8 +87,8 @@ class TeiEventMapLayer(
 
     private val polygonBorderLayer: Layer
         get() =
-            style.getLayer(POLYGON_LAYER_ID)
-                ?: LineLayer(POLYGON_LAYER_ID, sourceId)
+            style.getLayer(polygonLayerId)
+                ?: LineLayer(polygonLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.lineColor(eventColor ?: -1),
                         PropertyFactory.visibility(Property.NONE),
@@ -126,7 +124,7 @@ class TeiEventMapLayer(
     }
 
     private fun selectPoint(feature: Feature) {
-        style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
+        style.getSourceAs<GeoJsonSource>(selectedPointSourceID)?.apply {
             setGeoJson(feature)
         }
 
@@ -154,13 +152,13 @@ class TeiEventMapLayer(
 
     override fun getId(): String =
         if (featureType == FeatureType.POINT) {
-            POINT_LAYER_ID
+            pointLayerId
         } else {
-            POLYGON_LAYER_ID
+            polygonLayerId
         }
 
     override fun layerIdsToSearch(): Array<String> =
         arrayOf(
-            TEI_POINT_LAYER_ID,
+            teiPointLayerId,
         )
 }

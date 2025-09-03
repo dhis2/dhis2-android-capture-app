@@ -8,7 +8,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import org.dhis2.R
 
 object BackdropManager {
-    private const val changeBoundDuration = 200L
+    private const val CHANGE_BOUND_DURATION = 200L
 
     private fun changeBounds(
         isNavigationBarVisible: Boolean,
@@ -17,7 +17,7 @@ object BackdropManager {
         margin: Int,
     ) {
         val transition: Transition = ChangeBounds()
-        transition.duration = changeBoundDuration
+        transition.duration = CHANGE_BOUND_DURATION
         TransitionManager.beginDelayedTransition(backdropLayout, transition)
 
         val initSet = ConstraintSet()

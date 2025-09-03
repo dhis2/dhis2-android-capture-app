@@ -365,9 +365,9 @@ class SearchTEIViewModel(
         }
     }
 
-    fun updateActiveFilters(filtersActive: Boolean) {
-        if (filtersActive.value != filtersActive) searchRepository.clearFetchedList()
-        filtersActive.postValue(filtersActive)
+    fun updateActiveFilters(filters: Boolean) {
+        if (filtersActive.value != filters) searchRepository.clearFetchedList()
+        filtersActive.postValue(filters)
     }
 
     fun refreshData() {
