@@ -175,19 +175,19 @@ class EventCapturePresenterImpl(
     override fun isDataEntrySelected(): Boolean = navigationBarUIState.value.selectedItem == NavigationPage.DATA_ENTRY
 
     override fun updateNotesBadge(numberOfNotes: Int) {
-        val navigationBarUIState = navigationBarUIState.value
+        val uiState = navigationBarUIState.value
         val indexOfNotesNavigationItem =
-            navigationBarUIState
+            uiState
                 .items
                 .indexOfFirst { it.id == NavigationPage.NOTES }
 
         val notesNavigationItem =
-            navigationBarUIState
+            uiState
                 .items
                 .getOrNull(indexOfNotesNavigationItem)
 
         if (notesNavigationItem != null) {
-            val updatedList = navigationBarUIState.items.toMutableList()
+            val updatedList = uiState.items.toMutableList()
             updatedList[indexOfNotesNavigationItem] =
                 notesNavigationItem.copy(
                     showBadge = numberOfNotes > 0,

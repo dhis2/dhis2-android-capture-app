@@ -165,8 +165,8 @@ class ManageStockViewModel(
                         config,
                     ).items
 
-            result.asFlow().collect { stockItems ->
-                stockItems.value = stockItems
+            result.asFlow().collect {
+                stockItems.value = it
                 populateTable()
             }
         }

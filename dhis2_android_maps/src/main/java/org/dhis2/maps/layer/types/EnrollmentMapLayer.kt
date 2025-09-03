@@ -27,15 +27,6 @@ class EnrollmentMapLayer(
     private val enrollmentDarkColor: Int,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-    private var POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER_ID"
-    private var SELECTED_POINT_LAYER_ID: String = "SELECTED_POINT_LAYER_ID"
-
-    private var POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER_ID"
-    private var POLYGON_BORDER_LAYER_ID: String = "ENROLLMENT_POLYGON_BORDER_LAYER_ID"
-
-    private var SELECTED_ENROLLMENT_SOURCE_ID = "SELECTED_ENROLLMENT_SOURCE_ID"
-    private var TEI_POINT_LAYER_ID = "ENROLLMENT_TEI_POINT_LAYER_ID"
-
     override var visible = false
 
     init {
@@ -146,4 +137,13 @@ class EnrollmentMapLayer(
         arrayOf(
             TEI_POINT_LAYER_ID,
         )
+
+    companion object {
+        private const val POINT_LAYER_ID: String = "ENROLLMENT_POINT_LAYER_ID"
+        private const val SELECTED_POINT_LAYER_ID: String = "SELECTED_POINT_LAYER_ID"
+        private const val POLYGON_LAYER_ID: String = "ENROLLMENT_POLYGON_LAYER_ID"
+        private const val POLYGON_BORDER_LAYER_ID: String = "ENROLLMENT_POLYGON_BORDER_LAYER_ID"
+        private const val SELECTED_ENROLLMENT_SOURCE_ID = "SELECTED_ENROLLMENT_SOURCE_ID"
+        private const val TEI_POINT_LAYER_ID = "ENROLLMENT_TEI_POINT_LAYER_ID"
+    }
 }

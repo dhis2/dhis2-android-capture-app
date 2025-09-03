@@ -37,59 +37,49 @@ class RelationshipMapLayer(
     private val lineColor: Int?,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-    private val LINE_LAYER_ID: String = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
-    private val SELECTED_LINE_LAYER_ID: String = "SELECTED_RELATIONSHIP_LINE_LAYER_ID_$sourceId"
-    private val LINE_ARROW_LAYER_ID: String = "RELATIONSHIP_LINE_ARROW_LAYER_ID_$sourceId"
-    private val SELECTED_LINE_ARROW_LAYER_ID: String =
+    private val lineLayerId: String = "RELATIONSHIP_LINE_LAYER_ID_$sourceId"
+    private val selectedLineLayerId: String = "SELECTED_RELATIONSHIP_LINE_LAYER_ID_$sourceId"
+    private val lineArrowLayerId: String = "RELATIONSHIP_LINE_ARROW_LAYER_ID_$sourceId"
+    private val selectedLineArrowLayerId: String =
         "SELECTED_RELATIONSHIP_LINE_ARROW_LAYER_ID_$sourceId"
-    private val LINE_ARROW_BIDIRECTIONAL_LAYER_ID: String =
+    private val lineArrowBidirectionalLayerId: String =
         "RELATIONSHIP_LINE_ARROW_BIDIRECTIONAL_LAYER_ID_$sourceId"
-    private val SELECTED_LINE_ARROW_BIDIRECTIONAL_LAYER_ID: String =
-        "SELECTED_RELATIONSHIP_LINE_ARROW_BIDIRECTIONAL_LAYER_ID_$sourceId"
-
-    private val POINT_LAYER_ID: String = "RELATIONSHIP_POINT_LAYER_ID_$sourceId"
-    private val SELECTED_POINT_LAYER_ID: String = "SELECTED_RELATIONSHIP_POINT_LAYER_ID_$sourceId"
-
-    private val POLYGON_LAYER_ID: String = "RELATIONSHIP_POLYGON_LAYER_ID$sourceId"
-    private val SELECTED_POLYGON_LAYER_ID: String = "SEL_RELATIONSHIP_POLYGON_LAYER_ID$sourceId"
-    private val POLYGON_BORDER_LAYER_ID: String = "RELATIONSHIP_POLYGON_BORDER_LAYER_ID$sourceId"
-    private val SELECTED_POLYGON_BORDER_LAYER_ID: String =
-        "SEL_RELATIONSHIP_POLYGON_BORDER_LAYER_ID$sourceId"
-
-    private val SELECTED_SOURCE: String = "SELECTED_SOURCE_$sourceId"
-
-    private val BASE_RELATIONSHIP_LAYER_ID = "BASE_RELATIONSHIP_LAYER"
-
-    private var TEI_POINT_LAYER_ID = "RELATIONSHIP_TEI_POINT_LAYER_ID_$sourceId"
+    private val pointLayerId: String = "RELATIONSHIP_POINT_LAYER_ID_$sourceId"
+    private val selectedPointLayerId: String = "SELECTED_RELATIONSHIP_POINT_LAYER_ID_$sourceId"
+    private val polygonLayerId: String = "RELATIONSHIP_POLYGON_LAYER_ID$sourceId"
+    private val polygonBorderLayerId: String = "RELATIONSHIP_POLYGON_BORDER_LAYER_ID$sourceId"
+    private val selectedSource: String = "SELECTED_SOURCE_$sourceId"
+    private val baseRelationshipLayerId = "BASE_RELATIONSHIP_LAYER"
+    private var teiPointLayerId = "RELATIONSHIP_TEI_POINT_LAYER_ID_$sourceId"
 
     override var visible = false
 
     init {
-        if (style.getLayer(BASE_RELATIONSHIP_LAYER_ID) == null) {
+        if (style.getLayer(baseRelationshipLayerId) == null) {
             style.addLayer(baseRelationshipLayer)
         }
-        style.addSource(GeoJsonSource(SELECTED_SOURCE))
-        style.addLayerBelow(polygonLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerBelow(polygonBorderLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(teiPointLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(pointLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(selectedPointLayer, TEI_POINT_LAYER_ID)
-        style.addLayerAbove(linesLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(selectedLineLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(arrowLayer, BASE_RELATIONSHIP_LAYER_ID)
-        style.addLayerAbove(arrowBidirectionalLayer, BASE_RELATIONSHIP_LAYER_ID)
+        style.addSource(GeoJsonSource(selectedSource))
+        style.addLayerBelow(polygonLayer, baseRelationshipLayerId)
+        style.addLayerBelow(polygonBorderLayer, baseRelationshipLayerId)
+        style.addLayerAbove(teiPointLayer, baseRelationshipLayerId)
+        style.addLayerAbove(pointLayer, baseRelationshipLayerId)
+        style.addLayerAbove(selectedPointLayer, teiPointLayerId)
+        style.addLayerAbove(linesLayer, baseRelationshipLayerId)
+        style.addLayerAbove(selectedLineLayer, baseRelationshipLayerId)
+        style.addLayerAbove(arrowLayer, baseRelationshipLayerId)
+        style.addLayerAbove(arrowBidirectionalLayer, baseRelationshipLayerId)
     }
 
     private val baseRelationshipLayer: Layer
         get() =
-            style.getLayer(BASE_RELATIONSHIP_LAYER_ID)
-                ?: LineLayer(BASE_RELATIONSHIP_LAYER_ID, sourceId)
+            style.getLayer(baseRelationshipLayerId)
+                ?: LineLayer(baseRelationshipLayerId, sourceId)
                     .withProperties(visibility(Property.NONE))
 
     private val linesLayer: Layer
         get() =
-            style.getLayer(LINE_LAYER_ID)
-                ?: LineLayer(LINE_LAYER_ID, sourceId)
+            style.getLayer(lineLayerId)
+                ?: LineLayer(lineLayerId, sourceId)
                     .withProperties(
                         lineColor(lineColor ?: LINE_COLOR),
                         lineWidth(LINE_WIDTH),
@@ -98,8 +88,8 @@ class RelationshipMapLayer(
 
     private val selectedLineLayer: Layer
         get() =
-            style.getLayer(SELECTED_LINE_LAYER_ID)
-                ?: LineLayer(SELECTED_LINE_LAYER_ID, SELECTED_SOURCE)
+            style.getLayer(selectedLineLayerId)
+                ?: LineLayer(selectedLineLayerId, selectedSource)
                     .withProperties(
                         lineColor(lineColor ?: LINE_COLOR),
                         lineWidth(SELECTED_LINE_WIDTH),
@@ -108,8 +98,8 @@ class RelationshipMapLayer(
 
     private val arrowLayer: Layer
         get() =
-            style.getLayer(LINE_ARROW_LAYER_ID)
-                ?: SymbolLayer(LINE_ARROW_LAYER_ID, sourceId)
+            style.getLayer(lineArrowLayerId)
+                ?: SymbolLayer(lineArrowLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ARROW),
                         PropertyFactory.iconAllowOverlap(true),
@@ -120,8 +110,8 @@ class RelationshipMapLayer(
 
     private val arrowBidirectionalLayer: Layer
         get() =
-            style.getLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID)
-                ?: SymbolLayer(LINE_ARROW_BIDIRECTIONAL_LAYER_ID, sourceId)
+            style.getLayer(lineArrowBidirectionalLayerId)
+                ?: SymbolLayer(lineArrowBidirectionalLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.iconImage(
                             RelationshipMapManager.RELATIONSHIP_ARROW_BIDIRECTIONAL,
@@ -133,8 +123,8 @@ class RelationshipMapLayer(
                     .withFilter(isBiderectional())
     private val selectedArrowLayer: Layer
         get() =
-            style.getLayer(SELECTED_LINE_ARROW_LAYER_ID)
-                ?: SymbolLayer(SELECTED_LINE_ARROW_LAYER_ID, sourceId)
+            style.getLayer(selectedLineArrowLayerId)
+                ?: SymbolLayer(selectedLineArrowLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.iconImage(RelationshipMapManager.RELATIONSHIP_ICON),
                         PropertyFactory.iconAllowOverlap(true),
@@ -145,8 +135,8 @@ class RelationshipMapLayer(
 
     private val pointLayer: Layer
         get() =
-            style.getLayer(POINT_LAYER_ID)
-                ?: SymbolLayer(POINT_LAYER_ID, sourceId)
+            style.getLayer(pointLayerId)
+                ?: SymbolLayer(pointLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.iconImage(
                             "${RelationshipMapManager.RELATIONSHIP_ICON}_$sourceId",
@@ -158,24 +148,24 @@ class RelationshipMapLayer(
 
     private val teiPointLayer: Layer
         get() =
-            style.getLayer(TEI_POINT_LAYER_ID)
-                ?: SymbolLayer(TEI_POINT_LAYER_ID, sourceId)
+            style.getLayer(teiPointLayerId)
+                ?: SymbolLayer(teiPointLayerId, sourceId)
                     .withTEIMarkerProperties()
                     .withInitialVisibility(Property.NONE)
                     .withFilter(isPoint())
 
     private val selectedPointLayer: Layer
         get() =
-            style.getLayer(SELECTED_POINT_LAYER_ID)
-                ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_SOURCE)
+            style.getLayer(selectedPointLayerId)
+                ?: SymbolLayer(selectedPointLayerId, selectedSource)
                     .withTEIMarkerProperties()
                     .withInitialVisibility(Property.NONE)
                     .withFilter(isPoint())
 
     private val polygonLayer: Layer
         get() =
-            style.getLayer(POLYGON_LAYER_ID)
-                ?: FillLayer(POLYGON_LAYER_ID, sourceId)
+            style.getLayer(polygonLayerId)
+                ?: FillLayer(polygonLayerId, sourceId)
                     .withProperties(
                         PropertyFactory.fillColor(
                             colorUtils.withAlpha(lineColor ?: LINE_COLOR ?: -1, 50),
@@ -184,8 +174,8 @@ class RelationshipMapLayer(
 
     private val polygonBorderLayer: Layer
         get() =
-            style.getLayer(POLYGON_BORDER_LAYER_ID)
-                ?: LineLayer(POLYGON_BORDER_LAYER_ID, sourceId)
+            style.getLayer(polygonBorderLayerId)
+                ?: LineLayer(polygonBorderLayerId, sourceId)
                     .withProperties(
                         lineColor(lineColor ?: LINE_COLOR),
                         lineWidth(LINE_WIDTH),
@@ -208,7 +198,7 @@ class RelationshipMapLayer(
     }
 
     fun selectPoints(features: List<Feature>) {
-        style.getSourceAs<GeoJsonSource>(SELECTED_SOURCE)?.apply {
+        style.getSourceAs<GeoJsonSource>(selectedSource)?.apply {
             setGeoJson(FeatureCollection.fromFeatures(features))
         }
 
@@ -255,10 +245,10 @@ class RelationshipMapLayer(
         private const val SELECTED_LINE_WIDTH = 4f
     }
 
-    override fun getId(): String = LINE_LAYER_ID
+    override fun getId(): String = lineLayerId
 
     override fun layerIdsToSearch(): Array<String> =
         arrayOf(
-            TEI_POINT_LAYER_ID,
+            teiPointLayerId,
         )
 }

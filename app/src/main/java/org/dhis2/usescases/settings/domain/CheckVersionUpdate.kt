@@ -10,16 +10,16 @@ class CheckVersionUpdate(
     private val settingsMessages: SettingsMessages,
     private val resourceManager: ResourceManager,
 ) {
-    private val _updatesLoading = MutableLiveData<Boolean>()
+    private val updatesLoading = MutableLiveData<Boolean>()
 
     suspend operator fun invoke() {
-        _updatesLoading.postValue(true)
+        updatesLoading.postValue(true)
         val newVersion = versionRepository.getLatestVersionInfo()
         if (newVersion != null) {
             versionRepository.checkVersionUpdates()
         } else {
             settingsMessages.sendMessage(resourceManager.getString(R.string.no_updates))
         }
-        _updatesLoading.postValue(false)
+        updatesLoading.postValue(false)
     }
 }
