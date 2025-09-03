@@ -103,4 +103,68 @@
     <string name="add_image">Añadir imagen</string>
     <string name="no_results_found">No se han encontrado resultados</string>
     <string name="action_done">Terminado</string>
-    </resources>
+    <!--*******************->
+        D2 Error Messages
+    **********************-->
+    <string name="login_error_null_pass">La contraseña está vacía. Ingrese la contraseña.</string>
+    <string name="login_error_null_username">El usuario está vacío. Ingrese el usuario.</string>
+    <string name="login_error_dhis_version">Este servidor trabaja sobre una versión de dhis distinta a 2.29. Actualice el servidor o utilize el entorno de pruebas para continuar.</string>
+    <string name="login_error_dhis_version_v2">Este servidor tiene una version de DHIS2 diferente de %s. Actualice su servidor o contacte a su administrador.</string>
+    <string name="login_error_unsuccessful_response">Algo ha ido mal. Por favor, compruebe que tanto la url del servidor como el usuario y contraseña son correctos y pruebe otra vez.</string>
+    <string name="login_error_error_response">Disculpe, hubo un error del lado del servidor.</string>
+    <string name="login_error_no_dhis_instance">La URL entregada no es un servidor de DHIS2.</string>
+    <string name="login_error_bad_credentials">El usuario y la contraseña son incorrectas</string>
+    <string name="login_error_unknown_host">Servidor desconocido</string>
+    <string name="online_search_parsing_error">Error al obtener los resultados</string>
+    <string name="error_unexpected">Disculpe, algo inesperado salió mal.</string>
+    <string name="error_too_manu_org_units">Su usuario tiene más de una unidad organizativa raíz. Revise su configuración o contacte a su administrador.</string>
+    <string name="error_max_tei_count_reached">Los resultados de la búsqueda online sobrepasan el número máximo de instancias que se pueden mostrar. Redefina los criterios de búsqueda.</string>
+    <string name="error_many_requests">El servidor se encuentra ocupado en estos momentos. Por favor inténtelo más tarde.</string>
+    <string name="error_already_authenticated">Este usuario ya ha iniciado sesión.</string>
+    <string name="error_already_executed">La petición ya ha sido evaluada.</string>
+    <string name="error_api_invalid_query">La petición al servidor no es válida.</string>
+    <string name="error_app_name_not_set">No se ha definido el nombre de la aplicación.</string>
+    <string name="error_app_version_not_set">No se ha definido la versión de la aplicación.</string>
+    <string name="error_access_keystore">No se puede acceder al almacén de claves del dispositivo.</string>
+    <string name="error_create_existing_error">No se puede crear un objeto que ya existe.</string>
+    <string name="error_delete_non_existing_object">No se puede eliminar un objeto que no existe.</string>
+    <string name="error_instance_keystore">No se puede inicializar el almacén de llaves.</string>
+    <string name="error_reserve_value_on_server">No se pudo reservar los valores. Por favor contacte a su administrador</string>
+    <string name="error_export_login">Inicie sesión para exportar la base de datos.</string>
+    <string name="error_export_encrypted">Exportar una base de datos encriptada no está soportado.</string>
+    <string name="error_import_exist">Está intentando importar una base de datos que ya existe.</string>
+    <string name="error_import_logout">Por favor cierre sesión antes de importar una nueva base de datos.</string>
+    <string name="error_import_version">La versión de la base de datos importada es mayor que la soportada.</string>
+    <string name="error_file_not_found">Archivo no encontrado.</string>
+    <string name="error_file_resize">Ha habido un error al modificar el tamaño de la imagen.</string>
+    <string name="error_generate_coordinate">No se pueden generar coordenadas.</string>
+    <string name="error_job">No hay información disponible sobre la tarea.</string>
+    <string name="error_low_on_available_values">Puede que se esté quedando sin valores reservados.</string>
+    <string name="error_user_no_authenticated">No hay una sesión iniciada.</string>
+    <string name="error_user_no_authenticated_offline">No hay una sesión offline iniciada.</string>
+    <string name="error_no_values_left_on_server">No hay suficientes valores reservados en el servidor. Por favor contacte a su administrador</string>
+    <string name="error_different_offline_user">Estás intentando iniciar sesión offline con un usuario diferente.</string>
+    <string name="error_invalid_geometry">El valor de la geometría no es válido.</string>
+    <string name="error_no_reserved_values">No hay valores reservados disponibles. Cuando tenga acceso a Internet, vaya a Configuración y rellene los valores.</string>
+    <string name="error_object_update">No se ha podido actualizar.</string>
+    <string name="error_object_insert">No se ha podido crear.</string>
+    <string name="error_ownership_access">No tienes acceso.</string>
+    <string name="error_null_url">Falta la URL del servidor. Ingrese la URL.</string>
+    <string name="error_server_malformed">La URL del servidor está mal. Por favor revísela.</string>
+    <string name="error_settings_app_not_supported">Esta versión de Settings Web App no está soportada.</string>
+    <string name="error_settings_app_not_intalled">La Settings Web App no está instalada en el servidor.</string>
+    <string name="error_socket_timeout">El servidor ha tardado mucho en responder. Se ha cancelado la petición.</string>
+    <string name="error_relationship_updated">La relación no puede actualizarse.</string>
+    <string name="error_too_many_periods">Hay demasiados periodos.</string>
+    <string name="error_url_not_found">No pudimos encontrar la URL. Por favor revísela.</string>
+    <string name="error_account_disabled">Su cuenta de usuario ha sido desactivada. Si esto es un error, contacte con su administrador.</string>
+    <string name="error_account_locked">Su cuenta de usuario ha sido bloqueada. Si es un error, contacte con su administrador.</string>
+    <string name="error_set_value">No se ha podido cambiar el valor.</string>
+    <string name="error_value_reservation_time">La petición para reservar más valores está tardando demasiado. Por favor vuelva a intentarlo.</string>
+    <string name="error_ssl">Hay un problema con los certificados del servidor. Por favor contacte con su administrador.</string>
+    <string name="error_sms_not_supported">SMS no está soportado.</string>
+    <string name="error_min_attributes">No hay suficientes atributos para realizar la búsqueda. Por favor redefina la búsqueda añadiendo más atributos.</string>
+    <string name="error_org_unit_scope">La búsqueda online solo está disponible para las unidades organizativas de búsqueda.</string>
+    <string name="error_invalid_characters">El query contiene caracteres invalidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
+
+</resources>

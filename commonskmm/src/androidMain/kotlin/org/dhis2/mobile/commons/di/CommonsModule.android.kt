@@ -12,6 +12,8 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
@@ -32,6 +34,10 @@ actual val commonsModule: Module
 
         single<NetworkStatusProvider> {
             NetworkStatusProviderImpl(get())
+        }
+
+        factory<D2ErrorMessageProvider> { params ->
+            D2ErrorMessageProviderImpl(params.get())
         }
 
         factory<TableDimensionRepository> { params ->
