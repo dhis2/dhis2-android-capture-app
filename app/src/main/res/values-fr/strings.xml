@@ -224,6 +224,7 @@
     <string name="settingsSms">Paramètres SMS</string>
     <string name="settingsSms_descr">Cliquez et éditez les paramètres de la passerelle SMS</string>
     <string name="settingsCheckVersion">Mise à jour du logiciel</string>
+    <string name="settingsCheckVersionMessage">Logiciel</string>
     <string name="settingsExportDB">Exportation de la base des données</string>
     <string name="settingsExportDBMessage">Exporter votre base de données et le partager avec l\'administrateur</string>
     <string name="settingTwoFA">Authentification à deux facteurs</string>
