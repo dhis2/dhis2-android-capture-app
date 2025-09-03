@@ -138,8 +138,9 @@ class LoginViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         Dispatchers.setMain(testingDispatcher)
+        whenever(repository.getTestingCredentials()) doReturn emptyList()
     }
 
     @Test
@@ -251,33 +252,36 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should display biometric button for logged server`() {
+    fun `Should display biometric button for logged server`() = runTest {
         instantiateLoginViewModel()
         mockAccounts()
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
         whenever(preferenceProvider.contains(SECURE_PASS)) doReturn true
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
+        testingDispatcher.scheduler.advanceUntilIdle()
         assert(loginViewModel.canLoginWithBiometrics.value == true)
     }
 
     @Test
-    fun `Should not display biometric button for not logged server`() {
+    fun `Should not display biometric button for not logged server`() = runTest {
         instantiateLoginViewModel()
         mockAccounts()
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("notLoggedServer", 0, 0, 0)
+        testingDispatcher.scheduler.advanceUntilIdle()
         assert(loginViewModel.canLoginWithBiometrics.value == false)
     }
 
     @Test
-    fun `Should not display biometric button for more than one account`() {
+    fun `Should not display biometric button for more than one account`() = runTest {
         instantiateLoginViewModel()
         mockAccounts(2)
         whenever(preferenceProvider.getString(SECURE_SERVER_URL)) doReturn "loggedServer"
         whenever(biometricController.hasBiometric()) doReturn true
         loginViewModel.onServerChanged("loggedServer", 0, 0, 0)
+        testingDispatcher.scheduler.advanceUntilIdle()
         assert(loginViewModel.canLoginWithBiometrics.value == false)
     }
 
@@ -336,7 +340,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `Should handle successfull response`() {
+    fun `Should handle successfull response`() = runTest {
         instantiateLoginViewModel()
         val response = Result.success(
             User.builder()
@@ -374,15 +378,15 @@ class LoginViewModelTest {
         ) doReturn mock()
 
         whenever(
-            userManager.d2.userModule().accountManager().getAccounts(),
-        ) doReturn listOf()
+            userManager.accountCount(),
+        ) doReturn 0
 
         loginViewModel.handleResponse(response)
         verify(view).saveUsersData(true, false)
     }
 
     @Test
-    fun `Should set server and username if user is logged and display biometric prompt`() {
+    fun `Should set server and username if user is logged and display biometric prompt`() = runTest {
         instantiateLoginViewModel()
         mockSystemInfo()
         mockAccounts()
@@ -395,6 +399,7 @@ class LoginViewModelTest {
         loginViewModel.checkServerInfoAndShowBiometricButton()
         verify(view).setUrl("contextPath")
         verify(view).setUser("Username")
+        testingDispatcher.scheduler.advanceUntilIdle()
         assert(loginViewModel.canLoginWithBiometrics.value == true)
         mockBiometrics()
         loginViewModel.authenticateWithBiometric()
@@ -473,25 +478,10 @@ class LoginViewModelTest {
         }
     }
 
-    private fun mockAccounts(accounts: Int = 1) {
+    private suspend fun mockAccounts(accounts: Int = 1) {
         whenever(
-            userManager.d2.userModule(),
-        ) doReturn mock()
-        whenever(
-            userManager.d2.userModule().user(),
-        ) doReturn mock()
-        whenever(
-            userManager.d2.userModule().user().blockingGet(),
-        ) doReturn null
-        whenever(
-            userManager.d2.userModule().accountManager(),
-        ) doReturn mock()
-
-        whenever(
-            userManager.d2.userModule().accountManager().getAccounts(),
-        ) doReturn mutableListOf<DatabaseAccount>().apply {
-            repeat(accounts) { this.add(dummyDatabaseAccount) }
-        }
+            userManager.accountCount(),
+        ) doReturn accounts
     }
 
     private val dummyDatabaseAccount = DatabaseAccount.builder()

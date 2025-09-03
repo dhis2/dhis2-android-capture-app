@@ -15,7 +15,7 @@ interface HomeRepository {
     fun hasProgramWithAssignment(): Boolean
     fun hasHomeAnalytics(): Boolean
     fun getServerVersion(): Single<SystemInfo?>
-    fun accountsCount(): Int
+    suspend fun accountsCount(): Int
     fun isPinStored(): Boolean
     fun homeItemCount(): Int
     suspend fun singleHomeItemData(): HomeItemData?

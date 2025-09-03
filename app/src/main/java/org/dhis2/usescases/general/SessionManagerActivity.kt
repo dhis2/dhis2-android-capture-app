@@ -81,7 +81,7 @@ abstract class SessionManagerActivity : AppCompatActivity(), ActivityResultObser
                     )
                     Unit
                 }
-            if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
+            if (serverComponent.userManager().isUserLoggedIn.blockingFirst() &&
                 !serverComponent.userManager().allowScreenShare()
             ) {
                 window.setFlags(

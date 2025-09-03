@@ -239,7 +239,9 @@ class MainPresenter(
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        view.goToLogin(repository.accountsCount(), isDeletion = false)
+                        launch(coroutineContext) {
+                            view.goToLogin(repository.accountsCount(), isDeletion = false)
+                        }
                     },
                     { Timber.e(it) },
                 ),
@@ -255,8 +257,9 @@ class MainPresenter(
             userManager.d2?.wipeModule()?.wipeEverything()
             userManager.d2?.userModule()?.accountManager()?.deleteCurrentAccount()
             view.cancelNotifications()
-
-            view.goToLogin(repository.accountsCount(), isDeletion = true)
+            launch(coroutineContext) {
+                view.goToLogin(repository.accountsCount(), isDeletion = true)
+            }
         } catch (exception: Exception) {
             Timber.e(exception)
         }

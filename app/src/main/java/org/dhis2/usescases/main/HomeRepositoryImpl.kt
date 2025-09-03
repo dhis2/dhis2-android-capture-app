@@ -54,7 +54,7 @@ class HomeRepositoryImpl(
         return d2.systemInfoModule().systemInfo().get()
     }
 
-    override fun accountsCount() = d2.userModule().accountManager().getAccounts().count()
+    override suspend fun accountsCount() = d2.userModule().accountManager().getAccounts().count()
 
     override fun isPinStored() = d2.dataStoreModule().localDataStore().value(PIN).blockingExists()
     override fun homeItemCount(): Int {

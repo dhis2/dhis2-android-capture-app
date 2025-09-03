@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -116,7 +117,7 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Should log out`() {
+    fun `Should log out`() = runTest {
         whenever(repository.logOut()) doReturn Completable.complete()
 
         whenever(repository.accountsCount()) doReturn 1
@@ -181,7 +182,7 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Should go to delete account`() {
+    fun `Should go to delete account`() = runTest {
         val randomFile = File("random")
         whenever(view.obtainFileView()) doReturn randomFile
         whenever(userManager.d2) doReturn mock()
@@ -194,13 +195,13 @@ class MainPresenterTest {
 
         verify(view).showProgressDeleteNotification()
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
-        verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
+        verify(userManager.d2.userModule().accountManager()).deleteCurrentAccount()
         verify(view).cancelNotifications()
         verify(view).goToLogin(1, true)
     }
 
     @Test
-    fun `Should go to manage account`() {
+    fun `Should go to manage account`() = runTest {
         val firstRandomUserAccount =
             DatabaseAccount.builder()
                 .username("random")
