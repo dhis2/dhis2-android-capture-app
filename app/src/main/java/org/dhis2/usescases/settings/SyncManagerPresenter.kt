@@ -133,10 +133,6 @@ class SyncManagerPresenter(
         }
     }
 
-    fun init() {
-        networkUtils.registerNetworkCallback()
-    }
-
     fun onCheckVersionUpdate() {
         viewModelScope.launch(dispatcherProvider.io()) {
             checkVersionUpdate()
@@ -202,7 +198,8 @@ class SyncManagerPresenter(
 
     fun saveGatewayNumber(gatewayNumber: String) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveGatewayNumber(gatewayNumber))
+            val result =
+                updateSmsModule(UpdateSmsModule.SmsSetting.SaveGatewayNumber(gatewayNumber))
             when (result) {
                 UpdateSmsModule.EnableSmsResult.Success,
                 UpdateSmsModule.EnableSmsResult.Error,
@@ -294,11 +291,6 @@ class SyncManagerPresenter(
             launchSync(LaunchSync.SyncAction.SyncMetadata)
         }
     }
-
-    fun dispose() {
-        networkUtils.unregisterNetworkCallback()
-    }
-
     fun resetSyncParameters() {
         viewModelScope.launch(dispatcherProvider.io()) {
             updateSyncSettings(UpdateSyncSettings.SyncSettings.Reset)

@@ -49,13 +49,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 const val SERVER_VALIDATION_CONTENT_BUTTON_TAG = "ServerValidationContentButtonTag"
 
 @Composable
-internal fun ServerValidationContent(availableServers: List<String>) {
-    val viewModel: LoginViewModel = koinViewModel()
+internal fun ServerValidationContent(
+    availableServers: List<String>,
+    viewModel: LoginViewModel,
+) {
     val currentScreen by viewModel.currentScreen.collectAsState(null)
     val isServerValidationRunning by remember(currentScreen) {
         derivedStateOf {
@@ -67,6 +68,7 @@ internal fun ServerValidationContent(availableServers: List<String>) {
             (currentScreen as? LoginScreenState.ServerValidation)?.error
         }
     }
+
     Column(
         modifier =
             Modifier

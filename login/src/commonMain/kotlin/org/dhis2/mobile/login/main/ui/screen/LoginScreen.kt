@@ -30,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,8 +64,6 @@ fun LoginScreen(
     legacyLoginContent: @Composable (server: String, username: String) -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
-    val initialScreen by viewModel.currentScreen.collectAsState(LoginScreenState.Loading)
-
     var displayMoreActions by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -84,12 +81,14 @@ fun LoginScreen(
 
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
-                is NavigationAction.Navigate ->
+                is NavigationAction.Navigate -> {
+                    viewModel.setCurrentScreen(action.destination)
                     navController.navigate(
                         action.destination,
                     ) {
                         action.navOptions(this)
                     }
+                }
 
                 NavigationAction.NavigateUp -> navController.navigateUp()
             }
@@ -99,20 +98,21 @@ fun LoginScreen(
 
         NavHost(
             navController = navController,
-            startDestination = initialScreen,
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(
-                        top = padding.calculateTopPadding(),
-                        start = padding.calculateStartPadding(layoutDirection),
-                        end = padding.calculateEndPadding(layoutDirection),
-                        bottom = 0.dp,
-                    ).consumeWindowInsets(padding)
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                    ).padding(bottom = padding.calculateBottomPadding()),
+            startDestination = LoginScreenState.Loading,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    top = padding.calculateTopPadding(),
+                    start = padding.calculateStartPadding(layoutDirection),
+                    end = padding.calculateEndPadding(layoutDirection),
+                    bottom = 0.dp,
+                )
+                .consumeWindowInsets(padding)
+                .background(
+                    Color.White,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                )
+                .padding(bottom = padding.calculateBottomPadding()),
         ) {
             composable<LoginScreenState.Loading> {
                 displayMoreActions = false
@@ -121,7 +121,7 @@ fun LoginScreen(
             composable<LoginScreenState.ServerValidation> {
                 val args = it.toRoute<LoginScreenState.ServerValidation>()
                 displayMoreActions = true
-                ServerValidationContent(args.availableServers)
+                ServerValidationContent(args.availableServers, viewModel)
             }
             composable<LoginScreenState.LegacyLogin> {
                 displayMoreActions = false
