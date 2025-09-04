@@ -51,6 +51,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
 import org.dhis2.databinding.ActivityLoginBinding
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.screen.LoginScreen
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
@@ -71,6 +72,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -99,6 +101,8 @@ class LoginActivity :
 
     @Inject
     lateinit var resourceManager: ResourceManager
+
+    private val appLinkNavigation: AppLinkNavigation by inject()
 
     private var isPinScreenVisible = false
     private var qrUrl: String? = null
@@ -232,26 +236,11 @@ class LoginActivity :
 
     override fun onResume() {
         super.onResume()
-        handleOAuthRedirect(intent)
-    }
-
-    private fun handleOAuthRedirect(intent: Intent?) {
-        Timber.d("Handling OAuth redirect")
-        val redirectUri = "https://vgarciabnz.github.io"
-
         val appLinkAction = intent?.action
         val appLinkData: Uri? = intent?.data
         if (Intent.ACTION_VIEW == appLinkAction && appLinkData != null) {
-            if (appLinkData.toString().startsWith(redirectUri)) {
-                val code = appLinkData.getQueryParameter("code")
-                if (code != null) {
-                    Timber.tag("OAuth").d("OAuth Authorization code: $code")
-                } else {
-                    Timber.tag("OAuth").e("Authorization Error: ${appLinkData.getQueryParameter("error")}")
-                }
-                // Consume the intent by setting its action to null to prevent re-handling
-                getIntent()?.action = null
-            }
+            appLinkNavigation.appLink.tryEmit(appLinkData.toString())
+            intent?.action = null
         }
     }
 

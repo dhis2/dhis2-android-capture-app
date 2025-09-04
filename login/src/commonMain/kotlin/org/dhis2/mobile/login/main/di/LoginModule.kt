@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.di
 import org.dhis2.mobile.login.authentication.di.twoFAModule
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
@@ -11,13 +12,13 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-internal val mainLoginModule =
-    module {
-        single<Navigator> { DefaultNavigator() }
-        factoryOf(::GetInitialScreen)
-        factoryOf(::ValidateServer)
-        viewModelOf(::LoginViewModel)
-    }
+internal val mainLoginModule = module {
+    single<Navigator> { DefaultNavigator() }
+    factoryOf(::GetInitialScreen)
+    factoryOf(::ValidateServer)
+    viewModelOf(::LoginViewModel)
+    single<AppLinkNavigation> { AppLinkNavigation() }
+}
 
 internal expect val accountModule: Module
 
