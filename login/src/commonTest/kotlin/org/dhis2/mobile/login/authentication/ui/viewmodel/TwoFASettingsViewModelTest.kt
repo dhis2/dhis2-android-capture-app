@@ -3,10 +3,12 @@ package org.dhis2.mobile.login.authentication.ui.viewmodel
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
@@ -29,6 +31,7 @@ class TwoFASettingsViewModelTest {
     private val mapper: TwoFAUiStateMapper = mock()
     private val enableTwoFa: EnableTwoFA = mock()
     private val disableTwoFa: DisableTwoFA = mock()
+    private val networkStatusProvider: NetworkStatusProvider = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     private val dispatchers = Dispatcher(
@@ -40,6 +43,7 @@ class TwoFASettingsViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+        whenever(networkStatusProvider.connectionStatus) doReturn flowOf(true)
     }
 
     @Test
@@ -59,6 +63,7 @@ class TwoFASettingsViewModelTest {
             enableTwoFA = enableTwoFa,
             disableTwoFA = disableTwoFa,
             mapper = mapper,
+            networkStatusProvider = networkStatusProvider,
             dispatchers = dispatchers,
         )
 
@@ -95,6 +100,7 @@ class TwoFASettingsViewModelTest {
             enableTwoFA = enableTwoFa,
             disableTwoFA = disableTwoFa,
             mapper = mapper,
+            networkStatusProvider = networkStatusProvider,
             dispatchers = dispatchers,
         )
 

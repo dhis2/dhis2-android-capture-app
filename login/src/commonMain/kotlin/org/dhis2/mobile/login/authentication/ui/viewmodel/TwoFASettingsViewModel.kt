@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.EnableTwoFA
 import org.dhis2.mobile.login.authentication.domain.usecase.GetTwoFAStatus
@@ -25,6 +26,7 @@ open class TwoFASettingsViewModel(
     private val enableTwoFA: EnableTwoFA,
     private val disableTwoFA: DisableTwoFA,
     private val mapper: TwoFAUiStateMapper,
+    private val networkStatusProvider: NetworkStatusProvider,
     private val dispatchers: Dispatcher,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<TwoFAUiState>(TwoFAUiState.Checking)
@@ -38,6 +40,13 @@ open class TwoFASettingsViewModel(
                 SharingStarted.WhileSubscribed(5000L),
                 TwoFAUiState.Checking,
             )
+
+    private val isNetworkOnline = networkStatusProvider.connectionStatus
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            false,
+        )
 
     private suspend fun checkTwoFAStatus() {
         val twoFAStatus = getTwoFAStatus()
@@ -64,7 +73,7 @@ open class TwoFASettingsViewModel(
                 ) ?: it
             }
             yield()
-            enableTwoFA.invoke(code).fold(
+            enableTwoFA.invoke(code, isNetworkOnline.value).fold(
                 onSuccess = {
                     checkTwoFAStatus()
                 },
@@ -104,7 +113,7 @@ open class TwoFASettingsViewModel(
                 ) ?: it
             }
             yield()
-            disableTwoFA.invoke(code).fold(
+            disableTwoFA.invoke(code, isNetworkOnline.value).fold(
                 onSuccess = {
                     checkTwoFAStatus()
                 },

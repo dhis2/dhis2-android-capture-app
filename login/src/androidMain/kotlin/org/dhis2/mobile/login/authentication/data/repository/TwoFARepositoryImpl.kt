@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.authentication.data.repository
 
 import kotlinx.coroutines.delay
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 import org.hisp.dhis.android.core.D2
@@ -12,6 +13,7 @@ private var isEnabledForTesting = false
 
 class TwoFARepositoryImpl(
     private val d2: D2,
+    private val d2ErrorMessageProvider: D2ErrorMessageProvider,
 ) : TwoFARepository {
     override suspend fun getTwoFAStatus(): TwoFAStatus {
         val is2FAEnabled = if (featureFlagEnabled()) {
@@ -35,7 +37,7 @@ class TwoFARepositoryImpl(
         }
     }
 
-    override suspend fun enableTwoFA(code: String): Result<Unit> {
+    override suspend fun enableTwoFA(code: String, isNetworkAvailable: Boolean): Result<Unit> {
         delay(3000) // TODO: Delete line when feature flag is removed
         val result = if (featureFlagEnabled()) {
             isEnabledForTesting = true
@@ -47,7 +49,7 @@ class TwoFARepositoryImpl(
             is Dhis2Result.Failure ->
                 Result.failure(
                     Exception(
-                        result.failure.message ?: result.failure.errorDescription(),
+                        d2ErrorMessageProvider.getErrorMessage(result.failure, isNetworkAvailable),
                     ),
                 )
 
@@ -56,7 +58,7 @@ class TwoFARepositoryImpl(
         }
     }
 
-    override suspend fun disableTwoFAs(code: String): Result<Unit> {
+    override suspend fun disableTwoFAs(code: String, isNetworkAvailable: Boolean): Result<Unit> {
         delay(3000) // TODO: Delete line when feature flag is removed
         val result = if (featureFlagEnabled()) {
             isEnabledForTesting = false
@@ -68,7 +70,7 @@ class TwoFARepositoryImpl(
             is Dhis2Result.Failure ->
                 Result.failure(
                     Exception(
-                        result.failure.message ?: result.failure.errorDescription(),
+                        d2ErrorMessageProvider.getErrorMessage(result.failure, isNetworkAvailable),
                     ),
                 )
 

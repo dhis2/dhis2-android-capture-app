@@ -3,11 +3,13 @@ package org.dhis2.mobile.login.authentication
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.authentication.domain.model.TwoFAStatus
 import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 import org.dhis2.mobile.login.authentication.domain.usecase.DisableTwoFA
@@ -38,6 +40,7 @@ class TwoFAScreenConfigurationIntegrationTest {
     private lateinit var viewModel: TwoFASettingsViewModel
     private lateinit var enableTwoFa: EnableTwoFA
     private lateinit var disableTwoFa: DisableTwoFA
+    private val networkStatusProvider: NetworkStatusProvider = mock()
     private val dispatchers = Dispatcher(
         testDispatcher,
         testDispatcher,
@@ -54,6 +57,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         disableTwoFA = DisableTwoFA(repository)
         enableTwoFA = EnableTwoFA(repository)
         mapper = TwoFAUiStateMapper()
+        whenever(networkStatusProvider.connectionStatus) doReturn flowOf(true)
     }
 
     @AfterTest
@@ -78,6 +82,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                networkStatusProvider = networkStatusProvider,
                 dispatchers = dispatchers,
             )
 
@@ -107,6 +112,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                networkStatusProvider = networkStatusProvider,
                 dispatchers = dispatchers,
             )
 
@@ -136,6 +142,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                networkStatusProvider = networkStatusProvider,
                 dispatchers = dispatchers,
             )
 
@@ -164,11 +171,12 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                networkStatusProvider = networkStatusProvider,
                 dispatchers = dispatchers,
             )
 
             // When: 2FA code is entered correctly"
-            whenever(repository.disableTwoFAs("123456")) doReturn Result.success(Unit)
+            whenever(repository.disableTwoFAs("123456", true)) doReturn Result.success(Unit)
 
             // Then: enable 2FA screen is displayed after disable
             viewModel.uiState.test {
@@ -221,11 +229,12 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                networkStatusProvider = networkStatusProvider,
                 dispatchers = dispatchers,
             )
 
             // When: 2FA incorrect code is entered"
-            whenever(repository.disableTwoFAs("123456")).thenReturn(
+            whenever(repository.disableTwoFAs("123456", true)).thenReturn(
                 Result.failure(Exception("error")),
             )
 
@@ -272,7 +281,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 TwoFAStatus.Enabled(),
             )
 
-            whenever(repository.enableTwoFA("123456")) doReturn Result.success(Unit)
+            whenever(repository.enableTwoFA("123456", true)) doReturn Result.success(Unit)
 
             // When: 2FA status is checked
             viewModel = TwoFASettingsViewModel(
@@ -280,6 +289,7 @@ class TwoFAScreenConfigurationIntegrationTest {
                 enableTwoFA = enableTwoFa,
                 disableTwoFA = disableTwoFa,
                 mapper = mapper,
+                networkStatusProvider = networkStatusProvider,
                 dispatchers = dispatchers,
             )
 
