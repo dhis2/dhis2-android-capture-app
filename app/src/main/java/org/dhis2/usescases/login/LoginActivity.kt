@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils.isEmpty
@@ -220,6 +221,36 @@ class LoginActivity :
                         )
                     },
                 )
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handleOAuthRedirect(intent)
+    }
+
+    private fun handleOAuthRedirect(intent: Intent?) {
+        Timber.d("Handling OAuth redirect")
+        val redirectUri = "https://vgarciabnz.github.io"
+
+        val appLinkAction = intent?.action
+        val appLinkData: Uri? = intent?.data
+        if (Intent.ACTION_VIEW == appLinkAction && appLinkData != null) {
+            if (appLinkData.toString().startsWith(redirectUri)) {
+                val code = appLinkData.getQueryParameter("code")
+                if (code != null) {
+                    Timber.tag("OAuth").d("OAuth Authorization code: $code")
+                } else {
+                    Timber.tag("OAuth").e("Authorization Error: ${appLinkData.getQueryParameter("error")}")
+                }
+                // Consume the intent by setting its action to null to prevent re-handling
+                getIntent()?.action = null
             }
         }
     }

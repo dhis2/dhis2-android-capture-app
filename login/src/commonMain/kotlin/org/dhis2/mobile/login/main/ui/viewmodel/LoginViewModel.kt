@@ -45,22 +45,24 @@ class LoginViewModel(
                 validationRunning = true,
             ) ?: it
         }
-        serverValidationJob =
-            viewModelScope.launch {
-                val result = withMinimumDuration { validateServer(serverUrl) }
-                when (result) {
-                    is ServerValidationResult.Error ->
-                        _currentScreen.update {
-                            (it as? LoginScreenState.ServerValidation)?.copy(
-                                currentServer = serverUrl,
-                                error = result.message,
-                                validationRunning = false,
-                            ) ?: it
-                        }
-                    ServerValidationResult.Legacy -> {
-                        updateIsValidationRunning()
-                        navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
+        serverValidationJob = viewModelScope.launch {
+            val result = withMinimumDuration { validateServer(serverUrl) }
+            when (result) {
+                is ServerValidationResult.Error ->
+                    _currentScreen.update {
+                        (it as? LoginScreenState.ServerValidation)?.copy(
+                            currentServer = serverUrl,
+                            error = result.message,
+                            validationRunning = false,
+                        ) ?: it
                     }
+
+                ServerValidationResult.Legacy -> {
+                    updateIsValidationRunning()
+//                    navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
+                    navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                }
+
                     ServerValidationResult.Oauth -> {
                         updateIsValidationRunning()
                         navigator.navigate(LoginScreenState.OauthLogin(serverUrl))

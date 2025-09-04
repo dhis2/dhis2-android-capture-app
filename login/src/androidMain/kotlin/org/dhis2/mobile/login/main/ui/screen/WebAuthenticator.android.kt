@@ -12,6 +12,15 @@ actual fun WebAuthenticator(
     url: String,
     onDismiss: () -> Unit,
 ) {
+    val redirectUri = "https://vgarciabnz.github.io"
+    val oauthAuthUrl =
+        "https://dev.im.dhis2.org/oauth2-android-test/oauth2/authorize?" +
+            "response_type=code" +
+            "&client_id=dhis2-client" +
+            "&redirect_uri=$redirectUri" +
+            "&scope=openid%20email" +
+            "&state=abc123"
+
     val context = LocalContext.current
     LaunchedEffect(url) {
         val customTabsIntent = CustomTabsIntent.Builder()
@@ -20,7 +29,10 @@ actual fun WebAuthenticator(
             .build()
         customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
         try {
-            customTabsIntent.launchUrl(context, url.toUri())
+            customTabsIntent.launchUrl(
+                context,
+                oauthAuthUrl.toUri(),
+            )
         } catch (e: Exception) {
             // Handle case where a browser is not available
             onDismiss()
