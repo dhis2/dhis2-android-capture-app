@@ -17,14 +17,6 @@ class NetworkUtils(
     private val networkStatusProvider = NetworkStatusProviderImpl(context)
     val connectionStatus = networkStatusProvider.connectionStatus
 
-    fun registerNetworkCallback() {
-        networkStatusProvider.init()
-    }
-
-    fun unregisterNetworkCallback() {
-        networkStatusProvider.clear()
-    }
-
     fun isOnline(): Boolean {
         var isOnline = false
         try {

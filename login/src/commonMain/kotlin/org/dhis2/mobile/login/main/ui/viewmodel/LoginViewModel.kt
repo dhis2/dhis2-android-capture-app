@@ -5,11 +5,12 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
@@ -20,22 +21,33 @@ class LoginViewModel(
     val navigator: Navigator,
     val getInitialScreen: GetInitialScreen,
     val validateServer: ValidateServer,
+    val networkStatusProvider: NetworkStatusProvider,
 ) : ViewModel() {
+
+    private val isNetworkOnline = networkStatusProvider.connectionStatus
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            false,
+        )
     private val _currentScreen = MutableStateFlow<LoginScreenState>(LoginScreenState.Loading)
-    val currentScreen =
-        _currentScreen
-            .onStart {
-                goToInitialScreen()
-            }.shareIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-            )
+    val currentScreen = _currentScreen.asSharedFlow()
 
     private var serverValidationJob: Job? = null
 
     private fun goToInitialScreen() {
         viewModelScope.launch {
-            _currentScreen.emit(getInitialScreen())
+            navigator.navigate(destination = getInitialScreen())
+        }
+    }
+
+    init {
+        goToInitialScreen()
+    }
+
+    fun setCurrentScreen(screen: LoginScreenState) {
+        viewModelScope.launch {
+            _currentScreen.update { screen }
         }
     }
 
@@ -45,28 +57,29 @@ class LoginViewModel(
                 validationRunning = true,
             ) ?: it
         }
-        serverValidationJob =
-            viewModelScope.launch {
-                val result = withMinimumDuration { validateServer(serverUrl) }
-                when (result) {
-                    is ServerValidationResult.Error ->
-                        _currentScreen.update {
-                            (it as? LoginScreenState.ServerValidation)?.copy(
-                                currentServer = serverUrl,
-                                error = result.message,
-                                validationRunning = false,
-                            ) ?: it
-                        }
-                    ServerValidationResult.Legacy -> {
-                        updateIsValidationRunning()
-                        navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
+        serverValidationJob = viewModelScope.launch {
+            val result = withMinimumDuration { validateServer(serverUrl, isNetworkOnline.value) }
+            when (result) {
+                is ServerValidationResult.Error ->
+                    _currentScreen.update {
+                        (it as? LoginScreenState.ServerValidation)?.copy(
+                            currentServer = serverUrl,
+                            error = result.message,
+                            validationRunning = false,
+                        ) ?: it
                     }
-                    ServerValidationResult.Oauth -> {
-                        updateIsValidationRunning()
-                        navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
-                    }
+
+                ServerValidationResult.Legacy -> {
+                    updateIsValidationRunning()
+                    navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
+                }
+
+                ServerValidationResult.Oauth -> {
+                    updateIsValidationRunning()
+                    navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
                 }
             }
+        }
     }
 
     fun cancelServerValidation() {

@@ -89,17 +89,11 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        presenter.init()
-    }
-
     override fun onPause() {
         super.onPause()
         if (deleteLocalDataDialog != null && deleteLocalDataDialog!!.isVisible) {
             deleteLocalDataDialog!!.dismiss()
         }
-        presenter.dispose()
     }
 
     override fun onStop() {
