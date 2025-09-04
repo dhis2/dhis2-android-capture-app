@@ -153,4 +153,8 @@
     <string name="error_min_attributes">Il n\'y a pas assez d\'attributs pour effectuer la recherche. Veuillez affiner votre recherche avec plus d\'attributs.</string>
     <string name="error_org_unit_scope">La recherche en ligne n\'est disponible que pour vos unités organisationnelles de recherche d\'utilisateurs.</string>
     <string name="error_no_internet_connection">Vous n\'êtes pas connecté. Veuillez-vous connecter et réssayer.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

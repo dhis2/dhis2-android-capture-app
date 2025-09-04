@@ -120,15 +120,26 @@
     <string name="yes">是</string>
     <string name="no">否</string>
     <string name="re_open_to_edit">重新打开表单进行编辑</string>
+    <string name="input_age_date_of_birth">生日</string>
     <string name="input_age">年龄</string>
+    <string name="input_age_or">或</string>
+    <string name="input_action_accept">接受</string>
+    <string name="input_action_cancel">取消</string>
     <string name="input_coordinate_latitude">维度</string>
     <string name="input_coordinate_longitude">经度</string>
+    <string name="input_coordinate_add_location">添加位置</string>
     <string name="input_date_out_of_range">超出范围</string>
     <string name="format_error">格式不正确</string>
     <string name="add_file">添加文件</string>
     <string name="add_image">添加图片</string>
+    <string name="from_gallery">从图库添加</string>
     <string name="no_results_found">没有结果</string>
     <string name="search_to_find_more">搜索查找更多信息</string>
+    <string name="action_done">完成</string>
+    <string name="input_not_supported">不支持</string>
+    <!--*******************->
+        D2 Error Messages
+    **********************-->
     <string name="login_error_null_pass">密码丢失。请输入密码。</string>
     <string name="login_error_null_username">缺少用户名。请输入用户名。</string>
     <string name="login_error_dhis_version">服务器运行版本不是2.29，请更新服务器版本或使用测试环境继续</string>
@@ -191,7 +202,8 @@
     <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
     <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
     <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
-    <string name="database_import_failed">数据库导入失败</string>
-    <string name="invalid_file">无效文件</string>
-    <string name="not_in_totp_2fa_enrollment_mode">未进入 TOTP 2FA 注册模式</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

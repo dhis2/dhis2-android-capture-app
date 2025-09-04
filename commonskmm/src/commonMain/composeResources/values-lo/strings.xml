@@ -162,4 +162,8 @@
     <string name="error_min_attributes">ຄຸນລັກສະນະບໍ່ພຽງພໍທີ່ຈະດໍາເນີນການຄົ້ນຫາ. ກະລຸນາປັບປຸງການຄົ້ນຫາຂອງທ່ານດ້ວຍຄຸນລັກສະນະເພີ່ມເຕີມ.</string>
     <string name="error_org_unit_scope">ການຄົ້ນຫາອອນລາຍໃຊ້ໄດ້ກັບຫົວຫນ່ວຍການຈັດຕັ້ງທີ່ຄົ້ນຫາຜູ້ໃຊ້ຂອງທ່ານເທົ່ານັ້ນ.</string>
     <string name="error_no_internet_connection">ທ່ານອອຟລາຍຢູ່. ເຊື່ອມຕໍ່ອິນເຕີເນັດ ແລະ ລອງໃໝ່ອີກຄັ້ງ</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

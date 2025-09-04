@@ -180,4 +180,8 @@
     <string name="error_org_unit_scope">Онлайн-поиск доступен только для подразделений вашей организации по поиску пользователей.</string>
     <string name="error_server_unavailable">Сервер в настоящее время недоступен. Повторите попытку позже.</string>
     <string name="error_no_internet_connection">Вы находитесь оффлайн. Подключитесь к Интернету и повторите попытку.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

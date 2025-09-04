@@ -178,4 +178,8 @@
     <string name="error_org_unit_scope">البحث على الإنترنت متاح فقط للوحدات التنظيمية المتاحة للمستخدم للبحث.</string>
     <string name="error_server_unavailable">الخادم غير متوفر حالياً. حاول مرة أخرى في وقت لاحق.</string>
     <string name="error_no_internet_connection">أنت غير متصل بالإنترنت. اتصل بالإنترنت وحاول مرة أخرى.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

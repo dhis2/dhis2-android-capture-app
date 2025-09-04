@@ -172,4 +172,8 @@
     <string name="error_min_attributes">Er zijn niet genoeg attributen om de zoekopdracht uit te voeren. Verfijn uw zoekopdracht met meer attributen.</string>
     <string name="error_org_unit_scope">Online zoeken is alleen beschikbaar voor uw organisatie-eenheden voor het zoeken van gebruikers.</string>
     <string name="error_invalid_characters">Er zijn ongeldige tekens in de vraag. Vraag de beheerder om de serverconfiguratie te verifiëren (relaxedQueryChars,...).</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>
