@@ -132,7 +132,7 @@ fun LoginScreen(
             composable<LoginScreenState.OauthLogin> {
                 val args = it.toRoute<LoginScreenState.OauthLogin>()
                 WebAuthenticator(url = args.selectedServer) {
-                    // TODO implement CustomTab callback
+                    viewModel.onOauthLoginCancelled()
                 }
             }
             composable<LoginScreenState.Accounts> {

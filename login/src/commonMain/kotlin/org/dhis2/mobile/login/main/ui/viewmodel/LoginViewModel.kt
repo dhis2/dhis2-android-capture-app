@@ -99,10 +99,17 @@ class LoginViewModel(
         if (urlString.startsWith(redirectUri)) {
             val code = urlString.substringAfter("code=").substringBefore('&')
             if (code.isNotEmpty()) {
-                // TODO: Use the authorization code to get a token.
+                // TODO: Use the authorization code to get a token and log in, then show statistics screen
             } else {
                 val error = urlString.substringAfter("error=").substringBefore('&')
+                //TODO: show server check screen with error
             }
+        }
+    }
+
+    fun onOauthLoginCancelled() {
+        viewModelScope.launch {
+            navigator.navigateUp()
         }
     }
 }

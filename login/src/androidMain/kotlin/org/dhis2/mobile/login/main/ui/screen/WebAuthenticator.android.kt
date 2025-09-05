@@ -1,10 +1,12 @@
 package org.dhis2.mobile.login.main.ui.screen
 
+import android.app.Activity
 import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 
 @Composable
@@ -21,21 +23,26 @@ actual fun WebAuthenticator(
             "&scope=openid%20email" +
             "&state=abc123"
 
-    val context = LocalContext.current
+    // Custom Tab launcher will handle the result of the Custom Tab to detect if the user closed it
+    val customTabLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_CANCELED) {
+            onDismiss()
+        }
+    }
+
     LaunchedEffect(url) {
         val customTabsIntent = CustomTabsIntent.Builder()
             .setShowTitle(false)
             .setUrlBarHidingEnabled(true)
             .build()
         customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
-        try {
-            customTabsIntent.launchUrl(
-                context,
-                oauthAuthUrl.toUri(),
-            )
-        } catch (e: Exception) {
-            // Handle case where a browser is not available
-            onDismiss()
+
+        val intent = customTabsIntent.intent.apply {
+            data = oauthAuthUrl.toUri()
         }
+
+        customTabLauncher.launch(intent)
     }
 }
