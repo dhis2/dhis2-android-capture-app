@@ -9,18 +9,17 @@ class D2ErrorUtils(
     private val context: Context,
     private val networkUtils: NetworkUtils,
 ) {
-
-    private val d2ErrorMessageProvider = D2ErrorMessageProviderImpl {
-        networkUtils.isOnline()
-    }
+    private val d2ErrorMessageProvider =
+        D2ErrorMessageProviderImpl {
+            networkUtils.isOnline()
+        }
 
     @Deprecated(
         message = "Use getErrorMessage instead",
         replaceWith = ReplaceWith("D2ErrorMessageProviderImpl"),
     )
-    fun getErrorMessage(throwable: Throwable): String? {
-        return runBlocking {
+    fun getErrorMessage(throwable: Throwable): String? =
+        runBlocking {
             d2ErrorMessageProvider.getErrorMessage(throwable)
         }
-    }
 }

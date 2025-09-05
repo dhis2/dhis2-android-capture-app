@@ -18,29 +18,30 @@ import org.koin.core.module.Module
 import org.koin.dsl.module
 
 actual val commonsModule: Module
-    get() = module {
-        single<ValueParser> {
-            ValueParserImpl(get())
-        }
-        single<FileController> {
-            FileControllerImpl()
-        }
-        single<FileHandler> {
-            FileHandlerImpl()
-        }
-        single<CrashReportController> {
-            CrashReportControllerImpl()
-        }
+    get() =
+        module {
+            single<ValueParser> {
+                ValueParserImpl(get())
+            }
+            single<FileController> {
+                FileControllerImpl()
+            }
+            single<FileHandler> {
+                FileHandlerImpl()
+            }
+            single<CrashReportController> {
+                CrashReportControllerImpl()
+            }
 
-        single<NetworkStatusProvider> {
-            NetworkStatusProviderImpl(get())
-        }
+            single<NetworkStatusProvider> {
+                NetworkStatusProviderImpl(get())
+            }
 
-        factory<D2ErrorMessageProvider> { params ->
-            D2ErrorMessageProviderImpl(params.get())
-        }
+            factory<D2ErrorMessageProvider> { params ->
+                D2ErrorMessageProviderImpl(params.get())
+            }
 
-        factory<TableDimensionRepository> { params ->
-            TableDimensionRepositoryImpl(get(), params.get())
+            factory<TableDimensionRepository> { params ->
+                TableDimensionRepositoryImpl(get(), params.get())
+            }
         }
-    }

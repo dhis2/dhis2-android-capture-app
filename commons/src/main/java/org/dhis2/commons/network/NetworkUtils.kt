@@ -11,7 +11,9 @@ import timber.log.Timber
     message = "This has been deprecated",
     replaceWith = ReplaceWith("NetworkStatusProvider"),
 )
-class NetworkUtils(val context: Context) {
+class NetworkUtils(
+    val context: Context,
+) {
     private val networkStatusProvider = NetworkStatusProviderImpl(context)
     val connectionStatus = networkStatusProvider.connectionStatus
 
