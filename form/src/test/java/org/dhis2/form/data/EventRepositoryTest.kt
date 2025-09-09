@@ -174,17 +174,18 @@ class EventRepositoryTest {
         )
     }
 
-    private fun eventRepository(eventMode: EventMode) = EventRepository(
-        fieldFactory = fieldViewModelFactory,
-        eventUid = eventUid,
-        d2 = d2,
-        metadataIconProvider = metadataIconProvider,
-        resources = resources,
-        eventResourcesProvider = eventResourcesProvider,
-        eventMode = eventMode,
-        dispatcherProvider = dispatchers,
-        customIntentRepository = customIntentRepository,
-    )
+    private fun eventRepository(eventMode: EventMode) =
+        EventRepository(
+            fieldFactory = fieldViewModelFactory,
+            eventUid = eventUid,
+            d2 = d2,
+            metadataIconProvider = metadataIconProvider,
+            resources = resources,
+            eventResourcesProvider = eventResourcesProvider,
+            eventMode = eventMode,
+            dispatcherProvider = dispatchers,
+            customIntentRepository = customIntentRepository,
+        )
 
     private val mockedStage =
         mock<ProgramStage> {

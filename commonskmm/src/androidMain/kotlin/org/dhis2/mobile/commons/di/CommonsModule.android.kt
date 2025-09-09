@@ -26,16 +26,17 @@ actual val commonsModule: Module
                 ValueParserImpl(get())
             }
             single<CustomIntentRepository> {
-            CustomIntentRepositoryImpl(get())
-        }
-        single<FileController> {
-            FileControllerImpl()
-        }
-        single<FileHandler> {
-            FileHandlerImpl()
-        }
-        single<CrashReportController> {
-            CrashReportControllerImpl()}
+                CustomIntentRepositoryImpl(get())
+            }
+            single<FileController> {
+                FileControllerImpl()
+            }
+            single<FileHandler> {
+                FileHandlerImpl()
+            }
+            single<CrashReportController> {
+                CrashReportControllerImpl()
+            }
 
             single<NetworkStatusProvider> {
                 NetworkStatusProviderImpl(get())

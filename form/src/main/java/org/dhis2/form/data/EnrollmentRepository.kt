@@ -170,10 +170,11 @@ class EnrollmentRepository(
                     programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
                 ),
             )
-        val attributeCustomIntent = customIntentRepository.getCustomIntents(
+        val attributeCustomIntent =
+            customIntentRepository.getCustomIntents(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
-            programUid,
-            null,
+                programUid,
+                null,
             )
 
         val valueType = attribute.valueType()

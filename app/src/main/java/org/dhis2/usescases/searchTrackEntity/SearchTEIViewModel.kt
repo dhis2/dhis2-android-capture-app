@@ -424,7 +424,8 @@ class SearchTEIViewModel(
             searchParametersUiState.items.map {
                 (it as FieldUiModelImpl).copy(value = null, displayName = null)
             }
-        searchParametersUiState = searchParametersUiState.copy(
+        searchParametersUiState =
+            searchParametersUiState.copy(
                 items = updatedItems,
                 searchedItems = mapOf(),
             )
@@ -591,7 +592,8 @@ class SearchTEIViewModel(
             try {
                 if (canPerformSearch()) {
                     searching = queryData.isNotEmpty()
-                    searchParametersUiState = searchParametersUiState.copy(
+                    searchParametersUiState =
+                        searchParametersUiState.copy(
                             clearSearchEnabled = queryData.isNotEmpty(),
                             searchedItems = getFriendlyQueryData(),
                         )
@@ -1052,7 +1054,8 @@ class SearchTEIViewModel(
             )
 
             searching = queryData.isNotEmpty()
-            searchParametersUiState = searchParametersUiState.copy(
+            searchParametersUiState =
+                searchParametersUiState.copy(
                     clearSearchEnabled = queryData.isNotEmpty(),
                     searchedItems = getFriendlyQueryData(),
                 )

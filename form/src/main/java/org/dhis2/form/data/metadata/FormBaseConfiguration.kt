@@ -15,7 +15,6 @@ open class FormBaseConfiguration(
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
 ) {
-
     fun disableCollapsableSectionsInProgram(programUid: String) = d2.disableCollapsableSectionsInProgram(programUid)
 
     fun dateFormatConfiguration() =

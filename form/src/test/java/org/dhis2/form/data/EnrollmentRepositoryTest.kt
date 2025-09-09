@@ -66,14 +66,16 @@ class EnrollmentRepositoryTest {
                 .trackedEntityType()
                 ?.access()
                 ?.data()
-                ?.write(),) doReturn true
-        repository = EnrollmentRepository(
-            fieldFactory = fieldFactory,
+                ?.write(),
+        ) doReturn true
+        repository =
+            EnrollmentRepository(
+                fieldFactory = fieldFactory,
                 conf = conf,
-            enrollmentMode = enrollmentMode,
-            enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
-            metadataIconProvider = metadataIconProvider,
-            customIntentRepository = customIntentRepository,
+                enrollmentMode = enrollmentMode,
+                enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
+                metadataIconProvider = metadataIconProvider,
+                customIntentRepository = customIntentRepository,
             )
     }
 
