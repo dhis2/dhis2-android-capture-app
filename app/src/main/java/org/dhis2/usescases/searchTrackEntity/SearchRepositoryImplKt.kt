@@ -412,17 +412,18 @@ class SearchRepositoryImplKt(
                                     onSearch = { searchFlow.value = it },
                                 )
                             }
-                        val customIntentModel = customIntentRepository.getCustomIntent(
-                        programUid = programUid,
-                        triggerUid = attribute.uid(),
-                        programStageUid = null,
-                        actionType = CustomIntentActionTypeModel.SEARCH,
-                    )
-                    createField(
-                        trackedEntityAttribute = attribute,
-                        programTrackedEntityAttribute = programAttribute,
-                        optionSetConfiguration = optionSetConfiguration,
-                        customIntent = customIntentModel,
+                        val customIntentModel =
+                            customIntentRepository.getCustomIntent(
+                                programUid = programUid,
+                                triggerUid = attribute.uid(),
+                                programStageUid = null,
+                                actionType = CustomIntentActionTypeModel.SEARCH,
+                            )
+                        createField(
+                            trackedEntityAttribute = attribute,
+                            programTrackedEntityAttribute = programAttribute,
+                            optionSetConfiguration = optionSetConfiguration,
+                            customIntent = customIntentModel,
                         )
                     }
             }.filter { parameter ->

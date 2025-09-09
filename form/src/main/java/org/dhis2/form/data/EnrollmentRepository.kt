@@ -176,8 +176,8 @@ class EnrollmentRepository(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
                 programUid,
                 null,
-            CustomIntentActionTypeModel.DATA_ENTRY,
-        )
+                CustomIntentActionTypeModel.DATA_ENTRY,
+            )
 
         val valueType = attribute.valueType()
         var mandatory = programTrackedEntityAttribute.mandatory() ?: false
