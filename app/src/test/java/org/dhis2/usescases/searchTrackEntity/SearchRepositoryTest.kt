@@ -116,16 +116,17 @@ class SearchRepositoryTest {
             trackedEntityAttributes[uid] ?: createTrackedEntityAttributeRepository(uid, false)
         }
 
-        searchRepository = SearchRepositoryImplKt(
-            searchRepositoryJava = mock(),
-            d2 = d2,
-            dispatcher = dispatchers,
-            fieldViewModelFactory = fieldViewModelFactory,
-            metadataIconProvider = metadataIconProvider,
-            trackedEntityInstanceInfoProvider = mock(),
-            eventInfoProvider = mock(),
-            customIntentRepository = customIntentRepository,
-        )
+        searchRepository =
+            SearchRepositoryImplKt(
+                searchRepositoryJava = mock(),
+                d2 = d2,
+                dispatcher = dispatchers,
+                fieldViewModelFactory = fieldViewModelFactory,
+                metadataIconProvider = metadataIconProvider,
+                trackedEntityInstanceInfoProvider = mock(),
+                eventInfoProvider = mock(),
+                customIntentRepository = customIntentRepository,
+            )
 
         searchRepositoryJava =
             SearchRepositoryImpl(

@@ -1,6 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity;
 
-import static org.dhis2.usescases.searchTrackEntity.SearchRepositoryImpl.Companion.OPTION_SET_REGEX;
 import android.database.sqlite.SQLiteConstraintException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

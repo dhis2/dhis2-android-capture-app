@@ -621,12 +621,13 @@ class EventRepository(
                     programStageDataElement.dataElement()!!.uid(),
                 ).blockingGet()
         val uid = de?.uid() ?: ""
-        val customIntent = customIntentRepository.getCustomIntent(
-            uid,
-            programUid,
-            programStage?.uid(),
-            CustomIntentActionTypeModel.DATA_ENTRY,
-        )
+        val customIntent =
+            customIntentRepository.getCustomIntent(
+                uid,
+                programUid,
+                programStage?.uid(),
+                CustomIntentActionTypeModel.DATA_ENTRY,
+            )
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false

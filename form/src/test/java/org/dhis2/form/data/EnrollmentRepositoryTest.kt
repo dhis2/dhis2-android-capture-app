@@ -71,7 +71,7 @@ class EnrollmentRepositoryTest {
         repository =
             EnrollmentRepository(
                 fieldFactory = fieldFactory,
-            conf = conf,
+                conf = conf,
                 enrollmentMode = enrollmentMode,
                 enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
                 metadataIconProvider = metadataIconProvider,
