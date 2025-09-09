@@ -45,8 +45,8 @@ fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, Li
     }
 }
 
-private fun parseMapFromJson(jsonString: String): Map<String, List<String>> {
-    return try {
+private fun parseMapFromJson(jsonString: String): Map<String, List<String>> =
+    try {
         val jsonObject = JSONObject(jsonString)
         val map = mutableMapOf<String, List<String>>()
         jsonObject.keys().forEach { key ->
@@ -61,4 +61,3 @@ private fun parseMapFromJson(jsonString: String): Map<String, List<String>> {
     } catch (e: Exception) {
         emptyMap()
     }
-}

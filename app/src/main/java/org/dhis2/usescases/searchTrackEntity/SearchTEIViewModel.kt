@@ -93,9 +93,10 @@ class SearchTEIViewModel(
     val navigationBarUIState: MutableState<NavigationBarUIState<NavigationPage>> =
         _navigationBarUIState
 
-    val queryData = mutableMapOf<String, List<String>?>().apply {
-        initialQuery?.let { putAll(it) }
-    }
+    val queryData =
+        mutableMapOf<String, List<String>?>().apply {
+            initialQuery?.let { putAll(it) }
+        }
 
     private val _legacyInteraction = MutableLiveData<LegacyInteraction?>()
     val legacyInteraction: LiveData<LegacyInteraction?> = _legacyInteraction
@@ -664,9 +665,8 @@ class SearchTEIViewModel(
                         } ?: true
             }
 
-    fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> {
-        return searchRepository.filterQueryForProgram(queryData, programUid)
-    }
+    fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> =
+        searchRepository.filterQueryForProgram(queryData, programUid)
 
     fun onEnrollClick() {
         _legacyInteraction.postValue(LegacyInteraction.OnEnrollClick(queryData))
