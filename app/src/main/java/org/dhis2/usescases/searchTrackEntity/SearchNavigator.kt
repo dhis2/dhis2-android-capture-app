@@ -94,8 +94,11 @@ class SearchNavigator(
         )
     }
 
-    private fun updateBundle(programUid: String?, currentQueryData: Map<String, List<String>>): Bundle {
-        return activity.intent.extras?.apply {
+    private fun updateBundle(
+        programUid: String?,
+        currentQueryData: Map<String, List<String>>,
+    ): Bundle =
+        activity.intent.extras?.apply {
             putString(SearchTEActivity.Extra.PROGRAM_UID.key(), programUid)
             putStringArrayList(
                 SearchTEActivity.Extra.QUERY_ATTR.key(),
@@ -109,10 +112,10 @@ class SearchNavigator(
                 )
             }
         } ?: Bundle()
-}
 
-fun <I, O> ComponentActivity.registerActivityResultLauncher(
-    key: String = UUID.randomUUID().toString(),
-    contract: ActivityResultContract<I, O>,
-    callback: ActivityResultCallback<O>,
-): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)
+    fun <I, O> ComponentActivity.registerActivityResultLauncher(
+        key: String = UUID.randomUUID().toString(),
+        contract: ActivityResultContract<I, O>,
+        callback: ActivityResultCallback<O>,
+    ): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)
+}
