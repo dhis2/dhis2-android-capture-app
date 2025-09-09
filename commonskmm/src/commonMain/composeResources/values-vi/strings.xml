@@ -124,4 +124,73 @@
     <string name="no_results_found">Không tìm thấy kết quả nào</string>
     <string name="action_done">Hoàn thành</string>
     <string name="input_not_supported">Không được hỗ trợ</string>
+    <!--*******************->
+        D2 Error Messages
+    **********************-->
+    <string name="login_error_null_pass">Thiếu mật khẩu. Xin vui lòng nhập mật khẩu</string>
+    <string name="login_error_null_username">Thiếu tên đăng nhập. Xin vui lòng nhập tên đăng nhập.</string>
+    <string name="login_error_dhis_version">Máy chủ này đang chạy phiên bản dhis khác với phiên bản 2.29. Hãy cập nhật phiên bản máy chủ của bạn hoặc sử dụng môi trường thực nghiệm để tiếp tục.</string>
+    <string name="login_error_dhis_version_v2">Máy chủ này đang chạy phiên bản DHIS2 khác với %s. Vui lòng cập nhật phiên bản máy chủ của bạn hoặc liên hệ quản lý.</string>
+    <string name="login_error_unsuccessful_response">Có gì đó không đúng. Vui lòng kiểm tra đường dẫn liên kết đến máy chủ, tên đăng nhập, mật khẩu và thử lại.</string>
+    <string name="login_error_error_response">Rất tiếc! Có lỗi gì đó ở phía máy chủ</string>
+    <string name="login_error_no_dhis_instance">Đường dẫn liên kết không phải là đường dẫn đến máy chủ DHIS2</string>
+    <string name="login_error_bad_credentials">Tên đăng nhập và mật khẩu không đúng</string>
+    <string name="login_error_unknown_host">Máy chủ không xác định</string>
+    <string name="online_search_parsing_error">Xảy ra lỗi khi chuyển đổi kết quả</string>
+    <string name="error_unexpected">Có gì đó không đúng</string>
+    <string name="error_too_manu_org_units">Tài khoảng của bạn có nhiều hơn một đơn vị gốc. Kiểm tra lại cấu hình của bạn hoặc liên hệ với quản lý của bạn.</string>
+    <string name="error_max_tei_count_reached">Các kết quả vượt quá số lượng tối đa các bệnh nhân có thể hiển thị. Xin vui lòng sửa lại các yếu tố tìm kiếm.</string>
+    <string name="error_many_requests">Máy chủ đang bận. Xin vui lòng thử lại sau.</string>
+    <string name="error_already_authenticated">Người dùng đã được đăng nhập.</string>
+    <string name="error_already_executed">Yêu cầu đã được thực hiện.</string>
+    <string name="error_api_invalid_query">Yêu cầu máy chủ không hợp lệ.</string>
+    <string name="error_app_name_not_set">Tên ứng dụng chưa được thiết lập.</string>
+    <string name="error_app_version_not_set">Phiên bản ứng dụng chưa được thiết lập</string>
+    <string name="error_access_keystore">Không thể truy cập kho khóa của thiết bị</string>
+    <string name="error_create_existing_error">Không thể tạo. Đối tượng đang tồn tại.</string>
+    <string name="error_delete_non_existing_object">Xóa bị từ chối. Đối tượng không tồn tại</string>
+    <string name="error_instance_keystore">Không thể tạo kho khóa</string>
+    <string name="error_reserve_value_on_server">Chúng ta không thể đặt trước giá trị cho các dữ liệu này. Vui lòng liên hệ quản lý của bạn. </string>
+    <string name="error_export_login">Vui lòng đăng nhập để xuất cơ sở dữ liệu.</string>
+    <string name="error_export_encrypted">Xuất dữ liệu mã hóa không hỗ trợ</string>
+    <string name="error_import_exist">Bạn đang nhập cơ sở dữ liệu đang tồn tại</string>
+    <string name="error_import_logout">Vui lòng đăng xuất để nhập cơ sở dữ liệu mới</string>
+    <string name="error_import_version">Phiên bản của cơ sở dữ liệu được nhập cao hơn phiên bản được hỗ trợ</string>
+    <string name="error_file_not_found">Không tìm thấy tập tin</string>
+    <string name="error_file_resize">Có lỗi trong quá trình thay đổi kích cỡ hình ảnh</string>
+    <string name="error_generate_coordinate">Không thể tạo tọa độ</string>
+    <string name="error_job">Báo cáo không có</string>
+    <string name="error_low_on_available_values">Bạn có thể đang sắp hết giá trị giành riêng hiện có</string>
+    <string name="error_user_no_authenticated">Không có người dùng được xác thực.</string>
+    <string name="error_user_no_authenticated_offline">Không có người dùng được xác thực ngoại tuyến</string>
+    <string name="error_no_values_left_on_server">Không có đủ giá trị để đặt trên máy chủ. Xin vui lòng liên hệ quản lý của bạn.</string>
+    <string name="error_different_offline_user">Bạn đang cố gắng đăng nhập ngoại tuyến với tên đăng nhập khác.</string>
+    <string name="error_invalid_geometry">Giá trị địa lý không hợp lệ</string>
+    <string name="error_no_reserved_values">Không có giá trị đặt trước. Vào Cài Đặt và Đặt trước giá trị khi bạn có kết nối internet.</string>
+    <string name="error_object_update">Không thể cập nhật đối tượng.</string>
+    <string name="error_object_insert">Không thể thêm đối tượng</string>
+    <string name="error_ownership_access">Bạn không thể truy cập</string>
+    <string name="error_null_url">Thiếu đường dẫn liên kết đến máy chủ. Vui lòng nhập đường dẫn liên kết.</string>
+    <string name="error_server_malformed">Đường dẫn liên kết đến máy chủ không hợp lệ. Vui lòng kiểm tra lại</string>
+    <string name="error_settings_app_not_supported">Phiên bản của Cài Đặt Ứng Dụng Web này không hỗ trợ</string>
+    <string name="error_settings_app_not_intalled">Cài Đặt Ứng Dụng Web không được cài trong máy chủ.</string>
+    <string name="error_socket_timeout">Máy chủ mất quá nhiều thời gian để trả lời. Chúng tôi đã hủy yêu cầu.</string>
+    <string name="error_relationship_updated">Mối quan hệ không thể cập nhật.</string>
+    <string name="error_too_many_periods">Có quá nhiều thời điểm</string>
+    <string name="error_url_not_found">Chúng tôi không thể tìm thấy đường dẫn liên kết. Vui lòng kiểm tra lại.</string>
+    <string name="error_account_disabled">Tài khoảng của bạn đã bị vô hiệu hóa. Nếu đây là lỗi, vui lòng liên hệ quản lý của bạn.</string>
+    <string name="error_account_locked">Tài khoảng của bạn đã bị khóa. Nếu đây là lỗi, vui lòng liên hệ quản lý của bạn.</string>
+    <string name="error_set_value">Giá trị không thể được thiết lập</string>
+    <string name="error_value_reservation_time">Yêu cầu đặt các giá trị mất quá nhiều thời gian. Vui lòng thử lại.</string>
+    <string name="error_ssl">Có vấn đề với chứng nhận máy chủ. Vui lòng liên hệ với quản lý của bạn.</string>
+    <string name="error_sms_not_supported">Không hỗ trợ SMS</string>
+    <string name="error_min_attributes">Không có đủ yếu tố để thực hiện tìm kiếm. Vui lòng kiểm tra với nhiều yếu tố hơn.</string>
+    <string name="error_org_unit_scope">Tìm kiếm trực tuyến chỉ hiển thị trong các đơn vị mà tài khoảng của bạn được cấp.</string>
+    <string name="error_invalid_characters">Có các ký tự không hợp lệ trong yêu cầu. Vui lòng liên hệ quản lý để xác nhận cấu hình máy chủ (relaxQueryChars,...)</string>
+    <string name="error_server_unavailable">Không thể truy cập máy chủ. Xin vui lòng thử lại sau.</string>
+    <string name="error_no_internet_connection">Bạn đang ngoại tuyến. Vui lòng kết nối mạng và thử lại</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

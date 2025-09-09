@@ -81,4 +81,10 @@
     <string name="no_results_found">Натижа йўқ</string>
     <string name="action_done">Бўлди</string>
     <string name="input_not_supported">Қўллаб қувватланмайди</string>
+    <string name="login_error_dhis_version">Ушбу сервер 2.29 дан фарқли версияни ишлатмоқда. Сервер версиясини янгиланг ёки давом этиш учун синов муддатидан фойдаланинг.</string>
+    <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

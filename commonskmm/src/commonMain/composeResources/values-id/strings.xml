@@ -73,4 +73,10 @@
     <string name="no_results_found">Tidak ada hasil ditemukan</string>
     <string name="action_done">Selesai</string>
     <string name="input_not_supported">Tidak didukung</string>
+    <string name="login_error_dhis_version">Server ini menjalankan versi dhis yang berbeda dari 2.29. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
+    <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>
