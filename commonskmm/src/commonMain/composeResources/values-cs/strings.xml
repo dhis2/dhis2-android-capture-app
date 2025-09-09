@@ -126,8 +126,8 @@
     <string name="action_done">Hotovo</string>
     <string name="input_not_supported">Není podporováno</string>
     <!--*******************->
-                D2 Error Messages
-            **********************-->
+        D2 Error Messages
+    **********************-->
     <string name="login_error_null_pass">Chybí heslo. Prosím vložte heslo.</string>
     <string name="login_error_null_username">Chybí uživatelské jméno. Zadejte uživatelské jméno.</string>
     <string name="login_error_dhis_version">Tento server používá jinou verzi DHIS než 2.29. Aktualizujte verzi serveru nebo pokračujte testovacím prostředím.</string>
@@ -190,4 +190,8 @@
     <string name="error_invalid_characters">V dotazu jsou neplatné znaky. Požádejte správce o ověření konfigurace serveru (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">Server je momentálně nedostupný. Zkuste to později.</string>
     <string name="error_no_internet_connection">Jste offline. Připojte se k internetu a zkuste to znovu.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

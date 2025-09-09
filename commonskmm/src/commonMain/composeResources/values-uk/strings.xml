@@ -113,8 +113,8 @@
     <string name="action_done">Зроблено</string>
     <string name="input_not_supported">Не підтримується</string>
     <!--*******************->
-            D2 Error Messages
-        **********************-->
+        D2 Error Messages
+    **********************-->
     <string name="login_error_null_pass">Пароль відсутній. Будь ласка, введіть пароль.</string>
     <string name="login_error_null_username">Ім\'я користувача відсутнє. Будь ласка, введіть ім\'я користувача.</string>
     <string name="login_error_dhis_version">На цьому сервері працює інша версія dhis, ніж 2.29. Щоб продовжити, оновіть версію серверу або скористайтеся середовищем тестування.</string>
@@ -175,4 +175,8 @@
     <string name="error_min_attributes">Недостатньо атрибутів для виконання пошуку. Уточніть пошук за допомогою додаткових атрибутів.</string>
     <string name="error_org_unit_scope">Онлайн-пошук доступний лише для організаційних підрозділів  користувача.</string>
     <string name="error_invalid_characters">У запиті є недійсні символи. Попросіть адміністратора перевірити конфігурацію сервера (relaxedQueryChars,...).</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

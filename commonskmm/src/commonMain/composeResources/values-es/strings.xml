@@ -138,11 +138,11 @@
     <string name="action_done">Hecho</string>
     <string name="input_not_supported">No soportado</string>
     <!--*******************->
-            D2 Error Messages
-        **********************-->
+        D2 Error Messages
+    **********************-->
     <string name="login_error_null_pass">La contraseña está vacía. Ingrese la contraseña.</string>
     <string name="login_error_null_username">El usuario está vacío. Ingrese el usuario.</string>
-    <string name="login_error_dhis_version">Este servidor trabaja sobre una versión de dhis distinta a 2.29. Actualice el servidor o utilize el entorno de pruebas para continuar.</string>
+    <string name="login_error_dhis_version">Este servidor trabaja sobre una versión de dhis distinta a 2.29. Actualice el servidor o utilice el entorno de pruebas para continuar.</string>
     <string name="login_error_dhis_version_v2">Este servidor tiene una version de DHIS2 diferente de %s. Actualice su servidor o contacte a su administrador.</string>
     <string name="login_error_unsuccessful_response">Algo ha ido mal. Por favor, compruebe que tanto la url del servidor como el usuario y contraseña son correctos y pruebe otra vez.</string>
     <string name="login_error_error_response">Disculpe, hubo un error del lado del servidor.</string>
@@ -202,4 +202,8 @@
     <string name="error_invalid_characters">La consulta contiene caracteres inválidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">El servidor no está disponible actualmente. Vuelve a intentarlo más tarde.</string>
     <string name="error_no_internet_connection">Estas desconectado. Conéctese a Internet e inténtelo nuevamente.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

@@ -174,13 +174,13 @@
     <string name="error_server_malformed"> O URL do servidor não está bem formado. Por favor, verifique-o.</string>
     <string name="error_settings_app_not_supported"> Esta versão da aplicação Web de definições não é suportada.</string>
     <string name="error_settings_app_not_intalled"> A aplicação Web de definições não está instalada no servidor.</string>
-    <string name="error_socket_timeout"> O servidor demorou demasiado tempo para responder. Cancelamos o pedido.</string>
+    <string name="error_socket_timeout"> O servidor demorou demasiado tempo a responder. Cancelamos a requisição.</string>
     <string name="error_relationship_updated">O relacionamento não pode ser actualizado.</string>
     <string name="error_too_many_periods">Existem muitos períodos.</string>
     <string name="error_url_not_found"> Não foi possível encontrar a URL. Por favor, verifique-o.</string>
     <string name="error_account_disabled"> A sua conta de utilizador foi desactivada. Se isto for um erro, contacte o seu administrador.</string>
     <string name="error_account_locked"> A sua conta de utilizador está bloqueada. Se isto for um erro, contacte o seu administrador.</string>
-    <string name="error_set_value">O valor não pôde ser definido.</string>
+    <string name="error_set_value">O valor não pode ser definido.</string>
     <string name="error_value_reservation_time">O pedido de reserva de valores demorou demasiado tempo. Por favor, tente novamente.</string>
     <string name="error_ssl">Existe um problema com os certificados do servidor. Por favor, contacte o seu administrador.</string>
     <string name="error_sms_not_supported">SMS não é compatível.</string>
@@ -189,4 +189,8 @@
     <string name="error_invalid_characters">Existem caracteres inválidos na consulta. Por favor, peça ao administrador para verificar a configuração do servidor (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">O servidor está indisponível do momento. Tente novamente mais tarde.</string>
     <string name="error_no_internet_connection">Está off-line. Ligue-se à Internet e tente novamente.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>

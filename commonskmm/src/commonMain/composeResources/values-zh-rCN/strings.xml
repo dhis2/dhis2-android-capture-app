@@ -126,8 +126,8 @@
     <string name="action_done">完成</string>
     <string name="input_not_supported">不支持</string>
     <!--*******************->
-                D2 Error Messages
-            **********************-->
+        D2 Error Messages
+    **********************-->
     <string name="login_error_null_pass">密码丢失。请输入密码。</string>
     <string name="login_error_null_username">缺少用户名。请输入用户名。</string>
     <string name="login_error_dhis_version">服务器运行版本不是2.29，请更新服务器版本或使用测试环境继续</string>
@@ -190,4 +190,8 @@
     <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
     <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
     <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>
