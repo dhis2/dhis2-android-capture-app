@@ -87,9 +87,7 @@ object Injector {
 
     fun provideDispatchers(): DispatcherProvider = FormDispatcher()
 
-    fun provideCustomIntentProvider(): CustomIntentRepository {
-        return CustomIntentRepositoryImpl(provideD2())
-    }
+    fun provideCustomIntentProvider(): CustomIntentRepository = CustomIntentRepositoryImpl(provideD2())
 
     private fun provideFormRepository(
         context: Context,

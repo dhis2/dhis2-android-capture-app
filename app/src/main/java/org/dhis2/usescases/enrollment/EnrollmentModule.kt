@@ -145,11 +145,7 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideCustomIntentProvider(
-        d2: D2,
-    ): CustomIntentRepository {
-        return CustomIntentRepositoryImpl(d2)
-    }
+    fun provideCustomIntentProvider(d2: D2): CustomIntentRepository = CustomIntentRepositoryImpl(d2)
 
     @Provides
     @PerActivity

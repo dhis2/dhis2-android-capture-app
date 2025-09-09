@@ -195,8 +195,8 @@ class FormRepositoryIntegrationTest {
                 enrollmentMode,
                 enrollmentFormLabelsProvider,
                 customIntentRepository,
-            metadataIconProvider,
-        )
+                metadataIconProvider,
+            )
 
         return FormRepositoryImpl(
             formValueStore,

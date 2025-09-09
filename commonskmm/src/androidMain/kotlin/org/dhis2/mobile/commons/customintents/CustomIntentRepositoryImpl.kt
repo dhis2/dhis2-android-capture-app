@@ -19,60 +19,64 @@ class CustomIntentRepositoryImpl(
         triggerUid: String?,
         programUid: String?,
         programStageUid: String?,
-    ): CustomIntentModel? {
-        return getCustomIntentFromUid(triggerUid, CustomIntentContext(programUid, programStageUid))
-    }
+    ): CustomIntentModel? = getCustomIntentFromUid(triggerUid, CustomIntentContext(programUid, programStageUid))
 
-    private fun getCustomIntentFromUid(uid: String?, context: CustomIntentContext): CustomIntentModel? {
-        return getFilteredCustomIntents(uid).firstOrNull { customIntent ->
-            customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
-        }?.let {
-            val requestParams = evaluateCustomIntentRequestParams(it, context)
-            val customIntentRequest = requestParams.mapNotNull { param ->
-                param.value?.let { value ->
-                    CustomIntentRequestArgumentModel(
-                        key = param.key,
-                        value = value,
-                    )
-                }
-            }
-            val customIntentResponse = it.response()?.data()?.extras()?.map { dataExtra ->
-                CustomIntentResponseDataModel(
-                    name = dataExtra.extraName(),
-                    extraType = when (dataExtra.extraType()) {
-                        ExtraType.STRING -> CustomIntentResponseExtraType.STRING
-                        ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
-                        ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
-                        ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
-                        ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
-                        ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
-                    },
-                    key = dataExtra.key(),
+    private fun getCustomIntentFromUid(
+        uid: String?,
+        context: CustomIntentContext,
+    ): CustomIntentModel? =
+        getFilteredCustomIntents(uid)
+            .firstOrNull { customIntent ->
+                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
+            }?.let {
+                val requestParams = evaluateCustomIntentRequestParams(it, context)
+                val customIntentRequest =
+                    requestParams.mapNotNull { param ->
+                        param.value?.let { value ->
+                            CustomIntentRequestArgumentModel(
+                                key = param.key,
+                                value = value,
+                            )
+                        }
+                    }
+                val customIntentResponse =
+                    it.response()?.data()?.extras()?.map { dataExtra ->
+                        CustomIntentResponseDataModel(
+                            name = dataExtra.extraName(),
+                            extraType =
+                                when (dataExtra.extraType()) {
+                                    ExtraType.STRING -> CustomIntentResponseExtraType.STRING
+                                    ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
+                                    ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
+                                    ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
+                                    ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
+                                    ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
+                                },
+                            key = dataExtra.key(),
+                        )
+                    } ?: emptyList()
+
+                CustomIntentModel(
+                    uid = it.uid(),
+                    name = it.name(),
+                    customIntentRequest = customIntentRequest,
+                    customIntentResponse = customIntentResponse,
+                    packageName = it.packageName() ?: "",
                 )
-            } ?: emptyList()
+            }
 
-            CustomIntentModel(
-                uid = it.uid(),
-                name = it.name(),
-                customIntentRequest = customIntentRequest,
-                customIntentResponse = customIntentResponse,
-                packageName = it.packageName() ?: "",
-            )
-        }
-    }
-
-    private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> {
-        return customIntents.filter { customIntent ->
+    private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> =
+        customIntents.filter { customIntent ->
             customIntent?.trigger()?.attributes()?.any { it.uid() == uid } == true ||
                 customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
         }
-    }
 
     private fun evaluateCustomIntentRequestParams(
         customIntent: CustomIntent,
         context: CustomIntentContext,
-    ): Map<String, Any?> {
-        return d2.settingModule().customIntentService()
+    ): Map<String, Any?> =
+        d2
+            .settingModule()
+            .customIntentService()
             .blockingEvaluateRequestParams(customIntent, context)
-    }
 }
