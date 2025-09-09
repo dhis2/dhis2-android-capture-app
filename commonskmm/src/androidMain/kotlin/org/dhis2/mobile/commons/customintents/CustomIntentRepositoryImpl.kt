@@ -16,7 +16,7 @@ class CustomIntentRepositoryImpl(
 ) : CustomIntentRepository {
     private val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
 
-    override fun getCustomIntents(
+    override fun getCustomIntent(
         triggerUid: String?,
         programUid: String?,
         programStageUid: String?,
@@ -89,4 +89,5 @@ class CustomIntentRepositoryImpl(
             .settingModule()
             .customIntentService()
             .blockingEvaluateRequestParams(customIntent, context)
+
 }
