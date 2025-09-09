@@ -15,7 +15,6 @@ buildscript {
 plugins {
     alias(libs.plugins.ktlint)
     alias(libs.plugins.sonarqube)
-    id("com.github.ben-manes.versions").version("0.46.0")
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.kotlin.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
@@ -49,13 +48,6 @@ sonarqube {
             property("sonar.pullrequest.key", pullRequestId)
         }
     }
-}
-
-val isNonStable: (String) -> Boolean = { version ->
-    val stableKeyword =
-        listOf("RELEASE", "FINAL", "GA").any { it -> version.uppercase().contains(it) }
-    val regex = """^[0-9,.v-]+(-r)?$""".toRegex()
-    !stableKeyword && !(version matches regex)
 }
 
 allprojects {
