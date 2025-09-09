@@ -1,7 +1,7 @@
 [versions]
 kotlinxDatetime = "0.7.1-0.6.x-compat" #Needs to be compatible with the Rule engine, update when it's updated
-lifecycleRuntimeCompose = "2.10.0+dev2916"
-navigationCompose = "2.9.10-alpha01"
+lifecycleRuntimeCompose = "2.9.3"
+navigationCompose = "2.9.0-rc01"
 sdk = "36"
 minSdk = "21"
 vCode = "146"
@@ -27,7 +27,7 @@ corektx = "1.17.0"
 fragmentktx = "1.8.9"
 recyclerview = "1.4.0"
 compose = "1.9.0"
-composePluginVersion = "1.10.0+dev2916"
+composePluginVersion = "1.8.2"
 composePaging = "3.3.6"
 pagingTesting = "3.3.6"
 composeConstraintLayout = "1.1.1"
@@ -82,7 +82,7 @@ uiautomator = "2.3.0"
 maplibre = "11.13.1"
 maplibregeogson = "6.0.1"
 material3WindowSize = "1.3.2"
-material3WindowSizeCompose = "1.10.0+dev2916"
+material3WindowSizeCompose = "1.8.2"
 material3AdaptiveAndroid = "1.1.0"
 koin = "4.1.1"
 junitJupiter = "5.13.4"
@@ -93,6 +93,7 @@ playservicesphone = "18.2.0"
 ksp = "2.2.10-2.0.2"
 commonsText = "1.14.0"
 ktlint = "13.1.0"
+sonarqube = "3.5.0.2730"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -223,6 +224,7 @@ compose = { id = "org.jetbrains.compose", version.ref = "composePluginVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]

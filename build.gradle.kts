@@ -14,7 +14,7 @@ buildscript {
 
 plugins {
     alias(libs.plugins.ktlint)
-    id("org.sonarqube").version("3.5.0.2730")
+    alias(libs.plugins.sonarqube)
     id("com.github.ben-manes.versions").version("0.46.0")
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.kotlin.compose.compiler) apply false
