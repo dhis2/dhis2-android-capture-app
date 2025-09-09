@@ -12,45 +12,51 @@ class CreateEventUseCaseRepositoryImpl(
     private val d2: D2,
     private val dateUtils: DateUtils,
 ) : CreateEventUseCaseRepository {
-
     override suspend fun createEvent(
         enrollmentUid: String?,
         programUid: String,
         programStageUid: String?,
         orgUnitUid: String,
-    ): Result<String> {
-        return try {
+    ): Result<String> =
+        try {
             val stageLastDate = getStageLastDate(enrollmentUid, programStageUid)
             val programStage = getProgramStage(programStageUid)
-            val eventUid = d2.eventModule().events().blockingAdd(
-                EventCreateProjection.builder().apply {
-                    enrollmentUid?.let { enrollment(enrollmentUid) }
-                    program(programUid)
-                    programStage(programStageUid)
-                    organisationUnit(orgUnitUid)
-                }.build(),
-            )
+            val eventUid =
+                d2.eventModule().events().blockingAdd(
+                    EventCreateProjection
+                        .builder()
+                        .apply {
+                            enrollmentUid?.let { enrollment(enrollmentUid) }
+                            program(programUid)
+                            programStage(programStageUid)
+                            organisationUnit(orgUnitUid)
+                        }.build(),
+                )
             setEventDate(eventUid, programStage, stageLastDate)
             Result.success(eventUid)
         } catch (error: D2Error) {
             Result.failure(error)
         }
-    }
 
-    private fun setEventDate(eventUid: String, programStage: ProgramStage?, stageLastDate: Date?) {
+    private fun setEventDate(
+        eventUid: String,
+        programStage: ProgramStage?,
+        stageLastDate: Date?,
+    ) {
         val currentDate = dateUtils.getStartOfDay(Date())
-        val eventDate = if (stageLastDate != null && programStage?.periodType() != null) {
-            val currentPeriod = dateUtils.getNextPeriod(programStage.periodType(), currentDate, 0)
-            val lastEventDatePeriod =
-                dateUtils.getNextPeriod(programStage.periodType(), stageLastDate, 0)
-            if (currentPeriod == lastEventDatePeriod || lastEventDatePeriod.after(currentPeriod)) {
-                dateUtils.getNextPeriod(programStage.periodType(), currentDate, 1)
+        val eventDate =
+            if (stageLastDate != null && programStage?.periodType() != null) {
+                val currentPeriod = dateUtils.getNextPeriod(programStage.periodType(), currentDate, 0)
+                val lastEventDatePeriod =
+                    dateUtils.getNextPeriod(programStage.periodType(), stageLastDate, 0)
+                if (currentPeriod == lastEventDatePeriod || lastEventDatePeriod.after(currentPeriod)) {
+                    dateUtils.getNextPeriod(programStage.periodType(), currentDate, 1)
+                } else {
+                    dateUtils.getNextPeriod(programStage.periodType(), currentDate, 0)
+                }
             } else {
-                dateUtils.getNextPeriod(programStage.periodType(), currentDate, 0)
+                currentDate
             }
-        } else {
-            currentDate
-        }
 
         if (eventDate.before(currentDate) || eventDate == currentDate) {
             val eventRepository = d2.eventModule().events().uid(eventUid)
@@ -58,18 +64,34 @@ class CreateEventUseCaseRepositoryImpl(
         }
     }
 
-    private fun getStageLastDate(enrollmentUid: String?, programStageUid: String?): Date? {
+    private fun getStageLastDate(
+        enrollmentUid: String?,
+        programStageUid: String?,
+    ): Date? {
         val activeEvents =
-            d2.eventModule().events().byEnrollmentUid()
-                .eq(enrollmentUid).byProgramStageUid()
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(enrollmentUid)
+                .byProgramStageUid()
                 .eq(programStageUid)
-                .byDeleted().isFalse
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .byDeleted()
+                .isFalse
+                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
+                .blockingGet()
         val scheduleEvents =
-            d2.eventModule().events().byEnrollmentUid().eq(enrollmentUid).byProgramStageUid()
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(enrollmentUid)
+                .byProgramStageUid()
                 .eq(programStageUid)
-                .byDeleted().isFalse
-                .orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet()
+                .byDeleted()
+                .isFalse
+                .orderByDueDate(RepositoryScope.OrderByDirection.DESC)
+                .blockingGet()
 
         var activeDate: Date? = null
         var scheduleDate: Date? = null
@@ -86,10 +108,10 @@ class CreateEventUseCaseRepositoryImpl(
         }
     }
 
-    private fun getProgramStage(programStageUid: String?): ProgramStage? {
-        return d2.programModule()
+    private fun getProgramStage(programStageUid: String?): ProgramStage? =
+        d2
+            .programModule()
             .programStages()
             .uid(programStageUid)
             .blockingGet()
-    }
 }

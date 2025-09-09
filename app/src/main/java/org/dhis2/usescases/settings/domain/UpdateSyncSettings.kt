@@ -11,12 +11,23 @@ class UpdateSyncSettings(
     private val settingsRepository: SettingsRepository,
     private val analyticsHelper: AnalyticsHelper,
 ) {
-
     sealed interface SyncSettings {
-        data class Scope(val limitScope: LimitScope?) : SyncSettings
-        data class EventMaxCount(val eventsNumber: Int?) : SyncSettings
-        data class TeiMaxCount(val teiNumber: Int?) : SyncSettings
-        data class ReservedValues(val reservedValuesCount: Int?) : SyncSettings
+        data class Scope(
+            val limitScope: LimitScope?,
+        ) : SyncSettings
+
+        data class EventMaxCount(
+            val eventsNumber: Int?,
+        ) : SyncSettings
+
+        data class TeiMaxCount(
+            val teiNumber: Int?,
+        ) : SyncSettings
+
+        data class ReservedValues(
+            val reservedValuesCount: Int?,
+        ) : SyncSettings
+
         data object Reset : SyncSettings
     }
 

@@ -29,17 +29,11 @@ sealed class FilterItem(
     @DrawableRes
     abstract fun icon(): Int
 
-    fun showSorting(): Boolean {
-        return Sorting.getSortingOptions(programType).any { it == type }
-    }
+    fun showSorting(): Boolean = Sorting.getSortingOptions(programType).any { it == type }
 
-    fun observeCount(): ObservableField<Int> {
-        return FilterManager.getInstance().observeField(type)
-    }
+    fun observeCount(): ObservableField<Int> = FilterManager.getInstance().observeField(type)
 
-    fun getFilterValue(defaultValue: String): String {
-        return FilterManager.getInstance().getFilterStringValue(type, defaultValue)
-    }
+    fun getFilterValue(defaultValue: String): String = FilterManager.getInstance().getFilterStringValue(type, defaultValue)
 
     fun onSortingClick() {
         val sortItem = create(type)
@@ -84,28 +78,29 @@ data class PeriodFilter(
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
 ) : FilterItem(Filters.PERIOD, programType, sortingItem, openFilter, filterLabel) {
-
-    fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
+    fun setSelectedPeriod(
+        periods: List<DatePeriod>,
+        checkedId: Int,
+    ) {
         if (checkedId != FilterManager.getInstance().periodIdSelected.get()) {
             FilterManager.getInstance().periodIdSelected.set(checkedId)
             FilterManager.getInstance().addPeriod(periods)
         }
     }
 
-    fun requestPeriod(periodRequest: FilterManager.PeriodRequest, checkedId: Int) {
+    fun requestPeriod(
+        periodRequest: FilterManager.PeriodRequest,
+        checkedId: Int,
+    ) {
         FilterManager.getInstance().addPeriodRequest(periodRequest, Filters.PERIOD)
         if (checkedId != FilterManager.getInstance().periodIdSelected.get()) {
             FilterManager.getInstance().periodIdSelected.set(checkedId)
         }
     }
 
-    fun observePeriod(): ObservableField<Int> {
-        return FilterManager.getInstance().periodIdSelected
-    }
+    fun observePeriod(): ObservableField<Int> = FilterManager.getInstance().periodIdSelected
 
-    override fun icon(): Int {
-        return R.drawable.ic_calendar_positive
-    }
+    override fun icon(): Int = R.drawable.ic_calendar_positive
 }
 
 data class EnrollmentDateFilter(
@@ -114,27 +109,29 @@ data class EnrollmentDateFilter(
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
 ) : FilterItem(Filters.ENROLLMENT_DATE, programType, sortingItem, openFilter, filterLabel) {
-    fun setSelectedPeriod(periods: List<DatePeriod>, checkedId: Int) {
+    fun setSelectedPeriod(
+        periods: List<DatePeriod>,
+        checkedId: Int,
+    ) {
         if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected.get()) {
             FilterManager.getInstance().enrollmentPeriodIdSelected.set(checkedId)
             FilterManager.getInstance().addEnrollmentPeriod(periods)
         }
     }
 
-    fun requestPeriod(periodRequest: FilterManager.PeriodRequest, checkedId: Int) {
+    fun requestPeriod(
+        periodRequest: FilterManager.PeriodRequest,
+        checkedId: Int,
+    ) {
         FilterManager.getInstance().addPeriodRequest(periodRequest, Filters.ENROLLMENT_DATE)
         if (checkedId != FilterManager.getInstance().enrollmentPeriodIdSelected.get()) {
             FilterManager.getInstance().enrollmentPeriodIdSelected.set(checkedId)
         }
     }
 
-    override fun icon(): Int {
-        return R.drawable.ic_calendar_positive
-    }
+    override fun icon(): Int = R.drawable.ic_calendar_positive
 
-    fun observePeriod(): ObservableField<Int> {
-        return FilterManager.getInstance().enrollmentPeriodIdSelected
-    }
+    fun observePeriod(): ObservableField<Int> = FilterManager.getInstance().enrollmentPeriodIdSelected
 }
 
 data class EnrollmentStatusFilter(
@@ -143,18 +140,16 @@ data class EnrollmentStatusFilter(
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
 ) : FilterItem(Filters.ENROLLMENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
-
-    fun setEnrollmentStatus(addEnrollment: Boolean, enrollmentStatus: EnrollmentStatus) {
+    fun setEnrollmentStatus(
+        addEnrollment: Boolean,
+        enrollmentStatus: EnrollmentStatus,
+    ) {
         FilterManager.getInstance().addEnrollmentStatus(!addEnrollment, enrollmentStatus)
     }
 
-    fun observeEnrollmentStatus(): ObservableField<EnrollmentStatus> {
-        return FilterManager.getInstance().observeEnrollmentStatus()
-    }
+    fun observeEnrollmentStatus(): ObservableField<EnrollmentStatus> = FilterManager.getInstance().observeEnrollmentStatus()
 
-    override fun icon(): Int {
-        return R.drawable.ic_enrollment_status_filter
-    }
+    override fun icon(): Int = R.drawable.ic_enrollment_status_filter
 }
 
 data class OrgUnitFilter(
@@ -163,11 +158,8 @@ data class OrgUnitFilter(
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
-) :
-    FilterItem(Filters.ORG_UNIT, programType, sortingItem, openFilter, filterLabel) {
-    override fun icon(): Int {
-        return R.drawable.ic_filter_ou
-    }
+) : FilterItem(Filters.ORG_UNIT, programType, sortingItem, openFilter, filterLabel) {
+    override fun icon(): Int = R.drawable.ic_filter_ou
 }
 
 data class SyncStateFilter(
@@ -176,13 +168,15 @@ data class SyncStateFilter(
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
 ) : FilterItem(Filters.SYNC_STATE, programType, sortingItem, openFilter, filterLabel) {
-
     private val syncedCheck = ObservableBoolean(false)
     private val notSyncedCheck = ObservableBoolean(false)
     private val errorCheck = ObservableBoolean(false)
     private val smsCheck = ObservableBoolean(false)
 
-    fun setSyncStatus(addState: Boolean, vararg syncStates: State) {
+    fun setSyncStatus(
+        addState: Boolean,
+        vararg syncStates: State,
+    ) {
         FilterManager.getInstance().addState(!addState, *syncStates)
     }
 
@@ -220,9 +214,7 @@ data class SyncStateFilter(
         }
     }
 
-    override fun icon(): Int {
-        return R.drawable.ic_filter_sync
-    }
+    override fun icon(): Int = R.drawable.ic_filter_sync
 }
 
 data class CatOptionComboFilter(
@@ -233,9 +225,7 @@ data class CatOptionComboFilter(
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
 ) : FilterItem(Filters.CAT_OPT_COMB, programType, sortingItem, openFilter, filterLabel) {
-    fun showSpinner(): Boolean {
-        return catOptionCombos.size < 15
-    }
+    fun showSpinner(): Boolean = catOptionCombos.size < 15
 
     fun showDialog() {
         FilterManager.getInstance().addCatOptComboRequest(catCombo.uid())
@@ -245,9 +235,7 @@ data class CatOptionComboFilter(
         FilterManager.getInstance().addCatOptCombo(catOptionCombos[position])
     }
 
-    override fun icon(): Int {
-        return R.drawable.ic_category_option_combo_filter
-    }
+    override fun icon(): Int = R.drawable.ic_category_option_combo_filter
 }
 
 data class EventStatusFilter(
@@ -255,19 +243,17 @@ data class EventStatusFilter(
     override val sortingItem: ObservableField<SortingItem>,
     override val openFilter: ObservableField<Filters>,
     override val filterLabel: String,
-) :
-    FilterItem(Filters.EVENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
-    fun setEventStatus(addStatus: Boolean, vararg eventStatus: EventStatus) {
+) : FilterItem(Filters.EVENT_STATUS, programType, sortingItem, openFilter, filterLabel) {
+    fun setEventStatus(
+        addStatus: Boolean,
+        vararg eventStatus: EventStatus,
+    ) {
         FilterManager.getInstance().addEventStatus(!addStatus, *eventStatus)
     }
 
-    fun observeEventStatus(): ObservableField<List<EventStatus>> {
-        return FilterManager.getInstance().observeEventStatus()
-    }
+    fun observeEventStatus(): ObservableField<List<EventStatus>> = FilterManager.getInstance().observeEventStatus()
 
-    override fun icon(): Int {
-        return R.drawable.ic_status
-    }
+    override fun icon(): Int = R.drawable.ic_status
 }
 
 data class AssignedFilter(
@@ -282,13 +268,9 @@ data class AssignedFilter(
         }
     }
 
-    fun observeAssignedToMe(): ObservableField<Boolean> {
-        return FilterManager.getInstance().observeAssignedToMe()
-    }
+    fun observeAssignedToMe(): ObservableField<Boolean> = FilterManager.getInstance().observeAssignedToMe()
 
-    override fun icon(): Int {
-        return R.drawable.ic_assignment
-    }
+    override fun icon(): Int = R.drawable.ic_assignment
 }
 
 data class WorkingListFilter(
@@ -300,26 +282,23 @@ data class WorkingListFilter(
 ) : FilterItem(Filters.WORKING_LIST, programType, sortingItem, openFilter, filterLabel) {
     fun onChecked(checkedId: Int) {
         openFilter.set(null)
-        workingLists.forEach {
-            if (it.id() == checkedId) {
-                it.select()
-            } else {
-                it.deselect()
+        workingLists
+            .forEach {
+                if (it.id() == checkedId) {
+                    it.select()
+                } else {
+                    it.deselect()
+                }
+            }.also {
+                if (checkedId == -1) {
+                    FilterManager.getInstance().currentWorkingList(null)
+                }
             }
-        }.also {
-            if (checkedId == -1) {
-                FilterManager.getInstance().currentWorkingList(null)
-            }
-        }
     }
 
-    fun observeScope(): ObservableField<WorkingListScope> {
-        return FilterManager.getInstance().observeWorkingListScope()
-    }
+    fun observeScope(): ObservableField<WorkingListScope> = FilterManager.getInstance().observeWorkingListScope()
 
-    override fun icon(): Int {
-        return -1
-    }
+    override fun icon(): Int = -1
 }
 
 data class FollowUpFilter(
@@ -332,9 +311,7 @@ data class FollowUpFilter(
         FilterManager.getInstance().setFollowUp(setActive)
     }
 
-    fun observeFollowUp(): ObservableField<Boolean> {
-        return FilterManager.getInstance().observeFollowUp()
-    }
+    fun observeFollowUp(): ObservableField<Boolean> = FilterManager.getInstance().observeFollowUp()
 
     override fun icon() = R.drawable.ic_follow_up_filter
 }

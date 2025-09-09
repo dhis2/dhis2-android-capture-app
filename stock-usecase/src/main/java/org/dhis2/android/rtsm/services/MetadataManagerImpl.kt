@@ -15,7 +15,6 @@ class MetadataManagerImpl(
     private val d2: D2,
     private val dispatcher: StockDispatcherProvider,
 ) : MetadataManager {
-
     override fun stockManagementProgram(programUid: String): Single<Program?> {
         if (programUid.isBlank()) {
             throw InitializationException(
@@ -23,7 +22,8 @@ class MetadataManagerImpl(
             )
         }
 
-        return d2.programModule()
+        return d2
+            .programModule()
             .programs()
             .byUid()
             .eq(programUid)
@@ -31,11 +31,14 @@ class MetadataManagerImpl(
             .get()
     }
 
-    override fun transactionType(dataSetUid: String): Single<DataElement> {
-        return Single.defer {
-            d2.dataElementModule().dataElements().uid(dataSetUid).get()
+    override fun transactionType(dataSetUid: String): Single<DataElement> =
+        Single.defer {
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(dataSetUid)
+                .get()
         }
-    }
 
     override suspend fun loadStockUseCase(programUid: String) = d2.stockUseCase(programUid)
 
@@ -45,29 +48,30 @@ class MetadataManagerImpl(
      * intersection of the program OUs (without DESCENDANTS) and
      * the user data capture OUs (with DESCENDANTS)
      */
-    override fun facilities(programUid: String): Single<List<OrganisationUnit>> {
-        return Single.defer {
+    override fun facilities(programUid: String): Single<List<OrganisationUnit>> =
+        Single.defer {
             stockManagementProgram(programUid).map { program ->
                 // TODO: Flag situations where the intersection is nil (i.e. no facility obtained)
-                d2.organisationUnitModule()
+                d2
+                    .organisationUnitModule()
                     .organisationUnits()
                     .byOrganisationUnitScope(
                         OrganisationUnit.Scope.SCOPE_DATA_CAPTURE,
-                    )
-                    .byProgramUids(listOf(program.uid()))
+                    ).byProgramUids(listOf(program.uid()))
                     .blockingGet()
             }
         }
-    }
 
-    override fun destinations(distributedTo: String): Single<List<Option>> {
-        return Single.defer {
-            d2.dataElementModule()
+    override fun destinations(distributedTo: String): Single<List<Option>> =
+        Single.defer {
+            d2
+                .dataElementModule()
                 .dataElements()
                 .uid(distributedTo)
                 .get()
                 .flatMap {
-                    d2.optionModule()
+                    d2
+                        .optionModule()
                         .options()
                         .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .byOptionSetUid()
@@ -75,5 +79,4 @@ class MetadataManagerImpl(
                         .get()
                 }
         }
-    }
 }

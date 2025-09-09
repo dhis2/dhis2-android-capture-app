@@ -23,248 +23,253 @@ import org.dhis2.R
 import org.dhis2.bindings.clipWithRoundedCorners
 import org.dhis2.bindings.dp
 
-const val itemIndicatorTag = "ITEM_INDICATOR"
+const val ITEM_INDICATOR_TAG = "ITEM_INDICATOR"
 
-class NavigationBottomBar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-) : BottomNavigationView(context, attrs, defStyleAttr) {
-    private val animations = NavigationBottomBarAnimations(this)
-    private var hidden = false
-    private var currentItemIndicatorColor: Int
-    private val itemIndicatorSize: Float
-    private val itemIndicatorDrawable: Drawable?
-    private var currentItemId: Int = -1
-    internal var initialPage: Int = 0
-    private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
-    private var forceShowAnalytics = false
+class NavigationBottomBar
+    @JvmOverloads
+    constructor(
+        context: Context,
+        attrs: AttributeSet? = null,
+        defStyleAttr: Int = 0,
+    ) : BottomNavigationView(context, attrs, defStyleAttr) {
+        private val animations = NavigationBottomBarAnimations(this)
+        private var hidden = false
+        private var currentItemIndicatorColor: Int
+        private val itemIndicatorSize: Float
+        private val itemIndicatorDrawable: Drawable?
+        private var currentItemId: Int = -1
+        internal var initialPage: Int = 0
+        private val currentItemIndicator: View by lazy { initCurrentItemIndicator() }
+        private var forceShowAnalytics = false
 
-    var onConfigurationFinishListener: (() -> Unit)? = null
+        var onConfigurationFinishListener: (() -> Unit)? = null
 
-    init {
-        hidden = visibility == View.GONE
-        labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
-        this.clipWithRoundedCorners()
-        context.obtainStyledAttributes(attrs, R.styleable.NavigationBottomBar).apply {
-            currentItemIndicatorColor = getColor(
-                R.styleable.NavigationBottomBar_currentItemSelectorColor,
-                ContextCompat.getColor(context, R.color.colorPrimary),
-            )
-            itemIndicatorSize = getDimension(
-                R.styleable.NavigationBottomBar_currentItemSelectorSize,
-                40.dp.toFloat(),
-            )
-            itemIndicatorDrawable =
-                getDrawable(R.styleable.NavigationBottomBar_currentItemSelectorDrawable)
-            forceShowAnalytics =
-                getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
-            recycle()
-        }
-        setIconsColor(currentItemIndicatorColor)
-    }
-
-    fun hide() {
-        hidden = true
-        animations.hide {
-            visibility = View.GONE
-        }
-    }
-
-    fun show() {
-        if (visibleItemCount().size > 1) {
-            visibility = View.VISIBLE
-            animations.show {
-                if (visibility != View.VISIBLE) {
-                    visibility = View.VISIBLE
-                }
-                hidden = false
+        init {
+            hidden = visibility == View.GONE
+            labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
+            this.clipWithRoundedCorners()
+            context.obtainStyledAttributes(attrs, R.styleable.NavigationBottomBar).apply {
+                currentItemIndicatorColor =
+                    getColor(
+                        R.styleable.NavigationBottomBar_currentItemSelectorColor,
+                        ContextCompat.getColor(context, R.color.colorPrimary),
+                    )
+                itemIndicatorSize =
+                    getDimension(
+                        R.styleable.NavigationBottomBar_currentItemSelectorSize,
+                        40.dp.toFloat(),
+                    )
+                itemIndicatorDrawable =
+                    getDrawable(R.styleable.NavigationBottomBar_currentItemSelectorDrawable)
+                forceShowAnalytics =
+                    getBoolean(R.styleable.NavigationBottomBar_forceShowAnalytics, false)
+                recycle()
             }
-        }
-    }
-
-    override fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
-        super.setOnItemSelectedListener { item ->
-            currentItemId = item.itemId
-            findViewById<View>(item.itemId)?.let { itemView ->
-                animateItemIndicatorPosition(itemView)
-            }
-            updateBadges()
-            listener?.onNavigationItemSelected(item) ?: false
-        }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
-        super.setOnNavigationItemSelectedListener { item ->
-            currentItemId = item.itemId
-            findViewById<View>(item.itemId)?.let { itemView ->
-                animateItemIndicatorPosition(itemView)
-            }
-            updateBadges()
-            listener?.onNavigationItemSelected(item) ?: false
-        }
-    }
-
-    private fun intrinsicHorizontalMargin(): Int {
-        return (width - (getChildAt(0) as BottomNavigationMenuView).width) / 2
-    }
-
-    private fun initCurrentItemIndicator(): View {
-        return ImageView(context).apply {
-            layoutParams =
-                ViewGroup.LayoutParams(itemIndicatorSize.toInt(), itemIndicatorSize.toInt())
-            x = 0f
-            y = 0f
-            setImageDrawable(itemIndicatorDrawable)
-            DrawableCompat.setTint(DrawableCompat.wrap(drawable), currentItemIndicatorColor)
-            tag = itemIndicatorTag
-        }
-    }
-
-    private fun animateItemIndicatorPosition(selectedItemView: View) {
-        animations.animateSelectionOut(currentItemIndicator.animate()) {
-            setCurrentItemIndicatorPosition(selectedItemView)
-            animations.animateSelectionIn(currentItemIndicator.animate())
-        }
-    }
-
-    private fun setCurrentItemIndicatorPosition(selectedItemView: View) {
-        currentItemIndicator.apply {
-            x = selectedItemView.x +
-                selectedItemView.width / 2f +
-                intrinsicHorizontalMargin() -
-                itemIndicatorSize / 2f
-            y = (this@NavigationBottomBar.height - itemIndicatorSize) / 2f
+            setIconsColor(currentItemIndicatorColor)
         }
 
-        if (indicatorHasPosition() && !isItemIndicatorAdded()) {
-            addView(currentItemIndicator)
-        }
-        invalidate()
-    }
-
-    private fun indicatorHasPosition(): Boolean {
-        return currentItemIndicator.x != -itemIndicatorSize / 2f &&
-            currentItemIndicator.y != -itemIndicatorSize / 2f
-    }
-
-    private fun isItemIndicatorAdded(): Boolean {
-        return findViewWithTag<View?>(itemIndicatorTag) != null
-    }
-
-    fun isHidden(): Boolean {
-        return hidden
-    }
-
-    private fun updateBadges() {
-        menu.forEach { updateBadge(it.itemId, getOrCreateBadge(it.itemId).number) }
-    }
-
-    fun updateBadge(menuItemId: Int, badgeCount: Int) {
-        val badge = getOrCreateBadge(menuItemId)
-        badge.isVisible = badgeCount > 0
-        badge.number = badgeCount
-        badge.horizontalOffset = -5
-        if (currentItemId == menuItemId) {
-            badge.backgroundColor = currentItemIndicatorColor
-        } else {
-            badge.backgroundColor = ColorUtils.setAlphaComponent(currentItemIndicatorColor, 128)
-        }
-    }
-
-    fun selectItemAt(position: Int) {
-        mutableListOf<Int>().apply {
-            menu.forEach {
-                if (it.isVisible) {
-                    add(it.itemId)
-                }
-            }
-            selectedItemId = get(position)
-        }
-    }
-
-    fun setIconsColor(color: Int) {
-        currentItemIndicatorColor = color
-        val iconsColorStates =
-            ColorStateList(
-                arrayOf(
-                    intArrayOf(android.R.attr.state_checked),
-                    intArrayOf(-android.R.attr.state_checked),
-                ),
-                intArrayOf(
-                    currentItemIndicatorColor,
-                    Color.argb(
-                        114,
-                        currentItemIndicatorColor.red,
-                        currentItemIndicatorColor.green,
-                        currentItemIndicatorColor.blue,
-                    ),
-                ),
-            )
-        itemIconTintList = iconsColorStates
-        itemIndicatorDrawable?.let {
-            DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
-        }
-    }
-
-    fun pageConfiguration(navigationPageConfigurator: NavigationPageConfigurator) {
-        val visibleMenuItems = mutableListOf<MenuItem>()
-        menu.forEach {
-            it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
-            if (it.isVisible) {
-                visibleMenuItems.add(it)
-            }
-        }
-        when {
-            visibleMenuItems.size < 2 && !isHidden() -> {
-                hidden = true
+        fun hide() {
+            hidden = true
+            animations.hide {
                 visibility = View.GONE
             }
-            visibleMenuItems.size > 1 && isHidden() -> {
-                initSelection(visibleMenuItems)
-                onConfigurationFinishListener?.invoke() ?: show()
-            }
-            else -> initSelection(visibleMenuItems)
         }
-    }
 
-    private fun initSelection(visibleMenuItems: MutableList<MenuItem>) {
-        visibleMenuItems.forEachIndexed { index, item ->
-            if (index == initialPage) {
-                selectItemAt(initialPage)
-            }
-        }
-    }
-
-    override fun onVisibilityChanged(changedView: View, visibility: Int) {
-        super.onVisibilityChanged(changedView, visibility)
-        post {
-            if (visibility == View.VISIBLE) {
-                animateItemIndicatorPosition(findViewById(selectedItemId))
+        fun show() {
+            if (visibleItemCount().size > 1) {
+                visibility = View.VISIBLE
+                animations.show {
+                    if (visibility != View.VISIBLE) {
+                        visibility = View.VISIBLE
+                    }
+                    hidden = false
+                }
             }
         }
-    }
 
-    private fun visibleItemCount(): MutableList<MenuItem> {
-        val visibleMenuItems = mutableListOf<MenuItem>()
-        menu.forEach {
-            it.takeIf { it.isVisible }?.let { visibleItem -> visibleMenuItems.add(visibleItem) }
+        override fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
+            super.setOnItemSelectedListener { item ->
+                currentItemId = item.itemId
+                findViewById<View>(item.itemId)?.let { itemView ->
+                    animateItemIndicatorPosition(itemView)
+                }
+                updateBadges()
+                listener?.onNavigationItemSelected(item) ?: false
+            }
         }
-        return visibleMenuItems
-    }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        findViewById<View>(currentItemId)?.let {
-            setCurrentItemIndicatorPosition(it)
+        @Deprecated("Deprecated in Java")
+        override fun setOnNavigationItemSelectedListener(listener: OnNavigationItemSelectedListener?) {
+            super.setOnNavigationItemSelectedListener { item ->
+                currentItemId = item.itemId
+                findViewById<View>(item.itemId)?.let { itemView ->
+                    animateItemIndicatorPosition(itemView)
+                }
+                updateBadges()
+                listener?.onNavigationItemSelected(item) ?: false
+            }
         }
-    }
 
-    fun currentPage(): Int {
-        return visibleItemCount().indexOfFirst { it.itemId == currentItemId }
+        private fun intrinsicHorizontalMargin(): Int = (width - (getChildAt(0) as BottomNavigationMenuView).width) / 2
+
+        private fun initCurrentItemIndicator(): View =
+            ImageView(context).apply {
+                layoutParams =
+                    ViewGroup.LayoutParams(itemIndicatorSize.toInt(), itemIndicatorSize.toInt())
+                x = 0f
+                y = 0f
+                setImageDrawable(itemIndicatorDrawable)
+                DrawableCompat.setTint(DrawableCompat.wrap(drawable), currentItemIndicatorColor)
+                tag = ITEM_INDICATOR_TAG
+            }
+
+        private fun animateItemIndicatorPosition(selectedItemView: View) {
+            animations.animateSelectionOut(currentItemIndicator.animate()) {
+                setCurrentItemIndicatorPosition(selectedItemView)
+                animations.animateSelectionIn(currentItemIndicator.animate())
+            }
+        }
+
+        private fun setCurrentItemIndicatorPosition(selectedItemView: View) {
+            currentItemIndicator.apply {
+                x = selectedItemView.x +
+                    selectedItemView.width / 2f +
+                    intrinsicHorizontalMargin() -
+                    itemIndicatorSize / 2f
+                y = (this@NavigationBottomBar.height - itemIndicatorSize) / 2f
+            }
+
+            if (indicatorHasPosition() && !isItemIndicatorAdded()) {
+                addView(currentItemIndicator)
+            }
+            invalidate()
+        }
+
+        private fun indicatorHasPosition(): Boolean =
+            currentItemIndicator.x != -itemIndicatorSize / 2f &&
+                currentItemIndicator.y != -itemIndicatorSize / 2f
+
+        private fun isItemIndicatorAdded(): Boolean = findViewWithTag<View?>(ITEM_INDICATOR_TAG) != null
+
+        fun isHidden(): Boolean = hidden
+
+        private fun updateBadges() {
+            menu.forEach { updateBadge(it.itemId, getOrCreateBadge(it.itemId).number) }
+        }
+
+        fun updateBadge(
+            menuItemId: Int,
+            badgeCount: Int,
+        ) {
+            val badge = getOrCreateBadge(menuItemId)
+            badge.isVisible = badgeCount > 0
+            badge.number = badgeCount
+            badge.horizontalOffset = -5
+            if (currentItemId == menuItemId) {
+                badge.backgroundColor = currentItemIndicatorColor
+            } else {
+                badge.backgroundColor = ColorUtils.setAlphaComponent(currentItemIndicatorColor, 128)
+            }
+        }
+
+        fun selectItemAt(position: Int) {
+            mutableListOf<Int>().apply {
+                menu.forEach {
+                    if (it.isVisible) {
+                        add(it.itemId)
+                    }
+                }
+                selectedItemId = get(position)
+            }
+        }
+
+        fun setIconsColor(color: Int) {
+            currentItemIndicatorColor = color
+            val iconsColorStates =
+                ColorStateList(
+                    arrayOf(
+                        intArrayOf(android.R.attr.state_checked),
+                        intArrayOf(-android.R.attr.state_checked),
+                    ),
+                    intArrayOf(
+                        currentItemIndicatorColor,
+                        Color.argb(
+                            114,
+                            currentItemIndicatorColor.red,
+                            currentItemIndicatorColor.green,
+                            currentItemIndicatorColor.blue,
+                        ),
+                    ),
+                )
+            itemIconTintList = iconsColorStates
+            itemIndicatorDrawable?.let {
+                DrawableCompat.setTint(DrawableCompat.wrap(it), currentItemIndicatorColor)
+            }
+        }
+
+        fun pageConfiguration(navigationPageConfigurator: NavigationPageConfigurator) {
+            val visibleMenuItems = mutableListOf<MenuItem>()
+            menu.forEach {
+                it.isVisible = navigationPageConfigurator.pageVisibility(it.itemId)
+                if (it.isVisible) {
+                    visibleMenuItems.add(it)
+                }
+            }
+            when {
+                visibleMenuItems.size < 2 && !isHidden() -> {
+                    hidden = true
+                    visibility = View.GONE
+                }
+                visibleMenuItems.size > 1 && isHidden() -> {
+                    initSelection(visibleMenuItems)
+                    onConfigurationFinishListener?.invoke() ?: show()
+                }
+                else -> initSelection(visibleMenuItems)
+            }
+        }
+
+        private fun initSelection(visibleMenuItems: MutableList<MenuItem>) {
+            visibleMenuItems.forEachIndexed { index, item ->
+                if (index == initialPage) {
+                    selectItemAt(initialPage)
+                }
+            }
+        }
+
+        override fun onVisibilityChanged(
+            changedView: View,
+            visibility: Int,
+        ) {
+            super.onVisibilityChanged(changedView, visibility)
+            post {
+                if (visibility == View.VISIBLE) {
+                    animateItemIndicatorPosition(findViewById(selectedItemId))
+                }
+            }
+        }
+
+        private fun visibleItemCount(): MutableList<MenuItem> {
+            val visibleMenuItems = mutableListOf<MenuItem>()
+            menu.forEach {
+                it.takeIf { it.isVisible }?.let { visibleItem -> visibleMenuItems.add(visibleItem) }
+            }
+            return visibleMenuItems
+        }
+
+        override fun onSizeChanged(
+            w: Int,
+            h: Int,
+            oldw: Int,
+            oldh: Int,
+        ) {
+            super.onSizeChanged(w, h, oldw, oldh)
+            findViewById<View>(currentItemId)?.let {
+                setCurrentItemIndicatorPosition(it)
+            }
+        }
+
+        fun currentPage(): Int = visibleItemCount().indexOfFirst { it.itemId == currentItemId }
     }
-}
 
 @BindingAdapter("initialPage")
 fun NavigationBottomBar.setInitialPage(initialPage: Int) {

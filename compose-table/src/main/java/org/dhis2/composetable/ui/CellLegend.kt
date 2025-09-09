@@ -20,23 +20,22 @@ import androidx.compose.ui.unit.dp
 fun CellLegendBox(
     modifier: Modifier = Modifier,
     legendColor: Color?,
-    content: @Composable
-    BoxScope.() -> Unit,
+    content: @Composable BoxScope.() -> Unit,
 ) {
-    val boxModifier = legendColor?.let {
-        val cornerSize = LocalTableDimensions.current.defaultLegendCornerSize
-        val borderWidth = LocalTableDimensions.current.defaultLegendBorderWidth
-        modifier
-            .clip(shape = RoundedCornerShape(size = cornerSize))
-            .drawBehind {
-                drawRect(
-                    color = legendColor,
-                    topLeft = Offset(0f, 0f),
-                    size = Size(borderWidth.toPx(), size.height),
-                )
-            }
-            .background(color = legendColor.copy(alpha = 0.15f))
-    } ?: modifier
+    val boxModifier =
+        legendColor?.let {
+            val cornerSize = LocalTableDimensions.current.defaultLegendCornerSize
+            val borderWidth = LocalTableDimensions.current.defaultLegendBorderWidth
+            modifier
+                .clip(shape = RoundedCornerShape(size = cornerSize))
+                .drawBehind {
+                    drawRect(
+                        color = legendColor,
+                        topLeft = Offset(0f, 0f),
+                        size = Size(borderWidth.toPx(), size.height),
+                    )
+                }.background(color = legendColor.copy(alpha = 0.15f))
+        } ?: modifier
     Box(
         modifier = boxModifier,
         content = content,
@@ -47,9 +46,10 @@ fun CellLegendBox(
 @Preview
 fun CellLegendPreview() {
     CellLegendBox(
-        modifier = Modifier
-            .width(44.dp)
-            .height(16.dp),
+        modifier =
+            Modifier
+                .width(44.dp)
+                .height(16.dp),
         legendColor = Color(44, 152, 240),
     ) {}
 }

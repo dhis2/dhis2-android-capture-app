@@ -48,11 +48,11 @@ class HomeViewModel(
     private val d2: D2,
     savedState: SavedStateHandle,
 ) : BaseViewModel(schedulerProvider) {
-
     private lateinit var config: StockUseCase
 
-    private val program: String = savedState[Constants.PROGRAM_UID]
-        ?: throw InitializationException("Some configuration parameters are missing")
+    private val program: String =
+        savedState[Constants.PROGRAM_UID]
+            ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _facilities =
         MutableStateFlow<OperationState<List<OrganisationUnit>>>(OperationState.Loading)
@@ -66,13 +66,13 @@ class HomeViewModel(
 
     private var transactionItems by mutableStateOf(mapTransaction())
 
-    private val _destinations =
+    private val _destinationsList =
         MutableStateFlow<OperationState<List<Option>>>(OperationState.Loading)
     val destinationsList: StateFlow<OperationState<List<Option>>>
-        get() = _destinations
+        get() = _destinationsList
 
-    private val _settingsUiSate = MutableStateFlow(SettingsUiState(programUid = program, transactionItems = transactionItems))
-    val settingsUiState: StateFlow<SettingsUiState> = _settingsUiSate
+    private val _settingsUiState = MutableStateFlow(SettingsUiState(programUid = program, transactionItems = transactionItems))
+    val settingsUiState: StateFlow<SettingsUiState> = _settingsUiState
 
     private val _helperText = MutableStateFlow<String?>(null)
     val helperText = _helperText.asStateFlow()
@@ -97,14 +97,20 @@ class HomeViewModel(
         viewModelScope.launch {
             val result = charts.getVisualizationGroups(program)
             if (result.isNotEmpty()) {
-                _settingsUiSate.update { currentUiState ->
+                _settingsUiState.update { currentUiState ->
                     currentUiState.copy(hasAnalytics = result.isNotEmpty())
                 }
                 _analytics.value = result
             }
-            val programName = d2.programModule().programs().uid(program).blockingGet()?.displayName()
+            val programName =
+                d2
+                    .programModule()
+                    .programs()
+                    .uid(program)
+                    .blockingGet()
+                    ?.displayName()
             if (programName != null) {
-                _settingsUiSate.update { currentUiState ->
+                _settingsUiState.update { currentUiState ->
                     currentUiState.copy(programName = programName)
                 }
             }
@@ -113,16 +119,17 @@ class HomeViewModel(
 
     private fun loadDestinations() {
         disposable.add(
-            metadataManager.destinations(config.distributedTo())
+            metadataManager
+                .destinations(config.distributedTo())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
-                    { _destinations.value = (OperationState.Success<List<Option>>(it)) },
+                    { _destinationsList.value = (OperationState.Success<List<Option>>(it)) },
                     {
                         Timber.e(it)
-                        _destinations.value = (
+                        _destinationsList.value = (
                             OperationState.Error(R.string.destinations_load_error)
-                            )
+                        )
                     },
                 ),
         )
@@ -130,14 +137,21 @@ class HomeViewModel(
 
     private fun loadTransactionTypeLabels() {
         disposable.add(
-            metadataManager.transactionType(config.stockDistribution())
+            metadataManager
+                .transactionType(config.stockDistribution())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { dataElement ->
-                        transactionItems.find { it.type == TransactionType.DISTRIBUTION }?.label = dataElement.displayName() ?: TransactionType.DISTRIBUTION.name
-                        _settingsUiSate.update { currentUiState ->
-                            currentUiState.copy(transactionItems = transactionItems, selectedTransactionItem = transactionItems.find { it.type == TransactionType.DISTRIBUTION } ?: currentUiState.selectedTransactionItem)
+                        transactionItems.find { it.type == TransactionType.DISTRIBUTION }?.label =
+                            dataElement.displayName() ?: TransactionType.DISTRIBUTION.name
+                        _settingsUiState.update { currentUiState ->
+                            currentUiState.copy(
+                                transactionItems = transactionItems,
+                                selectedTransactionItem =
+                                    transactionItems.find { it.type == TransactionType.DISTRIBUTION }
+                                        ?: currentUiState.selectedTransactionItem,
+                            )
                         }
                     },
                     {
@@ -146,14 +160,16 @@ class HomeViewModel(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.stockCount())
+            metadataManager
+                .transactionType(config.stockCount())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { dataElement ->
                         _helperText.value = dataElement.description()
-                        transactionItems.find { it.type == TransactionType.CORRECTION }?.label = dataElement.displayName() ?: TransactionType.CORRECTION.name
-                        _settingsUiSate.update { currentUiState ->
+                        transactionItems.find { it.type == TransactionType.CORRECTION }?.label =
+                            dataElement.displayName() ?: TransactionType.CORRECTION.name
+                        _settingsUiState.update { currentUiState ->
                             currentUiState.copy(transactionItems = transactionItems)
                         }
                     },
@@ -163,13 +179,15 @@ class HomeViewModel(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.stockDiscarded())
+            metadataManager
+                .transactionType(config.stockDiscarded())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { dataElement ->
-                        transactionItems.find { it.type == TransactionType.DISCARD }?.label = dataElement.displayName() ?: TransactionType.DISCARD.name
-                        _settingsUiSate.update { currentUiState ->
+                        transactionItems.find { it.type == TransactionType.DISCARD }?.label =
+                            dataElement.displayName() ?: TransactionType.DISCARD.name
+                        _settingsUiState.update { currentUiState ->
                             currentUiState.copy(transactionItems = transactionItems)
                         }
                     },
@@ -179,12 +197,13 @@ class HomeViewModel(
                 ),
         )
         disposable.add(
-            metadataManager.transactionType(config.distributedTo())
+            metadataManager
+                .transactionType(config.distributedTo())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
-                        _settingsUiSate.update { currentUiState ->
+                        _settingsUiState.update { currentUiState ->
                             currentUiState.copy(deliverToLabel = it.displayName() ?: "")
                         }
                     },
@@ -197,7 +216,8 @@ class HomeViewModel(
 
     private fun loadFacilities() {
         disposable.add(
-            metadataManager.facilities(config.programUid)
+            metadataManager
+                .facilities(config.programUid)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -205,7 +225,7 @@ class HomeViewModel(
                         _facilities.value = (OperationState.Success(it))
 
                         if (it.size == 1) {
-                            _settingsUiSate.update { currentUiState ->
+                            _settingsUiState.update { currentUiState ->
                                 currentUiState.copy(facility = it[0])
                             }
                         }
@@ -219,20 +239,20 @@ class HomeViewModel(
     }
 
     fun selectTransaction(selectedItem: TransactionItem) {
-        _settingsUiSate.update { currentUiState ->
+        _settingsUiState.update { currentUiState ->
             currentUiState.copy(selectedTransactionItem = selectedItem)
         }
         // Distributed to cannot only be set for DISTRIBUTION,
         // so ensure you clear it for others if it has been set
         if (selectedItem.type != TransactionType.DISTRIBUTION) {
-            _settingsUiSate.update { currentUiState ->
+            _settingsUiState.update { currentUiState ->
                 currentUiState.copy(destination = null)
             }
         }
     }
 
     fun setFacility(facility: OrganisationUnit) {
-        _settingsUiSate.update { currentUiState ->
+        _settingsUiState.update { currentUiState ->
             currentUiState.copy(facility = facility)
         }
     }
@@ -244,13 +264,13 @@ class HomeViewModel(
             )
         }
 
-        _settingsUiSate.update { currentUiState ->
+        _settingsUiState.update { currentUiState ->
             currentUiState.copy(destination = destination)
         }
     }
 
-    fun checkForFieldErrors(): Int? {
-        return if (settingsUiState.value.facility == null) {
+    fun checkForFieldErrors(): Int? =
+        if (settingsUiState.value.facility == null) {
             R.string.mandatory_facility_selection
         } else if (settingsUiState.value.selectedTransactionItem.type == TransactionType.DISTRIBUTION &&
             settingsUiState.value.destination == null
@@ -259,7 +279,6 @@ class HomeViewModel(
         } else {
             null
         }
-    }
 
     fun getData(): Transaction {
         if (settingsUiState.value.facility == null) {
@@ -280,7 +299,7 @@ class HomeViewModel(
     }
 
     fun resetSettings() {
-        _settingsUiSate.update {
+        _settingsUiState.update {
             SettingsUiState(
                 programUid = config.programUid,
                 transactionItems = transactionItems,
@@ -289,13 +308,14 @@ class HomeViewModel(
         selectTransaction(
             transactionItems.find { it.type == TransactionType.DISTRIBUTION } ?: TransactionItem(
                 R.drawable.ic_distribution,
-                TransactionType.DISTRIBUTION, TransactionType.DISTRIBUTION.name,
+                TransactionType.DISTRIBUTION,
+                TransactionType.DISTRIBUTION.name,
             ),
         )
     }
 
-    private fun mapTransaction(): MutableList<TransactionItem> {
-        return mutableListOf(
+    private fun mapTransaction(): MutableList<TransactionItem> =
+        mutableListOf(
             TransactionItem(
                 R.drawable.ic_distribution,
                 TransactionType.DISTRIBUTION,
@@ -308,17 +328,16 @@ class HomeViewModel(
                 TransactionType.CORRECTION.name,
             ),
         )
-    }
 
     fun switchScreen(itemId: Int) {
         when (itemId) {
             BottomNavigation.DATA_ENTRY.id -> {
-                _settingsUiSate.update { currentUiState ->
+                _settingsUiState.update { currentUiState ->
                     currentUiState.copy(selectedScreen = BottomNavigation.DATA_ENTRY)
                 }
             }
             BottomNavigation.ANALYTICS.id -> {
-                _settingsUiSate.update { currentUiState ->
+                _settingsUiState.update { currentUiState ->
                     currentUiState.copy(selectedScreen = BottomNavigation.ANALYTICS)
                 }
             }

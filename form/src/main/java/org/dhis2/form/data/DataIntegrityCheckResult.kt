@@ -21,11 +21,11 @@ data class MissingMandatoryResult(
     override val allowDiscard: Boolean,
     override val eventResultDetails: EventResultDetails,
 ) : DataIntegrityCheckResult(
-    canComplete,
-    onCompleteMessage,
-    allowDiscard,
-    eventResultDetails,
-)
+        canComplete,
+        onCompleteMessage,
+        allowDiscard,
+        eventResultDetails,
+    )
 
 data class FieldsWithErrorResult(
     val mandatoryFields: Map<String, String>,
@@ -35,13 +35,12 @@ data class FieldsWithErrorResult(
     override val onCompleteMessage: String?,
     override val allowDiscard: Boolean,
     override val eventResultDetails: EventResultDetails,
-
 ) : DataIntegrityCheckResult(
-    canComplete,
-    onCompleteMessage,
-    allowDiscard,
-    eventResultDetails,
-)
+        canComplete,
+        onCompleteMessage,
+        allowDiscard,
+        eventResultDetails,
+    )
 
 data class FieldsWithWarningResult(
     val fieldUidWarningList: List<FieldWithIssue>,
@@ -49,10 +48,10 @@ data class FieldsWithWarningResult(
     override val onCompleteMessage: String?,
     override val eventResultDetails: EventResultDetails,
 ) : DataIntegrityCheckResult(
-    canComplete,
-    onCompleteMessage,
-    eventResultDetails = eventResultDetails,
-)
+        canComplete,
+        onCompleteMessage,
+        eventResultDetails = eventResultDetails,
+    )
 
 data class SuccessfulResult(
     val extraData: String? = null,
@@ -60,10 +59,10 @@ data class SuccessfulResult(
     override val onCompleteMessage: String?,
     override val eventResultDetails: EventResultDetails,
 ) : DataIntegrityCheckResult(
-    canComplete,
-    onCompleteMessage,
-    eventResultDetails = eventResultDetails,
-)
+        canComplete,
+        onCompleteMessage,
+        eventResultDetails = eventResultDetails,
+    )
 
 data class EventResultDetails(
     val eventStatus: EventStatus?,

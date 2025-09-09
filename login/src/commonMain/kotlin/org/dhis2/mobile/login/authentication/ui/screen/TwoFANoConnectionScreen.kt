@@ -27,9 +27,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun TwoFANoConnectionScreen(
-    onRetry: () -> Unit = {},
-) {
+fun TwoFANoConnectionScreen(onRetry: () -> Unit = {}) {
     Column {
         InfoBar(
             text = stringResource(Res.string.two_fa_no_connection_title),
@@ -45,13 +43,13 @@ fun TwoFANoConnectionScreen(
         )
 
         Column(
-            modifier = Modifier
-                .padding(top = 16.dp)
-                .background(
-                    color = SurfaceColor.ContainerLow,
-                    shape = RoundedCornerShape(Radius.M),
-                )
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .padding(top = 16.dp)
+                    .background(
+                        color = SurfaceColor.ContainerLow,
+                        shape = RoundedCornerShape(Radius.M),
+                    ).padding(16.dp),
         ) {
             Text(
                 text = stringResource(Res.string.two_fa_no_connection_description),
@@ -59,9 +57,10 @@ fun TwoFANoConnectionScreen(
             )
 
             Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
                 text = stringResource(Res.string.two_fa_no_connection_button),
                 icon = {

@@ -23,7 +23,6 @@ import org.mockito.kotlin.whenever
 import java.util.UUID
 
 class SyncPresenterTest {
-
     lateinit var presenter: SyncPresenter
     private val view: SyncView = mock()
     private val userManager: UserManager =
@@ -34,13 +33,14 @@ class SyncPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = SyncPresenter(
-            view,
-            userManager,
-            schedulerProvider,
-            workManagerController,
-            preferences,
-        )
+        presenter =
+            SyncPresenter(
+                view,
+                userManager,
+                schedulerProvider,
+                workManagerController,
+                preferences,
+            )
     }
 
     @Test
@@ -97,8 +97,11 @@ class SyncPresenterTest {
         verify(view, times(1)).goToLogin()
     }
 
-    private fun metaWorkInfo(state: WorkInfo.State, message: String? = null): WorkInfo {
-        return WorkInfo(
+    private fun metaWorkInfo(
+        state: WorkInfo.State,
+        message: String? = null,
+    ): WorkInfo =
+        WorkInfo(
             id = UUID.randomUUID(),
             state = state,
             outputData = Data.Builder().apply { putString(METADATA_MESSAGE, message) }.build(),
@@ -107,5 +110,4 @@ class SyncPresenterTest {
             runAttemptCount = 0,
             generation = 0,
         )
-    }
 }

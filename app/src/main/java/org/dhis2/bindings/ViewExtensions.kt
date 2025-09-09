@@ -32,32 +32,40 @@ fun TextView.clearFocusOnDone() {
 }
 
 fun View.clipWithRoundedCorners(curvedRadio: Int = 16.dp) {
-    outlineProvider = object : ViewOutlineProvider() {
-        override fun getOutline(view: View, outline: Outline) {
-            outline.setRoundRect(
-                0,
-                0,
-                view.width,
-                view.height + curvedRadio,
-                curvedRadio.toFloat(),
-            )
+    outlineProvider =
+        object : ViewOutlineProvider() {
+            override fun getOutline(
+                view: View,
+                outline: Outline,
+            ) {
+                outline.setRoundRect(
+                    0,
+                    0,
+                    view.width,
+                    view.height + curvedRadio,
+                    curvedRadio.toFloat(),
+                )
+            }
         }
-    }
     clipToOutline = true
 }
 
 fun View.clipWithTopRightRoundedCorner(curvedRadio: Int = 16.dp) {
-    outlineProvider = object : ViewOutlineProvider() {
-        override fun getOutline(view: View, outline: Outline) {
-            outline.setRoundRect(
-                0 - curvedRadio,
-                0,
-                view.width,
-                view.height + curvedRadio,
-                curvedRadio.toFloat(),
-            )
+    outlineProvider =
+        object : ViewOutlineProvider() {
+            override fun getOutline(
+                view: View,
+                outline: Outline,
+            ) {
+                outline.setRoundRect(
+                    0 - curvedRadio,
+                    0,
+                    view.width,
+                    view.height + curvedRadio,
+                    curvedRadio.toFloat(),
+                )
+            }
         }
-    }
     clipToOutline = true
 }
 
@@ -77,20 +85,21 @@ fun Spinner.overrideHeight(desiredHeight: Int) {
 }
 
 fun Spinner.doOnItemSelected(onItemSelected: (selectedIndex: Int) -> Unit) {
-    onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(
-            adapterView: AdapterView<*>?,
-            view: View?,
-            selectedIndex: Int,
-            id: Long,
-        ) {
-            onItemSelected(selectedIndex)
-        }
+    onItemSelectedListener =
+        object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                view: View?,
+                selectedIndex: Int,
+                id: Long,
+            ) {
+                onItemSelected(selectedIndex)
+            }
 
-        override fun onNothingSelected(p0: AdapterView<*>?) {
-            // Don't do anything
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                // Don't do anything
+            }
         }
-    }
 }
 
 fun FloatingActionButton.display(shouldBeDisplayed: Boolean) {

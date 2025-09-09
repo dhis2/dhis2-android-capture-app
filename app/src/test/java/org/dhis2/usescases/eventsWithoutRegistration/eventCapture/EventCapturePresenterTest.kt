@@ -41,15 +41,16 @@ class EventCapturePresenterTest {
 
     @Before
     fun setUp() {
-        presenter = EventCapturePresenterImpl(
-            view,
-            eventUid,
-            eventRepository,
-            schedulers,
-            preferences,
-            pageConfigurator,
-            resourceManager,
-        )
+        presenter =
+            EventCapturePresenterImpl(
+                view,
+                eventUid,
+                eventRepository,
+                schedulers,
+                preferences,
+                pageConfigurator,
+                resourceManager,
+            )
     }
 
     @Test
@@ -305,10 +306,11 @@ class EventCapturePresenterTest {
 
     @Test
     fun `Should init note counter`() {
-        whenever(eventRepository.noteCount) doReturnConsecutively listOf(
-            0,
-            1,
-        ).map { Single.just(it) }
+        whenever(eventRepository.noteCount) doReturnConsecutively
+            listOf(
+                0,
+                1,
+            ).map { Single.just(it) }
         presenter.initNoteCounter()
         verify(view).updateNoteBadge(0)
         presenter.initNoteCounter()
@@ -316,8 +318,18 @@ class EventCapturePresenterTest {
     }
 
     private fun initializeMocks() {
-        val stage = ProgramStage.builder().uid("stage").displayName("stageName").build()
-        val orgUnit = OrganisationUnit.builder().uid("orgUnit").displayName("OrgUnitName").build()
+        val stage =
+            ProgramStage
+                .builder()
+                .uid("stage")
+                .displayName("stageName")
+                .build()
+        val orgUnit =
+            OrganisationUnit
+                .builder()
+                .uid("orgUnit")
+                .displayName("OrgUnitName")
+                .build()
 
         whenever(eventRepository.programStageName()) doReturn Flowable.just(stage.uid())
         whenever(eventRepository.orgUnit()) doReturn Flowable.just(orgUnit)

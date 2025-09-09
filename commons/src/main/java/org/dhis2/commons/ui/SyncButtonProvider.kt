@@ -20,17 +20,18 @@ fun SyncButtonProvider(
     syncRetryActionLabel: String = stringResource(id = R.string.sync_retry),
     onSyncIconClick: () -> Unit,
 ) {
-    val buttonText = when (state) {
-        State.TO_POST,
-        State.TO_UPDATE,
-        -> syncActionLabel
+    val buttonText =
+        when (state) {
+            State.TO_POST,
+            State.TO_UPDATE,
+            -> syncActionLabel
 
-        State.ERROR,
-        State.WARNING,
-        -> syncRetryActionLabel
+            State.ERROR,
+            State.WARNING,
+            -> syncRetryActionLabel
 
-        else -> null
-    }
+            else -> null
+        }
     buttonText?.let {
         Button(
             style = ButtonStyle.TONAL,

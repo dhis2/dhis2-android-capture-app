@@ -7,6 +7,7 @@ object AnalyticsCountingIdlingResource {
 
     @JvmField
     val countingIdlingResource = CountingIdlingResource(RESOURCE)
+
     fun increment() {
         countingIdlingResource.increment()
     }

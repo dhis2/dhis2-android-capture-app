@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import java.util.UUID
 
 class NotesRepositoryTest {
-
     private lateinit var repository: NotesRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val programUid = UUID.randomUUID().toString()
@@ -35,12 +34,19 @@ class NotesRepositoryTest {
         mockEnrollment(teiUid, enrollmentUid)
 
         whenever(
-            d2.noteModule().notes()
-                .byEnrollmentUid().eq(enrollmentUid),
+            d2
+                .noteModule()
+                .notes()
+                .byEnrollmentUid()
+                .eq(enrollmentUid),
         ) doReturn mock()
         whenever(
-            d2.noteModule().notes()
-                .byEnrollmentUid().eq(enrollmentUid).get(),
+            d2
+                .noteModule()
+                .notes()
+                .byEnrollmentUid()
+                .eq(enrollmentUid)
+                .get(),
         ) doReturn Single.just(notes)
 
         val testObserver = repository.getEnrollmentNotes(teiUid).test()
@@ -58,12 +64,19 @@ class NotesRepositoryTest {
         val eventUid = UUID.randomUUID().toString()
 
         whenever(
-            d2.noteModule().notes()
-                .byEventUid().eq(eventUid),
+            d2
+                .noteModule()
+                .notes()
+                .byEventUid()
+                .eq(eventUid),
         ) doReturn mock()
         whenever(
-            d2.noteModule().notes()
-                .byEventUid().eq(eventUid).get(),
+            d2
+                .noteModule()
+                .notes()
+                .byEventUid()
+                .eq(eventUid)
+                .get(),
         ) doReturn Single.just(notes)
 
         val testObserver = repository.getEventNotes(eventUid).test()
@@ -77,18 +90,25 @@ class NotesRepositoryTest {
 
     @Test
     fun `Should check program write permission`() {
-        val dummyProgram = Program.builder()
-            .uid(UUID.randomUUID().toString())
-            .access(
-                Access.builder().data(
-                    DataAccess.builder()
-                        .read(true)
-                        .write(true)
-                        .build(),
-                ).build(),
-            ).build()
+        val dummyProgram =
+            Program
+                .builder()
+                .uid(UUID.randomUUID().toString())
+                .access(
+                    Access
+                        .builder()
+                        .data(
+                            DataAccess
+                                .builder()
+                                .read(true)
+                                .write(true)
+                                .build(),
+                        ).build(),
+                ).build()
         whenever(
-            d2.programModule().programs()
+            d2
+                .programModule()
+                .programs()
                 .uid(programUid)
                 .blockingGet(),
         ) doReturn dummyProgram
@@ -96,37 +116,61 @@ class NotesRepositoryTest {
         assert(repository.hasProgramWritePermission())
     }
 
-    private fun dummyNote(): Note = Note.builder()
-        .uid(UUID.randomUUID().toString())
-        .value("Note")
-        .build()
+    private fun dummyNote(): Note =
+        Note
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .value("Note")
+            .build()
 
-    private fun mockEnrollment(teiUid: String, enrollmentUid: String) {
+    private fun mockEnrollment(
+        teiUid: String,
+        enrollmentUid: String,
+    ) {
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid),
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byProgram()
+                .eq(programUid),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byProgram()
+                .eq(programUid)
                 .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid),
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byProgram()
+                .eq(programUid)
+                .byTrackedEntityInstance()
+                .eq(teiUid),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byProgram()
+                .eq(programUid)
+                .byTrackedEntityInstance()
+                .eq(teiUid)
                 .one(),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byProgram().eq(programUid)
-                .byTrackedEntityInstance().eq(teiUid)
-                .one().blockingGet(),
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byProgram()
+                .eq(programUid)
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .one()
+                .blockingGet(),
         ) doReturn Enrollment.builder().uid(enrollmentUid).build()
     }
 }

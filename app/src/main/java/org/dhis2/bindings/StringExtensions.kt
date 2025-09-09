@@ -9,10 +9,11 @@ import java.util.Date
 const val WRONG_FORMAT = "Wrong format"
 val String?.initials: String
     get() {
-        val userNames = this
-            ?.split(" ".toRegex())
-            ?.dropLastWhile { it.isEmpty() }
-            ?.toTypedArray()
+        val userNames =
+            this
+                ?.split(" ".toRegex())
+                ?.dropLastWhile { it.isEmpty() }
+                ?.toTypedArray()
 
         var userInit = ""
         userNames?.forEachIndexed { index, word ->
@@ -22,13 +23,12 @@ val String?.initials: String
         return userInit
     }
 
-fun String?.toDateSpan(context: Context): String {
-    return if (this == null) {
+fun String?.toDateSpan(context: Context): String =
+    if (this == null) {
         ""
     } else {
         toDate().toDateSpan(context)
     }
-}
 
 fun String.toDate(): Date {
     var date: Date? = null
@@ -84,7 +84,15 @@ fun String.newVersion(oldVersion: String): Boolean {
     val old = oldVersion.split(".")
     try {
         new.forEachIndexed { index, vNumber ->
-            if (vNumber.toInt() < (old.getOrElse(index) { "0" }).toInt()) return false else if (vNumber.toInt() > (old.getOrElse(index) { "0" }).toInt()) return true
+            if (vNumber.toInt() <
+                (old.getOrElse(index) { "0" }).toInt()
+            ) {
+                return false
+            } else if (vNumber.toInt() >
+                (old.getOrElse(index) { "0" }).toInt()
+            ) {
+                return true
+            }
         }
     } catch (e: Exception) {
         return false

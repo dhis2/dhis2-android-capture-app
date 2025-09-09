@@ -10,8 +10,10 @@ import org.maplibre.android.location.engine.LocationEngineRequest
 import org.maplibre.android.location.engine.LocationEngineResult
 import java.lang.Exception
 
-class MapLocationEngine(context: Context) : LocationProviderImpl(context), LocationEngine {
-
+class MapLocationEngine(
+    context: Context,
+) : LocationProviderImpl(context),
+    LocationEngine {
     override fun getLastLocation(callback: LocationEngineCallback<LocationEngineResult>) {
         getLastKnownLocation(
             onNewLocation = {

@@ -14,7 +14,6 @@ import org.dhis2.commons.R
 import org.dhis2.commons.databinding.AlertBottomDialogBinding
 
 class AlertBottomDialog : BottomSheetDialogFragment() {
-
     companion object {
         val instance: AlertBottomDialog
             get() = AlertBottomDialog()
@@ -24,20 +23,27 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
 
     fun setMessage(message: String) = apply { this.message = message }
 
-    fun setPositiveButton(text: String? = null, onClick: (() -> Unit)? = null) = apply {
+    fun setPositiveButton(
+        text: String? = null,
+        onClick: (() -> Unit)? = null,
+    ) = apply {
         this.positiveText = text
         this.positiveOnclick = onClick
     }
 
-    fun setNegativeButton(text: String? = null, onClick: (() -> Unit)? = null) = apply {
+    fun setNegativeButton(
+        text: String? = null,
+        onClick: (() -> Unit)? = null,
+    ) = apply {
         this.showNegative = true
         this.negativeText = text
         this.negativeOnclick = onClick
     }
 
-    fun setFieldsToDisplay(fieldsToDisplay: List<String>) = apply {
-        this.fieldsToDisplay = fieldsToDisplay
-    }
+    fun setFieldsToDisplay(fieldsToDisplay: List<String>) =
+        apply {
+            this.fieldsToDisplay = fieldsToDisplay
+        }
 
     private var fieldsToDisplay: List<String>? = null
     private var showNegative: Boolean = false
@@ -101,7 +107,10 @@ class AlertBottomDialog : BottomSheetDialogFragment() {
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver.addOnGlobalLayoutListener {
             val dialog = dialog as BottomSheetDialog

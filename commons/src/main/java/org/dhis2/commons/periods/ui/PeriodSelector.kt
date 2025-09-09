@@ -47,9 +47,10 @@ fun PeriodSelectorContent(
                 if (periods.itemCount == 0) {
                     item {
                         DropdownListItem(
-                            item = DropdownItem(
-                                label = stringResource(R.string.no_periods),
-                            ),
+                            item =
+                                DropdownItem(
+                                    label = stringResource(R.string.no_periods),
+                                ),
                             contentPadding = PaddingValues(Spacing8),
                             selected = false,
                             enabled = false,
@@ -61,9 +62,10 @@ fun PeriodSelectorContent(
                         val period = periods[index]
                         DropdownListItem(
                             modifier = Modifier.testTag("period_item_$index"),
-                            item = DropdownItem(
-                                label = period?.name ?: "",
-                            ),
+                            item =
+                                DropdownItem(
+                                    label = period?.name ?: "",
+                                ),
                             contentPadding = PaddingValues(Spacing8),
                             selected = period?.selected == true,
                             enabled = period?.enabled == true,
@@ -84,12 +86,13 @@ fun ProgressItem(
     contentPadding: PaddingValues,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(384.dp)
-            .clip(RoundedCornerShape(Spacing8))
-            .background(color = Color.Unspecified)
-            .padding(contentPadding),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(384.dp)
+                .clip(RoundedCornerShape(Spacing8))
+                .background(color = Color.Unspecified)
+                .padding(contentPadding),
         contentAlignment = Alignment.Center,
     ) {
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)

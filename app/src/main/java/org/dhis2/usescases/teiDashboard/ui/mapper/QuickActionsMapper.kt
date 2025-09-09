@@ -26,10 +26,11 @@ class QuickActionsMapper(
         dashboardEnrollmentModel: DashboardEnrollmentModel,
         teiCanBeTransferred: Boolean,
         onActionClick: (QuickActionType) -> Unit,
-    ): List<QuickActionUiModel> {
-        return dashboardEnrollmentModel.quickActions
+    ): List<QuickActionUiModel> =
+        dashboardEnrollmentModel.quickActions
             .mapNotNull {
-                QuickActionType.valueOf(it)
+                QuickActionType
+                    .valueOf(it)
                     .filter(dashboardEnrollmentModel, teiCanBeTransferred)
             }.map { quickActionType ->
                 QuickActionUiModel(
@@ -38,13 +39,12 @@ class QuickActionsMapper(
                     onActionClick = { onActionClick(quickActionType) },
                 )
             }
-    }
 
     private fun QuickActionType.filter(
         dashboardEnrollmentModel: DashboardEnrollmentModel,
         teiCanBeTransferred: Boolean,
-    ): QuickActionType? {
-        return when (this) {
+    ): QuickActionType? =
+        when (this) {
             QuickActionType.MARK_FOLLOW_UP ->
                 if (dashboardEnrollmentModel.currentEnrollment.followUp() == true) {
                     null
@@ -75,20 +75,20 @@ class QuickActionsMapper(
 
             else -> this
         }
-    }
 
     private fun getText(
         quickActionType: QuickActionType,
         programUid: String?,
-    ): String {
-        return when (quickActionType) {
+    ): String =
+        when (quickActionType) {
             QuickActionType.MARK_FOLLOW_UP -> resourceManager.getString(R.string.mark_follow_up)
             QuickActionType.TRANSFER -> resourceManager.getString(R.string.transfer)
-            QuickActionType.COMPLETE_ENROLLMENT -> resourceManager.formatWithEnrollmentLabel(
-                programUid,
-                R.string.complete_enrollment_label,
-                1,
-            )
+            QuickActionType.COMPLETE_ENROLLMENT ->
+                resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.complete_enrollment_label,
+                    1,
+                )
 
             QuickActionType.CANCEL_ENROLLMENT ->
                 resourceManager.formatWithEnrollmentLabel(
@@ -97,33 +97,36 @@ class QuickActionsMapper(
                     1,
                 )
 
-            QuickActionType.REOPEN_ENROLLMENT -> resourceManager.formatWithEnrollmentLabel(
-                programUid,
-                R.string.reopen_enrollment_label,
-                1,
-            )
+            QuickActionType.REOPEN_ENROLLMENT ->
+                resourceManager.formatWithEnrollmentLabel(
+                    programUid,
+                    R.string.reopen_enrollment_label,
+                    1,
+                )
 
             QuickActionType.MORE_ENROLLMENTS -> resourceManager.getString(R.string.more_enrollments)
         }
-    }
 
-    private fun getIcon(quickActionType: QuickActionType) = @Composable {
-        val iconResource = when (quickActionType) {
-            QuickActionType.MARK_FOLLOW_UP -> Icons.Outlined.Flag
-            QuickActionType.TRANSFER -> Icons.Outlined.MoveDown
-            QuickActionType.COMPLETE_ENROLLMENT -> Icons.Outlined.CheckCircle
-            QuickActionType.CANCEL_ENROLLMENT -> Icons.Outlined.Block
-            QuickActionType.REOPEN_ENROLLMENT -> Icons.Outlined.LockReset
-            QuickActionType.MORE_ENROLLMENTS -> Icons.AutoMirrored.Outlined.Assignment
+    private fun getIcon(quickActionType: QuickActionType) =
+        @Composable {
+            val iconResource =
+                when (quickActionType) {
+                    QuickActionType.MARK_FOLLOW_UP -> Icons.Outlined.Flag
+                    QuickActionType.TRANSFER -> Icons.Outlined.MoveDown
+                    QuickActionType.COMPLETE_ENROLLMENT -> Icons.Outlined.CheckCircle
+                    QuickActionType.CANCEL_ENROLLMENT -> Icons.Outlined.Block
+                    QuickActionType.REOPEN_ENROLLMENT -> Icons.Outlined.LockReset
+                    QuickActionType.MORE_ENROLLMENTS -> Icons.AutoMirrored.Outlined.Assignment
+                }
+            Icon(
+                imageVector = iconResource,
+                contentDescription = null,
+                tint =
+                    if (quickActionType == QuickActionType.REOPEN_ENROLLMENT) {
+                        SurfaceColor.Warning
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
+            )
         }
-        Icon(
-            imageVector = iconResource,
-            contentDescription = null,
-            tint = if (quickActionType == QuickActionType.REOPEN_ENROLLMENT) {
-                SurfaceColor.Warning
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            },
-        )
-    }
 }

@@ -50,12 +50,14 @@ class ScanActivity : ActivityGlobalAbstract() {
             var url = barcodeResult.text
 
             if (optionSetUid != null) {
-                val option = scanRepository.getOptions()
-                    .firstOrNull {
-                        it.displayName() == barcodeResult.text ||
-                            it.name() == barcodeResult.text ||
-                            it.code() == barcodeResult.text
-                    }
+                val option =
+                    scanRepository
+                        .getOptions()
+                        .firstOrNull {
+                            it.displayName() == barcodeResult.text ||
+                                it.name() == barcodeResult.text ||
+                                it.code() == barcodeResult.text
+                        }
                 if (option != null) {
                     url = option.displayName()
                 } else {
@@ -100,7 +102,8 @@ class ScanActivity : ActivityGlobalAbstract() {
         capture.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return mScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
-    }
+    override fun onKeyDown(
+        keyCode: Int,
+        event: KeyEvent?,
+    ): Boolean = mScannerView.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
 }

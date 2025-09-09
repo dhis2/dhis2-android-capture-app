@@ -79,8 +79,9 @@ import timber.log.Timber
 import java.io.Serializable
 import javax.inject.Inject
 
-class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View {
-
+class SearchTEActivity :
+    ActivityGlobalAbstract(),
+    SearchTEContractsModule.View {
     private lateinit var binding: ActivitySearchBinding
     private lateinit var searchScreenConfigurator: SearchScreenConfigurator
 
@@ -122,16 +123,16 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     private var initSearchNeeded = true
     var searchComponent: SearchTEComponent? = null
 
-    enum class Extra(val key: String) {
+    enum class Extra(
+        val key: String,
+    ) {
         TEI_UID("TRACKED_ENTITY_UID"),
         PROGRAM_UID("PROGRAM_UID"),
         QUERY_ATTR("QUERY_DATA_ATTR"),
         QUERY_VALUES("QUERY_DATA_VALUES"),
         ;
 
-        fun key(): String {
-            return key
-        }
+        fun key(): String = key
     }
 
     private enum class Content {
@@ -160,11 +161,12 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         }
         initSearchParameters()
 
-        searchScreenConfigurator = SearchScreenConfigurator(
-            binding,
-        ) { isOpen: Boolean ->
-            viewModel.setFiltersOpened(isOpen)
-        }
+        searchScreenConfigurator =
+            SearchScreenConfigurator(
+                binding,
+            ) { isOpen: Boolean ->
+                viewModel.setFiltersOpened(isOpen)
+            }
 
         binding.setPresenter(presenter)
         binding.setTotalFilters(FilterManager.getInstance().totalFilters)
@@ -301,24 +303,25 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     private fun openSyncDialog() {
         val contextView = findViewById<View>(R.id.navigationBar)
-        SyncStatusDialog.Builder()
+        SyncStatusDialog
+            .Builder()
             .withContext(this, null)
             .withSyncContext(
                 SyncContext.TrackerProgram(initialProgram!!),
-            )
-            .onDismissListener(object : OnDismissListener {
-                override fun onDismiss(hasChanged: Boolean) {
-                    if (hasChanged) viewModel.refreshData()
-                }
-            })
-            .onNoConnectionListener {
-                Snackbar.make(
-                    contextView,
-                    R.string.sync_offline_check_connection,
-                    Snackbar.LENGTH_SHORT,
-                ).show()
-            }
-            .show("PROGRAM_SYNC")
+            ).onDismissListener(
+                object : OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) viewModel.refreshData()
+                    }
+                },
+            ).onNoConnectionListener {
+                Snackbar
+                    .make(
+                        contextView,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT,
+                    ).show()
+            }.show("PROGRAM_SYNC")
     }
 
     override fun updateFilters(totalFilters: Int) {
@@ -336,7 +339,8 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
             tEType,
             resourceManager,
             { uid: String, preselectedOrgUnits: List<String>, orgUnitScope: OrgUnitSelectorScope, label: String ->
-                OUTreeFragment.Builder()
+                OUTreeFragment
+                    .Builder()
                     .withPreselectedOrgUnits(preselectedOrgUnits)
                     .singleSelection()
                     .onSelection { selectedOrgUnits: List<OrganisationUnit> ->
@@ -353,8 +357,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                                 true,
                             ),
                         )
-                    }
-                    .orgUnitScope(orgUnitScope)
+                    }.orgUnitScope(orgUnitScope)
                     .build()
                     .show(supportFragmentManager, label)
             },
@@ -600,13 +603,14 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun setPrograms(programs: List<ProgramSpinnerModel>) {
-        binding.programSpinner.adapter = ProgramAdapter(
-            this,
-            R.layout.spinner_program_layout,
-            R.id.spinner_text,
-            programs,
-            presenter.trackedEntityName.displayName(),
-        )
+        binding.programSpinner.adapter =
+            ProgramAdapter(
+                this,
+                R.layout.spinner_program_layout,
+                R.id.spinner_text,
+                programs,
+                presenter.trackedEntityName.displayName(),
+            )
         if (initialProgram != null && initialProgram!!.isNotEmpty()) {
             setInitialProgram(programs)
         } else {
@@ -623,22 +627,24 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
 
     override fun showSyncDialog(enrollmentUid: String) {
         val contextView = findViewById<View>(R.id.navigationBar)
-        SyncStatusDialog.Builder()
+        SyncStatusDialog
+            .Builder()
             .withContext(this, null)
             .withSyncContext(
                 TrackerProgramTei(enrollmentUid),
-            )
-            .onDismissListener(object : OnDismissListener {
-                override fun onDismiss(hasChanged: Boolean) {
-                    if (hasChanged) viewModel.refreshData()
-                }
-            })
-            .onNoConnectionListener {
-                Snackbar.make(
-                    contextView,
-                    R.string.sync_offline_check_connection,
-                    Snackbar.LENGTH_SHORT,
-                ).show()
+            ).onDismissListener(
+                object : OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) viewModel.refreshData()
+                    }
+                },
+            ).onNoConnectionListener {
+                Snackbar
+                    .make(
+                        contextView,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT,
+                    ).show()
             }.show("TEI_SYNC")
     }
 
@@ -658,9 +664,7 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         )
     }
 
-    override fun fromRelationshipTEI(): String? {
-        return fromRelationshipTeiUid
-    }
+    override fun fromRelationshipTEI(): String? = fromRelationshipTeiUid
 
     override fun showHideFilterGeneral() {
         viewModel.onFiltersClick(isLandscape())
@@ -683,16 +687,15 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
     }
 
     override fun openOrgUnitTreeSelector() {
-        OUTreeFragment.Builder()
+        OUTreeFragment
+            .Builder()
             .withPreselectedOrgUnits(
                 FilterManager.getInstance().orgUnitUidsFilters,
-            )
-            .onSelection { selectedOrgUnits: List<OrganisationUnit?>? ->
+            ).onSelection { selectedOrgUnits: List<OrganisationUnit?>? ->
                 presenter.setOrgUnitFilters(
                     selectedOrgUnits,
                 )
-            }
-            .build()
+            }.build()
             .show(supportFragmentManager, "OUTreeFragment")
     }
 
@@ -704,7 +707,11 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         }
     }
 
-    override fun openDashboard(teiUid: String, programUid: String?, enrollmentUid: String?) {
+    override fun openDashboard(
+        teiUid: String,
+        programUid: String?,
+        enrollmentUid: String?,
+    ) {
         searchNavigator.openDashboard(teiUid, programUid, enrollmentUid)
     }
 
@@ -716,28 +723,33 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
         displayMessage(getString(R.string.download_tei_error, typeName))
     }
 
-    override fun showBreakTheGlass(teiUid: String, enrollmentUid: String?) {
+    override fun showBreakTheGlass(
+        teiUid: String,
+        enrollmentUid: String?,
+    ) {
         BreakTheGlassBottomDialog()
             .setProgram(presenter.program.uid())
             .setPositiveButton { reason: String? ->
                 viewModel.onDownloadTei(teiUid, enrollmentUid, reason)
-            }
-            .show(supportFragmentManager, BreakTheGlassBottomDialog::class.java.name)
+            }.show(supportFragmentManager, BreakTheGlassBottomDialog::class.java.name)
     }
 
-    override fun goToEnrollment(enrollmentUid: String, programUid: String) {
+    override fun goToEnrollment(
+        enrollmentUid: String,
+        programUid: String,
+    ) {
         searchNavigator.goToEnrollment(enrollmentUid, programUid, fromRelationshipTEI())
     }
 
-    override fun downloadProgress(): Consumer<D2Progress> {
-        return Consumer {
-            Snackbar.make(
-                binding.getRoot(),
-                getString(R.string.downloading),
-                BaseTransientBottomBar.LENGTH_SHORT,
-            ).show()
+    override fun downloadProgress(): Consumer<D2Progress> =
+        Consumer {
+            Snackbar
+                .make(
+                    binding.getRoot(),
+                    getString(R.string.downloading),
+                    BaseTransientBottomBar.LENGTH_SHORT,
+                ).show()
         }
-    }
 
     companion object {
         private const val CURRENT_SCREEN = "current_screen"

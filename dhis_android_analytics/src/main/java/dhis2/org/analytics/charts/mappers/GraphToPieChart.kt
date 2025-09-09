@@ -11,8 +11,11 @@ import dhis2.org.R
 import dhis2.org.analytics.charts.data.Graph
 
 class GraphToPieChart {
-    fun map(context: Context, graph: Graph): PieChart {
-        return PieChart(context).apply {
+    fun map(
+        context: Context,
+        graph: Graph,
+    ): PieChart =
+        PieChart(context).apply {
             description.isEnabled = false
             setDrawEntryLabels(false)
             setUsePercentValues(true)
@@ -22,19 +25,24 @@ class GraphToPieChart {
             transparentCircleRadius = 0f
             isRotationEnabled = false
             legend.withGlobalStyle()
-            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    if (e?.data is String) {
-                        setChartData(this@apply, graph, e.data as String)
+            setOnChartValueSelectedListener(
+                object : OnChartValueSelectedListener {
+                    override fun onValueSelected(
+                        e: Entry?,
+                        h: Highlight?,
+                    ) {
+                        if (e?.data is String) {
+                            setChartData(this@apply, graph, e.data as String)
+                            invalidate()
+                        }
+                    }
+
+                    override fun onNothingSelected() {
+                        setChartData(this@apply, graph)
                         invalidate()
                     }
-                }
-
-                override fun onNothingSelected() {
-                    setChartData(this@apply, graph)
-                    invalidate()
-                }
-            })
+                },
+            )
 
             extraTopOffset = 25f
             extraLeftOffset = 25f
@@ -45,13 +53,18 @@ class GraphToPieChart {
             layoutParams =
                 ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DEFAULT_CHART_HEIGHT)
         }
-    }
 
-    private fun setChartData(pieChart: PieChart, graph: Graph, serieToHighlight: String? = null) {
-        pieChart.data = GraphToPieData().map(graph, serieToHighlight)
-            .withGlobalStyle(
-                PercentageValueFormatter(pieChart),
-                ContextCompat.getColor(pieChart.context, R.color.textPrimary),
-            )
+    private fun setChartData(
+        pieChart: PieChart,
+        graph: Graph,
+        serieToHighlight: String? = null,
+    ) {
+        pieChart.data =
+            GraphToPieData()
+                .map(graph, serieToHighlight)
+                .withGlobalStyle(
+                    PercentageValueFormatter(pieChart),
+                    ContextCompat.getColor(pieChart.context, R.color.textPrimary),
+                )
     }
 }

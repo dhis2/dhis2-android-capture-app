@@ -11,7 +11,6 @@ class EventFieldMapper(
     private val fieldFactory: FieldViewModelFactory,
     private val mandatoryFieldWarning: String,
 ) {
-
     var totalFields: Int = 0
     var unsupportedFields: Int = 0
     private lateinit var visualDataElements: MutableList<String?>
@@ -46,36 +45,41 @@ class EventFieldMapper(
             var mandatoryCounter = 0
             if (showErrors.first) {
                 repeat(
-                    warnings.filter { warning ->
-                        fields.firstOrNull { field ->
-                            field.uid == warning.key && field.programStageSection == section.uid
-                        } != null
-                    }.size +
+                    warnings
+                        .filter { warning ->
+                            fields.firstOrNull { field ->
+                                field.uid == warning.key && field.programStageSection == section.uid
+                            } != null
+                        }.size +
                         emptyMandatoryFields
-                            .filter { it.value.programStageSection == section.uid }.size,
+                            .filter { it.value.programStageSection == section.uid }
+                            .size,
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
                 repeat(
-                    errors.filter { error ->
-                        fields.firstOrNull { field ->
-                            field.uid == error.key && field.programStageSection == section.uid
-                        } != null
-                    }.size,
+                    errors
+                        .filter { error ->
+                            fields.firstOrNull { field ->
+                                field.uid == error.key && field.programStageSection == section.uid
+                            } != null
+                        }.size,
                 ) { errorCounter++ }
             }
             finalFieldList[finalFieldList.indexOf(section)] =
                 section.apply {
-                    this.errors = if (errorCounter != 0) {
-                        errorCounter
-                    } else {
-                        0
-                    }
-                    this.warnings = if (mandatoryCounter != 0) {
-                        mandatoryCounter
-                    } else {
-                        0
-                    }
+                    this.errors =
+                        if (errorCounter != 0) {
+                            errorCounter
+                        } else {
+                            0
+                        }
+                    this.warnings =
+                        if (mandatoryCounter != 0) {
+                            mandatoryCounter
+                        } else {
+                            0
+                        }
                 }
         }
 
@@ -125,7 +129,10 @@ class EventFieldMapper(
 
     private fun getFieldSection(field: FieldUiModel) = field.programStageSection ?: ""
 
-    private fun updateFieldMap(fieldSection: String, field: FieldUiModel) {
+    private fun updateFieldMap(
+        fieldSection: String,
+        field: FieldUiModel,
+    ) {
         if (!fieldMap.containsKey(fieldSection)) {
             fieldMap[fieldSection] = ArrayList()
         }
@@ -148,18 +155,17 @@ class EventFieldMapper(
     private fun isValidMultiSection(
         sectionList: List<FormSectionViewModel>,
         sectionModel: FormSectionViewModel,
-    ): Boolean {
-        return sectionList.isNotEmpty() && sectionModel.sectionUid!!.isNotEmpty()
-    }
+    ): Boolean = sectionList.isNotEmpty() && sectionModel.sectionUid!!.isNotEmpty()
 
     private fun isValidSingleSection(
         sectionList: List<FormSectionViewModel>,
         sectionModel: FormSectionViewModel,
-    ): Boolean {
-        return sectionList.size == 1 && sectionModel.sectionUid?.isEmpty() == true
-    }
+    ): Boolean = sectionList.size == 1 && sectionModel.sectionUid?.isEmpty() == true
 
-    private fun handleMultiSection(sectionModel: FormSectionViewModel, section: String) {
+    private fun handleMultiSection(
+        sectionModel: FormSectionViewModel,
+        section: String,
+    ) {
         val fieldViewModels = mutableListOf<FieldUiModel>()
         if (fieldMap[sectionModel.sectionUid] != null) {
             fieldViewModels.addAll(
@@ -223,30 +229,30 @@ class EventFieldMapper(
         finalFieldList.addAll(fieldMap[sectionModel.sectionUid] as Collection<FieldUiModel>)
     }
 
-    private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean {
-        return field.optionSet == null || field.renderingType?.isVisualOptionSet() == false
-    }
+    private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean =
+        field.optionSet == null || field.renderingType?.isVisualOptionSet() == false
 
     fun completedFieldsPercentage(): Float {
         val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields }
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
-    private fun isUnsupported(type: ValueType?): Boolean {
-        return when (type) {
+    private fun isUnsupported(type: ValueType?): Boolean =
+        when (type) {
             ValueType.TRACKER_ASSOCIATE,
             ValueType.USERNAME,
             -> true
 
             else -> false
         }
-    }
 
-    private fun calculateCompletionPercentage(completedFields: Int, totals: Int): Float {
-        return if (totals == 0) {
+    private fun calculateCompletionPercentage(
+        completedFields: Int,
+        totals: Int,
+    ): Float =
+        if (totals == 0) {
             100f
         } else {
             completedFields.toFloat() / totals.toFloat()
         }
-    }
 }

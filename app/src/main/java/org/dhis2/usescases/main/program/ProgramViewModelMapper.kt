@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.dataset.DataSetInstanceSummary
 import org.hisp.dhis.android.core.program.Program
 import java.util.Date
 
-class ProgramViewModelMapper() {
+class ProgramViewModelMapper {
     fun map(
         program: Program,
         recordCount: Int,
@@ -16,17 +16,18 @@ class ProgramViewModelMapper() {
         hasOverdue: Boolean,
         filtersAreActive: Boolean,
         metadataIconData: MetadataIconData,
-    ): ProgramUiModel {
-        return ProgramUiModel(
+    ): ProgramUiModel =
+        ProgramUiModel(
             uid = program.uid(),
             title = program.displayName()!!,
             metadataIconData = metadataIconData,
             count = recordCount,
-            type = if (program.trackedEntityType() != null) {
-                program.trackedEntityType()!!.uid()
-            } else {
-                null
-            },
+            type =
+                if (program.trackedEntityType() != null) {
+                    program.trackedEntityType()!!.uid()
+                } else {
+                    null
+                },
             typeName = recordLabel,
             programType = program.programType()!!.name,
             description = program.displayDescription(),
@@ -39,7 +40,6 @@ class ProgramViewModelMapper() {
             isStockUseCase = false,
             lastUpdated = program.lastUpdated() ?: Date(),
         )
-    }
 
     fun map(
         dataSet: DataSet,
@@ -48,8 +48,8 @@ class ProgramViewModelMapper() {
         dataSetLabel: String,
         filtersAreActive: Boolean,
         metadataIconData: MetadataIconData,
-    ): ProgramUiModel {
-        return ProgramUiModel(
+    ): ProgramUiModel =
+        ProgramUiModel(
             uid = dataSetInstanceSummary.dataSetUid(),
             title = dataSetInstanceSummary.dataSetDisplayName(),
             metadataIconData = metadataIconData,
@@ -67,14 +67,12 @@ class ProgramViewModelMapper() {
             isStockUseCase = false,
             lastUpdated = dataSet.lastUpdated() ?: Date(),
         )
-    }
 
     fun map(
         programUiModel: ProgramUiModel,
         downloadState: ProgramDownloadState,
-    ): ProgramUiModel {
-        return programUiModel.copy(
+    ): ProgramUiModel =
+        programUiModel.copy(
             downloadState = downloadState,
         )
-    }
 }

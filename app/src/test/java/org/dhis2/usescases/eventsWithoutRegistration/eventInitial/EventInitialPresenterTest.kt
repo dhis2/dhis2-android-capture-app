@@ -43,16 +43,17 @@ class EventInitialPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = EventInitialPresenter(
-            view,
-            rulesUtilsProvider,
-            eventInitialRepository,
-            schedulers,
-            preferences,
-            analyticsHelper,
-            matomoAnalyticsController,
-            eventFieldMapper,
-        )
+        presenter =
+            EventInitialPresenter(
+                view,
+                rulesUtilsProvider,
+                eventInitialRepository,
+                schedulers,
+                preferences,
+                analyticsHelper,
+                matomoAnalyticsController,
+                eventFieldMapper,
+            )
     }
 
     @Test
@@ -365,11 +366,23 @@ class EventInitialPresenterTest {
     ) {
         val program = Program.builder().uid(uid).build()
         val orgUnits =
-            mutableListOf(OrganisationUnit.builder().uid("orgUnit").displayName("name").build())
+            mutableListOf(
+                OrganisationUnit
+                    .builder()
+                    .uid("orgUnit")
+                    .displayName("name")
+                    .build(),
+            )
         val programStage = ProgramStage.builder().uid(programStageUid).build()
 
         if (moreOrgUnits) {
-            orgUnits.add(OrganisationUnit.builder().uid("orgUnit2").displayName("name").build())
+            orgUnits.add(
+                OrganisationUnit
+                    .builder()
+                    .uid("orgUnit2")
+                    .displayName("name")
+                    .build(),
+            )
         }
 
         whenever(eventInitialRepository.accessDataWrite(uid)) doReturn Observable.just(true)

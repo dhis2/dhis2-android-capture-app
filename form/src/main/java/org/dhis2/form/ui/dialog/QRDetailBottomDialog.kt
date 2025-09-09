@@ -60,7 +60,6 @@ QRDetailBottomDialog(
     private val editable: Boolean,
     private val onScan: () -> Unit,
 ) : BottomSheetDialogFragment() {
-
     var colorUtils: ColorUtils = ColorUtils()
 
     companion object {
@@ -115,7 +114,6 @@ QRDetailBottomDialog(
         modifier: Modifier = Modifier,
         value: String,
         label: String,
-
     ) {
         var showDialog by rememberSaveable(showBottomSheet) {
             mutableStateOf(showBottomSheet)
@@ -123,14 +121,14 @@ QRDetailBottomDialog(
         if (showDialog) {
             val buttonList = getComposeButtonList()
             BottomSheetShell(
-                uiState = BottomSheetShellUIState(
-                    title = label,
-                    showTopSectionDivider = true,
-                    showBottomSectionDivider = true,
-                    bottomPadding = bottomSheetLowerPadding(),
-                ),
+                uiState =
+                    BottomSheetShellUIState(
+                        title = label,
+                        showTopSectionDivider = true,
+                        showBottomSectionDivider = true,
+                        bottomPadding = bottomSheetLowerPadding(),
+                    ),
                 windowInsets = { bottomSheetInsets() },
-
                 modifier = modifier,
                 icon = {
                     Icon(
@@ -156,7 +154,10 @@ QRDetailBottomDialog(
                     }
                 },
                 buttonBlock = {
-                    ButtonCarousel(modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()), carouselButtonList = buttonList)
+                    ButtonCarousel(
+                        modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+                        carouselButtonList = buttonList,
+                    )
                 },
                 onDismiss = {
                     dismiss()
@@ -167,81 +168,84 @@ QRDetailBottomDialog(
     }
 
     private fun formattedContent(value: String) =
-        value.removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
+        value
+            .removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
             .removePrefix(GS1Elements.GS1_GROUP_SEPARATOR.element)
 
     private fun getComposeButtonList(): List<CarouselButtonData> {
-        val scanItem = CarouselButtonData(
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.QrCodeScanner,
-                    contentDescription = "QR scan Button",
-                )
-            },
-            enabled = true,
-            text = resources.getString(R.string.scan),
-            onClick = {
-                showBottomSheet = false
-                onScan()
-                dismiss()
-            },
-        )
-        val buttonList = mutableListOf(
+        val scanItem =
             CarouselButtonData(
                 icon = {
                     Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = "QR Share Button",
+                        imageVector = Icons.Outlined.QrCodeScanner,
+                        contentDescription = "QR scan Button",
                     )
                 },
                 enabled = true,
-                text = resources.getString(R.string.share),
+                text = resources.getString(R.string.scan),
                 onClick = {
-                    qrContentUri?.let { uri ->
-                        Intent().apply {
-                            action = Intent.ACTION_SEND
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            setDataAndType(uri, context?.contentResolver?.getType(uri))
-                            putExtra(Intent.EXTRA_STREAM, uri)
-                            startActivity(
-                                Intent.createChooser(
-                                    this,
-                                    context?.getString(R.string.share),
-                                ),
-                            )
-                        }
-                    }
+                    showBottomSheet = false
+                    onScan()
+                    dismiss()
                 },
-            ),
-            scanItem,
-
-            CarouselButtonData(
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.FileDownload,
-                        contentDescription = "QR download Button",
-                    )
-                },
-                enabled = true,
-                text = resources.getString(R.string.download),
-                onClick = {
-                    viewModel.qrBitmap.value?.onSuccess { bitmap ->
-                        fileHandler.saveBitmapAndOpen(
-                            bitmap,
-                            "$label.png",
-                        ) { file ->
-                            file.observe(viewLifecycleOwner) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    getString(R.string.file_downloaded),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+            )
+        val buttonList =
+            mutableListOf(
+                CarouselButtonData(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = "QR Share Button",
+                        )
+                    },
+                    enabled = true,
+                    text = resources.getString(R.string.share),
+                    onClick = {
+                        qrContentUri?.let { uri ->
+                            Intent().apply {
+                                action = Intent.ACTION_SEND
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                setDataAndType(uri, context?.contentResolver?.getType(uri))
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                startActivity(
+                                    Intent.createChooser(
+                                        this,
+                                        context?.getString(R.string.share),
+                                    ),
+                                )
                             }
                         }
-                    }
-                },
-            ),
-        )
+                    },
+                ),
+                scanItem,
+                CarouselButtonData(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.FileDownload,
+                            contentDescription = "QR download Button",
+                        )
+                    },
+                    enabled = true,
+                    text = resources.getString(R.string.download),
+                    onClick = {
+                        viewModel.qrBitmap.value?.onSuccess { bitmap ->
+                            fileHandler.saveBitmapAndOpen(
+                                bitmap,
+                                "$label.png",
+                            ) { file ->
+                                file.observe(viewLifecycleOwner) {
+                                    Toast
+                                        .makeText(
+                                            requireContext(),
+                                            getString(R.string.file_downloaded),
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                }
+                            }
+                        }
+                    },
+                ),
+            )
         if (!editable) {
             buttonList.remove(scanItem)
         }
@@ -262,11 +266,12 @@ QRDetailBottomDialog(
 
             qrBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
             stream.close()
-            qrContentUri = FileProvider.getUriForFile(
-                requireContext(),
-                FormFileProvider.fileProviderAuthority,
-                File(cachePath, "qrImage.png"),
-            )
+            qrContentUri =
+                FileProvider.getUriForFile(
+                    requireContext(),
+                    FormFileProvider.fileProviderAuthority,
+                    File(cachePath, "qrImage.png"),
+                )
         } catch (e: IOException) {
             Timber.e(e)
         }

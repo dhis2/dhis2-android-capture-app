@@ -12,8 +12,11 @@ import org.hisp.dhis.android.core.common.ValidationStrategy
 
 interface DataEntryRepository {
     fun list(): Flowable<List<FieldUiModel>>
+
     fun firstSectionToOpen(): String?
+
     fun sectionUids(): Flowable<List<String>>
+
     fun updateSection(
         sectionToUpdate: FieldUiModel,
         isSectionOpen: Boolean?,
@@ -42,6 +45,7 @@ interface DataEntryRepository {
     fun disableCollapsableSections(): Boolean?
 
     fun getSpecificDataEntryItems(uid: String): List<FieldUiModel>
+
     fun fetchPeriods(): Flow<PagingData<Period>>
 
     fun options(

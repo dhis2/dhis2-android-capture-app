@@ -13,21 +13,22 @@ internal class CheckCompletionStatus(
     private val attrOptionComboUid: String,
     private val dataSetInstanceRepository: DataSetInstanceRepository,
 ) {
-
     suspend operator fun invoke(): DataSetCompletionStatus {
-        val isComplete = dataSetInstanceRepository.isComplete(
-            dataSetUid = dataSetUid,
-            periodId = periodId,
-            orgUnitUid = orgUnitUid,
-            attrOptionComboUid = attrOptionComboUid,
-        )
+        val isComplete =
+            dataSetInstanceRepository.isComplete(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            )
 
-        val isEditable = dataSetInstanceRepository.isEditable(
-            dataSetUid = dataSetUid,
-            periodId = periodId,
-            orgUnitUid = orgUnitUid,
-            attrOptionComboUid = attrOptionComboUid,
-        )
+        val isEditable =
+            dataSetInstanceRepository.isEditable(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            )
 
         return if (isComplete) {
             COMPLETED

@@ -6,17 +6,25 @@ import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 
-class TeiAttributesProvider(private val d2: D2) {
-
+class TeiAttributesProvider(
+    private val d2: D2,
+) {
     fun getValuesFromTrackedEntityTypeAttributes(
         trackedEntityTypeUid: String?,
         trackedEntityInstanceUid: String,
     ): List<TrackedEntityAttributeValue> {
-        val attrFromType = d2.trackedEntityModule().trackedEntityTypeAttributes()
-            .byTrackedEntityTypeUid().eq(trackedEntityTypeUid)
-            .byDisplayInList().isTrue.blockingGet().mapNotNull {
-                it.trackedEntityAttribute()?.uid() to it
-            }.toMap()
+        val attrFromType =
+            d2
+                .trackedEntityModule()
+                .trackedEntityTypeAttributes()
+                .byTrackedEntityTypeUid()
+                .eq(trackedEntityTypeUid)
+                .byDisplayInList()
+                .isTrue
+                .blockingGet()
+                .mapNotNull {
+                    it.trackedEntityAttribute()?.uid() to it
+                }.toMap()
 
         return attrFromType.mapNotNull {
             getTrackedEntityAttributeValue(trackedEntityInstanceUid, it.key)
@@ -27,12 +35,23 @@ class TeiAttributesProvider(private val d2: D2) {
         trackedEntityTypeUid: String?,
         trackedEntityInstanceUid: String,
     ): List<TrackedEntityAttributeValue> {
-        val program = d2.programModule().programs()
-            .byTrackedEntityTypeUid().eq(trackedEntityTypeUid).blockingGet()[0]
+        val program =
+            d2
+                .programModule()
+                .programs()
+                .byTrackedEntityTypeUid()
+                .eq(trackedEntityTypeUid)
+                .blockingGet()[0]
         val attrFromProgramTrackedEntityAttribute =
-            d2.programModule().programTrackedEntityAttributes()
-                .byProgram().eq(program.uid()).byDisplayInList().isTrue
-                .blockingGet().mapNotNull {
+            d2
+                .programModule()
+                .programTrackedEntityAttributes()
+                .byProgram()
+                .eq(program.uid())
+                .byDisplayInList()
+                .isTrue
+                .blockingGet()
+                .mapNotNull {
                     it.trackedEntityAttribute()?.uid() to it
                 }.toMap()
 
@@ -46,10 +65,16 @@ class TeiAttributesProvider(private val d2: D2) {
         trackedEntityInstanceUid: String,
     ): Single<List<TrackedEntityAttributeValue>> {
         val attrFromProgramTrackedEntityAttribute =
-            d2.programModule().programTrackedEntityAttributes()
-                .byProgram().eq(programUid).byDisplayInList().isTrue
+            d2
+                .programModule()
+                .programTrackedEntityAttributes()
+                .byProgram()
+                .eq(programUid)
+                .byDisplayInList()
+                .isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet().mapNotNull {
+                .blockingGet()
+                .mapNotNull {
                     it.trackedEntityAttribute()?.uid() to it
                 }.toMap()
 
@@ -65,10 +90,16 @@ class TeiAttributesProvider(private val d2: D2) {
         trackedEntityInstanceUid: String,
     ): List<TrackedEntityAttributeValue> {
         val attrFromProgramTrackedEntityAttribute =
-            d2.programModule().programTrackedEntityAttributes()
-                .byProgram().eq(programUid).byDisplayInList().isTrue
+            d2
+                .programModule()
+                .programTrackedEntityAttributes()
+                .byProgram()
+                .eq(programUid)
+                .byDisplayInList()
+                .isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet().mapNotNull {
+                .blockingGet()
+                .mapNotNull {
                     it.trackedEntityAttribute()?.uid() to it
                 }.toMap()
 
@@ -82,8 +113,13 @@ class TeiAttributesProvider(private val d2: D2) {
         trackedEntityInstanceUid: String,
     ): Single<List<Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?>>> {
         val attrFromProgramTrackedEntityAttribute =
-            d2.programModule().programTrackedEntityAttributes()
-                .byProgram().eq(programUid).byDisplayInList().isTrue
+            d2
+                .programModule()
+                .programTrackedEntityAttributes()
+                .byProgram()
+                .eq(programUid)
+                .byDisplayInList()
+                .isTrue
                 .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet()
 
@@ -97,25 +133,37 @@ class TeiAttributesProvider(private val d2: D2) {
     private fun getTrackedEntityAttributeValue(
         trackedEntityInstanceUid: String,
         trackedEntityAttributeUid: String?,
-    ): TrackedEntityAttributeValue? {
-        return d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().eq(trackedEntityInstanceUid)
-            .byTrackedEntityAttribute().eq(trackedEntityAttributeUid)
+    ): TrackedEntityAttributeValue? =
+        d2
+            .trackedEntityModule()
+            .trackedEntityAttributeValues()
+            .byTrackedEntityInstance()
+            .eq(trackedEntityInstanceUid)
+            .byTrackedEntityAttribute()
+            .eq(trackedEntityAttributeUid)
             .one()
             .blockingGet()
-    }
 
     private fun transformAttributeToValueMap(
         trackedEntityInstanceUid: String,
         trackedEntityAttributeUid: String?,
     ): Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?> {
-        val teiAttribute = d2.trackedEntityModule()
-            .trackedEntityAttributes().uid(trackedEntityAttributeUid).blockingGet()
-        val teiAttributeValue = d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().eq(trackedEntityInstanceUid)
-            .byTrackedEntityAttribute().eq(trackedEntityAttributeUid)
-            .one()
-            .blockingGet()
+        val teiAttribute =
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(trackedEntityAttributeUid)
+                .blockingGet()
+        val teiAttributeValue =
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityInstance()
+                .eq(trackedEntityInstanceUid)
+                .byTrackedEntityAttribute()
+                .eq(trackedEntityAttributeUid)
+                .one()
+                .blockingGet()
 
         return Pair(teiAttribute, teiAttributeValue)
     }

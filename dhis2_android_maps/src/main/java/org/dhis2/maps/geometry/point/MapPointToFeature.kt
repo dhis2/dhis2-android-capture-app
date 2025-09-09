@@ -9,9 +9,11 @@ import org.maplibre.geojson.Feature
 import org.maplibre.geojson.Point
 
 class MapPointToFeature {
-
     // To remove this with bounds
-    fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
+    fun map(
+        item: Geometry,
+        bounds: BoundsGeometry,
+    ): Pair<Feature, BoundsGeometry>? {
         val sdkPoint = GeometryHelper.getPoint(item)
         val lat = sdkPoint[1]
         val lon = sdkPoint[0]

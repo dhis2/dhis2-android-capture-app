@@ -68,7 +68,9 @@ import org.maplibre.android.location.permissions.PermissionsManager
 import org.maplibre.android.maps.MapView
 import javax.inject.Inject
 
-class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
+class RelationshipFragment :
+    FragmentGlobalAbstract(),
+    RelationshipView {
     @Inject
     lateinit var presenter: RelationshipPresenter
 
@@ -88,42 +90,43 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
     private var relationshipMapManager: RelationshipMapManager? = null
     private lateinit var mapButtonObservable: MapButtonObservable
 
-    private val addRelationshipLauncher = registerForActivityResult(AddRelationshipContract()) {
-        themeManager.setProgramTheme(programUid()!!)
-        when (it) {
-            is RelationshipResult.Error -> { // Unused
-            }
+    private val addRelationshipLauncher =
+        registerForActivityResult(AddRelationshipContract()) {
+            themeManager.setProgramTheme(programUid()!!)
+            when (it) {
+                is RelationshipResult.Error -> { // Unused
+                }
 
-            is RelationshipResult.Success -> {
-                relationshipSection?.let { relationshipSection ->
-                    relationShipsViewModel.onAddRelationship(
-                        selectedTeiUid = it.teiUidToAddAsRelationship,
-                        relationshipTypeUid = relationshipSection.uid,
-                        relationshipSide = relationshipSection.side,
-                    )
+                is RelationshipResult.Success -> {
+                    relationshipSection?.let { relationshipSection ->
+                        relationShipsViewModel.onAddRelationship(
+                            selectedTeiUid = it.teiUidToAddAsRelationship,
+                            relationshipTypeUid = relationshipSection.uid,
+                            relationshipSide = relationshipSection.side,
+                        )
+                    }
                 }
             }
         }
-    }
 
-    private fun programUid(): String? {
-        return requireArguments().getString("ARG_PROGRAM_UID")
-    }
+    private fun programUid(): String? = requireArguments().getString("ARG_PROGRAM_UID")
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is MapButtonObservable) {
             mapButtonObservable = context
-            app().userComponent()?.plus(
-                RelationshipModule(
-                    requireContext(),
-                    this,
-                    programUid(),
-                    requireArguments().getString("ARG_TEI_UID"),
-                    requireArguments().getString("ARG_ENROLLMENT_UID"),
-                    requireArguments().getString("ARG_EVENT_UID"),
-                ),
-            )?.inject(this)
+            app()
+                .userComponent()
+                ?.plus(
+                    RelationshipModule(
+                        requireContext(),
+                        this,
+                        programUid(),
+                        requireArguments().getString("ARG_TEI_UID"),
+                        requireArguments().getString("ARG_ENROLLMENT_UID"),
+                        requireArguments().getString("ARG_EVENT_UID"),
+                    ),
+                )?.inject(this)
         } else {
             throw ClassCastException("$context must implement MapButtonObservable")
         }
@@ -133,8 +136,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DHIS2Theme {
@@ -146,35 +149,37 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
                     when (showMap) {
                         true -> RelationshipMapScreen(savedInstanceState)
-                        else -> RelationShipsScreen(
-                            uiState = uiState,
-                            relationshipSelectionState = relationshipSelectionState,
-                            onCreateRelationshipClick = {
-                                relationshipSection = it
-                                presenter.goToAddRelationship(
-                                    it.uid,
-                                    it.entityToAdd,
-                                )
-                            },
-                            onRelationshipClick = {
-                                presenter.onRelationshipClicked(
-                                    ownerType = it.ownerType,
-                                    ownerUid = it.ownerUid,
-                                )
-                            },
-                            onRelationShipSelected = relationShipsViewModel::updateSelectedList,
-                        )
+                        else ->
+                            RelationShipsScreen(
+                                uiState = uiState,
+                                relationshipSelectionState = relationshipSelectionState,
+                                onCreateRelationshipClick = {
+                                    relationshipSection = it
+                                    presenter.goToAddRelationship(
+                                        it.uid,
+                                        it.entityToAdd,
+                                    )
+                                },
+                                onRelationshipClick = {
+                                    presenter.onRelationshipClicked(
+                                        ownerType = it.ownerType,
+                                        ownerUid = it.ownerUid,
+                                    )
+                                },
+                                onRelationShipSelected = relationShipsViewModel::updateSelectedList,
+                            )
                     }
 
                     if (showDeleteConfirmation) {
                         (uiState as? RelationshipsUiState.Success)?.let { state ->
                             DeleteRelationshipsConfirmation(
                                 relationships =
-                                relationshipSelectionState.selectedItems.map { selectedUid ->
-                                    state.data.first {
-                                        it.relationships.any { it.uid == selectedUid }
-                                    }.title
-                                },
+                                    relationshipSelectionState.selectedItems.map { selectedUid ->
+                                        state.data
+                                            .first {
+                                                it.relationships.any { it.uid == selectedUid }
+                                            }.title
+                                    },
                                 onDelete = {
                                     relationShipsViewModel.deleteSelectedRelationships()
                                 },
@@ -187,9 +192,11 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                 }
             }
         }
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         observeRelationshipTopBarIcon()
     }
@@ -198,13 +205,14 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 relationShipsViewModel.relationshipSelectionState.collect { selectionState ->
-                    val topBarIconState = if (selectionState.selectingMode) {
-                        RelationshipTopBarIconState.Selecting {
-                            relationShipsViewModel.onDeleteClick()
+                    val topBarIconState =
+                        if (selectionState.selectingMode) {
+                            RelationshipTopBarIconState.Selecting {
+                                relationShipsViewModel.onDeleteClick()
+                            }
+                        } else {
+                            RelationshipTopBarIconState.List()
                         }
-                    } else {
-                        RelationshipTopBarIconState.List()
-                    }
                     mapButtonObservable.updateRelationshipsTopBarIconState(topBarIconState)
                 }
             }
@@ -226,7 +234,8 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
 
         LaunchedEffect(key1 = items) {
             mapData?.let { data ->
-                relationshipMapManager.takeIf { it?.isMapReady() == true }
+                relationshipMapManager
+                    .takeIf { it?.isMapReady() == true }
                     ?.update(data.relationshipFeatures, data.boundingBox)
             }
         }
@@ -243,8 +252,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             onItemScrolled = { item ->
                 with(relationshipMapManager) {
                     this?.requestMapLayerManager()?.selectFeature(null)
-                    this?.findFeatures(item.uid)
-                        ?.takeIf { it.isNotEmpty() }?.let { features ->
+                    this
+                        ?.findFeatures(item.uid)
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.let { features ->
                             map?.centerCameraOnFeatures(features)
                         }
                 }
@@ -278,10 +289,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
                             relationshipMapManager?.let {
                                 val dialog = MapLayerDialog.newInstance(programUid())
                                 dialog.mapManager = it
-                                dialog.setOnLayersVisibilityListener { layersVisibility ->
-                                    presenter.filterVisibleMapItems(layersVisibility)
-                                }
-                                    .show(childFragmentManager, MapLayerDialog::class.java.name)
+                                dialog
+                                    .setOnLayersVisibilityListener { layersVisibility ->
+                                        presenter.filterVisibleMapItems(layersVisibility)
+                                    }.show(childFragmentManager, MapLayerDialog::class.java.name)
                             }
                         }
                     }
@@ -296,62 +307,68 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
             onItem = { item ->
                 ListCard(
                     modifier = Modifier.fillParentMaxWidth(),
-                    listCardState = rememberListCardState(
-                        title = ListCardTitleModel(text = item.title),
-                        description = item.description?.let {
-                            ListCardDescriptionModel(
-                                text = it,
-                            )
-                        },
-                        lastUpdated = item.lastUpdated,
-                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                            additionalInfoList = item.additionalInfoList,
-                            syncProgressItem = AdditionalInfoItem(
-                                key = stringResource(id = R.string.syncing),
-                                value = "",
-                            ),
-                            expandLabelText = stringResource(id = R.string.show_more),
-                            shrinkLabelText = stringResource(id = R.string.show_less),
-                            scrollableContent = true,
+                    listCardState =
+                        rememberListCardState(
+                            title = ListCardTitleModel(text = item.title),
+                            description =
+                                item.description?.let {
+                                    ListCardDescriptionModel(
+                                        text = it,
+                                    )
+                                },
+                            lastUpdated = item.lastUpdated,
+                            additionalInfoColumnState =
+                                rememberAdditionalInfoColumnState(
+                                    additionalInfoList = item.additionalInfoList,
+                                    syncProgressItem =
+                                        AdditionalInfoItem(
+                                            key = stringResource(id = R.string.syncing),
+                                            value = "",
+                                        ),
+                                    expandLabelText = stringResource(id = R.string.show_more),
+                                    shrinkLabelText = stringResource(id = R.string.show_less),
+                                    scrollableContent = true,
+                                ),
                         ),
-                    ),
                     onCardClick = {
                         presenter.onMapRelationshipClicked(item.uid)
                     },
                     listAvatar = {
                         Avatar(
-                            style = when (
-                                val config =
-                                    item.avatarProviderConfiguration
-                            ) {
-                                is AvatarProviderConfiguration.MainValueLabel ->
-                                    AvatarStyleData.Text(
-                                        config.firstMainValue.firstOrNull()?.toString()
-                                            ?: "?",
-                                    )
+                            style =
+                                when (
+                                    val config =
+                                        item.avatarProviderConfiguration
+                                ) {
+                                    is AvatarProviderConfiguration.MainValueLabel ->
+                                        AvatarStyleData.Text(
+                                            config.firstMainValue.firstOrNull()?.toString()
+                                                ?: "?",
+                                        )
 
-                                is AvatarProviderConfiguration.Metadata ->
-                                    AvatarStyleData.Metadata(
-                                        imageCardData = config.metadataIconData.imageCardData,
-                                        avatarSize = config.size,
-                                        tintColor = config.metadataIconData.color,
-                                    )
+                                    is AvatarProviderConfiguration.Metadata ->
+                                        AvatarStyleData.Metadata(
+                                            imageCardData = config.metadataIconData.imageCardData,
+                                            avatarSize = config.size,
+                                            tintColor = config.metadataIconData.color,
+                                        )
 
-                                is AvatarProviderConfiguration.ProfilePic ->
-                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
-                            },
-                            onImageClick = when (
-                                val config =
-                                    item.avatarProviderConfiguration
-                            ) {
-                                is AvatarProviderConfiguration.Metadata,
-                                is AvatarProviderConfiguration.MainValueLabel,
-                                -> null
+                                    is AvatarProviderConfiguration.ProfilePic ->
+                                        AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                },
+                            onImageClick =
+                                when (
+                                    val config =
+                                        item.avatarProviderConfiguration
+                                ) {
+                                    is AvatarProviderConfiguration.Metadata,
+                                    is AvatarProviderConfiguration.MainValueLabel,
+                                    -> null
 
-                                is AvatarProviderConfiguration.ProfilePic -> {
-                                    { launchImageDetail(config.profilePicturePath) }
-                                }
-                            },
+                                    is AvatarProviderConfiguration.ProfilePic -> {
+                                        { launchImageDetail(config.profilePicturePath) }
+                                    }
+                                },
                         )
                     },
                 )
@@ -366,16 +383,20 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         )
     }
 
-    private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
+    private fun loadMap(
+        mapView: MapView,
+        savedInstanceState: Bundle?,
+    ) {
         relationshipMapManager =
             RelationshipMapManager(mapView, MapLocationEngine(requireContext()))
         relationshipMapManager?.also {
             lifecycle.addObserver(it)
             it.onCreate(savedInstanceState)
-            it.onMapClickListener = OnMapClickListener(
-                it,
-                presenter::onFeatureClicked,
-            )
+            it.onMapClickListener =
+                OnMapClickListener(
+                    it,
+                    presenter::onFeatureClicked,
+                )
             it.init(
                 presenter.fetchMapStyles(),
                 onInitializationFinished = {
@@ -424,8 +445,9 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         super.onResume()
         presenter.init()
         relationShipsViewModel.refreshRelationships()
-        val exists = childFragmentManager
-            .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
+        val exists =
+            childFragmentManager
+                .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
         exists?.dismiss()
     }
 
@@ -439,7 +461,10 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         relationshipMapManager?.onLowMemory()
     }
 
-    override fun goToAddRelationship(teiUid: String, teiTypeUidToAdd: String) {
+    override fun goToAddRelationship(
+        teiUid: String,
+        teiTypeUidToAdd: String,
+    ) {
         addRelationshipLauncher.launch(
             RelationshipInput(
                 teiUid,
@@ -463,12 +488,16 @@ class RelationshipFragment : FragmentGlobalAbstract(), RelationshipView {
         )
     }
 
-    override fun openEventFor(eventUid: String, programUid: String) {
-        val bundle = EventCaptureActivity.getActivityBundle(
-            eventUid,
-            programUid,
-            EventMode.CHECK,
-        )
+    override fun openEventFor(
+        eventUid: String,
+        programUid: String,
+    ) {
+        val bundle =
+            EventCaptureActivity.getActivityBundle(
+                eventUid,
+                programUid,
+                EventMode.CHECK,
+            )
         val intent = Intent(context, EventCaptureActivity::class.java)
         intent.putExtras(bundle)
         requireActivity().startActivity(intent)

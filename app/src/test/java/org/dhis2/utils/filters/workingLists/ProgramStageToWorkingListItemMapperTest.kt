@@ -10,7 +10,6 @@ import org.junit.Before
 import org.junit.Test
 
 class ProgramStageToWorkingListItemMapperTest {
-
     private lateinit var mapper: ProgramStageToWorkingListItemMapper
 
     @Before
@@ -20,19 +19,21 @@ class ProgramStageToWorkingListItemMapperTest {
 
     @Test
     fun `Should map program stage filter to working list item`() {
-        val result = mapper.map(
-            ProgramStageWorkingList.builder()
-                .uid("filterUid")
-                .displayName("filterName")
-                .program(ObjectWithUid.create("programUid"))
-                .programStage(ObjectWithUid.create("stageUid"))
-                .programStageQueryCriteria(
-                    ProgramStageQueryCriteria.builder()
-                        .assignedUserMode(AssignedUserMode.CURRENT)
-                        .build(),
-                )
-                .build(),
-        )
+        val result =
+            mapper.map(
+                ProgramStageWorkingList
+                    .builder()
+                    .uid("filterUid")
+                    .displayName("filterName")
+                    .program(ObjectWithUid.create("programUid"))
+                    .programStage(ObjectWithUid.create("stageUid"))
+                    .programStageQueryCriteria(
+                        ProgramStageQueryCriteria
+                            .builder()
+                            .assignedUserMode(AssignedUserMode.CURRENT)
+                            .build(),
+                    ).build(),
+            )
 
         assertTrue(result.uid == "filterUid")
         assertTrue(result.label == "filterName")
@@ -40,13 +41,15 @@ class ProgramStageToWorkingListItemMapperTest {
 
     @Test
     fun `Should set program stage filter default values`() {
-        val result = mapper.map(
-            ProgramStageWorkingList.builder()
-                .uid("filterUid")
-                .program(ObjectWithUid.create("programUid"))
-                .programStage(ObjectWithUid.create("stageUid"))
-                .build(),
-        )
+        val result =
+            mapper.map(
+                ProgramStageWorkingList
+                    .builder()
+                    .uid("filterUid")
+                    .program(ObjectWithUid.create("programUid"))
+                    .programStage(ObjectWithUid.create("stageUid"))
+                    .build(),
+            )
 
         assertTrue(result.uid == "filterUid")
         assertTrue(result.label == "defaultLabel")

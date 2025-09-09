@@ -142,42 +142,54 @@ class UiActionHandlerImpl(
         preselectedOrgUnits: List<String>,
         callback: (result: String?) -> Unit,
     ) {
-        OUTreeFragment.Builder()
+        OUTreeFragment
+            .Builder()
             .withPreselectedOrgUnits(preselectedOrgUnits)
             .singleSelection()
             .onSelection { selectedOrgUnits ->
                 if (selectedOrgUnits.isNotEmpty()) {
                     callback(selectedOrgUnits.firstOrNull()?.uid())
                 }
-            }
-            .orgUnitScope(OrgUnitSelectorScope.DataSetCaptureScope(dataSetUid))
+            }.orgUnitScope(OrgUnitSelectorScope.DataSetCaptureScope(dataSetUid))
             .build()
             .show(context.supportFragmentManager, dataSetUid)
     }
 
-    override fun onCall(phoneNumber: String, onActivityNotFound: () -> Unit) {
-        val phoneCallIntent = Intent(Intent.ACTION_DIAL).apply {
-            data = Uri.parse("tel:$phoneNumber")
-        }
+    override fun onCall(
+        phoneNumber: String,
+        onActivityNotFound: () -> Unit,
+    ) {
+        val phoneCallIntent =
+            Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$phoneNumber")
+            }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
-    override fun onSendEmail(email: String, onActivityNotFound: () -> Unit) {
-        val phoneCallIntent = Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:$email")
-        }
+    override fun onSendEmail(
+        email: String,
+        onActivityNotFound: () -> Unit,
+    ) {
+        val phoneCallIntent =
+            Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:$email")
+            }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
-    override fun onOpenLink(url: String, onActivityNotFound: () -> Unit) {
-        val phoneCallIntent = Intent(Intent.ACTION_VIEW).apply {
-            data =
-                if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    Uri.parse("http://$url")
-                } else {
-                    Uri.parse(url)
-                }
-        }
+    override fun onOpenLink(
+        url: String,
+        onActivityNotFound: () -> Unit,
+    ) {
+        val phoneCallIntent =
+            Intent(Intent.ACTION_VIEW).apply {
+                data =
+                    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                        Uri.parse("http://$url")
+                    } else {
+                        Uri.parse(url)
+                    }
+            }
         launchIntentChooser(phoneCallIntent, onActivityNotFound)
     }
 
@@ -205,7 +217,10 @@ class UiActionHandlerImpl(
         }
     }
 
-    override fun onAddImage(fieldUid: String, callback: (result: String?) -> Unit) {
+    override fun onAddImage(
+        fieldUid: String,
+        callback: (result: String?) -> Unit,
+    ) {
         this.callback = callback
         fileLauncher.launch("image/*")
     }
@@ -229,19 +244,21 @@ class UiActionHandlerImpl(
         onActivityNotFound: () -> Unit,
     ) {
         filepath?.let {
-            val contentUri = FileProvider.getUriForFile(
-                context,
-                AggregatesFileProvider.fileProviderAuthority,
-                File(it),
-            )
-            val shareImageIntent = Intent(ACTION_SEND).apply {
-                setDataAndType(
-                    contentUri,
-                    context.contentResolver.getType(contentUri),
+            val contentUri =
+                FileProvider.getUriForFile(
+                    context,
+                    AggregatesFileProvider.fileProviderAuthority,
+                    File(it),
                 )
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                putExtra(Intent.EXTRA_STREAM, contentUri)
-            }
+            val shareImageIntent =
+                Intent(ACTION_SEND).apply {
+                    setDataAndType(
+                        contentUri,
+                        context.contentResolver.getType(contentUri),
+                    )
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    putExtra(Intent.EXTRA_STREAM, contentUri)
+                }
 
             launchIntentChooser(shareImageIntent, onActivityNotFound)
         }
@@ -269,7 +286,10 @@ class UiActionHandlerImpl(
         }
     }
 
-    private fun launchIntentChooser(intent: Intent, onActivityNotFound: () -> Unit) {
+    private fun launchIntentChooser(
+        intent: Intent,
+        onActivityNotFound: () -> Unit,
+    ) {
         val title = context.getString(R.string.open_with)
         val chooser = Intent.createChooser(intent, title)
 
@@ -280,14 +300,12 @@ class UiActionHandlerImpl(
         }
     }
 
-    private fun getTempFile() =
-        File(FileResourceDirectoryHelper.getFileResourceDirectory(context), "tempFile.png")
+    private fun getTempFile() = File(FileResourceDirectoryHelper.getFileResourceDirectory(context), "tempFile.png")
 
-    private fun getPhotoUri(file: File): Uri {
-        return FileProvider.getUriForFile(
+    private fun getPhotoUri(file: File): Uri =
+        FileProvider.getUriForFile(
             context,
             AggregatesFileProvider.fileProviderAuthority,
             file,
         )
-    }
 }

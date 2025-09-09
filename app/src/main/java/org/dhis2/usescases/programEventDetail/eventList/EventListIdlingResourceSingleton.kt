@@ -3,7 +3,6 @@ package org.dhis2.usescases.programEventDetail.eventList
 import androidx.test.espresso.idling.CountingIdlingResource
 
 object EventListIdlingResourceSingleton {
-
     private const val RESOURCE = "EventList"
 
     @JvmField

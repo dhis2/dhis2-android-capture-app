@@ -3,11 +3,9 @@ package org.dhis2.commons.filters.periods.data
 import org.dhis2.commons.R
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
 
-class PeriodTypeLabelProvider() {
-    operator fun invoke(
-        periodType: FilterPeriodType,
-    ): Int {
-        return when (periodType) {
+class PeriodTypeLabelProvider {
+    operator fun invoke(periodType: FilterPeriodType): Int =
+        when (periodType) {
             FilterPeriodType.NONE -> R.string.DAILY
             FilterPeriodType.DAILY -> R.string.DAILY
             FilterPeriodType.WEEKLY -> R.string.weekly
@@ -29,5 +27,4 @@ class PeriodTypeLabelProvider() {
             FilterPeriodType.FINANCIAL_OCT -> R.string.financial_year_october
             FilterPeriodType.FINANCIAL_NOV -> R.string.financial_year_november
         }
-    }
 }

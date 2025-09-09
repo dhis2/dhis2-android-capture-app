@@ -11,8 +11,11 @@ import androidx.activity.result.contract.ActivityResultContract
 import java.io.File
 
 actual class GetFileResource : ActivityResultContract<String, List<Uri>>() {
-    override fun createIntent(context: Context, input: String): Intent {
-        return Intent(Intent.ACTION_GET_CONTENT).apply {
+    override fun createIntent(
+        context: Context,
+        input: String,
+    ): Intent =
+        Intent(Intent.ACTION_GET_CONTENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = input
             putExtra(Intent.EXTRA_LOCAL_ONLY, true)
@@ -20,13 +23,15 @@ actual class GetFileResource : ActivityResultContract<String, List<Uri>>() {
                 .addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-    }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> {
-        return intent.takeIf {
-            resultCode == Activity.RESULT_OK
-        }?.getClipDataUris() ?: emptyList()
-    }
+    override fun parseResult(
+        resultCode: Int,
+        intent: Intent?,
+    ): List<Uri> =
+        intent
+            .takeIf {
+                resultCode == Activity.RESULT_OK
+            }?.getClipDataUris() ?: emptyList()
 }
 
 internal fun Intent.getClipDataUris(): List<Uri> {
@@ -48,7 +53,10 @@ internal fun Intent.getClipDataUris(): List<Uri> {
     return ArrayList(resultSet)
 }
 
-fun Uri.toFileOverWrite(context: Context, suffix: String = ""): File? {
+fun Uri.toFileOverWrite(
+    context: Context,
+    suffix: String = "",
+): File? {
     var resultFile: File? = null
     if (ContentResolver.SCHEME_CONTENT == this.scheme) {
         val cr = context.contentResolver

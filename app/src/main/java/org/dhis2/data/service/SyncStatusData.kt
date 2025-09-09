@@ -12,29 +12,24 @@ data class SyncStatusData(
     val programSyncStatusMap: Map<String, D2ProgressStatus> = emptyMap(),
     val isInitialSync: Boolean = false,
 ) {
+    fun isProgramDownloading(uid: String): Boolean = programSyncStatusMap.isNotEmpty() && programSyncStatusMap[uid]?.isComplete == false
 
-    fun isProgramDownloading(uid: String): Boolean {
-        return programSyncStatusMap.isNotEmpty() && programSyncStatusMap[uid]?.isComplete == false
-    }
-
-    fun hasDownloadError(uid: String): Boolean {
-        return programSyncStatusMap.isNotEmpty() &&
+    fun hasDownloadError(uid: String): Boolean =
+        programSyncStatusMap.isNotEmpty() &&
             (
                 programSyncStatusMap[uid]?.syncStatus == D2ProgressSyncStatus.ERROR ||
                     programSyncStatusMap[uid]?.syncStatus == D2ProgressSyncStatus.PARTIAL_ERROR
-                )
-    }
+            )
 
-    fun isProgramDownloaded(uid: String): Boolean {
-        return programSyncStatusMap[uid]?.isComplete == true && running == true
-    }
+    fun isProgramDownloaded(uid: String): Boolean = programSyncStatusMap[uid]?.isComplete == true && running == true
 
-    fun canDisplayMessage() = when {
-        running == false or
-            downloadingEvents or
-            downloadingTracker or
-            downloadingDataSetValues or
-            downloadingMedia -> true
-        else -> false
-    }
+    fun canDisplayMessage() =
+        when {
+            running == false or
+                downloadingEvents or
+                downloadingTracker or
+                downloadingDataSetValues or
+                downloadingMedia -> true
+            else -> false
+        }
 }

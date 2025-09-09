@@ -30,27 +30,27 @@ open class BaseViewModel(
         program: String,
         transaction: Transaction,
         stockUseCase: StockUseCase,
-    ): Disposable {
-        return ruleValidationHelper.evaluate(
-            entry = action.entry,
-            program = program,
-            transaction = transaction,
-            stockUseCase = stockUseCase,
-        )
-            .doOnError { Timber.e(it) }
+    ): Disposable =
+        ruleValidationHelper
+            .evaluate(
+                entry = action.entry,
+                program = program,
+                transaction = transaction,
+                stockUseCase = stockUseCase,
+            ).doOnError { Timber.e(it) }
             .observeOn(schedulerProvider.io())
             .subscribeOn(schedulerProvider.ui())
             .subscribe { ruleEffects ->
                 action.callback?.validationCompleted(ruleEffects)
             }
-    }
 
     fun toggleGuideDisplay() {
-        _showGuide.value = if (_showGuide.value == null) {
-            true
-        } else {
-            !_showGuide.value!!
-        }
+        _showGuide.value =
+            if (_showGuide.value == null) {
+                true
+            } else {
+                !_showGuide.value!!
+            }
     }
 
     fun isVoiceInputEnabled(prefKey: String) = false // TODO check if enabled

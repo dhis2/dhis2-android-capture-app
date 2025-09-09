@@ -7,7 +7,6 @@ import java.time.Instant
 import java.util.Date
 
 class OrganisationUnitExtensionsTest {
-
     @Test
     fun `Should return true if date is null`() {
         Assert.assertTrue(
@@ -53,12 +52,15 @@ class OrganisationUnitExtensionsTest {
         )
     }
 
-    private fun orgUnit(startDate: Date?, endDate: Date?): OrganisationUnit {
-        return OrganisationUnit.builder()
+    private fun orgUnit(
+        startDate: Date?,
+        endDate: Date?,
+    ): OrganisationUnit =
+        OrganisationUnit
+            .builder()
             .uid("orgUnitUid")
             .displayName("OrgUnitName")
             .openingDate(startDate)
             .closedDate(endDate)
             .build()
-    }
 }

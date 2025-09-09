@@ -52,23 +52,25 @@ class ProgramRepositoryImplTest {
     private val dhis2TeiUtils: DhisTrackedEntityInstanceUtils = mock()
     private val scheduler = TrampolineSchedulerProvider()
     private val resourceManager: ResourceManager = mock()
-    private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
-    }
+    private val metadataIconProvider: MetadataIconProvider =
+        mock {
+            on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
+        }
 
     @Before
     fun setUp() {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
 
-        programRepository = ProgramRepositoryImpl(
-            d2,
-            filterPresenter,
-            dhisProgramUtils,
-            dhis2TeiUtils,
-            resourceManager,
-            metadataIconProvider,
-            scheduler,
-        )
+        programRepository =
+            ProgramRepositoryImpl(
+                d2,
+                filterPresenter,
+                dhisProgramUtils,
+                dhis2TeiUtils,
+                resourceManager,
+                metadataIconProvider,
+                scheduler,
+            )
         whenever(
             resourceManager.defaultDataSetLabel(),
         ) doReturn "dataset"
@@ -79,27 +81,32 @@ class ProgramRepositoryImplTest {
             resourceManager.defaultTeiLabel(),
         ) doReturn "tei"
         whenever(
-            d2.dataSetModule().dataSets().uid(anyString()).blockingGet(),
-        ) doReturn DataSet.builder()
-            .uid("dataSetUid")
-            .description("description")
-            .style(
-                ObjectStyle.builder()
-                    .color("color")
-                    .icon("icon")
-                    .build(),
-            )
-            .access(
-                Access.create(
-                    true,
-                    true,
-                    DataAccess.create(
+            d2
+                .dataSetModule()
+                .dataSets()
+                .uid(anyString())
+                .blockingGet(),
+        ) doReturn
+            DataSet
+                .builder()
+                .uid("dataSetUid")
+                .description("description")
+                .style(
+                    ObjectStyle
+                        .builder()
+                        .color("color")
+                        .icon("icon")
+                        .build(),
+                ).access(
+                    Access.create(
                         true,
                         true,
+                        DataAccess.create(
+                            true,
+                            true,
+                        ),
                     ),
-                ),
-            )
-            .build()
+                ).build()
     }
 
     @After
@@ -150,9 +157,10 @@ class ProgramRepositoryImplTest {
     private fun initWheneverForPrograms() {
         whenever(
             dhisProgramUtils.getProgramsInCaptureOrgUnits(),
-        ) doReturn Flowable.just(
-            mockedPrograms(),
-        )
+        ) doReturn
+            Flowable.just(
+                mockedPrograms(),
+            )
         whenever(
             dhisProgramUtils.getProgramRecordLabel(any(), any(), any()),
         ) doReturnConsecutively arrayListOf("event", "tei")
@@ -160,26 +168,75 @@ class ProgramRepositoryImplTest {
             dhisProgramUtils.getProgramState(any<Program>()),
         ) doReturnConsecutively arrayListOf(State.SYNCED, State.TO_POST)
         whenever(
-            d2.programModule().programs().uid(any()).blockingGet(),
-        )doReturnConsecutively mockedPrograms()
+            d2
+                .programModule()
+                .programs()
+                .uid(any())
+                .blockingGet(),
+        ) doReturnConsecutively mockedPrograms()
         whenever(
             filterPresenter.filteredEventProgram(any()),
         ) doReturn mock()
         whenever(
             filterPresenter.filteredEventProgram(any()).blockingGet(),
-        ) doReturn listOf(
-            Event.builder().uid("0").syncState(State.SYNCED).build(),
-            Event.builder().uid("1").syncState(State.SYNCED).build(),
-            Event.builder().uid("2").syncState(State.SYNCED).build(),
-            Event.builder().uid("3").syncState(State.SYNCED).build(),
-            Event.builder().uid("4").syncState(State.SYNCED).build(),
-            Event.builder().uid("5").syncState(State.SYNCED).build(),
-            Event.builder().uid("6").syncState(State.SYNCED).build(),
-            Event.builder().uid("7").syncState(State.SYNCED).build(),
-            Event.builder().uid("8").syncState(State.SYNCED).build(),
-            Event.builder().uid("9").syncState(State.SYNCED).build(),
-            Event.builder().uid("10").syncState(State.RELATIONSHIP).build(),
-        )
+        ) doReturn
+            listOf(
+                Event
+                    .builder()
+                    .uid("0")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("1")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("2")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("3")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("4")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("5")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("6")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("7")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("8")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("9")
+                    .syncState(State.SYNCED)
+                    .build(),
+                Event
+                    .builder()
+                    .uid("10")
+                    .syncState(State.RELATIONSHIP)
+                    .build(),
+            )
         whenever(dhis2TeiUtils.hasOverdueInProgram(any(), any())) doReturn false
         whenever(filterPresenter.areFiltersActive()) doReturn false
         whenever(
@@ -193,16 +250,18 @@ class ProgramRepositoryImplTest {
         ) doReturn listOf("0", "1")
     }
 
-    private fun mockedDataSetInstanceSummaries(): List<DataSetInstanceSummary> {
-        return listOf(
-            DataSetInstanceSummary.builder()
+    private fun mockedDataSetInstanceSummaries(): List<DataSetInstanceSummary> =
+        listOf(
+            DataSetInstanceSummary
+                .builder()
                 .dataSetUid("dataSetUid_1")
                 .dataSetDisplayName("dataSetUid_1")
                 .valueCount(5)
                 .dataSetInstanceCount(2)
                 .state(State.SYNCED)
                 .build(),
-            DataSetInstanceSummary.builder()
+            DataSetInstanceSummary
+                .builder()
                 .dataSetUid("dataSetUid_1")
                 .dataSetDisplayName("dataSetUid_1")
                 .dataSetInstanceCount(1)
@@ -210,28 +269,28 @@ class ProgramRepositoryImplTest {
                 .state(State.TO_UPDATE)
                 .build(),
         )
-    }
 
-    private fun mockedPrograms(): List<Program> {
-        return arrayListOf(
-            Program.builder()
+    private fun mockedPrograms(): List<Program> =
+        arrayListOf(
+            Program
+                .builder()
                 .uid("program1")
                 .displayName("program1")
                 .programType(ProgramType.WITHOUT_REGISTRATION)
                 .style(ObjectStyle.builder().build())
                 .build(),
-            Program.builder()
+            Program
+                .builder()
                 .uid("program2")
                 .displayName("program2")
                 .programType(ProgramType.WITH_REGISTRATION)
                 .style(ObjectStyle.builder().build())
                 .trackedEntityType(
-                    TrackedEntityType.builder()
+                    TrackedEntityType
+                        .builder()
                         .uid("teType")
                         .displayName("Person")
                         .build(),
-                )
-                .build(),
+                ).build(),
         )
-    }
 }

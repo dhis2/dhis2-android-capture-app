@@ -14,13 +14,20 @@ class AboutPresenter(
     private val userRepository: UserRepository,
 ) {
     var disposable = CompositeDisposable()
+
     fun init() {
         disposable.add(
-            Flowable.zip(
-                userRepository.credentials(),
-                d2.systemInfoModule().systemInfo().get().toFlowable()
-                    .map { it.contextPath() ?: "" },
-            ) { fields, result -> Pair(fields, result) }.cacheWithInitialCapacity(1)
+            Flowable
+                .zip(
+                    userRepository.credentials(),
+                    d2
+                        .systemInfoModule()
+                        .systemInfo()
+                        .get()
+                        .toFlowable()
+                        .map { it.contextPath() ?: "" },
+                ) { fields, result -> Pair(fields, result) }
+                .cacheWithInitialCapacity(1)
                 .subscribeOn(provider.io())
                 .observeOn(provider.ui())
                 .subscribe(

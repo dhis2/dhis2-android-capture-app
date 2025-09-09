@@ -7,7 +7,6 @@ import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 internal abstract class ValueValidator(
     private val repository: DataSetInstanceRepository,
 ) {
-
     suspend fun checkedCategoryOptionCombos(
         dataSetUid: String,
         dataElementUid: String,
@@ -38,8 +37,9 @@ internal abstract class ValueValidator(
         rowIds: List<TableId>,
         columnIds: List<TableId>,
     ): String {
-        val dataElementUids = rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
-            columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
+        val dataElementUids =
+            rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
+                columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
 
         if (dataElementUids.size != 1) throw IllegalStateException("Only one data element can be provided")
 

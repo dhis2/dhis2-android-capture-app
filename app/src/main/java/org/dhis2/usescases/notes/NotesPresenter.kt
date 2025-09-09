@@ -42,7 +42,6 @@ class NotesPresenter(
     private val noteType: NoteType,
     private val schedulerProvider: SchedulerProvider,
 ) {
-
     var compositeDisposable = CompositeDisposable()
     val noteProcessor: FlowableProcessor<Boolean> = PublishProcessor.create()
 
@@ -56,19 +55,23 @@ class NotesPresenter(
 
     fun subscribeToNotes() {
         compositeDisposable.add(
-            noteProcessor.startWith(true)
+            noteProcessor
+                .startWith(true)
                 .flatMapSingle {
                     NotesIdlingResource.increment()
                     when (noteType) {
-                        NoteType.EVENT -> notesRepository.getEventNotes(uid)
-                            .doOnSuccess { NotesIdlingResource.decrement() }
-                            .doOnError { NotesIdlingResource.decrement() }
-                        NoteType.ENROLLMENT -> notesRepository.getEnrollmentNotes(uid)
-                            .doOnSuccess { NotesIdlingResource.decrement() }
-                            .doOnError { NotesIdlingResource.decrement() }
+                        NoteType.EVENT ->
+                            notesRepository
+                                .getEventNotes(uid)
+                                .doOnSuccess { NotesIdlingResource.decrement() }
+                                .doOnError { NotesIdlingResource.decrement() }
+                        NoteType.ENROLLMENT ->
+                            notesRepository
+                                .getEnrollmentNotes(uid)
+                                .doOnSuccess { NotesIdlingResource.decrement() }
+                                .doOnError { NotesIdlingResource.decrement() }
                     }
-                }
-                .subscribeOn(schedulerProvider.io())
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     this::handleNotes,
@@ -77,7 +80,8 @@ class NotesPresenter(
         )
 
         compositeDisposable.add(
-            Flowable.just(notesRepository.hasProgramWritePermission())
+            Flowable
+                .just(notesRepository.hasProgramWritePermission())
                 .subscribeOn(schedulerProvider.computation())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(

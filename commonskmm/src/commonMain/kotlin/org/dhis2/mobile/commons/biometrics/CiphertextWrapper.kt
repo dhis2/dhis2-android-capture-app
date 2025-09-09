@@ -1,6 +1,9 @@
 package org.dhis2.mobile.commons.biometrics
 
-data class CiphertextWrapper(val ciphertext: ByteArray, val initializationVector: ByteArray) {
+data class CiphertextWrapper(
+    val ciphertext: ByteArray,
+    val initializationVector: ByteArray,
+) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

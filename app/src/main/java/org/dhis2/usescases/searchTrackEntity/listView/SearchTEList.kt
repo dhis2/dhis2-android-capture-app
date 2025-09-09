@@ -50,7 +50,6 @@ const val ARG_FROM_RELATIONSHIP = "ARG_FROM_RELATIONSHIP"
 private const val DIRECTION_DOWN = 1
 
 class SearchTEList : FragmentGlobalAbstract() {
-
     @Inject
     lateinit var viewModelFactory: SearchTeiViewModelFactory
 
@@ -66,8 +65,6 @@ class SearchTEList : FragmentGlobalAbstract() {
     private val viewModel by activityViewModels<SearchTEIViewModel> { viewModelFactory }
 
     private val workingListViewModel by viewModels<WorkingListViewModel> { workingListViewModelFactory }
-
-    private val KEY_SCROLL_POSITION = "scroll_position"
 
     private val initialLoadingAdapter by lazy {
         SearchListResultAdapter { }
@@ -116,24 +113,26 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     companion object {
-        fun get(fromRelationships: Boolean): SearchTEList {
-            return SearchTEList().apply {
+        fun get(fromRelationships: Boolean): SearchTEList =
+            SearchTEList().apply {
                 arguments = bundleArguments(fromRelationships)
             }
-        }
+
+        private const val KEY_SCROLL_POSITION = "scroll_position"
     }
 
-    private fun bundleArguments(fromRelationships: Boolean): Bundle {
-        return Bundle().apply {
+    private fun bundleArguments(fromRelationships: Boolean): Bundle =
+        Bundle().apply {
             putBoolean(ARG_FROM_RELATIONSHIP, fromRelationships)
         }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (context as SearchTEActivity).searchComponent?.plus(
-            SearchTEListModule(),
-        )?.inject(this)
+        (context as SearchTEActivity)
+            .searchComponent
+            ?.plus(
+                SearchTEListModule(),
+            )?.inject(this)
     }
 
     @ExperimentalAnimationApi
@@ -141,15 +140,16 @@ class SearchTEList : FragmentGlobalAbstract() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return FragmentSearchListBinding.inflate(inflater, container, false).apply {
-            configureList(scrollView, savedInstanceState?.getInt(KEY_SCROLL_POSITION))
-            configureOpenSearchButton(openSearchButton)
-            configureCreateButton(createButton)
-        }.also {
-            observeNewData()
-        }.root
-    }
+    ): View =
+        FragmentSearchListBinding
+            .inflate(inflater, container, false)
+            .apply {
+                configureList(scrollView, savedInstanceState?.getInt(KEY_SCROLL_POSITION))
+                configureOpenSearchButton(openSearchButton)
+                configureCreateButton(createButton)
+            }.also {
+                observeNewData()
+            }.root
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -165,40 +165,50 @@ class SearchTEList : FragmentGlobalAbstract() {
     ) {
         var currentPosition = currentVisiblePosition
         val layoutManager = scrollView.layoutManager as? LinearLayoutManager
-        scrollView.apply {
-            adapter = listAdapter
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        CoroutineTracker.decrement()
-                    } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        CoroutineTracker.increment()
-                    }
-                    if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
-                        viewModel.isScrollingDown.value = false
-                    }
-                }
+        scrollView
+            .apply {
+                adapter = listAdapter
+                addOnScrollListener(
+                    object : RecyclerView.OnScrollListener() {
+                        override fun onScrollStateChanged(
+                            recyclerView: RecyclerView,
+                            newState: Int,
+                        ) {
+                            super.onScrollStateChanged(recyclerView, newState)
+                            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                                CoroutineTracker.decrement()
+                            } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                                CoroutineTracker.increment()
+                            }
+                            if (!recyclerView.canScrollVertically(DIRECTION_DOWN)) {
+                                viewModel.isScrollingDown.value = false
+                            }
+                        }
 
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    if (dy > 0) {
-                        viewModel.isScrollingDown.value = true
-                        currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
-                    } else if (dy < 0) {
-                        viewModel.isScrollingDown.value = false
-                        currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
+                        override fun onScrolled(
+                            recyclerView: RecyclerView,
+                            dx: Int,
+                            dy: Int,
+                        ) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            if (dy > 0) {
+                                viewModel.isScrollingDown.value = true
+                                currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
+                            } else if (dy < 0) {
+                                viewModel.isScrollingDown.value = false
+                                currentPosition = layoutManager?.findFirstCompletelyVisibleItemPosition()
+                            }
+                        }
+                    },
+                )
+                lifecycleScope.launch {
+                    liveAdapter.loadStateFlow.collectLatest {
+                        scrollToPosition(currentPosition ?: 0)
                     }
                 }
-            })
-            lifecycleScope.launch {
-                liveAdapter.loadStateFlow.collectLatest {
-                    scrollToPosition(currentPosition ?: 0)
-                }
+            }.also {
+                recycler = it
             }
-        }.also {
-            recycler = it
-        }
     }
 
     @ExperimentalAnimationApi
@@ -213,10 +223,12 @@ class SearchTEList : FragmentGlobalAbstract() {
                 if (!teTypeName.isNullOrBlank()) {
                     val isFilterOpened by viewModel.filtersOpened.observeAsState(false)
                     val createButtonVisibility by viewModel
-                        .createButtonScrollVisibility.observeAsState(true)
-                    val queryData = remember(viewModel.uiState) {
-                        viewModel.uiState.searchedItems
-                    }
+                        .createButtonScrollVisibility
+                        .observeAsState(true)
+                    val queryData =
+                        remember(viewModel.uiState) {
+                            viewModel.uiState.searchedItems
+                        }
 
                     FullSearchButtonAndWorkingList(
                         teTypeName = teTypeName!!,
@@ -248,24 +260,31 @@ class SearchTEList : FragmentGlobalAbstract() {
             setContent {
                 val isScrollingDown by viewModel.isScrollingDown.observeAsState(false)
                 val createButtonVisibility by viewModel
-                    .createButtonScrollVisibility.observeAsState(true)
+                    .createButtonScrollVisibility
+                    .observeAsState(true)
                 val filtersOpened by viewModel.filtersOpened.observeAsState(false)
                 val teTypeName by viewModel.teTypeName.observeAsState()
-                val hasQueryData = remember(viewModel.uiState) {
-                    viewModel.queryData.isNotEmpty()
-                }
+                val hasQueryData =
+                    remember(viewModel.uiState) {
+                        viewModel.queryData.isNotEmpty()
+                    }
 
                 updateLayoutParams<CoordinatorLayout.LayoutParams> {
-                    val bottomMargin = if (viewModel.isBottomNavigationBarVisible()) {
-                        56.dp
-                    } else {
-                        16.dp
-                    }
+                    val bottomMargin =
+                        if (viewModel.isBottomNavigationBarVisible()) {
+                            56.dp
+                        } else {
+                            16.dp
+                        }
                     setMargins(0, 0, 0, bottomMargin)
                 }
 
                 val orientation = LocalConfiguration.current.orientation
-                if ((hasQueryData || orientation == Configuration.ORIENTATION_LANDSCAPE) && createButtonVisibility && !filtersOpened && !teTypeName.isNullOrBlank()) {
+                if ((hasQueryData || orientation == Configuration.ORIENTATION_LANDSCAPE) &&
+                    createButtonVisibility &&
+                    !filtersOpened &&
+                    !teTypeName.isNullOrBlank()
+                ) {
                     CreateNewButton(
                         modifier = Modifier,
                         extended = !isScrollingDown,
@@ -278,11 +297,12 @@ class SearchTEList : FragmentGlobalAbstract() {
     }
 
     private fun displayImageDetail(imagePath: String) {
-        val intent = ImageDetailActivity.intent(
-            context = requireContext(),
-            title = null,
-            imagePath = imagePath,
-        )
+        val intent =
+            ImageDetailActivity.intent(
+                context = requireContext(),
+                title = null,
+                imagePath = imagePath,
+            )
 
         startActivity(intent)
     }
@@ -366,12 +386,18 @@ class SearchTEList : FragmentGlobalAbstract() {
     private fun onInitDataLoaded() {
         viewModel.onDataLoaded(
             programResultCount = liveAdapter.itemCount,
-            globalResultCount = if (globalAdapter.itemCount > 0) {
-                globalAdapter.itemCount
-            } else {
-                null
-            },
-            onlineErrorCode = liveAdapter.snapshot().items.lastOrNull()?.onlineErrorCode,
+            globalResultCount =
+                if (globalAdapter.itemCount > 0) {
+                    globalAdapter.itemCount
+                } else {
+                    null
+                },
+            onlineErrorCode =
+                liveAdapter
+                    .snapshot()
+                    .items
+                    .lastOrNull()
+                    ?.onlineErrorCode,
         )
     }
 

@@ -30,50 +30,51 @@ class ProgramRuleTests {
      */
     private fun getRuleEngineContext(rules: List<Rule>): RuleEngineContext {
         // Variable used by the program rules in the program rule expressions and actions
-        val rulesVariables = listOf<RuleVariable>(
-            RuleVariablePreviousEvent(
-                "PSM- Initial stock on hand - Previous event",
-                false,
-                emptyList(),
-                "ypCQAFr1a5l",
-                RuleValueType.NUMERIC,
-            ),
-            RuleVariableCurrentEvent(
-                "PSM- Previous stock balance",
-                false,
-                emptyList(),
-                "oc8tn8CewiP",
-                RuleValueType.NUMERIC,
-            ),
-            RuleVariableCurrentEvent(
-                "PSM- Stock consumed distributed",
-                false,
-                emptyList(),
-                "lpGYJoVUudr",
-                RuleValueType.NUMERIC,
-            ),
-            RuleVariableCurrentEvent(
-                "PSM- Stock corrected",
-                false,
-                emptyList(),
-                "ej1YwWaYGmm",
-                RuleValueType.NUMERIC,
-            ),
-            RuleVariableCurrentEvent(
-                "PSM- Stock discarded",
-                false,
-                emptyList(),
-                "I7cmT3iXT0y",
-                RuleValueType.NUMERIC,
-            ),
-            RuleVariableCurrentEvent(
-                "PSM- Stock received",
-                false,
-                emptyList(),
-                "j3ydinp6Qp8",
-                RuleValueType.NUMERIC,
-            ),
-        )
+        val rulesVariables =
+            listOf<RuleVariable>(
+                RuleVariablePreviousEvent(
+                    "PSM- Initial stock on hand - Previous event",
+                    false,
+                    emptyList(),
+                    "ypCQAFr1a5l",
+                    RuleValueType.NUMERIC,
+                ),
+                RuleVariableCurrentEvent(
+                    "PSM- Previous stock balance",
+                    false,
+                    emptyList(),
+                    "oc8tn8CewiP",
+                    RuleValueType.NUMERIC,
+                ),
+                RuleVariableCurrentEvent(
+                    "PSM- Stock consumed distributed",
+                    false,
+                    emptyList(),
+                    "lpGYJoVUudr",
+                    RuleValueType.NUMERIC,
+                ),
+                RuleVariableCurrentEvent(
+                    "PSM- Stock corrected",
+                    false,
+                    emptyList(),
+                    "ej1YwWaYGmm",
+                    RuleValueType.NUMERIC,
+                ),
+                RuleVariableCurrentEvent(
+                    "PSM- Stock discarded",
+                    false,
+                    emptyList(),
+                    "I7cmT3iXT0y",
+                    RuleValueType.NUMERIC,
+                ),
+                RuleVariableCurrentEvent(
+                    "PSM- Stock received",
+                    false,
+                    emptyList(),
+                    "j3ydinp6Qp8",
+                    RuleValueType.NUMERIC,
+                ),
+            )
         return RuleEngineContext(
             rules,
             rulesVariables,
@@ -102,14 +103,15 @@ class ProgramRuleTests {
                 ProgramRuleActionType.ASSIGN.name,
                 mapOf(Pair("field", "ypCQAFr1a5l")),
             )
-        val rule1 = Rule(
-            "true",
-            listOf(assignAction),
-            "rule1Uid",
-            "PSM- Assign Stock on Hand",
-            null,
-            1,
-        )
+        val rule1 =
+            Rule(
+                "true",
+                listOf(assignAction),
+                "rule1Uid",
+                "PSM- Assign Stock on Hand",
+                null,
+                1,
+            )
         rules.add(rule1)
 
         // TODO Add the two remaining program rules
@@ -121,63 +123,66 @@ class ProgramRuleTests {
     @Throws(Exception::class)
     fun evaluateTOneRuleTest() {
         val ruleEngineContext = getRuleEngineContext(createRules())
-        val enrollment = RuleEnrollment(
-            "test_enrollment",
-            "test_program",
-            Date().toRuleEngineLocalDate(),
-            Date().toRuleEngineLocalDate(),
-            RuleEnrollmentStatus.ACTIVE,
-            "test_ou",
-            "test_ou_code",
-            emptyList(),
-        )
+        val enrollment =
+            RuleEnrollment(
+                "test_enrollment",
+                "test_program",
+                Date().toRuleEngineLocalDate(),
+                Date().toRuleEngineLocalDate(),
+                RuleEnrollmentStatus.ACTIVE,
+                "test_ou",
+                "test_ou_code",
+                emptyList(),
+            )
 
-        val ruleEvent = RuleEvent(
-            "test_event",
-            "test_program_stage",
-            "",
-            RuleEventStatus.ACTIVE,
-            Date().toRuleEngineInstant(),
-            Date().toRuleEngineInstant(),
-            Date().toRuleEngineLocalDate(),
-            null,
-            "",
-            "",
-            listOf(
-                // PRevious Stock Balance
-                RuleDataValue(
-                    "oc8tn8CewiP",
-                    "3",
+        val ruleEvent =
+            RuleEvent(
+                "test_event",
+                "test_program_stage",
+                "",
+                RuleEventStatus.ACTIVE,
+                Date().toRuleEngineInstant(),
+                Date().toRuleEngineInstant(),
+                Date().toRuleEngineLocalDate(),
+                null,
+                "",
+                "",
+                listOf(
+                    // PRevious Stock Balance
+                    RuleDataValue(
+                        "oc8tn8CewiP",
+                        "3",
+                    ),
+                    // PSM Stock received
+                    RuleDataValue(
+                        "j3ydinp6Qp8",
+                        "4",
+                    ),
+                    // PSM- Stock consumed distributed
+                    RuleDataValue(
+                        "lpGYJoVUudr",
+                        "2",
+                    ),
+                    // PSM- Stock discarded
+                    RuleDataValue(
+                        "I7cmT3iXT0y",
+                        "1",
+                    ),
+                    // PSM- Stock corrected
+                    RuleDataValue(
+                        "ej1YwWaYGmm",
+                        "3",
+                    ),
                 ),
-                // PSM Stock received
-                RuleDataValue(
-                    "j3ydinp6Qp8",
-                    "4",
-                ),
-                // PSM- Stock consumed distributed
-                RuleDataValue(
-                    "lpGYJoVUudr",
-                    "2",
-                ),
-                // PSM- Stock discarded
-                RuleDataValue(
-                    "I7cmT3iXT0y",
-                    "1",
-                ),
-                // PSM- Stock corrected
-                RuleDataValue(
-                    "ej1YwWaYGmm",
-                    "3",
-                ),
-            ),
-        )
+            )
 
-        val ruleEffects = RuleEngine.getInstance().evaluate(
-            ruleEvent,
-            enrollment,
-            listOf(),
-            ruleEngineContext,
-        )
+        val ruleEffects =
+            RuleEngine.getInstance().evaluate(
+                ruleEvent,
+                enrollment,
+                listOf(),
+                ruleEngineContext,
+            )
         assertEquals(ruleEffects.find { it.ruleId == "rule1Uid" }?.data, "1")
     }
 }

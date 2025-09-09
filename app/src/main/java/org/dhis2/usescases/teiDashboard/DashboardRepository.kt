@@ -19,7 +19,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 
 interface DashboardRepository {
-
     fun getTeiHeader(): String?
 
     fun getTeiProfilePath(): String?
@@ -40,25 +39,22 @@ interface DashboardRepository {
 
     fun setFollowUp(enrollmentUid: String?): Boolean
 
-    fun updateState(event: Event?, newStatus: EventStatus): Event
+    fun updateState(
+        event: Event?,
+        newStatus: EventStatus,
+    ): Event
 
     fun completeEnrollment(enrollmentUid: String): Flowable<Enrollment>
 
     fun displayGenerateEvent(eventUid: String?): Observable<ProgramStage>
 
-    fun relationshipsForTeiType(
-        teType: String,
-    ): Observable<List<Pair<RelationshipType?, String>>>
+    fun relationshipsForTeiType(teType: String): Observable<List<Pair<RelationshipType?, String>>>
 
     fun catOptionCombo(catComboUid: String?): CategoryOptionCombo
 
-    fun getTrackedEntityInstance(
-        teiUid: String,
-    ): Observable<TrackedEntityInstance>
+    fun getTrackedEntityInstance(teiUid: String): Observable<TrackedEntityInstance>
 
-    fun getProgramTrackedEntityAttributes(
-        programUid: String?,
-    ): Observable<List<ProgramTrackedEntityAttribute>>
+    fun getProgramTrackedEntityAttributes(programUid: String?): Observable<List<ProgramTrackedEntityAttribute>>
 
     fun getTeiOrgUnits(
         teiUid: String,
@@ -70,11 +66,12 @@ interface DashboardRepository {
         showOnlyActive: Boolean,
     ): Observable<List<kotlin.Pair<Program, MetadataIconData>>>
 
-    fun getTEIEnrollments(
-        teiUid: String,
-    ): Observable<List<Enrollment>>
+    fun getTEIEnrollments(teiUid: String): Observable<List<Enrollment>>
 
-    fun saveCatOption(eventUid: String?, catOptionComboUid: String?)
+    fun saveCatOption(
+        eventUid: String?,
+        catOptionComboUid: String?,
+    )
 
     fun checkIfDeleteTeiIsPossible(): Boolean
 
@@ -113,5 +110,6 @@ interface DashboardRepository {
     fun transferTei(newOrgUnitId: String)
 
     fun teiCanBeTransferred(): Boolean
+
     fun enrollmentHasWriteAccess(): Boolean
 }

@@ -33,8 +33,10 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 
 abstract class SmsResponseReceiver : BroadcastReceiver() {
-
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         if (SmsRetriever.SMS_RETRIEVED_ACTION != intent.action) return
 
         val extras = intent.extras

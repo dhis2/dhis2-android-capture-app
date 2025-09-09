@@ -20,7 +20,6 @@ class AnalyticsTeiSettingsToGraph(
     private val periodStepProvider: PeriodStepProvider,
     private val chartCoordinatesProvider: ChartCoordinatesProvider,
 ) {
-
     fun map(
         teiUid: String,
         analytycsTeiSettings: List<AnalyticsTeiSetting>,
@@ -29,18 +28,23 @@ class AnalyticsTeiSettingsToGraph(
         dataElementNameProvider: (String) -> String,
         indicatorNameProvider: (String) -> String,
         teiGenderProvider: (NutritionGenderData) -> Boolean,
-    ): List<Graph> {
-        return analytycsTeiSettings.map { analyticsTeiSettings ->
+    ): List<Graph> =
+        analytycsTeiSettings.map { analyticsTeiSettings ->
             val analyticsSetting = analyticsSettingsMapper.map(analyticsTeiSettings)
             val selectedRelativePeriod = selectedRelativePeriodProvider(analyticsTeiSettings.uid())
             val selectedOrgUnits = selectedOrgUnitProvider(analyticsTeiSettings.uid())
             val nutritionCoordinates: List<SerieData> =
                 if (analyticsSetting is NutritionSettingsAnalyticsModel) {
                     val isFemale = teiGenderProvider(analyticsSetting.genderData)
-                    val nutritionChartType = analyticsTeiSettings.whoNutritionData()!!.chartType()
-                        .toNutritionChartType(isFemale)
-                    nutritionDataProvider.getNutritionData(nutritionChartType)
-                        .toMutableList().apply {
+                    val nutritionChartType =
+                        analyticsTeiSettings
+                            .whoNutritionData()!!
+                            .chartType()
+                            .toNutritionChartType(isFemale)
+                    nutritionDataProvider
+                        .getNutritionData(nutritionChartType)
+                        .toMutableList()
+                        .apply {
                             add(
                                 SerieData(
                                     analyticsSetting.displayName,
@@ -61,57 +65,66 @@ class AnalyticsTeiSettingsToGraph(
                     emptyList()
                 }
 
-            val dataElementCoordinates = analyticsSetting.dataElements().map {
-                SerieData(
-                    dataElementNameProvider(it.dataElementUid),
-                    when (analyticsSetting.type) {
-                        ChartType.PIE_CHART -> chartCoordinatesProvider.pieChartCoordinates(
-                            it.stageUid,
-                            teiUid,
-                            it.dataElementUid,
-                            selectedRelativePeriod,
-                            selectedOrgUnits,
+            val dataElementCoordinates =
+                analyticsSetting.dataElements().map {
+                    SerieData(
+                        dataElementNameProvider(it.dataElementUid),
+                        when (analyticsSetting.type) {
+                            ChartType.PIE_CHART ->
+                                chartCoordinatesProvider.pieChartCoordinates(
+                                    it.stageUid,
+                                    teiUid,
+                                    it.dataElementUid,
+                                    selectedRelativePeriod,
+                                    selectedOrgUnits,
+                                )
+                            else ->
+                                chartCoordinatesProvider.dataElementCoordinates(
+                                    it.stageUid,
+                                    teiUid,
+                                    it.dataElementUid,
+                                    selectedRelativePeriod,
+                                    selectedOrgUnits,
+                                    true,
+                                )
+                        },
+                    )
+                }
+            val indicatorCoordinates =
+                analyticsSetting
+                    .indicators()
+                    .map {
+                        SerieData(
+                            indicatorNameProvider(it.indicatorUid),
+                            chartCoordinatesProvider.indicatorCoordinates(
+                                it.stageUid,
+                                teiUid,
+                                it.indicatorUid,
+                                selectedRelativePeriod,
+                                selectedOrgUnits,
+                            ),
                         )
-                        else -> chartCoordinatesProvider.dataElementCoordinates(
-                            it.stageUid,
-                            teiUid,
-                            it.dataElementUid,
-                            selectedRelativePeriod,
-                            selectedOrgUnits,
-                            true,
-                        )
-                    },
-                )
-            }
-            val indicatorCoordinates = analyticsSetting.indicators().map {
-                SerieData(
-                    indicatorNameProvider(it.indicatorUid),
-                    chartCoordinatesProvider.indicatorCoordinates(
-                        it.stageUid,
-                        teiUid,
-                        it.indicatorUid,
-                        selectedRelativePeriod,
-                        selectedOrgUnits,
-                    ),
-                )
-            }.filter { it.coordinates.isNotEmpty() }
+                    }.filter { it.coordinates.isNotEmpty() }
             Graph(
                 title = analyticsSetting.displayName,
-                series = nutritionCoordinates.union(dataElementCoordinates)
-                    .union(indicatorCoordinates)
-                    .toList(),
+                series =
+                    nutritionCoordinates
+                        .union(dataElementCoordinates)
+                        .union(indicatorCoordinates)
+                        .toList(),
                 periodToDisplayDefault = null,
                 eventPeriodType = PeriodType.valueOf(analyticsSetting.period()),
-                periodStep = periodStepProvider.periodStep(
-                    PeriodType.valueOf(analyticsSetting.period()),
-                ),
+                periodStep =
+                    periodStepProvider.periodStep(
+                        PeriodType.valueOf(analyticsSetting.period()),
+                    ),
                 chartType = analyticsSetting.type,
                 visualizationUid = analyticsTeiSettings.uid(),
-                graphFilters = GraphFilters.Visualization(
-                    periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
-                    orgUnitsSelected = selectedOrgUnits ?: emptyList(),
-                ),
+                graphFilters =
+                    GraphFilters.Visualization(
+                        periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+                        orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+                    ),
             )
         }
-    }
 }

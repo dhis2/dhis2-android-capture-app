@@ -10,7 +10,6 @@ class CheckVersionWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : Worker(context, workerParams) {
-
     @Inject
     internal lateinit var presenter: MainPresenter
 

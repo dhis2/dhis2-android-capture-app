@@ -6,8 +6,5 @@ import org.dhis2.mobile.login.authentication.domain.repository.TwoFARepository
 class GetTwoFAStatus(
     private val twoFARepository: TwoFARepository,
 ) {
-
-    suspend operator fun invoke(): TwoFAStatus {
-        return twoFARepository.getTwoFAStatus()
-    }
+    suspend operator fun invoke(): TwoFAStatus = twoFARepository.getTwoFAStatus()
 }

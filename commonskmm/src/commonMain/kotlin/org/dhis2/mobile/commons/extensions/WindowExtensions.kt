@@ -15,5 +15,5 @@ fun deviceIsInLandscapeMode(): Boolean {
         (
             windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium &&
                 windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
-            )
+        )
 }

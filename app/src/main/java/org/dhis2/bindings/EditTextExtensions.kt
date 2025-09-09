@@ -27,11 +27,12 @@ fun TextInputEditText.placeHolder(placeholder: String) {
     this.setHintTextColor(ContextCompat.getColor(context, R.color.placeholder))
     this.hint = placeholder
 
-    this.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-        if (hasFocus) {
-            this.hint = ""
+    this.onFocusChangeListener =
+        View.OnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                this.hint = ""
+            }
         }
-    }
 }
 
 fun TextView.setDateInterval(string: String?) {

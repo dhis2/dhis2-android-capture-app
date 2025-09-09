@@ -60,8 +60,8 @@ class TEIDataModule(
         createEventUseCase: CreateEventUseCase,
         d2ErrorUtils: D2ErrorUtils,
         preferences: PreferenceProvider,
-    ): TEIDataPresenter {
-        return TEIDataPresenter(
+    ): TEIDataPresenter =
+        TEIDataPresenter(
             view,
             d2,
             dashboardRepository,
@@ -82,13 +82,10 @@ class TEIDataModule(
             d2ErrorUtils,
             preferences,
         )
-    }
 
     @Provides
     @PerFragment
-    fun searchTEIRepository(d2: D2): SearchTEIRepository {
-        return SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
-    }
+    fun searchTEIRepository(d2: D2): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
 
     @Provides
     @PerFragment
@@ -97,8 +94,8 @@ class TEIDataModule(
         periodUtils: DhisPeriodUtils,
         metadataIconProvider: MetadataIconProvider,
         dateUtils: DateUtils,
-    ): TeiDataRepository {
-        return TeiDataRepositoryImpl(
+    ): TeiDataRepository =
+        TeiDataRepositoryImpl(
             d2,
             programUid,
             teiUid,
@@ -107,7 +104,6 @@ class TEIDataModule(
             metadataIconProvider,
             dateUtils,
         )
-    }
 
     @Provides
     @PerFragment
@@ -116,8 +112,8 @@ class TEIDataModule(
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
         resourceManager: ResourceManager,
-    ): FormValueStore {
-        return FormValueStore(
+    ): FormValueStore =
+        FormValueStore(
             d2,
             teiUid,
             EntryMode.ATTR,
@@ -127,42 +123,24 @@ class TEIDataModule(
             networkUtils,
             resourceManager,
         )
-    }
 
     @Provides
     fun provideGetNewEventCreationTypeOptions(
         programConfigurationRepository: ProgramConfigurationRepository,
-    ): GetNewEventCreationTypeOptions {
-        return GetNewEventCreationTypeOptions(programConfigurationRepository)
-    }
+    ): GetNewEventCreationTypeOptions = GetNewEventCreationTypeOptions(programConfigurationRepository)
 
     @Provides
-    fun provideEventCreationsOptionsMapper(
-        resourceManager: ResourceManager,
-    ): EventCreationOptionsMapper {
-        return EventCreationOptionsMapper(resourceManager)
-    }
+    fun provideEventCreationsOptionsMapper(resourceManager: ResourceManager): EventCreationOptionsMapper =
+        EventCreationOptionsMapper(resourceManager)
 
     @Provides
-    fun provideTeiCardMapper(
-        resourceManager: ResourceManager,
-    ): TeiDashboardCardMapper {
-        return TeiDashboardCardMapper(resourceManager)
-    }
+    fun provideTeiCardMapper(resourceManager: ResourceManager): TeiDashboardCardMapper = TeiDashboardCardMapper(resourceManager)
 
     @Provides
-    fun provideInfoBarMapper(
-        resourceManager: ResourceManager,
-    ): InfoBarMapper {
-        return InfoBarMapper(resourceManager)
-    }
+    fun provideInfoBarMapper(resourceManager: ResourceManager): InfoBarMapper = InfoBarMapper(resourceManager)
 
     @Provides
-    fun provideQuickActionMapper(
-        resourceManager: ResourceManager,
-    ): QuickActionsMapper {
-        return QuickActionsMapper(programUid, resourceManager)
-    }
+    fun provideQuickActionMapper(resourceManager: ResourceManager): QuickActionsMapper = QuickActionsMapper(programUid, resourceManager)
 
     @Provides
     fun provideContractHandler() = TeiDataContractHandler(registry)
@@ -172,16 +150,13 @@ class TEIDataModule(
     fun providesTEIEventCardMapper(
         resourceManager: ResourceManager,
         dateUtils: DateUtils,
-    ): TEIEventCardMapper {
-        return TEIEventCardMapper(resourceManager, dateUtils)
-    }
+    ): TEIEventCardMapper = TEIEventCardMapper(resourceManager, dateUtils)
 
     @Provides
-    fun provideCreateEventUseCase(
-        repository: CreateEventUseCaseRepositoryImpl,
-    ) = CreateEventUseCase(
-        repository = repository,
-    )
+    fun provideCreateEventUseCase(repository: CreateEventUseCaseRepositoryImpl) =
+        CreateEventUseCase(
+            repository = repository,
+        )
 
     @Provides
     fun provideCreateEventUseCaseRepository(

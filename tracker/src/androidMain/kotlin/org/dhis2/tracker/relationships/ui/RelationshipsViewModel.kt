@@ -25,7 +25,6 @@ class RelationshipsViewModel(
     private val d2ErrorUtils: D2ErrorUtils,
     private val relationshipsUiStateMapper: RelationshipsUiStateMapper,
 ) : ViewModel() {
-
     private val _relationshipsUiState =
         MutableStateFlow<RelationshipsUiState>(RelationshipsUiState.Loading)
     val relationshipsUiState: StateFlow<RelationshipsUiState> =
@@ -40,24 +39,26 @@ class RelationshipsViewModel(
     fun refreshRelationships() {
         viewModelScope.launch {
             val relationships = getRelationshipsByType()
-            _relationshipsUiState.value = if (relationships.isEmpty()) {
-                RelationshipsUiState.Empty
-            } else {
-                RelationshipsUiState.Success(relationshipsUiStateMapper.map(relationships))
-            }
+            _relationshipsUiState.value =
+                if (relationships.isEmpty()) {
+                    RelationshipsUiState.Empty
+                } else {
+                    RelationshipsUiState.Success(relationshipsUiStateMapper.map(relationships))
+                }
         }
     }
 
     fun updateSelectedList(relationshipUid: String) {
         viewModelScope.launch(dispatcher.io()) {
             _relationshipSelectionState.update {
-                val updatedList = it.selectedItems.toMutableList().apply {
-                    if (contains(relationshipUid)) {
-                        remove(relationshipUid)
-                    } else {
-                        add(relationshipUid)
+                val updatedList =
+                    it.selectedItems.toMutableList().apply {
+                        if (contains(relationshipUid)) {
+                            remove(relationshipUid)
+                        } else {
+                            add(relationshipUid)
+                        }
                     }
-                }
                 it.copy(
                     selectingMode = updatedList.isNotEmpty(),
                     selectedItems = updatedList,
@@ -75,8 +76,10 @@ class RelationshipsViewModel(
     }
 
     fun selectAll() {
-        val allRelationshipsUid = (relationshipsUiState.value as? RelationshipsUiState.Success)
-            ?.data?.flatMap { it.relationships.map { it.ownerUid } } ?: listOf()
+        val allRelationshipsUid =
+            (relationshipsUiState.value as? RelationshipsUiState.Success)
+                ?.data
+                ?.flatMap { it.relationships.map { it.ownerUid } } ?: listOf()
 
         viewModelScope.launch(dispatcher.io()) {
             _relationshipSelectionState.update {
@@ -106,9 +109,10 @@ class RelationshipsViewModel(
 
     fun deleteSelectedRelationships() {
         viewModelScope.launch(dispatcher.io()) {
-            val result = deleteRelationships(
-                relationshipSelectionState.value.selectedItems,
-            )
+            val result =
+                deleteRelationships(
+                    relationshipSelectionState.value.selectedItems,
+                )
 
             if (result.isSuccess) {
                 stopSelectingMode()

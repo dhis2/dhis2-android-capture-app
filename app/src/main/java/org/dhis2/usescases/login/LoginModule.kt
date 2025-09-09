@@ -27,15 +27,12 @@ class LoginModule(
     private val viewModelStoreOwner: ViewModelStoreOwner,
     private val userManager: UserManager?,
 ) {
-
     @Provides
     fun provideActivity(): ActivityGlobalAbstract = view.abstractActivity
 
     @Provides
     @PerActivity
-    fun provideResourceManager(
-        colorUtils: ColorUtils,
-    ) = ResourceManager(view.context, colorUtils)
+    fun provideResourceManager(colorUtils: ColorUtils) = ResourceManager(view.context, colorUtils)
 
     @Provides
     @PerActivity
@@ -50,8 +47,8 @@ class LoginModule(
         crashReportController: CrashReportController,
         networkUtils: NetworkUtils,
         repository: LoginRepository,
-    ): LoginViewModel {
-        return ViewModelProvider(
+    ): LoginViewModel =
+        ViewModelProvider(
             viewModelStoreOwner,
             LoginViewModelFactory(
                 view,
@@ -68,30 +65,24 @@ class LoginModule(
                 repository,
             ),
         )[LoginViewModel::class.java]
-    }
 
     @Provides
     @PerActivity
-    fun provideCryptographyManager(): CryptographyManager {
-        return CryptographyManager()
-    }
+    fun provideCryptographyManager(): CryptographyManager = CryptographyManager()
 
     @Provides
     @PerActivity
-    fun openIdProviders(context: Context): OpenIdProviders {
-        return OpenIdProviders(context)
-    }
+    fun openIdProviders(context: Context): OpenIdProviders = OpenIdProviders(context)
 
     @Provides
     @PerActivity
     fun provideLoginRepository(
         context: Context,
         dispatcherProvider: DispatcherProvider,
-    ): LoginRepository {
-        return LoginRepository(
+    ): LoginRepository =
+        LoginRepository(
             context.resources,
             Gson(),
             dispatcherProvider,
         )
-    }
 }

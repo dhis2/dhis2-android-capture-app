@@ -8,10 +8,7 @@ import javax.inject.Singleton
 
 @Module
 open class DispatcherModule {
-
     @Provides
     @Singleton
-    open fun provideDispatcherModule(): DispatcherProvider {
-        return FormDispatcher()
-    }
+    open fun provideDispatcherModule(): DispatcherProvider = FormDispatcher()
 }

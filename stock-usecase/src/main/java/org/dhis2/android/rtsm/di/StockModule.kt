@@ -27,72 +27,73 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val stockModule = module {
-    factory {
-        CompositeDisposable()
-    }
+val stockModule =
+    module {
+        factory {
+            CompositeDisposable()
+        }
 
-    factory<DispatcherProvider> {
-        StockDispatcherProvider()
-    }
+        factory<DispatcherProvider> {
+            StockDispatcherProvider()
+        }
 
-    factory {
-        ColorUtils()
-    }
+        factory {
+            ColorUtils()
+        }
 
-    factory<SpeechRecognitionManager> {
-        SpeechRecognitionManagerImpl(get())
-    }
+        factory<SpeechRecognitionManager> {
+            SpeechRecognitionManagerImpl(get())
+        }
 
-    factory {
-        ResourceManager(get(), get())
-    }
+        factory {
+            ResourceManager(get(), get())
+        }
 
-    factory<FeatureConfigRepository> {
-        FeatureConfigRepositoryImpl(get())
-    }
+        factory<FeatureConfigRepository> {
+            FeatureConfigRepositoryImpl(get())
+        }
 
-    factory<Charts.Dependencies> {
-        AnalyticsDependencies(get(), get(), get(), get(), get())
-    }
+        factory<Charts.Dependencies> {
+            AnalyticsDependencies(get(), get(), get(), get(), get())
+        }
 
-    factory<Charts> {
-        DhisAnalyticCharts.Provider.get(get())
-    }
+        factory<Charts> {
+            DhisAnalyticCharts.Provider.get(get())
+        }
 
-    factory<BaseSchedulerProvider> {
-        SchedulerProviderImpl()
-    }
+        factory<BaseSchedulerProvider> {
+            SchedulerProviderImpl()
+        }
 
-    factory<RuleValidationHelper> {
-        RuleValidationHelperImpl(get())
-    }
+        factory<RuleValidationHelper> {
+            RuleValidationHelperImpl(get())
+        }
 
-    factory<MetadataManager> {
-        MetadataManagerImpl(get(), get())
-    }
+        factory<MetadataManager> {
+            MetadataManagerImpl(get(), get())
+        }
 
-    factory<StockManager> {
-        StockManagerImpl(get(), get(), get(), get(), get())
-    }
+        factory<StockManager> {
+            StockManagerImpl(get(), get(), get(), get(), get())
+        }
 
-    viewModel { params ->
-        HomeViewModel(get(), get(), get(), get(), get(), params.get())
-    }
+        viewModel { params ->
+            HomeViewModel(get(), get(), get(), get(), get(), params.get())
+        }
 
-    factory {
-        StockTableDimensionStore(get())
-    }
+        factory {
+            StockTableDimensionStore(get())
+        }
 
-    factory {
-        StockDispatcherProvider()
-    }
+        factory {
+            StockDispatcherProvider()
+        }
 
-    factory {
-        TableModelMapper(get())
-    }
+        factory {
+            TableModelMapper(get())
+        }
 
-    viewModel {
-        ManageStockViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        viewModel {
+            ManageStockViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(), get())
+        }
     }
-}

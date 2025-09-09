@@ -67,66 +67,72 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class ProgramStageSelectionPresenterTest {
-
     private lateinit var presenter: ProgramStageSelectionPresenter
 
     private val view: ProgramStageSelectionView = mock()
     private val repository: ProgramStageSelectionRepository = mock()
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
-    private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
-    }
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.Unconfined
-    }
+    private val metadataIconProvider: MetadataIconProvider =
+        mock {
+            on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
+        }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn Dispatchers.Unconfined
+        }
     private val createEventUseCase: CreateEventUseCase = mock()
     private val d2ErrorUtils: D2ErrorUtils = mock()
 
     @Before
     fun setUp() {
-        presenter = ProgramStageSelectionPresenter(
-            view,
-            repository,
-            rulesUtils,
-            metadataIconProvider,
-            scheduler,
-            dispatcherProvider,
-            createEventUseCase,
-            d2ErrorUtils,
-        )
+        presenter =
+            ProgramStageSelectionPresenter(
+                view,
+                repository,
+                rulesUtils,
+                metadataIconProvider,
+                scheduler,
+                dispatcherProvider,
+                createEventUseCase,
+                d2ErrorUtils,
+            )
     }
 
     @Test
     fun `Should set programStages`() {
-        val programStages = listOf(
-            ProgramStage.builder().uid("programStage1").build(),
-            ProgramStage.builder().uid("programStage2").build(),
-        )
-        val programStageData = listOf(
-            ProgramStageData(
-                ProgramStage.builder().uid("programStage1").build(),
-                MetadataIconData.defaultIcon(),
-            ),
-            ProgramStageData(
-                ProgramStage.builder().uid("programStage2").build(),
-                MetadataIconData.defaultIcon(),
-            ),
-        )
-        val calcResult = Result.success(
+        val programStages =
             listOf(
-                RuleEffect(
-                    "ruleUid",
-                    RuleAction(
-                        data = null,
-                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                        values = mutableMapOf(
-                            Pair("programStage", "programStage"),
+                ProgramStage.builder().uid("programStage1").build(),
+                ProgramStage.builder().uid("programStage2").build(),
+            )
+        val programStageData =
+            listOf(
+                ProgramStageData(
+                    ProgramStage.builder().uid("programStage1").build(),
+                    MetadataIconData.defaultIcon(),
+                ),
+                ProgramStageData(
+                    ProgramStage.builder().uid("programStage2").build(),
+                    MetadataIconData.defaultIcon(),
+                ),
+            )
+        val calcResult =
+            Result.success(
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            data = null,
+                            type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                            values =
+                                mutableMapOf(
+                                    Pair("programStage", "programStage"),
+                                ),
                         ),
                     ),
                 ),
-            ),
-        )
+            )
 
         whenever(
             repository.enrollmentProgramStages(),
@@ -146,26 +152,31 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should go to programStage when there is only one`() {
-        val programStage = ProgramStage.builder()
-            .uid("programStage")
-            .repeatable(true)
-            .periodType(PeriodType.Daily)
-            .build()
+        val programStage =
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .repeatable(true)
+                .periodType(PeriodType.Daily)
+                .build()
         val programStages = listOf(programStage)
-        val calcResult = Result.success(
-            listOf(
-                RuleEffect(
-                    ruleId = "ruleUid",
-                    ruleAction = RuleAction(
-                        data = null,
-                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                        values = mutableMapOf(
-                            Pair("programStage", "programStage"),
-                        ),
+        val calcResult =
+            Result.success(
+                listOf(
+                    RuleEffect(
+                        ruleId = "ruleUid",
+                        ruleAction =
+                            RuleAction(
+                                data = null,
+                                type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                                values =
+                                    mutableMapOf(
+                                        Pair("programStage", "programStage"),
+                                    ),
+                            ),
                     ),
                 ),
-            ),
-        )
+            )
 
         whenever(
             repository.enrollmentProgramStages(),
@@ -191,20 +202,22 @@ class ProgramStageSelectionPresenterTest {
     fun `Should hide programStage when app`() {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
-        val calcResult = Result.success(
-            listOf(
-                RuleEffect(
-                    "ruleUid",
-                    RuleAction(
-                        data = null,
-                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                        values = mutableMapOf(
-                            Pair("programStage", "programStage"),
+        val calcResult =
+            Result.success(
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            data = null,
+                            type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                            values =
+                                mutableMapOf(
+                                    Pair("programStage", "programStage"),
+                                ),
                         ),
                     ),
                 ),
-            ),
-        )
+            )
 
         whenever(
             rulesUtils.applyRuleEffects(
@@ -258,9 +271,13 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should set result when clicking on a ProgramStage`() {
-        val programStage = ProgramStage.builder().uid("programStage").access(
-            Access.builder().data(DataAccess.builder().write(true).build()).build(),
-        ).build()
+        val programStage =
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .access(
+                    Access.builder().data(DataAccess.builder().write(true).build()).build(),
+                ).build()
 
         presenter.onProgramStageClick(programStage)
 
@@ -269,9 +286,13 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should display permission message when clicking on a ProgramStage without access`() {
-        val programStage = ProgramStage.builder().uid("programStage").access(
-            Access.builder().data(DataAccess.builder().write(false).build()).build(),
-        ).build()
+        val programStage =
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .access(
+                    Access.builder().data(DataAccess.builder().write(false).build()).build(),
+                ).build()
 
         presenter.onProgramStageClick(programStage)
 
@@ -301,64 +322,68 @@ class ProgramStageSelectionPresenterTest {
     }
 
     @Test
-    fun `onOrgUnitForNewEventSelected success`() = runTest {
-        val programUid = "programUid"
-        val orgUnitUid = "orgUnitUid"
-        val programStageUid = "programStageUid"
-        val enrollmentUid = "enrollmentUid"
-        val eventUid = "eventUid"
+    fun `onOrgUnitForNewEventSelected success`() =
+        runTest {
+            val programUid = "programUid"
+            val orgUnitUid = "orgUnitUid"
+            val programStageUid = "programStageUid"
+            val enrollmentUid = "enrollmentUid"
+            val eventUid = "eventUid"
 
-        whenever(
-            createEventUseCase.invoke(
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    orgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn (kotlin.Result.success(eventUid))
+
+            presenter.onOrgUnitForNewEventSelected(
+                programStageUid,
                 programUid,
                 orgUnitUid,
-                programStageUid,
                 enrollmentUid,
-            ),
-        ) doReturn (kotlin.Result.success(eventUid))
+            )
 
-        presenter.onOrgUnitForNewEventSelected(
-            programStageUid,
-            programUid,
-            orgUnitUid,
-            enrollmentUid,
-        )
-
-        verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
-        verifyNoMoreInteractions(view)
-    }
+            verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+            verifyNoMoreInteractions(view)
+        }
 
     @Test
-    fun `onOrgUnitForNewEventSelected failure`() = runTest {
-        val programUid = "programUid"
-        val orgUnitUid = "orgUnitUid"
-        val programStageUid = "programStageUid"
-        val enrollmentUid = "enrollmentUid"
-        val errorMessage = "Error message"
-        val d2Error = D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription(errorMessage)
-            .build()
+    fun `onOrgUnitForNewEventSelected failure`() =
+        runTest {
+            val programUid = "programUid"
+            val orgUnitUid = "orgUnitUid"
+            val programStageUid = "programStageUid"
+            val enrollmentUid = "enrollmentUid"
+            val errorMessage = "Error message"
+            val d2Error =
+                D2Error
+                    .builder()
+                    .errorCode(D2ErrorCode.UNEXPECTED)
+                    .errorDescription(errorMessage)
+                    .build()
 
-        whenever(
-            createEventUseCase.invoke(
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    orgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn (kotlin.Result.failure(d2Error))
+
+            whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
+
+            presenter.onOrgUnitForNewEventSelected(
+                programStageUid,
                 programUid,
                 orgUnitUid,
-                programStageUid,
                 enrollmentUid,
-            ),
-        ) doReturn (kotlin.Result.failure(d2Error))
+            )
 
-        whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
-
-        presenter.onOrgUnitForNewEventSelected(
-            programStageUid,
-            programUid,
-            orgUnitUid,
-            enrollmentUid,
-        )
-
-        verify(view).displayMessage(errorMessage)
-        verifyNoMoreInteractions(view)
-    }
+            verify(view).displayMessage(errorMessage)
+            verifyNoMoreInteractions(view)
+        }
 }

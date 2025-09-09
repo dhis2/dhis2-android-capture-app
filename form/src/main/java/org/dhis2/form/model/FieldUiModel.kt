@@ -9,7 +9,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldUiModel {
-
     val uid: String
 
     val value: String?
@@ -110,6 +109,7 @@ interface FieldUiModel {
 
     interface Callback {
         fun intent(intent: FormIntent)
+
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
     }
 

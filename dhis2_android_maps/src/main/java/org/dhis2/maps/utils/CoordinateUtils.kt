@@ -12,12 +12,17 @@ import org.maplibre.geojson.Polygon
 typealias GeometryCoordinate = String
 
 object CoordinateUtils {
-    fun geometryFromStringCoordinates(featureType: FeatureType, coordinates: String?): Geometry? {
-        return coordinates?.let {
-            val geometry = org.hisp.dhis.android.core.common.Geometry.builder()
-                .type(featureType)
-                .coordinates(it)
-                .build()
+    fun geometryFromStringCoordinates(
+        featureType: FeatureType,
+        coordinates: String?,
+    ): Geometry? =
+        coordinates?.let {
+            val geometry =
+                org.hisp.dhis.android.core.common.Geometry
+                    .builder()
+                    .type(featureType)
+                    .coordinates(it)
+                    .build()
             when (featureType) {
                 FeatureType.POINT -> buildPointGeometry(geometry)
                 FeatureType.POLYGON -> buildPolygonGeometry(geometry)
@@ -25,10 +30,9 @@ object CoordinateUtils {
                     null
             }
         }
-    }
 
-    fun geometryCoordinates(geometry: Geometry?): GeometryCoordinate? {
-        return when (geometry) {
+    fun geometryCoordinates(geometry: Geometry?): GeometryCoordinate? =
+        when (geometry) {
             is Point -> {
                 Gson().toJson(
                     geometry.coordinates().map { coordinate -> coordinate.truncate() },
@@ -36,32 +40,31 @@ object CoordinateUtils {
             }
 
             is Polygon -> {
-                val value = geometry.coordinates().map { polygon ->
-                    polygon.map { point ->
-                        point.coordinates().map { coordinate -> coordinate.truncate() }
+                val value =
+                    geometry.coordinates().map { polygon ->
+                        polygon.map { point ->
+                            point.coordinates().map { coordinate -> coordinate.truncate() }
+                        }
                     }
-                }
                 Gson().toJson(value)
             }
 
             else -> null
         }
-    }
 
-    private fun buildPointGeometry(geometry: org.hisp.dhis.android.core.common.Geometry): Geometry {
-        return with(GeometryHelper.getPoint(geometry).toLatLng()) {
+    private fun buildPointGeometry(geometry: org.hisp.dhis.android.core.common.Geometry): Geometry =
+        with(GeometryHelper.getPoint(geometry).toLatLng()) {
             Point.fromLngLat(longitude, latitude)
         }
-    }
 
-    private fun buildPolygonGeometry(geometry: org.hisp.dhis.android.core.common.Geometry): Geometry {
-        return with(GeometryHelper.getPolygon(geometry)) {
-            val polygonPointList = map { polygon ->
-                polygon.map {
-                    Point.fromLngLat(it[0], it[1])
+    private fun buildPolygonGeometry(geometry: org.hisp.dhis.android.core.common.Geometry): Geometry =
+        with(GeometryHelper.getPolygon(geometry)) {
+            val polygonPointList =
+                map { polygon ->
+                    polygon.map {
+                        Point.fromLngLat(it[0], it[1])
+                    }
                 }
-            }
             Polygon.fromLngLats(polygonPointList)
         }
-    }
 }

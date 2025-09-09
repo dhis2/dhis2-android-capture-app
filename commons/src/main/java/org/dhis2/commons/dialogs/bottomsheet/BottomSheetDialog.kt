@@ -54,43 +54,42 @@ class BottomSheetDialog(
     val content: @Composable
     ((BottomSheetShellImplementation, scrollState: LazyListState) -> Unit)? = null,
 ) : BottomSheetDialogFragment() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
     }
 
-    private fun getSecondaryButtonColor(buttonStyle: DialogButtonStyle): ColorStyle {
-        return when (buttonStyle) {
+    private fun getSecondaryButtonColor(buttonStyle: DialogButtonStyle): ColorStyle =
+        when (buttonStyle) {
             is DialogButtonStyle.DiscardButton -> ColorStyle.WARNING
             else -> ColorStyle.DEFAULT
         }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DHIS2Theme {
                     val scrollState = rememberLazyListState()
                     BottomSheetShell(
-                        uiState = BottomSheetShellUIState(
-                            bottomPadding = bottomSheetLowerPadding(),
-                            showBottomSectionDivider = showBottomDivider,
-                            showTopSectionDivider = showTopDivider,
-                            title = bottomSheetDialogUiModel.title,
-                            description = when (bottomSheetDialogUiModel.clickableWord) {
-                                null -> bottomSheetDialogUiModel.message
-                                else -> null
-                            },
-                            headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
-                        ),
+                        uiState =
+                            BottomSheetShellUIState(
+                                bottomPadding = bottomSheetLowerPadding(),
+                                showBottomSectionDivider = showBottomDivider,
+                                showTopSectionDivider = showTopDivider,
+                                title = bottomSheetDialogUiModel.title,
+                                description =
+                                    when (bottomSheetDialogUiModel.clickableWord) {
+                                        null -> bottomSheetDialogUiModel.message
+                                        else -> null
+                                    },
+                                headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
+                            ),
                         windowInsets = { bottomSheetInsets() },
-
                         icon = {
                             if (bottomSheetDialogUiModel.iconResource != -1) {
                                 Icon(
@@ -106,36 +105,35 @@ class BottomSheetDialog(
                                 bottomSheetDialogUiModel = bottomSheetDialogUiModel,
                                 onMainButtonClicked = onMainButtonClicked,
                                 onSecondaryButtonClicked = onSecondaryButtonClicked,
-
                             )
                         },
                         onDismiss = {
                             dismiss()
                         },
-                        content = when {
-                            content != null -> {
-                                {
-                                    content.invoke(this@BottomSheetDialog, scrollState)
+                        content =
+                            when {
+                                content != null -> {
+                                    {
+                                        content.invoke(this@BottomSheetDialog, scrollState)
+                                    }
                                 }
-                            }
 
-                            bottomSheetDialogUiModel.clickableWord != null -> {
-                                {
-                                    ClickableTextContent(
-                                        bottomSheetDialogUiModel.message ?: "",
-                                        bottomSheetDialogUiModel.clickableWord!!,
-                                    )
+                                bottomSheetDialogUiModel.clickableWord != null -> {
+                                    {
+                                        ClickableTextContent(
+                                            bottomSheetDialogUiModel.message ?: "",
+                                            bottomSheetDialogUiModel.clickableWord!!,
+                                        )
+                                    }
                                 }
-                            }
 
-                            else -> null
-                        },
+                                else -> null
+                            },
                         contentScrollState = scrollState,
                     )
                 }
             }
         }
-    }
 
     @Composable
     fun BottomSheetButtons(
@@ -151,18 +149,20 @@ class BottomSheetDialog(
 
                         Button(
                             style = bottomSheetDialogUiModel.secondaryButton?.buttonStyle ?: ButtonStyle.TEXT,
-                            text = bottomSheetDialogUiModel.secondaryButton?.let {
-                                it.textLabel
-                                    ?: stringResource(id = it.textResource)
-                            } ?: "",
+                            text =
+                                bottomSheetDialogUiModel.secondaryButton?.let {
+                                    it.textLabel
+                                        ?: stringResource(id = it.textResource)
+                                } ?: "",
                             colorStyle = getSecondaryButtonColor(style),
                             onClick = {
                                 onSecondaryButtonClicked()
                                 dismiss()
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag(SECONDARY_BUTTON_TAG),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .testTag(SECONDARY_BUTTON_TAG),
                         )
                     }
                 },
@@ -171,15 +171,16 @@ class BottomSheetDialog(
                         Button(
                             style = ButtonStyle.FILLED,
                             text =
-                            it.textLabel
-                                ?: stringResource(id = it.textResource),
+                                it.textLabel
+                                    ?: stringResource(id = it.textResource),
                             onClick = {
                                 onMainButtonClicked(this@BottomSheetDialog)
                                 dismiss()
                             },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .testTag(MAIN_BUTTON_TAG),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .testTag(MAIN_BUTTON_TAG),
                         )
                     }
                 },
@@ -188,28 +189,35 @@ class BottomSheetDialog(
     }
 
     @Composable
-    private fun ClickableTextContent(originalText: String, clickableText: String) {
+    private fun ClickableTextContent(
+        originalText: String,
+        clickableText: String,
+    ) {
         Column(Modifier.padding(Spacing.Spacing0)) {
             ClickableText(
-                modifier = Modifier
-                    .testTag(CLICKABLE_TEXT_TAG)
-                    .fillMaxWidth(),
-                text = buildAnnotatedString {
-                    val clickableWordIndex = originalText.indexOf(clickableText)
-                    append(originalText)
-                    addStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            textDecoration = TextDecoration.Underline,
-                        ),
-                        start = clickableWordIndex,
-                        end = clickableWordIndex + clickableText.length,
-                    )
-                },
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = TextColor.OnSurfaceLight,
-                    textAlign = TextAlign.Start,
-                ),
+                modifier =
+                    Modifier
+                        .testTag(CLICKABLE_TEXT_TAG)
+                        .fillMaxWidth(),
+                text =
+                    buildAnnotatedString {
+                        val clickableWordIndex = originalText.indexOf(clickableText)
+                        append(originalText)
+                        addStyle(
+                            style =
+                                SpanStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    textDecoration = TextDecoration.Underline,
+                                ),
+                            start = clickableWordIndex,
+                            end = clickableWordIndex + clickableText.length,
+                        )
+                    },
+                style =
+                    MaterialTheme.typography.bodyMedium.copy(
+                        color = TextColor.OnSurfaceLight,
+                        textAlign = TextAlign.Start,
+                    ),
                 onClick = {
                     onMessageClick()
                 },
@@ -218,7 +226,10 @@ class BottomSheetDialog(
     }
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver.addOnGlobalLayoutListener {
             val dialog = dialog as BottomSheetDialog
@@ -231,17 +242,25 @@ class BottomSheetDialog(
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.peekHeight = 0
 
-            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(
+                        bottomSheet: View,
+                        newState: Int,
+                    ) {
+                        if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        }
                     }
-                }
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                    /*NoUse*/
-                }
-            })
+                    override fun onSlide(
+                        bottomSheet: View,
+                        slideOffset: Float,
+                    ) {
+                        // NoUse
+                    }
+                },
+            )
         }
     }
 }

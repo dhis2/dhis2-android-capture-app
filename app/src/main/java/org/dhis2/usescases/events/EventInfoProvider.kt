@@ -48,8 +48,8 @@ class EventInfoProvider(
     private val cachedDisplayOrgUnit = mutableMapOf<String, Boolean>()
     private val cachedStages = mutableMapOf<String, ProgramStage>()
 
-    fun getEventTitle(event: Event): String {
-        return when (event.status()) {
+    fun getEventTitle(event: Event): String =
+        when (event.status()) {
             EventStatus.SCHEDULE -> {
                 dateLabelProvider.scheduleFormat(
                     event.eventDate(),
@@ -59,63 +59,65 @@ class EventInfoProvider(
 
             else -> dateLabelProvider.format(event.eventDate())
         }
-    }
 
-    fun getAvatar(event: Event, useMetadataIcon: Boolean = false): AvatarProviderConfiguration {
+    fun getAvatar(
+        event: Event,
+        useMetadataIcon: Boolean = false,
+    ): AvatarProviderConfiguration {
         val stage = event.programStage()?.let { getStage(it) }
         val enrollment = event.enrollment()?.let { d2.enrollment(it) }
         val tei = enrollment?.trackedEntityInstance()?.let { d2.tei(it) }
 
         return if (tei != null && !useMetadataIcon) {
             val profilePath = profilePictureProvider(tei, event.program())
-            val firstAttributeValue = d2.trackedEntityModule().trackedEntitySearch()
-                .uid(tei.uid())
-                .blockingGet()
-                ?.attributeValues
-                ?.firstOrNull()
+            val firstAttributeValue =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntitySearch()
+                    .uid(tei.uid())
+                    .blockingGet()
+                    ?.attributeValues
+                    ?.firstOrNull()
             if (profilePath.isNotEmpty()) {
                 AvatarProviderConfiguration.ProfilePic(
                     profilePicturePath = profilePath,
                 )
             } else {
                 AvatarProviderConfiguration.MainValueLabel(
-                    firstMainValue = firstAttributeValue?.value?.firstOrNull()?.toString()
-                        ?: "",
+                    firstMainValue =
+                        firstAttributeValue?.value?.firstOrNull()?.toString()
+                            ?: "",
                 )
             }
         } else {
             AvatarProviderConfiguration.Metadata(
-                metadataIconData = metadataIconProvider(
-                    style = stage?.style() ?: ObjectStyle.builder().build(),
-
-                ),
+                metadataIconData =
+                    metadataIconProvider(
+                        style = stage?.style() ?: ObjectStyle.builder().build(),
+                    ),
             )
         }
     }
 
-    fun getEventDescription(event: Event): String? {
-        return event.programStage()?.let { getStage(it)?.displayDescription() }
-    }
+    fun getEventDescription(event: Event): String? = event.programStage()?.let { getStage(it)?.displayDescription() }
 
-    fun getEventLastUpdated(event: Event): String {
-        return dateLabelProvider.span(event.lastUpdated())
-    }
+    fun getEventLastUpdated(event: Event): String = dateLabelProvider.span(event.lastUpdated())
 
-    fun getAdditionInfoList(
-        event: Event,
-    ): MutableList<AdditionalInfoItem> {
+    fun getAdditionInfoList(event: Event): MutableList<AdditionalInfoItem> {
         val program = event.program()?.let { getProgram(it) }
 
         val displayOrgUnit = program?.uid()?.let { getDisplayOrgUnit(it) } == true
 
-        val list = getEventValues(event.uid(), event.programStage()).filter {
-            it.second.isNotEmpty() && it.second != "-"
-        }.map {
-            AdditionalInfoItem(
-                key = it.first,
-                value = it.second,
-            )
-        }.toMutableList()
+        val list =
+            getEventValues(event.uid(), event.programStage())
+                .filter {
+                    it.second.isNotEmpty() && it.second != "-"
+                }.map {
+                    AdditionalInfoItem(
+                        key = it.first,
+                        value = it.second,
+                    )
+                }.toMutableList()
 
         if (displayOrgUnit) {
             checkRegisteredIn(
@@ -154,11 +156,12 @@ class EventInfoProvider(
         val enrollment = event.enrollment()?.let { d2.enrollment(it) }
         return if (stage != null) {
             RelatedInfo(
-                event = RelatedInfo.Event(
-                    stageUid = stage.uid(),
-                    stageDisplayName = stage.displayName() ?: stage.uid(),
-                    teiUid = enrollment?.uid(),
-                ),
+                event =
+                    RelatedInfo.Event(
+                        stageUid = stage.uid(),
+                        stageDisplayName = stage.displayName() ?: stage.uid(),
+                        teiUid = enrollment?.uid(),
+                    ),
             )
         } else {
             null
@@ -169,25 +172,41 @@ class EventInfoProvider(
         eventUid: String,
         eventStageUid: String? = null,
     ): List<Pair<String, String>> {
-        val stageUid = eventStageUid
-            ?: d2.eventModule().events()
-                .uid(eventUid)
-                .blockingGet()
-                ?.programStage()
+        val stageUid =
+            eventStageUid
+                ?: d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .blockingGet()
+                    ?.programStage()
 
-        val displayInListDataElements = d2.programModule().programStageDataElements()
-            .byProgramStage().eq(stageUid)
-            .byDisplayInReports().isTrue
-            .blockingGet().map {
-                it.dataElement()?.uid()!!
-            }
+        val displayInListDataElements =
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq(stageUid)
+                .byDisplayInReports()
+                .isTrue
+                .blockingGet()
+                .map {
+                    it.dataElement()?.uid()!!
+                }
 
         return if (displayInListDataElements.isNotEmpty()) {
             displayInListDataElements.mapNotNull {
-                val valueRepo = d2.trackedEntityModule().trackedEntityDataValues()
-                    .value(eventUid, it)
-                val de = d2.dataElementModule().dataElements()
-                    .uid(it).blockingGet()
+                val valueRepo =
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityDataValues()
+                        .value(eventUid, it)
+                val de =
+                    d2
+                        .dataElementModule()
+                        .dataElements()
+                        .uid(it)
+                        .blockingGet()
                 if (isAcceptedValueType(de?.valueType())) {
                     Pair(
                         de?.displayFormName() ?: de?.displayName() ?: "-",
@@ -206,20 +225,22 @@ class EventInfoProvider(
         }
     }
 
-    private fun isAcceptedValueType(valueType: ValueType?): Boolean {
-        return when (valueType) {
+    private fun isAcceptedValueType(valueType: ValueType?): Boolean =
+        when (valueType) {
             ValueType.IMAGE, ValueType.COORDINATE, ValueType.FILE_RESOURCE -> false
             else -> true
         }
-    }
 
     private fun checkRegisteredIn(
         list: MutableList<AdditionalInfoItem>,
         orgUnitUid: String?,
     ) {
-        val orgUnit = d2.organisationUnitModule().organisationUnits()
-            .uid(orgUnitUid)
-            .blockingGet()
+        val orgUnit =
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
+                .uid(orgUnitUid)
+                .blockingGet()
         list.add(
             AdditionalInfoItem(
                 key = resourceManager.getString(R.string.registered_in),
@@ -234,25 +255,33 @@ class EventInfoProvider(
         event: Event,
         programCatComboUid: String?,
     ) {
-        val programCatCombo = d2.categoryModule().categoryCombos()
-            .uid(programCatComboUid)
-            .blockingGet()
-        programCatCombo?.let { categoryCombo ->
-            val catOptCombo = d2.categoryModule().categoryOptionCombos()
-                .uid(event.attributeOptionCombo())
+        val programCatCombo =
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .uid(programCatComboUid)
                 .blockingGet()
+        programCatCombo?.let { categoryCombo ->
+            val catOptCombo =
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .uid(event.attributeOptionCombo())
+                    .blockingGet()
 
-            catOptCombo?.displayName().takeIf { displayName ->
-                !displayName.isNullOrEmpty() && displayName != "default"
-            }?.let { displayName ->
-                list.add(
-                    AdditionalInfoItem(
-                        key = categoryCombo.displayName(),
-                        value = displayName,
-                        isConstantItem = true,
-                    ),
-                )
-            }
+            catOptCombo
+                ?.displayName()
+                .takeIf { displayName ->
+                    !displayName.isNullOrEmpty() && displayName != "default"
+                }?.let { displayName ->
+                    list.add(
+                        AdditionalInfoItem(
+                            key = categoryCombo.displayName(),
+                            value = displayName,
+                            isConstantItem = true,
+                        ),
+                    )
+                }
         }
     }
 
@@ -261,74 +290,83 @@ class EventInfoProvider(
         status: EventStatus?,
         dueDate: Date?,
     ) {
-        val item = when (status) {
-            EventStatus.ACTIVE -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = resourceManager.getString(R.string.event_not_completed),
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.event_not_completed),
-                    isConstantItem = true,
-                    color = SurfaceColor.Primary,
-                )
+        val item =
+            when (status) {
+                EventStatus.ACTIVE -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = resourceManager.getString(R.string.event_not_completed),
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.event_not_completed),
+                        isConstantItem = true,
+                        color = SurfaceColor.Primary,
+                    )
+                }
+
+                EventStatus.SCHEDULE -> {
+                    val text = dueDate.toOverdueOrScheduledUiText(resourceManager)
+                    val color =
+                        if (dateUtils.isEventDueDateOverdue(
+                                dueDate,
+                            )
+                        ) {
+                            AdditionalInfoItemColor.ERROR.color
+                        } else {
+                            AdditionalInfoItemColor.SUCCESS.color
+                        }
+                    val iconVector = if (dateUtils.isEventDueDateOverdue(dueDate)) Icons.Outlined.EventBusy else Icons.Outlined.Event
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = iconVector,
+                                contentDescription = text,
+                                tint = color,
+                            )
+                        },
+                        value = text,
+                        isConstantItem = true,
+                        color = color,
+                    )
+                }
+
+                EventStatus.SKIPPED -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.EventBusy,
+                                contentDescription = resourceManager.getString(R.string.skipped),
+                                tint = AdditionalInfoItemColor.DISABLED.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.skipped),
+                        isConstantItem = true,
+                        color = AdditionalInfoItemColor.DISABLED.color,
+                    )
+                }
+
+                EventStatus.OVERDUE -> {
+                    val overdueText = dueDate.toOverdueOrScheduledUiText(resourceManager)
+
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.EventBusy,
+                                contentDescription = overdueText,
+                                tint = AdditionalInfoItemColor.ERROR.color,
+                            )
+                        },
+                        value = overdueText,
+                        isConstantItem = true,
+                        color = AdditionalInfoItemColor.ERROR.color,
+                    )
+                }
+
+                else -> null
             }
-
-            EventStatus.SCHEDULE -> {
-                val text = dueDate.toOverdueOrScheduledUiText(resourceManager)
-                val color = if (dateUtils.isEventDueDateOverdue(dueDate)) AdditionalInfoItemColor.ERROR.color else AdditionalInfoItemColor.SUCCESS.color
-                val iconVector = if (dateUtils.isEventDueDateOverdue(dueDate)) Icons.Outlined.EventBusy else Icons.Outlined.Event
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = iconVector,
-                            contentDescription = text,
-                            tint = color,
-                        )
-                    },
-                    value = text,
-                    isConstantItem = true,
-                    color = color,
-                )
-            }
-
-            EventStatus.SKIPPED -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.EventBusy,
-                            contentDescription = resourceManager.getString(R.string.skipped),
-                            tint = AdditionalInfoItemColor.DISABLED.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.skipped),
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.DISABLED.color,
-                )
-            }
-
-            EventStatus.OVERDUE -> {
-                val overdueText = dueDate.toOverdueOrScheduledUiText(resourceManager)
-
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.EventBusy,
-                            contentDescription = overdueText,
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                    },
-                    value = overdueText,
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.ERROR.color,
-                )
-            }
-
-            else -> null
-        }
         item?.let { list.add(it) }
     }
 
@@ -336,71 +374,75 @@ class EventInfoProvider(
         list: MutableList<AdditionalInfoItem>,
         state: State?,
     ) {
-        val item = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = resourceManager.getString(R.string.not_synced),
-                            tint = AdditionalInfoItemColor.DISABLED.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.not_synced),
-                    color = AdditionalInfoItemColor.DISABLED.color,
-                    isConstantItem = true,
-                )
-            }
+        val item =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncDisabled,
+                                contentDescription = resourceManager.getString(R.string.not_synced),
+                                tint = AdditionalInfoItemColor.DISABLED.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.not_synced),
+                        color = AdditionalInfoItemColor.DISABLED.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.UPLOADING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
-                    },
-                    value = resourceManager.getString(R.string.syncing),
-                    color = SurfaceColor.Primary,
-                    isConstantItem = true,
-                )
-            }
+                State.UPLOADING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        },
+                        value = resourceManager.getString(R.string.syncing),
+                        color = SurfaceColor.Primary,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.ERROR -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_error_title),
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_error_title),
-                    color = AdditionalInfoItemColor.ERROR.color,
-                    isConstantItem = true,
-                )
-            }
+                State.ERROR -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_error_title),
+                                tint = AdditionalInfoItemColor.ERROR.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_error_title),
+                        color = AdditionalInfoItemColor.ERROR.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.WARNING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
-                            tint = AdditionalInfoItemColor.WARNING.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_dialog_title_warning),
-                    color = AdditionalInfoItemColor.WARNING.color,
-                    isConstantItem = true,
-                )
-            }
+                State.WARNING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
+                                tint = AdditionalInfoItemColor.WARNING.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_dialog_title_warning),
+                        color = AdditionalInfoItemColor.WARNING.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            else -> null
-        }
+                else -> null
+            }
         item?.let { list.add(it) }
     }
 
-    private fun checkViewOnly(list: MutableList<AdditionalInfoItem>, event: Event) {
+    private fun checkViewOnly(
+        list: MutableList<AdditionalInfoItem>,
+        event: Event,
+    ) {
         val editable = d2.eventModule().eventService().blockingIsEditable(event.uid())
         if (!editable) {
             list.add(
@@ -420,21 +462,29 @@ class EventInfoProvider(
         }
     }
 
-    private fun getStage(programStageUid: String) = fromCache(cachedStages, programStageUid) {
-        d2.programModule().programStages()
-            .uid(programStageUid)
-            .blockingGet()
-    }
+    private fun getStage(programStageUid: String) =
+        fromCache(cachedStages, programStageUid) {
+            d2
+                .programModule()
+                .programStages()
+                .uid(programStageUid)
+                .blockingGet()
+        }
 
-    private fun getProgram(programUid: String) = fromCache(cachedPrograms, programUid) {
-        d2.programModule().programs()
-            .uid(programUid)
-            .blockingGet()
-    }
+    private fun getProgram(programUid: String) =
+        fromCache(cachedPrograms, programUid) {
+            d2
+                .programModule()
+                .programs()
+                .uid(programUid)
+                .blockingGet()
+        }
 
     private fun getDisplayOrgUnit(programUid: String) =
         fromCache(cachedDisplayOrgUnit, programUid) {
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byProgramUids(listOf(programUid))
                 .blockingCount() > 1
         } == true

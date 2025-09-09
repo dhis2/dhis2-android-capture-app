@@ -56,7 +56,6 @@ import javax.inject.Inject
 class EventMapFragment :
     FragmentGlobalAbstract(),
     EventMapFragmentView {
-
     @Inject
     lateinit var mapNavigation: org.dhis2.maps.ExternalMapNavigation
 
@@ -72,7 +71,8 @@ class EventMapFragment :
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        (activity as ProgramEventDetailActivity).component
+        (activity as ProgramEventDetailActivity)
+            .component
             ?.plus(EventMapModule(this))
             ?.inject(this)
         programEventsViewModel.setProgress(true)
@@ -102,12 +102,14 @@ class EventMapFragment :
 
                     LaunchedEffect(key1 = items) {
                         eventMapData?.let { data ->
-                            eventMapManager?.takeIf { it.isMapReady() }?.update(
-                                data.featureCollectionMap,
-                                data.boundingBox,
-                            ).also {
-                                presenter.mapManager = eventMapManager
-                            }
+                            eventMapManager
+                                ?.takeIf { it.isMapReady() }
+                                ?.update(
+                                    data.featureCollectionMap,
+                                    data.boundingBox,
+                                ).also {
+                                    presenter.mapManager = eventMapManager
+                                }
                         }
                     }
 
@@ -117,8 +119,10 @@ class EventMapFragment :
                         onItemScrolled = { item ->
                             with(eventMapManager) {
                                 this?.requestMapLayerManager()?.selectFeature(null)
-                                this?.findFeatures(item.uid)
-                                    ?.takeIf { it.isNotEmpty() }?.let { features ->
+                                this
+                                    ?.findFeatures(item.uid)
+                                    ?.takeIf { it.isNotEmpty() }
+                                    ?.let { features ->
                                         map?.centerCameraOnFeatures(features)
                                     }
                             }
@@ -144,12 +148,13 @@ class EventMapFragment :
                                         val mapLayerDialog =
                                             MapLayerDialog.newInstance(presenter.programUid())
                                         mapLayerDialog.mapManager = presenter.mapManager
-                                        mapLayerDialog.setOnLayersVisibilityListener { layersVisibility ->
-                                            presenter.filterVisibleMapItems(layersVisibility)
-                                        }.show(
-                                            childFragmentManager,
-                                            MapLayerDialog::class.java.name,
-                                        )
+                                        mapLayerDialog
+                                            .setOnLayersVisibilityListener { layersVisibility ->
+                                                presenter.filterVisibleMapItems(layersVisibility)
+                                            }.show(
+                                                childFragmentManager,
+                                                MapLayerDialog::class.java.name,
+                                            )
                                     }
                                 }
                             }
@@ -167,38 +172,45 @@ class EventMapFragment :
                                         loadMap(it, savedInstanceState)
                                     }
                                 },
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .testTag("MAP"),
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .testTag("MAP"),
                             ) {}
                         },
                         onItem = { item ->
                             ListCard(
-                                modifier = Modifier
-                                    .fillParentMaxWidth()
-                                    .testTag("MAP_ITEM"),
-                                listCardState = rememberListCardState(
-                                    title = ListCardTitleModel(
-                                        text = item.title,
-                                        allowOverflow = false,
+                                modifier =
+                                    Modifier
+                                        .fillParentMaxWidth()
+                                        .testTag("MAP_ITEM"),
+                                listCardState =
+                                    rememberListCardState(
+                                        title =
+                                            ListCardTitleModel(
+                                                text = item.title,
+                                                allowOverflow = false,
+                                            ),
+                                        description =
+                                            item.description?.let {
+                                                ListCardDescriptionModel(
+                                                    text = it,
+                                                )
+                                            },
+                                        lastUpdated = item.lastUpdated,
+                                        additionalInfoColumnState =
+                                            rememberAdditionalInfoColumnState(
+                                                additionalInfoList = item.additionalInfoList,
+                                                syncProgressItem =
+                                                    AdditionalInfoItem(
+                                                        key = stringResource(id = R.string.syncing),
+                                                        value = "",
+                                                    ),
+                                                expandLabelText = stringResource(id = R.string.show_more),
+                                                shrinkLabelText = stringResource(id = R.string.show_less),
+                                                scrollableContent = true,
+                                            ),
                                     ),
-                                    description = item.description?.let {
-                                        ListCardDescriptionModel(
-                                            text = it,
-                                        )
-                                    },
-                                    lastUpdated = item.lastUpdated,
-                                    additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                                        additionalInfoList = item.additionalInfoList,
-                                        syncProgressItem = AdditionalInfoItem(
-                                            key = stringResource(id = R.string.syncing),
-                                            value = "",
-                                        ),
-                                        expandLabelText = stringResource(id = R.string.show_more),
-                                        shrinkLabelText = stringResource(id = R.string.show_less),
-                                        scrollableContent = true,
-                                    ),
-                                ),
                                 actionButton = {
                                     SyncButtonProvider(state = item.state) {
                                         programEventsViewModel.eventSyncClicked.value = item.uid
@@ -210,38 +222,40 @@ class EventMapFragment :
                                 },
                                 listAvatar = {
                                     Avatar(
-                                        style = when (
-                                            val config =
-                                                item.avatarProviderConfiguration
-                                        ) {
-                                            is AvatarProviderConfiguration.MainValueLabel ->
-                                                AvatarStyleData.Text(
-                                                    config.firstMainValue.firstOrNull()?.toString()
-                                                        ?: "?",
-                                                )
+                                        style =
+                                            when (
+                                                val config =
+                                                    item.avatarProviderConfiguration
+                                            ) {
+                                                is AvatarProviderConfiguration.MainValueLabel ->
+                                                    AvatarStyleData.Text(
+                                                        config.firstMainValue.firstOrNull()?.toString()
+                                                            ?: "?",
+                                                    )
 
-                                            is AvatarProviderConfiguration.Metadata ->
-                                                AvatarStyleData.Metadata(
-                                                    imageCardData = config.metadataIconData.imageCardData,
-                                                    avatarSize = config.size,
-                                                    tintColor = config.metadataIconData.color,
-                                                )
+                                                is AvatarProviderConfiguration.Metadata ->
+                                                    AvatarStyleData.Metadata(
+                                                        imageCardData = config.metadataIconData.imageCardData,
+                                                        avatarSize = config.size,
+                                                        tintColor = config.metadataIconData.color,
+                                                    )
 
-                                            is AvatarProviderConfiguration.ProfilePic ->
-                                                AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
-                                        },
-                                        onImageClick = when (
-                                            val config =
-                                                item.avatarProviderConfiguration
-                                        ) {
-                                            is AvatarProviderConfiguration.Metadata,
-                                            is AvatarProviderConfiguration.MainValueLabel,
-                                            -> null
+                                                is AvatarProviderConfiguration.ProfilePic ->
+                                                    AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                            },
+                                        onImageClick =
+                                            when (
+                                                val config =
+                                                    item.avatarProviderConfiguration
+                                            ) {
+                                                is AvatarProviderConfiguration.Metadata,
+                                                is AvatarProviderConfiguration.MainValueLabel,
+                                                -> null
 
-                                            is AvatarProviderConfiguration.ProfilePic -> {
-                                                { launchImageDetail(config.profilePicturePath) }
-                                            }
-                                        },
+                                                is AvatarProviderConfiguration.ProfilePic -> {
+                                                    { launchImageDetail(config.profilePicturePath) }
+                                                }
+                                            },
                                     )
                                 },
                             )
@@ -265,8 +279,9 @@ class EventMapFragment :
             programEventsViewModel.setProgress(true)
             presenter.getEventInfo(eventUid)
         }
-        val exists = childFragmentManager
-            .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
+        val exists =
+            childFragmentManager
+                .findFragmentByTag(MapLayerDialog::class.java.name) as MapLayerDialog?
         exists?.dismiss()
     }
 
@@ -299,7 +314,10 @@ class EventMapFragment :
         )
     }
 
-    private fun loadMap(mapView: MapView, savedInstanceState: Bundle?) {
+    private fun loadMap(
+        mapView: MapView,
+        savedInstanceState: Bundle?,
+    ) {
         eventMapManager = EventMapManager(mapView, MapLocationEngine(requireContext()))
         eventMapManager?.also {
             lifecycle.addObserver(it)

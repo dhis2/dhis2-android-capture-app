@@ -5,7 +5,6 @@ import org.maplibre.android.geometry.LatLng
 const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
 
 object CalculateCameraAnimationDuration {
-
     operator fun invoke(
         currentPosition: LatLng,
         targetPosition: LatLng,

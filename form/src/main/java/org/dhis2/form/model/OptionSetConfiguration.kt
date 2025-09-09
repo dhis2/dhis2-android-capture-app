@@ -17,15 +17,14 @@ data class OptionSetConfiguration(
         fun optionDataFlow(
             flow: Flow<PagingData<Option>>,
             fetchMetadataIconData: (option: Option) -> MetadataIconData,
-        ) =
-            flow.map { pagingData ->
-                pagingData.map { option ->
-                    OptionData(
-                        option = option,
-                        metadataIconData = fetchMetadataIconData(option),
-                    )
-                }
+        ) = flow.map { pagingData ->
+            pagingData.map { option ->
+                OptionData(
+                    option = option,
+                    metadataIconData = fetchMetadataIconData(option),
+                )
             }
+        }
     }
 
     data class OptionData(

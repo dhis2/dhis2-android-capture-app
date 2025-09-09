@@ -18,36 +18,42 @@ internal suspend fun IndicatorMap.toTableModel(
 ) = TableModel(
     id = INDICATOR_TABLE_UID,
     title = resourceManager.indicatorsLabel(),
-    tableHeaderModel = TableHeader(
-        rows = listOf(
-            TableHeaderRow(
-                cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
-            ),
+    tableHeaderModel =
+        TableHeader(
+            rows =
+                listOf(
+                    TableHeaderRow(
+                        cells = listOf(TableHeaderCell(resourceManager.defaultHeaderLabel())),
+                    ),
+                ),
+            extraColumns = emptyList(),
         ),
-        extraColumns = emptyList(),
-    ),
-    tableRows = entries.mapIndexed { index, (key, value) ->
-        val rowIndex = index + absoluteRowIndex
-        TableRowModel(
-            rowHeaders = listOf(
-                RowHeader(
-                    id = key,
-                    title = key,
-                    row = rowIndex,
-                    column = 0,
-                ),
-            ),
-            values = mapOf(
-                0 to TableCell(
-                    id = key,
-                    row = rowIndex,
-                    column = 0,
-                    content = TableCellContent.Text(value),
-                    editable = false,
-                    mandatory = false,
-                    legendColor = null,
-                ),
-            ),
-        )
-    },
+    tableRows =
+        entries.mapIndexed { index, (key, value) ->
+            val rowIndex = index + absoluteRowIndex
+            TableRowModel(
+                rowHeaders =
+                    listOf(
+                        RowHeader(
+                            id = key,
+                            title = key,
+                            row = rowIndex,
+                            column = 0,
+                        ),
+                    ),
+                values =
+                    mapOf(
+                        0 to
+                            TableCell(
+                                id = key,
+                                row = rowIndex,
+                                column = 0,
+                                content = TableCellContent.Text(value),
+                                editable = false,
+                                mandatory = false,
+                                legendColor = null,
+                            ),
+                    ),
+            )
+        },
 )

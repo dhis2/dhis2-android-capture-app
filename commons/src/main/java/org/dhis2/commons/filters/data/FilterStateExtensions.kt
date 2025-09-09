@@ -5,7 +5,9 @@ import org.dhis2.commons.R
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.common.State
 
-enum class StateFilter(@StringRes val stateName: Int) {
+enum class StateFilter(
+    @StringRes val stateName: Int,
+) {
     TO_POST(R.string.state_to_post),
     TO_UPDATE(R.string.state_to_update),
     ERROR(R.string.state_error),
@@ -17,8 +19,8 @@ enum class StateFilter(@StringRes val stateName: Int) {
     SYNCED_VIA_SMS(R.string.sync_by_sms),
 }
 
-fun State.toStringResource(): Int {
-    return when (this) {
+fun State.toStringResource(): Int =
+    when (this) {
         State.TO_POST -> StateFilter.TO_POST.stateName
         State.TO_UPDATE -> StateFilter.TO_UPDATE.stateName
         State.ERROR -> StateFilter.ERROR.stateName
@@ -29,8 +31,5 @@ fun State.toStringResource(): Int {
         State.SENT_VIA_SMS -> StateFilter.SENT_VIA_SMS.stateName
         State.SYNCED_VIA_SMS -> StateFilter.SYNCED_VIA_SMS.stateName
     }
-}
 
-fun State.toStringValue(resourceManager: ResourceManager): String {
-    return resourceManager.getString(toStringResource())
-}
+fun State.toStringValue(resourceManager: ResourceManager): String = resourceManager.getString(toStringResource())

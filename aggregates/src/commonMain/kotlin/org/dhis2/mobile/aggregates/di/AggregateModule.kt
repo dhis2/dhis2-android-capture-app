@@ -27,216 +27,230 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
-internal val featureModule = module {
-    singleOf(::ResourceManager)
-    singleOf(::FieldErrorMessageProvider)
+internal val featureModule =
+    module {
+        singleOf(::ResourceManager)
+        singleOf(::FieldErrorMessageProvider)
 
-    factory {
-        Dispatcher(
-            io = { Dispatchers.IO },
-            main = { Dispatchers.Main },
-            default = { Dispatchers.Default },
-        )
-    }
+        factory {
+            Dispatcher(
+                io = { Dispatchers.IO },
+                main = { Dispatchers.Main },
+                default = { Dispatchers.Default },
+            )
+        }
 
-    factory { params ->
-        GetDataSetInstanceData(
-            datasetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-            openErrorLocation = params.get(),
-        )
-    }
+        factory { params ->
+            GetDataSetInstanceData(
+                datasetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+                openErrorLocation = params.get(),
+            )
+        }
 
-    factory { params ->
-        GetDataSetSectionData(
-            datasetUid = params.get(),
-            orgUnitUid = params.get(),
-            periodId = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            GetDataSetSectionData(
+                datasetUid = params.get(),
+                orgUnitUid = params.get(),
+                periodId = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory { params ->
-        GetDataValueData(
-            datasetUid = params.get(),
-            orgUnitUid = params.get(),
-            periodId = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            GetDataValueData(
+                datasetUid = params.get(),
+                orgUnitUid = params.get(),
+                periodId = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory { params ->
-        GetDataSetSectionIndicators(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attributeOptionComboUid = params.get(),
-            repository = get(),
-        )
-    }
-    factory { params ->
-        GetDataValueInput(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            repository = get(),
-            optionRepository = get(),
-        )
-    }
+        factory { params ->
+            GetDataSetSectionIndicators(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attributeOptionComboUid = params.get(),
+                repository = get(),
+            )
+        }
+        factory { params ->
+            GetDataValueInput(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                repository = get(),
+                optionRepository = get(),
+            )
+        }
 
-    factory { params ->
-        SetDataValue(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            repository = get(),
-        )
-    }
+        factory { params ->
+            SetDataValue(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                repository = get(),
+            )
+        }
 
-    factory { params ->
-        CheckValidationRulesConfiguration(
-            dataSetUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            CheckValidationRulesConfiguration(
+                dataSetUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory { params ->
-        CheckCompletionStatus(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            CheckCompletionStatus(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory {
-        DataSetModalDialogProvider(
-            resourceManager = get(),
-        )
-    }
+        factory {
+            DataSetModalDialogProvider(
+                resourceManager = get(),
+            )
+        }
 
-    factory { params ->
-        CompleteDataSet(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            CompleteDataSet(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory { params ->
-        ReopenDataSet(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            ReopenDataSet(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory { params ->
-        RunValidationRules(
-            dataSetUid = params.get(),
-            periodId = params.get(),
-            orgUnitUid = params.get(),
-            attrOptionComboUid = params.get(),
-            dataSetInstanceRepository = get(),
-        )
-    }
+        factory { params ->
+            RunValidationRules(
+                dataSetUid = params.get(),
+                periodId = params.get(),
+                orgUnitUid = params.get(),
+                attrOptionComboUid = params.get(),
+                dataSetInstanceRepository = get(),
+            )
+        }
 
-    factory { params ->
-        UploadFile(
-            repository = get(),
-        )
-    }
+        factory { params ->
+            UploadFile(
+                repository = get(),
+            )
+        }
 
-    factory {
-        InputDataUiStateMapper(
-            resourceManager = get(),
-        )
-    }
+        factory {
+            InputDataUiStateMapper(
+                resourceManager = get(),
+            )
+        }
 
-    factory { params ->
-        ComputeResizeAction(
-            dimensionRepository = get { parametersOf(params.get()) },
-        )
-    }
+        factory { params ->
+            ComputeResizeAction(
+                dimensionRepository = get { parametersOf(params.get()) },
+            )
+        }
 
-    viewModel { params ->
-        val dataSetUid = params.get<String>()
-        val periodId = params.get<String>()
-        val orgUnitUid = params.get<String>()
-        val attrOptionComboUid = params.get<String>()
-        val openErrorLocation = params.getOrNull<Boolean>() ?: false
-        val onClose = params.get<() -> Unit>()
-        val uiActionHandler = params.get<UiActionHandler>()
+        viewModel { params ->
+            val dataSetUid = params.get<String>()
+            val periodId = params.get<String>()
+            val orgUnitUid = params.get<String>()
+            val attrOptionComboUid = params.get<String>()
+            val openErrorLocation = params.getOrNull<Boolean>() ?: false
+            val onClose = params.get<() -> Unit>()
+            val uiActionHandler = params.get<UiActionHandler>()
 
-        DataSetTableViewModel(
-            onClose = onClose,
-            getDataSetInstanceData = get {
-                parametersOf(
-                    dataSetUid,
-                    periodId,
-                    orgUnitUid,
-                    attrOptionComboUid,
-                    openErrorLocation,
-                )
-            },
-            getDataSetSectionData = get {
-                parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
-            },
-            getDataValueData = get {
-                parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
-            },
-            getDataSetSectionIndicators = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            getDataValueInput = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            setDataValue = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            uploadFile = get(),
-            resourceManager = get(),
-            checkValidationRulesConfiguration = get {
-                parametersOf(dataSetUid)
-            },
-            checkCompletionStatus = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            datasetModalDialogProvider = get(),
-            completeDataSet = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            reopenDataSet = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            dispatcher = get(),
-            runValidationRules = get {
-                parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
-            },
-            uiActionHandler = uiActionHandler,
-            inputDataUiStateMapper = get(),
-            fieldErrorMessageProvider = get(),
-            computeResizeAction = get {
-                parametersOf(dataSetUid)
-            },
-        )
+            DataSetTableViewModel(
+                onClose = onClose,
+                getDataSetInstanceData =
+                    get {
+                        parametersOf(
+                            dataSetUid,
+                            periodId,
+                            orgUnitUid,
+                            attrOptionComboUid,
+                            openErrorLocation,
+                        )
+                    },
+                getDataSetSectionData =
+                    get {
+                        parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
+                    },
+                getDataValueData =
+                    get {
+                        parametersOf(dataSetUid, orgUnitUid, periodId, attrOptionComboUid)
+                    },
+                getDataSetSectionIndicators =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                getDataValueInput =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                setDataValue =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                uploadFile = get(),
+                resourceManager = get(),
+                checkValidationRulesConfiguration =
+                    get {
+                        parametersOf(dataSetUid)
+                    },
+                checkCompletionStatus =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                datasetModalDialogProvider = get(),
+                completeDataSet =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                reopenDataSet =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                dispatcher = get(),
+                runValidationRules =
+                    get {
+                        parametersOf(dataSetUid, periodId, orgUnitUid, attrOptionComboUid)
+                    },
+                uiActionHandler = uiActionHandler,
+                inputDataUiStateMapper = get(),
+                fieldErrorMessageProvider = get(),
+                computeResizeAction =
+                    get {
+                        parametersOf(dataSetUid)
+                    },
+            )
+        }
     }
-}
 
 internal expect val platformModule: Module
 
-val aggregatesModule = module {
-    includes(featureModule, platformModule)
-}
+val aggregatesModule =
+    module {
+        includes(featureModule, platformModule)
+    }

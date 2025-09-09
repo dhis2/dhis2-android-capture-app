@@ -26,7 +26,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class EventRepositoryTest {
-
     private val eventUid = "eventUid"
     private val programStageUid = "programStageUid"
     private val programUid = "programUid"
@@ -42,42 +41,55 @@ class EventRepositoryTest {
     private val eventResourcesProvider: EventResourcesProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
 
-    private val mockedProgram: Program = mock {
-        on { categoryComboUid() } doReturn catComboUid
-    }
+    private val mockedProgram: Program =
+        mock {
+            on { categoryComboUid() } doReturn catComboUid
+        }
 
-    private val catCombo: CategoryCombo = mock {
-        on { isDefault } doReturn false
-    }
+    private val catCombo: CategoryCombo =
+        mock {
+            on { isDefault } doReturn false
+        }
 
-    private val mockedFirstSection: ProgramStageSection = mock {
-        on { uid() } doReturn firstSectionUid
-    }
+    private val mockedFirstSection: ProgramStageSection =
+        mock {
+            on { uid() } doReturn firstSectionUid
+        }
 
-    private val mockedSecondSection: ProgramStageSection = mock {
-        on { uid() } doReturn secondSectionUid
-    }
+    private val mockedSecondSection: ProgramStageSection =
+        mock {
+            on { uid() } doReturn secondSectionUid
+        }
 
-    private val dispatchers: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.IO
-    }
+    private val dispatchers: DispatcherProvider =
+        mock {
+            on { io() } doReturn Dispatchers.IO
+        }
 
     @Before
     fun setUp() {
         whenever(
-            d2.programModule().programs().uid(programUid).get(),
+            d2
+                .programModule()
+                .programs()
+                .uid(programUid)
+                .get(),
         ) doReturn Single.just(mockedProgram)
 
         whenever(
             d2.categoryModule().categoryCombos().withCategories(),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryCombos()
+            d2
+                .categoryModule()
+                .categoryCombos()
                 .withCategories()
                 .uid(catComboUid),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryCombos()
+            d2
+                .categoryModule()
+                .categoryCombos()
                 .withCategories()
                 .uid(catComboUid)
                 .get(),
@@ -87,7 +99,11 @@ class EventRepositoryTest {
     @Test
     fun openEventDetailSectionsIfNewEvent() {
         whenever(
-            d2.eventModule().events().uid(eventUid).blockingGet(),
+            d2
+                .eventModule()
+                .events()
+                .uid(eventUid)
+                .blockingGet(),
         ) doReturn mockedEventWithDetails
 
         mockSections()
@@ -101,11 +117,16 @@ class EventRepositoryTest {
     @Test
     fun openEventDetailSectionsIfCheckEvent() {
         whenever(
-            d2.eventModule().events().uid(eventUid).blockingGet(),
+            d2
+                .eventModule()
+                .events()
+                .uid(eventUid)
+                .blockingGet(),
         ) doReturn mockedEventNoDetails
 
         whenever(
-            d2.programModule()
+            d2
+                .programModule()
                 .programStages()
                 .uid(programStageUid)
                 .blockingGet(),
@@ -120,7 +141,11 @@ class EventRepositoryTest {
     @Test
     fun openCategoryComboSectionIfCheckEvent() {
         whenever(
-            d2.eventModule().events().uid(eventUid).blockingGet(),
+            d2
+                .eventModule()
+                .events()
+                .uid(eventUid)
+                .blockingGet(),
         ) doReturn mockedEventNoAttr
 
         val result = eventRepository(EventMode.CHECK).firstSectionToOpen()
@@ -132,7 +157,11 @@ class EventRepositoryTest {
     @Test
     fun openDataSectionIfCheckEvent() {
         whenever(
-            d2.eventModule().events().uid(eventUid).blockingGet(),
+            d2
+                .eventModule()
+                .events()
+                .uid(eventUid)
+                .blockingGet(),
         ) doReturn mockedEventWithDetails
 
         mockSections()
@@ -143,69 +172,87 @@ class EventRepositoryTest {
         )
     }
 
-    private fun eventRepository(eventMode: EventMode) = EventRepository(
-        fieldFactory = fieldViewModelFactory,
-        eventUid = eventUid,
-        d2 = d2,
-        metadataIconProvider = metadataIconProvider,
-        resources = resources,
-        eventResourcesProvider = eventResourcesProvider,
-        eventMode = eventMode,
-        dispatcherProvider = dispatchers,
-    )
+    private fun eventRepository(eventMode: EventMode) =
+        EventRepository(
+            fieldFactory = fieldViewModelFactory,
+            eventUid = eventUid,
+            d2 = d2,
+            metadataIconProvider = metadataIconProvider,
+            resources = resources,
+            eventResourcesProvider = eventResourcesProvider,
+            eventMode = eventMode,
+            dispatcherProvider = dispatchers,
+        )
 
-    private val mockedStage = mock<ProgramStage> {
-        on { featureType() } doReturn null
-    }
+    private val mockedStage =
+        mock<ProgramStage> {
+            on { featureType() } doReturn null
+        }
 
-    private val mockedEventNoDetails = mock<Event> {
-        on { program() } doReturn programUid
-        on { programStage() } doReturn programStageUid
-        on { eventDate() } doReturn null
-        on { organisationUnit() } doReturn null
-        on { geometry() } doReturn null
-        on { attributeOptionCombo() } doReturn null
-    }
+    private val mockedEventNoDetails =
+        mock<Event> {
+            on { program() } doReturn programUid
+            on { programStage() } doReturn programStageUid
+            on { eventDate() } doReturn null
+            on { organisationUnit() } doReturn null
+            on { geometry() } doReturn null
+            on { attributeOptionCombo() } doReturn null
+        }
 
-    private val mockedEventNoAttr = mock<Event> {
-        on { program() } doReturn programUid
-        on { programStage() } doReturn programStageUid
-        on { eventDate() } doReturn Date()
-        on { organisationUnit() } doReturn orgUnitUid
-        on { geometry() } doReturn mock<Geometry>()
-        on { attributeOptionCombo() } doReturn null
-    }
+    private val mockedEventNoAttr =
+        mock<Event> {
+            on { program() } doReturn programUid
+            on { programStage() } doReturn programStageUid
+            on { eventDate() } doReturn Date()
+            on { organisationUnit() } doReturn orgUnitUid
+            on { geometry() } doReturn mock<Geometry>()
+            on { attributeOptionCombo() } doReturn null
+        }
 
-    private val mockedEventWithDetails = mock<Event> {
-        on { program() } doReturn programUid
-        on { programStage() } doReturn programStageUid
-        on { eventDate() } doReturn Date()
-        on { organisationUnit() } doReturn orgUnitUid
-        on { geometry() } doReturn mock<Geometry>()
-        on { attributeOptionCombo() } doReturn attributeOptionComboUid
-    }
+    private val mockedEventWithDetails =
+        mock<Event> {
+            on { program() } doReturn programUid
+            on { programStage() } doReturn programStageUid
+            on { eventDate() } doReturn Date()
+            on { organisationUnit() } doReturn orgUnitUid
+            on { geometry() } doReturn mock<Geometry>()
+            on { attributeOptionCombo() } doReturn attributeOptionComboUid
+        }
 
     private fun mockSections() {
         whenever(
-            d2.programModule().programStageSections()
+            d2
+                .programModule()
+                .programStageSections()
                 .byProgramStageUid(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageSections()
+            d2
+                .programModule()
+                .programStageSections()
                 .byProgramStageUid(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageSections()
-                .byProgramStageUid().eq(anyOrNull()),
+            d2
+                .programModule()
+                .programStageSections()
+                .byProgramStageUid()
+                .eq(anyOrNull()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageSections()
-                .byProgramStageUid().eq(anyOrNull())
+            d2
+                .programModule()
+                .programStageSections()
+                .byProgramStageUid()
+                .eq(anyOrNull())
                 .withDataElements(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageSections()
-                .byProgramStageUid().eq(anyOrNull())
+            d2
+                .programModule()
+                .programStageSections()
+                .byProgramStageUid()
+                .eq(anyOrNull())
                 .withDataElements()
                 .blockingGet(),
         ) doReturn listOf(mockedFirstSection, mockedSecondSection)

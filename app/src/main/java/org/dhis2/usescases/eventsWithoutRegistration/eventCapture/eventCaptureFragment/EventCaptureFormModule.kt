@@ -14,7 +14,6 @@ class EventCaptureFormModule(
     val view: EventCaptureFormView,
     val eventUid: String,
 ) {
-
     @Provides
     @PerFragment
     fun providePresenter(
@@ -23,8 +22,8 @@ class EventCaptureFormModule(
         resourceManager: ResourceManager,
         reOpenEventUseCase: ReOpenEventUseCase,
         eventDispatchers: EventDispatchers,
-    ): EventCaptureFormPresenter {
-        return EventCaptureFormPresenter(
+    ): EventCaptureFormPresenter =
+        EventCaptureFormPresenter(
             view,
             activityPresenter,
             d2,
@@ -33,7 +32,6 @@ class EventCaptureFormModule(
             reOpenEventUseCase,
             eventDispatchers,
         )
-    }
 
     @Provides
     @PerFragment

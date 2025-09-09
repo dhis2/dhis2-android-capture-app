@@ -25,8 +25,7 @@ fun TableHeaderRow(
     cornerUiState: TableCornerUiState,
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
-    cellStyle: @Composable
-    (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
+    cellStyle: @Composable (headerColumnIndex: Int, headerRowIndex: Int) -> CellStyle,
     onTableCornerClick: () -> Unit = {},
     onHeaderCellClick: (headerColumnIndex: Int, headerRowIndex: Int) -> Unit = { _, _ -> },
     onHeaderResize: (Int, Float) -> Unit,
@@ -41,13 +40,14 @@ fun TableHeaderRow(
 
         if (isHeaderActionEnabled) {
             TableActions(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .constrainAs(tableActions) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
+                modifier =
+                    Modifier
+                        .padding(bottom = 24.dp)
+                        .constrainAs(tableActions) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        },
                 title = tableModel.title,
                 actionIcons = {
                     if (TableTheme.dimensions.hasOverriddenWidths(tableModel.id ?: "")) {
@@ -55,9 +55,10 @@ fun TableHeaderRow(
                             onClick = onResetResize,
                             icon = {
                                 Icon(
-                                    imageVector = ImageVector.vectorResource(
-                                        id = R.drawable.ic_restart_alt,
-                                    ),
+                                    imageVector =
+                                        ImageVector.vectorResource(
+                                            id = R.drawable.ic_restart_alt,
+                                        ),
                                     contentDescription = "",
                                     tint = Color.Black.copy(alpha = 0.87f),
                                 )
@@ -69,19 +70,19 @@ fun TableHeaderRow(
         }
 
         TableCorner(
-            modifier = Modifier
-                .constrainAs(tableCorner) {
-                    if (isHeaderActionEnabled) {
-                        top.linkTo(tableActions.bottom)
-                    } else {
-                        top.linkTo(parent.top)
-                    }
-                    start.linkTo(parent.start)
-                    end.linkTo(header.start)
-                    bottom.linkTo(header.bottom)
-                    height = Dimension.fillToConstraints
-                }
-                .zIndex(1f),
+            modifier =
+                Modifier
+                    .constrainAs(tableCorner) {
+                        if (isHeaderActionEnabled) {
+                            top.linkTo(tableActions.bottom)
+                        } else {
+                            top.linkTo(parent.top)
+                        }
+                        start.linkTo(parent.start)
+                        end.linkTo(header.start)
+                        bottom.linkTo(header.bottom)
+                        height = Dimension.fillToConstraints
+                    }.zIndex(1f),
             tableCornerUiState = cornerUiState,
             tableId = tableModel.id ?: "",
             onClick = onTableCornerClick,
@@ -89,17 +90,18 @@ fun TableHeaderRow(
 
         TableHeader(
             tableId = tableModel.id,
-            modifier = Modifier
-                .constrainAs(header) {
-                    if (isHeaderActionEnabled) {
-                        top.linkTo(tableActions.bottom)
-                    } else {
-                        top.linkTo(parent.top)
-                    }
-                    start.linkTo(tableCorner.end)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                },
+            modifier =
+                Modifier
+                    .constrainAs(header) {
+                        if (isHeaderActionEnabled) {
+                            top.linkTo(tableActions.bottom)
+                        } else {
+                            top.linkTo(parent.top)
+                        }
+                        start.linkTo(tableCorner.end)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    },
             tableHeaderModel = tableModel.tableHeaderModel,
             horizontalScrollState = horizontalScrollState,
             cellStyle = cellStyle,

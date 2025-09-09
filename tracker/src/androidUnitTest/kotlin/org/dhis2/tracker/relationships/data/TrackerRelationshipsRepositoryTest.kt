@@ -21,7 +21,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class TrackerRelationshipsRepositoryTest {
-
     private lateinit var trackerRelationshipsRepository: TrackerRelationshipsRepository
 
     private val resources: ResourceManager = mock()
@@ -38,7 +37,8 @@ class TrackerRelationshipsRepositoryTest {
     @Before
     fun setup() {
         whenever(
-            d2.trackedEntityModule()
+            d2
+                .trackedEntityModule()
                 .trackedEntityInstances()
                 .uid(teiUid)
                 .blockingGet(),
@@ -48,55 +48,62 @@ class TrackerRelationshipsRepositoryTest {
         ) doReturn trackedEntityType
 
         whenever(
-            d2.enrollmentModule()
+            d2
+                .enrollmentModule()
                 .enrollments()
                 .uid(enrollmentUid)
                 .blockingGet(),
         ) doReturn enrollment
 
-        trackerRelationshipsRepository = TrackerRelationshipsRepository(
-            d2 = d2,
-            resources = resources,
-            teiUid = teiUid,
-            enrollmentUid = enrollmentUid,
-            profilePictureProvider = profilePictureProvider,
-        )
+        trackerRelationshipsRepository =
+            TrackerRelationshipsRepository(
+                d2 = d2,
+                resources = resources,
+                teiUid = teiUid,
+                enrollmentUid = enrollmentUid,
+                profilePictureProvider = profilePictureProvider,
+            )
     }
 
     @Test
-    fun shouldGetRelationshipTypes() = runTest {
-        // Given
-        // A TEI enrolled in a program
-        whenever(enrollment.program()) doReturn "programUid_1"
+    fun shouldGetRelationshipTypes() =
+        runTest {
+            // Given
+            // A TEI enrolled in a program
+            whenever(enrollment.program()) doReturn "programUid_1"
 
-        // With two relationship types related
-        whenever(
-            d2.relationshipModule().relationshipService()
-                .getRelationshipTypesForTrackedEntities(
-                    trackedEntityType = trackedEntityType,
-                    programUid = "programUid_1",
-                ),
-        ) doReturn relationshipWithEntitySideList
+            // With two relationship types related
+            whenever(
+                d2
+                    .relationshipModule()
+                    .relationshipService()
+                    .getRelationshipTypesForTrackedEntities(
+                        trackedEntityType = trackedEntityType,
+                        programUid = "programUid_1",
+                    ),
+            ) doReturn relationshipWithEntitySideList
 
-        // When getting the relationship types
-        val relationshipTypes = trackerRelationshipsRepository.getRelationshipTypes()
+            // When getting the relationship types
+            val relationshipTypes = trackerRelationshipsRepository.getRelationshipTypes()
 
-        // Then a relationshipSectionList is returned
-        val expectedResult = listOf(
-            relationshipSection1,
-            relationshipSection2,
+            // Then a relationshipSectionList is returned
+            val expectedResult =
+                listOf(
+                    relationshipSection1,
+                    relationshipSection2,
+                )
+            assertEquals(expectedResult, relationshipTypes)
+        }
+
+    private val relationshipWithEntitySideList =
+        listOf(
+            RelationshipTypeWithEntitySide(
+                relationshipType = relationshipTypeTeiToTei,
+                entitySide = RelationshipConstraintType.FROM,
+            ),
+            RelationshipTypeWithEntitySide(
+                relationshipType = relationshipTypeEventToTei,
+                entitySide = RelationshipConstraintType.FROM,
+            ),
         )
-        assertEquals(expectedResult, relationshipTypes)
-    }
-
-    private val relationshipWithEntitySideList = listOf(
-        RelationshipTypeWithEntitySide(
-            relationshipType = relationshipTypeTeiToTei,
-            entitySide = RelationshipConstraintType.FROM,
-        ),
-        RelationshipTypeWithEntitySide(
-            relationshipType = relationshipTypeEventToTei,
-            entitySide = RelationshipConstraintType.FROM,
-        ),
-    )
 }

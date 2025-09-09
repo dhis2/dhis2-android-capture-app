@@ -8,7 +8,6 @@ const val TYPE_POLYGON = "Polygon"
 const val TYPE_LINE = "LineString"
 
 interface MapLayer {
-
     fun showLayer()
 
     fun hideLayer()

@@ -18,20 +18,21 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.databinding.BreakTheGlassBottomDialogBindingImpl
 
 class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
-
     private lateinit var programUid: String
 
     lateinit var resourceManager: ResourceManager
 
     val colorUtils: ColorUtils = ColorUtils()
 
-    fun setProgram(programUid: String) = apply {
-        this.programUid = programUid
-    }
+    fun setProgram(programUid: String) =
+        apply {
+            this.programUid = programUid
+        }
 
-    fun setPositiveButton(onClick: ((String) -> Unit)? = null) = apply {
-        this.positiveOnclick = onClick
-    }
+    fun setPositiveButton(onClick: ((String) -> Unit)? = null) =
+        apply {
+            this.positiveOnclick = onClick
+        }
 
     private var positiveOnclick: ((String) -> Unit)? = null
 
@@ -43,70 +44,79 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        resourceManager = ResourceManager(
-            context,
-            colorUtils,
-        )
+        resourceManager =
+            ResourceManager(
+                context,
+                colorUtils,
+            )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return BreakTheGlassBottomDialogBindingImpl.inflate(inflater, container, false).apply {
-            message.text = resourceManager.formatWithEnrollmentLabel(
-                programUid,
-                R.string.break_glass_dialog_description_V2,
-                1,
-            )
-            label.text = resourceManager.formatWithEnrollmentLabel(
-                programUid,
-                R.string.break_glass_reason_V2,
-                1,
-            )
-            positive.apply {
-                setOnClickListener {
-                    positiveOnclick?.invoke(inputEditText.text.toString())
-                    dismiss()
-                }
-            }
-            negative.apply {
-                setOnClickListener {
-                    dismiss()
-                }
-            }
-            inputEditText.doOnTextChanged { _, _, _, _ ->
-                positive.isEnabled = inputEditText.text.toString().isNotEmpty()
-                clearButton.visibility = if (inputEditText.text.toString().isEmpty()) {
-                    View.GONE
-                } else {
-                    View.VISIBLE
-                }
-            }
-            inputEditText.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    val focusColor =
-                        colorUtils.getPrimaryColor(requireContext(), ColorType.PRIMARY)
-                    label.setTextColor(focusColor)
-                    selectionView.setBackgroundColor(focusColor)
-                } else {
-                    val unFocusColor = ContextCompat.getColor(
-                        requireContext(),
-                        R.color.text_black_A63,
+    ): View =
+        BreakTheGlassBottomDialogBindingImpl
+            .inflate(inflater, container, false)
+            .apply {
+                message.text =
+                    resourceManager.formatWithEnrollmentLabel(
+                        programUid,
+                        R.string.break_glass_dialog_description_V2,
+                        1,
                     )
-                    label.setTextColor(unFocusColor)
-                    selectionView.setBackgroundColor(unFocusColor)
+                label.text =
+                    resourceManager.formatWithEnrollmentLabel(
+                        programUid,
+                        R.string.break_glass_reason_V2,
+                        1,
+                    )
+                positive.apply {
+                    setOnClickListener {
+                        positiveOnclick?.invoke(inputEditText.text.toString())
+                        dismiss()
+                    }
                 }
-            }
-            clearButton.setOnClickListener {
-                inputEditText.text?.clear()
-            }
-        }.root
-    }
+                negative.apply {
+                    setOnClickListener {
+                        dismiss()
+                    }
+                }
+                inputEditText.doOnTextChanged { _, _, _, _ ->
+                    positive.isEnabled = inputEditText.text.toString().isNotEmpty()
+                    clearButton.visibility =
+                        if (inputEditText.text.toString().isEmpty()) {
+                            View.GONE
+                        } else {
+                            View.VISIBLE
+                        }
+                }
+                inputEditText.setOnFocusChangeListener { _, hasFocus ->
+                    if (hasFocus) {
+                        val focusColor =
+                            colorUtils.getPrimaryColor(requireContext(), ColorType.PRIMARY)
+                        label.setTextColor(focusColor)
+                        selectionView.setBackgroundColor(focusColor)
+                    } else {
+                        val unFocusColor =
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.text_black_A63,
+                            )
+                        label.setTextColor(unFocusColor)
+                        selectionView.setBackgroundColor(unFocusColor)
+                    }
+                }
+                clearButton.setOnClickListener {
+                    inputEditText.text?.clear()
+                }
+            }.root
 
     // This is necessary to show the bottomSheet dialog with full height on landscape
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         view.viewTreeObserver.addOnGlobalLayoutListener {
             val dialog = dialog as BottomSheetDialog
@@ -119,17 +129,25 @@ class BreakTheGlassBottomDialog : BottomSheetDialogFragment() {
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.peekHeight = 0
 
-            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                override fun onStateChanged(bottomSheet: View, newState: Int) {
-                    if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            behavior.addBottomSheetCallback(
+                object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(
+                        bottomSheet: View,
+                        newState: Int,
+                    ) {
+                        if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        }
                     }
-                }
 
-                override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                    /*NoUse*/
-                }
-            })
+                    override fun onSlide(
+                        bottomSheet: View,
+                        slideOffset: Float,
+                    ) {
+                        // NoUse
+                    }
+                },
+            )
         }
     }
 }

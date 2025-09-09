@@ -13,16 +13,17 @@ import org.dhis2.commons.Constants
 
 @Composable
 internal fun syncPeriodLabel(currentDataSyncPeriod: Int): String {
-    val setting = when (currentDataSyncPeriod) {
-        EVERY_30_MIN -> stringResource(R.string.thirty_minutes)
-        EVERY_HOUR -> stringResource(R.string.a_hour)
-        EVERY_6_HOUR -> stringResource(R.string.every_6_hours)
-        EVERY_12_HOUR -> stringResource(R.string.every_12_hours)
-        Constants.TIME_MANUAL -> stringResource(R.string.Manual)
-        EVERY_24_HOUR -> stringResource(R.string.a_day)
-        EVERY_7_DAYS -> stringResource(R.string.a_week)
-        else -> stringResource(R.string.a_day)
-    }
+    val setting =
+        when (currentDataSyncPeriod) {
+            EVERY_30_MIN -> stringResource(R.string.thirty_minutes)
+            EVERY_HOUR -> stringResource(R.string.a_hour)
+            EVERY_6_HOUR -> stringResource(R.string.every_6_hours)
+            EVERY_12_HOUR -> stringResource(R.string.every_12_hours)
+            Constants.TIME_MANUAL -> stringResource(R.string.Manual)
+            EVERY_24_HOUR -> stringResource(R.string.a_day)
+            EVERY_7_DAYS -> stringResource(R.string.a_week)
+            else -> stringResource(R.string.a_day)
+        }
 
     return String.format(stringResource(R.string.settings_sync_period) + ": %s", setting)
 }

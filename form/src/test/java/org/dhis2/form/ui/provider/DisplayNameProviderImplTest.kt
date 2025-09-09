@@ -15,7 +15,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class DisplayNameProviderImplTest {
-
     private val optionSetConfiguration: OptionSetConfiguration = mock()
     private val orgUnitConfiguration: OrgUnitConfiguration = mock()
     private val fileResourceConfiguration: FileResourceConfiguration = mock()
@@ -43,11 +42,12 @@ class DisplayNameProviderImplTest {
         mockOptionSetByCode(testingValue, testingOptionSetUid, testingOptionName, true)
         mockOptionSetByName(testingValue, testingOptionSetUid, testingOptionName, false)
 
-        val result = displayNameProvider.provideDisplayName(
-            ValueType.INTEGER,
-            testingValue,
-            testingOptionSetUid,
-        )
+        val result =
+            displayNameProvider.provideDisplayName(
+                ValueType.INTEGER,
+                testingValue,
+                testingOptionSetUid,
+            )
 
         assertTrue(result == testingOptionName)
     }
@@ -60,11 +60,12 @@ class DisplayNameProviderImplTest {
         mockOptionSetByCode(testingValue, testingOptionSetUid, testingOptionName, false)
         mockOptionSetByName(testingValue, testingOptionSetUid, testingOptionName, true)
 
-        val result = displayNameProvider.provideDisplayName(
-            ValueType.INTEGER,
-            testingValue,
-            testingOptionSetUid,
-        )
+        val result =
+            displayNameProvider.provideDisplayName(
+                ValueType.INTEGER,
+                testingValue,
+                testingOptionSetUid,
+            )
 
         assertTrue(result == testingOptionName)
     }
@@ -77,11 +78,12 @@ class DisplayNameProviderImplTest {
         mockOptionSetByCode(testingValue, testingOptionSetUid, testingOptionName, false)
         mockOptionSetByName(testingValue, testingOptionSetUid, testingOptionName, false)
 
-        val result = displayNameProvider.provideDisplayName(
-            ValueType.INTEGER,
-            testingValue,
-            testingOptionSetUid,
-        )
+        val result =
+            displayNameProvider.provideDisplayName(
+                ValueType.INTEGER,
+                testingValue,
+                testingOptionSetUid,
+            )
 
         assertTrue(result == "value")
     }
@@ -92,10 +94,12 @@ class DisplayNameProviderImplTest {
         val testingOrgUnitName = "orgUnitName"
         whenever(
             orgUnitConfiguration.orgUnitByUid(testingOrgUnitUid),
-        ) doReturn OrganisationUnit.builder()
-            .uid(testingOrgUnitUid)
-            .displayName(testingOrgUnitName)
-            .build()
+        ) doReturn
+            OrganisationUnit
+                .builder()
+                .uid(testingOrgUnitUid)
+                .displayName(testingOrgUnitName)
+                .build()
         val result =
             displayNameProvider.provideDisplayName(ValueType.ORGANISATION_UNIT, testingOrgUnitUid)
         assertTrue(result == testingOrgUnitName)
@@ -117,11 +121,12 @@ class DisplayNameProviderImplTest {
     fun `Should return file path for valueType IMAGE when value is the file path`() {
         val value = "filePath"
         whenever(fileResourceConfiguration.getFilePath(value)) doReturn null
-        val result = displayNameProvider.provideDisplayName(
-            valueType = ValueType.IMAGE,
-            value = value,
-            optionSet = null,
-        )
+        val result =
+            displayNameProvider.provideDisplayName(
+                valueType = ValueType.IMAGE,
+                value = value,
+                optionSet = null,
+            )
         assertEquals(value, result)
     }
 
@@ -130,11 +135,12 @@ class DisplayNameProviderImplTest {
         val filePath = "filePath"
         val value = "uid"
         whenever(fileResourceConfiguration.getFilePath(value)) doReturn filePath
-        val result = displayNameProvider.provideDisplayName(
-            valueType = ValueType.IMAGE,
-            value = value,
-            optionSet = null,
-        )
+        val result =
+            displayNameProvider.provideDisplayName(
+                valueType = ValueType.IMAGE,
+                value = value,
+                optionSet = null,
+            )
         assertEquals(filePath, result)
     }
 
@@ -167,14 +173,16 @@ class DisplayNameProviderImplTest {
     ) {
         whenever(
             optionSetConfiguration.optionInDataSetByCode(optionSetUid, value),
-        ) doReturn if (exists) {
-            Option.builder()
-                .uid("optionUid")
-                .displayName(optionName)
-                .build()
-        } else {
-            null
-        }
+        ) doReturn
+            if (exists) {
+                Option
+                    .builder()
+                    .uid("optionUid")
+                    .displayName(optionName)
+                    .build()
+            } else {
+                null
+            }
     }
 
     private fun mockOptionSetByName(
@@ -185,13 +193,15 @@ class DisplayNameProviderImplTest {
     ) {
         whenever(
             optionSetConfiguration.optionInDataSetByName(optionSetUid, value),
-        ) doReturn if (exists) {
-            Option.builder()
-                .uid("optionUid")
-                .displayName(optionName)
-                .build()
-        } else {
-            null
-        }
+        ) doReturn
+            if (exists) {
+                Option
+                    .builder()
+                    .uid("optionUid")
+                    .displayName(optionName)
+                    .build()
+            } else {
+                null
+            }
     }
 }

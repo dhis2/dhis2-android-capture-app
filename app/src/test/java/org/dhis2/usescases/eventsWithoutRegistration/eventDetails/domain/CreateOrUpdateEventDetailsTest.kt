@@ -17,16 +17,17 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class CreateOrUpdateEventDetailsTest {
-
     private val selectedDate = Date()
     private val event: Event = mock()
-    private val repository: EventDetailsRepository = mock {
-        on { getEvent() } doReturn event
-        on { updateEvent(selectedDate, ORG_UNIT_UID, null, null) } doReturn event
-    }
-    private val resourcesProvider: EventDetailResourcesProvider = mock {
-        on { provideEventCreationError() } doReturn EVENT_UPDATE_ERROR
-    }
+    private val repository: EventDetailsRepository =
+        mock {
+            on { getEvent() } doReturn event
+            on { updateEvent(selectedDate, ORG_UNIT_UID, null, null) } doReturn event
+        }
+    private val resourcesProvider: EventDetailResourcesProvider =
+        mock {
+            on { provideEventCreationError() } doReturn EVENT_UPDATE_ERROR
+        }
 
     private lateinit var createOrUpdateEventDetails: CreateOrUpdateEventDetails
 
@@ -36,37 +37,43 @@ class CreateOrUpdateEventDetailsTest {
     }
 
     @Test
-    fun `should successfully edit event`() = runBlocking {
-        whenever(repository.getEditableStatus()) doReturn Editable()
+    fun `should successfully edit event`() =
+        runBlocking {
+            whenever(repository.getEditableStatus()) doReturn Editable()
 
-        // When trying to update an existing event
-        val result = createOrUpdateEventDetails.invoke(
-            selectedDate,
-            ORG_UNIT_UID,
-            null,
-            null,
-        ).first()
+            // When trying to update an existing event
+            val result =
+                createOrUpdateEventDetails
+                    .invoke(
+                        selectedDate,
+                        ORG_UNIT_UID,
+                        null,
+                        null,
+                    ).first()
 
-        // Then event should have been updated
-        assertTrue(result.isSuccess)
-    }
+            // Then event should have been updated
+            assertTrue(result.isSuccess)
+        }
 
     @Test
-    fun `Should not update event status on ReadOnly event`() = runBlocking {
-        whenever(repository.getEditableStatus()) doReturn NonEditable(NO_DATA_WRITE_ACCESS)
+    fun `Should not update event status on ReadOnly event`() =
+        runBlocking {
+            whenever(repository.getEditableStatus()) doReturn NonEditable(NO_DATA_WRITE_ACCESS)
 
-        // When trying to update an existing event
-        val result = createOrUpdateEventDetails.invoke(
-            selectedDate,
-            ORG_UNIT_UID,
-            null,
-            null,
-        ).first()
+            // When trying to update an existing event
+            val result =
+                createOrUpdateEventDetails
+                    .invoke(
+                        selectedDate,
+                        ORG_UNIT_UID,
+                        null,
+                        null,
+                    ).first()
 
-        // Then event should have been updated
-        assertTrue(result.isFailure)
-        assert(result.exceptionOrNull()?.message == EVENT_UPDATE_ERROR)
-    }
+            // Then event should have been updated
+            assertTrue(result.isFailure)
+            assert(result.exceptionOrNull()?.message == EVENT_UPDATE_ERROR)
+        }
 
     companion object {
         const val ORG_UNIT_UID = "orgUnitUid"

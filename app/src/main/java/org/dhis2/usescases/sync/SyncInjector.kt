@@ -16,8 +16,10 @@ interface SyncComponent {
 }
 
 @Module
-class SyncModule(private val view: SyncView, serverComponent: ServerComponent?) {
-
+class SyncModule(
+    private val view: SyncView,
+    serverComponent: ServerComponent?,
+) {
     private val userManager = serverComponent?.userManager()
 
     @Provides
@@ -26,13 +28,12 @@ class SyncModule(private val view: SyncView, serverComponent: ServerComponent?) 
         schedulerProvider: SchedulerProvider,
         workManagerController: WorkManagerController,
         preferences: PreferenceProvider,
-    ): SyncPresenter {
-        return SyncPresenter(
+    ): SyncPresenter =
+        SyncPresenter(
             view,
             userManager,
             schedulerProvider,
             workManagerController,
             preferences,
         )
-    }
 }

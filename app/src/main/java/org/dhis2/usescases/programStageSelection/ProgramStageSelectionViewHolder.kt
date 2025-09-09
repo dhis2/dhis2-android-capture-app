@@ -19,7 +19,6 @@ class ProgramStageSelectionViewHolder(
     private val binding: ItemProgramStageBinding,
     val onItemClick: (ProgramStage) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
-
     init {
         binding.composeProgramStageIcon.setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
@@ -34,9 +33,10 @@ class ProgramStageSelectionViewHolder(
             setContent {
                 DHIS2Theme {
                     MetadataAvatar(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .alpha(0.5f),
+                        modifier =
+                            Modifier
+                                .size(56.dp)
+                                .alpha(0.5f),
                         icon = {
                             if (programStageData.metadataIconData.isFileLoaded()) {
                                 MetadataIcon(

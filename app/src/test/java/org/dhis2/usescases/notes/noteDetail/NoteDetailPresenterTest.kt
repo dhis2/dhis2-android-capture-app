@@ -15,7 +15,6 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class NoteDetailPresenterTest {
-
     private lateinit var presenter: NoteDetailPresenter
     private val scheduler = TrampolineSchedulerProvider()
     private val repository: NoteDetailRepository = mock()

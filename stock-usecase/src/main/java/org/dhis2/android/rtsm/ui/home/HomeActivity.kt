@@ -39,7 +39,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity() {
-
     private val viewModel: HomeViewModel by viewModel()
     private val manageStockViewModel: ManageStockViewModel by viewModel()
     private var themeColor = R.color.colorPrimary
@@ -55,7 +54,8 @@ class HomeActivity : AppCompatActivity() {
         }
 
         filterManager = FilterManager.getInstance()
-        intent.getStringExtra(Constants.PROGRAM_UID)
+        intent
+            .getStringExtra(Constants.PROGRAM_UID)
             ?.let { manageStockViewModel.setConfig(it) }
 
         handleInsets()
@@ -143,24 +143,28 @@ class HomeActivity : AppCompatActivity() {
                 activity = this@HomeActivity,
                 recordUid = programUid,
                 syncContext = SyncContext.TrackerProgram(programUid),
-                dismissListener = object : OnDismissListener {
-                    override fun onDismiss(hasChanged: Boolean) {
-                        manageStockViewModel.refreshData()
-                    }
-                },
-                onSyncNavigationListener = object : OnSyncNavigationListener {
-                    override fun intercept(
-                        syncStatusItem: SyncStatusItem,
-                        intent: Intent,
-                    ): Intent? {
-                        return null
-                    }
-                },
+                dismissListener =
+                    object : OnDismissListener {
+                        override fun onDismiss(hasChanged: Boolean) {
+                            manageStockViewModel.refreshData()
+                        }
+                    },
+                onSyncNavigationListener =
+                    object : OnSyncNavigationListener {
+                        override fun intercept(
+                            syncStatusItem: SyncStatusItem,
+                            intent: Intent,
+                        ): Intent? = null
+                    },
             ).show()
         }
     }
 
-    private fun showSnackBar(scope: CoroutineScope, scaffoldState: ScaffoldState, message: String) {
+    private fun showSnackBar(
+        scope: CoroutineScope,
+        scaffoldState: ScaffoldState,
+        message: String,
+    ) {
         scope.launch {
             scaffoldState.snackbarHostState.showSnackbar(message)
         }

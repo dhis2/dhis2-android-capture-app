@@ -27,7 +27,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class DashboardViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -121,9 +120,10 @@ class DashboardViewModelTest {
         mockGrouping(false)
 
         with(getViewModel()) {
-            whenever(repository.updateEnrollmentStatus(any(), any())) doReturn Observable.just(
-                StatusChangeResultCode.CHANGED,
-            )
+            whenever(repository.updateEnrollmentStatus(any(), any())) doReturn
+                Observable.just(
+                    StatusChangeResultCode.CHANGED,
+                )
             whenever(mockedEnrollmentModel.currentEnrollment) doReturn mockedCompletedEnrollment
             updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
             testingDispatcher.scheduler.advanceUntilIdle()
@@ -140,37 +140,33 @@ class DashboardViewModelTest {
         mockGrouping(false)
 
         with(getViewModel()) {
-            whenever(repository.updateEnrollmentStatus(any(), any())) doReturn Observable.just(
-                StatusChangeResultCode.FAILED,
-            )
+            whenever(repository.updateEnrollmentStatus(any(), any())) doReturn
+                Observable.just(
+                    StatusChangeResultCode.FAILED,
+                )
             updateEnrollmentStatus(EnrollmentStatus.COMPLETED)
             testingDispatcher.scheduler.advanceUntilIdle()
             assertTrue(showStatusErrorMessages.value == StatusChangeResultCode.FAILED)
         }
     }
 
-    private fun getViewModel() = DashboardViewModel(
-        repository,
-        analyticsHelper,
-        object :
-            DispatcherProvider {
-            override fun io(): CoroutineDispatcher {
-                return testingDispatcher
-            }
+    private fun getViewModel() =
+        DashboardViewModel(
+            repository,
+            analyticsHelper,
+            object :
+                DispatcherProvider {
+                override fun io(): CoroutineDispatcher = testingDispatcher
 
-            override fun computation(): CoroutineDispatcher {
-                return testingDispatcher
-            }
+                override fun computation(): CoroutineDispatcher = testingDispatcher
 
-            override fun ui(): CoroutineDispatcher {
-                return testingDispatcher
-            }
-        },
-        pageConfigurator,
-        resoourcesManager,
-    ).also {
-        testingDispatcher.scheduler.advanceUntilIdle()
-    }
+                override fun ui(): CoroutineDispatcher = testingDispatcher
+            },
+            pageConfigurator,
+            resoourcesManager,
+        ).also {
+            testingDispatcher.scheduler.advanceUntilIdle()
+        }
 
     private fun mockEnrollmentModel() {
         whenever(repository.getDashboardModel()) doReturn mockedEnrollmentModel
@@ -187,16 +183,18 @@ class DashboardViewModelTest {
 
     private val mockedEnrollmentModel: DashboardEnrollmentModel = mock()
     private val mockedTeiModel: DashboardTEIModel = mock()
-    private val mockedEnrollment: Enrollment = mock {
-        on { uid() } doReturn "enrollmentUid"
-        on { followUp() } doReturn true
-        on { aggregatedSyncState() } doReturn State.SYNCED
-        on { status() } doReturn EnrollmentStatus.ACTIVE
-    }
+    private val mockedEnrollment: Enrollment =
+        mock {
+            on { uid() } doReturn "enrollmentUid"
+            on { followUp() } doReturn true
+            on { aggregatedSyncState() } doReturn State.SYNCED
+            on { status() } doReturn EnrollmentStatus.ACTIVE
+        }
 
-    private val mockedCompletedEnrollment: Enrollment = mock {
-        on { uid() } doReturn "enrollmentUid"
-        on { aggregatedSyncState() } doReturn State.TO_UPDATE
-        on { status() } doReturn EnrollmentStatus.COMPLETED
-    }
+    private val mockedCompletedEnrollment: Enrollment =
+        mock {
+            on { uid() } doReturn "enrollmentUid"
+            on { aggregatedSyncState() } doReturn State.TO_UPDATE
+            on { status() } doReturn EnrollmentStatus.COMPLETED
+        }
 }

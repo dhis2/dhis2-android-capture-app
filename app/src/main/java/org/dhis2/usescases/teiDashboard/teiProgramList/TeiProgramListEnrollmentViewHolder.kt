@@ -11,7 +11,6 @@ class TeiProgramListEnrollmentViewHolder(
     private val binding: ViewDataBinding,
     composeView: ComposeView?,
 ) : RecyclerView.ViewHolder(binding.root) {
-
     init {
         composeView?.setViewCompositionStrategy(
             ViewCompositionStrategy

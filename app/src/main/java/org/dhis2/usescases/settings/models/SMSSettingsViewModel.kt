@@ -14,7 +14,6 @@ data class SMSSettingsViewModel(
     val gatewayValidationResult: GatewayValidator.GatewayValidationResult,
     val resultSenderValidationResult: GatewayValidator.GatewayValidationResult,
 ) {
-
     fun gatewayState(
         gatewayValidation: GatewayValidator.GatewayValidationResult,
         smsSettings: SMSSettingsViewModel,
@@ -24,11 +23,12 @@ data class SMSSettingsViewModel(
         else -> InputShellState.DISABLED
     }
 
-    fun timeoutState() = if (isGatewayNumberEditable) {
-        InputShellState.FOCUSED
-    } else {
-        InputShellState.DISABLED
-    }
+    fun timeoutState() =
+        if (isGatewayNumberEditable) {
+            InputShellState.FOCUSED
+        } else {
+            InputShellState.DISABLED
+        }
 
     fun enableSmsState(gatewayNumber: String) =
         if (isGatewayNumberEditable && gatewayNumber.isNotEmpty()) {
@@ -37,15 +37,17 @@ data class SMSSettingsViewModel(
             InputShellState.DISABLED
         }
 
-    fun responseState() = if (isResponseNumberEditable) {
-        InputShellState.FOCUSED
-    } else {
-        InputShellState.DISABLED
-    }
+    fun responseState() =
+        if (isResponseNumberEditable) {
+            InputShellState.FOCUSED
+        } else {
+            InputShellState.DISABLED
+        }
 
-    fun waitForResponseState(resultSender: String) = if (isResponseNumberEditable && resultSender.isNotEmpty()) {
-        InputShellState.FOCUSED
-    } else {
-        InputShellState.DISABLED
-    }
+    fun waitForResponseState(resultSender: String) =
+        if (isResponseNumberEditable && resultSender.isNotEmpty()) {
+            InputShellState.FOCUSED
+        } else {
+            InputShellState.DISABLED
+        }
 }

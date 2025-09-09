@@ -19,61 +19,68 @@ fun NoRelationshipsPreview() {
 @Preview
 @Composable
 fun RelationShipScreenPreview() {
-    val mockUiState = RelationshipsUiState.Success(
-        data = listOf(
-            RelationshipSectionUiState(
-                uid = "uid1",
-                title = "Relationship type",
-                relationships = listOf(
-                    RelationshipItemUiState(
-                        uid = "uidA",
-                        title = "First name: Peter",
-                        description = null,
-                        attributes = listOf(
-                            Pair("Last name", "Parker"),
-                            Pair("Age", "25"),
-                            Pair("Gender", "Male"),
-                            Pair("Height", "1.75"),
-                        ),
-                        ownerType = RelationshipOwnerType.TEI,
-                        ownerUid = "ownerUid",
-                        avatar = AvatarProviderConfiguration.MainValueLabel(
-                            firstMainValue = "P",
-                        ),
-                        canOpen = true,
-                        lastUpdated = "Yesterday",
+    val mockUiState =
+        RelationshipsUiState.Success(
+            data =
+                listOf(
+                    RelationshipSectionUiState(
+                        uid = "uid1",
+                        title = "Relationship type",
+                        relationships =
+                            listOf(
+                                RelationshipItemUiState(
+                                    uid = "uidA",
+                                    title = "First name: Peter",
+                                    description = null,
+                                    attributes =
+                                        listOf(
+                                            Pair("Last name", "Parker"),
+                                            Pair("Age", "25"),
+                                            Pair("Gender", "Male"),
+                                            Pair("Height", "1.75"),
+                                        ),
+                                    ownerType = RelationshipOwnerType.TEI,
+                                    ownerUid = "ownerUid",
+                                    avatar =
+                                        AvatarProviderConfiguration.MainValueLabel(
+                                            firstMainValue = "P",
+                                        ),
+                                    canOpen = true,
+                                    lastUpdated = "Yesterday",
+                                ),
+                                RelationshipItemUiState(
+                                    uid = "uidB",
+                                    title = "First name: Mario",
+                                    description = null,
+                                    attributes =
+                                        listOf(
+                                            Pair("Last name", "Bros"),
+                                            Pair("Age", "25"),
+                                            Pair("Gender", "Male"),
+                                            Pair("Height", "1.75"),
+                                        ),
+                                    ownerType = RelationshipOwnerType.TEI,
+                                    ownerUid = "ownerUid",
+                                    avatar =
+                                        AvatarProviderConfiguration.MainValueLabel(
+                                            firstMainValue = "M",
+                                        ),
+                                    canOpen = true,
+                                    lastUpdated = "Yesterday",
+                                ),
+                            ),
+                        side = RelationshipConstraintSide.FROM,
+                        entityToAdd = null,
                     ),
-                    RelationshipItemUiState(
-                        uid = "uidB",
-                        title = "First name: Mario",
-                        description = null,
-                        attributes = listOf(
-                            Pair("Last name", "Bros"),
-                            Pair("Age", "25"),
-                            Pair("Gender", "Male"),
-                            Pair("Height", "1.75"),
-                        ),
-                        ownerType = RelationshipOwnerType.TEI,
-                        ownerUid = "ownerUid",
-                        avatar = AvatarProviderConfiguration.MainValueLabel(
-                            firstMainValue = "M",
-                        ),
-                        canOpen = true,
-                        lastUpdated = "Yesterday",
+                    RelationshipSectionUiState(
+                        uid = "uid2",
+                        title = "Empty relation ship",
+                        relationships = emptyList(),
+                        side = RelationshipConstraintSide.FROM,
+                        entityToAdd = null,
                     ),
                 ),
-                side = RelationshipConstraintSide.FROM,
-                entityToAdd = null,
-            ),
-            RelationshipSectionUiState(
-                uid = "uid2",
-                title = "Empty relation ship",
-                relationships = emptyList(),
-                side = RelationshipConstraintSide.FROM,
-                entityToAdd = null,
-            ),
-        ),
-    )
+        )
 
     RelationShipsScreen(
         uiState = mockUiState,

@@ -22,7 +22,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class DataSetInitialPresenterTest {
-
     private lateinit var presenter: DataSetInitialPresenter
 
     private val view: DataSetInitialContract.View = mock()
@@ -34,15 +33,16 @@ class DataSetInitialPresenterTest {
         presenter = DataSetInitialPresenter(view, repository, scheduler)
     }
 
-    private fun dummyDataSetInitial() = DataSetInitialModel(
-        "name",
-        "desc",
-        "catComboUid",
-        "catCombo",
-        PeriodType.Daily,
-        mutableListOf(),
-        0,
-    )
+    private fun dummyDataSetInitial() =
+        DataSetInitialModel(
+            "name",
+            "desc",
+            "catComboUid",
+            "catCombo",
+            PeriodType.Daily,
+            mutableListOf(),
+            0,
+        )
 
     @Test
     fun `Should set OrgUnit and data`() {
@@ -60,10 +60,11 @@ class DataSetInitialPresenterTest {
 
     @Test
     fun `Should not set OrgUnits when size is bigger than 1`() {
-        val orgUnits = listOf(
-            OrganisationUnit.builder().uid("orgUnitUid").build(),
-            OrganisationUnit.builder().uid("orgUnitUid2").build(),
-        )
+        val orgUnits =
+            listOf(
+                OrganisationUnit.builder().uid("orgUnitUid").build(),
+                OrganisationUnit.builder().uid("orgUnitUid2").build(),
+            )
         val dataSet = dummyDataSetInitial()
 
         whenever(repository.orgUnits()) doReturn Observable.just(orgUnits)

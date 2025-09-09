@@ -9,14 +9,24 @@ import org.hisp.dhis.android.core.user.User
 
 interface HomeRepository {
     fun user(): Single<User?>
+
     fun defaultCatCombo(): Single<CategoryCombo?>
+
     fun defaultCatOptCombo(): Single<CategoryOptionCombo?>
+
     fun logOut(): Completable
+
     fun hasProgramWithAssignment(): Boolean
+
     fun hasHomeAnalytics(): Boolean
+
     fun getServerVersion(): Single<SystemInfo?>
+
     fun accountsCount(): Int
+
     fun isPinStored(): Boolean
+
     fun homeItemCount(): Int
+
     suspend fun singleHomeItemData(): HomeItemData?
 }

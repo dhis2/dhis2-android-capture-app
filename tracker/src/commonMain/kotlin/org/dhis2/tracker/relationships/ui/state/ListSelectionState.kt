@@ -6,12 +6,13 @@ data class ListSelectionState(
     val selectingMode: Boolean = false,
     val selectedItems: List<String> = emptyList(),
 ) {
-
-    fun isSelected(itemUid: String, enabled: Boolean): SelectionState {
-        return when {
+    fun isSelected(
+        itemUid: String,
+        enabled: Boolean,
+    ): SelectionState =
+        when {
             !selectingMode || !enabled -> SelectionState.NONE
             selectedItems.contains(itemUid) -> SelectionState.SELECTED
             else -> SelectionState.SELECTABLE
         }
-    }
 }

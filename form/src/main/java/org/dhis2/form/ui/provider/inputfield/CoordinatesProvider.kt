@@ -76,16 +76,20 @@ fun ProvideInputCoordinate(
     )
 }
 
-fun mapGeometry(value: String?, featureType: FeatureType): Coordinates? {
-    return value?.let {
-        val geometry = Geometry.builder()
-            .coordinates(it)
-            .type(featureType)
-            .build()
+fun mapGeometry(
+    value: String?,
+    featureType: FeatureType,
+): Coordinates? =
+    value?.let {
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates(it)
+                .type(featureType)
+                .build()
 
         Coordinates(
             latitude = GeometryHelper.getPoint(geometry)[1],
             longitude = GeometryHelper.getPoint(geometry)[0],
         )
     }
-}

@@ -6,8 +6,7 @@ fun interface SingleEventEnforcer {
     companion object
 }
 
-fun SingleEventEnforcer.Companion.get(): SingleEventEnforcer =
-    SingleEventEnforcerImpl()
+fun SingleEventEnforcer.Companion.get(): SingleEventEnforcer = SingleEventEnforcerImpl()
 
 class SingleEventEnforcerImpl : SingleEventEnforcer {
     private val now: Long

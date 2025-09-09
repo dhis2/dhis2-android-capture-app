@@ -9,19 +9,15 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 class NutritionFillFormatter(
     private val boundaryDataSet: ILineDataSet?,
 ) : IFillFormatter {
-
     override fun getFillLinePosition(
         dataSet: ILineDataSet?,
         dataProvider: LineDataProvider?,
-    ): Float {
-        return 0f
-    }
+    ): Float = 0f
 
-    fun getFillLineBoundary(): List<Entry> {
-        return if (boundaryDataSet != null) {
+    fun getFillLineBoundary(): List<Entry> =
+        if (boundaryDataSet != null) {
             (boundaryDataSet as LineDataSet).values
         } else {
             emptyList()
         }
-    }
 }

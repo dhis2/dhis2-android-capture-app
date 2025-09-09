@@ -30,8 +30,8 @@ class SettingsViewModelFactory(
     private val networkUtils: NetworkUtils,
     private val settingsMessages: SettingsMessages,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return SyncManagerPresenter(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        SyncManagerPresenter(
             getSettingsState = getSettingsState,
             updateSyncSettings = updateSyncSettings,
             updateSmsResponse = updateSmsResponse,
@@ -45,5 +45,4 @@ class SettingsViewModelFactory(
             networkUtils = networkUtils,
             settingsMessages = settingsMessages,
         ) as T
-    }
 }

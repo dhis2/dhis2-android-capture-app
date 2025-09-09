@@ -17,7 +17,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class IndicatorsPresenterTest {
-
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
     private val view: IndicatorsView = mock()
     private val indicatorRepository: IndicatorRepository = mock()
@@ -55,14 +54,18 @@ class IndicatorsPresenterTest {
         verify(view).displayMessage(message)
     }
 
-    private fun analyticsModels(): List<AnalyticsModel> = listOf(
-        IndicatorModel(
-            ProgramIndicator.builder().uid("indicator_uid")
-                .displayInForm(true).build(),
-            "indicator_value",
-            "#ffffff",
-            LOCATION_INDICATOR_WIDGET,
-            "Info",
-        ),
-    )
+    private fun analyticsModels(): List<AnalyticsModel> =
+        listOf(
+            IndicatorModel(
+                ProgramIndicator
+                    .builder()
+                    .uid("indicator_uid")
+                    .displayInForm(true)
+                    .build(),
+                "indicator_value",
+                "#ffffff",
+                LOCATION_INDICATOR_WIDGET,
+                "Info",
+            ),
+        )
 }

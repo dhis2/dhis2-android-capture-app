@@ -11,22 +11,21 @@ import org.dhis2.R
 import org.dhis2.usescases.settings.SettingItem
 
 @Composable
-fun TwoFASettingItem(
-    onClick: () -> Unit,
-) {
+fun TwoFASettingItem(onClick: () -> Unit) {
     SettingItem(
         modifier = Modifier.testTag(SettingItem.TWO_FACTOR_AUTH.name),
         title = stringResource(id = R.string.settingTwoFA),
-        subtitle = buildAnnotatedString {
-            append(
-                String.format(
-                    stringResource(R.string.settingsTwoFAStatus),
-                    "Unknown",
-                ),
-            )
-            append("\n")
-            append(stringResource(R.string.settingTwoFADescr))
-        },
+        subtitle =
+            buildAnnotatedString {
+                append(
+                    String.format(
+                        stringResource(R.string.settingsTwoFAStatus),
+                        "Unknown",
+                    ),
+                )
+                append("\n")
+                append(stringResource(R.string.settingTwoFADescr))
+            },
         icon = Icons.Outlined.LockPerson,
         extraActions = {},
         showExtraActions = false,

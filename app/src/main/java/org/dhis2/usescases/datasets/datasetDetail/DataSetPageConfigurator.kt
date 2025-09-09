@@ -5,7 +5,6 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 class DataSetPageConfigurator(
     private val dataSetDetailRepository: DataSetDetailRepository,
 ) : NavigationPageConfigurator {
-
     private var canDisplayAnalytics: Boolean = false
 
     fun initVariables(): DataSetPageConfigurator {
@@ -13,11 +12,7 @@ class DataSetPageConfigurator(
         return this
     }
 
-    override fun displayListView(): Boolean {
-        return true
-    }
+    override fun displayListView(): Boolean = true
 
-    override fun displayAnalytics(): Boolean {
-        return canDisplayAnalytics
-    }
+    override fun displayAnalytics(): Boolean = canDisplayAnalytics
 }

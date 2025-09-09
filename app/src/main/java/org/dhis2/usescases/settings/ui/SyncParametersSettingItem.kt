@@ -42,13 +42,14 @@ internal fun SyncParametersSettingItem(
     SettingItem(
         modifier = Modifier.testTag(SettingItem.SYNC_PARAMETERS.name),
         title = stringResource(id = R.string.settingsSyncParameters),
-        subtitle = stringResource(R.string.event_tei_limits_v2).format(
-            provideLimitScopeLabel(syncParametersViewModel.limitScope),
-            syncParametersViewModel.currentEventCount,
-            syncParametersViewModel.numberOfEventsToDownload,
-            syncParametersViewModel.currentTeiCount,
-            syncParametersViewModel.numberOfTeiToDownload,
-        ),
+        subtitle =
+            stringResource(R.string.event_tei_limits_v2).format(
+                provideLimitScopeLabel(syncParametersViewModel.limitScope),
+                syncParametersViewModel.currentEventCount,
+                syncParametersViewModel.numberOfEventsToDownload,
+                syncParametersViewModel.currentTeiCount,
+                syncParametersViewModel.numberOfTeiToDownload,
+            ),
         icon = Icons.Outlined.DataUsage,
         extraActions = {
             Column(
@@ -56,14 +57,15 @@ internal fun SyncParametersSettingItem(
                 verticalArrangement = spacedBy(8.dp),
             ) {
                 if (syncParametersViewModel.limitScopeIsEditable) {
-                    val downloadLimitScopes = listOf(
-                        stringResource(R.string.settings_limit_globally),
-                        stringResource(R.string.settings_limit_ou),
-                        stringResource(R.string.settings_limit_program),
-                        stringResource(R.string.settings_limit_ou_program),
-                    )
+                    val downloadLimitScopes =
+                        listOf(
+                            stringResource(R.string.settings_limit_globally),
+                            stringResource(R.string.settings_limit_ou),
+                            stringResource(R.string.settings_limit_program),
+                            stringResource(R.string.settings_limit_ou_program),
+                        )
                     InputDropDown(
-                        modifier = Modifier.testTag(TestTag_SyncParameters_LimitScope),
+                        modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE),
                         title = stringResource(R.string.settings_limit_scope),
                         state = InputShellState.FOCUSED,
                         itemCount = downloadLimitScopes.size,
@@ -71,35 +73,38 @@ internal fun SyncParametersSettingItem(
                         fetchItem = { index ->
                             DropdownItem(downloadLimitScopes[index])
                         },
-                        selectedItem = DropdownItem(
-                            label = when (syncParametersViewModel.limitScope) {
-                                LimitScope.ALL_ORG_UNITS,
-                                LimitScope.GLOBAL,
-                                -> downloadLimitScopes[0]
+                        selectedItem =
+                            DropdownItem(
+                                label =
+                                    when (syncParametersViewModel.limitScope) {
+                                        LimitScope.ALL_ORG_UNITS,
+                                        LimitScope.GLOBAL,
+                                        -> downloadLimitScopes[0]
 
-                                LimitScope.PER_ORG_UNIT -> downloadLimitScopes[1]
-                                LimitScope.PER_PROGRAM -> downloadLimitScopes[2]
-                                LimitScope.PER_OU_AND_PROGRAM -> downloadLimitScopes[3]
-                            },
-                        ),
+                                        LimitScope.PER_ORG_UNIT -> downloadLimitScopes[1]
+                                        LimitScope.PER_PROGRAM -> downloadLimitScopes[2]
+                                        LimitScope.PER_OU_AND_PROGRAM -> downloadLimitScopes[3]
+                                    },
+                            ),
                         onResetButtonClicked = {
                             onScopeLimitSelected(LimitScope.GLOBAL)
                         },
                         onItemSelected = { index, _ ->
-                            val selectedScope = when (index) {
-                                0 -> LimitScope.GLOBAL
-                                1 -> LimitScope.PER_ORG_UNIT
-                                2 -> LimitScope.PER_PROGRAM
-                                3 -> LimitScope.PER_OU_AND_PROGRAM
-                                else -> LimitScope.GLOBAL
-                            }
+                            val selectedScope =
+                                when (index) {
+                                    0 -> LimitScope.GLOBAL
+                                    1 -> LimitScope.PER_ORG_UNIT
+                                    2 -> LimitScope.PER_PROGRAM
+                                    3 -> LimitScope.PER_OU_AND_PROGRAM
+                                    else -> LimitScope.GLOBAL
+                                }
                             onScopeLimitSelected(selectedScope)
                         },
                         loadOptions = {},
                     )
 
                     InputPositiveIntegerOrZero(
-                        modifier = Modifier.testTag(TestTag_SyncParameters_EventMaxCount),
+                        modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT),
                         title = stringResource(R.string.events_to_download),
                         state = InputShellState.FOCUSED,
                         inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfEventsToDownload.toString()),
@@ -112,7 +117,7 @@ internal fun SyncParametersSettingItem(
                     )
 
                     InputPositiveIntegerOrZero(
-                        modifier = Modifier.testTag(TestTag_SyncParameters_TeiMaxCount),
+                        modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT),
                         title = stringResource(R.string.teis_to_download),
                         state = InputShellState.FOCUSED,
                         inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfTeiToDownload.toString()),
@@ -129,32 +134,37 @@ internal fun SyncParametersSettingItem(
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-                syncParametersViewModel.hasSpecificProgramSettings.takeIf { it > 0 }
+                syncParametersViewModel.hasSpecificProgramSettings
+                    .takeIf { it > 0 }
                     ?.let { specificSettings ->
                         Text(
-                            text = buildAnnotatedString {
-                                val specificProgramText =
-                                    LocalContext.current.resources.getQuantityString(
-                                        R.plurals.settings_specific_programs,
-                                        syncParametersViewModel.hasSpecificProgramSettings,
-                                    ).format(specificSettings)
-                                append(
-                                    LocalContext.current.resources.getQuantityString(
-                                        R.plurals.settings_specific_programs,
-                                        syncParametersViewModel.hasSpecificProgramSettings,
-                                    ).format(specificSettings),
-                                )
-                                val indexOfNumber =
-                                    specificProgramText.indexOf(specificSettings.toString())
-                                addStyle(
-                                    style = SpanStyle(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        textDecoration = TextDecoration.None,
-                                    ),
-                                    start = indexOfNumber,
-                                    end = indexOfNumber + indexOfNumber.toString().length,
-                                )
-                            },
+                            text =
+                                buildAnnotatedString {
+                                    val specificProgramText =
+                                        LocalContext.current.resources
+                                            .getQuantityString(
+                                                R.plurals.settings_specific_programs,
+                                                syncParametersViewModel.hasSpecificProgramSettings,
+                                            ).format(specificSettings)
+                                    append(
+                                        LocalContext.current.resources
+                                            .getQuantityString(
+                                                R.plurals.settings_specific_programs,
+                                                syncParametersViewModel.hasSpecificProgramSettings,
+                                            ).format(specificSettings),
+                                    )
+                                    val indexOfNumber =
+                                        specificProgramText.indexOf(specificSettings.toString())
+                                    addStyle(
+                                        style =
+                                            SpanStyle(
+                                                color = MaterialTheme.colorScheme.primary,
+                                                textDecoration = TextDecoration.None,
+                                            ),
+                                        start = indexOfNumber,
+                                        end = indexOfNumber + indexOfNumber.toString().length,
+                                    )
+                                },
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Button(
@@ -173,12 +183,13 @@ internal fun SyncParametersSettingItem(
 }
 
 @Composable
-private fun provideLimitScopeLabel(limitScope: LimitScope) = when (limitScope) {
-    LimitScope.ALL_ORG_UNITS,
-    LimitScope.GLOBAL,
-    -> stringResource(R.string.settings_limit_globally)
+private fun provideLimitScopeLabel(limitScope: LimitScope) =
+    when (limitScope) {
+        LimitScope.ALL_ORG_UNITS,
+        LimitScope.GLOBAL,
+        -> stringResource(R.string.settings_limit_globally)
 
-    LimitScope.PER_ORG_UNIT -> stringResource(R.string.settings_limit_ou)
-    LimitScope.PER_PROGRAM -> stringResource(R.string.settings_limit_program)
-    LimitScope.PER_OU_AND_PROGRAM -> stringResource(R.string.settings_limit_ou_program)
-}
+        LimitScope.PER_ORG_UNIT -> stringResource(R.string.settings_limit_ou)
+        LimitScope.PER_PROGRAM -> stringResource(R.string.settings_limit_program)
+        LimitScope.PER_OU_AND_PROGRAM -> stringResource(R.string.settings_limit_ou_program)
+    }

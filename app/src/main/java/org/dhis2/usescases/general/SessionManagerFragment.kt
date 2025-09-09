@@ -5,11 +5,8 @@ import org.dhis2.commons.service.SessionManagerServiceImpl
 import javax.inject.Inject
 
 abstract class SessionManagerFragment : Fragment() {
-
     @Inject
     lateinit var sessionManagerServiceImpl: SessionManagerServiceImpl
 
-    fun isUserLoggedIn(): Boolean {
-        return (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.isUserLoggedIn())
-    }
+    fun isUserLoggedIn(): Boolean = (::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.isUserLoggedIn())
 }

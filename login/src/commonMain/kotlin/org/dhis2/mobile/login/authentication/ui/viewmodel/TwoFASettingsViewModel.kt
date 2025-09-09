@@ -28,34 +28,40 @@ open class TwoFASettingsViewModel(
     private val mapper: TwoFAUiStateMapper,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<TwoFAUiState>(TwoFAUiState.Checking)
-    val uiState: StateFlow<TwoFAUiState> = _uiState.asStateFlow()
-        .onStart {
-            checkTwoFAStatus()
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            TwoFAUiState.Checking,
-        )
+    val uiState: StateFlow<TwoFAUiState> =
+        _uiState
+            .asStateFlow()
+            .onStart {
+                checkTwoFAStatus()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                TwoFAUiState.Checking,
+            )
 
     private val _uiEnableState = MutableStateFlow<TwoFaEnableUiState>(TwoFaEnableUiState.Starting)
-    val uiEnableState: StateFlow<TwoFaEnableUiState> = _uiEnableState.asStateFlow()
-        .onStart {
-            getSecretCode()
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            TwoFaEnableUiState.Starting,
-        )
+    val uiEnableState: StateFlow<TwoFaEnableUiState> =
+        _uiEnableState
+            .asStateFlow()
+            .onStart {
+                getSecretCode()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                TwoFaEnableUiState.Starting,
+            )
 
     private val _secretCode = MutableStateFlow("")
-    val secretCode: StateFlow<String> = _secretCode.asStateFlow()
-        .onStart {
-            getSecretCode()
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.Lazily,
-            "",
-        )
+    val secretCode: StateFlow<String> =
+        _secretCode
+            .asStateFlow()
+            .onStart {
+                getSecretCode()
+            }.stateIn(
+                viewModelScope,
+                SharingStarted.Lazily,
+                "",
+            )
 
     private fun checkTwoFAStatus() {
         viewModelScope.launch {

@@ -83,61 +83,64 @@ fun SearchParametersScreen(
     val configuration = LocalConfiguration.current
 
     val scanContract = remember { ScanContract() }
-    val qrScanLauncher = rememberLauncherForActivityResult(
-        contract = scanContract,
-    ) { result ->
-        result.contents?.let { qrData ->
-            val intent = FormIntent.OnQrCodeScanned(
-                uid = result.originalIntent.getStringExtra(Constants.UID)!!,
-                value = qrData,
-                valueType = ValueType.TEXT,
-            )
-            intentHandler(intent)
-        }
-    }
-
-    val callback = remember {
-        object : FieldUiModel.Callback {
-            override fun intent(intent: FormIntent) {
-                intentHandler.invoke(intent)
+    val qrScanLauncher =
+        rememberLauncherForActivityResult(
+            contract = scanContract,
+        ) { result ->
+            result.contents?.let { qrData ->
+                val intent =
+                    FormIntent.OnQrCodeScanned(
+                        uid = result.originalIntent.getStringExtra(Constants.UID)!!,
+                        value = qrData,
+                        valueType = ValueType.TEXT,
+                    )
+                intentHandler(intent)
             }
+        }
 
-            override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
-                when (uiEvent) {
-                    is RecyclerViewUiEvents.OpenOrgUnitDialog ->
-                        onShowOrgUnit(
-                            uiEvent.uid,
-                            uiEvent.value?.let { listOf(it) } ?: emptyList(),
-                            uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
-                            uiEvent.label,
-                        )
+    val callback =
+        remember {
+            object : FieldUiModel.Callback {
+                override fun intent(intent: FormIntent) {
+                    intentHandler.invoke(intent)
+                }
 
-                    is RecyclerViewUiEvents.ScanQRCode -> {
-                        qrScanLauncher.launch(
-                            ScanOptions().apply {
-                                setDesiredBarcodeFormats()
-                                setPrompt("")
-                                setBeepEnabled(true)
-                                setBarcodeImageEnabled(false)
-                                addExtra(Constants.UID, uiEvent.uid)
-                                uiEvent.optionSet?.let {
-                                    addExtra(
-                                        Constants.OPTION_SET,
-                                        uiEvent.optionSet,
-                                    )
-                                }
-                                addExtra(Constants.SCAN_RENDERING_TYPE, uiEvent.renderingType)
-                            },
-                        )
-                    }
+                override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
+                    when (uiEvent) {
+                        is RecyclerViewUiEvents.OpenOrgUnitDialog ->
+                            onShowOrgUnit(
+                                uiEvent.uid,
+                                uiEvent.value?.let { listOf(it) } ?: emptyList(),
+                                uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
+                                uiEvent.label,
+                            )
 
-                    else -> {
-                        // no-op
+                        is RecyclerViewUiEvents.ScanQRCode -> {
+                            qrScanLauncher.launch(
+                                ScanOptions().apply {
+                                    setDesiredBarcodeFormats()
+                                    setPrompt("")
+                                    setBeepEnabled(true)
+                                    setBarcodeImageEnabled(false)
+                                    addExtra(Constants.UID, uiEvent.uid)
+                                    uiEvent.optionSet?.let {
+                                        addExtra(
+                                            Constants.OPTION_SET,
+                                            uiEvent.optionSet,
+                                        )
+                                    }
+                                    addExtra(Constants.SCAN_RENDERING_TYPE, uiEvent.renderingType)
+                                },
+                            )
+                        }
+
+                        else -> {
+                            // no-op
+                        }
                     }
                 }
             }
         }
-    }
 
     uiState.minAttributesMessage?.let { message ->
         coroutineScope.launch {
@@ -162,63 +165,71 @@ fun SearchParametersScreen(
         }
     }
 
-    val backgroundShape = when (configuration.orientation) {
-        Configuration.ORIENTATION_LANDSCAPE -> RoundedCornerShape(
-            topStart = CornerSize(Radius.L),
-            topEnd = CornerSize(Radius.NoRounding),
-            bottomEnd = CornerSize(Radius.NoRounding),
-            bottomStart = CornerSize(Radius.NoRounding),
-        )
+    val backgroundShape =
+        when (configuration.orientation) {
+            Configuration.ORIENTATION_LANDSCAPE ->
+                RoundedCornerShape(
+                    topStart = CornerSize(Radius.L),
+                    topEnd = CornerSize(Radius.NoRounding),
+                    bottomEnd = CornerSize(Radius.NoRounding),
+                    bottomStart = CornerSize(Radius.NoRounding),
+                )
 
-        else -> Shape.LargeTop
-    }
+            else -> Shape.LargeTop
+        }
 
     Scaffold(
         containerColor = Color.Transparent,
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,
-                modifier = Modifier.padding(
-                    start = 8.dp,
-                    top = 8.dp,
-                    end = 8.dp,
-                    bottom = 48.dp,
-                ),
+                modifier =
+                    Modifier.padding(
+                        start = 8.dp,
+                        top = 8.dp,
+                        end = 8.dp,
+                        bottom = 48.dp,
+                    ),
             )
         },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.White, shape = backgroundShape)
-                .padding(paddingValues),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .background(color = Color.White, shape = backgroundShape)
+                    .padding(paddingValues),
         ) {
             Column(
-                modifier = Modifier
-                    .weight(1F)
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .weight(1F)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 if (uiState.items.isEmpty()) {
                     Column(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(16.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         InfoBar(
-                            infoBarData = InfoBarData(
-                                text = resourceManager.getString(R.string.empty_search_attributes_message),
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.Outlined.ErrorOutline,
-                                        contentDescription = "warning",
-                                        tint = AdditionalInfoItemColor.WARNING.color,
-                                    )
-                                },
-                                color = AdditionalInfoItemColor.WARNING.color,
-                                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                                actionText = null,
-                                onClick = {},
-                            ),
+                            infoBarData =
+                                InfoBarData(
+                                    text = resourceManager.getString(R.string.empty_search_attributes_message),
+                                    icon = {
+                                        Icon(
+                                            imageVector = Icons.Outlined.ErrorOutline,
+                                            contentDescription = "warning",
+                                            tint = AdditionalInfoItemColor.WARNING.color,
+                                        )
+                                    },
+                                    color = AdditionalInfoItemColor.WARNING.color,
+                                    backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                                    actionText = null,
+                                    onClick = {},
+                                ),
                             Modifier.testTag("EMPTY_SEARCH_ATTRIBUTES_TEXT_TAG"),
                         )
                     }
@@ -226,29 +237,32 @@ fun SearchParametersScreen(
                     uiState.items.forEachIndexed { index, fieldUiModel ->
                         fieldUiModel.setCallback(callback)
                         ParameterSelectorItem(
-                            modifier = Modifier
-                                .testTag("SEARCH_PARAM_ITEM"),
-                            model = provideParameterSelectorItem(
-                                resources = resourceManager,
-                                focusManager = focusManager,
-                                fieldUiModel = fieldUiModel,
-                                callback = callback,
-                                onNextClicked = {
-                                    val nextIndex = index + 1
-                                    if (nextIndex < uiState.items.size) {
-                                        uiState.items[nextIndex].onItemClick()
-                                    }
-                                },
-                            ),
+                            modifier =
+                                Modifier
+                                    .testTag("SEARCH_PARAM_ITEM"),
+                            model =
+                                provideParameterSelectorItem(
+                                    resources = resourceManager,
+                                    focusManager = focusManager,
+                                    fieldUiModel = fieldUiModel,
+                                    callback = callback,
+                                    onNextClicked = {
+                                        val nextIndex = index + 1
+                                        if (nextIndex < uiState.items.size) {
+                                            uiState.items[nextIndex].onItemClick()
+                                        }
+                                    },
+                                ),
                         )
                     }
                 }
 
                 if (uiState.clearSearchEnabled) {
                     Button(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(16.dp, 24.dp, 16.dp, 8.dp),
+                        modifier =
+                            Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .padding(16.dp, 24.dp, 16.dp, 8.dp),
                         style = ButtonStyle.TEXT,
                         text = resourceManager.getString(R.string.clear_search),
                         icon = {
@@ -267,18 +281,20 @@ fun SearchParametersScreen(
 
             Button(
                 enabled = uiState.searchEnabled,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp, 8.dp, 16.dp, 8.dp)
-                    .testTag("SEARCH_BUTTON"),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp, 8.dp, 16.dp, 8.dp)
+                        .testTag("SEARCH_BUTTON"),
                 style = ButtonStyle.FILLED,
                 text = resourceManager.getString(R.string.search),
                 icon = {
-                    val iconTint = if (uiState.searchEnabled) {
-                        TextColor.OnPrimary
-                    } else {
-                        TextColor.OnDisabledSurface
-                    }
+                    val iconTint =
+                        if (uiState.searchEnabled) {
+                            TextColor.OnPrimary
+                        } else {
+                            TextColor.OnDisabledSurface
+                        }
 
                     Icon(
                         painter = painterResource(id = R.drawable.ic_search),
@@ -299,26 +315,28 @@ fun SearchParametersScreen(
 fun SearchFormPreview() {
     SearchParametersScreen(
         resourceManager = ResourceManager(LocalContext.current, ColorUtils()),
-        uiState = SearchParametersUiState(
-            items = listOf(
-                FieldUiModelImpl(
-                    uid = "uid1",
-                    label = "Label 1",
-                    autocompleteList = emptyList(),
-                    optionSetConfiguration = null,
-                    valueType = ValueType.TEXT,
-                    customIntent = null,
-                ),
-                FieldUiModelImpl(
-                    uid = "uid2",
-                    label = "Label 2",
-                    autocompleteList = emptyList(),
-                    optionSetConfiguration = null,
-                    valueType = ValueType.TEXT,
-                    customIntent = null,
-                ),
+        uiState =
+            SearchParametersUiState(
+                items =
+                    listOf(
+                        FieldUiModelImpl(
+                            uid = "uid1",
+                            label = "Label 1",
+                            autocompleteList = emptyList(),
+                            optionSetConfiguration = null,
+                            valueType = ValueType.TEXT,
+                            customIntent = null,
+                        ),
+                        FieldUiModelImpl(
+                            uid = "uid2",
+                            label = "Label 2",
+                            autocompleteList = emptyList(),
+                            optionSetConfiguration = null,
+                            valueType = ValueType.TEXT,
+                            customIntent = null,
+                        ),
+                    ),
             ),
-        ),
         intentHandler = {},
         onShowOrgUnit = { _, _, _, _ -> },
         onSearch = {},

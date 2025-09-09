@@ -38,7 +38,13 @@ class EnrollmentRepositoryTest {
 
         whenever(conf.program()?.access()) doReturn mock()
         whenever(conf.program()?.access()?.data()) doReturn mock()
-        whenever(conf.program()?.access()?.data()?.write()) doReturn true
+        whenever(
+            conf
+                .program()
+                ?.access()
+                ?.data()
+                ?.write(),
+        ) doReturn true
         whenever(conf.trackedEntityType()) doReturn mock()
 
         whenever(conf.trackedEntityType()?.access()) doReturn mock()
@@ -52,14 +58,21 @@ class EnrollmentRepositoryTest {
         whenever(conf.program()?.enrollmentDateLabel()) doReturn "Enrollment Date"
         whenever(enrolmentFormLabelsProvider.provideEnrollmentDateDefaultLabel("Program_UID")) doReturn "Enrollment Date"
 
-        whenever(conf.trackedEntityType()?.access()?.data()?.write()) doReturn true
-        repository = EnrollmentRepository(
-            fieldFactory,
-            conf,
-            enrollmentMode,
-            enrolmentFormLabelsProvider,
-            metadataIconProvider,
-        )
+        whenever(
+            conf
+                .trackedEntityType()
+                ?.access()
+                ?.data()
+                ?.write(),
+        ) doReturn true
+        repository =
+            EnrollmentRepository(
+                fieldFactory,
+                conf,
+                enrollmentMode,
+                enrolmentFormLabelsProvider,
+                metadataIconProvider,
+            )
     }
 
     @Test
@@ -76,10 +89,11 @@ class EnrollmentRepositoryTest {
     fun `should return enrollment Data section and another single section if program has no sections`() {
         whenever(conf.sections()) doReturn emptyList()
         assertTrue(
-            repository.sectionUids().blockingFirst() == listOf(
-                EnrollmentRepository.ENROLLMENT_DATA_SECTION_UID,
-                SINGLE_SECTION_UID,
-            ),
+            repository.sectionUids().blockingFirst() ==
+                listOf(
+                    EnrollmentRepository.ENROLLMENT_DATA_SECTION_UID,
+                    SINGLE_SECTION_UID,
+                ),
         )
     }
 

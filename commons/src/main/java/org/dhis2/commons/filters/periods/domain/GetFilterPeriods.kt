@@ -16,27 +16,25 @@ class GetFilterPeriods(
     private val filterPeriodRepository: FilterPeriodsRepository,
     private val periodLabelProvider: PeriodLabelProvider = PeriodLabelProvider(),
 ) {
-    operator fun invoke(
-        filterPeriodType: FilterPeriodType,
-
-    ): Flow<PagingData<Period>> = Pager(
-        config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
-        pagingSourceFactory = {
-            val maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
-            val minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -9) }.time
-            filterPeriodRepository.getPeriodSource(
-                labelProvider = periodLabelProvider,
-                filterPeriodType = filterPeriodType,
-                minDate = minDate,
-                maxDate = maxDate,
-            )
-        },
-    ).flow
-        .map { paging ->
-            paging.map { period ->
-                period.copy(
-                    enabled = true,
+    operator fun invoke(filterPeriodType: FilterPeriodType): Flow<PagingData<Period>> =
+        Pager(
+            config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
+            pagingSourceFactory = {
+                val maxDate = Calendar.getInstance().apply { add(Calendar.YEAR, 1) }.time
+                val minDate = Calendar.getInstance().apply { add(Calendar.YEAR, -9) }.time
+                filterPeriodRepository.getPeriodSource(
+                    labelProvider = periodLabelProvider,
+                    filterPeriodType = filterPeriodType,
+                    minDate = minDate,
+                    maxDate = maxDate,
                 )
+            },
+        ).flow
+            .map { paging ->
+                paging.map { period ->
+                    period.copy(
+                        enabled = true,
+                    )
+                }
             }
-        }
 }

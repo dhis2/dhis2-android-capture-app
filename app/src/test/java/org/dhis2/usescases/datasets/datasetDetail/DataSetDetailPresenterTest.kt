@@ -51,7 +51,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class DataSetDetailPresenterTest {
-
     private lateinit var presenter: DataSetDetailPresenter
 
     private val view: DataSetDetailView = mock()
@@ -64,15 +63,16 @@ class DataSetDetailPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = DataSetDetailPresenter(
-            view,
-            repository,
-            scheduler,
-            filterManager,
-            filterRepository,
-            disableHomeFilters,
-            matomoAnalyticsController,
-        )
+        presenter =
+            DataSetDetailPresenter(
+                view,
+                repository,
+                scheduler,
+                filterManager,
+                filterRepository,
+                disableHomeFilters,
+                matomoAnalyticsController,
+            )
     }
 
     @Test
@@ -149,7 +149,5 @@ class DataSetDetailPresenterTest {
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
 
-    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> {
-        return listOf(CategoryOptionCombo.builder().uid("uid").build())
-    }
+    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> = listOf(CategoryOptionCombo.builder().uid("uid").build())
 }

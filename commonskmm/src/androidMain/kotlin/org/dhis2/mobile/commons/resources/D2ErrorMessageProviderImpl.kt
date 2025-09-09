@@ -9,16 +9,15 @@ import org.jetbrains.compose.resources.getString
 class D2ErrorMessageProviderImpl(
     private val isNetworkAvailable: () -> Boolean,
 ) : D2ErrorMessageProvider {
-    override suspend fun getErrorMessage(throwable: Throwable): String? {
-        return when {
+    override suspend fun getErrorMessage(throwable: Throwable): String? =
+        when {
             throwable.cause is D2Error -> handleD2Error(throwable.cause as D2Error)
             throwable is D2Error -> handleD2Error(throwable)
             else -> throwable.localizedMessage
         }
-    }
 
-    private suspend fun handleD2Error(d2Error: D2Error?): String {
-        return when (d2Error!!.errorCode()) {
+    private suspend fun handleD2Error(d2Error: D2Error?): String =
+        when (d2Error!!.errorCode()) {
             D2ErrorCode.LOGIN_PASSWORD_NULL ->
                 getString(Res.string.login_error_null_pass)
 
@@ -216,8 +215,6 @@ class D2ErrorMessageProviderImpl(
             D2ErrorCode.NOT_IN_TOTP_2FA_ENROLLMENT_MODE ->
                 getString(Res.string.not_in_totp_2fa_enrollment_mode)
         }
-    }
 
-    private suspend fun defaultError() =
-        getString(Res.string.error_unexpected)
+    private suspend fun defaultError() = getString(Res.string.error_unexpected)
 }

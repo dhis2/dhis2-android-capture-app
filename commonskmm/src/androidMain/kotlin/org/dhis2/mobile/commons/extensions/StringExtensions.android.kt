@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import java.io.File
 
-actual fun String.toImageBitmap(): ImageBitmap? = File(this)
-    .takeIf { it.exists() }
-    ?.let { BitmapFactory.decodeFile(it.absolutePath).asImageBitmap() }
+actual fun String.toImageBitmap(): ImageBitmap? =
+    File(this)
+        .takeIf { it.exists() }
+        ?.let { BitmapFactory.decodeFile(it.absolutePath).asImageBitmap() }

@@ -16,13 +16,13 @@ class IndicatorsPresenter(
     val view: IndicatorsView,
     val indicatorRepository: IndicatorRepository,
 ) {
-
     var compositeDisposable: CompositeDisposable = CompositeDisposable()
     val publishProcessor = PublishProcessor.create<Unit>()
 
     fun init() {
         compositeDisposable.add(
-            publishProcessor.startWith(Unit)
+            publishProcessor
+                .startWith(Unit)
                 .flatMap { indicatorRepository.fetchData() }
                 .defaultSubscribe(schedulerProvider, { view.swapAnalytics(it) }, { Timber.d(it) }),
         )
@@ -31,6 +31,7 @@ class IndicatorsPresenter(
     fun onDettach() = compositeDisposable.clear()
 
     fun displayMessage(message: String) = view.displayMessage(message)
+
     fun filterByPeriod(
         chartModel: ChartModel,
         selectedPeriods: List<RelativePeriod>,
@@ -55,26 +56,32 @@ class IndicatorsPresenter(
         publishProcessor.onNext(Unit)
     }
 
-    fun resetFilter(chartModel: ChartModel, filterType: ChartFilter) {
+    fun resetFilter(
+        chartModel: ChartModel,
+        filterType: ChartFilter,
+    ) {
         chartModel.graph.visualizationUid?.let { _ ->
             when (filterType) {
-                ChartFilter.PERIOD -> indicatorRepository.filterByPeriod(
-                    chartModel,
-                    emptyList(),
-                    null,
-                )
+                ChartFilter.PERIOD ->
+                    indicatorRepository.filterByPeriod(
+                        chartModel,
+                        emptyList(),
+                        null,
+                    )
 
-                ChartFilter.ORG_UNIT -> indicatorRepository.filterByOrgUnit(
-                    chartModel,
-                    emptyList(),
-                    OrgUnitFilterType.NONE,
-                    null,
-                )
+                ChartFilter.ORG_UNIT ->
+                    indicatorRepository.filterByOrgUnit(
+                        chartModel,
+                        emptyList(),
+                        OrgUnitFilterType.NONE,
+                        null,
+                    )
 
-                ChartFilter.COLUMN -> indicatorRepository.filterLineListing(
-                    chartModel,
-                    null,
-                )
+                ChartFilter.COLUMN ->
+                    indicatorRepository.filterLineListing(
+                        chartModel,
+                        null,
+                    )
             }
         }
         publishProcessor.onNext(Unit)

@@ -49,63 +49,62 @@ class ServerModule {
     fun sdk(context: Context): D2 {
         if (!D2Manager.isD2Instantiated()) {
             blockingInstantiateD2(getD2Configuration(context))
-                ?.userModule()?.accountManager()?.setMaxAccounts(null)
+                ?.userModule()
+                ?.accountManager()
+                ?.setMaxAccounts(null)
         }
         return D2Manager.getD2()
     }
 
     @Provides
     @PerServer
-    fun sdkInstantiated(): ServerStatus {
-        return ServerStatus(D2Manager.isD2Instantiated())
-    }
+    fun sdkInstantiated(): ServerStatus = ServerStatus(D2Manager.isD2Instantiated())
 
     @Provides
     @PerServer
-    fun configurationRepository(d2: D2?, repository: ServerSettingsRepository): UserManager {
-        return UserManagerImpl(d2!!, repository)
-    }
+    fun configurationRepository(
+        d2: D2?,
+        repository: ServerSettingsRepository,
+    ): UserManager = UserManagerImpl(d2!!, repository)
 
     @Provides
     @PerServer
-    fun rulesUtilsProvider(d2: D2?, optionsRepository: OptionsRepository): RulesUtilsProvider {
-        return RulesUtilsProviderImpl(d2!!, optionsRepository)
-    }
+    fun rulesUtilsProvider(
+        d2: D2?,
+        optionsRepository: OptionsRepository,
+    ): RulesUtilsProvider = RulesUtilsProviderImpl(d2!!, optionsRepository)
 
     @Provides
     @PerServer
-    fun openIdSession(d2: D2, schedulerProvider: SchedulerProvider): OpenIdSession {
-        return OpenIdSession(d2, schedulerProvider)
-    }
+    fun openIdSession(
+        d2: D2,
+        schedulerProvider: SchedulerProvider,
+    ): OpenIdSession = OpenIdSession(d2, schedulerProvider)
 
     @Provides
     @PerServer
-    fun provideCharts(serverComponent: ServerComponent): Charts {
-        return DhisAnalyticCharts.Provider.get(serverComponent)
-    }
+    fun provideCharts(serverComponent: ServerComponent): Charts = DhisAnalyticCharts.Provider.get(serverComponent)
 
     @Provides
     @PerServer
-    fun provideGetFiltersApplyingWebAppConfig(): GetFiltersApplyingWebAppConfig {
-        return GetFiltersApplyingWebAppConfig()
-    }
+    fun provideGetFiltersApplyingWebAppConfig(): GetFiltersApplyingWebAppConfig = GetFiltersApplyingWebAppConfig()
 
     @Provides
     @PerServer
-    fun provideDhisPeriodUtils(d2: D2, context: Context): DhisPeriodUtils {
-        return DhisPeriodUtils(
+    fun provideDhisPeriodUtils(
+        d2: D2,
+        context: Context,
+    ): DhisPeriodUtils =
+        DhisPeriodUtils(
             d2,
             context.getString(R.string.period_span_default_label),
             context.getString(R.string.week_period_span_default_label),
             context.getString(R.string.biweek_period_span_default_label),
         )
-    }
 
     @Provides
     @PerServer
-    fun providesRepository(d2: D2): ServerSettingsRepository {
-        return ServerSettingsRepository(d2)
-    }
+    fun providesRepository(d2: D2): ServerSettingsRepository = ServerSettingsRepository(d2)
 
     @Provides
     @PerServer
@@ -114,8 +113,8 @@ class ServerModule {
         d2: D2,
         preferenceProvider: PreferenceProvider,
         colorUtils: ColorUtils,
-    ): ThemeManager {
-        return ThemeManager(
+    ): ThemeManager =
+        ThemeManager(
             userManager,
             ProgramConfiguration(d2),
             DataSetConfiguration(d2),
@@ -123,45 +122,34 @@ class ServerModule {
             preferenceProvider,
             colorUtils,
         )
-    }
 
     @Provides
     @PerServer
-    fun providesSyncStatusController(dispatcherProvider: DispatcherProvider): SyncStatusController {
-        return SyncStatusController(dispatcherProvider)
-    }
+    fun providesSyncStatusController(dispatcherProvider: DispatcherProvider): SyncStatusController =
+        SyncStatusController(dispatcherProvider)
 
     @Provides
     @PerServer
-    fun providesVersionStatusController(d2: D2): VersionRepository {
-        return VersionRepository(d2)
-    }
+    fun providesVersionStatusController(d2: D2): VersionRepository = VersionRepository(d2)
 
     @Provides
     @PerServer
-    fun providesFileController(): FileController {
-        return FileControllerImpl()
-    }
+    fun providesFileController(): FileController = FileControllerImpl()
 
     @Provides
     @PerServer
     fun providesUniqueAttributeController(
         d2: D2,
         crashReportController: CrashReportController,
-    ): UniqueAttributeController {
-        return UniqueAttributeController(
+    ): UniqueAttributeController =
+        UniqueAttributeController(
             d2,
             crashReportController,
         )
-    }
 
     @Provides
     @PerServer
-    fun metadataIconProvider(
-        d2: D2,
-    ): MetadataIconProvider {
-        return MetadataIconProvider(d2)
-    }
+    fun metadataIconProvider(d2: D2): MetadataIconProvider = MetadataIconProvider(d2)
 
     @Provides
     @PerServer
@@ -177,15 +165,11 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideEventPeriodRepository(d2: D2): EventPeriodRepository =
-        EventPeriodRepository(d2)
+    fun provideEventPeriodRepository(d2: D2): EventPeriodRepository = EventPeriodRepository(d2)
 
     @Provides
     @PerServer
-    fun providePeriodUseCase(
-        eventPeriodRepository: EventPeriodRepository,
-    ) =
-        GetEventPeriods(eventPeriodRepository)
+    fun providePeriodUseCase(eventPeriodRepository: EventPeriodRepository) = GetEventPeriods(eventPeriodRepository)
 
     companion object {
         @JvmStatic
@@ -197,7 +181,8 @@ class ServerModule {
                     AnalyticsHelper(context.app().appComponent().matomoController()),
                 ),
             )
-            return D2Configuration.builder()
+            return D2Configuration
+                .builder()
                 .appName(BuildConfig.APPLICATION_ID)
                 .appVersion(BuildConfig.VERSION_NAME)
                 .connectTimeoutInSeconds(10 * 60)
@@ -211,16 +196,12 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideOptionsRepository(d2: D2): OptionsRepository {
-        return OptionsRepository(d2)
-    }
+    fun provideOptionsRepository(d2: D2): OptionsRepository = OptionsRepository(d2)
 
     @Provides
     @PerServer
     fun provideEventResourceProvider(
         d2: D2,
         resourceManager: ResourceManager,
-    ): EventResourcesProvider {
-        return EventResourcesProvider(d2, resourceManager)
-    }
+    ): EventResourcesProvider = EventResourcesProvider(d2, resourceManager)
 }

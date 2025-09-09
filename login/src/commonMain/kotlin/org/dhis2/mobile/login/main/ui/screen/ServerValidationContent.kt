@@ -51,12 +51,10 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-const val ServerValidationContentButtonTag = "ServerValidationContentButtonTag"
+const val SERVER_VALIDATION_CONTENT_BUTTON_TAG = "ServerValidationContentButtonTag"
 
 @Composable
-internal fun ServerValidationContent(
-    availableServers: List<String>,
-) {
+internal fun ServerValidationContent(availableServers: List<String>) {
     val viewModel: LoginViewModel = koinViewModel()
     val currentScreen by viewModel.currentScreen.collectAsState(null)
     val isServerValidationRunning by remember(currentScreen) {
@@ -70,8 +68,10 @@ internal fun ServerValidationContent(
         }
     }
     Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         Text(
             text = stringResource(Res.string.server_verification_title),
@@ -90,18 +90,20 @@ internal fun ServerValidationContent(
                 },
             )
         }
-        val qrReader = serverQrReader { serverUrl ->
-            server = server.copy(text = serverUrl ?: "")
-        }
+        val qrReader =
+            serverQrReader { serverUrl ->
+                server = server.copy(text = serverUrl ?: "")
+            }
 
         InputQRCode(
             title = stringResource(Res.string.server_url_title),
             state = state,
-            supportingText = errorMessage?.takeIf { state == InputShellState.ERROR }?.let {
-                listOf(
-                    SupportingTextData(text = it, state = SupportingTextState.ERROR),
-                )
-            },
+            supportingText =
+                errorMessage?.takeIf { state == InputShellState.ERROR }?.let {
+                    listOf(
+                        SupportingTextData(text = it, state = SupportingTextState.ERROR),
+                    )
+                },
             onQRButtonClicked = qrReader::launch,
             inputTextFieldValue = server,
             autoCompleteList = availableServers,
@@ -126,37 +128,43 @@ internal fun ServerValidationContent(
         )
         Spacer(Modifier.size(Spacing.Spacing24))
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .animateContentSize(),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .animateContentSize(),
             horizontalArrangement = spacedBy(Spacing.Spacing16),
         ) {
             Button(
-                modifier = Modifier.weight(1f)
-                    .testTag(ServerValidationContentButtonTag),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .testTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG),
                 enabled = server.text.isNotEmpty() && !isServerValidationRunning,
                 style = ButtonStyle.FILLED,
-                icon = if (server.text.isNotEmpty()) {
-                    {
-                        if (isServerValidationRunning) {
-                            ProgressIndicator(
-                                type = ProgressIndicatorType.CIRCULAR_SMALL,
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                contentDescription = "Check login flow button",
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                            )
+                icon =
+                    if (server.text.isNotEmpty()) {
+                        {
+                            if (isServerValidationRunning) {
+                                ProgressIndicator(
+                                    type = ProgressIndicatorType.CIRCULAR_SMALL,
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                    contentDescription = "Check login flow button",
+                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                )
+                            }
                         }
-                    }
-                } else {
-                    null
-                },
-                text = if (isServerValidationRunning) {
-                    stringResource(Res.string.server_verification_running)
-                } else {
-                    stringResource(Res.string.action_next)
-                },
+                    } else {
+                        null
+                    },
+                text =
+                    if (isServerValidationRunning) {
+                        stringResource(Res.string.server_verification_running)
+                    } else {
+                        stringResource(Res.string.action_next)
+                    },
                 onClick = { viewModel.onValidateServer(server.text) },
             )
 

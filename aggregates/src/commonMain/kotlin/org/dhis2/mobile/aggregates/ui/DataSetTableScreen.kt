@@ -119,6 +119,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
 private val FabContainerHeight = 56.dp + 16.dp + 16.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -182,9 +183,10 @@ fun DataSetInstanceScreen(
     var fabSizeDp by remember { mutableStateOf(FabContainerHeight) }
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .imePadding(),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .imePadding(),
         topBar = {
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -221,22 +223,25 @@ fun DataSetInstanceScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors().copy(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
             )
         },
         snackbarHost = { DataSetSnackbarHost(snackbarHostState) },
         floatingActionButton = {
             val loadedState = dataSetScreenState as? DataSetScreenState.Loaded
-            val visible = loadedState?.dataSetSectionTable?.loading == false &&
-                loadedState.selectedCellInfo !is CellSelectionState.InputDataUiState
-            fabSizeDp = if (visible) {
-                FabContainerHeight
-            } else {
-                0.dp
-            }
+            val visible =
+                loadedState?.dataSetSectionTable?.loading == false &&
+                    loadedState.selectedCellInfo !is CellSelectionState.InputDataUiState
+            fabSizeDp =
+                if (visible) {
+                    FabContainerHeight
+                } else {
+                    0.dp
+                }
             AnimatedVisibility(
                 visible = visible,
                 enter = fadeIn(),
@@ -270,13 +275,17 @@ fun DataSetInstanceScreen(
                         val edition = state.dataSetDetails.edition
                         NonEditableReasonBlock(
                             modifier = Modifier.fillMaxWidth(),
-                            paddingValues = PaddingValues(
-                                start = Spacing.Spacing16,
-                                top = Spacing.Spacing8,
-                                end = Spacing.Spacing16,
-                                bottom = Spacing.Spacing8 + WindowInsets.navigationBars.asPaddingValues()
-                                    .calculateBottomPadding(),
-                            ),
+                            paddingValues =
+                                PaddingValues(
+                                    start = Spacing.Spacing16,
+                                    top = Spacing.Spacing8,
+                                    end = Spacing.Spacing16,
+                                    bottom =
+                                        Spacing.Spacing8 +
+                                            WindowInsets.navigationBars
+                                                .asPaddingValues()
+                                                .calculateBottomPadding(),
+                                ),
                             reason = nonEditableReasonLabel(edition),
                             canBeReopened = state.dataSetDetails.isCompleted && edition.editable,
                             onReopenClick = dataSetTableViewModel::onReopenDataSet,
@@ -290,26 +299,31 @@ fun DataSetInstanceScreen(
 
         var inputDialogSize: Int? by remember { mutableStateOf(null) }
         Box(
-            modifier = Modifier.fillMaxSize()
-                .padding(paddingValues),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
             propagateMinConstraints = true,
         ) {
             if (allowTwoPane) {
                 TwoPaneLayout(
-                    modifier = Modifier.fillMaxSize()
-                        .background(
-                            color = Color.Transparent,
-                            shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
-                        ),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .background(
+                                color = Color.Transparent,
+                                shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
+                            ),
                     paneConfig = TwoPaneConfig.SecondaryPaneFixedSize(283.dp),
                     primaryPane = {
                         when (dataSetScreenState) {
                             is DataSetScreenState.Loaded ->
                                 DataSetTableContent(
-                                    modifier = Modifier.background(
-                                        color = MaterialTheme.colorScheme.background,
-                                        shape = RoundedCornerShape(topEnd = Radius.L),
-                                    ),
+                                    modifier =
+                                        Modifier.background(
+                                            color = MaterialTheme.colorScheme.background,
+                                            shape = RoundedCornerShape(topEnd = Radius.L),
+                                        ),
                                     dataSetDetails = (dataSetScreenState as DataSetScreenState.Loaded).dataSetDetails,
                                     dataSetSectionTable = (dataSetScreenState as DataSetScreenState.Loaded).dataSetSectionTable,
                                     inputDialogSize = inputDialogSize,
@@ -336,10 +350,11 @@ fun DataSetInstanceScreen(
                                         dataSetTableViewModel.onUiAction(
                                             UiAction.OnValueChanged(
                                                 id = cellId,
-                                                newValue = when {
-                                                    isChecked -> "true"
-                                                    else -> null
-                                                },
+                                                newValue =
+                                                    when {
+                                                        isChecked -> "true"
+                                                        else -> null
+                                                    },
                                                 showInputDialog = false,
                                             ),
                                         )
@@ -366,18 +381,17 @@ fun DataSetInstanceScreen(
                                 }
                             }
                             VerticalTabs(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        color = MaterialTheme.colorScheme.background,
-                                        shape = RoundedCornerShape(topStart = Radius.L),
-                                    )
-                                    .padding(all = Spacing.Spacing16)
-                                    .background(
-                                        color = MaterialTheme.colorScheme.surfaceBright,
-                                        shape = RoundedCornerShape(Radius.L),
-                                    )
-                                    .padding(all = Spacing.Spacing0),
+                                modifier =
+                                    Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            color = MaterialTheme.colorScheme.background,
+                                            shape = RoundedCornerShape(topStart = Radius.L),
+                                        ).padding(all = Spacing.Spacing16)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.surfaceBright,
+                                            shape = RoundedCornerShape(Radius.L),
+                                        ).padding(all = Spacing.Spacing0),
                                 tabs = tabs,
                                 onSectionSelected = { sectionUid ->
                                     dataSetTableViewModel.onSectionSelected(sectionUid)
@@ -425,10 +439,11 @@ fun DataSetInstanceScreen(
                             dataSetTableViewModel.onUiAction(
                                 UiAction.OnValueChanged(
                                     id = cellId,
-                                    newValue = when {
-                                        isChecked -> "true"
-                                        else -> null
-                                    },
+                                    newValue =
+                                        when {
+                                            isChecked -> "true"
+                                            else -> null
+                                        },
                                     showInputDialog = false,
                                 ),
                             )
@@ -451,21 +466,25 @@ fun DataSetInstanceScreen(
 
             AnimatedVisibility(
                 visible = visible,
-                enter = slideInVertically(
-                    initialOffsetY = { fullHeight -> fullHeight },
-                ),
-                exit = slideOutVertically(
-                    targetOffsetY = { fullHeight -> fullHeight },
-                ),
+                enter =
+                    slideInVertically(
+                        initialOffsetY = { fullHeight -> fullHeight },
+                    ),
+                exit =
+                    slideOutVertically(
+                        targetOffsetY = { fullHeight -> fullHeight },
+                    ),
             ) {
                 selectedCellInfo?.takeIf { visible }?.let { inputData ->
                     require(inputData is CellSelectionState.InputDataUiState)
                     InputDialog(
-                        modifier = Modifier.align(Alignment.BottomCenter)
-                            .testTag(INPUT_DIALOG_TAG)
-                            .onGloballyPositioned { coordinates ->
-                                inputDialogSize = coordinates.size.height
-                            },
+                        modifier =
+                            Modifier
+                                .align(Alignment.BottomCenter)
+                                .testTag(INPUT_DIALOG_TAG)
+                                .onGloballyPositioned { coordinates ->
+                                    inputDialogSize = coordinates.size.height
+                                },
                         input = {
                             InputProvider(
                                 modifier = Modifier,
@@ -490,8 +509,10 @@ fun DataSetInstanceScreen(
                                         contentDescription = inputData.buttonAction.buttonText,
                                     )
                                 },
-                                modifier = Modifier.fillMaxWidth()
-                                    .testTag(inputData.buttonAction.testTag),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .testTag(inputData.buttonAction.testTag),
                             )
                         },
                         onDismiss = {
@@ -511,50 +532,51 @@ fun DataSetInstanceScreen(
 }
 
 @Composable
-private fun nonEditableReasonLabel(edition: DataSetEdition) = when (edition.nonEditableReason) {
-    is NonEditableReason.AttributeOptionComboNotAssignedToOrgUnit ->
-        stringResource(
-            Res.string.attribute_option_combo_not_assigned_to_org_unit,
-            edition.nonEditableReason.attributeOptionComboLabel,
-            edition.nonEditableReason.orgUnitLabel,
-        )
+private fun nonEditableReasonLabel(edition: DataSetEdition) =
+    when (edition.nonEditableReason) {
+        is NonEditableReason.AttributeOptionComboNotAssignedToOrgUnit ->
+            stringResource(
+                Res.string.attribute_option_combo_not_assigned_to_org_unit,
+                edition.nonEditableReason.attributeOptionComboLabel,
+                edition.nonEditableReason.orgUnitLabel,
+            )
 
-    NonEditableReason.Closed ->
-        stringResource(Res.string.dataset_closed)
+        NonEditableReason.Closed ->
+            stringResource(Res.string.dataset_closed)
 
-    NonEditableReason.Expired ->
-        stringResource(Res.string.dataset_expired)
+        NonEditableReason.Expired ->
+            stringResource(Res.string.dataset_expired)
 
-    is NonEditableReason.NoAttributeOptionComboAccess ->
-        stringResource(
-            Res.string.attribute_option_combo_no_access,
-            edition.nonEditableReason.attributeOptionComboLabel,
-        )
+        is NonEditableReason.NoAttributeOptionComboAccess ->
+            stringResource(
+                Res.string.attribute_option_combo_no_access,
+                edition.nonEditableReason.attributeOptionComboLabel,
+            )
 
-    NonEditableReason.NoDataWriteAccess ->
-        stringResource(Res.string.no_data_write_access)
+        NonEditableReason.NoDataWriteAccess ->
+            stringResource(Res.string.no_data_write_access)
 
-    NonEditableReason.None -> ""
-    is NonEditableReason.OrgUnitNotInCaptureScope ->
-        stringResource(
-            Res.string.org_unit_not_in_capture_scope,
-            edition.nonEditableReason.orgUnitLabel,
-        )
+        NonEditableReason.None -> ""
+        is NonEditableReason.OrgUnitNotInCaptureScope ->
+            stringResource(
+                Res.string.org_unit_not_in_capture_scope,
+                edition.nonEditableReason.orgUnitLabel,
+            )
 
-    is NonEditableReason.PeriodIsNotInAttributeOptionComboRange ->
-        stringResource(
-            Res.string.period_not_in_attribute_option_combo_range,
-            edition.nonEditableReason.periodLabel,
-            edition.nonEditableReason.attributeOptionComboLabel,
-        )
+        is NonEditableReason.PeriodIsNotInAttributeOptionComboRange ->
+            stringResource(
+                Res.string.period_not_in_attribute_option_combo_range,
+                edition.nonEditableReason.periodLabel,
+                edition.nonEditableReason.attributeOptionComboLabel,
+            )
 
-    is NonEditableReason.PeriodIsNotInOrgUnitRange ->
-        stringResource(
-            Res.string.period_not_in_org_unit_range,
-            edition.nonEditableReason.periodLabel,
-            edition.nonEditableReason.orgUnitLabel,
-        )
-}
+        is NonEditableReason.PeriodIsNotInOrgUnitRange ->
+            stringResource(
+                Res.string.period_not_in_org_unit_range,
+                edition.nonEditableReason.periodLabel,
+                edition.nonEditableReason.orgUnitLabel,
+            )
+    }
 
 /**
  * Data set single pane layout
@@ -588,19 +610,23 @@ private fun DataSetSinglePane(
     onCheckedCellChanged: (cellId: String, Boolean) -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary),
     ) {
         Column(
-            Modifier.fillMaxSize().clip(
-                shape = RoundedCornerShape(
-                    topStart = Radius.L,
-                    topEnd = Radius.L,
+            Modifier
+                .fillMaxSize()
+                .clip(
+                    shape =
+                        RoundedCornerShape(
+                            topStart = Radius.L,
+                            topEnd = Radius.L,
+                        ),
+                ).background(
+                    color = MaterialTheme.colorScheme.surfaceBright,
                 ),
-            ).background(
-                color = MaterialTheme.colorScheme.surfaceBright,
-            ),
         ) {
             DataSetTable(
                 dataSetSectionTable = dataSetSectionTable,
@@ -609,8 +635,10 @@ private fun DataSetSinglePane(
                 fabSize = fabSize,
                 topContent = {
                     Column(
-                        modifier = modifier.fillMaxWidth()
-                            .padding(bottom = Spacing.Spacing24),
+                        modifier =
+                            modifier
+                                .fillMaxWidth()
+                                .padding(bottom = Spacing.Spacing24),
                     ) {
                         SectionTabs(
                             modifier = Modifier,
@@ -619,17 +647,19 @@ private fun DataSetSinglePane(
                             selectedTab = initialTab,
                         )
                         DataSetDetails(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(),
                             dataSetDetails = dataSetDetails,
                         )
 
                         if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
-                            val message = if (dataSetSections.isEmpty()) {
-                                emptyDatasetMessage
-                            } else {
-                                emptySectionMessage
-                            }
+                            val message =
+                                if (dataSetSections.isEmpty()) {
+                                    emptyDatasetMessage
+                                } else {
+                                    emptySectionMessage
+                                }
                             WarningInfoBar(message)
                         }
 
@@ -638,11 +668,12 @@ private fun DataSetSinglePane(
                         ) {
                             val message =
                                 "Some fields couldn't be displayed due to a configuration issue: %s.\nPlease contact your administrator."
-                            val info = when {
-                                this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
-                                this != null -> joinToString(", ")
-                                else -> null
-                            }
+                            val info =
+                                when {
+                                    this != null && size > 4 -> "${joinToString(", ")} and ${size - 4} more"
+                                    this != null -> joinToString(", ")
+                                    else -> null
+                                }
                             if (!this.isNullOrEmpty()) {
                                 WarningInfoBar(message.format(info))
                             }
@@ -650,12 +681,13 @@ private fun DataSetSinglePane(
                         dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                             HtmlContentBox(
                                 text = it,
-                                modifier = Modifier.padding(
-                                    top = Spacing.Spacing8,
-                                    bottom = Spacing.Spacing0,
-                                    start = Spacing.Spacing16,
-                                    end = Spacing.Spacing16,
-                                ),
+                                modifier =
+                                    Modifier.padding(
+                                        top = Spacing.Spacing8,
+                                        bottom = Spacing.Spacing0,
+                                        start = Spacing.Spacing16,
+                                        end = Spacing.Spacing16,
+                                    ),
                             )
                         }
                     }
@@ -664,12 +696,12 @@ private fun DataSetSinglePane(
                     dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
                         HtmlContentBox(
                             text = it,
-                            modifier = Modifier.padding(
-                                top = Spacing.Spacing24,
-                                start = Spacing.Spacing16,
-                                end = Spacing.Spacing16,
-                            ),
-
+                            modifier =
+                                Modifier.padding(
+                                    top = Spacing.Spacing24,
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                ),
                         )
                     }
                 },
@@ -690,14 +722,16 @@ private fun SectionTabs(
     selectedTab: Int,
     onSectionSelected: (uid: String) -> Unit,
 ) {
-    val tabLabels = remember {
-        dataSetSections.map { it.title }
-    }
+    val tabLabels =
+        remember {
+            dataSetSections.map { it.title }
+        }
     AdaptiveTabRow(
-        modifier = modifier
-            .height(Spacing.Spacing48)
-            .fillMaxWidth()
-            .background(Color.Transparent),
+        modifier =
+            modifier
+                .height(Spacing.Spacing48)
+                .fillMaxWidth()
+                .background(Color.Transparent),
         tabLabels = tabLabels,
         selectedTab = selectedTab,
         onTabClicked = { selectedTabIndex ->
@@ -746,36 +780,39 @@ private fun DataSetTableContent(
                             Spacing.Spacing8
                         }
                     DataSetDetails(
-                        modifier.clip(
-                            RoundedCornerShape(
-                                topStart = Radius.L,
-                                topEnd = Radius.L,
-                            ),
-                        ).padding(
-                            start = Spacing.Spacing16,
-                            end = Spacing.Spacing16,
-                            bottom = dataSetDetailsBottomPadding,
-                        ).animateContentSize(),
+                        modifier
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = Radius.L,
+                                    topEnd = Radius.L,
+                                ),
+                            ).padding(
+                                start = Spacing.Spacing16,
+                                end = Spacing.Spacing16,
+                                bottom = dataSetDetailsBottomPadding,
+                            ).animateContentSize(),
                         dataSetDetails = dataSetDetails,
                     )
 
                     if (!dataSetSectionTable.loading && dataSetSectionTable.tableModels.isEmpty()) {
-                        val message = if (dataSetSections.isEmpty()) {
-                            emptyDatasetMessage
-                        } else {
-                            emptySectionMessage
-                        }
+                        val message =
+                            if (dataSetSections.isEmpty()) {
+                                emptyDatasetMessage
+                            } else {
+                                emptySectionMessage
+                            }
                         WarningInfoBar(message)
                     }
 
                     dataSetSections.firstOrNull { it.uid == currentSection }?.topContent?.let {
                         HtmlContentBox(
                             text = it,
-                            modifier = Modifier.padding(
-                                bottom = Spacing.Spacing8,
-                                start = Spacing.Spacing16,
-                                end = Spacing.Spacing16,
-                            ),
+                            modifier =
+                                Modifier.padding(
+                                    bottom = Spacing.Spacing8,
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                ),
                         )
                     }
                 }
@@ -784,11 +821,13 @@ private fun DataSetTableContent(
                 dataSetSections.firstOrNull { it.uid == currentSection }?.bottomContent?.let {
                     HtmlContentBox(
                         text = it,
-                        modifier = Modifier.padding(
-                            top = Spacing.Spacing24,
-                            start = Spacing.Spacing16,
-                            end = Spacing.Spacing16,
-                        ).testTag("HTML_BOTTOM_CONTENT"),
+                        modifier =
+                            Modifier
+                                .padding(
+                                    top = Spacing.Spacing24,
+                                    start = Spacing.Spacing16,
+                                    end = Spacing.Spacing16,
+                                ).testTag("HTML_BOTTOM_CONTENT"),
                     )
                 }
             },
@@ -817,25 +856,28 @@ private fun ContentLoading(
 @Composable
 private fun WarningInfoBar(message: String?) {
     Column(
-        modifier = Modifier.fillMaxWidth()
-            .padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(top = Spacing.Spacing24, start = Spacing.Spacing16, end = Spacing.Spacing16),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(
-            infoBarData = InfoBarData(
-                text = message ?: "",
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.ErrorOutline,
-                        contentDescription = "warning",
-                        tint = AdditionalInfoItemColor.WARNING.color,
-                    )
-                },
-                color = AdditionalInfoItemColor.WARNING.color,
-                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                actionText = null,
-                onClick = {},
-            ),
+            infoBarData =
+                InfoBarData(
+                    text = message ?: "",
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.ErrorOutline,
+                            contentDescription = "warning",
+                            tint = AdditionalInfoItemColor.WARNING.color,
+                        )
+                    },
+                    color = AdditionalInfoItemColor.WARNING.color,
+                    backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                    actionText = null,
+                    onClick = {},
+                ),
         )
     }
 }
@@ -860,9 +902,10 @@ private fun DataSetTable(
 ) {
     val density = LocalDensity.current
 
-    val inputDialogSizeDp = with(density) {
-        inputDialogSize?.toDp() ?: 0.dp
-    }
+    val inputDialogSizeDp =
+        with(density) {
+            inputDialogSize?.toDp() ?: 0.dp
+        }
 
     val screenWidth = with(density) { getScreenWidth().roundToPx() - Spacing.Spacing32.roundToPx() }
     val sectionTableId = remember { mutableStateOf<String?>(null) }
@@ -871,104 +914,124 @@ private fun DataSetTable(
         sectionTableId.value = dataSetSectionTable.id
     }
 
-    val tableResizeActions = remember {
-        object : TableResizeActions {
-            override fun onRowHeaderResize(tableId: String, newValue: Float) {
-                sectionTableId.value?.let {
-                    onTableResize(
-                        ResizeAction.RowHeaderChanged(
-                            tableId,
-                            sectionTableId.value ?: "",
-                            newValue,
-                        ),
-                    )
+    val tableResizeActions =
+        remember {
+            object : TableResizeActions {
+                override fun onRowHeaderResize(
+                    tableId: String,
+                    newValue: Float,
+                ) {
+                    sectionTableId.value?.let {
+                        onTableResize(
+                            ResizeAction.RowHeaderChanged(
+                                tableId,
+                                sectionTableId.value ?: "",
+                                newValue,
+                            ),
+                        )
+                    }
                 }
-            }
 
-            override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
-                sectionTableId.value?.let {
-                    onTableResize(
-                        ResizeAction.ColumnHeaderChanged(
-                            tableId,
-                            sectionTableId.value ?: "",
-                            column,
-                            newValue,
-                        ),
-                    )
+                override fun onColumnHeaderResize(
+                    tableId: String,
+                    column: Int,
+                    newValue: Float,
+                ) {
+                    sectionTableId.value?.let {
+                        onTableResize(
+                            ResizeAction.ColumnHeaderChanged(
+                                tableId,
+                                sectionTableId.value ?: "",
+                                column,
+                                newValue,
+                            ),
+                        )
+                    }
                 }
-            }
 
-            override fun onTableDimensionResize(tableId: String, newValue: Float) {
-                sectionTableId.value?.let {
-                    onTableResize(
-                        ResizeAction.TableDimension(tableId, sectionTableId.value ?: "", newValue),
-                    )
+                override fun onTableDimensionResize(
+                    tableId: String,
+                    newValue: Float,
+                ) {
+                    sectionTableId.value?.let {
+                        onTableResize(
+                            ResizeAction.TableDimension(tableId, sectionTableId.value ?: "", newValue),
+                        )
+                    }
                 }
-            }
 
-            override fun onTableDimensionReset(tableId: String) {
-                sectionTableId.value?.let {
-                    onTableResize(
-                        ResizeAction.Reset(tableId, sectionTableId.value ?: ""),
-                    )
+                override fun onTableDimensionReset(tableId: String) {
+                    sectionTableId.value?.let {
+                        onTableResize(
+                            ResizeAction.Reset(tableId, sectionTableId.value ?: ""),
+                        )
+                    }
                 }
             }
         }
-    }
     TableTheme(
-        tableDimensions = dataSetSectionTable.overridingDimensions.let { overwrittenDimension ->
-            TableDimensions(
-                extraWidths = with(density) {
-                    overwrittenDimension.overwrittenTableWidth.mapValues { (_, width) ->
-                        width.dp.roundToPx()
-                    }
-                },
-                rowHeaderWidths = with(density) {
-                    overwrittenDimension.overwrittenRowHeaderWidth.mapValues { (_, width) ->
-                        width.dp.roundToPx()
-                    }
-                },
-                columnWidth = with(density) {
-                    overwrittenDimension.overwrittenColumnWidth.mapValues { (_, value) ->
-                        value.mapValues { (_, width) ->
-                            width.dp.roundToPx()
-                        }
-                    }
-                },
-                totalWidth = screenWidth,
-            )
-        },
+        tableDimensions =
+            dataSetSectionTable.overridingDimensions.let { overwrittenDimension ->
+                TableDimensions(
+                    extraWidths =
+                        with(density) {
+                            overwrittenDimension.overwrittenTableWidth.mapValues { (_, width) ->
+                                width.dp.roundToPx()
+                            }
+                        },
+                    rowHeaderWidths =
+                        with(density) {
+                            overwrittenDimension.overwrittenRowHeaderWidth.mapValues { (_, width) ->
+                                width.dp.roundToPx()
+                            }
+                        },
+                    columnWidth =
+                        with(density) {
+                            overwrittenDimension.overwrittenColumnWidth.mapValues { (_, value) ->
+                                value.mapValues { (_, width) ->
+                                    width.dp.roundToPx()
+                                }
+                            }
+                        },
+                    totalWidth = screenWidth,
+                )
+            },
     ) {
         DataTable(
             tableList = dataSetSectionTable.tableModels,
             currentSelection = currentSelection,
             onResizedActions = tableResizeActions,
-            tableInteractions = object : TableInteractions {
-                override fun onClick(tableCell: TableCell) {
-                    super.onClick(tableCell)
-                    onCellClick(tableCell.id, tableCell.value, tableCell.error)
-                }
-
-                override fun onSelectionChange(newTableSelection: TableSelection) {
-                    super.onSelectionChange(newTableSelection)
-                    if (newTableSelection !is TableSelection.CellSelection) {
-                        onCellSelected(newTableSelection)
+            tableInteractions =
+                object : TableInteractions {
+                    override fun onClick(tableCell: TableCell) {
+                        super.onClick(tableCell)
+                        onCellClick(tableCell.id, tableCell.value, tableCell.error)
                     }
-                }
 
-                override fun onChecked(tableCell: TableCell, checked: Boolean) {
-                    super.onChecked(tableCell, checked)
-                    onCheckedCellChanged(tableCell.id, checked)
-                }
-            },
+                    override fun onSelectionChange(newTableSelection: TableSelection) {
+                        super.onSelectionChange(newTableSelection)
+                        if (newTableSelection !is TableSelection.CellSelection) {
+                            onCellSelected(newTableSelection)
+                        }
+                    }
+
+                    override fun onChecked(
+                        tableCell: TableCell,
+                        checked: Boolean,
+                    ) {
+                        super.onChecked(tableCell, checked)
+                        onCheckedCellChanged(tableCell.id, checked)
+                    }
+                },
             topContent = topContent,
             bottomContent = bottomContent,
-            contentPadding = PaddingValues(
-                start = Spacing.Spacing16,
-                top = Spacing.Spacing8,
-                end = Spacing.Spacing16,
-                bottom = Spacing.Spacing16 + inputDialogSizeDp + fabSize,
-            ),
+            contentPadding =
+                PaddingValues(
+                    start = Spacing.Spacing16,
+                    top = Spacing.Spacing8,
+                    end = Spacing.Spacing16,
+                    bottom = Spacing.Spacing16 + inputDialogSizeDp + fabSize,
+                ),
             loading = loading,
         )
     }

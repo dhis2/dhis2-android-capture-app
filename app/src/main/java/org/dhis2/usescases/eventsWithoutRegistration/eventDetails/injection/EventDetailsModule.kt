@@ -51,26 +51,22 @@ class EventDetailsModule(
     val initialOrgUnitUid: String?,
     val enrollmentStatus: EnrollmentStatus?,
 ) {
-
     @Provides
     @PerFragment
     fun provideEventDetailResourceProvider(
         resourceManager: ResourceManager,
         eventResourcesProvider: EventResourcesProvider,
-    ): EventDetailResourcesProvider {
-        return EventDetailResourcesProvider(
+    ): EventDetailResourcesProvider =
+        EventDetailResourcesProvider(
             programUid,
             programStageUid,
             resourceManager,
             eventResourcesProvider,
         )
-    }
 
     @Provides
     @PerFragment
-    fun provideGeometryController(): GeometryController {
-        return GeometryController(GeometryParserImpl())
-    }
+    fun provideGeometryController(): GeometryController = GeometryController(GeometryParserImpl())
 
     @Provides
     @PerFragment
@@ -79,42 +75,41 @@ class EventDetailsModule(
         resourceManager: ResourceManager,
         periodUtils: DhisPeriodUtils,
         preferenceProvider: PreferenceProvider,
-    ): EventDetailsRepository {
-        return EventDetailsRepository(
+    ): EventDetailsRepository =
+        EventDetailsRepository(
             d2 = d2,
             programUid = programUid,
             eventUid = eventUid,
             programStageUid = programStageUid,
             eventCreationType = eventCreationType,
-            fieldFactory = FieldViewModelFactoryImpl(
-                HintProviderImpl(context),
-                DisplayNameProviderImpl(
-                    OptionSetConfiguration(d2),
-                    OrgUnitConfiguration(d2),
-                    FileResourceConfiguration(d2),
-                    periodUtils,
+            fieldFactory =
+                FieldViewModelFactoryImpl(
+                    HintProviderImpl(context),
+                    DisplayNameProviderImpl(
+                        OptionSetConfiguration(d2),
+                        OrgUnitConfiguration(d2),
+                        FileResourceConfiguration(d2),
+                        periodUtils,
+                    ),
+                    UiEventTypesProviderImpl(),
+                    KeyboardActionProviderImpl(),
+                    LegendValueProviderImpl(d2, resourceManager),
+                    AutoCompleteProviderImpl(preferenceProvider),
                 ),
-                UiEventTypesProviderImpl(),
-                KeyboardActionProviderImpl(),
-                LegendValueProviderImpl(d2, resourceManager),
-                AutoCompleteProviderImpl(preferenceProvider),
-            ),
             onError = resourceManager::parseD2Error,
         )
-    }
 
     @Provides
     @PerFragment
     fun provideConfigurePeriodSelector(
         eventDetailsRepository: EventDetailsRepository,
         periodUseCase: GetEventPeriods,
-    ): ConfigurePeriodSelector {
-        return ConfigurePeriodSelector(
+    ): ConfigurePeriodSelector =
+        ConfigurePeriodSelector(
             enrollmentUid = enrollmentId,
             eventDetailRepository = eventDetailsRepository,
             getEventPeriods = periodUseCase,
         )
-    }
 
     @Provides
     @PerFragment
@@ -128,8 +123,8 @@ class EventDetailsModule(
         eventDetailResourcesProvider: EventDetailResourcesProvider,
         metadataIconProvider: MetadataIconProvider,
         configurePeriodSelector: ConfigurePeriodSelector,
-    ): EventDetailsViewModelFactory {
-        return EventDetailsViewModelFactory(
+    ): EventDetailsViewModelFactory =
+        EventDetailsViewModelFactory(
             ConfigureEventDetails(
                 repository = eventDetailsRepository,
                 resourcesProvider = resourcesProvider,
@@ -163,12 +158,12 @@ class EventDetailsModule(
             eventUid = eventUid,
             geometryController = geometryController,
             locationProvider = locationProvider,
-            createOrUpdateEventDetails = CreateOrUpdateEventDetails(
-                repository = eventDetailsRepository,
-                resourcesProvider = resourcesProvider,
-            ),
+            createOrUpdateEventDetails =
+                CreateOrUpdateEventDetails(
+                    repository = eventDetailsRepository,
+                    resourcesProvider = resourcesProvider,
+                ),
             eventDetailResourcesProvider = eventDetailResourcesProvider,
             configurePeriodSelector = configurePeriodSelector,
         )
-    }
 }

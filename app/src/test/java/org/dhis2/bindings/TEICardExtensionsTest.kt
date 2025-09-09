@@ -17,7 +17,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class TEICardExtensionsTest {
-
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
     private val resources: Resources = mock()
@@ -27,8 +26,9 @@ class TEICardExtensionsTest {
     @Test
     fun `Should return list of enrollment data icons that is smaller than four and all icons`() {
         val programs: MutableList<Program> = mutableListOf()
-        for (index in 1..4)
+        for (index in 1..4) {
             programs.add(createProgram("uid_$index"))
+        }
 
         mockEnrollmentIconsData()
         val result = programs.getEnrollmentIconsData("uid_1") { metadataIconData }
@@ -41,8 +41,9 @@ class TEICardExtensionsTest {
     @Test
     fun `Should return list of enrollment data icons equal to four and all icons`() {
         val programs: MutableList<Program> = mutableListOf()
-        for (index in 1..5)
+        for (index in 1..5) {
             programs.add(createProgram("uid_$index"))
+        }
 
         mockEnrollmentIconsData()
         val result = programs.getEnrollmentIconsData("uid_1") { metadataIconData }
@@ -55,8 +56,9 @@ class TEICardExtensionsTest {
     @Test
     fun `Should return list of enrollment data icons equal to four, three icons and an integer`() {
         val programs: MutableList<Program> = mutableListOf()
-        for (index in 1..7)
+        for (index in 1..7) {
             programs.add(createProgram("uid_$index"))
+        }
 
         mockEnrollmentIconsData()
         val result = programs.getEnrollmentIconsData("uid_5") { metadataIconData }
@@ -75,8 +77,9 @@ class TEICardExtensionsTest {
     @Test
     fun `Should return list when current program is null`() {
         val programs: MutableList<Program> = mutableListOf()
-        for (index in 1..6)
+        for (index in 1..6) {
             programs.add(createProgram("uid_$index"))
+        }
 
         mockEnrollmentIconsData()
         val result = programs.getEnrollmentIconsData(null) { metadataIconData }
@@ -95,8 +98,9 @@ class TEICardExtensionsTest {
     @Test
     fun `Should return max icons number`() {
         val programs: MutableList<Program> = mutableListOf()
-        for (index in 0..150)
+        for (index in 0..150) {
             programs.add(createProgram("uid_$index"))
+        }
 
         mockEnrollmentIconsData()
         val result = programs.getEnrollmentIconsData("uid_100") { metadataIconData }
@@ -114,9 +118,15 @@ class TEICardExtensionsTest {
         whenever(resources.getIdentifier(any(), any(), any())) doAnswer { 1 }
     }
 
-    private fun createProgram(uid: String) = Program
-        .builder()
-        .uid(uid)
-        .style(ObjectStyle.builder().color("color").icon("icon").build())
-        .build()
+    private fun createProgram(uid: String) =
+        Program
+            .builder()
+            .uid(uid)
+            .style(
+                ObjectStyle
+                    .builder()
+                    .color("color")
+                    .icon("icon")
+                    .build(),
+            ).build()
 }

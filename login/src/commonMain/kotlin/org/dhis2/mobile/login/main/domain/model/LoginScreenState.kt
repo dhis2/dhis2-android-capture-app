@@ -3,7 +3,6 @@ package org.dhis2.mobile.login.main.domain.model
 import kotlinx.serialization.Serializable
 
 sealed interface LoginScreenState {
-
     @Serializable
     data object Loading : LoginScreenState
 

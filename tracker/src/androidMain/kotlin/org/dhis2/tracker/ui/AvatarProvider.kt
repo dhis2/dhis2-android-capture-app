@@ -13,8 +13,8 @@ class AvatarProvider(
         color: String?,
         profilePath: String,
         firstAttributeValue: String?,
-    ): AvatarProviderConfiguration {
-        return when {
+    ): AvatarProviderConfiguration =
+        when {
             profilePath.isNotEmpty() ->
                 ProfilePic(profilePicturePath = profilePath)
 
@@ -26,5 +26,4 @@ class AvatarProvider(
                     firstMainValue = firstAttributeValue ?: "",
                 )
         }
-    }
 }

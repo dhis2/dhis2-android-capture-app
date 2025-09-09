@@ -32,8 +32,8 @@ class OptionSetDialogViewModel(
         }
     }
 
-    private suspend fun loadOptions(textToSearch: String = ""): List<Option> {
-        return withContext(dispatchers.io()) {
+    private suspend fun loadOptions(textToSearch: String = ""): List<Option> =
+        withContext(dispatchers.io()) {
             searchOptionSetOption(
                 field.optionSet,
                 textToSearch,
@@ -41,16 +41,12 @@ class OptionSetDialogViewModel(
                 emptyList(),
             )
         }
-    }
 }
 
 class OptionSetDialogViewModelFactory(
     private val searchOptionSetOption: SearchOptionSetOption,
     private val field: FieldUiModel,
     private val dispatchers: DispatcherProvider,
-
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return OptionSetDialogViewModel(searchOptionSetOption, field, dispatchers) as T
-    }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T = OptionSetDialogViewModel(searchOptionSetOption, field, dispatchers) as T
 }

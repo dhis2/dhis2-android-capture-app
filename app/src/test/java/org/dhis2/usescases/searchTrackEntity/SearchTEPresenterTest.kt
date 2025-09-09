@@ -27,7 +27,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class SearchTEPresenterTest {
-
     lateinit var presenter: SearchTEContractsModule.Presenter
 
     private val view: SearchTEContractsModule.View = mock()
@@ -48,46 +47,58 @@ class SearchTEPresenterTest {
     @Before
     fun setUp() {
         whenever(
-            d2.programModule().programs().uid(initialProgram).blockingGet(),
+            d2
+                .programModule()
+                .programs()
+                .uid(initialProgram)
+                .blockingGet(),
         ) doReturn
-            Program.builder().uid(initialProgram)
+            Program
+                .builder()
+                .uid(initialProgram)
                 .displayFrontPageList(true)
-                .minAttributesRequiredToSearch(0).build()
+                .minAttributesRequiredToSearch(0)
+                .build()
 
         whenever(
             repository.getTrackedEntityType(teType),
-        ) doReturn Observable.just(
-            TrackedEntityType.builder()
-                .uid(teType)
-                .displayName("teTypeName")
-                .build(),
-        )
+        ) doReturn
+            Observable.just(
+                TrackedEntityType
+                    .builder()
+                    .uid(teType)
+                    .displayName("teTypeName")
+                    .build(),
+            )
 
-        presenter = SearchTEPresenter(
-            view,
-            d2,
-            repository,
-            schedulers,
-            analyticsHelper,
-            initialProgram,
-            teType,
-            preferenceProvider,
-            filterRepository,
-            disableHomeFiltersFromSettingsApp,
-            matomoAnalyticsController,
-            syncStatusController,
-            resourceManager,
-            colorUtils,
-        )
+        presenter =
+            SearchTEPresenter(
+                view,
+                d2,
+                repository,
+                schedulers,
+                analyticsHelper,
+                initialProgram,
+                teType,
+                preferenceProvider,
+                filterRepository,
+                disableHomeFiltersFromSettingsApp,
+                matomoAnalyticsController,
+                syncStatusController,
+                resourceManager,
+                colorUtils,
+            )
     }
 
     @Test
     fun `Should ignore initial program spinner selection`() {
-        val program = Program.builder()
-            .uid("uid")
-            .displayFrontPageList(true)
-            .minAttributesRequiredToSearch(1)
-            .build()
+        val program =
+            Program
+                .builder()
+                .uid("uid")
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(1)
+                .build()
 
         presenter.setProgramForTesting(program)
 
@@ -98,39 +109,57 @@ class SearchTEPresenterTest {
 
     @Test
     fun `Should clear data, fab and list when another program is selected`() {
-        val program = Program.builder()
-            .uid("uid")
-            .displayFrontPageList(true)
-            .minAttributesRequiredToSearch(1)
-            .build()
+        val program =
+            Program
+                .builder()
+                .uid("uid")
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(1)
+                .build()
 
-        val newSelectedProgram = Program.builder()
-            .uid("uid2")
-            .displayFrontPageList(true)
-            .minAttributesRequiredToSearch(1)
-            .build()
+        val newSelectedProgram =
+            Program
+                .builder()
+                .uid("uid2")
+                .displayFrontPageList(true)
+                .minAttributesRequiredToSearch(1)
+                .build()
 
         whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid()),
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(newSelectedProgram.uid()),
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(newSelectedProgram.uid())
                 .byEnableUserAssignment(),
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
-                .byEnableUserAssignment().isTrue,
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(newSelectedProgram.uid())
+                .byEnableUserAssignment()
+                .isTrue,
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programStages()
-                .byProgramUid().eq(newSelectedProgram.uid())
-                .byEnableUserAssignment().isTrue
+            d2
+                .programModule()
+                .programStages()
+                .byProgramUid()
+                .eq(newSelectedProgram.uid())
+                .byEnableUserAssignment()
+                .isTrue
                 .blockingIsEmpty(),
         ) doReturn false
 

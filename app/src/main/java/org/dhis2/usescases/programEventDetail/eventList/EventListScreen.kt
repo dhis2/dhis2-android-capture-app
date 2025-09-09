@@ -32,10 +32,11 @@ fun EventListScreen(
     workingListViewModel: WorkingListViewModel,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.Absolute.spacedBy(Spacing.Spacing4),
     ) {
         WorkingListChipGroup(
@@ -50,9 +51,10 @@ fun EventListScreen(
 
             LoadState.Loading -> {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
                     ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
@@ -62,10 +64,11 @@ fun EventListScreen(
             is LoadState.NotLoading -> {
                 if (events.itemCount < 1) {
                     Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(horizontal = 42.dp),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(horizontal = 42.dp),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
@@ -74,9 +77,10 @@ fun EventListScreen(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
                         verticalArrangement = Arrangement.Absolute.spacedBy(4.dp),
                     ) {
                         items(count = events.itemCount) { index ->

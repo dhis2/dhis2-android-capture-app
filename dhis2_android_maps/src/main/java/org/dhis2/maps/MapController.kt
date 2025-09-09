@@ -13,8 +13,6 @@ class MapController {
             MapLibre.setConnected(connection)
         }
 
-        fun isConnected(): Boolean {
-            return MapLibre.isConnected()
-        }
+        fun isConnected(): Boolean = MapLibre.isConnected()
     }
 }

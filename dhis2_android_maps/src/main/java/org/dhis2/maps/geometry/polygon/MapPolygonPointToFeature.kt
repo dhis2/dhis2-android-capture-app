@@ -11,11 +11,12 @@ class MapPolygonPointToFeature {
         val lat = sdkPolygon[0][0][1]
         val lon = sdkPolygon[0][0][0]
 
-        val point = if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
-            Point.fromLngLat(lon, lat)
-        } else {
-            null
-        }
+        val point =
+            if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+                Point.fromLngLat(lon, lat)
+            } else {
+                null
+            }
         return Feature.fromGeometry(point)
     }
 }

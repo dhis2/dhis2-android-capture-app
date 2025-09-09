@@ -28,7 +28,6 @@ const val MANUAL_ZOOM_LEVEL = 15.0
 const val PADDING = 50
 
 object MapSelectorZoomHandler {
-
     operator fun invoke(
         map: MapLibreMap?,
         captureMode: MapSelectorViewModel.CaptureMode,
@@ -37,18 +36,21 @@ object MapSelectorZoomHandler {
     ) {
         val selectedFeature = getSelectedFeature(featureCollection)
 
-        val cameraUpdate = when (captureMode) {
-            NONE -> selectedFeature?.let {
-                initialZoomWithSelectedFeature(it)
-            } ?: initialZoomWithNoSelection(lastGPSLocation)
-            GPS -> selectedFeature?.let { gpsZoom(it) }
-            MANUAL -> null
-            MANUAL_SWIPE -> null
-            SEARCH, SEARCH_PIN_CLICKED -> selectedFeature?.let {
-                searchZoomWithSelectedFeature(it)
+        val cameraUpdate =
+            when (captureMode) {
+                NONE ->
+                    selectedFeature?.let {
+                        initialZoomWithSelectedFeature(it)
+                    } ?: initialZoomWithNoSelection(lastGPSLocation)
+                GPS -> selectedFeature?.let { gpsZoom(it) }
+                MANUAL -> null
+                MANUAL_SWIPE -> null
+                SEARCH, SEARCH_PIN_CLICKED ->
+                    selectedFeature?.let {
+                        searchZoomWithSelectedFeature(it)
+                    }
+                SEARCH_SWIPE, SEARCH_MANUAL -> null
             }
-            SEARCH_SWIPE, SEARCH_MANUAL -> null
-        }
 
         map?.let { mapLibreMap ->
             cameraUpdate?.let { update ->
@@ -67,8 +69,8 @@ object MapSelectorZoomHandler {
         feature: Feature,
         zoomLevel: Double = INITIAL_ZOOM_LEVEL,
         padding: Int = PADDING,
-    ): CameraUpdate? {
-        return when (val data = feature.getCameraUpdate()) {
+    ): CameraUpdate? =
+        when (val data = feature.getCameraUpdate()) {
             is CameraUpdateData.Point -> {
                 CameraUpdateFactory.newLatLngZoom(data.latLng, zoomLevel)
             }
@@ -79,10 +81,8 @@ object MapSelectorZoomHandler {
 
             null -> null
         }
-    }
 
-    private fun initialZoomWithSelectedFeature(selectedFeature: Feature) =
-        buildCameraUpdate(selectedFeature)
+    private fun initialZoomWithSelectedFeature(selectedFeature: Feature) = buildCameraUpdate(selectedFeature)
 
     private fun initialZoomWithNoSelection(lastGPSLocation: SelectedLocation.GPSResult?) =
         lastGPSLocation?.asLatLng()?.let {
@@ -92,14 +92,11 @@ object MapSelectorZoomHandler {
             )
         }
 
-    private fun gpsZoom(selectedFeature: Feature) =
-        buildCameraUpdate(selectedFeature, GPS_ZOOM_LEVEL)
+    private fun gpsZoom(selectedFeature: Feature) = buildCameraUpdate(selectedFeature, GPS_ZOOM_LEVEL)
 
-    private fun manualZoom(selectedFeature: Feature) =
-        buildCameraUpdate(selectedFeature, MANUAL_ZOOM_LEVEL)
+    private fun manualZoom(selectedFeature: Feature) = buildCameraUpdate(selectedFeature, MANUAL_ZOOM_LEVEL)
 
-    private fun searchZoomWithSelectedFeature(selectedFeature: Feature) =
-        buildCameraUpdate(selectedFeature, SEARCH_ZOOM_LEVEL)
+    private fun searchZoomWithSelectedFeature(selectedFeature: Feature) = buildCameraUpdate(selectedFeature, SEARCH_ZOOM_LEVEL)
 
     private fun searchZoomWithNoSelection(featureCollection: FeatureCollection) =
         featureCollection.bbox()?.toLatLngBounds()?.let { bounds ->

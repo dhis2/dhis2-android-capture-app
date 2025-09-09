@@ -7,9 +7,13 @@ import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 
-class GeometryController(private val geometryParser: GeometryParser) {
-
-    fun generateLocationFromCoordinates(featureType: FeatureType, coordinates: String?): Geometry? {
+class GeometryController(
+    private val geometryParser: GeometryParser,
+) {
+    fun generateLocationFromCoordinates(
+        featureType: FeatureType,
+        coordinates: String?,
+    ): Geometry? {
         if (coordinates == null) {
             return null
         }
@@ -36,9 +40,8 @@ class GeometryController(private val geometryParser: GeometryParser) {
         updateCoordinates: (value: String?) -> Unit,
         currentLocation: (fieldUid: String) -> Unit,
         mapRequest: (fieldUid: String, featureType: String, initCoordinate: String?) -> Unit,
-    ): FieldUiModel.Callback {
-        return object : FieldUiModel.Callback {
-
+    ): FieldUiModel.Callback =
+        object : FieldUiModel.Callback {
             override fun intent(intent: FormIntent) {
                 when (intent) {
                     is FormIntent.SaveCurrentLocation -> updateCoordinates(intent.value)
@@ -50,15 +53,15 @@ class GeometryController(private val geometryParser: GeometryParser) {
 
             override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
                 when (uiEvent) {
-                    is RecyclerViewUiEvents.RequestLocationByMap -> mapRequest(
-                        uiEvent.uid,
-                        uiEvent.featureType.name,
-                        uiEvent.value,
-                    )
+                    is RecyclerViewUiEvents.RequestLocationByMap ->
+                        mapRequest(
+                            uiEvent.uid,
+                            uiEvent.featureType.name,
+                            uiEvent.value,
+                        )
                     else -> {
                     }
                 }
             }
         }
-    }
 }

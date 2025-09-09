@@ -27,7 +27,10 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @ExperimentalAnimationApi
 @Composable
-fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
+fun ReopenButton(
+    visible: Boolean,
+    onReopenClickListener: () -> Unit,
+) {
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(),
@@ -36,13 +39,15 @@ fun ReopenButton(visible: Boolean, onReopenClickListener: () -> Unit) {
         Button(
             onClick = onReopenClickListener,
             shape = RoundedCornerShape(24.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(id = R.color.section_warning_color),
-            ),
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = colorResource(id = R.color.section_warning_color),
+                ),
             contentPadding = PaddingValues(10.dp),
-            modifier = Modifier
-                .height(40.dp)
-                .wrapContentWidth(),
+            modifier =
+                Modifier
+                    .height(40.dp)
+                    .wrapContentWidth(),
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_lock_open_white),

@@ -25,10 +25,11 @@ data class RelationshipModel(
     val fromDescription: String? = null,
 ) {
     fun displayRelationshipName(): String {
-        val values = when (direction) {
-            RelationshipDirection.FROM -> fromValues
-            RelationshipDirection.TO -> toValues
-        }
+        val values =
+            when (direction) {
+                RelationshipDirection.FROM -> fromValues
+                RelationshipDirection.TO -> toValues
+            }
         return when {
             values.isNotEmpty() -> {
                 val firstPair = values.first()
@@ -41,49 +42,48 @@ data class RelationshipModel(
         }
     }
 
-    fun displayDescription(): String? {
-        return when (direction) {
+    fun displayDescription(): String? =
+        when (direction) {
             RelationshipDirection.FROM -> fromDescription
             RelationshipDirection.TO -> toDescription
         }
-    }
 
-    fun displayLastUpdated(): Date? {
-        return when (direction) {
+    fun displayLastUpdated(): Date? =
+        when (direction) {
             RelationshipDirection.FROM -> fromLastUpdated
             RelationshipDirection.TO -> toLastUpdated
         }
-    }
 
-    fun displayAttributes(): List<Pair<String, String>> {
-        return when (direction) {
+    fun displayAttributes(): List<Pair<String, String>> =
+        when (direction) {
             RelationshipDirection.FROM -> fromValues
             RelationshipDirection.TO -> toValues
         }.drop(1)
-    }
 
     fun firstMainValue(): String {
-        val values = when (direction) {
-            RelationshipDirection.FROM -> fromValues
-            RelationshipDirection.TO -> toValues
-        }
-        return values.first().second.firstOrNull()
+        val values =
+            when (direction) {
+                RelationshipDirection.FROM -> fromValues
+                RelationshipDirection.TO -> toValues
+            }
+        return values
+            .first()
+            .second
+            .firstOrNull()
             ?.toString() ?: ""
     }
 
-    fun getPicturePath(): String {
-        return when (direction) {
+    fun getPicturePath(): String =
+        when (direction) {
             RelationshipDirection.FROM -> fromImage ?: ""
             RelationshipDirection.TO -> toImage ?: ""
         }
-    }
 
-    fun displayGeometry(): RelationshipGeometry? {
-        return when (direction) {
+    fun displayGeometry(): RelationshipGeometry? =
+        when (direction) {
             RelationshipDirection.FROM -> fromGeometry
             RelationshipDirection.TO -> toGeometry
         }
-    }
 }
 
 data class RelationshipGeometry(
@@ -92,9 +92,11 @@ data class RelationshipGeometry(
 )
 
 enum class RelationshipDirection {
-    FROM, TO
+    FROM,
+    TO,
 }
 
 enum class RelationshipOwnerType {
-    EVENT, TEI
+    EVENT,
+    TEI,
 }

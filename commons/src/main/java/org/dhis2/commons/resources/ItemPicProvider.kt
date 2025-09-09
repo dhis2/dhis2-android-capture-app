@@ -28,7 +28,9 @@ fun ImageView.setItemPic(
         imagePath?.isNotEmpty() == true -> {
             visibility = View.VISIBLE
             textView?.visibility = View.GONE
-            Glide.with(context).load(File(imagePath))
+            Glide
+                .with(context)
+                .load(File(imagePath))
                 .transform(CircleCrop())
                 .placeholder(defaultImageRes)
                 .error(defaultImageRes)
@@ -53,9 +55,11 @@ fun ImageView.setItemPic(
             setBackgroundColor(defaultColorRes)
             clipWithAllRoundedCorners(6.dp)
             ContextCompat.getDrawable(context, defaultImageRes)?.let {
-                Glide.with(context).load(
-                    colorUtils.tintDrawableReosurce(it, defaultColorRes),
-                ).transform(RoundedCorners(6.dp))
+                Glide
+                    .with(context)
+                    .load(
+                        colorUtils.tintDrawableReosurce(it, defaultColorRes),
+                    ).transform(RoundedCorners(6.dp))
                     .placeholder(defaultImageRes)
                     .error(defaultImageRes)
                     .transition(DrawableTransitionOptions.withCrossFade())

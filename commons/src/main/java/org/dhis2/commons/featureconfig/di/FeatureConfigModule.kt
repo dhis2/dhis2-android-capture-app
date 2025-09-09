@@ -9,13 +9,8 @@ import org.hisp.dhis.android.core.D2Manager
 
 @Module
 class FeatureConfigModule {
-
     @Provides
-    fun provideRepository(): FeatureConfigRepository {
-        return FeatureConfigRepositoryImpl(provideD2())
-    }
+    fun provideRepository(): FeatureConfigRepository = FeatureConfigRepositoryImpl(provideD2())
 
-    private fun provideD2(): D2 {
-        return D2Manager.getD2()
-    }
+    private fun provideD2(): D2 = D2Manager.getD2()
 }

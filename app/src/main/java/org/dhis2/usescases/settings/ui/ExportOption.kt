@@ -58,13 +58,14 @@ fun ExportOption(
 
     var onPermissionGrantedCallback: () -> Unit = {}
     var showPermissionDialog by remember { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { isGranted ->
-        onPermissionGrantedCallback.takeIf { isGranted }?.invoke() ?: run {
-            showPermissionDialog = true
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            onPermissionGrantedCallback.takeIf { isGranted }?.invoke() ?: run {
+                showPermissionDialog = true
+            }
         }
-    }
 
     val permissionSettingLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -90,10 +91,11 @@ fun ExportOption(
 
         if (targetState.not()) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Spacing.Spacing72)
-                    .padding(Spacing.Spacing16),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(Spacing.Spacing72)
+                        .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
@@ -133,10 +135,11 @@ fun ExportOption(
             }
         } else {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Spacing.Spacing72)
-                    .padding(Spacing.Spacing16),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(Spacing.Spacing72)
+                        .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
@@ -150,18 +153,20 @@ fun ExportOption(
             labelText = stringResource(id = R.string.permission_denied),
             descriptionText = "You need to provide the permission to carry out this action",
             iconResource = R.drawable.ic_info,
-            dismissButton = ButtonUiModel("Cancel") {
-                showPermissionDialog = false
-                onPermissionGrantedCallback = {}
-            },
-            confirmButton = ButtonUiModel("Change permission") {
-                permissionSettingLauncher.launch(
-                    Intent(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.fromParts("package", context.packageName, null),
-                    ),
-                )
-            },
+            dismissButton =
+                ButtonUiModel("Cancel") {
+                    showPermissionDialog = false
+                    onPermissionGrantedCallback = {}
+                },
+            confirmButton =
+                ButtonUiModel("Change permission") {
+                    permissionSettingLauncher.launch(
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", context.packageName, null),
+                        ),
+                    )
+                },
         )
     }
 }
@@ -197,8 +202,7 @@ private fun checkPermissionAndAndroidVersion(context: Context) =
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
         ) == PackageManager.PERMISSION_GRANTED
 
-private fun getHorizontalArrangement(displayProgress: Boolean) =
-    if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16)
+private fun getHorizontalArrangement(displayProgress: Boolean) = if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16)
 
 @Preview
 @Composable

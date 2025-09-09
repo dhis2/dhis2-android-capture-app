@@ -15,7 +15,6 @@ class RelationshipMapsRepositoryImpl(
     private val trackedEntityInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
 ) : RelationshipMapsRepository {
-
     override fun getRelatedInfo(
         ownerType: RelationshipOwnerType,
         ownerUid: String,
@@ -29,20 +28,31 @@ class RelationshipMapsRepositoryImpl(
             }
 
             RelationshipOwnerType.TEI -> {
-                val tei = d2.trackedEntityModule().trackedEntityInstances()
-                    .uid(ownerUid).blockingGet()
+                val tei =
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityInstances()
+                        .uid(ownerUid)
+                        .blockingGet()
 
-                val searchItem = d2.trackedEntityModule().trackedEntitySearch()
-                    .byTrackedEntityType().eq(tei?.trackedEntityType())
-                    .uid(ownerUid)
-                    .blockingGet()
+                val searchItem =
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntitySearch()
+                        .byTrackedEntityType()
+                        .eq(tei?.trackedEntityType())
+                        .uid(ownerUid)
+                        .blockingGet()
 
                 searchItem?.let {
                     if (config is TrackerRelationshipConfiguration) {
-                        val programUid = d2.enrollmentModule().enrollments()
-                            .uid(config.enrollmentUid)
-                            .blockingGet()
-                            ?.program()
+                        val programUid =
+                            d2
+                                .enrollmentModule()
+                                .enrollments()
+                                .uid(config.enrollmentUid)
+                                .blockingGet()
+                                ?.program()
                         trackedEntityInfoProvider.getRelatedInfo(
                             searchItem = searchItem,
                             selectedProgram = programUid?.let { d2.program(programUid) },
@@ -59,17 +69,27 @@ class RelationshipMapsRepositoryImpl(
         mapItem: MapItemModel,
         relationshipUid: String,
     ): MapItemModel {
-        val relationship = d2.relationshipModule().relationships().uid(relationshipUid).blockingGet()
+        val relationship =
+            d2
+                .relationshipModule()
+                .relationships()
+                .uid(relationshipUid)
+                .blockingGet()
         requireNotNull(relationship)
         return trackedEntityInfoProvider.updateRelationshipInfo(mapItem, relationship)
     }
 
-    override fun getEventProgram(eventUid: String?): String {
-        return d2.eventModule().events().uid(eventUid).blockingGet()?.program() ?: ""
-    }
+    override fun getEventProgram(eventUid: String?): String =
+        d2
+            .eventModule()
+            .events()
+            .uid(eventUid)
+            .blockingGet()
+            ?.program() ?: ""
 }
 
 sealed class RelationshipConfiguration
+
 data class TrackerRelationshipConfiguration(
     val enrollmentUid: String,
     val teiUid: String,

@@ -34,11 +34,11 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import java.io.File
 
-const val TestTag_DataPeriod = "TestTag_DataPeriod"
-const val TestTag_MetaPeriod = "TestTag_MetaPeriod"
-const val TestTag_SyncParameters_LimitScope = "TestTag_SyncParameters_LimitScope"
-const val TestTag_SyncParameters_EventMaxCount = "TestTag_SyncParameters_EventMaxCount"
-const val TestTag_SyncParameters_TeiMaxCount = "TestTag_SyncParameters_TeiMaxCount"
+const val TEST_TAG_DATA_PERIOD = "TestTag_DataPeriod"
+const val TEST_TAG_META_PERIOD = "TestTag_MetaPeriod"
+const val TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE = "TestTag_SyncParameters_LimitScope"
+const val TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT = "TestTag_SyncParameters_EventMaxCount"
+const val TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT = "TestTag_SyncParameters_TeiMaxCount"
 
 @Composable
 fun SettingsScreen(
@@ -94,13 +94,15 @@ fun SettingsScreen(
                         SettingsUiAction.SyncData -> viewmodel.syncData()
                         SettingsUiAction.SyncMetadata -> viewmodel.syncMeta()
                         is SettingsUiAction.OnSaveLimitScope -> viewmodel.saveLimitScope(uiAction.limitScope)
-                        is SettingsUiAction.OnSaveEventMaxCount -> viewmodel.saveEventMaxCount(
-                            uiAction.count,
-                        )
+                        is SettingsUiAction.OnSaveEventMaxCount ->
+                            viewmodel.saveEventMaxCount(
+                                uiAction.count,
+                            )
 
-                        is SettingsUiAction.OnSaveTeiMaxCount -> viewmodel.saveTeiMaxCount(
-                            uiAction.count,
-                        )
+                        is SettingsUiAction.OnSaveTeiMaxCount ->
+                            viewmodel.saveTeiMaxCount(
+                                uiAction.count,
+                            )
 
                         SettingsUiAction.OnSpecificProgramSettingsClick -> checkProgramSpecificSettings()
                         SettingsUiAction.OnManageReserveValues -> manageReserveValues()
@@ -157,12 +159,13 @@ private fun SettingItemList(
     onSettingsUiAction: (SettingsUiAction) -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .imePadding()
-            .background(MaterialTheme.colorScheme.primary)
-            .background(Color.White, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .imePadding()
+                .background(MaterialTheme.colorScheme.primary)
+                .background(Color.White, RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = spacedBy(Spacing.Spacing4),
     ) {
@@ -278,7 +281,6 @@ private fun SettingItemList(
                 saveTimeout = { timeout ->
                     onSettingsUiAction(SettingsUiAction.SaveTimeout(timeout))
                 },
-
                 disableSms = {
                     onSettingsUiAction(SettingsUiAction.DisableSMS)
                 },

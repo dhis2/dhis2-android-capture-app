@@ -18,7 +18,6 @@ abstract class BaseTeiViewHolder(
     private val binding: ItemSearchTrackedEntityBinding,
     private val colorUtils: ColorUtils,
 ) : RecyclerView.ViewHolder(binding.root) {
-
     lateinit var teiModel: SearchTeiModel
 
     abstract fun itemViewClick()

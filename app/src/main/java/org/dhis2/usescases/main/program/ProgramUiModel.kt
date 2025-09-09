@@ -27,13 +27,17 @@ data class ProgramUiModel(
 
     fun isDownloading() = downloadActive || downloadState == ProgramDownloadState.DOWNLOADING
 
-    fun getAlphaValue() = if (isDownloading()) {
-        0.4f
-    } else {
-        1f
-    }
+    fun getAlphaValue() =
+        if (isDownloading()) {
+            0.4f
+        } else {
+            1f
+        }
 }
 
 enum class ProgramDownloadState {
-    DOWNLOADING, DOWNLOADED, ERROR, NONE
+    DOWNLOADING,
+    DOWNLOADED,
+    ERROR,
+    NONE,
 }

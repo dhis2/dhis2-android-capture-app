@@ -16,27 +16,29 @@ class MapTeiEventsToFeatureCollection(
     private val mapPolygonToFeature: MapPolygonToFeature,
     private val bounds: GetBoundingBox,
 ) {
-
     fun map(events: List<MapItemModel>): Pair<EventsByProgramStage, BoundingBox> {
-        val eventsByProgramStage = events
-            .filter { it.relatedInfo?.event?.stageDisplayName != null }
-            .groupBy { it.relatedInfo?.event?.stageDisplayName!! }
-            .mapValues { eventModel ->
-                eventModel.value.mapNotNull {
-                    val feature = it.geometry?.let { eventGeometry ->
-                        if (eventGeometry.type() == FeatureType.POINT) {
-                            mapPointToFeature.map(eventGeometry)
-                        } else {
-                            mapPolygonToFeature.map(eventGeometry)
-                        }
+        val eventsByProgramStage =
+            events
+                .filter { it.relatedInfo?.event?.stageDisplayName != null }
+                .groupBy { it.relatedInfo?.event?.stageDisplayName!! }
+                .mapValues { eventModel ->
+                    eventModel.value.mapNotNull {
+                        val feature =
+                            it.geometry?.let { eventGeometry ->
+                                if (eventGeometry.type() == FeatureType.POINT) {
+                                    mapPointToFeature.map(eventGeometry)
+                                } else {
+                                    mapPolygonToFeature.map(eventGeometry)
+                                }
+                            }
+                        feature?.addTeiEventInfo(it)
                     }
-                    feature?.addTeiEventInfo(it)
                 }
-            }
 
-        val featureCollectionMap = eventsByProgramStage.mapValues {
-            FeatureCollection.fromFeatures(it.value)
-        }
+        val featureCollectionMap =
+            eventsByProgramStage.mapValues {
+                FeatureCollection.fromFeatures(it.value)
+            }
 
         val featureCollection = EventsByProgramStage(EVENT, featureCollectionMap)
 

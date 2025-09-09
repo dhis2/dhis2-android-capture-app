@@ -52,7 +52,6 @@ import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainPresenterTest {
-
     private lateinit var presenter: MainPresenter
     private val repository: HomeRepository = mock()
     private val schedulers: SchedulerProvider = TrampolineSchedulerProvider()
@@ -69,10 +68,11 @@ class MainPresenterTest {
     private val syncStatusController: SyncStatusController = mock()
     private val versionRepository: VersionRepository = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn testingDispatcher
-        on { ui() } doReturn testingDispatcher
-    }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn testingDispatcher
+            on { ui() } doReturn testingDispatcher
+        }
 
     private val forceToNotSynced: Boolean = false
 
@@ -123,13 +123,23 @@ class MainPresenterTest {
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.dataStoreModule()) doReturn mock()
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
-        whenever(userManager.d2.dataStoreModule().localDataStore().value(PIN)) doReturn mock()
+        whenever(
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(PIN),
+        ) doReturn mock()
 
         presenter.logOut()
 
         verify(workManagerController).cancelAllWork()
         verify(preferences).setValue(SESSION_LOCKED, false)
-        verify(userManager.d2.dataStoreModule().localDataStore().value(PIN)).blockingDeleteIfExist()
+        verify(
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(PIN),
+        ).blockingDeleteIfExist()
         verify(filterManager).clearAllFilters()
         verify(view).goToLogin(1, false)
     }
@@ -202,7 +212,8 @@ class MainPresenterTest {
     @Test
     fun `Should go to manage account`() {
         val firstRandomUserAccount =
-            DatabaseAccount.builder()
+            DatabaseAccount
+                .builder()
                 .username("random")
                 .serverUrl("https://www.random.com/")
                 .encrypted(false)
@@ -210,7 +221,8 @@ class MainPresenterTest {
                 .databaseCreationDate("16/2/2012")
                 .build()
         val secondRandomUserAccount =
-            DatabaseAccount.builder()
+            DatabaseAccount
+                .builder()
                 .username("random")
                 .serverUrl("https://www.random.com/")
                 .encrypted(false)
@@ -224,10 +236,16 @@ class MainPresenterTest {
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
-        whenever(userManager.d2.userModule().accountManager().getAccounts()) doReturn listOf(
-            firstRandomUserAccount,
-            secondRandomUserAccount,
-        )
+        whenever(
+            userManager.d2
+                .userModule()
+                .accountManager()
+                .getAccounts(),
+        ) doReturn
+            listOf(
+                firstRandomUserAccount,
+                secondRandomUserAccount,
+            )
         whenever(repository.accountsCount()) doReturn 2
 
         presenter.onDeleteAccount()
@@ -287,31 +305,33 @@ class MainPresenterTest {
         whenever(preferences.getString(DHIS2, "")) doReturn oldVersion
     }
 
-    private fun systemInfo(server: String = "2.38") = SystemInfo.builder()
-        .systemName("random")
-        .contextPath("random too")
-        .dateFormat("dd/mm/yyyy")
-        .serverDate(Date())
-        .version(server)
-        .build()
+    private fun systemInfo(server: String = "2.38") =
+        SystemInfo
+            .builder()
+            .systemName("random")
+            .contextPath("random too")
+            .dateFormat("dd/mm/yyyy")
+            .serverDate(Date())
+            .version(server)
+            .build()
 
-    private fun createUser(): User {
-        return User.builder()
+    private fun createUser(): User =
+        User
+            .builder()
             .uid("userUid")
             .firstName("test_name")
             .surname("test_surName")
             .build()
-    }
 
-    private fun createCategoryCombo(): CategoryCombo {
-        return CategoryCombo.builder()
+    private fun createCategoryCombo(): CategoryCombo =
+        CategoryCombo
+            .builder()
             .uid("uid")
             .build()
-    }
 
-    private fun createCategoryOptionCombo(): CategoryOptionCombo {
-        return CategoryOptionCombo.builder()
+    private fun createCategoryOptionCombo(): CategoryOptionCombo =
+        CategoryOptionCombo
+            .builder()
             .uid("uid")
             .build()
-    }
 }

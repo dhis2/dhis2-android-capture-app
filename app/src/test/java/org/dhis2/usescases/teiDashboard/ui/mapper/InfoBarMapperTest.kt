@@ -22,7 +22,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class InfoBarMapperTest {
-
     private val resourceManager: ResourceManager = mock()
     private lateinit var mapper: InfoBarMapper
 
@@ -35,12 +34,16 @@ class InfoBarMapperTest {
         setPrograms().forEach {
             whenever(
                 resourceManager.formatWithEnrollmentLabel(
-                    it.first.uid(), R.string.enrollment_completed_V2, 1,
+                    it.first.uid(),
+                    R.string.enrollment_completed_V2,
+                    1,
                 ),
             ) doReturn "Enrollment completed"
             whenever(
                 resourceManager.formatWithEnrollmentLabel(
-                    it.first.uid(), R.string.enrollment_cancelled_V2, 1,
+                    it.first.uid(),
+                    R.string.enrollment_cancelled_V2,
+                    1,
                 ),
             ) doReturn "Enrollment cancelled"
         }
@@ -56,12 +59,13 @@ class InfoBarMapperTest {
     fun shouldShowSyncInfoBar() {
         val model = createFakeModel(State.TO_UPDATE, EnrollmentStatus.ACTIVE)
 
-        val result = mapper.map(
-            InfoBarType.SYNC,
-            model,
-            { },
-            true,
-        )
+        val result =
+            mapper.map(
+                InfoBarType.SYNC,
+                model,
+                { },
+                true,
+            )
 
         assertEquals(result.text, "Not synced")
     }
@@ -70,12 +74,13 @@ class InfoBarMapperTest {
     fun shouldShowEnrollmentStatusInfoBar() {
         val model = createFakeModel(State.TO_UPDATE, EnrollmentStatus.COMPLETED)
 
-        val result = mapper.map(
-            InfoBarType.ENROLLMENT_STATUS,
-            model,
-            {},
-            true,
-        )
+        val result =
+            mapper.map(
+                InfoBarType.ENROLLMENT_STATUS,
+                model,
+                {},
+                true,
+            )
 
         assertEquals(result.text, "Enrollment completed")
     }
@@ -84,12 +89,13 @@ class InfoBarMapperTest {
     fun shouldShowSFollowUpInfoBar() {
         val model = createFakeModel(State.TO_UPDATE, EnrollmentStatus.ACTIVE, true)
 
-        val result = mapper.map(
-            InfoBarType.FOLLOW_UP,
-            model,
-            {},
-            true,
-        )
+        val result =
+            mapper.map(
+                InfoBarType.FOLLOW_UP,
+                model,
+                {},
+                true,
+            )
 
         assertEquals(result.text, "Marked for follow up")
     }
@@ -99,50 +105,59 @@ class InfoBarMapperTest {
         status: EnrollmentStatus,
         followup: Boolean = false,
     ): DashboardEnrollmentModel {
-        val attributeValues = listOf(
-            Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
-            Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
-        )
+        val attributeValues =
+            listOf(
+                Pair(getTEA("uid1", "First Name"), getTEAValue("Jonah")),
+                Pair(getTEA("uid2", "Last Name"), getTEAValue("Hill")),
+            )
 
-        val model = DashboardEnrollmentModel(
-            setEnrollment(state, status, followup),
-            emptyList<ProgramStage>(),
-            setTei(state),
-            attributeValues,
-            emptyList<TrackedEntityAttributeValue>(),
-            setPrograms(),
-            emptyList<OrganisationUnit>(),
-            null,
-            null,
-            null,
-            emptyList(),
-        )
+        val model =
+            DashboardEnrollmentModel(
+                setEnrollment(state, status, followup),
+                emptyList<ProgramStage>(),
+                setTei(state),
+                attributeValues,
+                emptyList<TrackedEntityAttributeValue>(),
+                setPrograms(),
+                emptyList<OrganisationUnit>(),
+                null,
+                null,
+                null,
+                emptyList(),
+            )
 
         return model
     }
 
     private fun getTEAValue(value: String) =
-        TrackedEntityAttributeValue.builder()
+        TrackedEntityAttributeValue
+            .builder()
             .value(value)
             .build()
 
-    private fun getTEA(uid: String, value: String) =
-        TrackedEntityAttribute.builder()
-            .uid(uid)
-            .displayFormName(value)
-            .build()
-
-    private fun setTei(state: State) = TrackedEntityInstance.builder()
-        .uid("TEIUid")
-        .organisationUnit("OrgUnit")
-        .aggregatedSyncState(state)
+    private fun getTEA(
+        uid: String,
+        value: String,
+    ) = TrackedEntityAttribute
+        .builder()
+        .uid(uid)
+        .displayFormName(value)
         .build()
+
+    private fun setTei(state: State) =
+        TrackedEntityInstance
+            .builder()
+            .uid("TEIUid")
+            .organisationUnit("OrgUnit")
+            .aggregatedSyncState(state)
+            .build()
 
     private fun setEnrollment(
         state: State,
         status: EnrollmentStatus,
         followup: Boolean = false,
-    ) = Enrollment.builder()
+    ) = Enrollment
+        .builder()
         .uid("EnrollmentUid")
         .syncState(state)
         .aggregatedSyncState(state)
@@ -151,20 +166,23 @@ class InfoBarMapperTest {
         .program("Program1Uid")
         .build()
 
-    private fun setPrograms() = listOf<Pair<Program, MetadataIconData>>(
-        Pair(
-            Program.builder()
-                .uid("Program1Uid")
-                .displayName("Program 1")
-                .build(),
-            MetadataIconData.defaultIcon(),
-        ),
-        Pair(
-            Program.builder()
-                .uid("Program2Uid")
-                .displayName("Program 2")
-                .build(),
-            MetadataIconData.defaultIcon(),
-        ),
-    )
+    private fun setPrograms() =
+        listOf<Pair<Program, MetadataIconData>>(
+            Pair(
+                Program
+                    .builder()
+                    .uid("Program1Uid")
+                    .displayName("Program 1")
+                    .build(),
+                MetadataIconData.defaultIcon(),
+            ),
+            Pair(
+                Program
+                    .builder()
+                    .uid("Program2Uid")
+                    .displayName("Program 2")
+                    .build(),
+                MetadataIconData.defaultIcon(),
+            ),
+        )
 }

@@ -87,28 +87,31 @@ class HomeViewModelUnitTest {
 
     private lateinit var analytics: List<AnalyticsDhisVisualizationsGroup>
 
-    private val distributionItem = TransactionItem(
-        R.drawable.ic_distribution,
-        TransactionType.DISTRIBUTION,
-        TransactionType.DISTRIBUTION.name,
-    )
+    private val distributionItem =
+        TransactionItem(
+            R.drawable.ic_distribution,
+            TransactionType.DISTRIBUTION,
+            TransactionType.DISTRIBUTION.name,
+        )
 
-    private val correctionItem = TransactionItem(
-        R.drawable.ic_correction,
-        TransactionType.CORRECTION,
-        TransactionType.CORRECTION.name,
-    )
-    private val discardItem = TransactionItem(
-        R.drawable.ic_discard,
-        TransactionType.DISCARD,
-        TransactionType.DISCARD.name,
-    )
+    private val correctionItem =
+        TransactionItem(
+            R.drawable.ic_correction,
+            TransactionType.CORRECTION,
+            TransactionType.CORRECTION.name,
+        )
+    private val discardItem =
+        TransactionItem(
+            R.drawable.ic_discard,
+            TransactionType.DISCARD,
+            TransactionType.DISCARD.name,
+        )
 
     private val transactionItems = mutableListOf(distributionItem, correctionItem, discardItem)
 
     companion object {
         const val DISTRIBUTION_LABEL = "Distribution"
-        const val CORRECTION_lABEL = "Correction"
+        const val CORRECTION_LABEL = "Correction"
         const val DISCARD_LABEL = "Discard"
         const val DELIVER_TO_LABEL = "Deliver to"
         const val DISTRIBUTION_TRANSACTION_ITEM = "Deliver to"
@@ -136,32 +139,34 @@ class HomeViewModelUnitTest {
         RxJavaPlugins.setComputationSchedulerHandler { Schedulers.trampoline() }
         RxJavaPlugins.setNewThreadSchedulerHandler { Schedulers.trampoline() }
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
-        stockUseCase = StockUseCase(
-            programUid = "F5ijs28K4s8",
-            description = "Paracetamol",
-            itemDescription = "sLMTQUHAZnk",
-            itemCode = "wBr4wccNBj1",
-            programType = "LMIS",
-            stockOnHand = "RghnAkDBDI4",
-            transactions = listOf(
-                StockUseCaseTransaction.Distributed(
-                    sortOrder = 1,
-                    transactionType = StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED,
-                    distributedTo = "UIbjnkdsn8",
-                    stockDistributed = "OP47bhj98jh",
-                ),
-                StockUseCaseTransaction.Discarded(
-                    sortOrder = 2,
-                    transactionType = StockUseCaseTransaction.Companion.TransactionType.DISCARDED,
-                    stockDiscarded = "HJbhj984jh",
-                ),
-                StockUseCaseTransaction.Correction(
-                    sortOrder = 3,
-                    transactionType = StockUseCaseTransaction.Companion.TransactionType.CORRECTED,
-                    stockCount = "JKnaosi9pio",
-                ),
-            ),
-        )
+        stockUseCase =
+            StockUseCase(
+                programUid = "F5ijs28K4s8",
+                description = "Paracetamol",
+                itemDescription = "sLMTQUHAZnk",
+                itemCode = "wBr4wccNBj1",
+                programType = "LMIS",
+                stockOnHand = "RghnAkDBDI4",
+                transactions =
+                    listOf(
+                        StockUseCaseTransaction.Distributed(
+                            sortOrder = 1,
+                            transactionType = StockUseCaseTransaction.Companion.TransactionType.DISTRIBUTED,
+                            distributedTo = "UIbjnkdsn8",
+                            stockDistributed = "OP47bhj98jh",
+                        ),
+                        StockUseCaseTransaction.Discarded(
+                            sortOrder = 2,
+                            transactionType = StockUseCaseTransaction.Companion.TransactionType.DISCARDED,
+                            stockDiscarded = "HJbhj984jh",
+                        ),
+                        StockUseCaseTransaction.Correction(
+                            sortOrder = 3,
+                            transactionType = StockUseCaseTransaction.Companion.TransactionType.CORRECTED,
+                            stockCount = "JKnaosi9pio",
+                        ),
+                    ),
+            )
 
         facilities = FacilityFactory.getListOf(3)
         destinations = DestinationFactory.getListOf(5)
@@ -170,7 +175,7 @@ class HomeViewModelUnitTest {
             .thenReturn(analytics)
         val distributionDataSet =
             DataElementFactory.create(stockUseCase.stockDistribution(), DISTRIBUTION_LABEL)
-        val correctionDataSet = DataElementFactory.create(stockUseCase.stockCount(), CORRECTION_lABEL)
+        val correctionDataSet = DataElementFactory.create(stockUseCase.stockCount(), CORRECTION_LABEL)
         val discardDataSet = DataElementFactory.create(stockUseCase.stockDiscarded(), DISCARD_LABEL)
         val deliverToDataSet = DataElementFactory.create(stockUseCase.stockDiscarded(), DELIVER_TO_LABEL)
 
@@ -200,23 +205,25 @@ class HomeViewModelUnitTest {
 
         `when`(metadataManager.transactionType(stockUseCase.stockDiscarded()))
             .thenReturn(Single.just(discardDataSet))
-        viewModel = HomeViewModel(
-            disposable,
-            schedulerProvider,
-            metadataManager,
-            charts,
-            d2,
-            getStateHandle(),
-        )
+        viewModel =
+            HomeViewModel(
+                disposable,
+                schedulerProvider,
+                metadataManager,
+                charts,
+                d2,
+                getStateHandle(),
+            )
 
         viewModel.facilities.asLiveData().observeForever(facilitiesObserver)
         viewModel.destinationsList.asLiveData().observeForever(destinationsObserver)
     }
 
     private fun getStateHandle(): SavedStateHandle {
-        val state = hashMapOf<String, Any>(
-            org.dhis2.commons.Constants.PROGRAM_UID to "F5ijs28K4s8",
-        )
+        val state =
+            hashMapOf<String, Any>(
+                org.dhis2.commons.Constants.PROGRAM_UID to "F5ijs28K4s8",
+            )
         return SavedStateHandle(state)
     }
 
@@ -251,7 +258,9 @@ class HomeViewModelUnitTest {
         verify(metadataManager).transactionType(stockUseCase.stockDistribution())
 
         assertEquals(
-            viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISTRIBUTION }?.label,
+            viewModel.settingsUiState.value.transactionItems
+                .find { it.type == TransactionType.DISTRIBUTION }
+                ?.label,
             DISTRIBUTION_LABEL,
         )
     }
@@ -261,8 +270,10 @@ class HomeViewModelUnitTest {
         verify(metadataManager).transactionType(stockUseCase.stockCount())
 
         assertEquals(
-            viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.CORRECTION }?.label,
-            CORRECTION_lABEL,
+            viewModel.settingsUiState.value.transactionItems
+                .find { it.type == TransactionType.CORRECTION }
+                ?.label,
+            CORRECTION_LABEL,
         )
     }
 
@@ -271,7 +282,9 @@ class HomeViewModelUnitTest {
         verify(metadataManager).transactionType(stockUseCase.stockDiscarded())
 
         assertEquals(
-            viewModel.settingsUiState.value.transactionItems.find { it.type == TransactionType.DISCARD }?.label,
+            viewModel.settingsUiState.value.transactionItems
+                .find { it.type == TransactionType.DISCARD }
+                ?.label,
             DISCARD_LABEL,
         )
     }

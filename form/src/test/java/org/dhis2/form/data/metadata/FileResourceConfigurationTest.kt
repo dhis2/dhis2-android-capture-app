@@ -14,7 +14,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class FileResourceConfigurationTest {
-
     private val d2 = mock<D2>()
     private val fileResourceModule = mock<FileResourceModule>()
     private val fileResources: FileResourceCollectionRepository = mock()

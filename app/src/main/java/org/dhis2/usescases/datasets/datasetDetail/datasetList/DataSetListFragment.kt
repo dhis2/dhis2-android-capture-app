@@ -27,7 +27,6 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import javax.inject.Inject
 
 class DataSetListFragment : FragmentGlobalAbstract() {
-
     private lateinit var dataSetUid: String
     private var accessWriteData: Boolean = false
 
@@ -62,7 +61,8 @@ class DataSetListFragment : FragmentGlobalAbstract() {
             selectedDataset.observe(viewLifecycleOwner, ActionObserver { startDataSet(it) })
             selectedSync.observe(viewLifecycleOwner, ActionObserver { showSyncDialog(it) })
         }
-        return FragmentDataSetListBinding.inflate(inflater, container, false)
+        return FragmentDataSetListBinding
+            .inflate(inflater, container, false)
             .apply {
                 binding = this
                 lifecycleOwner = viewLifecycleOwner
@@ -94,14 +94,16 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     }
 
     private fun setWritePermission(canWrite: Boolean) {
-        binding.emptyData.text = when {
-            canWrite -> getString(R.string.dataset_empty_list_can_create)
-            else -> getString(R.string.dataset_emtpy_list_can_not_create)
-        }
-        binding.addDatasetButton.visibility = when {
-            canWrite -> View.VISIBLE
-            else -> View.GONE
-        }
+        binding.emptyData.text =
+            when {
+                canWrite -> getString(R.string.dataset_empty_list_can_create)
+                else -> getString(R.string.dataset_emtpy_list_can_not_create)
+            }
+        binding.addDatasetButton.visibility =
+            when {
+                canWrite -> View.VISIBLE
+                else -> View.GONE
+            }
     }
 
     private fun startNewDataSet() {
@@ -112,17 +114,19 @@ class DataSetListFragment : FragmentGlobalAbstract() {
     }
 
     private fun startDataSet(dataSet: DataSetDetailModel) {
-        val activityBundle = Bundle().apply {
-            putString(INTENT_EXTRA_DATA_SET_UID, dataSet.datasetUid)
-            putString(INTENT_EXTRA_PERIOD_ID, dataSet.periodId)
-            putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, dataSet.orgUnitUid)
-            putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, dataSet.catOptionComboUid)
-        }
+        val activityBundle =
+            Bundle().apply {
+                putString(INTENT_EXTRA_DATA_SET_UID, dataSet.datasetUid)
+                putString(INTENT_EXTRA_PERIOD_ID, dataSet.periodId)
+                putString(INTENT_EXTRA_ORGANISATION_UNIT_UID, dataSet.orgUnitUid)
+                putString(INTENT_EXTRA_ATTRIBUTE_OPTION_COMBO_UID, dataSet.catOptionComboUid)
+            }
         startActivity(DataSetInstanceActivity::class.java, activityBundle, false, false, null)
     }
 
     private fun showSyncDialog(dataSet: DataSetDetailModel) {
-        SyncStatusDialog.Builder()
+        SyncStatusDialog
+            .Builder()
             .withContext(this)
             .withSyncContext(
                 SyncContext.DataSetInstance(
@@ -131,33 +135,36 @@ class DataSetListFragment : FragmentGlobalAbstract() {
                     orgUnitUid = dataSet.orgUnitUid,
                     attributeOptionComboUid = dataSet.catOptionComboUid,
                 ),
-            ).onDismissListener(object : OnDismissListener {
-                override fun onDismiss(hasChanged: Boolean) {
-                    if (hasChanged) {
-                        viewModel.updateData()
+            ).onDismissListener(
+                object : OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) {
+                            viewModel.updateData()
+                        }
                     }
-                }
-            })
-            .onNoConnectionListener {
+                },
+            ).onNoConnectionListener {
                 val contextView = activity.findViewById<View>(R.id.navigationBar)
-                Snackbar.make(
-                    contextView,
-                    R.string.sync_offline_check_connection,
-                    Snackbar.LENGTH_SHORT,
-                ).show()
-            }
-            .show(FRAGMENT_TAG)
+                Snackbar
+                    .make(
+                        contextView,
+                        R.string.sync_offline_check_connection,
+                        Snackbar.LENGTH_SHORT,
+                    ).show()
+            }.show(FRAGMENT_TAG)
     }
 
     companion object {
         private const val FRAGMENT_TAG = "SYNC"
 
         @JvmStatic
-        fun newInstance(dataSetUid: String, accessWriteData: Boolean): DataSetListFragment {
-            return DataSetListFragment().apply {
+        fun newInstance(
+            dataSetUid: String,
+            accessWriteData: Boolean,
+        ): DataSetListFragment =
+            DataSetListFragment().apply {
                 this.dataSetUid = dataSetUid
                 this.accessWriteData = accessWriteData
             }
-        }
     }
 }

@@ -3,7 +3,6 @@ package org.dhis2.usescases.settings
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
-import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -18,11 +17,11 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
-import org.dhis2.usescases.settings.ui.TestTag_DataPeriod
-import org.dhis2.usescases.settings.ui.TestTag_MetaPeriod
-import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_EventMaxCount
-import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_LimitScope
-import org.dhis2.usescases.settings.ui.TestTag_SyncParameters_TeiMaxCount
+import org.dhis2.usescases.settings.ui.TEST_TAG_DATA_PERIOD
+import org.dhis2.usescases.settings.ui.TEST_TAG_META_PERIOD
+import org.dhis2.usescases.settings.ui.TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT
+import org.dhis2.usescases.settings.ui.TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE
+import org.dhis2.usescases.settings.ui.TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT
 
 fun settingsRobot(
     composeTestRule: ComposeTestRule,
@@ -44,7 +43,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             hasAnyAncestor(hasTestTag(SettingItem.DATA_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(TestTag_DataPeriod).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_DATA_PERIOD).assertIsNotDisplayed()
     }
 
     fun clickOnSyncConfiguration() {
@@ -56,7 +55,7 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             hasAnyAncestor(hasTestTag(SettingItem.META_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(TestTag_MetaPeriod).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_META_PERIOD).assertIsNotDisplayed()
     }
 
     fun clickOnSyncParameters() {
@@ -68,9 +67,9 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             hasAnyAncestor(hasTestTag(SettingItem.SYNC_PARAMETERS.name)) and
                     hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
         ).assertIsDisplayed()
-        composeTestRule.onNodeWithTag(TestTag_SyncParameters_LimitScope).assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag(TestTag_SyncParameters_EventMaxCount).assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag(TestTag_SyncParameters_TeiMaxCount).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT).assertIsNotDisplayed()
     }
 
     fun clickOnReservedValues() {

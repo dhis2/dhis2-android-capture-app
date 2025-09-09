@@ -5,8 +5,5 @@ import org.dhis2.commons.prefs.PreferenceProvider
 class AutoCompleteProviderImpl(
     val preferenceProvider: PreferenceProvider,
 ) : AutoCompleteProvider {
-
-    override fun provideAutoCompleteValues(elementUid: String): List<String>? {
-        return preferenceProvider.getList(elementUid, emptyList())
-    }
+    override fun provideAutoCompleteValues(elementUid: String): List<String>? = preferenceProvider.getList(elementUid, emptyList())
 }
