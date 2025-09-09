@@ -71,4 +71,11 @@
     <string name="add_file">Fayl qoʼshish</string>
     <string name="add_image">Rasm qoʼshish</string>
     <string name="no_results_found">Hech qanday natija topilmadi</string>
-    </resources>
+    <string name="login_error_dhis_version">Ushbu server 2.29 dan farqli versiyani ishlatmoqda. Server versiyasini yangilang yoki davom etish uchun sinov muddatidan foydalaning.</string>
+    <string name="login_error_unsuccessful_response">Nimadir notoʼgʼri bajarildi. Server URL manzili, foydalanuvchi nomi va parol toʼgʼri ekanligini tekshiring va qaytadan urining.</string>
+    <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

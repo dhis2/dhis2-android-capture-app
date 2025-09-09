@@ -848,6 +848,7 @@
     <string name="not_synced">Non synchronisé</string>
     <string name="sync_retry">Réessayer la synchronisation</string>
     <string name="marked_follow_up">Marqué pour suivi</string>
+    <string name="view_only">Visualiser uniquement</string>
     <string name="skipped">Ignoré</string>
     <string name="programs">Programmes</string>
     <string name="sync_successful">Synchronisation réussie</string>

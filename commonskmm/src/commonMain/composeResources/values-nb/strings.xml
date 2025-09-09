@@ -75,4 +75,10 @@
     <string name="no_results_found">Ingen resultater funnet</string>
     <string name="action_done">Fullfør</string>
     <string name="input_not_supported">Ikke støttet</string>
+    <string name="login_error_dhis_version">Denne serveren kjører en dhis versjon som er forskjellig fra 2.29. Oppdater din serverversjon eller bruk testmiljøet for å fortsette.</string>
+    <string name="online_search_parsing_error">Feil under analyse av resultater</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>
