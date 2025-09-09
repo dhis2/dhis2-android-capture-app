@@ -59,6 +59,7 @@ fun ProvideCustomIntentInput(
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
+                inputShellState = InputShellState.UNFOCUSED
                 val recoveredData =
                     fieldUiModel.customIntent?.customIntentResponse?.let {
                         mapIntentResponseData(
