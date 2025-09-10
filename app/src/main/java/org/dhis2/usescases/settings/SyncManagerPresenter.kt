@@ -116,7 +116,7 @@ class SyncManagerPresenter(
         val settingsState =
             getSettingsState(
                 openedItem = _settingsState.value?.openedItem,
-                hasConnection = connectionStatus.value,
+                hasConnection = _settingsState.value?.hasConnection == true,
                 metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
                 dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
             )
@@ -291,6 +291,7 @@ class SyncManagerPresenter(
             launchSync(LaunchSync.SyncAction.SyncMetadata)
         }
     }
+
     fun resetSyncParameters() {
         viewModelScope.launch(dispatcherProvider.io()) {
             updateSyncSettings(UpdateSyncSettings.SyncSettings.Reset)

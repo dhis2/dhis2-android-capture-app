@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -81,7 +82,11 @@ internal fun ServerValidationContent(
         )
         Spacer(Modifier.size(Spacing.Spacing16))
         var server by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(TextFieldValue((currentScreen as? LoginScreenState.ServerValidation)?.currentServer ?: ""))
+            mutableStateOf(
+                TextFieldValue(
+                    (currentScreen as? LoginScreenState.ServerValidation)?.currentServer ?: "",
+                ),
+            )
         }
         var state by remember(errorMessage, isServerValidationRunning) {
             mutableStateOf(
@@ -94,7 +99,11 @@ internal fun ServerValidationContent(
         }
         val qrReader =
             serverQrReader { serverUrl ->
-                server = server.copy(text = serverUrl ?: "")
+                server =
+                    server.copy(
+                        text = serverUrl ?: "",
+                        selection = TextRange(serverUrl?.length ?: 0),
+                    )
             }
 
         InputQRCode(
