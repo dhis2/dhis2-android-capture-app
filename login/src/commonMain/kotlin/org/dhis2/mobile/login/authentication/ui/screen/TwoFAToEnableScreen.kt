@@ -169,15 +169,13 @@ fun TwoFAAuthStepTwo(
                 )
 
                 Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                            .padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = CenterVertically,
                 ) {
-                    SelectionContainer {
+                    SelectionContainer(modifier = Modifier.weight(1f, fill = false)) {
                         Text(
                             text = secretCode,
                             style =

@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.authentication.ui.screen
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -125,15 +126,16 @@ fun TwoFASettingsScreen(
             shape = RoundedCornerShape(topStart = Radius.L, topEnd = Radius.L),
         ) {
             LazyColumn(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(
-                            start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                            end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
-                            bottom = paddingValues.calculateBottomPadding(),
-                        ).padding(16.dp)
-                        .navigationBarsPadding(),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(
+                        start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
+                        end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                        bottom = paddingValues.calculateBottomPadding(),
+                    )
+                    .padding(horizontal = 16.dp)
+                    .navigationBarsPadding(),
             ) {
                 when (uiState) {
                     is TwoFAUiState.Checking -> {

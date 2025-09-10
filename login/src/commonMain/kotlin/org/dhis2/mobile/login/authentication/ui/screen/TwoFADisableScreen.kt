@@ -29,6 +29,7 @@ import org.dhis2.mobile.login.resources.two_fa_disable_desc_1
 import org.dhis2.mobile.login.resources.two_fa_disable_desc_2
 import org.dhis2.mobile.login.resources.two_fa_disable_error
 import org.dhis2.mobile.login.resources.two_fa_disable_title
+import org.dhis2.mobile.login.resources.two_fa_disabling_button
 import org.dhis2.mobile.login.resources.two_fa_is_on
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -98,21 +99,24 @@ fun TwoFADisableScreen(
                     null
                 },
             )
+            Button(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                text = when (twoFADisableUiState.isDisabling) {
+                    true -> stringResource(Res.string.two_fa_disabling_button)
+                    else -> stringResource(Res.string.two_fa_disable_button)
+                },
+                colorStyle = ColorStyle.ERROR,
+                style = ButtonStyle.FILLED,
+                enabled = authCode.text.length >= 6 && twoFADisableUiState.isDisabling.not(),
+                onClick = { onDisable(authCode.text) },
+                icon = {
+                    Icon(
+                        imageVector = Icons.Outlined.KeyOff,
+                        contentDescription = stringResource(Res.string.two_fa_disable_button),
+                    )
+                },
+            )
         }
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(Res.string.two_fa_disable_button),
-            colorStyle = ColorStyle.ERROR,
-            style = ButtonStyle.FILLED,
-            enabled = authCode.text.length >= 6 && twoFADisableUiState.isDisabling.not(),
-            onClick = { onDisable(authCode.text) },
-            icon = {
-                Icon(
-                    imageVector = Icons.Outlined.KeyOff,
-                    contentDescription = stringResource(Res.string.two_fa_disable_button),
-                )
-            },
-        )
     }
 }
 
