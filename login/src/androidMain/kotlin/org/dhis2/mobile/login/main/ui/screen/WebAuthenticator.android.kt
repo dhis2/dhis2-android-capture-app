@@ -25,24 +25,28 @@ actual fun WebAuthenticator(
             "&state=abc123"
 
     // Custom Tab launcher will handle the result of the Custom Tab to detect if the user closed it
-    val customTabLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_CANCELED) {
-            onDismiss()
+    val customTabLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.StartActivityForResult(),
+        ) { result ->
+            if (result.resultCode == Activity.RESULT_CANCELED) {
+                onDismiss()
+            }
         }
-    }
 
     LaunchedEffect(url) {
-        val customTabsIntent = CustomTabsIntent.Builder()
-            .setShowTitle(false)
-            .setUrlBarHidingEnabled(true)
-            .build()
+        val customTabsIntent =
+            CustomTabsIntent
+                .Builder()
+                .setShowTitle(false)
+                .setUrlBarHidingEnabled(true)
+                .build()
         customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
 
-        val intent = customTabsIntent.intent.apply {
-            data = oauthAuthUrl.toUri()
-        }
+        val intent =
+            customTabsIntent.intent.apply {
+                data = oauthAuthUrl.toUri()
+            }
 
         customTabLauncher.launch(intent)
     }

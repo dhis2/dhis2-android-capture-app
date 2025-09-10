@@ -12,13 +12,14 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-internal val mainLoginModule = module {
-    single<Navigator> { DefaultNavigator() }
-    factoryOf(::GetInitialScreen)
-    factoryOf(::ValidateServer)
-    viewModelOf(::LoginViewModel)
-    single<AppLinkNavigation> { AppLinkNavigation() }
-}
+internal val mainLoginModule =
+    module {
+        single<Navigator> { DefaultNavigator() }
+        factoryOf(::GetInitialScreen)
+        factoryOf(::ValidateServer)
+        viewModelOf(::LoginViewModel)
+        single<AppLinkNavigation> { AppLinkNavigation() }
+    }
 
 internal expect val accountModule: Module
 

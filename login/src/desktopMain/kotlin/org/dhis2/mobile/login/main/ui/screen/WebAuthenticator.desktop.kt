@@ -6,7 +6,10 @@ import java.awt.Desktop
 import java.net.URI
 
 @Composable
-actual fun WebAuthenticator(url: String, onDismiss: () -> Unit) {
+actual fun WebAuthenticator(
+    url: String,
+    onDismiss: () -> Unit,
+) {
     LaunchedEffect(url) {
         if (Desktop.isDesktopSupported()) {
             try {
