@@ -49,6 +49,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 
 const val SERVER_VALIDATION_CONTENT_BUTTON_TAG = "ServerValidationContentButtonTag"
@@ -145,31 +146,27 @@ internal fun ServerValidationContent(
                     .animateContentSize(),
             horizontalArrangement = spacedBy(Spacing.Spacing16),
         ) {
+            val enabled = server.text.isNotEmpty() && !isServerValidationRunning
             Button(
                 modifier =
                     Modifier
                         .weight(1f)
                         .testTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG),
-                enabled = server.text.isNotEmpty() && !isServerValidationRunning,
+                enabled = enabled,
                 style = ButtonStyle.FILLED,
-                icon =
-                    if (server.text.isNotEmpty()) {
-                        {
-                            if (isServerValidationRunning) {
-                                ProgressIndicator(
-                                    type = ProgressIndicatorType.CIRCULAR_SMALL,
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                                    contentDescription = "Check login flow button",
-                                    tint = MaterialTheme.colorScheme.onPrimary,
-                                )
-                            }
-                        }
+                icon = {
+                    if (isServerValidationRunning) {
+                        ProgressIndicator(
+                            type = ProgressIndicatorType.CIRCULAR_SMALL,
+                        )
                     } else {
-                        null
-                    },
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = "Check login flow button",
+                            tint = if (enabled) MaterialTheme.colorScheme.onPrimary else TextColor.OnDisabledSurface,
+                        )
+                    }
+                },
                 text =
                     if (isServerValidationRunning) {
                         stringResource(Res.string.server_verification_running)
