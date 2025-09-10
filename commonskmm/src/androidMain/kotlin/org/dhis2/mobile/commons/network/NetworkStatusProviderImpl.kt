@@ -11,65 +11,69 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-class NetworkStatusProviderImpl(context: Context) : NetworkStatusProvider {
-
+class NetworkStatusProviderImpl(
+    context: Context,
+) : NetworkStatusProvider {
     private val manager by lazy {
         context.getSystemService(
             Context.CONNECTIVITY_SERVICE,
         ) as ConnectivityManager
     }
 
-    private val networkRequest = NetworkRequest.Builder()
-        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-        .also { builder ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                builder.addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-            }
-        }
-        .build()
+    private val networkRequest =
+        NetworkRequest
+            .Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .also { builder ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    builder.addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                }
+            }.build()
 
     private val availableNetworks = mutableSetOf<Network>()
 
     override val connectionStatus: Flow<Boolean>
         @RequiresPermission("android.permission.ACCESS_NETWORK_STATE")
-        get() = callbackFlow {
-            trySend(manager.getCurrentNetworkState())
+        get() =
+            callbackFlow {
+                trySend(manager.getCurrentNetworkState())
 
-            val networkCallback = object : ConnectivityManager.NetworkCallback() {
-                override fun onCapabilitiesChanged(
-                    network: Network,
-                    networkCapabilities: NetworkCapabilities,
-                ) {
-                    super.onCapabilitiesChanged(network, networkCapabilities)
-                    val networkState = networkCapabilities.asNetworkState()
-                    trySend(networkState)
-                }
+                val networkCallback =
+                    object : ConnectivityManager.NetworkCallback() {
+                        override fun onCapabilitiesChanged(
+                            network: Network,
+                            networkCapabilities: NetworkCapabilities,
+                        ) {
+                            super.onCapabilitiesChanged(network, networkCapabilities)
+                            val networkState = networkCapabilities.asNetworkState()
+                            trySend(networkState)
+                        }
 
-                override fun onUnavailable() {
-                    super.onUnavailable()
-                    trySend(false)
-                }
+                        override fun onUnavailable() {
+                            super.onUnavailable()
+                            trySend(false)
+                        }
 
-                override fun onAvailable(network: Network) {
-                    super.onAvailable(network)
-                    val networkCapabilities = manager.getNetworkCapabilities(network)
+                        override fun onAvailable(network: Network) {
+                            super.onAvailable(network)
+                            val networkCapabilities = manager.getNetworkCapabilities(network)
 
-                    val networkState = networkCapabilities?.asNetworkState() ?: false
-                    trySend(networkState)
-                }
+                            val networkState = networkCapabilities?.asNetworkState() ?: false
+                            trySend(networkState)
+                        }
 
-                override fun onLost(network: Network) {
-                    super.onLost(network)
-                    availableNetworks.remove(network)
-                    trySend(false)
+                        override fun onLost(network: Network) {
+                            super.onLost(network)
+                            availableNetworks.remove(network)
+                            trySend(false)
+                        }
+                    }
+
+                manager.registerNetworkCallback(networkRequest, networkCallback)
+                awaitClose {
+                    manager.unregisterNetworkCallback(networkCallback)
                 }
             }
-
-            manager.registerNetworkCallback(networkRequest, networkCallback)
-            awaitClose {
-                manager.unregisterNetworkCallback(networkCallback)
-            }
-        }
 
     @RequiresPermission("android.permission.ACCESS_NETWORK_STATE")
     private fun ConnectivityManager.getCurrentNetworkState(): Boolean {
@@ -82,7 +86,5 @@ class NetworkStatusProviderImpl(context: Context) : NetworkStatusProvider {
         }
     }
 
-    private fun NetworkCapabilities.asNetworkState(): Boolean {
-        return hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-    }
+    private fun NetworkCapabilities.asNetworkState(): Boolean = hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 }

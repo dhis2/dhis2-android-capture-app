@@ -15,8 +15,8 @@ class LoginRepositoryImpl(
     override suspend fun validateServer(
         server: String,
         isNetworkAvailable: Boolean,
-    ): ServerValidationResult {
-        return when (val result = d2.serverModule().blockingCheckServerUrl(server)) {
+    ): ServerValidationResult =
+        when (val result = d2.serverModule().blockingCheckServerUrl(server)) {
             is Result.Success -> {
                 if (result.value.isOauthEnabled()) {
                     ServerValidationResult.Oauth
@@ -26,10 +26,11 @@ class LoginRepositoryImpl(
             }
 
             is Result.Failure -> {
-                val error = d2ErrorMessageProvider.getErrorMessage(
-                    throwable = result.failure,
-                    isNetworkAvailable = isNetworkAvailable,
-                )
+                val error =
+                    d2ErrorMessageProvider.getErrorMessage(
+                        throwable = result.failure,
+                        isNetworkAvailable = isNetworkAvailable,
+                    )
                 ServerValidationResult.Error(error ?: getString(Res.string.server_url_error))
             }
         }
