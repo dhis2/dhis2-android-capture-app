@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +9,12 @@ import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
@@ -37,28 +43,31 @@ internal fun SyncMetadataSettingItem(
     onClick: () -> Unit,
     onSyncMetadataClick: () -> Unit,
     onSyncMetaPeriodChanged: (Int) -> Unit,
+    context: Context = LocalContext.current,
 ) {
-    val additionalInfoList = when {
-        metadataSettings.syncInProgress -> {
-            provideSyncInProgressInfoItems(metadataSettings.metadataSyncPeriod)
-        }
+    val additionalInfoList =
+        when {
+            metadataSettings.syncInProgress -> {
+                provideSyncInProgressInfoItems(metadataSettings.metadataSyncPeriod, context)
+            }
 
-        metadataSettings.hasErrors -> {
-            provideHasErrorItems(metadataSettings.metadataSyncPeriod)
-        }
+            metadataSettings.hasErrors -> {
+                provideHasErrorItems(metadataSettings.metadataSyncPeriod, context)
+            }
 
-        else -> {
-            provideDefaultInfoItems(
-                metadataSettings.metadataSyncPeriod,
-                metadataSettings.lastMetadataSync,
-            )
+            else -> {
+                provideDefaultInfoItems(
+                    metadataSettings.metadataSyncPeriod,
+                    metadataSettings.lastMetadataSync,
+                    context,
+                )
+            }
         }
-    }
 
     SettingItem(
         modifier = Modifier.testTag(SettingItem.META_SYNC.name),
         title = stringResource(id = R.string.settingsSyncMetadata),
-            additionalInfoList = additionalInfoList,
+        additionalInfoList = additionalInfoList,
         icon = Icons.Outlined.CloudSync,
         extraActions = {
             Column(
@@ -73,6 +82,15 @@ internal fun SyncMetadataSettingItem(
                             stringResource(R.string.Manual),
                         )
 
+                    var selectedItem by
+                        remember {
+                            mutableStateOf(
+                                DropdownItem(
+                                    label = syncPeriodLabel(metadataSettings.metadataSyncPeriod, context),
+                                ),
+                            )
+                        }
+
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_META_PERIOD),
                         title = "Title",
@@ -83,11 +101,10 @@ internal fun SyncMetadataSettingItem(
                             DropdownItem(metaSyncPeriods[index])
                         },
                         selectedItem =
-                            DropdownItem(
-                                label = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
-                            ),
+                        selectedItem,
                         onResetButtonClicked = { },
-                        onItemSelected = { index, _ ->
+                        onItemSelected = { index, newItem ->
+                            selectedItem = newItem
                             when (index) {
                                 0 -> onSyncMetaPeriodChanged(EVERY_24_HOUR)
                                 1 -> onSyncMetaPeriodChanged(EVERY_7_DAYS)
@@ -124,10 +141,14 @@ internal fun SyncMetadataSettingItem(
 }
 
 @Composable
-private fun provideDefaultInfoItems(metadataSyncPeriod: Int, lastMetadataSync: String) = listOf(
+private fun provideDefaultInfoItems(
+    metadataSyncPeriod: Int,
+    lastMetadataSync: String,
+    context: Context,
+) = listOf(
     AdditionalInfoItem(
         key = stringResource(R.string.settings_sync_period_v2),
-        value = syncPeriodLabel(metadataSyncPeriod),
+        value = syncPeriodLabel(metadataSyncPeriod, context),
     ),
     AdditionalInfoItem(
         key = stringResource(R.string.last_data_sync),
@@ -137,10 +158,13 @@ private fun provideDefaultInfoItems(metadataSyncPeriod: Int, lastMetadataSync: S
 )
 
 @Composable
-private fun provideHasErrorItems(metadataSyncPeriod: Int) = listOf(
+private fun provideHasErrorItems(
+    metadataSyncPeriod: Int,
+    context: Context,
+) = listOf(
     AdditionalInfoItem(
         key = stringResource(R.string.settings_sync_period_v2),
-        value = syncPeriodLabel(metadataSyncPeriod),
+        value = syncPeriodLabel(metadataSyncPeriod, context),
         isConstantItem = true,
     ),
     AdditionalInfoItem(
@@ -151,10 +175,13 @@ private fun provideHasErrorItems(metadataSyncPeriod: Int) = listOf(
 )
 
 @Composable
-private fun provideSyncInProgressInfoItems(metadataSyncPeriod: Int) = listOf(
+private fun provideSyncInProgressInfoItems(
+    metadataSyncPeriod: Int,
+    context: Context,
+) = listOf(
     AdditionalInfoItem(
         key = stringResource(R.string.settings_sync_period_v2),
-        value = syncPeriodLabel(metadataSyncPeriod),
+        value = syncPeriodLabel(metadataSyncPeriod, context),
         isConstantItem = true,
     ),
     AdditionalInfoItem(

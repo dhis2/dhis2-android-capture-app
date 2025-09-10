@@ -511,15 +511,16 @@ class SyncManagerPresenterTest {
             }
         }
 
-    private fun mockedSettingState() = SettingsState(
-        openedItem = null,
-        hasConnection = true,
-        metadataSettingsViewModel = mockedMetaViewModel(),
-        dataSettingsViewModel = mockedDataViewModel(),
-        syncParametersViewModel = mockedParamsViewModel(),
-        reservedValueSettingsViewModel = mockedReservecValuesViewModel(),
-        smsSettingsViewModel = mockedSMSViewModel(),
-        isTwoFAConfigured = true,
-        versionName = "1.0.0",
-    )
+    private fun mockedSettingState() =
+        SettingsState(
+            openedItem = null,
+            hasConnection = true,
+            metadataSettingsViewModel = mockedMetaViewModel(),
+            dataSettingsViewModel = mockedDataViewModel(),
+            syncParametersViewModel = mockedParamsViewModel(),
+            reservedValueSettingsViewModel = mockedReservecValuesViewModel(),
+            smsSettingsViewModel = mockedSMSViewModel(),
+            isTwoFAConfigured = true,
+            versionName = "1.0.0",
+        )
 }

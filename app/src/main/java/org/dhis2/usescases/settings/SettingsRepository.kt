@@ -284,10 +284,10 @@ class SettingsRepository(
     fun saveGatewayNumber(gatewayNumber: String) {
         try {
             d2
-            .smsModule()
-            .configCase()
-            .setGatewayNumber(gatewayNumber)
-            .blockingAwait()
+                .smsModule()
+                .configCase()
+                .setGatewayNumber(gatewayNumber)
+                .blockingAwait()
         } catch (e: Exception) {
             Timber.d(e.message)
         }
@@ -344,5 +344,6 @@ class SettingsRepository(
     suspend fun exportDatabase() = d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
 
     fun getVersionName(): String = BuildConfig.VERSION_NAME
+
     fun isTwoFAConfigured(): Boolean = featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
 }

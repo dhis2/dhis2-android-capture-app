@@ -100,12 +100,13 @@ internal fun SyncParametersSettingItem(
                         loadOptions = {},
                     )
 
-                    var eventsToDownload = remember {
-                        TextFieldValue(
-                            text = syncParametersViewModel.numberOfEventsToDownload.toString(),
-                            composition = TextRange(0, syncParametersViewModel.numberOfEventsToDownload.toString().length),
-                        )
-                    }
+                    var eventsToDownload =
+                        remember {
+                            TextFieldValue(
+                                text = syncParametersViewModel.numberOfEventsToDownload.toString(),
+                                composition = TextRange(0, syncParametersViewModel.numberOfEventsToDownload.toString().length),
+                            )
+                        }
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT),
                         title = stringResource(R.string.events_to_download),
@@ -122,12 +123,13 @@ internal fun SyncParametersSettingItem(
                         imeAction = ImeAction.Done,
                     )
 
-                    var numTeisDownloadTextFieldValue = remember {
-                        TextFieldValue(
-                            text = syncParametersViewModel.numberOfTeiToDownload.toString(),
-                            composition = TextRange(0, syncParametersViewModel.numberOfTeiToDownload.toString().length),
-                        )
-                    }
+                    var numTeisDownloadTextFieldValue =
+                        remember {
+                            TextFieldValue(
+                                text = syncParametersViewModel.numberOfTeiToDownload.toString(),
+                                composition = TextRange(0, syncParametersViewModel.numberOfTeiToDownload.toString().length),
+                            )
+                        }
 
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT),
@@ -202,21 +204,28 @@ internal fun SyncParametersSettingItem(
 private fun provideInfoItems(syncParametersViewModel: SyncParametersViewModel): List<AdditionalInfoItem> =
     listOf(
         AdditionalInfoItem(
-            value = stringResource(R.string.limit_setting).format(
-                provideLimitScopeLabel(
-                    syncParametersViewModel.limitScope,
+            value =
+                stringResource(R.string.limit_setting).format(
+                    provideLimitScopeLabel(
+                        syncParametersViewModel.limitScope,
+                    ),
                 ),
-            ),
             isConstantItem = true,
         ),
         AdditionalInfoItem(
             key = stringResource(R.string.sync_events),
-            value = syncParametersViewModel.currentEventCount.toString() + "/" + syncParametersViewModel.numberOfEventsToDownload.toString(),
+            value =
+                syncParametersViewModel.currentEventCount.toString() +
+                    "/" +
+                    syncParametersViewModel.numberOfEventsToDownload.toString(),
             isConstantItem = true,
         ),
         AdditionalInfoItem(
             key = stringResource(R.string.tei),
-            value = syncParametersViewModel.currentTeiCount.toString() + "/" + syncParametersViewModel.numberOfTeiToDownload.toString(),
+            value =
+                syncParametersViewModel.currentTeiCount.toString() +
+                    "/" +
+                    syncParametersViewModel.numberOfTeiToDownload.toString(),
             isConstantItem = true,
         ),
     )
