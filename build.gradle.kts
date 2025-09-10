@@ -149,8 +149,3 @@ gradle.addBuildListener(object : BuildAdapter() {
         }
     }
 })
-
-
-tasks.register("clean", Delete::class) {
-    delete(rootProject.layout.buildDirectory)
-}
