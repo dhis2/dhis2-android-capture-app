@@ -15,16 +15,17 @@ fun TwoFASettingItem(onClick: () -> Unit) {
     SettingItem(
         modifier = Modifier.testTag(SettingItem.TWO_FACTOR_AUTH.name),
         title = stringResource(id = R.string.settingTwoFA),
-        additionalInfoList = listOf(
+        additionalInfoList =
+            listOf(
                 // TODO: Replace "Unknown" with actual status when available
-            AdditionalInfoItem(
-                key = stringResource(R.string.settingsTwoFAStatus),
-                value = "Unknown",
+                AdditionalInfoItem(
+                    key = stringResource(R.string.settingsTwoFAStatus),
+                    value = "Unknown",
+                ),
+                AdditionalInfoItem(
+                    value = stringResource(R.string.settingTwoFADescr),
+                ),
             ),
-            AdditionalInfoItem(
-                value = stringResource(R.string.settingTwoFADescr),
-            ),
-        ),
         icon = Icons.Outlined.LockPerson,
         extraActions = {},
         showExtraActions = false,

@@ -46,33 +46,39 @@ internal fun SettingItem(
         modifier =
             Modifier
                 .wrapContentHeight()
-                .background(color = Color.White).padding(),
+                .background(color = Color.White)
+                .padding(),
     ) {
         ListCard(
             modifier = modifier,
-            listCardState = rememberListCardState(
-                    title = ListCardTitleModel(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            listCardState =
+                rememberListCardState(
+                    title =
+                        ListCardTitleModel(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                             color = SurfaceColor.Primary,
                         ),
-                description = ListCardDescriptionModel(text = subtitle),
-                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                    additionalInfoList = additionalInfoList,
-                    syncProgressItem = AdditionalInfoItem(
-                        key = "hhh",
-                        value = "",
-                    ),
-                    scrollableContent = true,
-                    ),
+                    description = ListCardDescriptionModel(text = subtitle),
+                    additionalInfoColumnState =
+                        rememberAdditionalInfoColumnState(
+                            additionalInfoList = additionalInfoList,
+                            syncProgressItem =
+                                AdditionalInfoItem(
+                                    key = "hhh",
+                                    value = "",
+                                ),
+                            scrollableContent = true,
+                        ),
                     loading = false,
                     expandable = false,
-            ),
+                ),
             listAvatar = {
                 Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(SurfaceColor.PrimaryContainer, CircleShape),
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .background(SurfaceColor.PrimaryContainer, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(

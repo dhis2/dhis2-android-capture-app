@@ -20,10 +20,11 @@ internal fun AppUpdateSettingItem(
 ) {
     SettingItem(
         title = stringResource(id = R.string.settingsCheckVersion),
-        additionalInfoList = listOf(
-            AdditionalInfoItem(
-                key = stringResource(R.string.app_version),
-                value = versionName,
+        additionalInfoList =
+            listOf(
+                AdditionalInfoItem(
+                    key = stringResource(R.string.app_version),
+                    value = versionName,
                 ),
             ),
         icon = Icons.Outlined.SystemUpdate,
