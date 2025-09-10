@@ -14,6 +14,7 @@ actual fun WebAuthenticator(
     url: String,
     onDismiss: () -> Unit,
 ) {
+    // TODO Use the url parameter when the backend supports dynamic redirect URIs
     val redirectUri = "https://vgarciabnz.github.io"
     val oauthAuthUrl =
         "https://dev.im.dhis2.org/oauth2-android-test/oauth2/authorize?" +

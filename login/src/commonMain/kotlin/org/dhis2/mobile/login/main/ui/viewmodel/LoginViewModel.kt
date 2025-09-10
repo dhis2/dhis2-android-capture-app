@@ -102,7 +102,12 @@ class LoginViewModel(
                 // TODO: Use the authorization code to get a token and log in, then show statistics screen
             } else {
                 val error = urlString.substringAfter("error=").substringBefore('&')
-                //TODO: show server check screen with error
+                _currentScreen.update {
+                    (it as? LoginScreenState.ServerValidation)?.copy(
+                        error = error,
+                        validationRunning = false,
+                    ) ?: it
+                }
             }
         }
     }
