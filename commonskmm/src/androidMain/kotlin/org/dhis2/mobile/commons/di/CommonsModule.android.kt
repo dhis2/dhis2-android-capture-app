@@ -41,10 +41,10 @@ actual val commonsModule: Module
 
             factoryOf<D2ErrorMessageProvider>(::D2ErrorMessageProviderImpl)
 
-        factory<TableDimensionRepository> { params ->
-            TableDimensionRepositoryImpl(get(), params.get())
+            factory<TableDimensionRepository> { params ->
+                TableDimensionRepositoryImpl(get(), params.get())
+            }
+            factory<Dispatcher> {
+                Dispatcher()
+            }
         }
-        factory<Dispatcher> {
-            Dispatcher()
-        }
-    }

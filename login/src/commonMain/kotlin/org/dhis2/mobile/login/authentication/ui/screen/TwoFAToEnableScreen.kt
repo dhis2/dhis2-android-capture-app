@@ -169,9 +169,10 @@ fun TwoFAAuthStepTwo(
                 )
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = CenterVertically,
                 ) {
@@ -246,14 +247,15 @@ fun TwoFAAuthStepThree(
         ) {
             InputText(
                 title = stringResource(Res.string.two_fa_authentication_code),
-                supportingText = enableUiState.enableErrorMessage?.let {
-                    listOf(
-                        SupportingTextData(
-                            text = stringResource(Res.string.two_fa_failed_to_turn_on),
-                            state = SupportingTextState.ERROR,
-                        ),
-                    )
-                },
+                supportingText =
+                    enableUiState.enableErrorMessage?.let {
+                        listOf(
+                            SupportingTextData(
+                                text = stringResource(Res.string.two_fa_failed_to_turn_on),
+                                state = SupportingTextState.ERROR,
+                            ),
+                        )
+                    },
                 inputTextFieldValue = textValue,
                 onValueChanged = {
                     if (it != null) {
@@ -264,23 +266,28 @@ fun TwoFAAuthStepThree(
             )
 
             Button(
-                enabled = when (enableUiState.isEnabling) {
-                    true -> false
-                    else -> { textValue.text.length == 6 }
-                },
-                modifier = Modifier
-                    .testTag(turn_on_button_test_tag)
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
+                enabled =
+                    when (enableUiState.isEnabling) {
+                        true -> false
+                        else -> {
+                            textValue.text.length == 6
+                        }
+                    },
+                modifier =
+                    Modifier
+                        .testTag(turn_on_button_test_tag)
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
-                text = when (enableUiState.isEnabling) {
-                    true -> {
-                        stringResource(Res.string.two_fa_turning_on_button)
-                    }
-                    else -> {
-                        stringResource(Res.string.two_fa_turn_on_button)
-                    }
-                },
+                text =
+                    when (enableUiState.isEnabling) {
+                        true -> {
+                            stringResource(Res.string.two_fa_turning_on_button)
+                        }
+                        else -> {
+                            stringResource(Res.string.two_fa_turn_on_button)
+                        }
+                    },
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.Key,

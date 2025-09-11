@@ -16,11 +16,12 @@ class TwoFARepositoryImpl(
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
 ) : TwoFARepository {
     override suspend fun getTwoFAStatus(): TwoFAStatus {
-        val is2FAEnabled = if (featureFlagEnabled()) {
-            isEnabledForTesting
-        } else {
-            d2.userModule().twoFactorAuthManager().is2faEnabled()
-        }
+        val is2FAEnabled =
+            if (featureFlagEnabled()) {
+                isEnabledForTesting
+            } else {
+                d2.userModule().twoFactorAuthManager().is2faEnabled()
+            }
 
         return if (is2FAEnabled) {
             TwoFAStatus.Enabled()
@@ -37,14 +38,18 @@ class TwoFARepositoryImpl(
         }
     }
 
-    override suspend fun enableTwoFA(code: String, isNetworkAvailable: Boolean): Result<Unit> {
+    override suspend fun enableTwoFA(
+        code: String,
+        isNetworkAvailable: Boolean,
+    ): Result<Unit> {
         delay(3000) // TODO: Delete line when feature flag is removed
-        val result = if (featureFlagEnabled()) {
-            isEnabledForTesting = true
-            Dhis2Result.Success(Unit)
-        } else {
-            d2.userModule().twoFactorAuthManager().enable2fa(code)
-        }
+        val result =
+            if (featureFlagEnabled()) {
+                isEnabledForTesting = true
+                Dhis2Result.Success(Unit)
+            } else {
+                d2.userModule().twoFactorAuthManager().enable2fa(code)
+            }
         return when (result) {
             is Dhis2Result.Failure ->
                 Result.failure(
@@ -58,14 +63,18 @@ class TwoFARepositoryImpl(
         }
     }
 
-    override suspend fun disableTwoFAs(code: String, isNetworkAvailable: Boolean): Result<Unit> {
+    override suspend fun disableTwoFAs(
+        code: String,
+        isNetworkAvailable: Boolean,
+    ): Result<Unit> {
         delay(3000) // TODO: Delete line when feature flag is removed
-        val result = if (featureFlagEnabled()) {
-            isEnabledForTesting = false
-            Dhis2Result.Success(Unit)
-        } else {
-            d2.userModule().twoFactorAuthManager().disable2fa(code)
-        }
+        val result =
+            if (featureFlagEnabled()) {
+                isEnabledForTesting = false
+                Dhis2Result.Success(Unit)
+            } else {
+                d2.userModule().twoFactorAuthManager().disable2fa(code)
+            }
         return when (result) {
             is Dhis2Result.Failure ->
                 Result.failure(
@@ -78,7 +87,12 @@ class TwoFARepositoryImpl(
         }
     }
 
-    private fun featureFlagEnabled() = d2.dataStoreModule().localDataStore()
-        .value(TWO_FA_FEATURE_FLAG)
-        .blockingGet()?.value()?.toBooleanStrictOrNull() == true
+    private fun featureFlagEnabled() =
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(TWO_FA_FEATURE_FLAG)
+            .blockingGet()
+            ?.value()
+            ?.toBooleanStrictOrNull() == true
 }

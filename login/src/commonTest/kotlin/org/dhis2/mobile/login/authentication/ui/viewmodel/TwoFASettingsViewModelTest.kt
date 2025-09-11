@@ -34,11 +34,12 @@ class TwoFASettingsViewModelTest {
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val testDispatcher = StandardTestDispatcher()
 
-    private val dispatchers = Dispatcher(
-        testDispatcher,
-        testDispatcher,
-        testDispatcher,
-    )
+    private val dispatchers =
+        Dispatcher(
+            testDispatcher,
+            testDispatcher,
+            testDispatcher,
+        )
 
     @Before
     fun setUp() {
@@ -47,25 +48,28 @@ class TwoFASettingsViewModelTest {
     }
 
     @Test
-    fun `TwoFAStatus is enabled`() = runTest {
-        val enabledStatus = TwoFAStatus.Enabled()
-        val disableUiState = TwoFAUiState.Disable(
-            state = InputShellState.UNFOCUSED,
-            isDisabling = false,
-            disableErrorMessage = null,
-        )
+    fun `TwoFAStatus is enabled`() =
+        runTest {
+            val enabledStatus = TwoFAStatus.Enabled()
+            val disableUiState =
+                TwoFAUiState.Disable(
+                    state = InputShellState.UNFOCUSED,
+                    isDisabling = false,
+                    disableErrorMessage = null,
+                )
 
             whenever(getTwoFAStatus()).thenReturn(enabledStatus)
             whenever(mapper.mapToUiState(enabledStatus)).thenReturn(disableUiState)
 
-        viewModel = TwoFASettingsViewModel(
-            getTwoFAStatus = getTwoFAStatus,
-            enableTwoFA = enableTwoFa,
-            disableTwoFA = disableTwoFa,
-            mapper = mapper,
-            networkStatusProvider = networkStatusProvider,
-            dispatchers = dispatchers,
-        )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             viewModel.uiState.test {
                 assert(awaitItem() is TwoFAUiState.Checking)
@@ -77,32 +81,35 @@ class TwoFASettingsViewModelTest {
         }
 
     @Test
-    fun `retry calls checkTwoFAStatus`() = runTest {
-        val noConnectionUiState = TwoFAStatus.NoConnection
-        val disabledStatus = TwoFAStatus.Disabled(secretCode = "SECRETCODE")
-        val enableUiState = TwoFAUiState.Enable(
-            secretCode = "SECRETCODE",
-            isEnabling = false,
-            enableErrorMessage = null,
-        )
+    fun `retry calls checkTwoFAStatus`() =
+        runTest {
+            val noConnectionUiState = TwoFAStatus.NoConnection
+            val disabledStatus = TwoFAStatus.Disabled(secretCode = "SECRETCODE")
+            val enableUiState =
+                TwoFAUiState.Enable(
+                    secretCode = "SECRETCODE",
+                    isEnabling = false,
+                    enableErrorMessage = null,
+                )
 
             whenever(getTwoFAStatus()) doReturnConsecutively
-                    listOf(
-                        noConnectionUiState,
-                        disabledStatus,
-                    )
+                listOf(
+                    noConnectionUiState,
+                    disabledStatus,
+                )
             whenever(mapper.mapToUiState(noConnectionUiState)) doReturn TwoFAUiState.NoConnection
 
             whenever(mapper.mapToUiState(disabledStatus)) doReturn enableUiState
 
-        viewModel = TwoFASettingsViewModel(
-            getTwoFAStatus = getTwoFAStatus,
-            enableTwoFA = enableTwoFa,
-            disableTwoFA = disableTwoFa,
-            mapper = mapper,
-            networkStatusProvider = networkStatusProvider,
-            dispatchers = dispatchers,
-        )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             viewModel.uiState.test {
                 assertEquals(TwoFAUiState.Checking, awaitItem())

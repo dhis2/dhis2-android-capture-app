@@ -41,12 +41,13 @@ open class TwoFASettingsViewModel(
                 TwoFAUiState.Checking,
             )
 
-    private val isNetworkOnline = networkStatusProvider.connectionStatus
-        .stateIn(
-            viewModelScope,
-            SharingStarted.Eagerly,
-            false,
-        )
+    private val isNetworkOnline =
+        networkStatusProvider.connectionStatus
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                false,
+            )
 
     private suspend fun checkTwoFAStatus() {
         val twoFAStatus = getTwoFAStatus()
@@ -93,13 +94,14 @@ open class TwoFASettingsViewModel(
         viewModelScope.launch(dispatchers.io) {
             _uiState.update {
                 (it as? TwoFAUiState.Disable)?.copy(
-                    state = if (it.disableErrorMessage != null && authCode.isEmpty()) {
-                        InputShellState.ERROR
-                    } else if (it.isDisabling) {
-                        InputShellState.DISABLED
-                    } else {
-                        InputShellState.UNFOCUSED
-                    },
+                    state =
+                        if (it.disableErrorMessage != null && authCode.isEmpty()) {
+                            InputShellState.ERROR
+                        } else if (it.isDisabling) {
+                            InputShellState.DISABLED
+                        } else {
+                            InputShellState.UNFOCUSED
+                        },
                 ) ?: it
             }
         }

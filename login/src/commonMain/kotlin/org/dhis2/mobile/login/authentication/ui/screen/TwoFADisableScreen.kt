@@ -88,23 +88,24 @@ fun TwoFADisableScreen(
                 title = stringResource(Res.string.two_fa_code),
                 state = twoFADisableUiState.state,
                 supportingText =
-                if (twoFADisableUiState.state == InputShellState.ERROR) {
-                    listOf(
-                        SupportingTextData(
-                            text = stringResource(Res.string.two_fa_disable_error),
-                            state = SupportingTextState.ERROR,
-                        ),
-                    )
-                } else {
-                    null
-                },
+                    if (twoFADisableUiState.state == InputShellState.ERROR) {
+                        listOf(
+                            SupportingTextData(
+                                text = stringResource(Res.string.two_fa_disable_error),
+                                state = SupportingTextState.ERROR,
+                            ),
+                        )
+                    } else {
+                        null
+                    },
             )
             Button(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                text = when (twoFADisableUiState.isDisabling) {
-                    true -> stringResource(Res.string.two_fa_disabling_button)
-                    else -> stringResource(Res.string.two_fa_disable_button)
-                },
+                text =
+                    when (twoFADisableUiState.isDisabling) {
+                        true -> stringResource(Res.string.two_fa_disabling_button)
+                        else -> stringResource(Res.string.two_fa_disable_button)
+                    },
                 colorStyle = ColorStyle.ERROR,
                 style = ButtonStyle.FILLED,
                 enabled = authCode.text.length >= 6 && twoFADisableUiState.isDisabling.not(),
@@ -128,11 +129,11 @@ fun TextStep(
 ) {
     Column(
         modifier =
-        Modifier
-            .background(
-                color = SurfaceColor.ContainerLow,
-                shape = RoundedCornerShape(16.dp),
-            ).padding(16.dp),
+            Modifier
+                .background(
+                    color = SurfaceColor.ContainerLow,
+                    shape = RoundedCornerShape(16.dp),
+                ).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Row(

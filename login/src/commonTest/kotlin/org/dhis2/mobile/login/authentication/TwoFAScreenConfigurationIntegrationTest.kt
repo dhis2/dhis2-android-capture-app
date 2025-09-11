@@ -41,11 +41,12 @@ class TwoFAScreenConfigurationIntegrationTest {
     private lateinit var enableTwoFa: EnableTwoFA
     private lateinit var disableTwoFa: DisableTwoFA
     private val networkStatusProvider: NetworkStatusProvider = mock()
-    private val dispatchers = Dispatcher(
-        testDispatcher,
-        testDispatcher,
-        testDispatcher,
-    )
+    private val dispatchers =
+        Dispatcher(
+            testDispatcher,
+            testDispatcher,
+            testDispatcher,
+        )
 
     @BeforeTest
     fun setup() {
@@ -77,14 +78,15 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                enableTwoFA = enableTwoFa,
-                disableTwoFA = disableTwoFa,
-                mapper = mapper,
-                networkStatusProvider = networkStatusProvider,
-                dispatchers = dispatchers,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             // Then: Loading screen is displayed followed by enable 2FA screen
             viewModel.uiState.test {
@@ -107,14 +109,15 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                enableTwoFA = enableTwoFa,
-                disableTwoFA = disableTwoFa,
-                mapper = mapper,
-                networkStatusProvider = networkStatusProvider,
-                dispatchers = dispatchers,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             // Then: Loading screen is displayed followed by disable 2FA screen
             viewModel.uiState.test {
@@ -137,14 +140,15 @@ class TwoFAScreenConfigurationIntegrationTest {
             )
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                enableTwoFA = enableTwoFa,
-                disableTwoFA = disableTwoFa,
-                mapper = mapper,
-                networkStatusProvider = networkStatusProvider,
-                dispatchers = dispatchers,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {
@@ -162,18 +166,20 @@ class TwoFAScreenConfigurationIntegrationTest {
     fun `Given 2FA enabled, When correct code is entered, Then enable 2FA screen is displayed`() =
         runTest {
             // Given: User taps on 2FA settings
-            whenever(repository.getTwoFAStatus()) doReturnConsecutively listOf(
-                TwoFAStatus.Enabled(),
-                TwoFAStatus.Disabled("123456"),
-            )
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                enableTwoFA = enableTwoFa,
-                disableTwoFA = disableTwoFa,
-                mapper = mapper,
-                networkStatusProvider = networkStatusProvider,
-                dispatchers = dispatchers,
-            )
+            whenever(repository.getTwoFAStatus()) doReturnConsecutively
+                listOf(
+                    TwoFAStatus.Enabled(),
+                    TwoFAStatus.Disabled("123456"),
+                )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             // When: 2FA code is entered correctly"
             whenever(repository.disableTwoFAs("123456", true)) doReturn Result.success(Unit)
@@ -224,14 +230,15 @@ class TwoFAScreenConfigurationIntegrationTest {
             whenever(repository.getTwoFAStatus()).thenReturn(
                 TwoFAStatus.Enabled(),
             )
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                enableTwoFA = enableTwoFa,
-                disableTwoFA = disableTwoFa,
-                mapper = mapper,
-                networkStatusProvider = networkStatusProvider,
-                dispatchers = dispatchers,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             // When: 2FA incorrect code is entered"
             whenever(repository.disableTwoFAs("123456", true)).thenReturn(
@@ -274,24 +281,26 @@ class TwoFAScreenConfigurationIntegrationTest {
     fun `Given user is in enable 2FA, when 2FA is enabled, go to disable screen`() =
         runTest {
             // Given: User taps on 2FA settings
-            whenever(repository.getTwoFAStatus()) doReturnConsecutively listOf(
-                TwoFAStatus.Disabled(
-                    secretCode = "123456",
-                ),
-                TwoFAStatus.Enabled(),
-            )
+            whenever(repository.getTwoFAStatus()) doReturnConsecutively
+                listOf(
+                    TwoFAStatus.Disabled(
+                        secretCode = "123456",
+                    ),
+                    TwoFAStatus.Enabled(),
+                )
 
             whenever(repository.enableTwoFA("123456", true)) doReturn Result.success(Unit)
 
             // When: 2FA status is checked
-            viewModel = TwoFASettingsViewModel(
-                getTwoFAStatus = getTwoFAStatus,
-                enableTwoFA = enableTwoFa,
-                disableTwoFA = disableTwoFa,
-                mapper = mapper,
-                networkStatusProvider = networkStatusProvider,
-                dispatchers = dispatchers,
-            )
+            viewModel =
+                TwoFASettingsViewModel(
+                    getTwoFAStatus = getTwoFAStatus,
+                    enableTwoFA = enableTwoFa,
+                    disableTwoFA = disableTwoFa,
+                    mapper = mapper,
+                    networkStatusProvider = networkStatusProvider,
+                    dispatchers = dispatchers,
+                )
 
             // Then: Loading screen is displayed followed by no connection screen
             viewModel.uiState.test {

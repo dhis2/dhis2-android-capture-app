@@ -127,15 +127,15 @@ fun TwoFASettingsScreen(
         ) {
             LazyColumn(
                 contentPadding = PaddingValues(vertical = 16.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
-                        end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
-                        bottom = paddingValues.calculateBottomPadding(),
-                    )
-                    .padding(horizontal = 16.dp)
-                    .navigationBarsPadding(),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(
+                            start = paddingValues.calculateStartPadding(LayoutDirection.Ltr),
+                            end = paddingValues.calculateEndPadding(LayoutDirection.Ltr),
+                            bottom = paddingValues.calculateBottomPadding(),
+                        ).padding(horizontal = 16.dp)
+                        .navigationBarsPadding(),
             ) {
                 when (uiState) {
                     is TwoFAUiState.Checking -> {

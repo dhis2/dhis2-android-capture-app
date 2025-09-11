@@ -4,6 +4,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 
 sealed class TwoFAUiState {
     object Checking : TwoFAUiState()
+
     data class Enable(
         val secretCode: String,
         val isEnabling: Boolean,
@@ -17,5 +18,6 @@ sealed class TwoFAUiState {
         val disableErrorMessage: String? = null,
         val errorMessage: String? = null,
     ) : TwoFAUiState()
+
     object NoConnection : TwoFAUiState()
 }

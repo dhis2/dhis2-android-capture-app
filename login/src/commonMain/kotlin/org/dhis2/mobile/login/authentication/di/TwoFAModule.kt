@@ -24,6 +24,6 @@ internal val twoFAModule =
         // Mappers
         single<TwoFAUiStateMapper> { TwoFAUiStateMapper() }
 
-    // ViewModels
-    viewModelOf(::TwoFASettingsViewModel)
-}
+        // ViewModels
+        viewModelOf(::TwoFASettingsViewModel)
+    }

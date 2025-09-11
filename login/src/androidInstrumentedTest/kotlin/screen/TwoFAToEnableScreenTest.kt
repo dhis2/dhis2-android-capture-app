@@ -10,7 +10,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.runComposeUiTest
 import org.dhis2.mobile.login.authentication.ui.screen.TURN_ON_BUTTON_TEST_TAG
 import org.dhis2.mobile.login.authentication.ui.screen.TwoFAToEnableScreen
-import org.dhis2.mobile.login.authentication.ui.screen.turn_on_button_test_tag
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.junit.Rule
@@ -29,11 +28,12 @@ class TwoFAToEnableScreenTest {
             setContent {
                 DHIS2Theme {
                     TwoFAToEnableScreen(
-                        enableUiState = TwoFAUiState.Enable(
-                            secretCode = secretCode,
-                            isEnabling = false,
-                            enableErrorMessage = null,
-                        ),
+                        enableUiState =
+                            TwoFAUiState.Enable(
+                                secretCode = secretCode,
+                                isEnabling = false,
+                                enableErrorMessage = null,
+                            ),
                         onAuthenticatorButtonClicked = {},
                         onCopyCodeButtonClicked = {},
                         onEnableButtonClicked = {},
@@ -46,22 +46,24 @@ class TwoFAToEnableScreenTest {
     }
 
     @Test
-    fun should_set_error_if_code_is_wrong() = runComposeUiTest {
-        with(composeTestRule) {
-            setContent {
-                DHIS2Theme {
-                    TwoFAToEnableScreen(
-                        enableUiState = TwoFAUiState.Enable(
-                            secretCode = secretCode,
-                            isEnabling = false,
-                            enableErrorMessage = "Error code",
-                        ),
-                        onAuthenticatorButtonClicked = {},
-                        onCopyCodeButtonClicked = {},
-                        onEnableButtonClicked = {},
-                    )
+    fun should_set_error_if_code_is_wrong() =
+        runComposeUiTest {
+            with(composeTestRule) {
+                setContent {
+                    DHIS2Theme {
+                        TwoFAToEnableScreen(
+                            enableUiState =
+                                TwoFAUiState.Enable(
+                                    secretCode = secretCode,
+                                    isEnabling = false,
+                                    enableErrorMessage = "Error code",
+                                ),
+                            onAuthenticatorButtonClicked = {},
+                            onCopyCodeButtonClicked = {},
+                            onEnableButtonClicked = {},
+                        )
+                    }
                 }
-            }
 
                 onNode(
                     hasTestTag("INPUT_TEXT_SUPPORTING_TEXT") and
