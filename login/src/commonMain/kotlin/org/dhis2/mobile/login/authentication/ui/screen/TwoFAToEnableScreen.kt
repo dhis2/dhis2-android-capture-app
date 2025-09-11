@@ -275,7 +275,7 @@ fun TwoFAAuthStepThree(
                     },
                 modifier =
                     Modifier
-                        .testTag(turn_on_button_test_tag)
+                        .testTag(TURN_ON_BUTTON_TEST_TAG)
                         .fillMaxWidth()
                         .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
