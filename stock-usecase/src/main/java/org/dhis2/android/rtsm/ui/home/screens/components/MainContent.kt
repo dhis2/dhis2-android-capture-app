@@ -65,14 +65,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
-fun getArrowWeight(revealed: Boolean) : Float {
-    return if (revealed) 0.10f else 0.05f
-}
-
-fun getTablePadding(revealed: Boolean) : Dp {
-    return if (revealed) 200.dp else 0.dp
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MainContent(
@@ -91,14 +83,14 @@ fun MainContent(
     val closeResource = painterResource(R.drawable.ic_close)
     var closeButtonVisibility by remember { mutableStateOf(0f) }
     val weightValue = getWeightValue(backdropState.isRevealed)
-    val weightValueArrow =  getArrowWeight(backdropState.isRevealed)
+    val weightValueArrow = getArrowWeight(backdropState.isRevealed)
     val weightValueArrowStatus = backdropState.isRevealed
     val focusManager = LocalFocusManager.current
     val search by manageStockViewModel.scanText.collectAsState()
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     var columnHeightDp by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
-    val tablePadding =  getTablePadding(backdropState.isRevealed)
+    val tablePadding = getTablePadding(backdropState.isRevealed)
     var tableResizeActions by remember {
         mutableStateOf<TableResizeActions?>(null)
     }
@@ -310,9 +302,11 @@ fun MainContent(
     }
 }
 
-fun getWeightValue(revealed: Boolean) : Float {
-    return if (revealed) 0.15f else 0.10f
-}
+fun getWeightValue(revealed: Boolean): Float = if (revealed) 0.15f else 0.10f
+
+fun getArrowWeight(revealed: Boolean): Float = if (revealed) 0.10f else 0.05f
+
+fun getTablePadding(revealed: Boolean): Dp = if (revealed) 200.dp else 0.dp
 
 private fun shouldDisplayTable(settingsUiState: SettingsUiState): Boolean =
     when (settingsUiState.selectedTransactionItem.type) {
