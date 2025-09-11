@@ -18,7 +18,9 @@ import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MAX_DATE
 import org.dhis2.form.ui.provider.inputfield.DEFAULT_MIN_DATE
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.arch.helpers.UidsHelper.getUidsList
 import org.hisp.dhis.android.core.common.FeatureType
@@ -29,7 +31,6 @@ import org.hisp.dhis.android.core.imports.ImportStatus
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
 import org.hisp.dhis.android.core.program.SectionRenderingType
-import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -41,6 +42,7 @@ class EnrollmentRepository(
     private val conf: EnrollmentConfiguration,
     private val enrollmentMode: EnrollmentMode,
     private val enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
+    private val customIntentRepository: CustomIntentRepository,
     metadataIconProvider: MetadataIconProvider,
 ) : DataEntryBaseRepository(conf, fieldFactory, metadataIconProvider) {
     override val programUid by lazy {
@@ -169,11 +171,12 @@ class EnrollmentRepository(
                     programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
                 ),
             )
-        val customIntentContext = CustomIntentContext(programUid, null)
         val attributeCustomIntent =
-            getCustomIntentFromUid(
-                uid = programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
-                context = customIntentContext,
+            customIntentRepository.getCustomIntent(
+                programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
+                programUid,
+                null,
+                CustomIntentActionTypeModel.DATA_ENTRY,
             )
 
         val valueType = attribute.valueType()

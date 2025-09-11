@@ -9,6 +9,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +23,8 @@ class EnrollmentRepositoryTest {
     private val enrollmentMode: EnrollmentMode = mock()
     private val enrolmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
+    private val customIntentRepository: CustomIntentRepository = mock()
+
     lateinit var repository: DataEntryRepository
     val programSection: ProgramSection = mock()
 
@@ -67,11 +70,12 @@ class EnrollmentRepositoryTest {
         ) doReturn true
         repository =
             EnrollmentRepository(
-                fieldFactory,
-                conf,
-                enrollmentMode,
-                enrolmentFormLabelsProvider,
-                metadataIconProvider,
+                fieldFactory = fieldFactory,
+                conf = conf,
+                enrollmentMode = enrollmentMode,
+                enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
+                metadataIconProvider = metadataIconProvider,
+                customIntentRepository = customIntentRepository,
             )
     }
 

@@ -37,6 +37,8 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
+import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
@@ -89,6 +91,7 @@ class EnrollmentModule(
         enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
         enrollmentConfiguration: EnrollmentConfiguration,
         metadataIconProvider: MetadataIconProvider,
+        customIntentRepository: CustomIntentRepository,
     ): EnrollmentRepository =
         EnrollmentRepository(
             fieldFactory = modelFactory,
@@ -96,6 +99,7 @@ class EnrollmentModule(
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
             metadataIconProvider = metadataIconProvider,
+            customIntentRepository = customIntentRepository,
         )
 
     @Provides
@@ -138,6 +142,10 @@ class EnrollmentModule(
         enrollmentConfiguration,
         eventResourcesProvider,
     )
+
+    @Provides
+    @PerActivity
+    fun provideCustomIntentProvider(d2: D2): CustomIntentRepository = CustomIntentRepositoryImpl(d2)
 
     @Provides
     @PerActivity

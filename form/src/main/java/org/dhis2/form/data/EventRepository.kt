@@ -28,7 +28,9 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -48,7 +50,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStageDataElement
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.program.SectionRenderingType
-import org.hisp.dhis.android.core.settings.CustomIntentContext
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class EventRepository(
@@ -59,6 +60,7 @@ class EventRepository(
     private val resources: ResourceManager,
     private val eventResourcesProvider: EventResourcesProvider,
     private val eventMode: EventMode,
+    private val customIntentRepository: CustomIntentRepository,
     dispatcherProvider: DispatcherProvider,
 ) : DataEntryBaseRepository(
         FormBaseConfiguration(d2, dispatcherProvider),
@@ -619,8 +621,13 @@ class EventRepository(
                     programStageDataElement.dataElement()!!.uid(),
                 ).blockingGet()
         val uid = de?.uid() ?: ""
-        val customIntentContext = CustomIntentContext(programUid, programStage?.uid())
-        val customIntent = getCustomIntentFromUid(uid, customIntentContext)
+        val customIntent =
+            customIntentRepository.getCustomIntent(
+                uid,
+                programUid,
+                programStage?.uid(),
+                CustomIntentActionTypeModel.DATA_ENTRY,
+            )
         val displayName = de?.displayName() ?: ""
         val valueType = de?.valueType()
         val mandatory = programStageDataElement.compulsory() ?: false

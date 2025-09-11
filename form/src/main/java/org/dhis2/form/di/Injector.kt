@@ -40,6 +40,8 @@ import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
+import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.EvaluationType
@@ -84,6 +86,8 @@ object Injector {
     private fun provideMetadataIconProvider() = MetadataIconProvider(provideD2())
 
     fun provideDispatchers(): DispatcherProvider = FormDispatcher()
+
+    fun provideCustomIntentProvider(): CustomIntentRepository = CustomIntentRepositoryImpl(provideD2())
 
     private fun provideFormRepository(
         context: Context,
@@ -154,6 +158,7 @@ object Injector {
             enrollmentMode = enrollmentRecords.enrollmentMode,
             enrollmentFormLabelsProvider = provideEnrollmentFormLabelsProvider(context),
             metadataIconProvider = metadataIconProvider,
+            customIntentRepository = provideCustomIntentProvider(),
         )
 
     private fun provideEventRepository(
@@ -173,6 +178,7 @@ object Injector {
                 ),
             eventMode = eventRecords.eventMode,
             dispatcherProvider = provideDispatchers(),
+            customIntentRepository = provideCustomIntentProvider(),
         )
 
     private fun provideEnrollmentFormLabelsProvider(context: Context) = EnrollmentFormLabelsProvider(provideResourcesManager(context))

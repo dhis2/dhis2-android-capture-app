@@ -46,7 +46,7 @@ class SearchNavigator(
 
     fun changeProgram(
         programUid: String?,
-        currentQueryData: Map<String, String>,
+        currentQueryData: Map<String, List<String>>,
         fromRelationshipTeiUid: String?,
     ) {
         val intent =
@@ -96,7 +96,7 @@ class SearchNavigator(
 
     private fun updateBundle(
         programUid: String?,
-        currentQueryData: Map<String, String>,
+        currentQueryData: Map<String, List<String>>,
     ): Bundle =
         activity.intent.extras?.apply {
             putString(SearchTEActivity.Extra.PROGRAM_UID.key(), programUid)
@@ -104,15 +104,18 @@ class SearchNavigator(
                 SearchTEActivity.Extra.QUERY_ATTR.key(),
                 ArrayList(currentQueryData.keys),
             )
-            putStringArrayList(
-                SearchTEActivity.Extra.QUERY_VALUES.key(),
-                ArrayList(currentQueryData.values),
-            )
+            val queryDataValues = currentQueryData.values.map { it.joinToString(",") }
+            if (queryDataValues.isNotEmpty()) {
+                putStringArrayList(
+                    SearchTEActivity.Extra.QUERY_VALUES.key(),
+                    ArrayList(queryDataValues),
+                )
+            }
         } ?: Bundle()
-}
 
-fun <I, O> ComponentActivity.registerActivityResultLauncher(
-    key: String = UUID.randomUUID().toString(),
-    contract: ActivityResultContract<I, O>,
-    callback: ActivityResultCallback<O>,
-): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)
+    fun <I, O> ComponentActivity.registerActivityResultLauncher(
+        key: String = UUID.randomUUID().toString(),
+        contract: ActivityResultContract<I, O>,
+        callback: ActivityResultCallback<O>,
+    ): ActivityResultLauncher<I> = activityResultRegistry.register(key, contract, callback)
+}

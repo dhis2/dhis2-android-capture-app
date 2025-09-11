@@ -10,33 +10,11 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.option.Option
-import org.hisp.dhis.android.core.settings.CustomIntent
-import org.hisp.dhis.android.core.settings.CustomIntentContext
 
 open class FormBaseConfiguration(
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
 ) {
-    fun optionGroups(optionGroupUids: List<String>) =
-        d2
-            .optionModule()
-            .optionGroups()
-            .withOptions()
-            .byUid()
-            .`in`(optionGroupUids)
-            .blockingGet()
-
-    val customIntents: List<CustomIntent?> = d2.settingModule().customIntents().blockingGet()
-
-    fun evaluateCustomIntentRequestParams(
-        customIntent: CustomIntent,
-        context: CustomIntentContext,
-    ): Map<String, Any?> =
-        d2
-            .settingModule()
-            .customIntentService()
-            .blockingEvaluateRequestParams(customIntent, context)
-
     fun disableCollapsableSectionsInProgram(programUid: String) = d2.disableCollapsableSectionsInProgram(programUid)
 
     fun dateFormatConfiguration() =

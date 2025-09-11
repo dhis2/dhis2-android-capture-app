@@ -2,6 +2,7 @@ package org.dhis2.usescases.searchTrackEntity
 
 import android.os.Bundle
 import org.dhis2.commons.Constants
+import org.json.JSONObject
 
 enum class SearchTEExtra(
     val key: String,
@@ -12,11 +13,8 @@ enum class SearchTEExtra(
     QUERY_VALUES("QUERY_DATA_VALUES"),
 }
 
-fun SearchTEActivity.teiUidExtra() = intent.getStringExtra(SearchTEExtra.TEI_UID.key)
-
-fun SearchTEActivity.programUidExtra() = intent.getStringExtra(SearchTEExtra.PROGRAM_UID.key)
-
-fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, String> {
+@Suppress("UNCHECKED_CAST")
+fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, List<String>> {
     return when {
         savedInstanceState == null -> {
             val attributes =
@@ -30,14 +28,36 @@ fun SearchTEActivity.queryDataExtra(savedInstanceState: Bundle?): Map<String, St
             if (attributes.size != values.size) return emptyMap()
             attributes
                 .mapIndexed { index, attributeUid ->
-                    attributeUid to values[index]
+                    attributeUid to values[index].split(",")
                 }.toMap()
         }
         savedInstanceState.containsKey(Constants.QUERY_DATA) -> {
-            savedInstanceState.getSerializable(Constants.QUERY_DATA) as Map<String, String>
+            val jsonString = savedInstanceState.getString(Constants.QUERY_DATA)
+            if (jsonString != null) {
+                parseMapFromJson(jsonString)
+            } else {
+                emptyMap()
+            }
         }
         else -> {
             emptyMap()
         }
     }
 }
+
+private fun parseMapFromJson(jsonString: String): Map<String, List<String>> =
+    try {
+        val jsonObject = JSONObject(jsonString)
+        val map = mutableMapOf<String, List<String>>()
+        jsonObject.keys().forEach { key ->
+            val jsonArray = jsonObject.getJSONArray(key)
+            val list = mutableListOf<String>()
+            for (i in 0 until jsonArray.length()) {
+                list.add(jsonArray.getString(i))
+            }
+            map[key] = list
+        }
+        map
+    } catch (e: Exception) {
+        emptyMap()
+    }

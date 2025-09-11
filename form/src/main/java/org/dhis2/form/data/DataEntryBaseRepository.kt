@@ -18,17 +18,9 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.mobile.commons.model.CustomIntentModel
-import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
-import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
-import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.program.SectionRenderingType
-import org.hisp.dhis.android.core.settings.CustomIntent
-import org.hisp.dhis.android.core.settings.CustomIntentActionType
-import org.hisp.dhis.android.core.settings.CustomIntentContext
 import timber.log.Timber
-import org.hisp.dhis.android.core.settings.CustomIntentResponseExtraType as ExtraType
 
 abstract class DataEntryBaseRepository(
     private val conf: FormBaseConfiguration,
@@ -63,70 +55,6 @@ abstract class DataEntryBaseRepository(
         optionGroupsToHide: List<String>,
         optionGroupsToShow: List<String>,
     ): FieldUiModel = warningMessage?.let { fieldUiModel.setError(it) } ?: fieldUiModel
-
-    private fun optionsFromGroups(optionGroupUids: List<String>): List<String> {
-        if (optionGroupUids.isEmpty()) return emptyList()
-        val optionsFromGroups = arrayListOf<String>()
-        val optionGroups = conf.optionGroups(optionGroupUids)
-        for (optionGroup in optionGroups) {
-            for (option in optionGroup.options()!!) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid())
-                }
-            }
-        }
-        return optionsFromGroups
-    }
-
-    private fun getFilteredCustomIntents(uid: String?): List<CustomIntent?> =
-        conf.customIntents.filter { customIntent ->
-            customIntent?.trigger()?.attributes()?.any { it.uid() == uid } == true ||
-                customIntent?.trigger()?.dataElements()?.any { it.uid() == uid } == true
-        }
-
-    fun getCustomIntentFromUid(
-        uid: String?,
-        context: CustomIntentContext,
-    ): CustomIntentModel? =
-        getFilteredCustomIntents(uid)
-            .firstOrNull { customIntent ->
-                customIntent?.action()?.contains(CustomIntentActionType.DATA_ENTRY) == true
-            }?.let {
-                val requestParams = conf.evaluateCustomIntentRequestParams(it, context)
-                val customIntentRequest =
-                    requestParams.mapNotNull { param ->
-                        param.value?.let { value ->
-                            CustomIntentRequestArgumentModel(
-                                key = param.key,
-                                value = value,
-                            )
-                        }
-                    }
-                val customIntentResponse =
-                    it.response()?.data()?.extras()?.map { dataExtra ->
-                        CustomIntentResponseDataModel(
-                            name = dataExtra.extraName(),
-                            extraType =
-                                when (dataExtra.extraType()) {
-                                    ExtraType.STRING -> CustomIntentResponseExtraType.STRING
-                                    ExtraType.INTEGER -> CustomIntentResponseExtraType.INTEGER
-                                    ExtraType.BOOLEAN -> CustomIntentResponseExtraType.BOOLEAN
-                                    ExtraType.FLOAT -> CustomIntentResponseExtraType.FLOAT
-                                    ExtraType.OBJECT -> CustomIntentResponseExtraType.OBJECT
-                                    ExtraType.LIST_OF_OBJECTS -> CustomIntentResponseExtraType.LIST_OF_OBJECTS
-                                },
-                            key = dataExtra.key(),
-                        )
-                    } ?: emptyList()
-
-                CustomIntentModel(
-                    uid = it.uid(),
-                    name = it.name(),
-                    customIntentRequest = customIntentRequest,
-                    customIntentResponse = customIntentResponse,
-                    packageName = it.packageName() ?: "",
-                )
-            }
 
     override fun options(
         optionSetUid: String,
