@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
@@ -60,6 +61,8 @@ import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 import org.dhis2.composetable.actions.TableResizeActions
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -286,6 +289,14 @@ fun MainContent(
                         tableResizeActions = actions
                     },
                 )
+            }
+            if (manageStockViewModel.dataEntryUiState
+                    .collectAsState()
+                    .value.loading
+            ) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    ProgressIndicator(type = ProgressIndicatorType.CIRCULAR, modifier = Modifier)
+                }
             }
         }
     }
