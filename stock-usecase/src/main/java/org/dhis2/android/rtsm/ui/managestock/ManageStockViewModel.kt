@@ -304,6 +304,15 @@ class ManageStockViewModel(
         if (itemsCache.values.isEmpty()) {
             return
         }
+        _dataEntryUiState.update { currentUiState ->
+            currentUiState.copy(
+                button =
+                    currentUiState.button.copy(
+                        visible = false,
+                    ),
+                loading = true,
+            )
+        }
         disposable.add(
             stockManagerRepository
                 .saveTransaction(
