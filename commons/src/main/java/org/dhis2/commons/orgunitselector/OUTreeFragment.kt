@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.dhis2.commons.R
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -143,7 +142,6 @@ class OUTreeFragment : BottomSheetDialogFragment() {
                 OrgBottomSheet(
                     title = viewmodel.model().title,
                     windowInsets = { bottomSheetInsets() },
-                    bottomSheetLowerPadding = bottomSheetLowerPadding(),
                     subtitle = viewmodel.model().subtitle,
                     headerTextAlignment = viewmodel.model().headerAlignment,
                     doneButtonText = viewmodel.model().doneButtonText,

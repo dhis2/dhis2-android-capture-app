@@ -50,7 +50,6 @@ DeleteBottomSheetDialog(
                 BottomSheetShell(
                     uiState =
                         BottomSheetShellUIState(
-                            bottomPadding = bottomSheetLowerPadding(),
                             title = title,
                             showTopSectionDivider = true,
                             showBottomSectionDivider = false,

@@ -16,7 +16,6 @@ import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.dialogs.bottomsheet.MAIN_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.SECONDARY_BUTTON_TAG
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
@@ -44,7 +43,6 @@ internal fun DataEntryBottomSheet(
                 description = model.message,
                 showTopSectionDivider = true,
                 showBottomSectionDivider = fieldsWithIssues.isNotEmpty(),
-                bottomPadding = bottomSheetLowerPadding(),
                 headerTextAlignment = model.headerTextAlignment,
             ),
         content =

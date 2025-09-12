@@ -78,7 +78,6 @@ class BottomSheetDialog(
                     BottomSheetShell(
                         uiState =
                             BottomSheetShellUIState(
-                                bottomPadding = bottomSheetLowerPadding(),
                                 showBottomSectionDivider = showBottomDivider,
                                 showTopSectionDivider = showTopDivider,
                                 title = bottomSheetDialogUiModel.title,
