@@ -121,7 +121,7 @@ internal fun ServerValidationContent(
             autoCompleteList = availableServers,
             autoCompleteItemSelected = { selectedServer ->
                 selectedServer?.let {
-                    server = TextFieldValue(it)
+                    server = TextFieldValue(it, TextRange(it.length))
                 }
             },
             onValueChanged = {
