@@ -2,7 +2,6 @@ package org.dhis2.form.extensions
 
 import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
@@ -40,7 +39,6 @@ fun FieldUiModel.legend() =
             it.label ?: "",
             it.legendsInfo,
             windowInsets = { bottomSheetInsets() },
-            bottomSheetLowerPadding = bottomSheetLowerPadding(),
         )
     }
 

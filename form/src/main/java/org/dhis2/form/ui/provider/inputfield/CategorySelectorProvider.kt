@@ -8,7 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -94,7 +93,6 @@ private fun ProvideCategorySelector(
             modifier = modifier,
             title = category.name,
             windowInsets = { bottomSheetInsets() },
-            bottomSheetLowerPadding = bottomSheetLowerPadding(),
             state = getInputState(fieldUiModel.inputState(), selectedItem.label.isEmpty()),
             inputStyle = inputStyle,
             selectedItem = selectedItem,
