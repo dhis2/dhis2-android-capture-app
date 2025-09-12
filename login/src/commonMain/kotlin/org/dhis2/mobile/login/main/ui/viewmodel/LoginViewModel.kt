@@ -71,8 +71,7 @@ class LoginViewModel(
 
                     ServerValidationResult.Legacy -> {
                         updateIsValidationRunning()
-//                    navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
-                        navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                        navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
                     }
 
                     ServerValidationResult.Oauth -> {
