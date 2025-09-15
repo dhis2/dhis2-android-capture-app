@@ -102,16 +102,6 @@ internal fun SyncDataSettingItem(
                                 ),
                             )
                         }
-
-//                    var selectedItem by with(dataSettings.dataSyncPeriod) {
-//                        remember(this) {
-//                            mutableStateOf(
-//                                DropdownItem(
-//                                    label = syncPeriodLabel(dataSettings.dataSyncPeriod, context),
-//                                ),)
-//
-//                        }
-//                    }
                     val dataSyncPeriods =
                         listOf(
                             stringResource(R.string.thirty_minutes),
