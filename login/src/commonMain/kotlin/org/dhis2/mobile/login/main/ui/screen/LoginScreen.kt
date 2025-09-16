@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,21 +83,15 @@ fun LoginScreen(
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
                 is NavigationAction.Navigate -> {
-                    navController.navigate(
-                        action.destination,
-                    ) {
+                    navController.navigate(action.destination) {
                         action.navOptions(this)
                         val currentRouteString = navController.currentBackStackEntry?.destination?.route
                         val startDestinationRouteString = LoginScreenState.Loading::class.qualifiedName
-
                         if (currentRouteString != null && currentRouteString == startDestinationRouteString) {
-                            popUpTo(LoginScreenState.Loading::class) {
-                                inclusive = true
-                            }
+                            popUpTo(LoginScreenState.Loading::class) { inclusive = true }
                         }
                     }
                 }
-
                 NavigationAction.NavigateUp -> navController.navigateUp()
             }
         }
@@ -121,19 +116,23 @@ fun LoginScreen(
                     ).padding(bottom = padding.calculateBottomPadding()),
         ) {
             composable<LoginScreenState.Loading> {
-                viewModel.setCurrentScreen(it.toRoute<LoginScreenState.Loading>())
                 displayMoreActions = false
                 LoadingScreen()
             }
             composable<LoginScreenState.ServerValidation> {
                 val args = it.toRoute<LoginScreenState.ServerValidation>()
-                viewModel.setCurrentScreen(args)
                 displayMoreActions = true
-                ServerValidationContent(args.availableServers, viewModel)
+
+                val uiState by viewModel.serverValidationState.collectAsState()
+                ServerValidationContent(
+                    availableServers = args.availableServers,
+                    state = uiState,
+                    onValidate = viewModel::onValidateServer,
+                    onCancel = viewModel::cancelServerValidation,
+                )
             }
             composable<LoginScreenState.LegacyLogin> {
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
-                viewModel.setCurrentScreen(arg)
                 displayMoreActions = arg.selectedServer.isEmpty()
                 legacyLoginContent(arg.selectedServer, arg.selectedUsername)
             }
@@ -144,7 +143,6 @@ fun LoginScreen(
                 }
             }
             composable<LoginScreenState.Accounts> {
-                viewModel.setCurrentScreen(it.toRoute<LoginScreenState.Accounts>())
                 displayMoreActions = true
                 AccountsScreen()
             }
