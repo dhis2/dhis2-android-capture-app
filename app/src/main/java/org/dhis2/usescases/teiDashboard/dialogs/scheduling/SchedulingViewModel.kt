@@ -298,12 +298,12 @@ class SchedulingViewModel(
         viewModelScope.launch {
             val eventDate = eventDate.value.currentDate ?: return@launch
             val enrollment = enrollment.value ?: return@launch
-
+            val orgUnitUid = launchMode.ownerOrgUnitUid ?: enrollment.organisationUnit()
             repository
                 .scheduleEvent(
                     enrollmentUid = enrollment.uid(),
                     dueDate = eventDate,
-                    orgUnitUid = enrollment.organisationUnit(),
+                    orgUnitUid = orgUnitUid,
                     categoryOptionComboUid = eventCatCombo.value.uid,
                 ).flowOn(dispatchersProvider.io())
                 .collect {

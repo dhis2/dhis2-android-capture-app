@@ -135,12 +135,24 @@ class EnrollmentPresenterImpl(
     }
 
     fun finish(enrollmentMode: EnrollmentActivity.EnrollmentMode) {
+        val teiUid = teiRepository.blockingGet()?.uid()
+
+        val ownerOrgUnitUid =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .withProgramOwners()
+                .uid(teiUid)
+                .blockingGet()
+                ?.programOwners()
+                ?.first { it.trackedEntityInstance() == teiUid }
+                ?.ownerOrgUnit()
         when (enrollmentMode) {
             EnrollmentActivity.EnrollmentMode.NEW -> {
                 matomoAnalyticsController.trackEvent(TRACKER_LIST, CREATE_TEI, CLICK)
                 disposable.add(
                     enrollmentFormRepository
-                        .generateEvents()
+                        .generateEvents(ownerOrgUnitUid = ownerOrgUnitUid)
                         .defaultSubscribe(
                             schedulerProvider,
                             {

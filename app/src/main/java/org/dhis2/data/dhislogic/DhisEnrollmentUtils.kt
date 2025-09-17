@@ -60,10 +60,13 @@ class DhisEnrollmentUtils
             }
         }
 
-        fun generateEnrollmentEvents(enrollmentUid: String): Pair<String, String?> =
+        fun generateEnrollmentEvents(
+            enrollmentUid: String,
+            ownerOrgUnitUid: String?,
+        ): Pair<String, String?> =
             EnrollmentEventGenerator(
                 EnrollmentEventGeneratorRepositoryImpl(d2),
-            ).generateEnrollmentEvents(enrollmentUid)
+            ).generateEnrollmentEvents(enrollmentUid, ownerOrgUnitUid)
 
         fun getOrgUnit(teiUid: String): String =
             d2

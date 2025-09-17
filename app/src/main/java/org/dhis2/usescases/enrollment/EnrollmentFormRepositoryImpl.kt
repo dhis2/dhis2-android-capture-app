@@ -25,9 +25,9 @@ class EnrollmentFormRepositoryImpl(
     private val tei: TrackedEntityInstance =
         teiRepository.blockingGet() ?: throw NullPointerException()
 
-    override fun generateEvents(): Single<Pair<String, String?>> =
+    override fun generateEvents(ownerOrgUnitUid: String?): Single<Pair<String, String?>> =
         Single.fromCallable {
-            enrollmentService.generateEnrollmentEvents(enrollmentUid)
+            enrollmentService.generateEnrollmentEvents(enrollmentUid, ownerOrgUnitUid)
         }
 
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)
