@@ -68,4 +68,23 @@
     <string name="cat_combo">Категория комбинацияси</string>
     <string name="yes">ҳа</string>
     <string name="no">йўқ</string>
-    </resources>
+    <string name="input_age_date_of_birth">Туғилган сана</string>
+    <string name="input_age">Ёш</string>
+    <string name="input_age_or">ёки</string>
+    <string name="input_action_accept">Қабул қилинг</string>
+    <string name="input_action_cancel">Рад этиш</string>
+    <string name="input_coordinate_latitude">Кенглик</string>
+    <string name="input_coordinate_longitude">Узунлик</string>
+    <string name="input_coordinate_add_location">Локация қўшинг</string>
+    <string name="add_file">Файл қўшиш</string>
+    <string name="add_image">Расм қўшиш</string>
+    <string name="no_results_found">Натижа йўқ</string>
+    <string name="action_done">Бўлди</string>
+    <string name="input_not_supported">Қўллаб қувватланмайди</string>
+    <string name="login_error_dhis_version">Ушбу сервер 2.29 дан фарқли версияни ишлатмоқда. Сервер версиясини янгиланг ёки давом этиш учун синов муддатидан фойдаланинг.</string>
+    <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

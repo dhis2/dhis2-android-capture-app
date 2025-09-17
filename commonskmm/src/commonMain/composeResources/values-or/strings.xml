@@ -12,4 +12,7 @@
     <string name="enter_positive_integer">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ</string>
     <string name="yes">ହଁ</string>
     <string name="no">ନାହିଁ</string>
+    <string name="input_coordinate_latitude">ଅକ୍ଷାଂଶ</string>
+    <string name="input_coordinate_longitude">ଦ୍ରାଘିମା</string>
+    <string name="action_done">ହୋଇଗଲା</string>
     </resources>
