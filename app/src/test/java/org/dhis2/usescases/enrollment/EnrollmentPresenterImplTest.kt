@@ -255,32 +255,32 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `should create an event right after enrollment creation`() {
-        whenever(enrollmentFormRepository.generateEvents()) doReturn
+        whenever(enrollmentFormRepository.generateEvents(OWNER_ORG_UNIT_UID)) doReturn
             Single.just(
                 Pair(
-                    "enrollmentUid",
-                    "eventUid",
+                    ENROLLMENT_UID,
+                    EVENT_UID,
                 ),
             )
 
         presenter.finish(NEW)
 
-        verify(enrollmentView).openEvent("eventUid")
+        verify(enrollmentView).openEvent(EVENT_UID)
     }
 
     @Test
     fun `should navigate to enrollment dashboard after enrollment creation`() {
-        whenever(enrollmentFormRepository.generateEvents()) doReturn
+        whenever(enrollmentFormRepository.generateEvents(OWNER_ORG_UNIT_UID)) doReturn
             Single.just(
                 Pair(
-                    "enrollmentUid",
+                    ENROLLMENT_UID,
                     null,
                 ),
             )
 
         presenter.finish(NEW)
 
-        verify(enrollmentView).openDashboard("enrollmentUid")
+        verify(enrollmentView).openDashboard(ENROLLMENT_UID)
     }
 
     @Test
@@ -288,5 +288,11 @@ class EnrollmentPresenterImplTest {
         presenter.finish(CHECK)
 
         verify(enrollmentView).setResultAndFinish()
+    }
+
+    companion object {
+        const val OWNER_ORG_UNIT_UID = "ownerOrgUnitUid"
+        const val ENROLLMENT_UID = "enrollmentUid"
+        const val EVENT_UID = "eventUid"
     }
 }
