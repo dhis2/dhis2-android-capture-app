@@ -7,7 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -92,7 +91,6 @@ private fun ProvideCategorySelector(
         InputDropDown(
             modifier = modifier,
             title = category.name,
-            windowInsets = { bottomSheetInsets() },
             state = getInputState(fieldUiModel.inputState(), selectedItem.label.isEmpty()),
             inputStyle = inputStyle,
             selectedItem = selectedItem,

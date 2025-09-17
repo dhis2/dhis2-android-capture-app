@@ -12,7 +12,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.datetime.LocalDate
 import org.dhis2.R
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.extensions.inDateRange
 import org.dhis2.commons.extensions.inOrgUnit
 import org.dhis2.commons.resources.ResourceManager
@@ -262,7 +261,6 @@ fun ProvideCategorySelector(
     if (selectableOptions.isNotEmpty()) {
         InputDropDown(
             modifier = modifier,
-            windowInsets = { bottomSheetInsets() },
             title = eventCatComboUiModel.category.name,
             state = getInputState(eventCatComboUiModel.detailsEnabled),
             selectedItem = DropdownItem(selectedItem ?: ""),
@@ -339,7 +337,6 @@ fun ProvideEmptyCategorySelector(
     }
 
     InputDropDown(
-        windowInsets = { bottomSheetInsets() },
         modifier = modifier,
         title = name,
         state = InputShellState.UNFOCUSED,

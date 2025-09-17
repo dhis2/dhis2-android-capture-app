@@ -88,7 +88,6 @@ class BottomSheetDialog(
                                     },
                                 headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
                             ),
-                        windowInsets = { bottomSheetInsets() },
                         icon = {
                             if (bottomSheetDialogUiModel.iconResource != -1) {
                                 Icon(

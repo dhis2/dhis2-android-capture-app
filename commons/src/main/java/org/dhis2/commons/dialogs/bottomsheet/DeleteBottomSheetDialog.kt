@@ -55,7 +55,6 @@ DeleteBottomSheetDialog(
                             showBottomSectionDivider = false,
                             description = description,
                         ),
-                    windowInsets = { bottomSheetInsets() },
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Info,

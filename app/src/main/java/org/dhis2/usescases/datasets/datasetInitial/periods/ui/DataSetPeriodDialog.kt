@@ -14,7 +14,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.dhis2.commons.R
 import org.dhis2.commons.date.toUiStringResource
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.periods.ui.PeriodSelectorContent
 import org.dhis2.usescases.datasets.datasetInitial.periods.DatasetPeriodViewModel
 import org.hisp.dhis.android.core.period.PeriodType
@@ -95,7 +94,6 @@ class DataSetPeriodDialog(
                                     showTopSectionDivider = true,
                                 ),
                             onDismiss = { dismiss() },
-                            windowInsets = { bottomSheetInsets() },
                             contentScrollState = scrollState,
                             content = {
                                 val periods =

@@ -22,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.paging.compose.collectAsLazyPagingItems
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
 import org.dhis2.commons.filters.periods.model.FilterPeriodType
 import org.dhis2.commons.filters.periods.ui.FilterPeriodsDialog.FilterDialogLaunchMode
 import org.dhis2.commons.filters.periods.ui.viewmodel.FilterPeriodsDialogViewmodel
@@ -139,7 +138,6 @@ fun FilterPeriodsDialogUI(
                     headerTextAlignment = TextAlign.Center,
                     animateHeaderOnKeyboardAppearance = false,
                 ),
-            windowInsets = { bottomSheetInsets() },
             contentScrollState = scrollState,
             content = {
                 when {
