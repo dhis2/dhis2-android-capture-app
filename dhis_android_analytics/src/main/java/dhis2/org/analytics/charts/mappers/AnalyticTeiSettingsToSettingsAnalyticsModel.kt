@@ -24,11 +24,11 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
     private fun mapNutrition(analyticsTeiSetting: AnalyticsTeiSetting): NutritionSettingsAnalyticsModel {
         val (zScoreContainer, zScoreStageUid, yIsDataElement) =
             getZscoreContainer(
-                analyticsTeiSetting.whoNutritionData()!!.y(),
+                analyticsTeiSetting.whoNutritionData()!!.y()!!,
             )
         val (ageOrHeightUid, ageOrHeightStageUid, xIsDataElement) =
             getAgeOrHeightContainer(
-                analyticsTeiSetting.whoNutritionData()!!.x(),
+                analyticsTeiSetting.whoNutritionData()!!.x()!!,
             )
 
         if (zScoreStageUid != ageOrHeightStageUid) {
