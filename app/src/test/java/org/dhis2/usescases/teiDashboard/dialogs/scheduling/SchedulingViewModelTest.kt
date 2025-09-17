@@ -33,8 +33,8 @@ class SchedulingViewModelTest {
 
     private val testingDispatcher = UnconfinedTestDispatcher()
 
-    private val enrollment = Enrollment.builder().uid("enrollment-uid").build()
-    private val programStage = ProgramStage.builder().uid("program-stage").build()
+    private val enrollment = Enrollment.builder().uid(ENROLLMENT_UID).build()
+    private val programStage = ProgramStage.builder().uid(STAGE).build()
 
     private val enrollmentObjectRepository: EnrollmentObjectRepository =
         mock {
@@ -42,7 +42,7 @@ class SchedulingViewModelTest {
         }
     private val enrollmentCollectionRepository: EnrollmentCollectionRepository =
         mock {
-            on { uid("enrollment-uid") } doReturn enrollmentObjectRepository
+            on { uid(ENROLLMENT_UID) } doReturn enrollmentObjectRepository
         }
     private val enrollmentModule: EnrollmentModule =
         mock {
@@ -55,7 +55,7 @@ class SchedulingViewModelTest {
         }
     private val programStageCollectionRepository: ProgramStageCollectionRepository =
         mock {
-            on { uid("program-stage") } doReturn readOnlyOneObjectRepositoryFinalImpl
+            on { uid(STAGE) } doReturn readOnlyOneObjectRepositoryFinalImpl
         }
     private val programModule: ProgramModule =
         mock {
@@ -95,10 +95,11 @@ class SchedulingViewModelTest {
                     },
                 launchMode =
                     SchedulingDialog.LaunchMode.NewSchedule(
-                        enrollmentUid = "enrollment-uid",
-                        programStagesUids = listOf("program-stage"),
+                        enrollmentUid = ENROLLMENT_UID,
+                        programStagesUids = listOf(STAGE),
                         showYesNoOptions = false,
                         eventCreationType = EventCreationType.SCHEDULE,
+                        ownerOrgUnitUid = OWNER_ORG_UNIT_UID,
                     ),
                 getEventPeriods = mock(),
             )
@@ -106,7 +107,7 @@ class SchedulingViewModelTest {
 
     @Test
     fun shouldSetReportDate() {
-        val date = DateUtils.DATE_FORMAT.parse("2024-04-14T00:00:00.000")
+        val date = DateUtils.DATE_FORMAT.parse(REPORT_DATE)
         val spy = spy(schedulingViewModel)
         spy.onDateSet(2024, 4, 14)
         verify(spy).setUpEventReportDate(date)
@@ -114,9 +115,17 @@ class SchedulingViewModelTest {
 
     @Test
     fun shouldSetReportDateForIncreasedNumberOfMonth() {
-        val date = DateUtils.DATE_FORMAT.parse("2025-01-31T00:00:00.000")
+        val date = DateUtils.DATE_FORMAT.parse(REPORT_DATE_INCREASED_MONTH)
         val spy = spy(schedulingViewModel)
         spy.onDateSet(2024, 13, 31)
         verify(spy).setUpEventReportDate(date)
+    }
+
+    companion object {
+        const val REPORT_DATE = "2024-04-14T00:00:00.000"
+        const val REPORT_DATE_INCREASED_MONTH = "2025-01-31T00:00:00.000"
+        const val STAGE = "program-stage"
+        const val OWNER_ORG_UNIT_UID = "ownerOrgUnitUid"
+        const val ENROLLMENT_UID = "enrollment-uid"
     }
 }
