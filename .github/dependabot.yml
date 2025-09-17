@@ -15,6 +15,8 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
+      - dependency-name: "*"
+        versions: ["*+*"]
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
         update-types:
