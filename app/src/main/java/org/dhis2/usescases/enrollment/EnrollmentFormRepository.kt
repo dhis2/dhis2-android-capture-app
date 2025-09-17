@@ -3,7 +3,7 @@ package org.dhis2.usescases.enrollment
 import io.reactivex.Single
 
 interface EnrollmentFormRepository {
-    fun generateEvents(): Single<Pair<String, String?>>
+    fun generateEvents(ownerOrgUnitUid: String?): Single<Pair<String, String?>>
 
     fun getProfilePicture(): String
 
