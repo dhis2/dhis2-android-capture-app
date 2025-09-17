@@ -130,7 +130,10 @@ fun LoginScreen(
                 legacyLoginContent(arg.selectedServer, arg.selectedUsername)
             }
             composable<LoginScreenState.OauthLogin> {
-                Text("Pending implementation")
+                val args = it.toRoute<LoginScreenState.OauthLogin>()
+                WebAuthenticator(url = args.selectedServer) {
+                    viewModel.onOauthLoginCancelled()
+                }
             }
             composable<LoginScreenState.Accounts> {
                 displayMoreActions = true

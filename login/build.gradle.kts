@@ -78,6 +78,7 @@ kotlin {
                 implementation(libs.koin.android)
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.androidx.activity.compose)
+                implementation(libs.androidx.browser)
             }
         }
 

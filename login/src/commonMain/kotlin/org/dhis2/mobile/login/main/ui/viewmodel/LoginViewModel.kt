@@ -14,12 +14,14 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 
 class LoginViewModel(
     val navigator: Navigator,
     val getInitialScreen: GetInitialScreen,
     val validateServer: ValidateServer,
+    private val appLinkNavigation: AppLinkNavigation,
 ) : ViewModel() {
     private val _currentScreen = MutableStateFlow<LoginScreenState>(LoginScreenState.Loading)
     val currentScreen =
@@ -32,6 +34,15 @@ class LoginViewModel(
             )
 
     private var serverValidationJob: Job? = null
+    private val redirectUri = "https://vgarciabnz.github.io"
+
+    init {
+        viewModelScope.launch {
+            appLinkNavigation.appLink.collect { urlString ->
+                handleAppLink(urlString)
+            }
+        }
+    }
 
     private fun goToInitialScreen() {
         viewModelScope.launch {
@@ -57,10 +68,12 @@ class LoginViewModel(
                                 validationRunning = false,
                             ) ?: it
                         }
+
                     ServerValidationResult.Legacy -> {
                         updateIsValidationRunning()
                         navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
                     }
+
                     ServerValidationResult.Oauth -> {
                         updateIsValidationRunning()
                         navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
@@ -79,6 +92,29 @@ class LoginViewModel(
             (it as? LoginScreenState.ServerValidation)?.copy(
                 validationRunning = serverValidationJob?.isActive == true,
             ) ?: it
+        }
+    }
+
+    private fun handleAppLink(urlString: String) {
+        if (urlString.startsWith(redirectUri)) {
+            val code = urlString.substringAfter("code=").substringBefore('&')
+            if (code.isNotEmpty()) {
+                // TODO: Use the authorization code to get a token and log in, then show statistics screen
+            } else {
+                val error = urlString.substringAfter("error=").substringBefore('&')
+                _currentScreen.update {
+                    (it as? LoginScreenState.ServerValidation)?.copy(
+                        error = error,
+                        validationRunning = false,
+                    ) ?: it
+                }
+            }
+        }
+    }
+
+    fun onOauthLoginCancelled() {
+        viewModelScope.launch {
+            navigator.navigateUp()
         }
     }
 }
