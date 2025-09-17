@@ -331,6 +331,7 @@ class ManageStockViewModel(
                                         color = R.color.success_color,
                                         icon = R.drawable.success_icon,
                                     ),
+                                loading = false,
                             )
                         }
                         updateStep(DataEntryStep.COMPLETED)

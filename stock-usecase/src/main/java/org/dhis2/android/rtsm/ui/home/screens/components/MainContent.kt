@@ -64,6 +64,7 @@ import org.dhis2.composetable.actions.TableResizeActions
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -290,11 +291,20 @@ fun MainContent(
                     },
                 )
             }
-            if (manageStockViewModel.dataEntryUiState
-                    .collectAsState()
-                    .value.loading
+
+            AnimatedVisibility(
+                visible =
+                    manageStockViewModel.dataEntryUiState
+                        .collectAsState()
+                        .value.loading,
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = Spacing.Spacing24),
+                ) {
                     ProgressIndicator(type = ProgressIndicatorType.CIRCULAR, modifier = Modifier)
                 }
             }
