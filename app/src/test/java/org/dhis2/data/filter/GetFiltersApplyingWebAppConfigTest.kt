@@ -147,6 +147,7 @@ class GetFiltersApplyingWebAppConfigTest {
             .builder()
             .filter(hasToShowFilter)
             .sort(hasToShowFilter)
+            .uid("random")
             .build()
 
     companion object {

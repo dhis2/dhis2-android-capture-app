@@ -809,6 +809,7 @@ class FilterRepositoryTest {
             .filterType(filterType)
             .scope(scope)
             .sort(show)
+            .uid("random")
             .build()
 
     private fun createWebAppHomeFilters(): Map<HomeFilter, FilterSetting> =
