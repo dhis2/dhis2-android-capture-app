@@ -5,10 +5,7 @@ set -e
 echo "Running Ktlint check..."
 ./gradlew ktlintCheck
 
-echo "Running app module Unit Tests..."
-./gradlew :app:testDhis2DebugUnitTest
-
-echo "Running all modules Unit Tests..."
-./gradlew testDebugUnitTest
+echo "Running Unit Tests..."
+./gradlew testDebugUnitTest testDhis2DebugUnitTest
 
 echo "All tasks completed!"

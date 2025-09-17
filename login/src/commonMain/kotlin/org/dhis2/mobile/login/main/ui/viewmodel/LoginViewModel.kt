@@ -46,9 +46,6 @@ class LoginViewModel(
                 handleAppLink(urlString)
             }
         }
-    }
-
-    init {
         goToInitialScreen()
     }
 
