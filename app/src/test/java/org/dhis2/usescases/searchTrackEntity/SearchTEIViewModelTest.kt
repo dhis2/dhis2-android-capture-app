@@ -48,6 +48,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.text.get
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchTEIViewModelTest {
@@ -56,7 +57,7 @@ class SearchTEIViewModelTest {
 
     private lateinit var viewModel: SearchTEIViewModel
     private val initialProgram = "programUid"
-    private val initialQuery = mutableMapOf<String, String>()
+    private val initialQuery = mutableMapOf<String, List<String>?>()
     private val repository: SearchRepository = mock()
     private val repositoryKt: SearchRepositoryKt =
         mock {
@@ -204,6 +205,63 @@ class SearchTEIViewModelTest {
         val queryData = viewModel.queryData
 
         assertTrue(queryData.isNotEmpty())
+        assertTrue(queryData["testingUid"]?.size == 1)
+        val values = queryData["testingUid"]
+        assertTrue(values?.contains("testingValue") == true)
+    }
+
+    @Test
+    fun `Should update query data when list of values is passed`() {
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
+                value = "testingValue,testingValue2",
+                valueType = ValueType.TEXT,
+            ),
+        )
+
+        val queryData = viewModel.queryData
+
+        assertTrue(queryData.isNotEmpty())
+        assertTrue(queryData.containsKey("testingUid"))
+        val values = queryData["testingUid"]
+        assertTrue(values?.size == 2)
+        assertTrue(values?.contains("testingValue") == true)
+        assertTrue(values?.contains("testingValue2") == true)
+    }
+
+    @Test
+    fun `Should update query data when various list of values are passed`() {
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid",
+                value = "testingValue,testingValue2",
+                valueType = ValueType.TEXT,
+            ),
+        )
+
+        viewModel.onParameterIntent(
+            FormIntent.OnSave(
+                uid = "testingUid2",
+                value = "testingValue,testingValue2",
+                valueType = ValueType.TEXT,
+            ),
+        )
+
+        val queryData = viewModel.queryData
+
+        assertTrue(queryData.isNotEmpty())
+        assertTrue(queryData.containsKey("testingUid"))
+        val values1 = queryData["testingUid"]
+        assertTrue(values1?.size == 2)
+        assertTrue(values1?.contains("testingValue") == true)
+        assertTrue(values1?.contains("testingValue2") == true)
+
+        assertTrue(queryData.containsKey("testingUid"))
+        val values2 = queryData["testingUid2"]
+        assertTrue(values2?.size == 2)
+        assertTrue(values2?.contains("testingValue") == true)
+        assertTrue(values2?.contains("testingValue2") == true)
     }
 
     @ExperimentalCoroutinesApi
@@ -293,7 +351,7 @@ class SearchTEIViewModelTest {
         runTest {
             setCurrentProgram(testingProgram(displayFrontPageList = false))
             viewModel.onSearch()
-            viewModel.uiState.shouldShowMinAttributeWarning.test {
+            viewModel.searchParametersUiState.shouldShowMinAttributeWarning.test {
                 assertTrue(awaitItem())
             }
         }
@@ -453,7 +511,7 @@ class SearchTEIViewModelTest {
         setAllowCreateBeforeSearch(false)
         whenever(
             repository.filterQueryForProgram(viewModel.queryData, null),
-        ) doReturn mapOf("field" to "value")
+        ) doReturn mapOf("field" to listOf("value"))
 
         performSearch()
         viewModel.onDataLoaded(1)
@@ -659,7 +717,7 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should return user-friendly names on search parameters fields`() {
-        viewModel.uiState = viewModel.uiState.copy(items = getFieldUIModels())
+        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getFieldUIModels())
         val expectedMap =
             mapOf(
                 "uid1" to "Friendly OrgUnit Name",
@@ -679,17 +737,17 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should clear uiState when clearing data`() {
-        viewModel.uiState = viewModel.uiState.copy(items = getFieldUIModels())
+        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getFieldUIModels())
         performSearch()
         viewModel.clearQueryData()
         assert(viewModel.queryData.isEmpty())
-        assert(viewModel.uiState.items.all { it.value == null })
-        assert(viewModel.uiState.searchedItems.isEmpty())
+        assert(viewModel.searchParametersUiState.items.all { it.value == null })
+        assert(viewModel.searchParametersUiState.searchedItems.isEmpty())
     }
 
     @Test
     fun `should return date without format`() {
-        viewModel.uiState = viewModel.uiState.copy(items = getMalformedDateFieldUIModels())
+        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getMalformedDateFieldUIModels())
         val expectedMap =
             mapOf(
                 "uid1" to "04",

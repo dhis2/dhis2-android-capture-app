@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
-    <string name="add_account">Add account</string>
+    <string name="add_account">Add new account</string>
     <string name="two_fa_screen_title">Two factor authentication</string>
     <string name="two_fa_no_connection_title">Can't connect to network</string>
     <string name="two_fa_no_connection_description">You need an internet connection to turn two-factor authentication on or off.</string>

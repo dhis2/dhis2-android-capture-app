@@ -1,3 +1,4 @@
+// kotlin
 package org.dhis2.mobile.login.main.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
@@ -17,8 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,9 +30,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.serverQrReader
-import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
+import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_next
 import org.dhis2.mobile.login.resources.server_url_title
@@ -57,20 +56,10 @@ const val SERVER_VALIDATION_CONTENT_BUTTON_TAG = "ServerValidationContentButtonT
 @Composable
 internal fun ServerValidationContent(
     availableServers: List<String>,
-    viewModel: LoginViewModel,
+    state: ServerValidationUiState,
+    onValidate: (String) -> Unit,
+    onCancel: () -> Unit,
 ) {
-    val currentScreen by viewModel.currentScreen.collectAsState(null)
-    val isServerValidationRunning by remember(currentScreen) {
-        derivedStateOf {
-            (currentScreen as? LoginScreenState.ServerValidation)?.validationRunning == true
-        }
-    }
-    val errorMessage by remember(currentScreen) {
-        derivedStateOf {
-            (currentScreen as? LoginScreenState.ServerValidation)?.error
-        }
-    }
-
     Column(
         modifier =
             Modifier
@@ -82,22 +71,26 @@ internal fun ServerValidationContent(
             style = MaterialTheme.typography.titleMedium,
         )
         Spacer(Modifier.size(Spacing.Spacing16))
+
         var server by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-            mutableStateOf(
-                TextFieldValue(
-                    (currentScreen as? LoginScreenState.ServerValidation)?.currentServer ?: "",
-                ),
-            )
+            mutableStateOf(TextFieldValue(state.currentServer))
         }
-        var state by remember(errorMessage, isServerValidationRunning) {
+        LaunchedEffect(state.currentServer) {
+            if (state.currentServer != server.text) {
+                server = TextFieldValue(state.currentServer, TextRange(state.currentServer.length))
+            }
+        }
+
+        var inputFocusState by remember(state.error, state.validationRunning) {
             mutableStateOf(
                 when {
-                    isServerValidationRunning -> InputShellState.DISABLED
-                    errorMessage != null -> InputShellState.ERROR
+                    state.validationRunning -> InputShellState.DISABLED
+                    state.error != null -> InputShellState.ERROR
                     else -> InputShellState.UNFOCUSED
                 },
             )
         }
+
         val qrReader =
             serverQrReader { serverUrl ->
                 server =
@@ -109,36 +102,42 @@ internal fun ServerValidationContent(
 
         InputQRCode(
             title = stringResource(Res.string.server_url_title),
-            state = state,
+            state = inputFocusState,
             supportingText =
-                errorMessage?.takeIf { state == InputShellState.ERROR }?.let {
-                    listOf(
-                        SupportingTextData(text = it, state = SupportingTextState.ERROR),
-                    )
-                },
+                state.error
+                    ?.takeIf { inputFocusState == InputShellState.ERROR }
+                    ?.let {
+                        listOf(
+                            SupportingTextData(
+                                text = it,
+                                state = SupportingTextState.ERROR,
+                            ),
+                        )
+                    },
             onQRButtonClicked = qrReader::launch,
             inputTextFieldValue = server,
             autoCompleteList = availableServers,
             autoCompleteItemSelected = { selectedServer ->
-                selectedServer?.let {
-                    server = TextFieldValue(it)
-                }
+                selectedServer?.let { server = TextFieldValue(it, TextRange(it.length)) }
             },
             onValueChanged = {
                 server = it ?: TextFieldValue()
-                state = InputShellState.FOCUSED
+                inputFocusState = InputShellState.FOCUSED
             },
             imeAction = ImeAction.Done,
             onNextClicked = {
-                viewModel.onValidateServer(server.text)
-                state = InputShellState.UNFOCUSED
+                onValidate(server.text)
+                inputFocusState = InputShellState.UNFOCUSED
             },
-            onFocusChanged = {
-                state = if (it) InputShellState.FOCUSED else InputShellState.UNFOCUSED
+            onFocusChanged = { focused ->
+                inputFocusState =
+                    if (focused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
             },
             modifier = Modifier.fillMaxWidth(),
         )
+
         Spacer(Modifier.size(Spacing.Spacing24))
+
         Row(
             modifier =
                 Modifier
@@ -146,7 +145,7 @@ internal fun ServerValidationContent(
                     .animateContentSize(),
             horizontalArrangement = spacedBy(Spacing.Spacing16),
         ) {
-            val enabled = server.text.isNotEmpty() && !isServerValidationRunning
+            val enabled = server.text.isNotEmpty() && !state.validationRunning
             Button(
                 modifier =
                     Modifier
@@ -155,10 +154,8 @@ internal fun ServerValidationContent(
                 enabled = enabled,
                 style = ButtonStyle.FILLED,
                 icon = {
-                    if (isServerValidationRunning) {
-                        ProgressIndicator(
-                            type = ProgressIndicatorType.CIRCULAR_SMALL,
-                        )
+                    if (state.validationRunning) {
+                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
                     } else {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowForward,
@@ -168,17 +165,15 @@ internal fun ServerValidationContent(
                     }
                 },
                 text =
-                    if (isServerValidationRunning) {
+                    if (state.validationRunning) {
                         stringResource(Res.string.server_verification_running)
                     } else {
                         stringResource(Res.string.action_next)
                     },
-                onClick = { viewModel.onValidateServer(server.text) },
+                onClick = { onValidate(server.text) },
             )
 
-            AnimatedVisibility(
-                visible = isServerValidationRunning,
-            ) {
+            AnimatedVisibility(visible = state.validationRunning) {
                 IconButton(
                     style = IconButtonStyle.TONAL,
                     icon = {
@@ -187,7 +182,7 @@ internal fun ServerValidationContent(
                             contentDescription = "Clear",
                         )
                     },
-                    onClick = viewModel::cancelServerValidation,
+                    onClick = onCancel,
                 )
             }
         }

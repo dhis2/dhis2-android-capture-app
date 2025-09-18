@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -15,13 +15,16 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
+import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 
 class LoginViewModel(
     val navigator: Navigator,
-    val getInitialScreen: GetInitialScreen,
-    val validateServer: ValidateServer,
-    val networkStatusProvider: NetworkStatusProvider,
+    private val getInitialScreen: GetInitialScreen,
+    private val validateServer: ValidateServer,
+    private val appLinkNavigation: AppLinkNavigation,
+    networkStatusProvider: NetworkStatusProvider,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -30,10 +33,21 @@ class LoginViewModel(
                 SharingStarted.Eagerly,
                 false,
             )
-    private val _currentScreen = MutableStateFlow<LoginScreenState>(LoginScreenState.Loading)
-    val currentScreen = _currentScreen.asSharedFlow()
+
+    private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
+    val serverValidationState = _serverValidationState.asStateFlow()
 
     private var serverValidationJob: Job? = null
+    private val redirectUri = "https://vgarciabnz.github.io"
+
+    init {
+        viewModelScope.launch {
+            appLinkNavigation.appLink.collect { urlString ->
+                handleAppLink(urlString)
+            }
+        }
+        goToInitialScreen()
+    }
 
     private fun goToInitialScreen() {
         viewModelScope.launch {
@@ -41,43 +55,37 @@ class LoginViewModel(
         }
     }
 
-    init {
-        goToInitialScreen()
-    }
-
-    fun setCurrentScreen(screen: LoginScreenState) {
-        viewModelScope.launch {
-            _currentScreen.update { screen }
-        }
-    }
-
     fun onValidateServer(serverUrl: String) {
-        _currentScreen.update {
-            (it as? LoginScreenState.ServerValidation)?.copy(
+        _serverValidationState.update {
+            it.copy(
+                currentServer = serverUrl,
+                error = null,
                 validationRunning = true,
-            ) ?: it
+            )
         }
         serverValidationJob =
             viewModelScope.launch {
-                val result = withMinimumDuration { validateServer(serverUrl, isNetworkOnline.value) }
+                val result =
+                    withMinimumDuration { validateServer(serverUrl, isNetworkOnline.value) }
                 when (result) {
-                    is ServerValidationResult.Error ->
-                        _currentScreen.update {
-                            (it as? LoginScreenState.ServerValidation)?.copy(
+                    is ServerValidationResult.Error -> {
+                        _serverValidationState.update {
+                            it.copy(
                                 currentServer = serverUrl,
                                 error = result.message,
                                 validationRunning = false,
-                            ) ?: it
+                            )
                         }
+                    }
 
                     ServerValidationResult.Legacy -> {
-                        updateIsValidationRunning()
                         navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
+                        stopValidation()
                     }
 
                     ServerValidationResult.Oauth -> {
-                        updateIsValidationRunning()
                         navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                        stopValidation()
                     }
                 }
             }
@@ -85,14 +93,33 @@ class LoginViewModel(
 
     fun cancelServerValidation() {
         serverValidationJob?.cancel()
-        updateIsValidationRunning()
+        stopValidation()
     }
 
-    private fun updateIsValidationRunning() {
-        _currentScreen.update {
-            (it as? LoginScreenState.ServerValidation)?.copy(
-                validationRunning = serverValidationJob?.isActive == true,
-            ) ?: it
+    private fun stopValidation() {
+        _serverValidationState.update { it.copy(validationRunning = false) }
+    }
+
+    private fun handleAppLink(urlString: String) {
+        if (urlString.startsWith(redirectUri)) {
+            val code = urlString.substringAfter("code=").substringBefore('&')
+            if (code.isNotEmpty()) {
+                // TODO: Use the authorization code to get a token and log in, then show statistics screen
+            } else {
+                val error = urlString.substringAfter("error=").substringBefore('&')
+                _serverValidationState.update {
+                    it.copy(
+                        error = error,
+                        validationRunning = false,
+                    )
+                }
+            }
+        }
+    }
+
+    fun onOauthLoginCancelled() {
+        viewModelScope.launch {
+            navigator.navigateUp()
         }
     }
 }

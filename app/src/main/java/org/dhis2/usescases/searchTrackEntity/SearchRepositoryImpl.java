@@ -1,10 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import android.database.sqlite.SQLiteConstraintException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
@@ -213,7 +211,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
 
             String dataId = searchParametersModel.getQueryData().keySet().toArray()[i].toString();
-            String dataValue = searchParametersModel.getQueryData().get(dataId);
+            List<String> dataValues = searchParametersModel.getQueryData().get(dataId);
 
 
             boolean isTETypeAttribute = d2.trackedEntityModule().trackedEntityTypeAttributes()
@@ -225,17 +223,39 @@ public class SearchRepositoryImpl implements SearchRepository {
                 TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet();
                 boolean isUnique = attribute.unique();
                 boolean isOptionSet = (attribute.optionSet() != null);
-                if (isUnique || isOptionSet) {
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
-                } else if (dataValue.contains("_os_")) {
-                    dataValue = dataValue.split("_os_")[1];
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
-                } else
-                    trackedEntityInstanceQuery = trackedEntityInstanceQuery.byFilter(dataId).like(dataValue);
+                assert dataValues != null;
+
+                trackedEntityInstanceQuery = getTrackedEntityQuery(dataId, dataValues, isUnique, isOptionSet);
             }
         }
 
         return trackedEntityInstanceQuery;
+    }
+
+    private TrackedEntitySearchCollectionRepository getTrackedEntityQuery(String dataId,
+                                                                          List<String> dataValues,
+                                                                          boolean isUnique,
+                                                                          boolean isOptionSet) {
+        if (dataValues.size() > 1) {
+            // return any tracked entities with attributes that match the the values in the list
+            return trackedEntityInstanceQuery.byFilter(dataId).in(dataValues);
+        } else {
+            if (dataValues.size() == 1) {
+                String dataValue = dataValues.get(0);
+                if (isUnique || isOptionSet) {
+                    // If the attribute is unique or an option set, we want an exact match
+                    return trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
+                } else if (dataValue.contains(OPTION_SET_REGEX)) {
+                    //legacy code could no longer be needed
+                    dataValue = dataValue.split(OPTION_SET_REGEX)[1];
+                    return trackedEntityInstanceQuery.byFilter(dataId).eq(dataValue);
+                } else
+                    // return tracked entities that contain the data value
+                    return trackedEntityInstanceQuery.byFilter(dataId).like(dataValue);
+            } else {
+                return trackedEntityInstanceQuery;
+            }
+        }
     }
 
     @NonNull
@@ -244,7 +264,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                                          @NonNull String orgUnit,
                                                          @NonNull String programUid,
                                                          @Nullable String teiUid,
-                                                         HashMap<String, String> queryData,
+                                                         HashMap<String, List<String>> queryData,
                                                          @Nullable String fromRelationshipUid) {
 
         Single<String> enrollmentInitial;
@@ -282,9 +302,13 @@ public class SearchRepositoryImpl implements SearchRepository {
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
                             queryData.remove(Constants.ENROLLMENT_DATE_UID);
                         for (String key : queryData.keySet()) {
-                            String dataValue = queryData.get(key);
-                            if (dataValue.contains("_os_"))
-                                dataValue = dataValue.split("_os_")[1];
+                            List<String> dataValues = queryData.get(key);
+
+                            assert dataValues != null;
+                            String dataValue = !dataValues.isEmpty() ? dataValues.get(0) : null;
+                            assert dataValue != null;
+                            if (dataValue.contains(OPTION_SET_REGEX))
+                                dataValue = dataValue.split(OPTION_SET_REGEX)[1];
 
                             TrackedEntityAttribute attribute = d2.trackedEntityModule().trackedEntityAttributes().uid(key).blockingGet();
                             boolean isGenerated = attribute.generated();
@@ -896,15 +920,15 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @Nullable String programUid) {
-        Map<String, String> filteredQuery = new HashMap<>();
-        for (Map.Entry<String, String> entry : queryData.entrySet()) {
+    public @NotNull Map<String, List<String>> filterQueryForProgram(@NotNull Map<String, List<String>> queryData, @Nullable String programUid) {
+        Map<String, List<String>> filteredQuery = new HashMap<>();
+        for (Map.Entry<String, List<String>> entry : queryData.entrySet()) {
             String attributeUid = entry.getKey();
-            String value = entry.getValue();
+            List<String> values = entry.getValue();
             if (programUid == null && attributeIsForType(attributeUid) ||
                     programUid != null && attributeBelongsToProgram(attributeUid, programUid)
             ) {
-                filteredQuery.put(attributeUid, value);
+                filteredQuery.put(attributeUid, values);
             }
         }
         return filteredQuery;
@@ -941,4 +965,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byProgramUids(Collections.singletonList(currentProgram))
                 .blockingCount() > 1;
     }
-}
+    private static final String OPTION_SET_REGEX = "_os_";
+
+    }
+
+

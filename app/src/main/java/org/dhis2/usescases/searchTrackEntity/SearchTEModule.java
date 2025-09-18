@@ -19,6 +19,8 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.prefs.PreferenceProviderImpl;
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository;
+import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl;
 import org.dhis2.commons.resources.ColorUtils;
@@ -70,6 +72,7 @@ import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
 
+import java.util.List;
 import java.util.Map;
 
 import dagger.Module;
@@ -83,13 +86,13 @@ public class SearchTEModule {
     private final String teiType;
     private final String initialProgram;
     private final Context moduleContext;
-    private final Map<String, String> initialQuery;
+    private final Map<String, List<String>> initialQuery;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
                           Context context,
-                          Map<String, String> initialQuery) {
+                          Map<String, List<String>> initialQuery) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
@@ -182,7 +185,8 @@ public class SearchTEModule {
             FieldViewModelFactory fieldViewModelFactory,
             MetadataIconProvider metadataIconProvider,
             ColorUtils colorUtils,
-            DateUtils dateUtils
+            DateUtils dateUtils,
+            CustomIntentRepository customIntentRepository
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -207,7 +211,8 @@ public class SearchTEModule {
                         metadataIconProvider,
                         profilePictureProvider,
                         dateUtils
-                )
+                ),
+                customIntentRepository
         );
     }
 
@@ -245,6 +250,12 @@ public class SearchTEModule {
     @PerActivity
     MapCoordinateFieldToFeatureCollection provideMapDataElementToFeatureCollection(MapAttributeToFeature attributeToFeatureMapper, MapDataElementToFeature dataElementToFeatureMapper) {
         return new MapCoordinateFieldToFeatureCollection(dataElementToFeatureMapper, attributeToFeatureMapper);
+    }
+
+    @Provides
+    @PerActivity
+    CustomIntentRepository provideCustomIntentRepository(D2 d2) {
+        return new CustomIntentRepositoryImpl(d2);
     }
 
     @Provides
