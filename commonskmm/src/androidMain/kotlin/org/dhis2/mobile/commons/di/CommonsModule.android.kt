@@ -1,8 +1,8 @@
 package org.dhis2.mobile.commons.di
 
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
-import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.data.TableDimensionRepository
 import org.dhis2.mobile.commons.data.TableDimensionRepositoryImpl
 import org.dhis2.mobile.commons.data.ValueParser

@@ -38,8 +38,6 @@ class TwoFAScreenConfigurationIntegrationTest {
     private lateinit var enableTwoFA: EnableTwoFA
     private lateinit var mapper: TwoFAUiStateMapper
     private lateinit var viewModel: TwoFASettingsViewModel
-    private lateinit var enableTwoFa: EnableTwoFA
-    private lateinit var disableTwoFa: DisableTwoFA
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val dispatchers =
         Dispatcher(
@@ -53,8 +51,6 @@ class TwoFAScreenConfigurationIntegrationTest {
         Dispatchers.setMain(testDispatcher)
         repository = mock()
         getTwoFAStatus = GetTwoFAStatus(repository)
-        enableTwoFa = EnableTwoFA(repository)
-        disableTwoFa = DisableTwoFA(repository)
         disableTwoFA = DisableTwoFA(repository)
         enableTwoFA = EnableTwoFA(repository)
         mapper = TwoFAUiStateMapper()
@@ -81,8 +77,8 @@ class TwoFAScreenConfigurationIntegrationTest {
             viewModel =
                 TwoFASettingsViewModel(
                     getTwoFAStatus = getTwoFAStatus,
-                    enableTwoFA = enableTwoFa,
-                    disableTwoFA = disableTwoFa,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
@@ -112,8 +108,8 @@ class TwoFAScreenConfigurationIntegrationTest {
             viewModel =
                 TwoFASettingsViewModel(
                     getTwoFAStatus = getTwoFAStatus,
-                    enableTwoFA = enableTwoFa,
-                    disableTwoFA = disableTwoFa,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
@@ -143,8 +139,8 @@ class TwoFAScreenConfigurationIntegrationTest {
             viewModel =
                 TwoFASettingsViewModel(
                     getTwoFAStatus = getTwoFAStatus,
-                    enableTwoFA = enableTwoFa,
-                    disableTwoFA = disableTwoFa,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
@@ -174,8 +170,8 @@ class TwoFAScreenConfigurationIntegrationTest {
             viewModel =
                 TwoFASettingsViewModel(
                     getTwoFAStatus = getTwoFAStatus,
-                    enableTwoFA = enableTwoFa,
-                    disableTwoFA = disableTwoFa,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
@@ -233,8 +229,8 @@ class TwoFAScreenConfigurationIntegrationTest {
             viewModel =
                 TwoFASettingsViewModel(
                     getTwoFAStatus = getTwoFAStatus,
-                    enableTwoFA = enableTwoFa,
-                    disableTwoFA = disableTwoFa,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,
@@ -295,8 +291,8 @@ class TwoFAScreenConfigurationIntegrationTest {
             viewModel =
                 TwoFASettingsViewModel(
                     getTwoFAStatus = getTwoFAStatus,
-                    enableTwoFA = enableTwoFa,
-                    disableTwoFA = disableTwoFa,
+                    enableTwoFA = enableTwoFA,
+                    disableTwoFA = disableTwoFA,
                     mapper = mapper,
                     networkStatusProvider = networkStatusProvider,
                     dispatchers = dispatchers,

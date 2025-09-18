@@ -91,7 +91,7 @@ open class TwoFASettingsViewModel(
     }
 
     fun updateAuthCode(authCode: String) {
-        viewModelScope.launch(dispatchers.io) {
+        viewModelScope.launch {
             _uiState.update {
                 (it as? TwoFAUiState.Disable)?.copy(
                     state =
