@@ -15,8 +15,12 @@ internal actual val accountModule =
                 get(),
             )
         }
+
         factory<LoginRepository> {
-            LoginRepositoryImpl(get())
+            LoginRepositoryImpl(
+                d2 = get(),
+                d2ErrorMessageProvider = get(),
+            )
         }
         viewModelOf(::AccountsViewModel)
     }

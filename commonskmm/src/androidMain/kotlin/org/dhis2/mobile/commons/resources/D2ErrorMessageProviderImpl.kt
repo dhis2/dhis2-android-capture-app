@@ -6,17 +6,26 @@ import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import org.jetbrains.compose.resources.getString
 
-class D2ErrorMessageProviderImpl(
-    private val isNetworkAvailable: () -> Boolean,
-) : D2ErrorMessageProvider {
-    override suspend fun getErrorMessage(throwable: Throwable): String? =
+class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
+    override suspend fun getErrorMessage(
+        throwable: Throwable,
+        isNetworkAvailable: Boolean,
+    ): String? =
         when {
-            throwable.cause is D2Error -> handleD2Error(throwable.cause as D2Error)
-            throwable is D2Error -> handleD2Error(throwable)
+            throwable.cause is D2Error ->
+                handleD2Error(
+                    throwable.cause as D2Error,
+                    isNetworkAvailable,
+                )
+
+            throwable is D2Error -> handleD2Error(throwable, isNetworkAvailable)
             else -> throwable.localizedMessage
         }
 
-    private suspend fun handleD2Error(d2Error: D2Error?): String =
+    private suspend fun handleD2Error(
+        d2Error: D2Error?,
+        isNetworkAvailable: Boolean,
+    ): String =
         when (d2Error!!.errorCode()) {
             D2ErrorCode.LOGIN_PASSWORD_NULL ->
                 getString(Res.string.login_error_null_pass)
@@ -200,7 +209,7 @@ class D2ErrorMessageProviderImpl(
 
             D2ErrorCode.PROGRAM_ACCESS_CLOSED -> defaultError()
             D2ErrorCode.SERVER_CONNECTION_ERROR ->
-                if (isNetworkAvailable()) {
+                if (isNetworkAvailable) {
                     getString(Res.string.error_server_unavailable)
                 } else {
                     getString(Res.string.error_no_internet_connection)

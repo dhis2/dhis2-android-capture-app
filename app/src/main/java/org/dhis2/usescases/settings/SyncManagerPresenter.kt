@@ -116,7 +116,7 @@ class SyncManagerPresenter(
         val settingsState =
             getSettingsState(
                 openedItem = _settingsState.value?.openedItem,
-                hasConnection = connectionStatus.value,
+                hasConnection = _settingsState.value?.hasConnection == true,
                 metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
                 dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
             )
@@ -131,10 +131,6 @@ class SyncManagerPresenter(
                 )
             }
         }
-    }
-
-    fun init() {
-        networkUtils.registerNetworkCallback()
     }
 
     fun onCheckVersionUpdate() {
@@ -202,7 +198,8 @@ class SyncManagerPresenter(
 
     fun saveGatewayNumber(gatewayNumber: String) {
         viewModelScope.launch(dispatcherProvider.io()) {
-            val result = updateSmsModule(UpdateSmsModule.SmsSetting.SaveGatewayNumber(gatewayNumber))
+            val result =
+                updateSmsModule(UpdateSmsModule.SmsSetting.SaveGatewayNumber(gatewayNumber))
             when (result) {
                 UpdateSmsModule.EnableSmsResult.Success,
                 UpdateSmsModule.EnableSmsResult.Error,
@@ -293,10 +290,6 @@ class SyncManagerPresenter(
         viewModelScope.launch(dispatcherProvider.io()) {
             launchSync(LaunchSync.SyncAction.SyncMetadata)
         }
-    }
-
-    fun dispose() {
-        networkUtils.unregisterNetworkCallback()
     }
 
     fun resetSyncParameters() {

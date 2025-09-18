@@ -113,18 +113,6 @@ class SyncManagerPresenterTest {
     }
 
     @Test
-    fun `Should init settings values`() {
-        presenter.init()
-        verify(networkUtils).registerNetworkCallback()
-    }
-
-    @Test
-    fun `Should unregister callbacks`() {
-        presenter.dispose()
-        verify(networkUtils).unregisterNetworkCallback()
-    }
-
-    @Test
     fun `should check version update`() =
         runTest {
             presenter.onCheckVersionUpdate()

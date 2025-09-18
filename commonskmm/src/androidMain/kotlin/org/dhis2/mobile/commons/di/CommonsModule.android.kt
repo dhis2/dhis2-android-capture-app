@@ -17,6 +17,7 @@ import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 actual val commonsModule: Module
@@ -42,9 +43,7 @@ actual val commonsModule: Module
                 NetworkStatusProviderImpl(get())
             }
 
-            factory<D2ErrorMessageProvider> { params ->
-                D2ErrorMessageProviderImpl(params.get())
-            }
+            factoryOf<D2ErrorMessageProvider>(::D2ErrorMessageProviderImpl)
 
             factory<TableDimensionRepository> { params ->
                 TableDimensionRepositoryImpl(get(), params.get())

@@ -65,8 +65,6 @@ fun LoginScreen(
     legacyLoginContent: @Composable (server: String, username: String) -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
-    val initialScreen by viewModel.currentScreen.collectAsState(LoginScreenState.Loading)
-
     var displayMoreActions by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -84,13 +82,16 @@ fun LoginScreen(
 
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
-                is NavigationAction.Navigate ->
-                    navController.navigate(
-                        action.destination,
-                    ) {
+                is NavigationAction.Navigate -> {
+                    navController.navigate(action.destination) {
                         action.navOptions(this)
+                        val currentRouteString = navController.currentBackStackEntry?.destination?.route
+                        val startDestinationRouteString = LoginScreenState.Loading::class.qualifiedName
+                        if (currentRouteString != null && currentRouteString == startDestinationRouteString) {
+                            popUpTo(LoginScreenState.Loading::class) { inclusive = true }
+                        }
                     }
-
+                }
                 NavigationAction.NavigateUp -> navController.navigateUp()
             }
         }
@@ -99,7 +100,7 @@ fun LoginScreen(
 
         NavHost(
             navController = navController,
-            startDestination = initialScreen,
+            startDestination = LoginScreenState.Loading,
             modifier =
                 Modifier
                     .fillMaxSize()
@@ -121,10 +122,16 @@ fun LoginScreen(
             composable<LoginScreenState.ServerValidation> {
                 val args = it.toRoute<LoginScreenState.ServerValidation>()
                 displayMoreActions = true
-                ServerValidationContent(args.availableServers)
+
+                val uiState by viewModel.serverValidationState.collectAsState()
+                ServerValidationContent(
+                    availableServers = args.availableServers,
+                    state = uiState,
+                    onValidate = viewModel::onValidateServer,
+                    onCancel = viewModel::cancelServerValidation,
+                )
             }
             composable<LoginScreenState.LegacyLogin> {
-                displayMoreActions = false
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
                 legacyLoginContent(arg.selectedServer, arg.selectedUsername)
