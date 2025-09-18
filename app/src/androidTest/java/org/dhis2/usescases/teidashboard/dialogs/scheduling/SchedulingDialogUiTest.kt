@@ -74,6 +74,7 @@ class SchedulingDialogUiTest {
                 launchMode = SchedulingDialog.LaunchMode.NewSchedule(
                     enrollmentUid = enrollment.uid(),
                     programStagesUids = programStages.map { it.uid() },
+                    ownerOrgUnitUid = null,
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
@@ -108,6 +109,7 @@ class SchedulingDialogUiTest {
                     programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
+                    ownerOrgUnitUid = null,
                 )
             ) {
             }
@@ -133,6 +135,7 @@ class SchedulingDialogUiTest {
                     enrollmentUid = enrollment.uid(),
                     programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = true,
+                    ownerOrgUnitUid = null,
                     eventCreationType = EventCreationType.SCHEDULE,
                 )
             ) {
@@ -165,6 +168,7 @@ class SchedulingDialogUiTest {
                     programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
+                    ownerOrgUnitUid = null,
                 )
             ) {
             }
@@ -199,6 +203,7 @@ class SchedulingDialogUiTest {
                     programStagesUids = programStages.map { it.uid() },
                     showYesNoOptions = false,
                     eventCreationType = EventCreationType.SCHEDULE,
+                    ownerOrgUnitUid = null,
                 )
             ) {
             }
