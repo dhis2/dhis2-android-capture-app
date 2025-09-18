@@ -6,6 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,12 +14,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +32,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
@@ -42,12 +46,23 @@ internal fun SettingItem(
     showExtraActions: Boolean,
     onClick: () -> Unit,
 ) {
+    val borderModifier =
+        if (showExtraActions) {
+            Modifier.border(
+                width = 2.dp,
+                color = SurfaceColor.ContainerHighest,
+                shape = RoundedCornerShape(Radius.S),
+            )
+        } else {
+            Modifier
+        }
     Column(
         modifier =
             Modifier
                 .wrapContentHeight()
-                .background(color = Color.White)
-                .padding(),
+                .then(borderModifier)
+                .clip(RoundedCornerShape(Radius.S))
+                .background(color = Color.White),
     ) {
         ListCard(
             modifier = modifier,

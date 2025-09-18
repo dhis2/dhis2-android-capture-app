@@ -112,10 +112,14 @@ internal fun SyncDataSettingItem(
                             stringResource(R.string.Manual),
                         )
                     val dropdownItems = dataSyncPeriods.map { DropdownItem(it) }
+                    var inputSyncPeriodState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_DATA_PERIOD),
                         title = stringResource(R.string.settings_sync_period_v2),
-                        state = InputShellState.FOCUSED,
+                        state = inputSyncPeriodState,
                         itemCount = dataSyncPeriods.size,
                         onSearchOption = {},
                         fetchItem = { index ->
@@ -125,6 +129,7 @@ internal fun SyncDataSettingItem(
                         onResetButtonClicked = { },
                         onItemSelected = { index, newItem ->
                             selectedItem = newItem
+                            inputSyncPeriodState = InputShellState.UNFOCUSED
                             when (index) {
                                 0 -> onSyncDataPeriodChanged(EVERY_30_MIN)
                                 1 -> onSyncDataPeriodChanged(EVERY_HOUR)
