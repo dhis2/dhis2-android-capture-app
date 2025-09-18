@@ -255,7 +255,7 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `should create an event right after enrollment creation`() {
-        whenever(enrollmentFormRepository.generateEvents(OWNER_ORG_UNIT_UID)) doReturn
+        whenever(enrollmentFormRepository.generateEvents()) doReturn
             Single.just(
                 Pair(
                     ENROLLMENT_UID,
@@ -270,7 +270,7 @@ class EnrollmentPresenterImplTest {
 
     @Test
     fun `should navigate to enrollment dashboard after enrollment creation`() {
-        whenever(enrollmentFormRepository.generateEvents(OWNER_ORG_UNIT_UID)) doReturn
+        whenever(enrollmentFormRepository.generateEvents()) doReturn
             Single.just(
                 Pair(
                     ENROLLMENT_UID,
