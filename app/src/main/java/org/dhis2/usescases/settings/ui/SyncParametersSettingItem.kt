@@ -61,10 +61,14 @@ internal fun SyncParametersSettingItem(
                             stringResource(R.string.settings_limit_program),
                             stringResource(R.string.settings_limit_ou_program),
                         )
+                    var inputSettingsLimitedState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE),
                         title = stringResource(R.string.settings_limit_scope),
-                        state = InputShellState.FOCUSED,
+                        state = inputSettingsLimitedState,
                         itemCount = downloadLimitScopes.size,
                         onSearchOption = {},
                         fetchItem = { index ->
@@ -95,6 +99,7 @@ internal fun SyncParametersSettingItem(
                                     3 -> LimitScope.PER_OU_AND_PROGRAM
                                     else -> LimitScope.GLOBAL
                                 }
+                            inputSettingsLimitedState = InputShellState.UNFOCUSED
                             onScopeLimitSelected(selectedScope)
                         },
                         loadOptions = {},
@@ -104,13 +109,17 @@ internal fun SyncParametersSettingItem(
                         remember {
                             TextFieldValue(
                                 text = syncParametersViewModel.numberOfEventsToDownload.toString(),
-                                composition = TextRange(0, syncParametersViewModel.numberOfEventsToDownload.toString().length),
+                                selection = TextRange(syncParametersViewModel.numberOfEventsToDownload.toString().length),
                             )
+                        }
+                    var inputEventsToDownloadState =
+                        remember {
+                            InputShellState.UNFOCUSED
                         }
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT),
                         title = stringResource(R.string.events_to_download),
-                        state = InputShellState.FOCUSED,
+                        state = inputEventsToDownloadState,
                         inputTextFieldValue = eventsToDownload,
                         onValueChanged = { fieldValue ->
                             fieldValue?.let {
@@ -121,20 +130,27 @@ internal fun SyncParametersSettingItem(
                             )
                         },
                         imeAction = ImeAction.Done,
+                        onFocusChanged = { isFocused ->
+                            inputEventsToDownloadState =
+                                if (isFocused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
+                        },
                     )
 
                     var numTeisDownloadTextFieldValue =
                         remember {
                             TextFieldValue(
                                 text = syncParametersViewModel.numberOfTeiToDownload.toString(),
-                                composition = TextRange(0, syncParametersViewModel.numberOfTeiToDownload.toString().length),
+                                selection = TextRange(syncParametersViewModel.numberOfTeiToDownload.toString().length),
                             )
                         }
-
+                    var inputTeisToDownloadState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT),
                         title = stringResource(R.string.teis_to_download),
-                        state = InputShellState.FOCUSED,
+                        state = inputTeisToDownloadState,
                         inputTextFieldValue = numTeisDownloadTextFieldValue,
                         onValueChanged = { fieldValue ->
                             fieldValue?.let {
@@ -145,6 +161,10 @@ internal fun SyncParametersSettingItem(
                             )
                         },
                         imeAction = ImeAction.Done,
+                        onFocusChanged = { isFocused ->
+                            inputTeisToDownloadState =
+                                if (isFocused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
+                        },
                     )
                 } else {
                     Text(

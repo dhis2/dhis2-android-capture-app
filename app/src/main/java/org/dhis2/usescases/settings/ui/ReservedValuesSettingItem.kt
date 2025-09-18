@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -41,9 +42,13 @@ internal fun ReservedValuesSettingItem(
                 verticalArrangement = spacedBy(8.dp),
             ) {
                 if (reservedValuesSettings.canBeEdited) {
+                    var inputReservedValuesState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputPositiveIntegerOrZero(
                         title = stringResource(R.string.reserved_values_hint),
-                        state = InputShellState.FOCUSED,
+                        state = inputReservedValuesState,
                         inputTextFieldValue = TextFieldValue(text = reservedValuesSettings.numberOfReservedValuesToDownload.toString()),
                         onValueChanged = { fieldValue ->
                             onReservedValuesToDownloadUpdate(
@@ -51,6 +56,14 @@ internal fun ReservedValuesSettingItem(
                             )
                         },
                         imeAction = ImeAction.Done,
+                        onFocusChanged = { isFocused ->
+                            inputReservedValuesState =
+                                if (isFocused) {
+                                    InputShellState.FOCUSED
+                                } else {
+                                    InputShellState.UNFOCUSED
+                                }
+                        },
                     )
                 } else {
                     Text(

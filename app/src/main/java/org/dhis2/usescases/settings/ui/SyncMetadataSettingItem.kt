@@ -90,21 +90,24 @@ internal fun SyncMetadataSettingItem(
                                 ),
                             )
                         }
+                    var inputSyncConfigurationState by remember {
+                        mutableStateOf(InputShellState.UNFOCUSED)
+                    }
 
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_META_PERIOD),
-                        title = "Title",
-                        state = InputShellState.FOCUSED,
+                        title = stringResource(R.string.settingsSyncMetadata),
+                        state = inputSyncConfigurationState,
                         itemCount = metaSyncPeriods.size,
                         onSearchOption = {},
                         fetchItem = { index ->
                             DropdownItem(metaSyncPeriods[index])
                         },
-                        selectedItem =
-                        selectedItem,
+                        selectedItem = selectedItem,
                         onResetButtonClicked = { },
                         onItemSelected = { index, newItem ->
                             selectedItem = newItem
+                            inputSyncConfigurationState = InputShellState.UNFOCUSED
                             when (index) {
                                 0 -> onSyncMetaPeriodChanged(EVERY_24_HOUR)
                                 1 -> onSyncMetaPeriodChanged(EVERY_7_DAYS)
