@@ -132,7 +132,7 @@ fun TwoFAAuthStepOne(onAuthenticatorButtonClicked: () -> Unit) {
                     icon = {
                         Icon(
                             painter = painterResource(Res.drawable.play_store),
-                            contentDescription = "Status Icon",
+                            contentDescription = stringResource(Res.string.two_fa_to_enable_google_authenticator),
                             tint = Color.Unspecified,
                         )
                     },
@@ -242,7 +242,7 @@ fun TwoFAAuthStepThree(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                    .padding(top = 16.dp),
             verticalArrangement = spacedBy(12.dp),
         ) {
             InputText(
@@ -284,6 +284,7 @@ fun TwoFAAuthStepThree(
                         true -> {
                             stringResource(Res.string.two_fa_turning_on_button)
                         }
+
                         else -> {
                             stringResource(Res.string.two_fa_turn_on_button)
                         }
