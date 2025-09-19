@@ -21,7 +21,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 @Composable
 fun TaskExecutorButton(
     modifier: Modifier,
-    enabled: Boolean,
     taskRunning: Boolean,
     actionText: String,
     taskRunningText: String,
@@ -40,7 +39,7 @@ fun TaskExecutorButton(
             modifier =
                 modifier
                     .weight(1f),
-            enabled = enabled,
+            enabled = false,
             style = ButtonStyle.FILLED,
             icon = {
                 if (taskRunning) {

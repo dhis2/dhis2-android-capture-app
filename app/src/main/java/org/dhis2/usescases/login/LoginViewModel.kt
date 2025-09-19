@@ -3,6 +3,7 @@ package org.dhis2.usescases.login
 import android.content.Intent
 import androidx.annotation.VisibleForTesting
 import androidx.biometric.BiometricPrompt
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,15 +20,15 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.prefs.SECURE_PASS
-import org.dhis2.commons.prefs.SECURE_SERVER_URL
-import org.dhis2.commons.prefs.SECURE_USER_NAME
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.biometric.BiometricAuthenticator
 import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.providers.SECURE_PASS
+import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
+import org.dhis2.mobile.commons.providers.SECURE_USER_NAME
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -38,7 +39,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
 import org.dhis2.utils.analytics.LOGIN
-import org.dhis2.utils.analytics.SERVER_QR_SCANNER
 import org.dhis2.utils.analytics.USER_PROPERTY_SERVER
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
@@ -101,7 +101,7 @@ class LoginViewModel(
                             if (isUserLoggedIn && !isSessionLocked) {
                                 view.startActivity(MainActivity::class.java, null, true, true, null)
                             } else if (isSessionLocked) {
-                                view.showUnlockButton()
+//                                view.showUnlockButton()
                             }
                             if (!isUserLoggedIn) {
                                 val serverUrl =
@@ -198,19 +198,19 @@ class LoginViewModel(
     fun checkBiometricVisibility() {
         _canLoginWithBiometrics.value =
             biometricAuthenticator.hasBiometric() &&
-            userManager
-                ?.d2
-                ?.userModule()
-                ?.accountManager()
-                ?.getAccounts()
-                ?.count() == 1 &&
-            preferenceProvider
-                .getString(SECURE_SERVER_URL)
-                ?.let { it == serverUrl.value } ?: false &&
-            (
-                preferenceProvider.contains(SECURE_PASS) ||
-                    cryptographyManager.isKeyReady()
-            )
+                    userManager
+                        ?.d2
+                        ?.userModule()
+                        ?.accountManager()
+                        ?.getAccounts()
+                        ?.count() == 1 &&
+                    preferenceProvider
+                        .getString(SECURE_SERVER_URL)
+                        ?.let { it == serverUrl.value } ?: false &&
+                    (
+                            preferenceProvider.contains(SECURE_PASS) ||
+                                    cryptographyManager.isKeyReady()
+                            )
     }
 
     fun onLoginButtonClick() {
@@ -324,11 +324,6 @@ class LoginViewModel(
         crashReportController.trackUser(userName.value, serverUrl.value)
     }
 
-    fun onQRClick() {
-        analyticsHelper.setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
-        view.navigateToQRActivity()
-    }
-
     fun onDestroy() {
         disposable.clear()
     }
@@ -403,9 +398,11 @@ class LoginViewModel(
             ?.blockingGet()
             ?.value() == null
 
-    fun canEnableBiometric(): Boolean = biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
+    fun canEnableBiometric(): Boolean =
+        biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
 
     fun saveUserCredentials(
+        fragmentActivity: FragmentActivity,
         userPass: String? = null,
         onDone: () -> Unit,
     ) {
@@ -421,16 +418,19 @@ class LoginViewModel(
                         BiometricPrompt.CryptoObject(cipher)
                     }
 
-                biometricAuthenticator.authenticate({
-                    val ciphertextWrapper =
-                        cryptographyManager.encryptData(pass, it.cryptoObject?.cipher!!)
-                    preferenceProvider.saveUserCredentialsAndCipher(
-                        serverUrl,
-                        userName,
-                        ciphertextWrapper,
-                    )
-                    onDone()
-                }, cryptoObject)
+                biometricAuthenticator.authenticate(
+                    fragmentActivity,
+                    {
+                        val ciphertextWrapper =
+                            cryptographyManager.encryptData(pass, it.cryptoObject?.cipher!!)
+                        preferenceProvider.saveUserCredentialsAndCipher(
+                            serverUrl,
+                            userName,
+                            ciphertextWrapper,
+                        )
+                        onDone()
+                    }, cryptoObject
+                )
             }
             preferenceProvider.saveUserCredentials(
                 serverUrl,
@@ -442,7 +442,9 @@ class LoginViewModel(
         }
     }
 
-    fun authenticateWithBiometric() {
+    fun authenticateWithBiometric(
+        fragmentActivity: FragmentActivity,
+    ) {
         val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
         if (ciphertextWrapper != null) {
             val cryptoObject =
@@ -451,14 +453,17 @@ class LoginViewModel(
                     ?.let { cipher ->
                         BiometricPrompt.CryptoObject(cipher)
                     }
-            biometricAuthenticator.authenticate({
-                password.value =
-                    cryptographyManager.decryptData(
-                        ciphertextWrapper.ciphertext,
-                        it.cryptoObject?.cipher!!,
-                    )
-                logIn()
-            }, cryptoObject)
+            biometricAuthenticator.authenticate(
+                fragmentActivity,
+                {
+                    password.value =
+                        cryptographyManager.decryptData(
+                            ciphertextWrapper.ciphertext,
+                            it.cryptoObject?.cipher!!,
+                        )
+                    logIn()
+                }, cryptoObject
+            )
         }
     }
 
@@ -588,8 +593,8 @@ class LoginViewModel(
     private fun checkData() {
         val newValue =
             !serverUrl.value.isNullOrEmpty() &&
-                !userName.value.isNullOrEmpty() &&
-                !password.value.isNullOrEmpty()
+                    !userName.value.isNullOrEmpty() &&
+                    !password.value.isNullOrEmpty()
         if (isDataComplete.value == null || isDataComplete.value != newValue) {
             isDataComplete.value = newValue
         }
@@ -613,8 +618,6 @@ class LoginViewModel(
     ) {
         this.serverUrl.value = serverUrl
         this.userName.value = userName
-        view.setUrl(serverUrl)
-        view.setUser(userName)
     }
 
     fun onImportDataBase(file: File) {
@@ -646,14 +649,12 @@ class LoginViewModel(
                         view.displayMessage(resourceManager.parseD2Error(it))
                     },
                 )
-
-                view.onDbImportFinished(result.isSuccess)
             }
         }
     }
 
     fun shouldAskForBiometrics(): Boolean =
         biometricAuthenticator.hasBiometric() &&
-            !preferenceProvider.areCredentialsSet() &&
-            hasAccounts.value == false
+                !preferenceProvider.areCredentialsSet() &&
+                hasAccounts.value == false
 }

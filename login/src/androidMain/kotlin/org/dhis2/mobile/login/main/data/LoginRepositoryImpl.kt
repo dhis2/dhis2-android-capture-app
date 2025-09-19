@@ -1,5 +1,12 @@
 package org.dhis2.mobile.login.main.data
 
+import org.dhis2.mobile.commons.biometric.BiometricActions
+import org.dhis2.mobile.commons.biometric.CryptographicActions
+import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.commons.providers.SECURE_PASS
+import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
+import org.dhis2.mobile.commons.reporting.AnalyticActions
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
@@ -8,9 +15,22 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.jetbrains.compose.resources.getString
 
+private const val PREF_USERS = "PREF_USERS"
+private const val PREF_SESSION_LOCKED = "SessionLocked"
+private const val PIN = "pin"
+private const val DATA_STORE_ANALYTICS_PERMISSION_KEY = "analytics_permission"
+private const val WAS_INITIAL_SYNC_DONE = "WasInitialSyncDone"
+const val USER_PROPERTY_SERVER = "serverUrl"
+private const val VERSION = "version"
+
 class LoginRepositoryImpl(
     private val d2: D2,
+    private val authenticator: BiometricActions,
+    private val cryptographyManager: CryptographicActions,
+    private val preferences: PreferenceProvider,
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
+    private val crashReportController: CrashReportController,
+    private val analyticActions: AnalyticActions,
 ) : LoginRepository {
     override suspend fun validateServer(
         server: String,
@@ -21,7 +41,15 @@ class LoginRepositoryImpl(
                 if (result.value.isOauthEnabled()) {
                     ServerValidationResult.Oauth
                 } else {
-                    ServerValidationResult.Legacy
+                    val oidcProvider = result.value.oidcProviders.firstOrNull()
+                    ServerValidationResult.Legacy(
+                        serverName = result.value.applicationTitle,
+                        serverDescription = result.value.applicationDescription,
+                        allowRecovery = result.value.allowAccountRecovery,
+                        oidcIcon = oidcProvider?.icon,
+                        oidcLoginText = oidcProvider?.loginText,
+                        oidcUrl = oidcProvider?.url,
+                    )
                 }
             }
 
@@ -34,4 +62,88 @@ class LoginRepositoryImpl(
                 ServerValidationResult.Error(error ?: getString(Res.string.server_url_error))
             }
         }
+
+    override suspend fun loginUser(serverUrl: String, username: String, password: String) = try {
+        d2.userModule().blockingLogIn(username, password, serverUrl)
+        kotlin.Result.success(Unit)
+    } catch (e: Exception) {
+        kotlin.Result.failure(Exception(d2ErrorMessageProvider.getErrorMessage(e)))
+    }
+
+    override suspend fun getAvailableLoginUsernames(): List<String> {
+        return preferences.getList(PREF_USERS, emptyList())
+    }
+
+    override suspend fun unlockSession() {
+        preferences.setValue(PREF_SESSION_LOCKED, false)
+        d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
+    }
+
+    override suspend fun updateAvailableUsers(username: String) {
+        val availableUsers = preferences.getList(PREF_USERS, emptyList()).toMutableList()
+        availableUsers.add(username)
+        preferences.setValue(PREF_USERS, availableUsers)
+    }
+
+    override suspend fun displayTrackingMessage(): Boolean {
+        return d2.dataStoreModule().localDataStore()
+            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+            .blockingGet()?.value() == null
+    }
+
+    override suspend fun initialSyncDone(
+        serverUrl: String,
+        username: String,
+    ): Boolean {
+        return isImportedDatabase(serverUrl, username) or entryExists()
+    }
+
+    override suspend fun canLoginWithBiometrics(serverUrl: String): Boolean {
+        val hasBiometrics = authenticator.hasBiometric()
+        val hasOnlyOneAccount = d2.userModule().accountManager()
+            .getAccounts().count() == 1
+        val isSameServer =
+            preferences.getString(SECURE_SERVER_URL)?.let { it == serverUrl } ?: false
+        val hasKey = preferences.contains(SECURE_PASS) || cryptographyManager.isKeyReady()
+        return hasBiometrics && hasOnlyOneAccount && isSameServer && hasKey
+    }
+
+    override suspend fun displayBiometricMessage(): Boolean {
+        val hasBiometrics = authenticator.hasBiometric()
+        val credentialsNotSet = preferences.areCredentialsSet().not()
+        val hasOnlyOneAccount = d2.userModule().accountManager()
+            .getAccounts().count() == 1
+        return hasBiometrics && hasOnlyOneAccount && credentialsNotSet
+    }
+
+    override fun updateTrackingPermissions(granted: Boolean) {
+        d2.dataStoreModule().localDataStore()
+            .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+            .blockingSet(granted.toString())
+        if (granted) {
+            val currentAccount = d2.userModule().accountManager().getCurrentAccount()
+            val systemInfo = d2.systemInfoModule().systemInfo().blockingGet()
+
+            analyticActions.trackMatomoEvent(USER_PROPERTY_SERVER, VERSION, systemInfo?.version()?:"")
+            crashReportController.trackServer(currentAccount?.serverUrl(), systemInfo?.version())
+            crashReportController.trackUser(currentAccount?.username(), currentAccount?.serverUrl())
+        }
+    }
+
+    private fun isImportedDatabase(
+        serverUrl: String,
+        username: String,
+    ): Boolean = d2
+        .userModule()
+        .accountManager()
+        .getCurrentAccount()
+        ?.let {
+            it.serverUrl() == serverUrl && it.username() == username && it.importDB() != null
+        } ?: false
+
+    private fun entryExists() =
+        d2.dataStoreModule().localDataStore()
+            .value(WAS_INITIAL_SYNC_DONE).blockingGet()
+            ?.value()?.lowercase()?.toBooleanStrictOrNull() == true
+
 }

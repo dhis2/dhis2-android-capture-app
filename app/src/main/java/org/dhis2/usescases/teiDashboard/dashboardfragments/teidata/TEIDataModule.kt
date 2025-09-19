@@ -85,7 +85,11 @@ class TEIDataModule(
 
     @Provides
     @PerFragment
-    fun searchTEIRepository(d2: D2): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
+    fun searchTEIRepository(
+        d2: D2,
+        crashReportController: CrashReportController
+    ): SearchTEIRepository =
+        SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashReportController)
 
     @Provides
     @PerFragment
@@ -127,20 +131,24 @@ class TEIDataModule(
     @Provides
     fun provideGetNewEventCreationTypeOptions(
         programConfigurationRepository: ProgramConfigurationRepository,
-    ): GetNewEventCreationTypeOptions = GetNewEventCreationTypeOptions(programConfigurationRepository)
+    ): GetNewEventCreationTypeOptions =
+        GetNewEventCreationTypeOptions(programConfigurationRepository)
 
     @Provides
     fun provideEventCreationsOptionsMapper(resourceManager: ResourceManager): EventCreationOptionsMapper =
         EventCreationOptionsMapper(resourceManager)
 
     @Provides
-    fun provideTeiCardMapper(resourceManager: ResourceManager): TeiDashboardCardMapper = TeiDashboardCardMapper(resourceManager)
+    fun provideTeiCardMapper(resourceManager: ResourceManager): TeiDashboardCardMapper =
+        TeiDashboardCardMapper(resourceManager)
 
     @Provides
-    fun provideInfoBarMapper(resourceManager: ResourceManager): InfoBarMapper = InfoBarMapper(resourceManager)
+    fun provideInfoBarMapper(resourceManager: ResourceManager): InfoBarMapper =
+        InfoBarMapper(resourceManager)
 
     @Provides
-    fun provideQuickActionMapper(resourceManager: ResourceManager): QuickActionsMapper = QuickActionsMapper(programUid, resourceManager)
+    fun provideQuickActionMapper(resourceManager: ResourceManager): QuickActionsMapper =
+        QuickActionsMapper(programUid, resourceManager)
 
     @Provides
     fun provideContractHandler() = TeiDataContractHandler(registry)

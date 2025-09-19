@@ -6,6 +6,7 @@ import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.data.LoginRepositoryImpl
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 internal actual val accountModule =
@@ -17,9 +18,15 @@ internal actual val accountModule =
         }
 
         factory<LoginRepository> {
+            val hasConnectionCallback = { true }
             LoginRepositoryImpl(
-                d2 = get(),
-                d2ErrorMessageProvider = get(),
+                get(),
+                get(),
+                get(),
+                get(),
+                get { parametersOf(hasConnectionCallback) },
+                get(),
+                get()
             )
         }
         viewModelOf(::AccountsViewModel)

@@ -14,6 +14,7 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
+import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -76,11 +77,20 @@ class LoginViewModel(
                                 validationRunning = false,
                             )
                         }
-                    }
 
-                    ServerValidationResult.Legacy -> {
-                        navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
-                        stopValidation()
+                    is ServerValidationResult.Legacy -> {
+                        navigator.navigate(
+                            LoginScreenState.LegacyLogin(
+                                serverName = result.serverName,
+                                allowRecovery = result.allowRecovery,
+                                selectedServer = serverUrl,
+                                selectedUsername = "",
+                                oidcIcon = result.oidcIcon,
+                                oidcLoginText = result.oidcLoginText,
+                                oidcUrl = result.oidcUrl,
+                            )
+                        )
+                            stopValidation()
                     }
 
                     ServerValidationResult.Oauth -> {
@@ -89,6 +99,7 @@ class LoginViewModel(
                     }
                 }
             }
+                }
     }
 
     fun cancelServerValidation() {

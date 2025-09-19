@@ -1,5 +1,6 @@
 package org.dhis2.data.biometric
 
+import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
@@ -9,6 +10,8 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.R
+import org.dhis2.mobile.commons.biometric.BiometricActions
+import org.dhis2.mobile.commons.biometric.CryptographicActions
 import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import java.nio.charset.Charset
 import java.security.KeyStore
@@ -25,12 +28,12 @@ private const val ENCRYPTION_ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
 const val KEY_NAME = "DHIS2_BIOMETRIC_KEY"
 
 class BiometricAuthenticator(
-    private val fragmentActivity: FragmentActivity,
-) {
+    private val context: Context,
+): BiometricActions {
     private var biometricPrompt: BiometricPrompt? = null
 
-    fun hasBiometric(): Boolean {
-        val biometricManager = BiometricManager.from(fragmentActivity)
+    override fun hasBiometric(): Boolean {
+        val biometricManager = BiometricManager.from(context)
         return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
@@ -38,6 +41,7 @@ class BiometricAuthenticator(
     }
 
     fun authenticate(
+        fragmentActivity: FragmentActivity,
         onSuccess: (BiometricPrompt.AuthenticationResult) -> Unit,
         cryptoObject: BiometricPrompt.CryptoObject? = null,
     ) {
@@ -45,7 +49,7 @@ class BiometricAuthenticator(
             biometricPrompt =
                 BiometricPrompt(
                     fragmentActivity,
-                    ContextCompat.getMainExecutor(fragmentActivity),
+                    ContextCompat.getMainExecutor(context),
                     object : BiometricPrompt.AuthenticationCallback() {
                         override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                             super.onAuthenticationSucceeded(result)
@@ -58,9 +62,9 @@ class BiometricAuthenticator(
         val promptInfo =
             BiometricPrompt.PromptInfo
                 .Builder()
-                .setTitle(fragmentActivity.getString(R.string.biometric_title))
+                .setTitle(context.getString(R.string.biometric_title))
                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
-                .setNegativeButtonText(fragmentActivity.getString(R.string.use_password))
+                .setNegativeButtonText(context.getString(R.string.use_password))
                 .build()
         if (cryptoObject == null) {
             biometricPrompt?.authenticate(promptInfo)
@@ -70,13 +74,13 @@ class BiometricAuthenticator(
     }
 }
 
-class CryptographyManager {
+class CryptographyManager: CryptographicActions {
     private val keyStore =
         KeyStore.getInstance(ANDROID_KEYSTORE).apply {
             load(null)
         }
 
-    fun getInitializedCipherForEncryption(): Cipher? =
+    override fun getInitializedCipherForEncryption(): Cipher? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val cipher = getCipher()
             val secretKey =
@@ -88,7 +92,7 @@ class CryptographyManager {
             null
         }
 
-    fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher? =
+    override fun getInitializedCipherForDecryption(initializationVector: ByteArray): Cipher? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val cipher = getCipher()
             val secretKey = getOrCreateSecretKey()
@@ -98,7 +102,7 @@ class CryptographyManager {
             null
         }
 
-    fun encryptData(
+    override fun encryptData(
         plaintext: String,
         cipher: Cipher,
     ): CiphertextWrapper {
@@ -106,7 +110,7 @@ class CryptographyManager {
         return CiphertextWrapper(ciphertext, cipher.iv)
     }
 
-    fun decryptData(
+    override fun decryptData(
         ciphertext: ByteArray,
         cipher: Cipher,
     ): String {
@@ -150,9 +154,9 @@ class CryptographyManager {
         return keyGenerator.generateKey()
     }
 
-    fun isKeyReady(): Boolean = keyStore.getKey(KEY_NAME, null) != null
+    override fun isKeyReady(): Boolean = keyStore.getKey(KEY_NAME, null) != null
 
-    fun deleteInvalidKey() {
+    override fun deleteInvalidKey() {
         if (isKeyReady()) {
             keyStore.deleteEntry(KEY_NAME)
         }

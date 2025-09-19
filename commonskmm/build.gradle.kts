@@ -110,10 +110,15 @@ compose.resources {
 }
 
 android {
-    namespace = "org.dhis2.mobile.commonskmm"
+    namespace = "org.dhis2.mobile.commons"
     compileSdk = libs.versions.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+        val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
+        buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

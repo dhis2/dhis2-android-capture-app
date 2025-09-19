@@ -1,28 +1,16 @@
-package org.dhis2.commons.prefs
+package org.dhis2.mobile.commons.providers
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.dhis2.commons.date.DateUtils
 import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
-import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
-import org.dhis2.mobile.commons.providers.LAST_DATA_SYNC
-import org.dhis2.mobile.commons.providers.LAST_META_SYNC
-import org.dhis2.mobile.commons.providers.SECURE_CREDENTIALS
-import org.dhis2.mobile.commons.providers.SECURE_PASS
-import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
-import org.dhis2.mobile.commons.providers.SECURE_USER_NAME
-import org.dhis2.mobile.commons.providers.SHARE_PREFS
 import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import timber.log.Timber
-import java.util.Date
 
-open class PreferenceProviderImpl(
-    context: Context,
-) : PreferenceProvider {
+internal class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
 
@@ -142,9 +130,9 @@ open class PreferenceProviderImpl(
     override fun contains(vararg keys: String): Boolean =
         keys.all { key ->
             sharedPreferences.contains(key) or
-                css
-                    .getAllKeys()
-                    .any { storedKey -> storedKey.startsWith(key) }
+                    css
+                        .getAllKeys()
+                        .any { storedKey -> storedKey.startsWith(key) }
         }
 
     override fun saveUserCredentials(
@@ -181,7 +169,7 @@ open class PreferenceProviderImpl(
         userName: String?,
     ): Boolean =
         getString(SECURE_SERVER_URL, "") == serverUrl &&
-            getString(SECURE_USER_NAME, "") == userName
+                getString(SECURE_USER_NAME, "") == userName
 
     override fun clear() {
         sharedPreferences.edit { clear() }
@@ -196,6 +184,17 @@ open class PreferenceProviderImpl(
 
     override fun <T> getObjectFromJson(
         key: String,
+        default: T,
+    ): T {
+        return getObjectFromJson(
+            key,
+            object : TypeToken<T>() {},
+            default
+        )
+    }
+
+    private fun <T> getObjectFromJson(
+        key: String,
         typeToken: TypeToken<T>,
         default: T,
     ): T {
@@ -206,23 +205,5 @@ open class PreferenceProviderImpl(
             Gson().fromJson<T>(getString(key), mapTypeToken)
         }
     }
-
-    override fun lastMetadataSync(): Date? =
-        getString(LAST_META_SYNC)?.let { lastMetadataSyncString ->
-            DateUtils.dateTimeFormat().parse(lastMetadataSyncString)
-        }
-
-    override fun lastDataSync(): Date? =
-        getString(LAST_DATA_SYNC)?.let { lastDataSyncString ->
-            DateUtils.dateTimeFormat().parse(lastDataSyncString)
-        }
-
-    override fun lastSync(): Date? =
-        mutableListOf<Date>()
-            .apply {
-                lastMetadataSync()?.let { add(it) }
-                lastDataSync()?.let { add(it) }
-            }.minOrNull()
-
     // endregion
 }

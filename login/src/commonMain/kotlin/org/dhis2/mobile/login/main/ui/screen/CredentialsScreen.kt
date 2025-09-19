@@ -1,30 +1,69 @@
 package org.dhis2.mobile.login.main.ui.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Login
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.outlined.Fingerprint
+import androidx.compose.material.icons.outlined.Fireplace
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
+import org.dhis2.mobile.login.main.ui.states.AfterLoginAction
+import org.dhis2.mobile.login.main.ui.states.LoginState
+import org.dhis2.mobile.login.main.ui.states.OidcInfo
+import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
+import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.biometrics_login_text
+import org.dhis2.mobile.login.resources.biometrics_login_title
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
+import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
+import org.hisp.dhis.mobile.ui.designsystem.component.Button
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
+import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPassword
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
@@ -34,69 +73,158 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.model.InputPasswordModel
 import org.hisp.dhis.mobile.ui.designsystem.component.model.InputUserModel
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
-fun CredentialsScreen() {
+fun CredentialsScreen(
+    selectedServer: String,
+    selectedServerName: String?,
+    selectedUsername: String?,
+    allowRecovery: Boolean,
+) {
+    val viewModel = koinViewModel<CredentialsViewModel> {
+        parametersOf(selectedServerName, selectedServer, selectedUsername, allowRecovery)
+    }
+    val screenState by viewModel.credentialsScreenState.collectAsState()
+    var displayBiometricMessage by remember{
+        mutableStateOf(false)
+    }
+    var displayTrackingMessage by remember{
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(screenState.afterLoginActions){
+        screenState.afterLoginActions.firstOrNull()?.let{afterLoginAction ->
+            when(afterLoginAction){
+                AfterLoginAction.DisplayBiometricsMessage ->
+                    displayBiometricMessage = true
+                AfterLoginAction.DisplayTrackingMessage ->
+                    displayTrackingMessage = true
+                is AfterLoginAction.NavigateToNextScreen ->
+                    viewModel.goToNextScreen(afterLoginAction.initialSyncDone)
+            }
+        }
+    }
+
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
+            .padding(Spacing.Spacing16),
         verticalArrangement = spacedBy(Spacing.Spacing24)
     ) {
         ServerInfo(
-            serverName = "ServerName",
-            serverUrl = "https://serverurl.net/dhis2",
-            serverImageUrl = "https://en.wikipedia.org/wiki/Flag_of_Spain#/media/File:Flag_of_Spain.svg",
+            serverName = selectedServerName,
+            serverUrl = selectedServer,
+            selectedUsername = selectedUsername,
+            serverImageUrl = "https://avatars.githubusercontent.com/u/1089987?s=200&v=4",
         )
         CredentialsContainer(
-            availableUsernames = emptyList(),
-            username = "",
-            password = "",
-        )
-        LoginStatus(
-            isLoggingIn = false,
-            loginErrorMessage = null,
-            onCancelLogin = {
-
+            availableUsernames = screenState.credentialsInfo.availableUsernames,
+            username = screenState.credentialsInfo.username,
+            password = screenState.credentialsInfo.password,
+            isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
+            isLoggingIn = screenState.loginState == LoginState.Running,
+            onUserNameChanged = {
+                viewModel.updateUsername(it)
+            },
+            onPasswordChanged = {
+                viewModel.updatePassword(it)
             }
         )
-//        CredentialActions()
-//        ManageAccountsButton()
+        LoginStatus(
+            isLoggingIn = screenState.loginState == LoginState.Running,
+            loginErrorMessage = screenState.errorMessage,
+            onCancelLogin = viewModel::cancelLogin
+        )
+        CredentialActions(
+            allowRecovery = screenState.allowRecovery,
+            oidcInfo = screenState.oidcInfo,
+            hasBiometrics = screenState.canUseBiometrics,
+            canLogin = screenState.loginState == LoginState.Enabled,
+            onLoginClicked = viewModel::onLoginClicked,
+            onOpenIdLogin = viewModel::onOpenIdLogin,
+            onBiometricsClicked = viewModel::onBiometricsClicked,
+            onManageAccounts = viewModel::onManageAccountsClicked,
+        )
+    }
+    if (displayTrackingMessage) {
+        TrackingPermissionDialog(
+            onPermissionResult = viewModel::onTrackingPermission,
+            onOpenPrivacyPolicy = viewModel::checkPrivacyPolicy,
+        )
+    }else if(displayBiometricMessage){
+        BiometricsDialog(
+            onPermissionResult = viewModel::onEnableBiometrics
+        )
     }
 }
 
 @Composable
 private fun ServerInfo(
-    serverName: String,
+    serverName: String?,
     serverUrl: String,
+    selectedUsername: String?,
     serverImageUrl: String?,
 ) {
     ListCard(
         modifier = Modifier.fillMaxWidth(),
         listCardState = rememberListCardState(
             title = ListCardTitleModel(
-                text = serverName
+                text = serverName ?: "-"
             ),
             description = ListCardDescriptionModel(
                 text = serverUrl
             ),
             additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                additionalInfoList = emptyList(),
+                additionalInfoList = selectedUsername?.let {
+                    listOf(
+                        AdditionalInfoItem(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Person,
+                                    contentDescription = "",
+                                    tint = TextColor.OnSurfaceLight,
+                                )
+                            },
+                            value = it
+                        )
+                    )
+                } ?: emptyList(),
                 syncProgressItem = AdditionalInfoItem(
                     value = ""
                 )
             ),
         ),
         listAvatar = {
+
             if (serverImageUrl != null) {
                 AsyncImage(
-                    model = serverImageUrl,
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data("https://avatars.githubusercontent.com/u/1089987?s=200&v=4")
+                        .crossfade(true)
+                        .build(),
                     contentDescription = "",
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(40.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = CircleShape
+                        )
+                        .border(
+                            1.dp,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = CircleShape
+                        ),
                     contentScale = ContentScale.Crop,
                 )
-            } else {
+            } else if (serverName?.isNotBlank() == true) {
                 Avatar(
                     style = AvatarStyleData.Text(serverName.take(1))
                 )
@@ -111,6 +239,10 @@ private fun CredentialsContainer(
     username: String,
     password: String,
     availableUsernames: List<String>,
+    isUsernameEditable: Boolean,
+    isLoggingIn: Boolean,
+    onUserNameChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit
 ) {
     var usernameTextValue by remember(username) {
         mutableStateOf(
@@ -130,34 +262,46 @@ private fun CredentialsContainer(
         }
     }
 
+    val inputShellState by remember(isLoggingIn) {
+        mutableStateOf(
+            when {
+                isLoggingIn -> InputShellState.DISABLED
+                else -> InputShellState.UNFOCUSED
+            }
+        )
+    }
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = spacedBy(Spacing.Spacing8)
     ) {
-        InputUser(
-            modifier = Modifier.fillMaxWidth(),
-            uiModel = InputUserModel(
-                title = "Username",
-                state = InputShellState.UNFOCUSED,
-                inputTextFieldValue = usernameTextValue,
-                autoCompleteList = availableUsernames,
-                autoCompleteItemSelected = {
-                    usernameTextValue =
-                        it?.let { text -> TextFieldValue(text) } ?: TextFieldValue("")
+        if (isUsernameEditable) {
+            InputUser(
+                modifier = Modifier.fillMaxWidth(),
+                uiModel = InputUserModel(
+                    title = "Username",
+                    state = inputShellState,
+                    inputTextFieldValue = usernameTextValue,
+                    autoCompleteList = availableUsernames,
+                    autoCompleteItemSelected = {
+                        usernameTextValue =
+                            it?.let { text -> TextFieldValue(text) } ?: TextFieldValue("")
 
-                },
-                onNextClicked = {
+                    },
+                    onNextClicked = {
 
-                },
-                onValueChanged = {
-                    usernameTextValue = it ?: TextFieldValue("")
-                },
-                onFocusChanged = {
+                    },
+                    onValueChanged = {
+                        usernameTextValue = it ?: TextFieldValue("")
+                        onUserNameChanged(usernameTextValue.text)
+                    },
+                    onFocusChanged = {
 
-                },
-                imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
-            ),
-        )
+                    },
+                    imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
+                ),
+            )
+        }
         InputPassword(
             modifier = Modifier.fillMaxWidth(),
             uiModel = InputPasswordModel(
@@ -167,6 +311,7 @@ private fun CredentialsContainer(
                 onNextClicked = {},
                 onValueChanged = {
                     passwordTextValue = it ?: TextFieldValue("")
+                    onPasswordChanged(passwordTextValue.text)
                 },
                 onFocusChanged = {},
                 imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
@@ -184,7 +329,6 @@ private fun LoginStatus(
     if (isLoggingIn) {
         TaskExecutorButton(
             modifier = Modifier,
-            enabled = true,
             taskRunning = true,
             actionText = "",
             taskRunningText = "Logging in...",
@@ -197,15 +341,248 @@ private fun LoginStatus(
             modifier = Modifier,
             text = loginErrorMessage,
             textColor = MaterialTheme.colorScheme.onErrorContainer,
-            actionText = "",
             backgroundColor = MaterialTheme.colorScheme.errorContainer,
             icon = {
                 Icon(
                     imageVector = Icons.Outlined.Info,
-                    contentDescription = ""
+                    contentDescription = "",
+                    tint = MaterialTheme.colorScheme.onErrorContainer,
                 )
             },
-            onActionClick = {},
         )
     }
+}
+
+@Composable
+private fun CredentialActions(
+    allowRecovery: Boolean,
+    hasBiometrics: Boolean,
+    oidcInfo: OidcInfo?,
+    canLogin: Boolean,
+    onLoginClicked: () -> Unit,
+    onOpenIdLogin: (url: String) -> Unit,
+    onBiometricsClicked: () -> Unit,
+    onManageAccounts: () -> Unit,
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = spacedBy(Spacing.Spacing8),
+    ) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            enabled = canLogin,
+            text = "Log in",
+            style = ButtonStyle.FILLED,
+            onClick = onLoginClicked,
+            icon = {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.Login,
+                    contentDescription = "Log in icon"
+                )
+            },
+        )
+        if (allowRecovery) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Recover account",
+                style = ButtonStyle.TONAL,
+                onClick = onLoginClicked
+            )
+        }
+        if (hasBiometrics) {
+            Box(
+                Modifier.fillMaxWidth()
+                    .padding(vertical = Spacing.Spacing24),
+                contentAlignment = Alignment.Center,
+            ) {
+                IconButton(
+                    style = IconButtonStyle.STANDARD,
+                    icon = {
+                        Icon(
+                            modifier = Modifier.size(48.dp),
+                            imageVector = Icons.Outlined.Fingerprint,
+                            contentDescription = "fingerprint",
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                    },
+                    onClick = onBiometricsClicked
+                )
+            }
+        }
+        if (oidcInfo != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = spacedBy(Spacing.Spacing16)
+            ) {
+                HorizontalDivider(modifier = Modifier.weight(1f))
+                Text("Or")
+                HorizontalDivider(modifier = Modifier.weight(1f))
+            }
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                text = oidcInfo.oidcLoginText ?: "Log in with openID",
+                icon = oidcInfo.oidcIcon?.let {
+                    {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.Login,
+                            contentDescription = "",
+                            tint = Color.Unspecified,
+                        )
+                    }
+                },
+                style = ButtonStyle.OUTLINED,
+                onClick = {
+                    oidcInfo.oidcUrl?.let { onOpenIdLogin(it) }
+                }
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            Button(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Manage accounts",
+                style = ButtonStyle.OUTLINED,
+                onClick = onManageAccounts
+            )
+        }
+    }
+}
+
+@Composable
+fun TrackingPermissionDialog(
+    onPermissionResult: (granted: Boolean) -> Unit,
+    onOpenPrivacyPolicy: () -> Unit,
+) {
+    BottomSheetShell(
+        modifier = Modifier,
+        uiState = BottomSheetShellUIState(
+            title = "Do you want to help us improve this app?",
+            showTopSectionDivider = true,
+            showBottomSectionDivider = true,
+            headerTextAlignment = TextAlign.Start,
+        ),
+        content = {
+            Text(
+                text = buildAnnotatedString {
+                    append(
+                        "If you say yes the app will send anonymous statistics and error logs which" +
+                                " help us improve user experience and performance."
+                    )
+                    append("\n\n")
+                    append(
+                        "For further details, please refer to our "
+                    )
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = "privacy policy",
+                            styles = TextLinkStyles(
+                                style = SpanStyle(
+                                    color = MaterialTheme.colorScheme.primary,
+                                ),
+                            ),
+                            linkInteractionListener = {
+                                onOpenPrivacyPolicy()
+                            }
+                        )
+                    ) {
+                        append("privacy policy")
+                    }
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextColor.OnSurfaceLight,
+            )
+        },
+        icon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.ShowChart,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        },
+        buttonBlock = {
+            ButtonBlock(
+                modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+                primaryButton = {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = ButtonStyle.OUTLINED,
+                        text = "Not now",
+                        onClick = {
+                            onPermissionResult(true)
+                        },
+                    )
+                },
+                secondaryButton = {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = ButtonStyle.FILLED,
+                        text = "Yes",
+                        onClick = {
+                            onPermissionResult(false)
+                        },
+                    )
+                }
+            )
+        },
+        onDismiss = {
+            onPermissionResult(false)
+        },
+    )
+}
+
+@Composable
+private fun BiometricsDialog(
+    onPermissionResult: (granted: Boolean) -> Unit,
+){
+    BottomSheetShell(
+        modifier = Modifier,
+        uiState = BottomSheetShellUIState(
+            title = stringResource(Res.string.biometrics_login_title),
+            description = stringResource(Res.string.biometrics_login_text),
+            showTopSectionDivider = true,
+            showBottomSectionDivider = true,
+            headerTextAlignment = TextAlign.Start,
+        ),
+        content = null,
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.Fingerprint,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        },
+        buttonBlock = {
+            ButtonBlock(
+                modifier = Modifier.padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+                primaryButton = {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = ButtonStyle.OUTLINED,
+                        text = "Not now",
+                        onClick = {
+                            onPermissionResult(true)
+                        },
+                    )
+                },
+                secondaryButton = {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        style = ButtonStyle.FILLED,
+                        text = "Yes",
+                        onClick = {
+                            onPermissionResult(false)
+                        },
+                    )
+                }
+            )
+        },
+        onDismiss = {
+            onPermissionResult(false)
+        },
+    )
 }

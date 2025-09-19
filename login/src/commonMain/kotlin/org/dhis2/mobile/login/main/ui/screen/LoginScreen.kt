@@ -62,7 +62,9 @@ fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     versionName: String,
     onImportDatabase: () -> Unit,
-    legacyLoginContent: @Composable (server: String, username: String) -> Unit,
+    onNavigateToSync: () -> Unit,
+    onNavigateToHome:()->Unit,
+    onNavigateToPrivacyPolicy:()->Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
@@ -93,6 +95,9 @@ fun LoginScreen(
                     }
                 }
                 NavigationAction.NavigateUp -> navController.navigateUp()
+                NavigationAction.NavigateToHome -> onNavigateToHome()
+                NavigationAction.NavigateToSync -> onNavigateToSync()
+                NavigationAction.NavigateToPrivacyPolicy -> onNavigateToPrivacyPolicy()
             }
         }
 
@@ -134,7 +139,12 @@ fun LoginScreen(
             composable<LoginScreenState.LegacyLogin> {
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
-                legacyLoginContent(arg.selectedServer, arg.selectedUsername)
+                CredentialsScreen(
+                    selectedServer = arg.selectedServer,
+                    selectedServerName = arg.serverName,
+                    selectedUsername = arg.selectedUsername,
+                    allowRecovery = arg.allowRecovery,
+                )
             }
             composable<LoginScreenState.OauthLogin> {
                 val args = it.toRoute<LoginScreenState.OauthLogin>()

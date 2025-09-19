@@ -13,12 +13,18 @@ import org.dhis2.mobile.login.main.ui.screen.CredentialsScreen
 
 @Preview
 @Composable
-fun CredentialsScreenPreview(){
+fun CredentialsScreenPreview() {
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(Color.White)
             .padding(16.dp)
-    ){
-        CredentialsScreen()
+    ) {
+        CredentialsScreen(
+            selectedServer = "https:pdsafijasodifh.com",
+            selectedUsername = "juanito",
+            selectedServerName = "Server name",
+            allowRecovery = true
+        )
     }
 }
