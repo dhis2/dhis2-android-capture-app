@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.absolutePadding
@@ -45,6 +46,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.journeyapps.barcodescanner.ScanOptions
@@ -60,6 +62,9 @@ import org.dhis2.android.rtsm.ui.managestock.components.ManageStockTable
 import org.dhis2.android.rtsm.ui.scanner.ScannerActivity
 import org.dhis2.composetable.actions.TableResizeActions
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
+import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -78,16 +83,15 @@ fun MainContent(
     val searchResource = painterResource(R.drawable.ic_search)
     val closeResource = painterResource(R.drawable.ic_close)
     var closeButtonVisibility by remember { mutableStateOf(0f) }
-    val weightValue = if (backdropState.isRevealed) 0.15f else 0.10f
-    val weightValueArrow = if (backdropState.isRevealed) 0.10f else 0.05f
+    val weightValue = getWeightValue(backdropState.isRevealed)
+    val weightValueArrow = getArrowWeight(backdropState.isRevealed)
     val weightValueArrowStatus = backdropState.isRevealed
     val focusManager = LocalFocusManager.current
     val search by manageStockViewModel.scanText.collectAsState()
     val settingsUiState by viewModel.settingsUiState.collectAsState()
     var columnHeightDp by remember { mutableStateOf(0.dp) }
     val localDensity = LocalDensity.current
-    val tablePadding = if (backdropState.isRevealed) 200.dp else 0.dp
-
+    val tablePadding = getTablePadding(backdropState.isRevealed)
     var tableResizeActions by remember {
         mutableStateOf<TableResizeActions?>(null)
     }
@@ -287,9 +291,32 @@ fun MainContent(
                     },
                 )
             }
+
+            AnimatedVisibility(
+                visible =
+                    manageStockViewModel.dataEntryUiState
+                        .collectAsState()
+                        .value.loading,
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = Spacing.Spacing24),
+                ) {
+                    ProgressIndicator(type = ProgressIndicatorType.CIRCULAR, modifier = Modifier)
+                }
+            }
         }
     }
 }
+
+fun getWeightValue(revealed: Boolean): Float = if (revealed) 0.15f else 0.10f
+
+fun getArrowWeight(revealed: Boolean): Float = if (revealed) 0.10f else 0.05f
+
+fun getTablePadding(revealed: Boolean): Dp = if (revealed) 200.dp else 0.dp
 
 private fun shouldDisplayTable(settingsUiState: SettingsUiState): Boolean =
     when (settingsUiState.selectedTransactionItem.type) {
