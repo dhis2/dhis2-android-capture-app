@@ -359,7 +359,6 @@ fun DeleteRelationshipsConfirmation(
     BottomSheetShell(
         uiState =
             BottomSheetShellUIState(
-                bottomPadding = BottomSheetShellDefaults.lowerPadding(true),
                 headerTextAlignment = TextAlign.Start,
                 showTopSectionDivider = true,
                 title =
@@ -381,7 +380,6 @@ fun DeleteRelationshipsConfirmation(
                             )
                     },
             ),
-        windowInsets = { BottomSheetShellDefaults.windowInsets(true) },
         icon = {
             Icon(
                 Icons.Outlined.ErrorOutline,
