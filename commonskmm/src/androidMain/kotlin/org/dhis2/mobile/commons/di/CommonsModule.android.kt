@@ -1,5 +1,6 @@
 package org.dhis2.mobile.commons.di
 
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.data.TableDimensionRepository
@@ -47,5 +48,8 @@ actual val commonsModule: Module
 
             factory<TableDimensionRepository> { params ->
                 TableDimensionRepositoryImpl(get(), params.get())
+            }
+            factory<Dispatcher> {
+                Dispatcher()
             }
         }

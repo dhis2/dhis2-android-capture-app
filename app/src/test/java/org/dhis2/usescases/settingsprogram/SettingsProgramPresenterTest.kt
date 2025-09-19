@@ -1,7 +1,6 @@
 package org.dhis2.usescases.settingsprogram
 
 import app.cash.turbine.test
-import junit.framework.Assert.assertTrue
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
 import org.dhis2.usescases.settingsprogram.domain.GetProgramSpecificSettings
@@ -13,7 +12,7 @@ import org.mockito.kotlin.whenever
 
 class SettingsProgramPresenterTest {
     private val getProgramSpecificSettings: GetProgramSpecificSettings = mock()
-    val viewmodel = SettingsProgramViewModel(getProgramSpecificSettings)
+    private val viewmodel = SettingsProgramViewModel(getProgramSpecificSettings)
 
     @Test
     fun `Should initialize the settings program`() =
@@ -22,10 +21,10 @@ class SettingsProgramPresenterTest {
                 listOf(
                     mock<SpecificSettings>(),
                 )
-            whenever(getProgramSpecificSettings()) doReturn testSettings
+            whenever(getProgramSpecificSettings()).doReturn(testSettings)
 
             viewmodel.programSettings.test {
-                assertTrue(awaitItem().isEmpty())
+                assertEquals(emptyList<SpecificSettings>(), expectMostRecentItem())
                 assertEquals(testSettings, awaitItem())
                 cancelAndConsumeRemainingEvents()
             }

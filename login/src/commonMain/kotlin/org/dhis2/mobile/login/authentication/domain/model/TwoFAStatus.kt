@@ -6,6 +6,7 @@ sealed class TwoFAStatus {
     ) : TwoFAStatus()
 
     data class Disabled(
+        val secretCode: String,
         val errorMessage: String? = null,
     ) : TwoFAStatus()
 

@@ -10,6 +10,7 @@ internal actual val twoFARepositoryModule: Module =
         factory<TwoFARepository> {
             TwoFARepositoryImpl(
                 get(),
+                get(),
             )
         }
     }

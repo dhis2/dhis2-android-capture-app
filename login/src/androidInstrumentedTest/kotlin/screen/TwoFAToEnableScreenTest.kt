@@ -10,7 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.runComposeUiTest
 import org.dhis2.mobile.login.authentication.ui.screen.TURN_ON_BUTTON_TEST_TAG
 import org.dhis2.mobile.login.authentication.ui.screen.TwoFAToEnableScreen
-import org.dhis2.mobile.login.authentication.ui.state.TwoFaEnableUiState
+import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.junit.Rule
 import kotlin.test.Test
@@ -28,8 +28,12 @@ class TwoFAToEnableScreenTest {
             setContent {
                 DHIS2Theme {
                     TwoFAToEnableScreen(
-                        enableUiState = TwoFaEnableUiState.Starting,
-                        secretCode = secretCode,
+                        enableUiState =
+                            TwoFAUiState.Enable(
+                                secretCode = secretCode,
+                                isEnabling = false,
+                                enableErrorMessage = null,
+                            ),
                         onAuthenticatorButtonClicked = {},
                         onCopyCodeButtonClicked = {},
                         onEnableButtonClicked = {},
@@ -48,8 +52,12 @@ class TwoFAToEnableScreenTest {
                 setContent {
                     DHIS2Theme {
                         TwoFAToEnableScreen(
-                            enableUiState = TwoFaEnableUiState.Failure,
-                            secretCode = secretCode,
+                            enableUiState =
+                                TwoFAUiState.Enable(
+                                    secretCode = secretCode,
+                                    isEnabling = false,
+                                    enableErrorMessage = "Error code",
+                                ),
                             onAuthenticatorButtonClicked = {},
                             onCopyCodeButtonClicked = {},
                             onEnableButtonClicked = {},

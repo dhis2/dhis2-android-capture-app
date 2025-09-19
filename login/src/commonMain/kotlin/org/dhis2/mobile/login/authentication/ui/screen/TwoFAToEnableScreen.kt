@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.mobile.login.authentication.ui.state.TwoFaEnableUiState
+import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.play_store
 import org.dhis2.mobile.login.resources.two_fa_authentication_code
@@ -66,8 +66,7 @@ const val TURN_ON_BUTTON_TEST_TAG = "turn_on_button_test_tag"
 
 @Composable
 fun TwoFAToEnableScreen(
-    enableUiState: TwoFaEnableUiState,
-    secretCode: String,
+    enableUiState: TwoFAUiState.Enable,
     onAuthenticatorButtonClicked: () -> Unit,
     onCopyCodeButtonClicked: (String) -> Unit,
     onEnableButtonClicked: (String) -> Unit,
@@ -95,7 +94,7 @@ fun TwoFAToEnableScreen(
 
         TwoFAAuthStepOne(onAuthenticatorButtonClicked)
 
-        TwoFAAuthStepTwo(secretCode, onCopyCodeButtonClicked)
+        TwoFAAuthStepTwo(enableUiState.secretCode, onCopyCodeButtonClicked)
 
         TwoFAAuthStepThree(enableUiState, onEnableButtonClicked)
     }
@@ -133,7 +132,7 @@ fun TwoFAAuthStepOne(onAuthenticatorButtonClicked: () -> Unit) {
                     icon = {
                         Icon(
                             painter = painterResource(Res.drawable.play_store),
-                            contentDescription = "Status Icon",
+                            contentDescription = stringResource(Res.string.two_fa_to_enable_google_authenticator),
                             tint = Color.Unspecified,
                         )
                     },
@@ -173,12 +172,11 @@ fun TwoFAAuthStepTwo(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = 16.dp)
-                            .padding(horizontal = 16.dp),
+                            .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = CenterVertically,
                 ) {
-                    SelectionContainer {
+                    SelectionContainer(modifier = Modifier.weight(1f, fill = false)) {
                         Text(
                             text = secretCode,
                             style =
@@ -212,7 +210,7 @@ fun TwoFAAuthStepTwo(
 
 @Composable
 fun TwoFAAuthStepThree(
-    enableUiState: TwoFaEnableUiState,
+    enableUiState: TwoFAUiState.Enable,
     onEnableButtonClicked: (String) -> Unit,
 ) {
     var textValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -244,22 +242,19 @@ fun TwoFAAuthStepThree(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                    .padding(top = 16.dp),
             verticalArrangement = spacedBy(12.dp),
         ) {
             InputText(
                 title = stringResource(Res.string.two_fa_authentication_code),
                 supportingText =
-                    when (enableUiState) {
-                        is TwoFaEnableUiState.Failure -> {
-                            listOf(
-                                SupportingTextData(
-                                    text = stringResource(Res.string.two_fa_failed_to_turn_on),
-                                    state = SupportingTextState.ERROR,
-                                ),
-                            )
-                        }
-                        else -> null
+                    enableUiState.enableErrorMessage?.let {
+                        listOf(
+                            SupportingTextData(
+                                text = stringResource(Res.string.two_fa_failed_to_turn_on),
+                                state = SupportingTextState.ERROR,
+                            ),
+                        )
                     },
                 inputTextFieldValue = textValue,
                 onValueChanged = {
@@ -272,8 +267,8 @@ fun TwoFAAuthStepThree(
 
             Button(
                 enabled =
-                    when (enableUiState) {
-                        is TwoFaEnableUiState.Enabling -> false
+                    when (enableUiState.isEnabling) {
+                        true -> false
                         else -> {
                             textValue.text.length == 6
                         }
@@ -285,10 +280,11 @@ fun TwoFAAuthStepThree(
                         .padding(top = 16.dp),
                 style = ButtonStyle.FILLED,
                 text =
-                    when (enableUiState) {
-                        is TwoFaEnableUiState.Enabling -> {
+                    when (enableUiState.isEnabling) {
+                        true -> {
                             stringResource(Res.string.two_fa_turning_on_button)
                         }
+
                         else -> {
                             stringResource(Res.string.two_fa_turn_on_button)
                         }
