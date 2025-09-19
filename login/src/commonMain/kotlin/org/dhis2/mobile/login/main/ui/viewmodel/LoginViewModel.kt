@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
-import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState.OauthLogin
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
-import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -77,10 +77,11 @@ class LoginViewModel(
                                 validationRunning = false,
                             )
                         }
+                    }
 
                     is ServerValidationResult.Legacy -> {
                         navigator.navigate(
-                            LoginScreenState.LegacyLogin(
+                            LegacyLogin(
                                 serverName = result.serverName,
                                 allowRecovery = result.allowRecovery,
                                 selectedServer = serverUrl,
@@ -90,16 +91,15 @@ class LoginViewModel(
                                 oidcUrl = result.oidcUrl,
                             )
                         )
-                            stopValidation()
+                        stopValidation()
                     }
 
                     ServerValidationResult.Oauth -> {
-                        navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                        navigator.navigate(OauthLogin(serverUrl))
                         stopValidation()
                     }
                 }
             }
-                }
     }
 
     fun cancelServerValidation() {
