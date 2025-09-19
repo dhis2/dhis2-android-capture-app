@@ -507,6 +507,7 @@ class TEIDataFragment :
         eventCreationType: EventCreationType,
     ) {
         val model = dashboardViewModel.dashboardModel.value
+        val ownerOrgUnitUid = model?.ownerOrgUnit?.uid()
         if (model is DashboardEnrollmentModel) {
             val programStages =
                 programStage?.let { listOf(it.uid()) }
@@ -520,6 +521,7 @@ class TEIDataFragment :
                         enrollmentUid = model.currentEnrollment.uid(),
                         programStagesUids = programStages,
                         showYesNoOptions = showYesNoOptions,
+                        ownerOrgUnitUid = ownerOrgUnitUid,
                         eventCreationType = eventCreationType,
                     ).show(parentFragmentManager, SCHEDULING_DIALOG)
             }

@@ -46,6 +46,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         fun newSchedule(
             enrollmentUid: String,
             programStagesUids: List<String>,
+            ownerOrgUnitUid: String?,
             showYesNoOptions: Boolean,
             eventCreationType: EventCreationType,
         ): SchedulingDialog {
@@ -53,6 +54,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
                 LaunchMode.NewSchedule(
                     enrollmentUid = enrollmentUid,
                     programStagesUids = programStagesUids,
+                    ownerOrgUnitUid = ownerOrgUnitUid,
                     showYesNoOptions = showYesNoOptions,
                     eventCreationType = eventCreationType,
                 )
@@ -236,6 +238,7 @@ class SchedulingDialog : BottomSheetDialogFragment() {
         data class NewSchedule(
             val enrollmentUid: String,
             val programStagesUids: List<String>,
+            val ownerOrgUnitUid: String?,
             override val showYesNoOptions: Boolean,
             override val eventCreationType: EventCreationType,
         ) : LaunchMode

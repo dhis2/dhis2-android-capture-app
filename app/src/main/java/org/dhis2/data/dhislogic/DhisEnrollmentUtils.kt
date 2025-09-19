@@ -60,10 +60,25 @@ class DhisEnrollmentUtils
             }
         }
 
-        fun generateEnrollmentEvents(enrollmentUid: String): Pair<String, String?> =
-            EnrollmentEventGenerator(
+        fun generateEnrollmentEvents(
+            enrollmentUid: String,
+            teiUid: String,
+        ): Pair<String, String?> {
+            val ownerOrgUnitUid =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
+                    .withProgramOwners()
+                    .uid(teiUid)
+                    .blockingGet()
+                    ?.programOwners()
+                    ?.first {
+                        it.trackedEntityInstance() == teiUid
+                    }?.ownerOrgUnit()
+            return EnrollmentEventGenerator(
                 EnrollmentEventGeneratorRepositoryImpl(d2),
-            ).generateEnrollmentEvents(enrollmentUid)
+            ).generateEnrollmentEvents(enrollmentUid, ownerOrgUnitUid)
+        }
 
         fun getOrgUnit(teiUid: String): String =
             d2
