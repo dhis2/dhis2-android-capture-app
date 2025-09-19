@@ -521,5 +521,6 @@ class SyncManagerPresenterTest {
             reservedValueSettingsViewModel = mockedReservecValuesViewModel(),
             smsSettingsViewModel = mockedSMSViewModel(),
             isTwoFAConfigured = true,
+            versionName = "1.0.0",
         )
 }

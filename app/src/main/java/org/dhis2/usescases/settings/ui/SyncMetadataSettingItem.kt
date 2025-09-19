@@ -1,5 +1,6 @@
 package org.dhis2.usescases.settings.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,12 +9,14 @@ import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -23,11 +26,14 @@ import org.dhis2.bindings.EVERY_7_DAYS
 import org.dhis2.commons.Constants
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 internal fun SyncMetadataSettingItem(
@@ -37,42 +43,31 @@ internal fun SyncMetadataSettingItem(
     onClick: () -> Unit,
     onSyncMetadataClick: () -> Unit,
     onSyncMetaPeriodChanged: (Int) -> Unit,
+    context: Context = LocalContext.current,
 ) {
+    val additionalInfoList =
+        when {
+            metadataSettings.syncInProgress -> {
+                provideSyncInProgressInfoItems(metadataSettings.metadataSyncPeriod, context)
+            }
+
+            metadataSettings.hasErrors -> {
+                provideHasErrorItems(metadataSettings.metadataSyncPeriod, context)
+            }
+
+            else -> {
+                provideDefaultInfoItems(
+                    metadataSettings.metadataSyncPeriod,
+                    metadataSettings.lastMetadataSync,
+                    context,
+                )
+            }
+        }
+
     SettingItem(
         modifier = Modifier.testTag(SettingItem.META_SYNC.name),
         title = stringResource(id = R.string.settingsSyncMetadata),
-        subtitle =
-            buildAnnotatedString {
-                val currentMetadataSyncPeriod = syncPeriodLabel(metadataSettings.metadataSyncPeriod)
-                when {
-                    metadataSettings.syncInProgress -> {
-                        append(
-                            currentMetadataSyncPeriod + "\n" + stringResource(R.string.syncing_configuration),
-                        )
-                    }
-
-                    metadataSettings.hasErrors -> {
-                        val message =
-                            currentMetadataSyncPeriod + "\n" + stringResource(R.string.metadata_sync_error)
-                        append(message)
-                        addStyle(
-                            style = SpanStyle(color = colorResource(R.color.red_060)),
-                            start = 0,
-                            end = message.length,
-                        )
-                    }
-
-                    else -> {
-                        append(
-                            currentMetadataSyncPeriod + "\n" +
-                                String.format(
-                                    stringResource(R.string.last_data_sync_date),
-                                    metadataSettings.lastMetadataSync,
-                                ),
-                        )
-                    }
-                }
-            },
+        additionalInfoList = additionalInfoList,
         icon = Icons.Outlined.CloudSync,
         extraActions = {
             Column(
@@ -87,21 +82,32 @@ internal fun SyncMetadataSettingItem(
                             stringResource(R.string.Manual),
                         )
 
+                    var selectedItem by
+                        remember {
+                            mutableStateOf(
+                                DropdownItem(
+                                    label = syncPeriodLabel(metadataSettings.metadataSyncPeriod, context),
+                                ),
+                            )
+                        }
+                    var inputSyncConfigurationState by remember {
+                        mutableStateOf(InputShellState.UNFOCUSED)
+                    }
+
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_META_PERIOD),
-                        title = "Title",
-                        state = InputShellState.FOCUSED,
+                        title = stringResource(R.string.settingsSyncMetadata),
+                        state = inputSyncConfigurationState,
                         itemCount = metaSyncPeriods.size,
                         onSearchOption = {},
                         fetchItem = { index ->
                             DropdownItem(metaSyncPeriods[index])
                         },
-                        selectedItem =
-                            DropdownItem(
-                                label = syncPeriodLabel(metadataSettings.metadataSyncPeriod),
-                            ),
+                        selectedItem = selectedItem,
                         onResetButtonClicked = { },
-                        onItemSelected = { index, _ ->
+                        onItemSelected = { index, newItem ->
+                            selectedItem = newItem
+                            inputSyncConfigurationState = InputShellState.UNFOCUSED
                             when (index) {
                                 0 -> onSyncMetaPeriodChanged(EVERY_24_HOUR)
                                 1 -> onSyncMetaPeriodChanged(EVERY_7_DAYS)
@@ -136,3 +142,53 @@ internal fun SyncMetadataSettingItem(
         onClick = onClick,
     )
 }
+
+@Composable
+private fun provideDefaultInfoItems(
+    metadataSyncPeriod: Int,
+    lastMetadataSync: String,
+    context: Context,
+) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod, context),
+    ),
+    AdditionalInfoItem(
+        key = stringResource(R.string.last_data_sync),
+        value = lastMetadataSync,
+        color = TextColor.OnSurface,
+    ),
+)
+
+@Composable
+private fun provideHasErrorItems(
+    metadataSyncPeriod: Int,
+    context: Context,
+) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod, context),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.metadata_sync_error),
+        isConstantItem = true,
+        color = AdditionalInfoItemColor.ERROR.color,
+    ),
+)
+
+@Composable
+private fun provideSyncInProgressInfoItems(
+    metadataSyncPeriod: Int,
+    context: Context,
+) = listOf(
+    AdditionalInfoItem(
+        key = stringResource(R.string.settings_sync_period_v2),
+        value = syncPeriodLabel(metadataSyncPeriod, context),
+        isConstantItem = true,
+    ),
+    AdditionalInfoItem(
+        value = stringResource(R.string.syncing_configuration),
+        isConstantItem = true,
+    ),
+)

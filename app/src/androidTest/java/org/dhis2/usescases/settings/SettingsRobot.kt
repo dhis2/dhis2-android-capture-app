@@ -39,8 +39,9 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForData() {
+        composeTestRule.onNodeWithTag(SettingItem.DATA_SYNC.name)
+            .assertIsDisplayed()
         composeTestRule.onNode(
-            hasAnyAncestor(hasTestTag(SettingItem.DATA_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_DATA_PERIOD).assertIsNotDisplayed()
@@ -51,8 +52,9 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
+        composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name)
+            .assertIsDisplayed()
         composeTestRule.onNode(
-            hasAnyAncestor(hasTestTag(SettingItem.META_SYNC.name)) and
                     hasText(NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_META_PERIOD).assertIsNotDisplayed()
@@ -63,8 +65,9 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkEditPeriodIsDisableForParameters() {
+        composeTestRule.onNodeWithTag(SettingItem.SYNC_PARAMETERS.name)
+            .assertIsDisplayed()
         composeTestRule.onNode(
-            hasAnyAncestor(hasTestTag(SettingItem.SYNC_PARAMETERS.name)) and
                     hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
         ).assertIsDisplayed()
         composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE).assertIsNotDisplayed()
@@ -78,7 +81,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnManageReservedValues() {
         composeTestRule.onNode(
-            hasAnyAncestor(hasTestTag(SettingItem.RESERVED_VALUES.name)) and
                     hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
 
