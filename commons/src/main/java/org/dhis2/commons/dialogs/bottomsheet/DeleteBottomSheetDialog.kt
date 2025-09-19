@@ -50,13 +50,11 @@ DeleteBottomSheetDialog(
                 BottomSheetShell(
                     uiState =
                         BottomSheetShellUIState(
-                            bottomPadding = bottomSheetLowerPadding(),
                             title = title,
                             showTopSectionDivider = true,
                             showBottomSectionDivider = false,
                             description = description,
                         ),
-                    windowInsets = { bottomSheetInsets() },
                     icon = {
                         Icon(
                             imageVector = Icons.Outlined.Info,

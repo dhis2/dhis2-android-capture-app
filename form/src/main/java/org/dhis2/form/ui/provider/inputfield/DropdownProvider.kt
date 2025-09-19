@@ -9,8 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.collectAsLazyPagingItems
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -47,8 +45,6 @@ fun ProvideDropdownInput(
 
     InputDropDown(
         modifier = modifier,
-        windowInsets = { bottomSheetInsets() },
-        bottomSheetLowerPadding = bottomSheetLowerPadding(),
         inputStyle = inputStyle,
         title = fieldUiModel.label,
         state = fieldUiModel.inputState(),

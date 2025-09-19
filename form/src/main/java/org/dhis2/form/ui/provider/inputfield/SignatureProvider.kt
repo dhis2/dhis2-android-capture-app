@@ -9,8 +9,6 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -41,8 +39,6 @@ fun ProvideInputSignature(
     InputSignature(
         modifier = modifier,
         title = fieldUiModel.label,
-        bottomSheetLowerPadding = bottomSheetLowerPadding(),
-        windowInsets = { bottomSheetInsets() },
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),

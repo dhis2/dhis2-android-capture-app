@@ -78,7 +78,6 @@ class BottomSheetDialog(
                     BottomSheetShell(
                         uiState =
                             BottomSheetShellUIState(
-                                bottomPadding = bottomSheetLowerPadding(),
                                 showBottomSectionDivider = showBottomDivider,
                                 showTopSectionDivider = showTopDivider,
                                 title = bottomSheetDialogUiModel.title,
@@ -89,7 +88,6 @@ class BottomSheetDialog(
                                     },
                                 headerTextAlignment = bottomSheetDialogUiModel.headerTextAlignment,
                             ),
-                        windowInsets = { bottomSheetInsets() },
                         icon = {
                             if (bottomSheetDialogUiModel.iconResource != -1) {
                                 Icon(
