@@ -117,6 +117,7 @@ internal fun ServerValidationContent(
             onQRButtonClicked = qrReader::launch,
             inputTextFieldValue = server,
             autoCompleteList = availableServers,
+            displayQRCapturedIcon = false,
             autoCompleteItemSelected = { selectedServer ->
                 selectedServer?.let { server = TextFieldValue(it, TextRange(it.length)) }
             },
