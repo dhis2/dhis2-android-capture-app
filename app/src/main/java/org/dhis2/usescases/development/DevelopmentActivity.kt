@@ -254,9 +254,10 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
         }
     }
 
-//    override fun onBackPressed() {
-//        super.onBackPressed()
-//        setResult(RESULT_OK)
-//        finish()
-//    }
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        setResult(RESULT_OK)
+        finish()
+    }
 }
