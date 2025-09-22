@@ -50,8 +50,8 @@ actual val commonsModule: Module
                 PreferenceProviderImpl(get())
             }
 
-            factory<D2ErrorMessageProvider> { params ->
-                D2ErrorMessageProviderImpl(params.get())
+            factory<D2ErrorMessageProvider> {
+                D2ErrorMessageProviderImpl()
             }
 
             factory<TableDimensionRepository> { params ->

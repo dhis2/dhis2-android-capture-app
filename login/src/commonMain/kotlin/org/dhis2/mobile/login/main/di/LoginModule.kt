@@ -5,6 +5,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
@@ -29,6 +30,7 @@ internal val mainLoginModule =
         factoryOf(::GetBiometricInfo)
         factoryOf(::LoginUser)
         factoryOf(::UpdateTrackingPermission)
+        factoryOf(::UpdateBiometricPermission)
         viewModel { parameters ->
             val serverName = parameters.get<String?>(0)
             val serverUrl = parameters.get<String>(1)
@@ -40,6 +42,8 @@ internal val mainLoginModule =
                 getBiometricInfo = get(),
                 loginUser = get(),
                 updateTrackingPermission = get(),
+                updateBiometricPermission = get(),
+                networkStatusProvider = get(),
                 serverName = serverName,
                 serverUrl = serverUrl,
                 username = userName,

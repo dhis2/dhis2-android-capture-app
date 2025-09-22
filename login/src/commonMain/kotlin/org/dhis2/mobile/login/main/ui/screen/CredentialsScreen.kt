@@ -208,7 +208,7 @@ private fun ServerInfo(
             if (serverImageUrl != null) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalPlatformContext.current)
-                        .data("https://avatars.githubusercontent.com/u/1089987?s=200&v=4")
+                        .data(serverImageUrl)
                         .crossfade(true)
                         .build(),
                     contentDescription = "",

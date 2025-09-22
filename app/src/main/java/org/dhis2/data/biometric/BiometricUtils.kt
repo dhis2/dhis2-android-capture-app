@@ -10,8 +10,8 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.R
-import org.dhis2.mobile.commons.biometric.BiometricActions
-import org.dhis2.mobile.commons.biometric.CryptographicActions
+import org.dhis2.mobile.commons.biometrics.BiometricActions
+import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import java.nio.charset.Charset
 import java.security.KeyStore
@@ -31,13 +31,25 @@ class BiometricAuthenticator(
     private val context: Context,
 ): BiometricActions {
     private var biometricPrompt: BiometricPrompt? = null
-
     override fun hasBiometric(): Boolean {
         val biometricManager = BiometricManager.from(context)
         return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
             BiometricManager.BIOMETRIC_SUCCESS -> true
             else -> false
         }
+    }
+
+    override fun authenticate(
+        cipher: Cipher,
+        callback:(Cipher)-> Unit,
+    ) {
+        val cryptoObject = BiometricPrompt.CryptoObject(cipher)
+        authenticate(
+            context as FragmentActivity,
+            {
+                it.cryptoObject?.cipher?.let {cipher-> callback(cipher) }
+            }, cryptoObject
+        )
     }
 
     fun authenticate(

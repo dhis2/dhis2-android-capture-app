@@ -11,8 +11,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.biometric.BiometricPrompt
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.style.TextAlign
+import androidx.core.content.ContextCompat
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -25,7 +26,6 @@ import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
-import org.dhis2.databinding.ActivityLoginBinding
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.screen.LoginScreen
 import org.dhis2.usescases.about.PolicyView
@@ -150,8 +150,8 @@ class LoginActivity :
         loginComponent.inject(this)
 
         super.onCreate(savedInstanceState)
-        val accountsCount = intent.getIntExtra(ACCOUNTS_COUNT, -1)
-        val isDeletion = intent.getBooleanExtra(IS_DELETION, false)
+
+        checkMessage()
 
         skipSync = intent.getBooleanExtra(EXTRA_SKIP_SYNC, false)
 
@@ -177,7 +177,7 @@ class LoginActivity :
                         activity?.let {
                             startActivity(Intent(it, PolicyView::class.java))
                         }
-                    }
+                    },
                 )
             }
         }
@@ -218,51 +218,12 @@ class LoginActivity :
 
     override fun isNetworkAvailable(): Boolean = NetworkUtils.isOnline(this)
 
-    override fun renderError(throwable: Throwable) {
-        showInfoDialog(
-            getString(R.string.login_error),
-            resourceManager.parseD2Error(throwable),
-        )
-    }
-
     override fun handleLogout() {
         recreate()
     }
 
     override fun alreadyAuthenticated() {
         startActivity(MainActivity::class.java, null, true, true, null)
-    }
-
-    private fun showCrashlyticsDialog() {
-        BottomSheetDialog(
-            BottomSheetDialogUiModel(
-                title = getString(R.string.improve_app_msg_title),
-                message = getString(R.string.improve_app_msg_text),
-                clickableWord = getString(R.string.improve_app_msg_clickable_word),
-                iconResource = R.drawable.ic_line_chart,
-                headerTextAlignment = TextAlign.Start,
-                mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton =
-                    DialogButtonStyle.SecondaryButton(
-                        textResource = R.string.not_now,
-                        buttonStyle = ButtonStyle.OUTLINED,
-                    ),
-            ),
-            onMainButtonClicked = {
-                presenter.grantTrackingPermissions(true)
-                context.app().initCrashController()
-                onLoginDataUpdated(false)
-            },
-            onSecondaryButtonClicked = {
-                presenter.grantTrackingPermissions(false)
-                onLoginDataUpdated(false)
-            },
-            onMessageClick = {
-                navigateToPrivacyPolicy()
-            },
-            showTopDivider = false,
-            showBottomDivider = true,
-        ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
     }
 
     override fun onUnlockClick() {
@@ -282,18 +243,8 @@ class LoginActivity :
         presenter.logOut()
     }
 
-    override fun saveUsersData(
-        displayTrackingMessage: Boolean,
-        isInitialSyncDone: Boolean,
-    ) {
-        app().createUserComponent()
-        skipSync = isInitialSyncDone
-        onLoginDataUpdated(displayTrackingMessage)
-    }
-
-    private fun onLoginDataUpdated(displayTrackingMessage: Boolean) {
+    private fun onLoginDataUpdated() {
         when {
-            presenter.shouldAskForBiometrics() -> showBiometricDialog()
             else -> {
                 presenter.saveUserCredentials(this) {
                     goToNextScreen()
@@ -323,7 +274,7 @@ class LoginActivity :
             },
             onSecondaryButtonClicked = {
                 presenter.saveUserCredentials(this) {
-                    onLoginDataUpdated(false)
+                    onLoginDataUpdated()
                 }
             },
         ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)

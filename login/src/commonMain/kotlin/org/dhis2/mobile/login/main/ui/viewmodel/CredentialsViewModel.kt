@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.states.AfterLoginAction
@@ -29,11 +31,22 @@ class CredentialsViewModel(
     private val getBiometricInfo: GetBiometricInfo,
     private val loginUser: LoginUser,
     private val updateTrackingPermission: UpdateTrackingPermission,
+    private val updateBiometricPermission: UpdateBiometricPermission,
+    networkStatusProvider: NetworkStatusProvider,
     private val serverName: String?,
     private val serverUrl: String,
     private val username: String?,
     private val allowRecovery: Boolean,
 ) : ViewModel() {
+
+    private val isNetworkOnline =
+        networkStatusProvider.connectionStatus
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                false,
+            )
+
 
     private val initialState = CredentialsUiState(
         serverInfo = ServerInfo(
@@ -131,7 +144,8 @@ class CredentialsViewModel(
             val result = loginUser(
                 serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
                 username = _credentialsScreenState.value.credentialsInfo.username,
-                password = _credentialsScreenState.value.credentialsInfo.password
+                password = _credentialsScreenState.value.credentialsInfo.password,
+                isNetworkAvailable = isNetworkOnline.value,
             )
             when (result) {
                 is LoginResult.Success -> {
@@ -177,7 +191,7 @@ class CredentialsViewModel(
     }
 
     fun onBiometricsClicked() {
-
+        //TODO:
     }
 
     fun onManageAccountsClicked() {
@@ -206,13 +220,20 @@ class CredentialsViewModel(
     }
 
     fun onEnableBiometrics(granted: Boolean) {
-        //TODO: Store with biometrics
-        _credentialsScreenState.update {
-            it.copy(
-                afterLoginActions = it.afterLoginActions.toMutableList().apply {
-                    remove(AfterLoginAction.DisplayBiometricsMessage)
-                },
+        viewModelScope.launch {
+            updateBiometricPermission(
+                serverUrl,
+                credentialsScreenState.value.credentialsInfo.username,
+                credentialsScreenState.value.credentialsInfo.password,
+                granted
             )
+            _credentialsScreenState.update {
+                it.copy(
+                    afterLoginActions = it.afterLoginActions.toMutableList().apply {
+                        remove(AfterLoginAction.DisplayBiometricsMessage)
+                    },
+                )
+            }
         }
     }
 

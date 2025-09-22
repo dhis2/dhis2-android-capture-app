@@ -1,7 +1,7 @@
 package org.dhis2.mobile.login.main.data
 
-import org.dhis2.mobile.commons.biometric.BiometricActions
-import org.dhis2.mobile.commons.biometric.CryptographicActions
+import org.dhis2.mobile.commons.biometrics.BiometricActions
+import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.SECURE_PASS
 import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
@@ -63,11 +63,23 @@ class LoginRepositoryImpl(
             }
         }
 
-    override suspend fun loginUser(serverUrl: String, username: String, password: String) = try {
+    override suspend fun loginUser(
+        serverUrl: String,
+        username: String,
+        password: String,
+        isNetworkAvailable: Boolean
+    ) = try {
         d2.userModule().blockingLogIn(username, password, serverUrl)
         kotlin.Result.success(Unit)
     } catch (e: Exception) {
-        kotlin.Result.failure(Exception(d2ErrorMessageProvider.getErrorMessage(e)))
+        kotlin.Result.failure(
+            Exception(
+                d2ErrorMessageProvider.getErrorMessage(
+                    e,
+                    isNetworkAvailable
+                )
+            )
+        )
     }
 
     override suspend fun getAvailableLoginUsernames(): List<String> {
@@ -81,7 +93,7 @@ class LoginRepositoryImpl(
 
     override suspend fun updateAvailableUsers(username: String) {
         val availableUsers = preferences.getList(PREF_USERS, emptyList()).toMutableList()
-        availableUsers.add(username)
+        if (!availableUsers.contains(username)) availableUsers.add(username)
         preferences.setValue(PREF_USERS, availableUsers)
     }
 
@@ -116,7 +128,7 @@ class LoginRepositoryImpl(
         return hasBiometrics && hasOnlyOneAccount && credentialsNotSet
     }
 
-    override fun updateTrackingPermissions(granted: Boolean) {
+    override suspend fun updateTrackingPermissions(granted: Boolean) {
         d2.dataStoreModule().localDataStore()
             .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
             .blockingSet(granted.toString())
@@ -124,7 +136,12 @@ class LoginRepositoryImpl(
             val currentAccount = d2.userModule().accountManager().getCurrentAccount()
             val systemInfo = d2.systemInfoModule().systemInfo().blockingGet()
 
-            analyticActions.trackMatomoEvent(USER_PROPERTY_SERVER, VERSION, systemInfo?.version()?:"")
+            analyticActions.trackMatomoEvent(
+                USER_PROPERTY_SERVER,
+                VERSION,
+                systemInfo?.version() ?: ""
+            )
+            crashReportController.init()
             crashReportController.trackServer(currentAccount?.serverUrl(), systemInfo?.version())
             crashReportController.trackUser(currentAccount?.username(), currentAccount?.serverUrl())
         }

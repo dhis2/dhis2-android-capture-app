@@ -13,18 +13,9 @@ class LoginContracts {
         @UiThread
         fun onLogoutClick(android: android.view.View)
 
-        @UiThread
-        fun saveUsersData(
-            displayTrackingMessage: Boolean,
-            isInitialSyncDone: Boolean,
-        )
-
         fun handleLogout()
 
         fun goToNextScreen()
-
-        @UiThread
-        fun renderError(throwable: Throwable)
 
         // FingerPrintAuth
 

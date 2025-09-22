@@ -1,6 +1,5 @@
-package org.dhis2.mobile.commons.biometric
+package org.dhis2.mobile.commons.biometrics
 
-import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
 import javax.crypto.Cipher
 
 interface CryptographicActions {

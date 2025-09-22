@@ -7,7 +7,14 @@ interface LoginRepository {
         server: String,
         isNetworkAvailable: Boolean,
     ): ServerValidationResult
-    suspend fun loginUser(serverUrl: String, username: String, password: String): Result<Unit>
+
+    suspend fun loginUser(
+        serverUrl: String,
+        username: String,
+        password: String,
+        isNetworkAvailable: Boolean
+    ): Result<Unit>
+
     suspend fun getAvailableLoginUsernames(): List<String>
     suspend fun unlockSession()
     suspend fun updateAvailableUsers(username: String)
@@ -19,5 +26,5 @@ interface LoginRepository {
 
     suspend fun canLoginWithBiometrics(serverUrl: String): Boolean
     suspend fun displayBiometricMessage(): Boolean
-    fun updateTrackingPermissions(granted: Boolean)
+    suspend fun updateTrackingPermissions(granted: Boolean)
 }

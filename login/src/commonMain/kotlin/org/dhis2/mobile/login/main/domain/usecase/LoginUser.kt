@@ -9,9 +9,10 @@ class LoginUser(
     suspend operator fun invoke(
         serverUrl: String,
         username: String,
-        password: String
+        password: String,
+        isNetworkAvailable: Boolean,
     ): LoginResult {
-        val result = repository.loginUser(serverUrl, username, password)
+        val result = repository.loginUser(serverUrl, username, password, isNetworkAvailable)
         return when {
             result.isSuccess -> {
                 repository.unlockSession()
