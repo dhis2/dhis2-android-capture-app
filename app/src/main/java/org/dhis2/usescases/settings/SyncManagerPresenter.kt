@@ -307,6 +307,7 @@ class SyncManagerPresenter(
     }
 
     fun checkSyncErrors() {
+        onItemClick(SettingItem.ERROR_LOG)
         viewModelScope.launch(dispatcherProvider.io()) {
             _errorLogChannel.send(getSyncErrors())
         }
