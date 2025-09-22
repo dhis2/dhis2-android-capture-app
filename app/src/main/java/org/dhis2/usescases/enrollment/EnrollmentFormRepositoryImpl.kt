@@ -27,7 +27,7 @@ class EnrollmentFormRepositoryImpl(
 
     override fun generateEvents(): Single<Pair<String, String?>> =
         Single.fromCallable {
-            enrollmentService.generateEnrollmentEvents(enrollmentUid)
+            enrollmentService.generateEnrollmentEvents(enrollmentUid, tei.uid())
         }
 
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)

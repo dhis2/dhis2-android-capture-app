@@ -258,14 +258,14 @@ class EnrollmentPresenterImplTest {
         whenever(enrollmentFormRepository.generateEvents()) doReturn
             Single.just(
                 Pair(
-                    "enrollmentUid",
-                    "eventUid",
+                    ENROLLMENT_UID,
+                    EVENT_UID,
                 ),
             )
 
         presenter.finish(NEW)
 
-        verify(enrollmentView).openEvent("eventUid")
+        verify(enrollmentView).openEvent(EVENT_UID)
     }
 
     @Test
@@ -273,14 +273,14 @@ class EnrollmentPresenterImplTest {
         whenever(enrollmentFormRepository.generateEvents()) doReturn
             Single.just(
                 Pair(
-                    "enrollmentUid",
+                    ENROLLMENT_UID,
                     null,
                 ),
             )
 
         presenter.finish(NEW)
 
-        verify(enrollmentView).openDashboard("enrollmentUid")
+        verify(enrollmentView).openDashboard(ENROLLMENT_UID)
     }
 
     @Test
@@ -288,5 +288,11 @@ class EnrollmentPresenterImplTest {
         presenter.finish(CHECK)
 
         verify(enrollmentView).setResultAndFinish()
+    }
+
+    companion object {
+        const val OWNER_ORG_UNIT_UID = "ownerOrgUnitUid"
+        const val ENROLLMENT_UID = "enrollmentUid"
+        const val EVENT_UID = "eventUid"
     }
 }

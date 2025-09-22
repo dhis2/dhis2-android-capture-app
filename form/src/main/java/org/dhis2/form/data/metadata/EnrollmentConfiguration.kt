@@ -31,6 +31,17 @@ class EnrollmentConfiguration(
 
     fun tei() = enrollment()?.trackedEntityInstance()?.let { d2.tei(it) }
 
+    fun ownerOrgUnit() =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .withProgramOwners()
+            .uid(tei()?.uid())
+            .blockingGet()
+            ?.programOwners()
+            ?.first { it.trackedEntityInstance() == tei()?.uid() }
+            ?.ownerOrgUnit()
+
     fun trackedEntityType() = d2.trackedEntityType(program()?.trackedEntityType()?.uid()!!)
 
     fun sections() =

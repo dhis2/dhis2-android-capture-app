@@ -26,10 +26,10 @@ class EnrollmentEventGeneratorTest {
         mockAddEvent()
         mockNoStageToOpen()
 
-        val result = eventGenerator.generateEnrollmentEvents("enrollmentUid")
+        val result = eventGenerator.generateEnrollmentEvents(ENROLLMENT_UID, OWNER_ORG_UNIT_UID)
         val enrollmentDate = mockedEnrollment().enrollmentDate()!!
-        verify(eventGeneratorRepository).setDueDate("eventUid", enrollmentDate, true)
-        assertTrue(result.first == "enrollmentUid")
+        verify(eventGeneratorRepository).setDueDate(EVENT_UID, enrollmentDate, true)
+        assertTrue(result.first == ENROLLMENT_UID)
         assertTrue(result.second == null)
     }
 
@@ -40,10 +40,10 @@ class EnrollmentEventGeneratorTest {
         mockAddEvent()
         mockNoStageToOpen()
 
-        val result = eventGenerator.generateEnrollmentEvents("enrollmentUid")
+        val result = eventGenerator.generateEnrollmentEvents(ENROLLMENT_UID, OWNER_ORG_UNIT_UID)
         val incidentDate = mockedEnrollment().incidentDate()!!
-        verify(eventGeneratorRepository).setDueDate("eventUid", incidentDate, true)
-        assertTrue(result.first == "enrollmentUid")
+        verify(eventGeneratorRepository).setDueDate(EVENT_UID, incidentDate, true)
+        assertTrue(result.first == ENROLLMENT_UID)
         assertTrue(result.second == null)
     }
 
@@ -54,10 +54,10 @@ class EnrollmentEventGeneratorTest {
         mockUseFirstStage(Constants.ENROLLMENT_DATE)
         mockEventExist()
         mockEventToReturn()
-        val result = eventGenerator.generateEnrollmentEvents("enrollmentUid")
+        val result = eventGenerator.generateEnrollmentEvents(ENROLLMENT_UID, OWNER_ORG_UNIT_UID)
         verify(eventGeneratorRepository, times(0)).addEvent(any(), any(), any(), any())
-        assertTrue(result.first == "enrollmentUid")
-        assertTrue(result.second == "eventUid")
+        assertTrue(result.first == ENROLLMENT_UID)
+        assertTrue(result.second == EVENT_UID)
     }
 
     @Test
@@ -68,11 +68,11 @@ class EnrollmentEventGeneratorTest {
         mockEventDoesNotExist()
         mockAddEvent()
         mockEventToReturn()
-        val result = eventGenerator.generateEnrollmentEvents("enrollmentUid")
+        val result = eventGenerator.generateEnrollmentEvents(ENROLLMENT_UID, OWNER_ORG_UNIT_UID)
         val enrollmentDate = mockedEnrollment().enrollmentDate()!!
-        verify(eventGeneratorRepository).setEventDate("eventUid", enrollmentDate)
-        assertTrue(result.first == "enrollmentUid")
-        assertTrue(result.second == "eventUid")
+        verify(eventGeneratorRepository).setEventDate(EVENT_UID, enrollmentDate)
+        assertTrue(result.first == ENROLLMENT_UID)
+        assertTrue(result.second == EVENT_UID)
     }
 
     @Test
@@ -83,11 +83,11 @@ class EnrollmentEventGeneratorTest {
         mockEventDoesNotExist()
         mockAddEvent()
         mockEventToReturn()
-        val result = eventGenerator.generateEnrollmentEvents("enrollmentUid")
+        val result = eventGenerator.generateEnrollmentEvents(ENROLLMENT_UID, OWNER_ORG_UNIT_UID)
         val incidentDate = mockedEnrollment().incidentDate()!!
-        verify(eventGeneratorRepository).setEventDate("eventUid", incidentDate)
-        assertTrue(result.first == "enrollmentUid")
-        assertTrue(result.second == "eventUid")
+        verify(eventGeneratorRepository).setEventDate(EVENT_UID, incidentDate)
+        assertTrue(result.first == ENROLLMENT_UID)
+        assertTrue(result.second == EVENT_UID)
     }
 
     private fun mockEnrollment() {
@@ -156,19 +156,19 @@ class EnrollmentEventGeneratorTest {
     private fun mockedEnrollment() =
         Enrollment
             .builder()
-            .uid("enrollmentUid")
+            .uid(ENROLLMENT_UID)
             .enrollmentDate(
                 GregorianCalendar(2019, 0, 9).time,
             ).incidentDate(
                 GregorianCalendar(2019, 0, 1).time,
-            ).program("programUid")
-            .organisationUnit("enrollingOrgUnit")
+            ).program(PROGRAM_UID)
+            .organisationUnit(ENROLLMENT_ORG_UNIT)
             .build()
 
     private fun mockedProgram(useFirstStage: Boolean) =
         Program
             .builder()
-            .uid("programUid")
+            .uid(PROGRAM_UID)
             .useFirstStageDuringRegistration(useFirstStage)
             .build()
 
@@ -180,7 +180,7 @@ class EnrollmentEventGeneratorTest {
     ) = listOf(
         ProgramStage
             .builder()
-            .uid("stageUid")
+            .uid(STAGE_UID)
             .generatedByEnrollmentDate(generatedByEnrollmentDate)
             .hideDueDate(hideDueDate)
             .periodType(periodType)
@@ -191,7 +191,16 @@ class EnrollmentEventGeneratorTest {
     private fun mockedStageToOpen(reportDateToUse: String) =
         ProgramStage
             .builder()
-            .uid("stageUid")
+            .uid(STAGE_UID)
             .reportDateToUse(reportDateToUse)
             .build()
+
+    companion object {
+        const val STAGE_UID = "stageUid"
+        const val OWNER_ORG_UNIT_UID = "ownerOrgUnitUid"
+        const val ENROLLMENT_UID = "enrollmentUid"
+        const val EVENT_UID = "eventUid"
+        const val PROGRAM_UID = "programUid"
+        const val ENROLLMENT_ORG_UNIT = "enrollingOrgUnit"
+    }
 }
