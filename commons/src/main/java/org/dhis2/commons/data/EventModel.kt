@@ -5,7 +5,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.program.ProgramStage
 import java.util.Date
 
-data class EventViewModel(
+data class EventModel(
     val type: EventViewModelType,
     val stage: ProgramStage?,
     val event: Event?,
@@ -46,7 +46,7 @@ data class EventViewModel(
             event?.eventDate() != null &&
             event.eventDate()?.after(today) == true
 
-    fun applyHideStage(hidden: Boolean): EventViewModel? =
+    fun applyHideStage(hidden: Boolean): EventModel? =
         when {
             type == EventViewModelType.STAGE && hidden ->
                 when {
@@ -58,7 +58,7 @@ data class EventViewModel(
         }
 }
 
-fun List<EventViewModel>.uids(): List<String> =
+fun List<EventModel>.uids(): List<String> =
     map {
         it.event?.uid()!!
     }

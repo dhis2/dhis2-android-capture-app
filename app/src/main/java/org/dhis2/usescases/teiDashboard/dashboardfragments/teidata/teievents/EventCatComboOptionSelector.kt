@@ -2,7 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import androidx.annotation.VisibleForTesting
 import androidx.fragment.app.FragmentManager
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import java.util.LinkedList
 import java.util.Queue
 
@@ -13,9 +13,9 @@ class EventCatComboOptionSelector(
         object :
             CategoryDialogInteractions {},
 ) {
-    private val eventsWithoutCatComboOptionQueue: Queue<EventViewModel> = LinkedList()
+    private val eventsWithoutCatComboOptionQueue: Queue<EventModel> = LinkedList()
 
-    fun setEventsWithoutCatComboOption(events: List<EventViewModel>) {
+    fun setEventsWithoutCatComboOption(events: List<EventModel>) {
         eventsWithoutCatComboOptionQueue.clear()
         eventsWithoutCatComboOptionQueue.addAll(events)
     }
@@ -35,5 +35,5 @@ class EventCatComboOptionSelector(
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun pollEvent(): EventViewModel? = eventsWithoutCatComboOptionQueue.poll()
+    fun pollEvent(): EventModel? = eventsWithoutCatComboOptionQueue.poll()
 }

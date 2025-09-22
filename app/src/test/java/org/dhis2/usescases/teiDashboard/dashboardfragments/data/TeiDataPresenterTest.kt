@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.bindings.canCreateEventInEnrollment
 import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.D2ErrorUtils
@@ -372,13 +372,13 @@ class TeiDataPresenterTest {
     private fun fakeModel(
         eventCount: Int = 0,
         type: EventViewModelType = EventViewModelType.STAGE,
-    ): EventViewModel {
+    ): EventModel {
         val dataElements = mutableListOf<Pair<String, String>>()
         dataElements.add(
             Pair("Name", "Peter"),
         )
 
-        return EventViewModel(
+        return EventModel(
             type = type,
             stage = ProgramStage.builder().uid("stage").build(),
             event = null,

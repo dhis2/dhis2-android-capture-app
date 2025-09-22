@@ -3,7 +3,7 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.EventModel;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.data.search.SearchParametersModel;
@@ -47,7 +47,7 @@ public interface SearchRepository {
 
     TrackedEntityType getTrackedEntityType();
 
-    List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
+    List<EventModel> getEventsForMap(List<SearchTeiModel> teis);
 
     Observable<D2Progress> downloadTei(String teiUid);
 

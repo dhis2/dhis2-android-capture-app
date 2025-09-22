@@ -14,7 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.resources.ResourceManager
@@ -36,7 +36,7 @@ class EventCardMapper(
     val resourceManager: ResourceManager,
 ) {
     fun map(
-        event: EventViewModel,
+        event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
         onSyncIconClick: () -> Unit,
@@ -60,7 +60,7 @@ class EventCardMapper(
         )
 
     private fun getAdditionalInfoList(
-        event: EventViewModel,
+        event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
     ): List<AdditionalInfoItem> {
@@ -143,7 +143,7 @@ class EventCardMapper(
 
     private fun checkCategoryCombination(
         list: MutableList<AdditionalInfoItem>,
-        event: EventViewModel,
+        event: EventModel,
     ) {
         if (!event.nameCategoryOptionCombo.isNullOrEmpty() &&
             event.nameCategoryOptionCombo != "default"

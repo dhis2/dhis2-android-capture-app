@@ -4,7 +4,7 @@ import io.reactivex.Single
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.bindings.userFriendlyValue
 import org.dhis2.commons.bindings.program
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.DateUtils
@@ -38,7 +38,7 @@ class TeiDataRepositoryImpl(
     override fun getTEIEnrollmentEvents(
         selectedStage: StageSection,
         groupedByStage: Boolean,
-    ): Single<List<EventViewModel>> {
+    ): Single<List<EventModel>> {
         val eventRepo =
             d2
                 .eventModule()
@@ -89,7 +89,7 @@ class TeiDataRepositoryImpl(
                 .get()
         }
 
-    override fun eventsWithoutCatCombo(): Single<List<EventViewModel>> {
+    override fun eventsWithoutCatCombo(): Single<List<EventModel>> {
         return getEnrollmentProgram()
             .flatMap { program ->
                 d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get().map {
@@ -143,7 +143,7 @@ class TeiDataRepositoryImpl(
                                     .programStages()
                                     .uid(it.programStage())
                                     .blockingGet() ?: throw IllegalArgumentException()
-                            EventViewModel(
+                            EventModel(
                                 type = EventViewModelType.EVENT,
                                 stage = stage,
                                 event = it,
@@ -199,8 +199,8 @@ class TeiDataRepositoryImpl(
     private fun getGroupedEvents(
         eventRepository: EventCollectionRepository,
         selectedStage: StageSection,
-    ): Single<List<EventViewModel>> {
-        val eventViewModels = mutableListOf<EventViewModel>()
+    ): Single<List<EventModel>> {
+        val eventModels = mutableListOf<EventModel>()
         var eventRepo: EventCollectionRepository
         val maxEventToShow = 3
         val program = programUid?.let { d2.program(programUid) }
@@ -239,8 +239,8 @@ class TeiDataRepositoryImpl(
                         selectedStage.showAllEvents &&
                             selectedStage.stageUid == programStage.uid()
 
-                    eventViewModels.add(
-                        EventViewModel(
+                    eventModels.add(
+                        EventModel(
                             EventViewModelType.STAGE,
                             programStage,
                             null,
@@ -267,8 +267,8 @@ class TeiDataRepositoryImpl(
                         ).forEachIndexed { index, event ->
                             val showTopShadow = index == 0
                             val showBottomShadow = index == eventList.size - 1
-                            eventViewModels.add(
-                                EventViewModel(
+                            eventModels.add(
+                                EventModel(
                                     EventViewModelType.EVENT,
                                     programStage,
                                     event,
@@ -311,8 +311,8 @@ class TeiDataRepositoryImpl(
                         }
 
                     if (eventList.size > maxEventToShow) {
-                        eventViewModels.add(
-                            EventViewModel(
+                        eventModels.add(
+                            EventModel(
                                 EventViewModelType.TOGGLE_BUTTON,
                                 programStage,
                                 null,
@@ -337,15 +337,15 @@ class TeiDataRepositoryImpl(
                         )
                     }
                 }
-                eventViewModels
+                eventModels
             }
     }
 
     private fun getTimelineEvents(
         eventRepository: EventCollectionRepository,
         showAllEvents: Boolean,
-    ): Single<List<EventViewModel>> {
-        val eventViewModels = mutableListOf<EventViewModel>()
+    ): Single<List<EventModel>> {
+        val eventModels = mutableListOf<EventModel>()
         val maxEventToShow = 5
         val program = programUid?.let { d2.program(it) }
 
@@ -365,8 +365,8 @@ class TeiDataRepositoryImpl(
                                 .programStages()
                                 .uid(event.programStage())
                                 .blockingGet() ?: throw IllegalArgumentException()
-                        eventViewModels.add(
-                            EventViewModel(
+                        eventModels.add(
+                            EventModel(
                                 EventViewModelType.EVENT,
                                 programStage,
                                 event,
@@ -415,8 +415,8 @@ class TeiDataRepositoryImpl(
                             .uid(eventList[maxEventToShow - 1].programStage())
                             .blockingGet()
                             ?: throw IllegalArgumentException()
-                    eventViewModels.add(
-                        EventViewModel(
+                    eventModels.add(
+                        EventModel(
                             EventViewModelType.TOGGLE_BUTTON,
                             programStage,
                             null,
@@ -440,7 +440,7 @@ class TeiDataRepositoryImpl(
                         ),
                     )
                 }
-                eventViewModels
+                eventModels
             }
     }
 

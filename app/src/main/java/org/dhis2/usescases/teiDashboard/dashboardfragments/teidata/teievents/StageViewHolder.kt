@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
@@ -39,7 +39,7 @@ internal class StageViewHolder(
     private val presenter: TEIDataPresenter,
     private val colorUtils: ColorUtils,
 ) : RecyclerView.ViewHolder(composeView) {
-    fun bind(eventItem: EventViewModel) {
+    fun bind(eventItem: EventModel) {
         val stage = eventItem.stage!!
 
         val resourceManager = ResourceManager(itemView.context, colorUtils)

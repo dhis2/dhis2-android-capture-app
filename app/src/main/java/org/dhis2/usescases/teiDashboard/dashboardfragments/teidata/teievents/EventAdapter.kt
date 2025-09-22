@@ -18,7 +18,7 @@ import io.reactivex.Flowable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.EventViewModelType.EVENT
 import org.dhis2.commons.data.EventViewModelType.STAGE
@@ -42,11 +42,11 @@ class EventAdapter(
     val colorUtils: ColorUtils,
     private val cardMapper: TEIEventCardMapper,
     private val initialSelectedEventUid: String? = null,
-) : ListAdapter<EventViewModel, RecyclerView.ViewHolder>(
-        object : DiffUtil.ItemCallback<EventViewModel>() {
+) : ListAdapter<EventModel, RecyclerView.ViewHolder>(
+        object : DiffUtil.ItemCallback<EventModel>() {
             override fun areItemsTheSame(
-                oldItem: EventViewModel,
-                newItem: EventViewModel,
+                oldItem: EventModel,
+                newItem: EventModel,
             ): Boolean {
                 val oldItemId =
                     if (oldItem.type == EVENT) {
@@ -64,8 +64,8 @@ class EventAdapter(
             }
 
             override fun areContentsTheSame(
-                oldItem: EventViewModel,
-                newItem: EventViewModel,
+                oldItem: EventModel,
+                newItem: EventModel,
             ): Boolean = oldItem == newItem
         },
     ) {

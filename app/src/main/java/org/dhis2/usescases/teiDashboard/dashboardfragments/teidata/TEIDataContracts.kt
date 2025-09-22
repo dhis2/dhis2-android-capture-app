@@ -7,7 +7,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.general.AbstractActivityContracts
@@ -18,7 +18,7 @@ class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
         fun viewLifecycleOwner(): LifecycleOwner
 
-        fun setEvents(events: List<EventViewModel>)
+        fun setEvents(events: List<EventModel>)
 
         fun displayScheduleEvent(
             programStage: ProgramStage?,
@@ -60,7 +60,7 @@ class TEIDataContracts {
             enrollmentUid: String,
         )
 
-        fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)
+        fun displayCatComboOptionSelectorForEvents(data: List<EventModel>)
 
         fun showProgramRuleErrorMessage()
 

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.dhis2.R;
 import org.dhis2.commons.bindings.BindingsKt;
-import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.EventModel;
 import org.dhis2.commons.databinding.ItemFieldValueBinding;
 import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.databinding.ItemEventBinding;
@@ -64,7 +64,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         );
     }
 
-    public void bind(EventViewModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
+    public void bind(EventModel eventModel, Enrollment enrollment, @NotNull Function0<Unit> toggleList) {
         Event event = eventModel.getEvent();
         binding.setEvent(eventModel.getEvent());
         binding.setStage(eventModel.getStage());
@@ -127,7 +127,7 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         showShadows(eventModel);
     }
 
-    private void setEventValueLayout(EventViewModel eventModel, @NotNull Function0<Unit> toggleList) {
+    private void setEventValueLayout(EventModel eventModel, @NotNull Function0<Unit> toggleList) {
         binding.showValuesButton.setVisibility(View.VISIBLE);
         binding.showValuesButton.setOnClickListener(view -> toggleList.invoke());
         initValues(eventModel.getValueListIsOpen(), eventModel.getDataElementValues());
@@ -190,8 +190,8 @@ public class EventViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    public void showShadows(EventViewModel eventViewModel) {
-        binding.shadowTop.setVisibility(eventViewModel.getGroupedByStage() && eventViewModel.getShowTopShadow() ? View.VISIBLE : View.GONE);
-        binding.shadowBottom.setVisibility(eventViewModel.getGroupedByStage() && eventViewModel.getShowBottomShadow() ? View.VISIBLE : View.GONE);
+    public void showShadows(EventModel eventModel) {
+        binding.shadowTop.setVisibility(eventModel.getGroupedByStage() && eventModel.getShowTopShadow() ? View.VISIBLE : View.GONE);
+        binding.shadowBottom.setVisibility(eventModel.getGroupedByStage() && eventModel.getShowBottomShadow() ? View.VISIBLE : View.GONE);
     }
 }
