@@ -29,9 +29,8 @@ import java.util.Locale
 
 internal class QrReaderPresenterImpl(
     private val d2: D2,
-    private val schedulerProvider: SchedulerProvider
-) :
-    QrReaderContracts.Presenter {
+    private val schedulerProvider: SchedulerProvider,
+) : QrReaderContracts.Presenter {
     private var view: QrReaderContracts.View? = null
     private val compositeDisposable = CompositeDisposable()
 
@@ -82,23 +81,23 @@ internal class QrReaderPresenterImpl(
                     }
                     if (attrValue.has("providedElsewhere")) {
                         trackedEntityDataValueModelBuilder.providedElsewhere(
-                            attrValue.getString("providedElsewhere").toBoolean()
+                            attrValue.getString("providedElsewhere").toBoolean(),
                         )
                     }
                     if (attrValue.has("created")) {
                         trackedEntityDataValueModelBuilder.created(
                             simpleDateFormat.parse(
                                 attrValue.getString(
-                                    "created"
-                                )
-                            )
+                                    "created",
+                                ),
+                            ),
                         )
                     }
                     if (attrValue.has("lastUpdated")) {
                         trackedEntityDataValueModelBuilder.lastUpdated(
                             simpleDateFormat.parse(
-                                attrValue.getString("lastUpdated")
-                            )
+                                attrValue.getString("lastUpdated"),
+                            ),
                         )
                     }
 
@@ -106,26 +105,33 @@ internal class QrReaderPresenterImpl(
                         // LOOK FOR dataElement ON LOCAL DATABASE.
                         // IF FOUND, OPEN DASHBOARD
 
-                        if (d2.dataElementModule().dataElements()
-                                .uid(attrValue.getString("dataElement")).blockingExists()
+                        if (d2
+                                .dataElementModule()
+                                .dataElements()
+                                .uid(attrValue.getString("dataElement"))
+                                .blockingExists()
                         ) {
                             dataJson.add(attrValue)
-                            val de = d2.dataElementModule().dataElements()
-                                .uid(attrValue.getString("dataElement")).blockingGet()
+                            val de =
+                                d2
+                                    .dataElementModule()
+                                    .dataElements()
+                                    .uid(attrValue.getString("dataElement"))
+                                    .blockingGet()
                             attributes.add(
                                 Triple(
                                     trackedEntityDataValueModelBuilder.build(),
                                     de!!.displayFormName(),
-                                    true
-                                )
+                                    true,
+                                ),
                             )
                         } else {
                             attributes.add(
                                 Triple<TrackedEntityDataValue, String?, Boolean>(
                                     trackedEntityDataValueModelBuilder.build(),
                                     null,
-                                    false
-                                )
+                                    false,
+                                ),
                             )
                         }
                     } else {
@@ -133,8 +139,8 @@ internal class QrReaderPresenterImpl(
                             Triple<TrackedEntityDataValue, String?, Boolean>(
                                 trackedEntityDataValueModelBuilder.build(),
                                 null,
-                                false
-                            )
+                                false,
+                            ),
                         )
                     }
                 }
@@ -173,51 +179,58 @@ internal class QrReaderPresenterImpl(
                 }
                 if (attrValue.has("providedElsewhere")) {
                     trackedEntityDataValueModelBuilder.providedElsewhere(
-                        attrValue.getString("providedElsewhere").toBoolean()
+                        attrValue.getString("providedElsewhere").toBoolean(),
                     )
                 }
                 if (attrValue.has("created")) {
                     trackedEntityDataValueModelBuilder.created(
                         simpleDateFormat.parse(
                             attrValue.getString(
-                                "created"
-                            )
-                        )
+                                "created",
+                            ),
+                        ),
                     )
                 }
                 if (attrValue.has("lastUpdated")) {
                     trackedEntityDataValueModelBuilder.lastUpdated(
                         simpleDateFormat.parse(
                             attrValue.getString(
-                                "lastUpdated"
-                            )
-                        )
+                                "lastUpdated",
+                            ),
+                        ),
                     )
                 }
 
                 if (attrValue.has("dataElement") && attrValue.getString("dataElement") != null) {
                     // LOOK FOR dataElement ON LOCAL DATABASE.
                     // IF FOUND, OPEN DASHBOARD
-                    if (d2.dataElementModule().dataElements()
-                            .uid(attrValue.getString("dataElement")).blockingExists()
+                    if (d2
+                            .dataElementModule()
+                            .dataElements()
+                            .uid(attrValue.getString("dataElement"))
+                            .blockingExists()
                     ) {
                         teiDataJson.add(attrValue)
-                        val de = d2.dataElementModule().dataElements()
-                            .uid(attrValue.getString("dataElement")).blockingGet()
+                        val de =
+                            d2
+                                .dataElementModule()
+                                .dataElements()
+                                .uid(attrValue.getString("dataElement"))
+                                .blockingGet()
                         attributes.add(
                             Triple(
                                 trackedEntityDataValueModelBuilder.build(),
                                 de!!.displayFormName(),
-                                true
-                            )
+                                true,
+                            ),
                         )
                     } else {
                         attributes.add(
                             Triple<TrackedEntityDataValue, String?, Boolean>(
                                 trackedEntityDataValueModelBuilder.build(),
                                 null,
-                                false
-                            )
+                                false,
+                            ),
                         )
                     }
                 } else {
@@ -225,8 +238,8 @@ internal class QrReaderPresenterImpl(
                         Triple<TrackedEntityDataValue, String?, Boolean>(
                             trackedEntityDataValueModelBuilder.build(),
                             null,
-                            false
-                        )
+                            false,
+                        ),
                     )
                 }
             }
@@ -249,9 +262,15 @@ internal class QrReaderPresenterImpl(
         }
 
         // IF TEI READ
-        teiUid?.let { currentTeiUid -> // 'it' will be the non-null teiUid
+        teiUid?.let { currentTeiUid ->
+            // 'it' will be the non-null teiUid
             // IF FOUND, OPEN DASHBOARD
-            if (d2.trackedEntityModule().trackedEntityInstances().uid(currentTeiUid).blockingExists()) {
+            if (d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
+                    .uid(currentTeiUid)
+                    .blockingExists()
+            ) {
                 view!!.goToDashBoard(currentTeiUid)
             } else {
                 view!!.downloadTei(currentTeiUid)
@@ -268,23 +287,32 @@ internal class QrReaderPresenterImpl(
                 val attrValue = jsonArray.getJSONObject(i)
                 if (attrValue.has("trackedEntityAttribute") && attrValue.getString("trackedEntityAttribute") != null) {
                     // TRACKED ENTITY ATTRIBUTE FOUND, TRACKED ENTITY ATTRIBUTE VALUE CAN BE SAVED.
-                    if (d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(attrValue.getString("trackedEntityAttribute")).blockingExists()
+                    if (d2
+                            .trackedEntityModule()
+                            .trackedEntityAttributes()
+                            .uid(attrValue.getString("trackedEntityAttribute"))
+                            .blockingExists()
                     ) {
-                        val attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                            .uid(attrValue.getString("trackedEntityAttribute")).blockingGet()
+                        val attribute =
+                            d2
+                                .trackedEntityModule()
+                                .trackedEntityAttributes()
+                                .uid(attrValue.getString("trackedEntityAttribute"))
+                                .blockingGet()
                         attributes.add(
                             Triple<String, String, Boolean>(
-                                attribute!!.displayName()!!, attrValue.getString("value"), true
-                            )
+                                attribute!!.displayName()!!,
+                                attrValue.getString("value"),
+                                true,
+                            ),
                         )
                     } else {
                         attributes.add(
                             Triple(
                                 attrValue.getString("trackedEntityAttribute"),
                                 "",
-                                false
-                            )
+                                false,
+                            ),
                         )
                     }
                 }
@@ -305,11 +333,17 @@ internal class QrReaderPresenterImpl(
                 val attrValue = jsonArray.getJSONObject(i)
                 if (attrValue.has("program") && attrValue.getString("program") != null) {
                     // PROGRAM FOUND, ENROLLMENT CAN BE SAVED
-                    if (d2.programModule().programs().uid(attrValue.getString("program"))
+                    if (d2
+                            .programModule()
+                            .programs()
+                            .uid(attrValue.getString("program"))
                             .blockingExists()
                     ) {
                         val program =
-                            d2.programModule().programs().uid(attrValue.getString("program"))
+                            d2
+                                .programModule()
+                                .programs()
+                                .uid(attrValue.getString("program"))
                                 .blockingGet()
                         enrollments.add(Pair<String, Boolean>(program!!.displayName()!!, true))
                     } else {
@@ -324,7 +358,6 @@ internal class QrReaderPresenterImpl(
         view!!.renderEnrollmentInfo(enrollments)
     }
 
-
     override fun handleEventInfo(jsonObject: JSONObject) {
         eventsJson.add(jsonObject)
         val events = ArrayList<Pair<String, Boolean>>()
@@ -332,7 +365,10 @@ internal class QrReaderPresenterImpl(
             // LOOK FOR ENROLLMENT ON LOCAL DATABASE
             if (jsonObject.has("enrollment") && jsonObject.getString("enrollment") != null) {
                 // ENROLLMENT FOUND, EVENT CAN BE SAVED
-                if (d2.enrollmentModule().enrollments().uid(jsonObject.getString("enrollment"))
+                if (d2
+                        .enrollmentModule()
+                        .enrollments()
+                        .uid(jsonObject.getString("enrollment"))
                         .blockingExists()
                 ) {
                     events.add(Pair(jsonObject.getString("enrollment"), true))
@@ -390,45 +426,58 @@ internal class QrReaderPresenterImpl(
             if (teiJson != null) {
                 val teiModelBuilder = TrackedEntityInstance.builder()
                 if (teiJson!!.has("uid")) teiModelBuilder.uid(teiJson!!.getString("uid"))
-                if (teiJson!!.has("created")) teiModelBuilder.created(
-                    DateUtils.databaseDateFormat().parse(
-                        teiJson!!.getString("created")
+                if (teiJson!!.has("created")) {
+                    teiModelBuilder.created(
+                        DateUtils.databaseDateFormat().parse(
+                            teiJson!!.getString("created"),
+                        ),
                     )
-                )
-                if (teiJson!!.has("lastUpdated")) teiModelBuilder.lastUpdated(
-                    DateUtils.databaseDateFormat().parse(
-                        teiJson!!.getString("lastUpdated")
+                }
+                if (teiJson!!.has("lastUpdated")) {
+                    teiModelBuilder.lastUpdated(
+                        DateUtils.databaseDateFormat().parse(
+                            teiJson!!.getString("lastUpdated"),
+                        ),
                     )
-                )
-                if (teiJson!!.has("aggregatedSyncState")) teiModelBuilder.aggregatedSyncState(
-                    State.valueOf(
-                        teiJson!!.getString("aggregatedSyncState")
+                }
+                if (teiJson!!.has("aggregatedSyncState")) {
+                    teiModelBuilder.aggregatedSyncState(
+                        State.valueOf(
+                            teiJson!!.getString("aggregatedSyncState"),
+                        ),
                     )
-                )
-                if (teiJson!!.has("organisationUnit")) teiModelBuilder.organisationUnit(
-                    teiJson!!.getString(
-                        "organisationUnit"
+                }
+                if (teiJson!!.has("organisationUnit")) {
+                    teiModelBuilder.organisationUnit(
+                        teiJson!!.getString(
+                            "organisationUnit",
+                        ),
                     )
-                )
-                if (teiJson!!.has("trackedEntityType")) teiModelBuilder.trackedEntityType(
-                    teiJson!!.getString(
-                        "trackedEntityType"
+                }
+                if (teiJson!!.has("trackedEntityType")) {
+                    teiModelBuilder.trackedEntityType(
+                        teiJson!!.getString(
+                            "trackedEntityType",
+                        ),
                     )
-                )
-                if (teiJson!!.has("geometry")) teiModelBuilder.geometry(
-                    Geometry.builder()
-                        .type(
-                            FeatureType.valueOf(
-                                teiJson!!.getJSONObject("geometry").getString("type")
-                            )
-                        )
-                        .coordinates(teiJson!!.getJSONObject("geometry").getString("coordinates"))
-                        .build()
-                )
+                }
+                if (teiJson!!.has("geometry")) {
+                    teiModelBuilder.geometry(
+                        Geometry
+                            .builder()
+                            .type(
+                                FeatureType.valueOf(
+                                    teiJson!!.getJSONObject("geometry").getString("type"),
+                                ),
+                            ).coordinates(teiJson!!.getJSONObject("geometry").getString("coordinates"))
+                            .build(),
+                    )
+                }
 
-                val teiModel = teiModelBuilder
-                    .deleted(false)
-                    .build()
+                val teiModel =
+                    teiModelBuilder
+                        .deleted(false)
+                        .build()
 
                 if (teiModel != null) {
                     runBlocking {
@@ -453,19 +502,27 @@ internal class QrReaderPresenterImpl(
                         val attrV = attrArray.getJSONObject(j)
                         val attrValueModelBuilder =
                             TrackedEntityAttributeValue.builder()
-                        if (attrV.has("created")) attrValueModelBuilder.created(
-                            DateUtils.databaseDateFormat().parse(attrV.getString("created"))
-                        )
-                        if (attrV.has("lastUpdated")) attrValueModelBuilder.lastUpdated(
-                            DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated"))
-                        )
+                        if (attrV.has("created")) {
+                            attrValueModelBuilder.created(
+                                DateUtils.databaseDateFormat().parse(attrV.getString("created")),
+                            )
+                        }
+                        if (attrV.has("lastUpdated")) {
+                            attrValueModelBuilder.lastUpdated(
+                                DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")),
+                            )
+                        }
                         if (attrV.has("value")) attrValueModelBuilder.value(attrV.getString("value"))
-                        if (attrV.has("trackedEntityInstance")) attrValueModelBuilder.trackedEntityInstance(
-                            attrV.getString("trackedEntityInstance")
-                        )
-                        if (attrV.has("trackedEntityAttribute")) attrValueModelBuilder.trackedEntityAttribute(
-                            attrV.getString("trackedEntityAttribute")
-                        )
+                        if (attrV.has("trackedEntityInstance")) {
+                            attrValueModelBuilder.trackedEntityInstance(
+                                attrV.getString("trackedEntityInstance"),
+                            )
+                        }
+                        if (attrV.has("trackedEntityAttribute")) {
+                            attrValueModelBuilder.trackedEntityAttribute(
+                                attrV.getString("trackedEntityAttribute"),
+                            )
+                        }
 
                         val attrValueModel = attrValueModelBuilder.build()
 
@@ -483,7 +540,8 @@ internal class QrReaderPresenterImpl(
 
         if (relationshipsJson != null) {
             for (i in relationshipsJson.indices) {
-                //TODO: CHANGE RELATIONSHIPS
+                // TODO: CHANGE RELATIONSHIPS
+
                 /*try {
                 JSONObject relationship = relationshipsJson.getJSONObject(i);
 
@@ -517,66 +575,95 @@ internal class QrReaderPresenterImpl(
                         val enrollmentJson = enrollmentArray.getJSONObject(j)
                         val enrollmentBuilder =
                             Enrollment.builder()
-                        if (enrollmentJson.has("uid")) enrollmentBuilder.uid(
-                            enrollmentJson.getString(
-                                "uid"
+                        if (enrollmentJson.has("uid")) {
+                            enrollmentBuilder.uid(
+                                enrollmentJson.getString(
+                                    "uid",
+                                ),
                             )
-                        )
-                        if (enrollmentJson.has("created")) enrollmentBuilder.created(
-                            DateUtils.databaseDateFormat()
-                                .parse(enrollmentJson.getString("created"))
-                        )
-                        if (enrollmentJson.has("lastUpdated")) enrollmentBuilder.lastUpdated(
-                            DateUtils.databaseDateFormat()
-                                .parse(enrollmentJson.getString("lastUpdated"))
-                        )
-                        if (enrollmentJson.has("aggregatedSyncState")) enrollmentBuilder.aggregatedSyncState(
-                            State.valueOf(enrollmentJson.getString("aggregatedSyncState"))
-                        )
-                        if (enrollmentJson.has("program")) enrollmentBuilder.program(
-                            enrollmentJson.getString(
-                                "program"
+                        }
+                        if (enrollmentJson.has("created")) {
+                            enrollmentBuilder.created(
+                                DateUtils
+                                    .databaseDateFormat()
+                                    .parse(enrollmentJson.getString("created")),
                             )
-                        )
-                        if (enrollmentJson.has("followUp")) enrollmentBuilder.followUp(
-                            enrollmentJson.getBoolean("followUp")
-                        )
-                        if (enrollmentJson.has("status")) enrollmentBuilder.status(
-                            EnrollmentStatus.valueOf(
-                                enrollmentJson.getString("status")
+                        }
+                        if (enrollmentJson.has("lastUpdated")) {
+                            enrollmentBuilder.lastUpdated(
+                                DateUtils
+                                    .databaseDateFormat()
+                                    .parse(enrollmentJson.getString("lastUpdated")),
                             )
-                        )
-                        if (enrollmentJson.has("enrollmentDate")) enrollmentBuilder.enrollmentDate(
-                            DateUtils.databaseDateFormat()
-                                .parse(enrollmentJson.getString("enrollmentDate"))
-                        )
-                        if (enrollmentJson.has("incidentDate")) enrollmentBuilder.incidentDate(
-                            DateUtils.databaseDateFormat()
-                                .parse(enrollmentJson.getString("incidentDate"))
-                        )
-                        if (enrollmentJson.has("organisationUnit")) enrollmentBuilder.organisationUnit(
-                            enrollmentJson.getString("organisationUnit")
-                        )
-                        if (enrollmentJson.has("trackedEntityInstance")) enrollmentBuilder.trackedEntityInstance(
-                            enrollmentJson.getString("trackedEntityInstance")
-                        )
-                        if (enrollmentJson.has("geometry")) enrollmentBuilder.geometry(
-                            Geometry.builder()
-                                .type(
-                                    FeatureType.valueOf(
-                                        enrollmentJson.getJSONObject("geometry").getString("type")
-                                    )
-                                )
-                                .coordinates(
-                                    enrollmentJson.getJSONObject("geometry")
-                                        .getString("coordinates")
-                                )
-                                .build()
-                        )
+                        }
+                        if (enrollmentJson.has("aggregatedSyncState")) {
+                            enrollmentBuilder.aggregatedSyncState(
+                                State.valueOf(enrollmentJson.getString("aggregatedSyncState")),
+                            )
+                        }
+                        if (enrollmentJson.has("program")) {
+                            enrollmentBuilder.program(
+                                enrollmentJson.getString(
+                                    "program",
+                                ),
+                            )
+                        }
+                        if (enrollmentJson.has("followUp")) {
+                            enrollmentBuilder.followUp(
+                                enrollmentJson.getBoolean("followUp"),
+                            )
+                        }
+                        if (enrollmentJson.has("status")) {
+                            enrollmentBuilder.status(
+                                EnrollmentStatus.valueOf(
+                                    enrollmentJson.getString("status"),
+                                ),
+                            )
+                        }
+                        if (enrollmentJson.has("enrollmentDate")) {
+                            enrollmentBuilder.enrollmentDate(
+                                DateUtils
+                                    .databaseDateFormat()
+                                    .parse(enrollmentJson.getString("enrollmentDate")),
+                            )
+                        }
+                        if (enrollmentJson.has("incidentDate")) {
+                            enrollmentBuilder.incidentDate(
+                                DateUtils
+                                    .databaseDateFormat()
+                                    .parse(enrollmentJson.getString("incidentDate")),
+                            )
+                        }
+                        if (enrollmentJson.has("organisationUnit")) {
+                            enrollmentBuilder.organisationUnit(
+                                enrollmentJson.getString("organisationUnit"),
+                            )
+                        }
+                        if (enrollmentJson.has("trackedEntityInstance")) {
+                            enrollmentBuilder.trackedEntityInstance(
+                                enrollmentJson.getString("trackedEntityInstance"),
+                            )
+                        }
+                        if (enrollmentJson.has("geometry")) {
+                            enrollmentBuilder.geometry(
+                                Geometry
+                                    .builder()
+                                    .type(
+                                        FeatureType.valueOf(
+                                            enrollmentJson.getJSONObject("geometry").getString("type"),
+                                        ),
+                                    ).coordinates(
+                                        enrollmentJson
+                                            .getJSONObject("geometry")
+                                            .getString("coordinates"),
+                                    ).build(),
+                            )
+                        }
 
-                        val enrollment = enrollmentBuilder
-                            .deleted(false)
-                            .build()
+                        val enrollment =
+                            enrollmentBuilder
+                                .deleted(false)
+                                .build()
 
                         if (enrollment != null) {
                             runBlocking { d2.databaseAdapter().upsertObject(enrollment, Enrollment::class) }
@@ -590,7 +677,6 @@ internal class QrReaderPresenterImpl(
             }
         }
 
-
         if (eventsJson != null) {
             for (i in eventsJson.indices) {
                 try {
@@ -598,64 +684,84 @@ internal class QrReaderPresenterImpl(
                     val eventBuilder =
                         Event.builder()
                     if (eventJson.has("uid")) eventBuilder.uid(eventJson.getString("uid"))
-                    if (eventJson.has("created")) eventBuilder.created(
-                        DateUtils.databaseDateFormat().parse(eventJson.getString("created"))
-                    )
-                    if (eventJson.has("lastUpdated")) eventBuilder.lastUpdated(
-                        DateUtils.databaseDateFormat().parse(eventJson.getString("lastUpdated"))
-                    )
-                    if (eventJson.has("aggregatedSyncState")) eventBuilder.aggregatedSyncState(
-                        State.valueOf(eventJson.getString("aggregatedSyncState"))
-                    )
-                    if (eventJson.has("enrollment")) eventBuilder.enrollment(eventJson.getString("enrollment"))
-                    if (eventJson.has("program")) eventBuilder.program(eventJson.getString("program"))
-                    if (eventJson.has("programStage")) eventBuilder.programStage(
-                        eventJson.getString(
-                            "programStage"
-                        )
-                    )
-                    if (eventJson.has("organisationUnit")) eventBuilder.organisationUnit(
-                        eventJson.getString(
-                            "organisationUnit"
-                        )
-                    )
-                    if (eventJson.has("eventDate")) eventBuilder.eventDate(
-                        DateUtils.databaseDateFormat().parse(eventJson.getString("eventDate"))
-                    )
-                    if (eventJson.has("status")) eventBuilder.status(
-                        EventStatus.valueOf(
-                            eventJson.getString(
-                                "status"
-                            )
-                        )
-                    )
-                    if (eventJson.has("attributeOptionCombo")) eventBuilder.attributeOptionCombo(
-                        eventJson.getString("attributeOptionCombo")
-                    )
-                    if (eventJson.has("geometry")) {
-                        eventBuilder.geometry(
-                            Geometry.builder()
-                                .type(
-                                    FeatureType.valueOf(
-                                        eventJson.getJSONObject("geometry").getString("type")
-                                    )
-                                )
-                                .coordinates(
-                                    eventJson.getJSONObject("geometry").getString("coordinates")
-                                )
-                                .build()
+                    if (eventJson.has("created")) {
+                        eventBuilder.created(
+                            DateUtils.databaseDateFormat().parse(eventJson.getString("created")),
                         )
                     }
-                    if (eventJson.has("completedDate")) eventBuilder.completedDate(
-                        DateUtils.databaseDateFormat().parse(eventJson.getString("completedDate"))
-                    )
-                    if (eventJson.has("dueDate")) eventBuilder.dueDate(
-                        DateUtils.databaseDateFormat().parse(eventJson.getString("dueDate"))
-                    )
+                    if (eventJson.has("lastUpdated")) {
+                        eventBuilder.lastUpdated(
+                            DateUtils.databaseDateFormat().parse(eventJson.getString("lastUpdated")),
+                        )
+                    }
+                    if (eventJson.has("aggregatedSyncState")) {
+                        eventBuilder.aggregatedSyncState(
+                            State.valueOf(eventJson.getString("aggregatedSyncState")),
+                        )
+                    }
+                    if (eventJson.has("enrollment")) eventBuilder.enrollment(eventJson.getString("enrollment"))
+                    if (eventJson.has("program")) eventBuilder.program(eventJson.getString("program"))
+                    if (eventJson.has("programStage")) {
+                        eventBuilder.programStage(
+                            eventJson.getString(
+                                "programStage",
+                            ),
+                        )
+                    }
+                    if (eventJson.has("organisationUnit")) {
+                        eventBuilder.organisationUnit(
+                            eventJson.getString(
+                                "organisationUnit",
+                            ),
+                        )
+                    }
+                    if (eventJson.has("eventDate")) {
+                        eventBuilder.eventDate(
+                            DateUtils.databaseDateFormat().parse(eventJson.getString("eventDate")),
+                        )
+                    }
+                    if (eventJson.has("status")) {
+                        eventBuilder.status(
+                            EventStatus.valueOf(
+                                eventJson.getString(
+                                    "status",
+                                ),
+                            ),
+                        )
+                    }
+                    if (eventJson.has("attributeOptionCombo")) {
+                        eventBuilder.attributeOptionCombo(
+                            eventJson.getString("attributeOptionCombo"),
+                        )
+                    }
+                    if (eventJson.has("geometry")) {
+                        eventBuilder.geometry(
+                            Geometry
+                                .builder()
+                                .type(
+                                    FeatureType.valueOf(
+                                        eventJson.getJSONObject("geometry").getString("type"),
+                                    ),
+                                ).coordinates(
+                                    eventJson.getJSONObject("geometry").getString("coordinates"),
+                                ).build(),
+                        )
+                    }
+                    if (eventJson.has("completedDate")) {
+                        eventBuilder.completedDate(
+                            DateUtils.databaseDateFormat().parse(eventJson.getString("completedDate")),
+                        )
+                    }
+                    if (eventJson.has("dueDate")) {
+                        eventBuilder.dueDate(
+                            DateUtils.databaseDateFormat().parse(eventJson.getString("dueDate")),
+                        )
+                    }
 
-                    val eventModel = eventBuilder
-                        .deleted(false)
-                        .build()
+                    val eventModel =
+                        eventBuilder
+                            .deleted(false)
+                            .build()
 
                     if (eventModel != null) {
                         runBlocking { d2.databaseAdapter().upsertObject(eventModel, Event::class) }
@@ -675,17 +781,22 @@ internal class QrReaderPresenterImpl(
                     TrackedEntityDataValue.builder()
 
                 if (attrV.has("event")) attrValueModelBuilder.event(attrV.getString("event"))
-                if (attrV.has("lastUpdated")) attrValueModelBuilder.lastUpdated(
-                    DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated"))
-                )
+                if (attrV.has("lastUpdated")) {
+                    attrValueModelBuilder.lastUpdated(
+                        DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")),
+                    )
+                }
                 if (attrV.has("dataElement")) attrValueModelBuilder.dataElement(attrV.getString("dataElement"))
                 if (attrV.has("storedBy")) attrValueModelBuilder.storedBy(attrV.getString("storedBy"))
                 if (attrV.has("value")) attrValueModelBuilder.value(attrV.getString("value"))
-                if (attrV.has("providedElsewhere")) attrValueModelBuilder.providedElsewhere(
-                    attrV.getString(
-                        "providedElsewhere"
-                    ).toBoolean()
-                )
+                if (attrV.has("providedElsewhere")) {
+                    attrValueModelBuilder.providedElsewhere(
+                        attrV
+                            .getString(
+                                "providedElsewhere",
+                            ).toBoolean(),
+                    )
+                }
 
                 val attrValueModel = attrValueModelBuilder.build()
 
@@ -702,13 +813,16 @@ internal class QrReaderPresenterImpl(
         view!!.goToDashBoard(teiUid)
     }
 
-
     // CALLS THE ENDPOINT TO DOWNLOAD AND SAVE THE TRACKED ENTITY INSTANCE INFO
     override fun onlineDownload() {
         view!!.initDownload()
-        val uidToDownload = teiUid?.let {listOf(it)} ?: emptyList()
+        val uidToDownload = teiUid?.let { listOf(it) } ?: emptyList()
         compositeDisposable.add(
-            d2.trackedEntityModule().trackedEntityInstanceDownloader().byUid().`in`(uidToDownload)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceDownloader()
+                .byUid()
+                .`in`(uidToDownload)
                 .download()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
@@ -720,15 +834,18 @@ internal class QrReaderPresenterImpl(
                     },
                     Action {
                         view!!.finishDownload()
-                        if (d2.trackedEntityModule().trackedEntityInstances().uid(teiUid)
+                        if (d2
+                                .trackedEntityModule()
+                                .trackedEntityInstances()
+                                .uid(teiUid)
                                 .blockingExists()
                         ) {
                             view!!.goToDashBoard(teiUid)
                         } else {
                             view!!.renderTeiInfo(teiUid)
                         }
-                    }
-                )
+                    },
+                ),
         )
     }
 
@@ -752,48 +869,49 @@ internal class QrReaderPresenterImpl(
                 if (eventWORegistrationJson!!.has("created")) {
                     eventBuilder.created(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("created")
-                        )
+                            eventWORegistrationJson!!.getString("created"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("lastUpdated")) {
                     eventBuilder.lastUpdated(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("lastUpdated")
-                        )
+                            eventWORegistrationJson!!.getString("lastUpdated"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("createdAtClient")) {
                     eventBuilder.createdAtClient(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("createdAtClient")
-                        )
+                            eventWORegistrationJson!!.getString("createdAtClient"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("lastUpdatedAtClient")) {
                     eventBuilder.lastUpdatedAtClient(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("lastUpdatedAtClient")
-                        )
+                            eventWORegistrationJson!!.getString("lastUpdatedAtClient"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("status")) {
                     eventBuilder.status(EventStatus.valueOf(eventWORegistrationJson!!.getString("status")))
                 }
-                if (eventWORegistrationJson!!.has("geometry")) { //TODO: FIX QRs -> SHOULD USE SMS COMPRESSION LIBRARY
+                if (eventWORegistrationJson!!.has("geometry")) { // TODO: FIX QRs -> SHOULD USE SMS COMPRESSION LIBRARY
                     eventBuilder.geometry(
-                        Geometry.builder()
+                        Geometry
+                            .builder()
                             .type(
                                 FeatureType.valueOf(
-                                    eventWORegistrationJson!!.getJSONObject("geometry")
-                                        .getString("type")
-                                )
-                            )
-                            .coordinates(
-                                eventWORegistrationJson!!.getJSONObject("geometry")
-                                    .getString("coordinates")
-                            )
-                            .build()
+                                    eventWORegistrationJson!!
+                                        .getJSONObject("geometry")
+                                        .getString("type"),
+                                ),
+                            ).coordinates(
+                                eventWORegistrationJson!!
+                                    .getJSONObject("geometry")
+                                    .getString("coordinates"),
+                            ).build(),
                     )
                 }
                 if (eventWORegistrationJson!!.has("program")) {
@@ -813,22 +931,22 @@ internal class QrReaderPresenterImpl(
                 if (eventWORegistrationJson!!.has("eventDate")) {
                     eventBuilder.eventDate(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("eventDate")
-                        )
+                            eventWORegistrationJson!!.getString("eventDate"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("completedDate")) {
                     eventBuilder.completedDate(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("completedDate")
-                        )
+                            eventWORegistrationJson!!.getString("completedDate"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("dueDate")) {
                     eventBuilder.dueDate(
                         DateUtils.databaseDateFormat().parse(
-                            eventWORegistrationJson!!.getString("dueDate")
-                        )
+                            eventWORegistrationJson!!.getString("dueDate"),
+                        ),
                     )
                 }
                 if (eventWORegistrationJson!!.has("attributeOptionCombo")) {
@@ -837,11 +955,17 @@ internal class QrReaderPresenterImpl(
 
                 eventBuilder.aggregatedSyncState(State.TO_UPDATE)
 
-                val event = eventBuilder
-                    .deleted(false)
-                    .build()
+                val event =
+                    eventBuilder
+                        .deleted(false)
+                        .build()
 
-                if (!d2.eventModule().events().uid(event.uid()).blockingExists()) {
+                if (!d2
+                        .eventModule()
+                        .events()
+                        .uid(event.uid())
+                        .blockingExists()
+                ) {
                     val result = runBlocking { d2.databaseAdapter().upsertObject(event, Event::class) }
                     Log.d("RESULT", "insert event ${result?.name}")
                 }
@@ -855,7 +979,6 @@ internal class QrReaderPresenterImpl(
             Timber.e(e)
         }
 
-
         for (i in dataJson.indices) {
             try {
                 val attrV = dataJson[i]
@@ -863,17 +986,22 @@ internal class QrReaderPresenterImpl(
                     TrackedEntityDataValue.builder()
 
                 if (attrV.has("event")) attrValueModelBuilder.event(attrV.getString("event"))
-                if (attrV.has("lastUpdated")) attrValueModelBuilder.lastUpdated(
-                    DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated"))
-                )
+                if (attrV.has("lastUpdated")) {
+                    attrValueModelBuilder.lastUpdated(
+                        DateUtils.databaseDateFormat().parse(attrV.getString("lastUpdated")),
+                    )
+                }
                 if (attrV.has("dataElement")) attrValueModelBuilder.dataElement(attrV.getString("dataElement"))
                 if (attrV.has("storedBy")) attrValueModelBuilder.storedBy(attrV.getString("storedBy"))
                 if (attrV.has("value")) attrValueModelBuilder.value(attrV.getString("value"))
-                if (attrV.has("providedElsewhere")) attrValueModelBuilder.providedElsewhere(
-                    attrV.getString(
-                        "providedElsewhere"
-                    ).toBoolean()
-                )
+                if (attrV.has("providedElsewhere")) {
+                    attrValueModelBuilder.providedElsewhere(
+                        attrV
+                            .getString(
+                                "providedElsewhere",
+                            ).toBoolean(),
+                    )
+                }
 
                 val attrValueModel = attrValueModelBuilder.build()
 

@@ -42,140 +42,211 @@ import java.util.zip.DataFormatException
 import java.util.zip.Deflater
 import java.util.zip.Inflater
 
-/*TODO: CHANGE THIS TO GET INFO FROM SMS Library*/
-class QRCodeGenerator(private val d2: D2) : QRInterface {
+// TODO: CHANGE THIS TO GET INFO FROM SMS Library
+class QRCodeGenerator(
+    private val d2: D2,
+) : QRInterface {
     private val gson: Gson =
         GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create()
 
     override fun teiQRs(teiUid: String): Observable<List<QrViewModel>> {
         val bitmaps: MutableList<QrViewModel> = ArrayList()
 
-        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).get()
-            .map<Boolean>(Function { data: TrackedEntityInstance? ->
-                bitmaps.add(
-                    QrViewModel(
-                        QRjson.TEI_JSON, gson.toJson(data)
+        return d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .uid(teiUid)
+            .get()
+            .map<Boolean>(
+                Function { data: TrackedEntityInstance? ->
+                    bitmaps.add(
+                        QrViewModel(
+                            QRjson.TEI_JSON,
+                            gson.toJson(data),
+                        ),
                     )
-                )
-            })
-            .flatMap(Function<Boolean, SingleSource<out List<TrackedEntityAttributeValue>>> { data: Boolean? ->
-                d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance()
-                    .eq(teiUid).get()
-            }).map(Function { data: List<TrackedEntityAttributeValue> ->
-                val arrayListAux = ArrayList<TrackedEntityAttributeValue>()
-                // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                var count = 0
-                for (i in data.indices) {
-                    arrayListAux.add(data[i])
-                    if (count == 1) {
-                        count = 0
-                        bitmaps.add(QrViewModel(QRjson.ATTR_JSON, gson.toJson(arrayListAux)))
-                        arrayListAux.clear()
-                    } else if (i == data.size - 1) {
-                        bitmaps.add(QrViewModel(QRjson.ATTR_JSON, gson.toJson(arrayListAux)))
-                    } else {
-                        count++
+                },
+            ).flatMap(
+                Function<Boolean, SingleSource<out List<TrackedEntityAttributeValue>>> { data: Boolean? ->
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityAttributeValues()
+                        .byTrackedEntityInstance()
+                        .eq(teiUid)
+                        .get()
+                },
+            ).map(
+                Function { data: List<TrackedEntityAttributeValue> ->
+                    val arrayListAux = ArrayList<TrackedEntityAttributeValue>()
+                    // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                    var count = 0
+                    for (i in data.indices) {
+                        arrayListAux.add(data[i])
+                        if (count == 1) {
+                            count = 0
+                            bitmaps.add(QrViewModel(QRjson.ATTR_JSON, gson.toJson(arrayListAux)))
+                            arrayListAux.clear()
+                        } else if (i == data.size - 1) {
+                            bitmaps.add(QrViewModel(QRjson.ATTR_JSON, gson.toJson(arrayListAux)))
+                        } else {
+                            count++
+                        }
                     }
-                }
-                true
-            }).flatMap(Function<Boolean, SingleSource<out List<Enrollment>>> { data: Boolean? ->
-                d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).get()
-            }).map(Function { data: List<Enrollment> ->
-                val arrayListAux = ArrayList<Enrollment>()
-                // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
-                var count = 0
-                for (i in data.indices) {
-                    arrayListAux.add(data[i])
-                    if (count == 1) {
-                        count = 0
-                        bitmaps.add(QrViewModel(QRjson.ENROLLMENT_JSON, gson.toJson(arrayListAux)))
-                        arrayListAux.clear()
-                    } else if (i == data.size - 1) {
-                        bitmaps.add(QrViewModel(QRjson.ENROLLMENT_JSON, gson.toJson(arrayListAux)))
-                    } else {
-                        count++
+                    true
+                },
+            ).flatMap(
+                Function<Boolean, SingleSource<out List<Enrollment>>> { data: Boolean? ->
+                    d2
+                        .enrollmentModule()
+                        .enrollments()
+                        .byTrackedEntityInstance()
+                        .eq(teiUid)
+                        .get()
+                },
+            ).map(
+                Function { data: List<Enrollment> ->
+                    val arrayListAux = ArrayList<Enrollment>()
+                    // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
+                    var count = 0
+                    for (i in data.indices) {
+                        arrayListAux.add(data[i])
+                        if (count == 1) {
+                            count = 0
+                            bitmaps.add(
+                                QrViewModel(
+                                    QRjson.ENROLLMENT_JSON,
+                                    gson.toJson(arrayListAux),
+                                ),
+                            )
+                            arrayListAux.clear()
+                        } else if (i == data.size - 1) {
+                            bitmaps.add(
+                                QrViewModel(
+                                    QRjson.ENROLLMENT_JSON,
+                                    gson.toJson(arrayListAux),
+                                ),
+                            )
+                        } else {
+                            count++
+                        }
                     }
-                }
-                data
-            }).toObservable()
-            .flatMap(Function<List<Enrollment>, ObservableSource<out List<Event>>> { data: List<Enrollment>? ->
-                Observable.fromIterable(data)
-                    .flatMap(Function<Enrollment, ObservableSource<out List<Event>>> { enrollment: Enrollment ->
-                        d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).get()
-                            .toObservable()
-                    })
-            }).flatMap(Function<List<Event>, ObservableSource<out Boolean>> { data: List<Event>? ->
-                Observable.fromIterable(data)
-                    .flatMap(Function<Event, ObservableSource<out Boolean>> { event: Event ->
-                        bitmaps.add(QrViewModel(QRjson.EVENTS_JSON, gson.toJson(event)))
-                        d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(event.uid())
-                            .get().toObservable()
-                            .map(Function { dataValueList: List<TrackedEntityDataValue> ->
-                                val arrayListAux = ArrayList<TrackedEntityDataValue>()
-                                // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                                var count = 0
-                                for (i in dataValueList.indices) {
-                                    arrayListAux.add(dataValueList[i])
-                                    if (count == 1) {
-                                        count = 0
-                                        bitmaps.add(
-                                            QrViewModel(
-                                                QRjson.DATA_JSON, gson.toJson(arrayListAux)
-                                            )
-                                        )
-                                        arrayListAux.clear()
-                                    } else if (i == dataValueList.size - 1) {
-                                        bitmaps.add(
-                                            QrViewModel(
-                                                QRjson.DATA_JSON, gson.toJson(arrayListAux)
-                                            )
-                                        )
-                                    } else {
-                                        count++
-                                    }
-                                }
-                                true
-                            })
-                    })
-            }).map(Function<Boolean, List<QrViewModel>> { data: Boolean? -> bitmaps })
+                    data
+                },
+            ).toObservable()
+            .flatMap(
+                Function<List<Enrollment>, ObservableSource<out List<Event>>> { data: List<Enrollment>? ->
+                    Observable.fromIterable(data).flatMap(
+                        Function<Enrollment, ObservableSource<out List<Event>>> { enrollment: Enrollment ->
+                            d2
+                                .eventModule()
+                                .events()
+                                .byEnrollmentUid()
+                                .eq(enrollment.uid())
+                                .get()
+                                .toObservable()
+                        },
+                    )
+                },
+            ).flatMap(
+                Function<List<Event>, ObservableSource<out Boolean>> { data: List<Event>? ->
+                    Observable.fromIterable(data).flatMap(
+                        Function<Event, ObservableSource<out Boolean>> { event: Event ->
+                            bitmaps.add(QrViewModel(QRjson.EVENTS_JSON, gson.toJson(event)))
+                            d2
+                                .trackedEntityModule()
+                                .trackedEntityDataValues()
+                                .byEvent()
+                                .eq(event.uid())
+                                .get()
+                                .toObservable()
+                                .map(
+                                    Function { dataValueList: List<TrackedEntityDataValue> ->
+                                        val arrayListAux = ArrayList<TrackedEntityDataValue>()
+                                        // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                                        var count = 0
+                                        for (i in dataValueList.indices) {
+                                            arrayListAux.add(dataValueList[i])
+                                            if (count == 1) {
+                                                count = 0
+                                                bitmaps.add(
+                                                    QrViewModel(
+                                                        QRjson.DATA_JSON,
+                                                        gson.toJson(arrayListAux),
+                                                    ),
+                                                )
+                                                arrayListAux.clear()
+                                            } else if (i == dataValueList.size - 1) {
+                                                bitmaps.add(
+                                                    QrViewModel(
+                                                        QRjson.DATA_JSON,
+                                                        gson.toJson(arrayListAux),
+                                                    ),
+                                                )
+                                            } else {
+                                                count++
+                                            }
+                                        }
+                                        true
+                                    },
+                                )
+                        },
+                    )
+                },
+            ).map(Function<Boolean, List<QrViewModel>> { data: Boolean? -> bitmaps })
     }
-
 
     override fun eventWORegistrationQRs(eventUid: String): Observable<List<QrViewModel>> {
         val bitmaps: MutableList<QrViewModel> = ArrayList()
 
-        return d2.eventModule().events().uid(eventUid).get().map<Event>(Function { data: Event ->
-                bitmaps.add(QrViewModel(QRjson.EVENT_JSON, gson.toJson(data)))
-                data
-            })
-            .flatMap(Function<Event, SingleSource<out List<TrackedEntityDataValue>>> { data: Event ->
-                d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(data.uid()).get()
-            }).map(Function { data: List<TrackedEntityDataValue> ->
-                val arrayListAux = ArrayList<TrackedEntityDataValue>()
-                // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                var count = 0
-                for (i in data.indices) {
-                    arrayListAux.add(data[i])
-                    if (count == 1) {
-                        count = 0
-                        bitmaps.add(
-                            QrViewModel(
-                                QRjson.DATA_JSON_WO_REGISTRATION, gson.toJson(arrayListAux)
+        return d2
+            .eventModule()
+            .events()
+            .uid(eventUid)
+            .get()
+            .map<Event>(
+                Function { data: Event ->
+                    bitmaps.add(QrViewModel(QRjson.EVENT_JSON, gson.toJson(data)))
+                    data
+                },
+            ).flatMap(
+                Function<Event, SingleSource<out List<TrackedEntityDataValue>>> { data: Event ->
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityDataValues()
+                        .byEvent()
+                        .eq(data.uid())
+                        .get()
+                },
+            ).map(
+                Function { data: List<TrackedEntityDataValue> ->
+                    val arrayListAux = ArrayList<TrackedEntityDataValue>()
+                    // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
+                    var count = 0
+                    for (i in data.indices) {
+                        arrayListAux.add(data[i])
+                        if (count == 1) {
+                            count = 0
+                            bitmaps.add(
+                                QrViewModel(
+                                    QRjson.DATA_JSON_WO_REGISTRATION,
+                                    gson.toJson(arrayListAux),
+                                ),
                             )
-                        )
-                        arrayListAux.clear()
-                    } else if (i == data.size - 1) {
-                        bitmaps.add(
-                            QrViewModel(
-                                QRjson.DATA_JSON_WO_REGISTRATION, gson.toJson(arrayListAux)
+                            arrayListAux.clear()
+                        } else if (i == data.size - 1) {
+                            bitmaps.add(
+                                QrViewModel(
+                                    QRjson.DATA_JSON_WO_REGISTRATION,
+                                    gson.toJson(arrayListAux),
+                                ),
                             )
-                        )
-                    } else {
-                        count++
+                        } else {
+                            count++
+                        }
                     }
-                }
-                true
-            }).toObservable()
+                    true
+                },
+            ).toObservable()
             .map(Function<Boolean, List<QrViewModel>> { data: Boolean? -> bitmaps })
     }
 
@@ -184,32 +255,36 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         return String(decodedBytes, StandardCharsets.UTF_8)
     }
 
-    override fun getUncodedData(teiUid: String): Observable<Bitmap> {
-        return Observable.fromCallable(Callable { getData(teiUid) })
+    override fun getUncodedData(teiUid: String): Observable<Bitmap> =
+        Observable
+            .fromCallable(Callable { getData(teiUid) })
             .map(Function { dataToCompress: String -> this.compress(dataToCompress) })
             .map(Function { inputData: ByteArray? -> transform(inputData) })
-    }
 
-    override fun getNFCData(teiUid: String): Observable<ByteArray> {
-        return Observable.fromCallable(Callable { getData(teiUid) })
+    override fun getNFCData(teiUid: String): Observable<ByteArray> =
+        Observable
+            .fromCallable(Callable { getData(teiUid) })
             .map(Function { dataToCompress: String -> this.compress(dataToCompress) })
-    }
 
-    override fun setData(inputData: String): Observable<Boolean> {
-        return Observable.fromCallable(Callable { decompress(decodeData(inputData).toByteArray()) })
+    override fun setData(inputData: String): Observable<Boolean> =
+        Observable
+            .fromCallable(Callable { decompress(decodeData(inputData).toByteArray()) })
             .map(Function { data: String -> getTEIInfo(data) })
-    }
 
     private fun getTEIInfo(formattedData: String): Boolean {
         val initialString = TEI_PATTERN.matcher(formattedData).group(1)
-        val tei_substring = initialString!!.substring(0, initialString.indexOf(ENROLLMENT_FLAG))
+        val teiSubstring = initialString!!.substring(0, initialString.indexOf(ENROLLMENT_FLAG))
 
-        val tei_substring_split =
-            tei_substring.split("|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val teiSubstringSplit =
+            teiSubstring.split("|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         /*    TrackedEntityInstance tei = TrackedEntityInstance.builder() TODO: UPDATE QR GENERATION WITH SMS LIBRARY
                 .uid(tei_substring_split[0])
-                .created(*//*DateUtils.databaseDateFormat().parse(teiSubstring[1])*/ /*new Date())
+                .created(*/
+
+        // DateUtils.databaseDateFormat().parse(teiSubstring[1])
+
+        /*new Date())
                 .organisationUnit(tei_substring_split[2])
                 .trackedEntityType(tei_substring_split[3])
                 .coordinates(!isEmpty(tei_substring_split[5]) ? tei_substring_split[5] : null)
@@ -262,27 +337,50 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
     private fun getData(teiUid: String): String {
         val dataBuilder: java.lang.StringBuilder = StringBuilder()
         dataBuilder.append(TEI_FLAG)
-        val tei = d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
+        val tei =
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(teiUid)
+                .blockingGet()
         dataBuilder.append(setTeiData(tei!!))
         val enrollments =
-            d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiUid).blockingGet()
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .blockingGet()
         for (enrollment in enrollments) {
             dataBuilder.append(ENROLLMENT_FLAG)
             dataBuilder.append(setEnrollmentData(enrollment))
             val teAttrValues =
-                d2.trackedEntityModule().trackedEntityAttributeValues().byTrackedEntityInstance()
-                    .eq(teiUid).blockingGet()
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityAttributeValues()
+                    .byTrackedEntityInstance()
+                    .eq(teiUid)
+                    .blockingGet()
             for (attrValue in teAttrValues) {
                 dataBuilder.append(ATTR_FLAG)
                 dataBuilder.append(setAttrData(attrValue))
             }
             val events =
-                d2.eventModule().events().byEnrollmentUid().eq(enrollment.uid()).blockingGet()
+                d2
+                    .eventModule()
+                    .events()
+                    .byEnrollmentUid()
+                    .eq(enrollment.uid())
+                    .blockingGet()
             for (event in events) {
                 dataBuilder.append(EVENT_FLAG)
                 dataBuilder.append(setEventData(event))
                 val teDataValue =
-                    d2.trackedEntityModule().trackedEntityDataValues().byEvent().eq(event.uid())
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityDataValues()
+                        .byEvent()
+                        .eq(event.uid())
                         .blockingGet()
                 for (dataValue in teDataValue) {
                     dataBuilder.append(DE_FLAG)
@@ -313,21 +411,32 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         data.add(event.uid())
         data.add(DateUtils.databaseDateFormat().format(event.created()))
         data.add(event.status()!!.name)
+
         /*  data.add(event.coordinate() != null ? String.valueOf(event.coordinate().latitude()) : "");
         data.add(event.coordinate() != null ? String.valueOf(event.coordinate().longitude()) : "");*/
-        data.add(event.program()) //TEI OR ENROLLMENT?
+
+        data.add(event.program()) // TEI OR ENROLLMENT?
         data.add(event.programStage())
         data.add(
-            if (event.eventDate() != null) DateUtils.databaseDateFormat()
-                .format(event.eventDate()) else ""
+            if (event.eventDate() != null) {
+                DateUtils.databaseDateFormat().format(event.eventDate())
+            } else {
+                ""
+            },
         )
         data.add(
-            if (event.completedDate() != null) DateUtils.databaseDateFormat()
-                .format(event.completedDate()) else ""
+            if (event.completedDate() != null) {
+                DateUtils.databaseDateFormat().format(event.completedDate())
+            } else {
+                ""
+            },
         )
         data.add(
-            if (event.dueDate() != null) DateUtils.databaseDateFormat()
-                .format(event.created()) else ""
+            if (event.dueDate() != null) {
+                DateUtils.databaseDateFormat().format(event.created())
+            } else {
+                ""
+            },
         )
         data.add(if (event.state() != null) event.state()!!.name else "")
         data.add(event.organisationUnit())
@@ -340,8 +449,11 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         data.add(tei.uid())
         data.add(DateUtils.databaseDateFormat().format(tei.created()))
         data.add(tei.organisationUnit())
-        data.add(tei.trackedEntityType())/*    data.add(tei.featureType() != null ? tei.featureType().name() : "");
+        data.add(tei.trackedEntityType())
+
+        /*    data.add(tei.featureType() != null ? tei.featureType().name() : "");
         data.add(tei.coordinates() != null ? tei.coordinates() : "");*/
+
         data.add(if (tei.state() != null) tei.state()!!.name else "")
         return TextUtils.join("|", data)
     }
@@ -353,17 +465,25 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         data.add(enrollment.organisationUnit())
         data.add(enrollment.program())
         data.add(
-            if (enrollment.enrollmentDate() != null) DateUtils.databaseDateFormat()
-                .format(enrollment.enrollmentDate()) else ""
+            if (enrollment.enrollmentDate() != null) {
+                DateUtils.databaseDateFormat().format(enrollment.enrollmentDate())
+            } else {
+                ""
+            },
         )
         data.add(
-            if (enrollment.incidentDate() != null) DateUtils.databaseDateFormat()
-                .format(enrollment.incidentDate()) else ""
+            if (enrollment.incidentDate() != null) {
+                DateUtils.databaseDateFormat().format(enrollment.incidentDate())
+            } else {
+                ""
+            },
         )
         data.add(if (enrollment.followUp()!!) "t" else "f")
         data.add(enrollment.status()!!.name)
+
         /* data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
         data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().longitude()) : "");*/
+
         data.add(enrollment.state()!!.name)
         return TextUtils.join("|", data)
     }
@@ -378,7 +498,9 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         val tei = saveTeiData(enrollment[0])
         for (i in 1..<enrollment.size) {
             val attributes =
-                enrollment[i].split("\\\$A|\\\$E".toRegex()).dropLastWhile { it.isEmpty() }
+                enrollment[i]
+                    .split("\\\$A|\\\$E".toRegex())
+                    .dropLastWhile { it.isEmpty() }
                     .toTypedArray()
             val events =
                 enrollment[i].split("\\\$E".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -391,7 +513,9 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
 
             for (ev in 1..<events.size) {
                 val dataElements =
-                    events[ev].split("\\\$D".toRegex()).dropLastWhile { it.isEmpty() }
+                    events[ev]
+                        .split("\\\$D".toRegex())
+                        .dropLastWhile { it.isEmpty() }
                         .toTypedArray()
                 val event = saveEvent(enrollmentModel, dataElements[0])
                 for (de in 1..<dataElements.size) {
@@ -403,7 +527,6 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         return tei.uid()
     }
 
-
     private fun saveTeiData(teiData: String): TrackedEntityInstance {
         val data = teiData.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         var created: Date? = null
@@ -412,19 +535,36 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         } catch (e: ParseException) {
             Timber.e(e)
         }
-        val tei = TrackedEntityInstance.builder().uid(data[0])
-            .created(created ?: Calendar.getInstance().time)
-            .lastUpdated(Calendar.getInstance().time).organisationUnit(data[2])
-            .trackedEntityType(data[3]).geometry(
-                if (data[5].isEmpty()) null else  //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
-                    Geometry.builder().type(FeatureType.POINT).coordinates(data[5]).build()
-            ).state(State.valueOf(data[6])).build()
+        val tei =
+            TrackedEntityInstance
+                .builder()
+                .uid(data[0])
+                .created(created ?: Calendar.getInstance().time)
+                .lastUpdated(Calendar.getInstance().time)
+                .organisationUnit(data[2])
+                .trackedEntityType(data[3])
+                .geometry(
+                    if (data[5].isEmpty()) {
+                        null
+                    } else {
+                        // TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
+                        Geometry
+                            .builder()
+                            .type(FeatureType.POINT)
+                            .coordinates(data[5])
+                            .build()
+                    },
+                ).state(State.valueOf(data[6]))
+                .build()
 
         runBlocking { d2.databaseAdapter().upsertObject(tei, TrackedEntityInstance::class) }
         return tei
     }
 
-    private fun saveEnrollmentData(tei: TrackedEntityInstance, enrollmentData: String): Enrollment {
+    private fun saveEnrollmentData(
+        tei: TrackedEntityInstance,
+        enrollmentData: String,
+    ): Enrollment {
         val data =
             enrollmentData.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         var created: Date? = null
@@ -441,40 +581,72 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
             Timber.e(e)
         }
 
-        if (!data[5].isEmpty()) try {
-            incidentDate = DateUtils.databaseDateFormat().parse(data[5])
-        } catch (e: ParseException) {
-            Timber.e(e)
+        if (!data[5].isEmpty()) {
+            try {
+                incidentDate = DateUtils.databaseDateFormat().parse(data[5])
+            } catch (e: ParseException) {
+                Timber.e(e)
+            }
         }
 
         val enrollment =
-            Enrollment.builder().uid(data[0]).created(created ?: Calendar.getInstance().time)
-                .lastUpdated(Calendar.getInstance().time).organisationUnit(data[2]).program(data[3])
-                .enrollmentDate(enrollmentDate).incidentDate(incidentDate).followUp(data[6] == "t")
-                .status(EnrollmentStatus.valueOf(data[7])).geometry(
-                    if (data[8].isEmpty()) null else Geometry.builder()
-                        //TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
-                        .type(FeatureType.POINT).coordinates(
-                            Coordinates.create(data[8].toDouble(), data[9].toDouble()).toString()
-                        ).build()
-                ).state(State.valueOf(data[10])).trackedEntityInstance(tei.uid()).build()
+            Enrollment
+                .builder()
+                .uid(data[0])
+                .created(created ?: Calendar.getInstance().time)
+                .lastUpdated(Calendar.getInstance().time)
+                .organisationUnit(data[2])
+                .program(data[3])
+                .enrollmentDate(enrollmentDate)
+                .incidentDate(incidentDate)
+                .followUp(data[6] == "t")
+                .status(EnrollmentStatus.valueOf(data[7]))
+                .geometry(
+                    if (data[8].isEmpty()) {
+                        null
+                    } else {
+                        Geometry
+                            .builder()
+                            // TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
+                            .type(FeatureType.POINT)
+                            .coordinates(
+                                Coordinates
+                                    .create(data[8].toDouble(), data[9].toDouble())
+                                    .toString(),
+                            ).build()
+                    },
+                ).state(State.valueOf(data[10]))
+                .trackedEntityInstance(tei.uid())
+                .build()
 
         runBlocking { d2.databaseAdapter().upsertObject(enrollment, Enrollment::class) }
         return enrollment
     }
 
-    fun saveAttribute(tei: TrackedEntityInstance, attrData: String) {
+    fun saveAttribute(
+        tei: TrackedEntityInstance,
+        attrData: String,
+    ) {
         val data = attrData.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val attribute = TrackedEntityAttributeValue.builder().created(Calendar.getInstance().time)
-            .lastUpdated(Calendar.getInstance().time).trackedEntityAttribute(data[0])
-            .trackedEntityInstance(tei.uid()).value(data[1]).build()
+        val attribute =
+            TrackedEntityAttributeValue
+                .builder()
+                .created(Calendar.getInstance().time)
+                .lastUpdated(Calendar.getInstance().time)
+                .trackedEntityAttribute(data[0])
+                .trackedEntityInstance(tei.uid())
+                .value(data[1])
+                .build()
 
         runBlocking {
             d2.databaseAdapter().upsertObject(attribute, TrackedEntityAttributeValue::class)
         }
     }
 
-    fun saveEvent(enrollment: Enrollment, eventData: String): Event {
+    fun saveEvent(
+        enrollment: Enrollment,
+        eventData: String,
+    ): Event {
         val data = eventData.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         var created: Date? = null
         var eventDate: Date? = null
@@ -485,31 +657,54 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         } catch (e: ParseException) {
             Timber.e(e)
         }
-        if (!data[7].isEmpty()) try {
-            eventDate = DateUtils.databaseDateFormat().parse(data[7])
-        } catch (e: ParseException) {
-            Timber.e(e)
+        if (!data[7].isEmpty()) {
+            try {
+                eventDate = DateUtils.databaseDateFormat().parse(data[7])
+            } catch (e: ParseException) {
+                Timber.e(e)
+            }
         }
-        if (!data[8].isEmpty()) try {
-            completeDate = DateUtils.databaseDateFormat().parse(data[8])
-        } catch (e: ParseException) {
-            Timber.e(e)
+        if (!data[8].isEmpty()) {
+            try {
+                completeDate = DateUtils.databaseDateFormat().parse(data[8])
+            } catch (e: ParseException) {
+                Timber.e(e)
+            }
         }
-        if (!data[9].isEmpty()) try {
-            dueDate = DateUtils.databaseDateFormat().parse(data[9])
-        } catch (e: ParseException) {
-            Timber.e(e)
+        if (!data[9].isEmpty()) {
+            try {
+                dueDate = DateUtils.databaseDateFormat().parse(data[9])
+            } catch (e: ParseException) {
+                Timber.e(e)
+            }
         }
         val event =
-            Event.builder().uid(data[0]).created(created).status(EventStatus.valueOf(data[2]))
+            Event
+                .builder()
+                .uid(data[0])
+                .created(created)
+                .status(EventStatus.valueOf(data[2]))
                 .geometry(
-                    if (data[3].isEmpty()) null else Geometry.builder() //TODO: CHANGE TO SUPPORT ALL FEATYRE TYPES
-                        .type(FeatureType.POINT).coordinates(
-                            Coordinates.create(data[3].toDouble(), data[4].toDouble()).toString()
-                        ).build()
-                ).organisationUnit(data[11]).program(data[5]).programStage(data[6])
-                .eventDate(eventDate).completedDate(completeDate).dueDate(dueDate)
-                .enrollment(enrollment.uid()).lastUpdated(Calendar.getInstance().time)
+                    if (data[3].isEmpty()) {
+                        null
+                    } else {
+                        Geometry
+                            .builder() // TODO: CHANGE TO SUPPORT ALL FEATYRE TYPES
+                            .type(FeatureType.POINT)
+                            .coordinates(
+                                Coordinates
+                                    .create(data[3].toDouble(), data[4].toDouble())
+                                    .toString(),
+                            ).build()
+                    },
+                ).organisationUnit(data[11])
+                .program(data[5])
+                .programStage(data[6])
+                .eventDate(eventDate)
+                .completedDate(completeDate)
+                .dueDate(dueDate)
+                .enrollment(enrollment.uid())
+                .lastUpdated(Calendar.getInstance().time)
                 .state(State.valueOf(data[10]))
                 .build()
 
@@ -517,11 +712,20 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         return event
     }
 
-    fun saveDataElement(event: Event, deData: String) {
+    fun saveDataElement(
+        event: Event,
+        deData: String,
+    ) {
         val data = deData.split("\\|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        val dataValue = TrackedEntityDataValue.builder().created(Calendar.getInstance().time)
-            .dataElement(data[0]).value(data[1]).event(event.uid()).build()
-        runBlocking { d2.databaseAdapter().upsertObject(dataValue, TrackedEntityDataValue::class)}
+        val dataValue =
+            TrackedEntityDataValue
+                .builder()
+                .created(Calendar.getInstance().time)
+                .dataElement(data[0])
+                .value(data[1])
+                .event(event.uid())
+                .build()
+        runBlocking { d2.databaseAdapter().upsertObject(dataValue, TrackedEntityDataValue::class) }
     }
 
     companion object {
@@ -534,7 +738,10 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
         private val TEI_PATTERN: Pattern = Pattern.compile("\\\$T(.+)")
 
         @JvmStatic
-        fun transform(type: String?, info: String): Bitmap? {
+        fun transform(
+            type: String?,
+            info: String,
+        ): Bitmap? {
             val data: ByteArray
             var encoded: String?
             try {
@@ -549,9 +756,13 @@ class QRCodeGenerator(private val d2: D2) : QRInterface {
             var bitmap: Bitmap? = null
             val gson = GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create()
             try {
-                val bitMatrix = multiFormatWriter.encode(
-                    gson.toJson(QRjson(type, encoded)), BarcodeFormat.QR_CODE, 1000, 1000
-                )
+                val bitMatrix =
+                    multiFormatWriter.encode(
+                        gson.toJson(QRjson(type, encoded)),
+                        BarcodeFormat.QR_CODE,
+                        1000,
+                        1000,
+                    )
                 val barcodeEncoder = BarcodeEncoder()
                 bitmap = barcodeEncoder.createBitmap(bitMatrix)
             } catch (e: WriterException) {

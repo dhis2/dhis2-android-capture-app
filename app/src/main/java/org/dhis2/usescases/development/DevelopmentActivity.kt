@@ -45,9 +45,13 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
         binding!!.forceCustomIcon.setOnClickListener { view: View? ->
             val d2: D2 = D2Manager.getD2()
             val fileResource =
-                d2.fileResourceModule().fileResources()
-                    .byDomain().eq(FileResourceDomain.DATA_VALUE)
-                    .one().blockingGet()
+                d2
+                    .fileResourceModule()
+                    .fileResources()
+                    .byDomain()
+                    .eq(FileResourceDomain.DATA_VALUE)
+                    .one()
+                    .blockingGet()
             if (fileResource != null) {
                 val uidToInsert = fileResource.uid()
                 runBlocking {
@@ -56,28 +60,29 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
                             "INSERT INTO CustomIcon (\"key\", \"fileResourceUid\", \"href\") VALUES (\"%s\",\"%s\",\"%s\")",
                             uidToInsert,
                             uidToInsert,
-                            uidToInsert
-                        )
+                            uidToInsert,
+                        ),
                     )
                     d2.databaseAdapter().execSQL(
-                        String.format("UPDATE Program SET icon = \"%s\"", uidToInsert)
+                        String.format("UPDATE Program SET icon = \"%s\"", uidToInsert),
                     )
                     d2.databaseAdapter().execSQL(
-                        String.format("UPDATE DataSet SET icon = \"%s\"", uidToInsert)
+                        String.format("UPDATE DataSet SET icon = \"%s\"", uidToInsert),
                     )
                     d2.databaseAdapter().execSQL(
-                        String.format("UPDATE ProgramStage SET icon = \"%s\"", uidToInsert)
+                        String.format("UPDATE ProgramStage SET icon = \"%s\"", uidToInsert),
                     )
                     d2.databaseAdapter().execSQL(
-                        String.format("UPDATE Option SET icon = \"%s\"", uidToInsert)
+                        String.format("UPDATE Option SET icon = \"%s\"", uidToInsert),
                     )
                 }
             } else {
-                Toast.makeText(
-                    this,
-                    "No file resource found. Add an image in a form and retry",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast
+                    .makeText(
+                        this,
+                        "No file resource found. Add an image in a form and retry",
+                        Toast.LENGTH_SHORT,
+                    ).show()
             }
         }
     }
@@ -85,20 +90,24 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
     private fun loadMultiText() {
         val d2: D2 = D2Manager.getD2()
         val hasMultiText =
-            !d2.dataElementModule().dataElements().byValueType().eq(ValueType.MULTI_TEXT)
+            !d2
+                .dataElementModule()
+                .dataElements()
+                .byValueType()
+                .eq(ValueType.MULTI_TEXT)
                 .blockingIsEmpty()
         binding!!.multitext.text = if (hasMultiText) "REVERT" else "FORCE MULTITEXT"
         binding!!.multitext.setOnClickListener { view: View? ->
             if (hasMultiText) {
                 runBlocking {
                     d2.databaseAdapter().execSQL(
-                        "UPDATE DataElement SET valueType = \"TEXT\" WHERE valueType = \"MULTI_TEXT\" AND optionSet IS NOT null"
+                        "UPDATE DataElement SET valueType = \"TEXT\" WHERE valueType = \"MULTI_TEXT\" AND optionSet IS NOT null",
                     )
                 }
             } else {
                 runBlocking {
                     d2.databaseAdapter().execSQL(
-                        "UPDATE DataElement SET valueType = \"MULTI_TEXT\" WHERE valueType = \"TEXT\" AND optionSet IS NOT null"
+                        "UPDATE DataElement SET valueType = \"MULTI_TEXT\" WHERE valueType = \"TEXT\" AND optionSet IS NOT null",
                     )
                 }
             }
@@ -137,8 +146,12 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
         }
 
         val json = writer.toString()
-        iconNames = Gson().fromJson(json, object : TypeToken<List<String?>?>() {
-        }.type)
+        iconNames =
+            Gson().fromJson(
+                json,
+                object : TypeToken<List<String?>?>() {
+                }.type,
+            )
         count = 0
 
         binding!!.iconButton.setOnClickListener { view: View? ->
@@ -157,18 +170,24 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
 
         binding!!.iconInput.setText(iconName)
 
-        val iconResource_negative = resources.getIdentifier(
-            iconName + "_negative", "drawable",
-            packageName
-        )
-        val iconResource_outline = resources.getIdentifier(
-            iconName + "_outline", "drawable",
-            packageName
-        )
-        val iconResource_positive = resources.getIdentifier(
-            iconName + "_positive", "drawable",
-            packageName
-        )
+        val iconResourceNegative =
+            resources.getIdentifier(
+                iconName + "_negative",
+                "drawable",
+                packageName,
+            )
+        val iconResourceOutline =
+            resources.getIdentifier(
+                iconName + "_outline",
+                "drawable",
+                packageName,
+            )
+        val iconResourcePositive =
+            resources.getIdentifier(
+                iconName + "_positive",
+                "drawable",
+                packageName,
+            )
         binding!!.iconInput.error = null
 
         binding!!.iconImagePossitive.setImageDrawable(null)
@@ -181,47 +200,46 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
 
         var hasError = false
         try {
-            binding!!.iconImagePossitive.setImageResource(iconResource_positive)
+            binding!!.iconImagePossitive.setImageResource(iconResourcePositive)
         } catch (e: Exception) {
             Timber.e(e)
             hasError = true
         }
 
         try {
-            binding!!.iconImageOutline.setImageResource(iconResource_outline)
+            binding!!.iconImageOutline.setImageResource(iconResourceOutline)
         } catch (e: Exception) {
             Timber.e(e)
             hasError = true
         }
 
         try {
-            binding!!.iconImageNegative.setImageResource(iconResource_negative)
+            binding!!.iconImageNegative.setImageResource(iconResourceNegative)
         } catch (e: Exception) {
             Timber.e(e)
             hasError = true
         }
 
         try {
-            binding!!.iconImagePossitiveTint.setImageResource(iconResource_positive)
+            binding!!.iconImagePossitiveTint.setImageResource(iconResourcePositive)
         } catch (e: Exception) {
             Timber.e(e)
             hasError = true
         }
 
         try {
-            binding!!.iconImageOutlineTint.setImageResource(iconResource_outline)
+            binding!!.iconImageOutlineTint.setImageResource(iconResourceOutline)
         } catch (e: Exception) {
             Timber.e(e)
             hasError = true
         }
 
         try {
-            binding!!.iconImageNegativeTint.setImageResource(iconResource_negative)
+            binding!!.iconImageNegativeTint.setImageResource(iconResourceNegative)
         } catch (e: Exception) {
             Timber.e(e)
             hasError = true
         }
-
 
         if (hasError) {
             binding!!.iconInput.error = "This drawable has errors"
@@ -249,7 +267,11 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
     private fun loadFeatureConfig() {
         binding!!.featureConfigButton.setOnClickListener { view: View? ->
             startActivity(
-                FeatureConfigView::class.java, null, false, false, null
+                FeatureConfigView::class.java,
+                null,
+                false,
+                false,
+                null,
             )
         }
     }

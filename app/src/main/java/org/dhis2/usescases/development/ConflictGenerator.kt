@@ -103,7 +103,7 @@ class ConflictGenerator(
                     }
                 }
             }.also {
-                runBlocking{
+                runBlocking {
                     d2.databaseAdapter().delete(
                         TrackerImportConflictTableInfo.TABLE_INFO.name(),
                         "conflict LIKE 'Generated%'",
@@ -135,7 +135,7 @@ class ConflictGenerator(
                                 dataValueConflict.dataElement()!!,
                                 dataValueConflict.categoryOptionCombo()!!,
                                 dataValueConflict.attributeOptionCombo()!!,
-                    ).blockingGet()
+                            ).blockingGet()
                     val dv =
                         dataValue?.toBuilder()?.syncState(State.SYNCED)?.build()
                     dv?.let {
@@ -207,14 +207,15 @@ class ConflictGenerator(
             }
             enrollmentUid?.let {
                 runBlocking {
-                    d2.databaseAdapter()
+                    d2
+                        .databaseAdapter()
                         .execSQL(updateEnrollment(enrollmentUid, importStatus.toSyncState().name))
                 }
-
             }
             teiUid?.let {
                 runBlocking {
-                    d2.databaseAdapter()
+                    d2
+                        .databaseAdapter()
                         .execSQL(updateTei(teiUid, importStatus.toSyncState().name))
                 }
             }
@@ -280,17 +281,20 @@ class ConflictGenerator(
             }
             attributeValue.event()?.let { eventUid ->
                 runBlocking {
-                    d2.databaseAdapter()
+                    d2
+                        .databaseAdapter()
                         .execSQL(updateEvent(eventUid, importStatus.toSyncState().name))
                 }
             }
             runBlocking {
-                d2.databaseAdapter()
+                d2
+                    .databaseAdapter()
                     .execSQL(updateEnrollment(enrollmentUid, importStatus.toSyncState().name))
             }
             teiUid?.let {
                 runBlocking {
-                    d2.databaseAdapter()
+                    d2
+                        .databaseAdapter()
                         .execSQL(updateTei(teiUid, importStatus.toSyncState().name))
                 }
             }
@@ -318,7 +322,6 @@ class ConflictGenerator(
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
                 d2.databaseAdapter().execSQL(updateEvent(eventUid, importStatus.toSyncState().name))
             }
-
         } catch (e: Exception) {
             Timber.e(e)
         }
@@ -342,7 +345,8 @@ class ConflictGenerator(
         try {
             runBlocking {
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
-                d2.databaseAdapter()
+                d2
+                    .databaseAdapter()
                     .execSQL(updateEnrollment(enrollmentUid, importStatus.toSyncState().name))
             }
 
@@ -372,7 +376,6 @@ class ConflictGenerator(
         try {
             runBlocking {
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
-
             }
             enrollment?.trackedEntityInstance()?.let {
                 runBlocking {
