@@ -49,7 +49,6 @@ fun ListCardProvider(
                             ),
                         expandLabelText = card.expandLabelText,
                         shrinkLabelText = card.shrinkLabelText,
-                        scrollableContent = true,
                     ),
                 loading = false,
                 expandable = false,
