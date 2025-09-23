@@ -247,7 +247,7 @@
     <string name="settingsExportDB">Export database</string>
     <string name="settingsExportDBMessage">Export your database and share it with your administrator</string>
     <string name="settingTwoFA">Two factor authentication</string>
-    <string name="settingsTwoFAStatus">Status:</string>
+    <string name="settingsTwoFAStatus">Status</string>
     <string name="settingTwoFADescr">Enable or disable the authentication in two steps.</string>
     <!--endregion-->
 
