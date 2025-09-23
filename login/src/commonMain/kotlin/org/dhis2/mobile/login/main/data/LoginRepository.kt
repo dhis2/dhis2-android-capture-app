@@ -1,7 +1,8 @@
 package org.dhis2.mobile.login.main.data
 
+import coil3.PlatformContext
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
-
+typealias UserPassword = String
 interface LoginRepository {
     suspend fun validateServer(
         server: String,
@@ -27,4 +28,6 @@ interface LoginRepository {
     suspend fun canLoginWithBiometrics(serverUrl: String): Boolean
     suspend fun displayBiometricMessage(): Boolean
     suspend fun updateTrackingPermissions(granted: Boolean)
+    context(context: PlatformContext)
+    suspend fun loginWithBiometric(): Result<UserPassword>
 }

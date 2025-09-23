@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.main.di
 
 import org.dhis2.mobile.login.authentication.di.twoFAModule
+import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
@@ -29,18 +30,20 @@ internal val mainLoginModule =
         factoryOf(::GetAvailableUsernames)
         factoryOf(::GetBiometricInfo)
         factoryOf(::LoginUser)
+        factoryOf(::BiometricLogin)
         factoryOf(::UpdateTrackingPermission)
         factoryOf(::UpdateBiometricPermission)
         viewModel { parameters ->
             val serverName = parameters.get<String?>(0)
             val serverUrl = parameters.get<String>(1)
-            val userName = parameters.get<String>(2)
+            val userName = parameters.get<String?>(2)
             val allowRecovery = parameters.get<Boolean>(3)
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get(),
                 getBiometricInfo = get(),
                 loginUser = get(),
+                biometricLogin = get(),
                 updateTrackingPermission = get(),
                 updateBiometricPermission = get(),
                 networkStatusProvider = get(),

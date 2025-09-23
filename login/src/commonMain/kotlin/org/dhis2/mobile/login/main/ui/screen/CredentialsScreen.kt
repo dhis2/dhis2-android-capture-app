@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Fingerprint
-import androidx.compose.material.icons.outlined.Fireplace
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.HorizontalDivider
@@ -79,7 +78,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalIn
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -94,24 +92,23 @@ fun CredentialsScreen(
     val viewModel = koinViewModel<CredentialsViewModel> {
         parametersOf(selectedServerName, selectedServer, selectedUsername, allowRecovery)
     }
+    val context = LocalPlatformContext.current
     val screenState by viewModel.credentialsScreenState.collectAsState()
-    var displayBiometricMessage by remember{
-        mutableStateOf(false)
+    val displayBiometricMessage by remember(screenState) {
+        derivedStateOf {
+            screenState.afterLoginActions.firstOrNull() is AfterLoginAction.DisplayBiometricsMessage
+        }
     }
-    var displayTrackingMessage by remember{
-        mutableStateOf(false)
+    val displayTrackingMessage by remember {
+        derivedStateOf {
+            screenState.afterLoginActions.firstOrNull() is AfterLoginAction.DisplayTrackingMessage
+        }
     }
 
-    LaunchedEffect(screenState.afterLoginActions){
-        screenState.afterLoginActions.firstOrNull()?.let{afterLoginAction ->
-            when(afterLoginAction){
-                AfterLoginAction.DisplayBiometricsMessage ->
-                    displayBiometricMessage = true
-                AfterLoginAction.DisplayTrackingMessage ->
-                    displayTrackingMessage = true
-                is AfterLoginAction.NavigateToNextScreen ->
-                    viewModel.goToNextScreen(afterLoginAction.initialSyncDone)
-            }
+    LaunchedEffect(screenState) {
+        val action = screenState.afterLoginActions.firstOrNull()
+        if(action is AfterLoginAction.NavigateToNextScreen){
+            viewModel.goToNextScreen(action.initialSyncDone)
         }
     }
 
@@ -151,7 +148,11 @@ fun CredentialsScreen(
             canLogin = screenState.loginState == LoginState.Enabled,
             onLoginClicked = viewModel::onLoginClicked,
             onOpenIdLogin = viewModel::onOpenIdLogin,
-            onBiometricsClicked = viewModel::onBiometricsClicked,
+            onBiometricsClicked = {
+                with(context) {
+                    viewModel.onBiometricsClicked()
+                }
+            },
             onManageAccounts = viewModel::onManageAccountsClicked,
         )
     }
@@ -160,9 +161,13 @@ fun CredentialsScreen(
             onPermissionResult = viewModel::onTrackingPermission,
             onOpenPrivacyPolicy = viewModel::checkPrivacyPolicy,
         )
-    }else if(displayBiometricMessage){
+    } else if (displayBiometricMessage) {
         BiometricsDialog(
-            onPermissionResult = viewModel::onEnableBiometrics
+            onPermissionResult = { granted ->
+                with(context) {
+                    viewModel.onEnableBiometrics(granted)
+                }
+            }
         )
     }
 }
@@ -538,7 +543,7 @@ fun TrackingPermissionDialog(
 @Composable
 private fun BiometricsDialog(
     onPermissionResult: (granted: Boolean) -> Unit,
-){
+) {
     BottomSheetShell(
         modifier = Modifier,
         uiState = BottomSheetShellUIState(

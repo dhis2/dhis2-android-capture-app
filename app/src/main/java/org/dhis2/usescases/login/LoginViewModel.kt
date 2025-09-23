@@ -202,11 +202,11 @@ class LoginViewModel(
             biometricAuthenticator.authenticate(
                 fragmentActivity,
                 {
-                    password.value =
+                   /* password.value =
                         cryptographyManager.decryptData(
                             ciphertextWrapper.ciphertext,
                             it.cryptoObject?.cipher!!,
-                        )
+                        )*/
 //                    logIn()
                 }, cryptoObject
             )

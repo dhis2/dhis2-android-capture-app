@@ -9,6 +9,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import coil3.PlatformContext
 import org.dhis2.R
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
@@ -39,6 +40,7 @@ class BiometricAuthenticator(
         }
     }
 
+    context(context: PlatformContext)
     override fun authenticate(
         cipher: Cipher,
         callback:(Cipher)-> Unit,

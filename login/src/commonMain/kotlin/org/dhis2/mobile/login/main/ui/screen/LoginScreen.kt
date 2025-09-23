@@ -45,7 +45,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
@@ -69,7 +68,6 @@ fun LoginScreen(
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
-    val context = LocalPlatformContext.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -144,7 +142,7 @@ fun LoginScreen(
                 CredentialsScreen(
                     selectedServer = arg.selectedServer,
                     selectedServerName = arg.serverName,
-                    selectedUsername = arg.selectedUsername,
+                    selectedUsername = arg.selectedUsername?.takeIf {username-> username.isNotEmpty() },
                     allowRecovery = arg.allowRecovery,
                 )
             }

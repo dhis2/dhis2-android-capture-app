@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -12,14 +11,16 @@ plugins {
 }
 
 
-repositories{
+repositories {
     maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
     mavenCentral()
     google()
 }
 
 kotlin {
-
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
     androidTarget {
         compilations.all {
             compileTaskProvider.configure {

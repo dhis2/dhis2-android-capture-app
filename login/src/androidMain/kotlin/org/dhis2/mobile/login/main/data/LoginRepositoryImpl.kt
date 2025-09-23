@@ -1,5 +1,7 @@
 package org.dhis2.mobile.login.main.data
 
+import coil3.PlatformContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.providers.PreferenceProvider
@@ -145,6 +147,27 @@ class LoginRepositoryImpl(
             crashReportController.trackServer(currentAccount?.serverUrl(), systemInfo?.version())
             crashReportController.trackUser(currentAccount?.username(), currentAccount?.serverUrl())
         }
+    }
+
+    context(context: PlatformContext)
+    override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> {
+        return preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
+            cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
+                ?.let { cipher ->
+                    suspendCancellableCoroutine { continuation ->
+                        authenticator.authenticate(cipher) { cipher ->
+                            val pass = cryptographyManager.decryptData(
+                                ciphertextWrapper.ciphertext,
+                                cipher,
+                            )
+                            continuation.resume(value = kotlin.Result.success(pass)){cause, _, _ -> }
+                        }
+                        continuation.invokeOnCancellation {
+                            //If needed perform action on cancelation
+                        }
+                    }
+                }
+        } ?: kotlin.Result.failure(Exception("No biometrics found"))
     }
 
     private fun isImportedDatabase(

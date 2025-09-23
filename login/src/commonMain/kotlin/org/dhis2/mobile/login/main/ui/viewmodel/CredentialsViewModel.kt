@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import coil3.PlatformContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
@@ -30,6 +32,7 @@ class CredentialsViewModel(
     private val getAvailableUsernames: GetAvailableUsernames,
     private val getBiometricInfo: GetBiometricInfo,
     private val loginUser: LoginUser,
+    private val biometricLogin: BiometricLogin,
     private val updateTrackingPermission: UpdateTrackingPermission,
     private val updateBiometricPermission: UpdateBiometricPermission,
     networkStatusProvider: NetworkStatusProvider,
@@ -190,8 +193,24 @@ class CredentialsViewModel(
         loginJob?.cancel()
     }
 
+    context(platformContext: PlatformContext)
     fun onBiometricsClicked() {
-        //TODO:
+        viewModelScope.launch {
+            val result = biometricLogin()
+            when {
+                result.isSuccess -> {
+                    updatePassword(password = result.getOrNull() ?: "")
+                    onLoginClicked()
+                }
+                else -> {
+                    _credentialsScreenState.update {
+                        it.copy(
+                            errorMessage = result.exceptionOrNull()?.message,
+                        )
+                    }
+                }
+            }
+        }
     }
 
     fun onManageAccountsClicked() {
@@ -219,7 +238,10 @@ class CredentialsViewModel(
         }
     }
 
-    fun onEnableBiometrics(granted: Boolean) {
+    context(platformContext: PlatformContext)
+    fun onEnableBiometrics(
+        granted: Boolean
+    ) {
         viewModelScope.launch {
             updateBiometricPermission(
                 serverUrl,

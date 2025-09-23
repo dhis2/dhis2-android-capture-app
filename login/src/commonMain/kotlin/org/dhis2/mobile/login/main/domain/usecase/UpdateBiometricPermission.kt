@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.main.domain.usecase
 
+import coil3.PlatformContext
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.providers.PreferenceProvider
@@ -9,6 +10,7 @@ class UpdateBiometricPermission(
     private val biometrics: BiometricActions,
     private val cryptographics: CryptographicActions,
 ) {
+    context(platformContext: PlatformContext)
     suspend operator fun invoke(
         serverUrl: String,
         username: String,
