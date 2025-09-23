@@ -17,6 +17,7 @@ class AccountRepositoryImpl(
                 serverUrl = it.serverUrl(),
                 serverName = it.loginConfig()?.applicationTitle,
                 serverDescription = it.loginConfig()?.applicationDescription,
+                serverFlag = it.loginConfig()?.countryFlag,
                 allowRecovery = it.loginConfig()?.allowAccountRecovery == true,
                 oidcIcon = oidcProviders?.icon,
                 oidcLoginText = oidcProviders?.loginText,

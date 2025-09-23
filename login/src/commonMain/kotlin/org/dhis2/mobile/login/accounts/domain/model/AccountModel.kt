@@ -5,6 +5,7 @@ data class AccountModel(
     val serverUrl: String,
     val serverName: String?,
     val serverDescription: String?,
+    var serverFlag: String?,
     val allowRecovery: Boolean,
     val oidcIcon: String?,
     val oidcLoginText: String?,
