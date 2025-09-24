@@ -37,11 +37,7 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="sync_incomplete_error_text">انتهت المزامنة ولكن لم نتلق تأكيدًا من الخادم لجميع السجلات. هذه السجلات لا تزال تحمل علامة \"غير مزامن\" في التطبيق. نوصي بإعادة محاولة المزامنة.</string>
-    <string name="metadata_sync_error">فشل: حدث خطأ في عملية المزامنة. إذا كنت متصلاً بالشبكة يرجى المحاولة مرة أخرى. إذا استمر الخطأ ، فاتصل بالمسؤول.</string>
-    <string name="data_sync_warning">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للتكوين الخاص بك وحاول مرة أخرى. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للتكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
-    <string name="data_sync_error">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة @ على البرامج التي بها أخطاء، و $ على TEI والأحداث التي فيها تعارض\".</string>
-    <string name="data_sync_error_program">خطأ: تعذر مزامنة بعض بياناتك. تحقق من حالة المزامنة: يتم وضع علامة $ على الأحداث و TEI التي تحوي على تعارضات\".</string>
     <string name="server_sync_error">حدث خطأ ولم يستجب الخادم. تواصل مع مديرك.</string>
 
     <string name="search_result_text">تم العثور على %s نتيجة</string>
@@ -217,7 +213,6 @@
         <item quantity="many">يوجد %s برامج ذات إعدادات محددة</item>
         <item quantity="other">يوجد %s برامج ذات إعدادات محددة</item>
     </plurals>
-    <string name="settings_sync_period">فترة المزامنة</string>
     <string name="settings_limit_scope">الإعدادات محدودة</string>
     <string name="settings_limit_globally">شامل</string>
     <string name="settings_limit_program">لكل برنامج</string>
@@ -243,6 +238,7 @@
     <string name="settingsCheckVersionMessage">البرمجيات</string>
     <string name="settingsExportDB">قاعدة بيانات التصدير</string>
     <string name="settingsExportDBMessage">قم بتصدير قاعدة البيانات الخاصة بك ومشاركتها مع المسؤول عنك</string>
+    <string name="settingsTwoFAStatus">الحالة</string>
     <!--endregion-->
 
     <string name="enrollmment_date">تاريخ التسجيل</string>

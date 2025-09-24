@@ -32,11 +32,7 @@
 
     <string name="sync_error_title">Synkroniseringsfeil</string>
     <string name="sync_error_text">En feil har oppstått under synkronisering. Vennligst prøv på nytt</string>
-    <string name="metadata_sync_error">FEIL: Noe gikk galt i synkroniseringsprosessen. Hvis du er tilkoblet, vennligst prøv på nytt. Hvis feilen vedvarer, kontakt din administrator.</string>
-    <string name="data_sync_warning">ADVARSEL: Mesteparten av dine data er synkronisert men noen felter presenterte konflikter. Synkroniser konfigurasjonen og prøv igjen. Sjekk deres synkroniseringstatus: programmer, TEI\'s og hendelser med konflinkter er merket som @.</string>
     <string name="data_sync_warning_program">ADVARSEL: Mesteparten av dine data er synkroniserte men noen felter presenterte konflinkter. Synkroniser din konfigurasjon og prøv igjen. Hvis advarselen vedvarer, sjekk deres synkroniseringsstatus: programmer, TEI\'s og hendelser med konflikter er merket som @.</string>
-    <string name="data_sync_error">FEIL: Noe av dine data kunne ikke synkroniseres. Sjekk synkroniseringsstatusen deres: programmer med feil er merket som @, TEI\'s og hendelser som $\".</string>
-    <string name="data_sync_error_program">FEIL: Noe av dine data kunne ikke synkroniseres. Sjekk synkroniseringsstatusen deres: TEI\'s og hendelser med konflikter er merket som $\".</string>
     <string name="search_result_text">%sresultater funnet</string>
     <string name="add_new">Legg til ny</string>
     <string name="add">Legg til</string>
@@ -196,7 +192,6 @@
         <item quantity="one">Det er  %s program med spesifikke innstillinger</item>
         <item quantity="other">Det er  %s programmer med spesifikke innstillinger</item>
     </plurals>
-    <string name="settings_sync_period">Synkroniseringsperiode</string>
     <string name="settings_limit_scope">Begrensede innstillinger</string>
     <string name="settings_limit_globally">Globalt</string>
     <string name="settings_limit_program">etter program</string>
@@ -218,6 +213,7 @@
     <string name="settingsReset_descr">Din konfigurasjon og App data lagret på enheten vil bli slettet. Du vil bli bedt om å logge inn på nytt, og data som ikke er synkronisert til serveren vil bli borte.</string>
     <string name="settingsSms">SMS innstillinger</string>
     <string name="settingsSms_descr">Sjekk og rediger parametre relatert til SMS inngangsport</string>
+    <string name="settingsTwoFAStatus">Status</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Registreringsdato</string>
