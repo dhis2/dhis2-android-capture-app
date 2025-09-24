@@ -107,7 +107,10 @@ fun SettingsScreen(
                         SettingsUiAction.OnSpecificProgramSettingsClick -> checkProgramSpecificSettings()
                         SettingsUiAction.OnManageReserveValues -> manageReserveValues()
                         SettingsUiAction.OnOpenErrorLog -> viewmodel.checkSyncErrors()
-                        SettingsUiAction.OnOpenTwoFASettings -> display2FASettingsScreen()
+                        SettingsUiAction.OnOpenTwoFASettings -> {
+                            viewmodel.onItemClick(SettingItem.TWO_FACTOR_AUTH)
+                            display2FASettingsScreen()
+                        }
                         is SettingsUiAction.OnSaveReservedValuesToDownload ->
                             viewmodel.saveReservedValues(uiAction.count)
 
@@ -298,6 +301,7 @@ private fun SettingItemList(
 
         item {
             AppUpdateSettingItem(
+                versionName = settingsUIModel.versionName,
                 isOpened = settingsUIModel.openedItem == SettingItem.VERSION_UPDATE,
                 onClick = { onSettingsUiAction(SettingsUiAction.OnItemClick(SettingItem.VERSION_UPDATE)) },
                 onCheckVersionUpdate = { onSettingsUiAction(SettingsUiAction.OnCheckVersionUpdates) },

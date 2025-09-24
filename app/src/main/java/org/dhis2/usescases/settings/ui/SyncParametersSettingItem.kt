@@ -8,11 +8,13 @@ import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -22,6 +24,7 @@ import org.dhis2.R
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.models.SyncParametersViewModel
 import org.hisp.dhis.android.core.settings.LimitScope
+import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
@@ -39,17 +42,11 @@ internal fun SyncParametersSettingItem(
     onTeiToDownloadLimitUpdate: (Int) -> Unit,
     onSpecificProgramSettingsClick: () -> Unit,
 ) {
+    val additionalInfoList = provideInfoItems(syncParametersViewModel)
     SettingItem(
         modifier = Modifier.testTag(SettingItem.SYNC_PARAMETERS.name),
         title = stringResource(id = R.string.settingsSyncParameters),
-        subtitle =
-            stringResource(R.string.event_tei_limits_v2).format(
-                provideLimitScopeLabel(syncParametersViewModel.limitScope),
-                syncParametersViewModel.currentEventCount,
-                syncParametersViewModel.numberOfEventsToDownload,
-                syncParametersViewModel.currentTeiCount,
-                syncParametersViewModel.numberOfTeiToDownload,
-            ),
+        additionalInfoList = additionalInfoList,
         icon = Icons.Outlined.DataUsage,
         extraActions = {
             Column(
@@ -64,10 +61,14 @@ internal fun SyncParametersSettingItem(
                             stringResource(R.string.settings_limit_program),
                             stringResource(R.string.settings_limit_ou_program),
                         )
+                    var inputSettingsLimitedState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputDropDown(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE),
                         title = stringResource(R.string.settings_limit_scope),
-                        state = InputShellState.FOCUSED,
+                        state = inputSettingsLimitedState,
                         itemCount = downloadLimitScopes.size,
                         onSearchOption = {},
                         fetchItem = { index ->
@@ -98,35 +99,72 @@ internal fun SyncParametersSettingItem(
                                     3 -> LimitScope.PER_OU_AND_PROGRAM
                                     else -> LimitScope.GLOBAL
                                 }
+                            inputSettingsLimitedState = InputShellState.UNFOCUSED
                             onScopeLimitSelected(selectedScope)
                         },
                         loadOptions = {},
                     )
 
+                    var eventsToDownload =
+                        remember {
+                            TextFieldValue(
+                                text = syncParametersViewModel.numberOfEventsToDownload.toString(),
+                                selection = TextRange(syncParametersViewModel.numberOfEventsToDownload.toString().length),
+                            )
+                        }
+                    var inputEventsToDownloadState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT),
                         title = stringResource(R.string.events_to_download),
-                        state = InputShellState.FOCUSED,
-                        inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfEventsToDownload.toString()),
+                        state = inputEventsToDownloadState,
+                        inputTextFieldValue = eventsToDownload,
                         onValueChanged = { fieldValue ->
+                            fieldValue?.let {
+                                eventsToDownload = fieldValue
+                            }
                             onEventToDownloadLimitUpdate(
                                 fieldValue?.text?.toIntOrNull() ?: 0,
                             )
                         },
                         imeAction = ImeAction.Done,
+                        onFocusChanged = { isFocused ->
+                            inputEventsToDownloadState =
+                                if (isFocused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
+                        },
                     )
 
+                    var numTeisDownloadTextFieldValue =
+                        remember {
+                            TextFieldValue(
+                                text = syncParametersViewModel.numberOfTeiToDownload.toString(),
+                                selection = TextRange(syncParametersViewModel.numberOfTeiToDownload.toString().length),
+                            )
+                        }
+                    var inputTeisToDownloadState =
+                        remember {
+                            InputShellState.UNFOCUSED
+                        }
                     InputPositiveIntegerOrZero(
                         modifier = Modifier.testTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT),
                         title = stringResource(R.string.teis_to_download),
-                        state = InputShellState.FOCUSED,
-                        inputTextFieldValue = TextFieldValue(text = syncParametersViewModel.numberOfTeiToDownload.toString()),
+                        state = inputTeisToDownloadState,
+                        inputTextFieldValue = numTeisDownloadTextFieldValue,
                         onValueChanged = { fieldValue ->
+                            fieldValue?.let {
+                                numTeisDownloadTextFieldValue = fieldValue
+                            }
                             onTeiToDownloadLimitUpdate(
                                 fieldValue?.text?.toIntOrNull() ?: 0,
                             )
                         },
                         imeAction = ImeAction.Done,
+                        onFocusChanged = { isFocused ->
+                            inputTeisToDownloadState =
+                                if (isFocused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
+                        },
                     )
                 } else {
                     Text(
@@ -181,6 +219,36 @@ internal fun SyncParametersSettingItem(
         onClick = onClick,
     )
 }
+
+@Composable
+private fun provideInfoItems(syncParametersViewModel: SyncParametersViewModel): List<AdditionalInfoItem> =
+    listOf(
+        AdditionalInfoItem(
+            value =
+                stringResource(R.string.limit_setting).format(
+                    provideLimitScopeLabel(
+                        syncParametersViewModel.limitScope,
+                    ),
+                ),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            key = stringResource(R.string.sync_events),
+            value =
+                syncParametersViewModel.currentEventCount.toString() +
+                    "/" +
+                    syncParametersViewModel.numberOfEventsToDownload.toString(),
+            isConstantItem = true,
+        ),
+        AdditionalInfoItem(
+            key = stringResource(R.string.tei),
+            value =
+                syncParametersViewModel.currentTeiCount.toString() +
+                    "/" +
+                    syncParametersViewModel.numberOfTeiToDownload.toString(),
+            isConstantItem = true,
+        ),
+    )
 
 @Composable
 private fun provideLimitScopeLabel(limitScope: LimitScope) =

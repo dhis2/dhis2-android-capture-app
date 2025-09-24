@@ -1,6 +1,7 @@
 package org.dhis2.usescases.settings
 
 import io.reactivex.Single
+import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -26,6 +27,7 @@ import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
+import timber.log.Timber
 
 class SettingsRepository(
     val d2: D2,
@@ -280,11 +282,15 @@ class SettingsRepository(
     }
 
     fun saveGatewayNumber(gatewayNumber: String) {
-        d2
-            .smsModule()
-            .configCase()
-            .setGatewayNumber(gatewayNumber)
-            .blockingAwait()
+        try {
+            d2
+                .smsModule()
+                .configCase()
+                .setGatewayNumber(gatewayNumber)
+                .blockingAwait()
+        } catch (e: Exception) {
+            Timber.d(e.message)
+        }
     }
 
     fun saveSmsResultSender(smsResultSender: String) {
@@ -336,6 +342,8 @@ class SettingsRepository(
     suspend fun foreignKeyViolations() = d2.maintenanceModule().foreignKeyViolations().blockingGet()
 
     suspend fun exportDatabase() = d2.maintenanceModule().databaseImportExport().exportLoggedUserDatabase()
+
+    fun getVersionName(): String = BuildConfig.VERSION_NAME
 
     fun isTwoFAConfigured(): Boolean = featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
 }
