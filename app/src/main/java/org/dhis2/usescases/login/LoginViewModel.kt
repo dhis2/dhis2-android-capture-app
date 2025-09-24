@@ -56,18 +56,9 @@ class LoginViewModel(
     private val preferenceProvider: PreferenceProvider,
     private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
-    private val dispatchers: DispatcherProvider,
-    private val biometricAuthenticator: BiometricAuthenticator,
-    private val cryptographyManager: CryptographyManager,
-    private val analyticsHelper: AnalyticsHelper,
-    private val crashReportController: CrashReportController,
-    private val network: NetworkUtils,
     private var userManager: UserManager?,
-    private val repository: LoginRepository,
 ) : ViewModel() {
     var disposable: CompositeDisposable = CompositeDisposable()
-    private val _canLoginWithBiometrics = MutableLiveData<Boolean>()
-    val canLoginWithBiometrics: LiveData<Boolean> = _canLoginWithBiometrics
 
     fun openIdLogin(config: OpenIDConnectConfig) {
         try {
@@ -143,83 +134,6 @@ class LoginViewModel(
         }
     }
 
-    fun canEnableBiometric(): Boolean = biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
-
-    fun saveUserCredentials(
-        fragmentActivity: FragmentActivity,
-        userPass: String? = null,
-        onDone: () -> Unit,
-    ) {
-        val serverUrl = ""
-        val userName = ""
-        if (serverUrl.isEmpty() or userName.isEmpty()) return
-
-        if (!preferenceProvider.areSameCredentials(serverUrl, userName)) {
-            val pass = userPass ?: serverUrl
-            if (canEnableBiometric()) {
-                val cryptoObject =
-                    cryptographyManager.getInitializedCipherForEncryption()?.let { cipher ->
-                        BiometricPrompt.CryptoObject(cipher)
-                    }
-
-                biometricAuthenticator.authenticate(
-                    fragmentActivity,
-                    {
-                        val ciphertextWrapper =
-                            cryptographyManager.encryptData(pass, it.cryptoObject?.cipher!!)
-                        preferenceProvider.saveUserCredentialsAndCipher(
-                            serverUrl,
-                            userName,
-                            ciphertextWrapper,
-                        )
-                        onDone()
-                    },
-                    cryptoObject,
-                )
-            }
-            preferenceProvider.saveUserCredentials(
-                serverUrl,
-                userName,
-                pass,
-            )
-        } else {
-            onDone()
-        }
-    }
-
-    fun authenticateWithBiometric(fragmentActivity: FragmentActivity) {
-        val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
-        if (ciphertextWrapper != null) {
-            val cryptoObject =
-                cryptographyManager
-                    .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
-                    ?.let { cipher ->
-                        BiometricPrompt.CryptoObject(cipher)
-                    }
-            biometricAuthenticator.authenticate(
-                fragmentActivity,
-                {
-                   /* password.value =
-                        cryptographyManager.decryptData(
-                            ciphertextWrapper.ciphertext,
-                            it.cryptoObject?.cipher!!,
-                        )*/
-//                    logIn()
-                },
-                cryptoObject,
-            )
-        }
-    }
-
-    fun onAccountRecovery() {
-        if (network.isOnline()) {
-            analyticsHelper.setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
-            view.openAccountRecovery()
-        } else {
-            view.showNoConnectionDialog()
-        }
-    }
-
     private fun deletePin() {
         userManager
             ?.d2
@@ -227,11 +141,6 @@ class LoginViewModel(
             ?.localDataStore()
             ?.value(PIN)
             ?.blockingDeleteIfExist()
-    }
-
-    companion object {
-        const val EMPTY_CREDENTIALS = "Empty credentials"
-        const val AUTH_ERROR = "AUTH ERROR"
     }
 
     fun onImportDataBase(file: File) {

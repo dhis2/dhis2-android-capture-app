@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -275,7 +276,7 @@ private fun CredentialsContainer(
 ) {
     var usernameTextValue by remember(username) {
         mutableStateOf(
-            TextFieldValue(username),
+            TextFieldValue(username, TextRange(username.length)),
         )
     }
 
@@ -315,7 +316,8 @@ private fun CredentialsContainer(
                         autoCompleteList = availableUsernames,
                         autoCompleteItemSelected = {
                             usernameTextValue =
-                                it?.let { text -> TextFieldValue(text) } ?: TextFieldValue("")
+                                it?.let { text -> TextFieldValue(text, TextRange(text.length)) }
+                                    ?: TextFieldValue("")
                         },
                         onNextClicked = {
                         },
