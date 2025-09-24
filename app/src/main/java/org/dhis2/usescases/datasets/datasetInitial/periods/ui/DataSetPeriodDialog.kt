@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -87,6 +88,16 @@ class DataSetPeriodDialog(
                         )
                     } else {
                         val scrollState = rememberLazyListState()
+
+                        // If future period entry is enabled we scroll after opening the dialog to
+                        // ensure data entry starts with "today's" period instead of the latest
+                        // period. The user can scroll up to move into the future.
+                        LaunchedEffect(openFuturePeriods) {
+                            if (openFuturePeriods > 0) {
+                                scrollState.animateScrollToItem(openFuturePeriods - 1)
+                            }
+                        }
+
                         BottomSheetShell(
                             uiState =
                                 BottomSheetShellUIState(
