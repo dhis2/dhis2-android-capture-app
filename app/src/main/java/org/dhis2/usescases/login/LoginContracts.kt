@@ -19,11 +19,7 @@ class LoginContracts {
 
         // FingerPrintAuth
 
-        fun openAccountRecovery()
-
         fun alreadyAuthenticated()
-
-        fun getDefaultServerProtocol(): String
 
         fun isNetworkAvailable(): Boolean
 

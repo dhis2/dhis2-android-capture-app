@@ -89,7 +89,7 @@ class LoginViewModel(
                                 oidcIcon = result.oidcIcon,
                                 oidcLoginText = result.oidcLoginText,
                                 oidcUrl = result.oidcUrl,
-                            )
+                            ),
                         )
                         stopValidation()
                     }

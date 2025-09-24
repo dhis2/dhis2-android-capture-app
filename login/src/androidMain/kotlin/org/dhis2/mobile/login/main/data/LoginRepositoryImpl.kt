@@ -69,7 +69,7 @@ class LoginRepositoryImpl(
         serverUrl: String,
         username: String,
         password: String,
-        isNetworkAvailable: Boolean
+        isNetworkAvailable: Boolean,
     ) = try {
         d2.userModule().blockingLogIn(username, password, serverUrl)
         kotlin.Result.success(Unit)
@@ -78,19 +78,21 @@ class LoginRepositoryImpl(
             Exception(
                 d2ErrorMessageProvider.getErrorMessage(
                     e,
-                    isNetworkAvailable
-                )
-            )
+                    isNetworkAvailable,
+                ),
+            ),
         )
     }
 
-    override suspend fun getAvailableLoginUsernames(): List<String> {
-        return preferences.getList(PREF_USERS, emptyList())
-    }
+    override suspend fun getAvailableLoginUsernames(): List<String> = preferences.getList(PREF_USERS, emptyList())
 
     override suspend fun unlockSession() {
         preferences.setValue(PREF_SESSION_LOCKED, false)
-        d2.dataStoreModule().localDataStore().value(PIN).blockingDeleteIfExist()
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(PIN)
+            .blockingDeleteIfExist()
     }
 
     override suspend fun updateAvailableUsers(username: String) {
@@ -99,23 +101,27 @@ class LoginRepositoryImpl(
         preferences.setValue(PREF_USERS, availableUsers)
     }
 
-    override suspend fun displayTrackingMessage(): Boolean {
-        return d2.dataStoreModule().localDataStore()
+    override suspend fun displayTrackingMessage(): Boolean =
+        d2
+            .dataStoreModule()
+            .localDataStore()
             .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            .blockingGet()?.value() == null
-    }
+            .blockingGet()
+            ?.value() == null
 
     override suspend fun initialSyncDone(
         serverUrl: String,
         username: String,
-    ): Boolean {
-        return isImportedDatabase(serverUrl, username) or entryExists()
-    }
+    ): Boolean = isImportedDatabase(serverUrl, username) or entryExists()
 
     override suspend fun canLoginWithBiometrics(serverUrl: String): Boolean {
         val hasBiometrics = authenticator.hasBiometric()
-        val hasOnlyOneAccount = d2.userModule().accountManager()
-            .getAccounts().count() == 1
+        val hasOnlyOneAccount =
+            d2
+                .userModule()
+                .accountManager()
+                .getAccounts()
+                .count() == 1
         val isSameServer =
             preferences.getString(SECURE_SERVER_URL)?.let { it == serverUrl } ?: false
         val hasKey = preferences.contains(SECURE_PASS) || cryptographyManager.isKeyReady()
@@ -125,13 +131,19 @@ class LoginRepositoryImpl(
     override suspend fun displayBiometricMessage(): Boolean {
         val hasBiometrics = authenticator.hasBiometric()
         val credentialsNotSet = preferences.areCredentialsSet().not()
-        val hasOnlyOneAccount = d2.userModule().accountManager()
-            .getAccounts().count() == 1
+        val hasOnlyOneAccount =
+            d2
+                .userModule()
+                .accountManager()
+                .getAccounts()
+                .count() == 1
         return hasBiometrics && hasOnlyOneAccount && credentialsNotSet
     }
 
     override suspend fun updateTrackingPermissions(granted: Boolean) {
-        d2.dataStoreModule().localDataStore()
+        d2
+            .dataStoreModule()
+            .localDataStore()
             .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
             .blockingSet(granted.toString())
         if (granted) {
@@ -141,7 +153,7 @@ class LoginRepositoryImpl(
             analyticActions.trackMatomoEvent(
                 USER_PROPERTY_SERVER,
                 VERSION,
-                systemInfo?.version() ?: ""
+                systemInfo?.version() ?: "",
             )
             crashReportController.init()
             crashReportController.trackServer(currentAccount?.serverUrl(), systemInfo?.version())
@@ -150,40 +162,46 @@ class LoginRepositoryImpl(
     }
 
     context(context: PlatformContext)
-    override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> {
-        return preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
-            cryptographyManager.getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
+    override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> =
+        preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
+            cryptographyManager
+                .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
                 ?.let { cipher ->
                     suspendCancellableCoroutine { continuation ->
                         authenticator.authenticate(cipher) { cipher ->
-                            val pass = cryptographyManager.decryptData(
-                                ciphertextWrapper.ciphertext,
-                                cipher,
-                            )
-                            continuation.resume(value = kotlin.Result.success(pass)){cause, _, _ -> }
+                            val pass =
+                                cryptographyManager.decryptData(
+                                    ciphertextWrapper.ciphertext,
+                                    cipher,
+                                )
+                            continuation.resume(value = kotlin.Result.success(pass)) { cause, _, _ -> }
                         }
                         continuation.invokeOnCancellation {
-                            //If needed perform action on cancelation
+                            // If needed perform action on cancelation
                         }
                     }
                 }
         } ?: kotlin.Result.failure(Exception("No biometrics found"))
-    }
 
     private fun isImportedDatabase(
         serverUrl: String,
         username: String,
-    ): Boolean = d2
-        .userModule()
-        .accountManager()
-        .getCurrentAccount()
-        ?.let {
-            it.serverUrl() == serverUrl && it.username() == username && it.importDB() != null
-        } ?: false
+    ): Boolean =
+        d2
+            .userModule()
+            .accountManager()
+            .getCurrentAccount()
+            ?.let {
+                it.serverUrl() == serverUrl && it.username() == username && it.importDB() != null
+            } ?: false
 
     private fun entryExists() =
-        d2.dataStoreModule().localDataStore()
-            .value(WAS_INITIAL_SYNC_DONE).blockingGet()
-            ?.value()?.lowercase()?.toBooleanStrictOrNull() == true
-
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(WAS_INITIAL_SYNC_DONE)
+            .blockingGet()
+            ?.value()
+            ?.lowercase()
+            ?.toBooleanStrictOrNull() == true
 }

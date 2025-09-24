@@ -50,11 +50,12 @@ fun TaskExecutorButton(
                     icon()
                 }
             },
-            text = if (taskRunning) {
-                taskRunningText
-            } else {
-                actionText
-            },
+            text =
+                if (taskRunning) {
+                    taskRunningText
+                } else {
+                    actionText
+                },
             onClick = onClick,
         )
 

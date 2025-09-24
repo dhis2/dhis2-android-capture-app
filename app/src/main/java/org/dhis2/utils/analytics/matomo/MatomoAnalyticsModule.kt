@@ -29,9 +29,10 @@ class MatomoAnalyticsModule {
     fun apkCheckSum(context: Context): DownloadTracker.Extra.ApkChecksum = DownloadTracker.Extra.ApkChecksum(context)
 }
 
-val matomoModule = module {
-    single { DownloadTracker.Extra.ApkChecksum(get()) }
-    single { Matomo.getInstance(get()) }
-    single<MatomoAnalyticsController> { MatomoAnalyticsControllerImpl(get(), get()) }
-    single<AnalyticActions> { AnalyticsHelper(get()) }
-}
+val matomoModule =
+    module {
+        single { DownloadTracker.Extra.ApkChecksum(get()) }
+        single { Matomo.getInstance(get()) }
+        single<MatomoAnalyticsController> { MatomoAnalyticsControllerImpl(get(), get()) }
+        single<AnalyticActions> { AnalyticsHelper(get()) }
+    }

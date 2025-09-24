@@ -13,17 +13,17 @@ object BiometricModule {
     @JvmStatic
     @Provides
     @PerActivity
-    fun provideBiometricController(context: ActivityGlobalAbstract): BiometricAuthenticator =
-        BiometricAuthenticator(context)
+    fun provideBiometricController(context: ActivityGlobalAbstract): BiometricAuthenticator = BiometricAuthenticator(context)
 }
 
-val biometricModule = module {
+val biometricModule =
+    module {
 
-    factory<BiometricActions> {
-        BiometricAuthenticator(get())
-    }
+        factory<BiometricActions> {
+            BiometricAuthenticator(get())
+        }
 
-    factory<CryptographicActions> {
-        CryptographyManager()
+        factory<CryptographicActions> {
+            CryptographyManager()
+        }
     }
-}

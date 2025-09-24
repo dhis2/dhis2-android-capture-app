@@ -41,7 +41,6 @@ class CredentialsViewModel(
     private val username: String?,
     private val allowRecovery: Boolean,
 ) : ViewModel() {
-
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
             .stateIn(
@@ -50,64 +49,71 @@ class CredentialsViewModel(
                 false,
             )
 
-
-    private val initialState = CredentialsUiState(
-        serverInfo = ServerInfo(
-            serverName = serverName,
-            serverUrl = serverUrl,
-            username = username,
-        ),
-        credentialsInfo = CredentialsInfo(
-            username = username ?: "",
-            password = "",
-            availableUsernames = emptyList(),
-            usernameCanBeEdited = username == null
-        ),
-        loginState = LoginState.Disabled,
-        errorMessage = null,
-        allowRecovery = false,
-        canUseBiometrics = false,
-        oidcInfo = null,
-        afterLoginActions = emptyList(),
-    )
+    private val initialState =
+        CredentialsUiState(
+            serverInfo =
+                ServerInfo(
+                    serverName = serverName,
+                    serverUrl = serverUrl,
+                    username = username,
+                ),
+            credentialsInfo =
+                CredentialsInfo(
+                    username = username ?: "",
+                    password = "",
+                    availableUsernames = emptyList(),
+                    usernameCanBeEdited = username == null,
+                ),
+            loginState = LoginState.Disabled,
+            errorMessage = null,
+            allowRecovery = false,
+            canUseBiometrics = false,
+            oidcInfo = null,
+            afterLoginActions = emptyList(),
+        )
 
     private var loginJob: Job? = null
 
     private val _credentialsScreenState = MutableStateFlow(initialState)
-    val credentialsScreenState = _credentialsScreenState.onStart {
-        loadData()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = initialState,
-    )
+    val credentialsScreenState =
+        _credentialsScreenState
+            .onStart {
+                loadData()
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = initialState,
+            )
 
     private fun loadData() {
         viewModelScope.launch {
             _credentialsScreenState.emit(
                 CredentialsUiState(
-                    serverInfo = ServerInfo(
-                        serverName = serverName,
-                        serverUrl = serverUrl,
-                        username = username,
-                    ),
-                    credentialsInfo = CredentialsInfo(
-                        username = username ?: "",
-                        password = "",
-                        availableUsernames = getAvailableUsernames(),
-                        usernameCanBeEdited = username == null
-                    ),
+                    serverInfo =
+                        ServerInfo(
+                            serverName = serverName,
+                            serverUrl = serverUrl,
+                            username = username,
+                        ),
+                    credentialsInfo =
+                        CredentialsInfo(
+                            username = username ?: "",
+                            password = "",
+                            availableUsernames = getAvailableUsernames(),
+                            usernameCanBeEdited = username == null,
+                        ),
                     loginState = LoginState.Disabled,
                     errorMessage = null,
                     allowRecovery = allowRecovery,
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
-                    oidcInfo = OidcInfo(
-                        oidcIcon = "icon",
-                        oidcLoginText = "Open id connect",
-                        oidcUrl = "https://openid.login.test"
-                    ),
+                    oidcInfo =
+                        OidcInfo( // TODO: This should either be received from validate server or with a new usecase
+                            oidcIcon = "icon",
+                            oidcLoginText = "Open id connect",
+                            oidcUrl = "https://openid.login.test",
+                        ),
                     afterLoginActions = emptyList(),
-                )
+                ),
             )
         }
     }
@@ -115,10 +121,18 @@ class CredentialsViewModel(
     fun updateUsername(username: String) {
         _credentialsScreenState.update {
             it.copy(
-                credentialsInfo = it.credentialsInfo.copy(
-                    username = username,
-                ),
-                loginState = if (username.isNotBlank() && it.credentialsInfo.username.isNotBlank()) LoginState.Enabled else LoginState.Disabled,
+                credentialsInfo =
+                    it.credentialsInfo.copy(
+                        username = username,
+                    ),
+                loginState =
+                    if (username.isNotBlank() &&
+                        it.credentialsInfo.username.isNotBlank()
+                    ) {
+                        LoginState.Enabled
+                    } else {
+                        LoginState.Disabled
+                    },
                 errorMessage = null,
             )
         }
@@ -127,15 +141,22 @@ class CredentialsViewModel(
     fun updatePassword(password: String) {
         _credentialsScreenState.update {
             it.copy(
-                credentialsInfo = it.credentialsInfo.copy(
-                    password = password
-                ),
-                loginState = if (password.isNotBlank() && it.credentialsInfo.username.isNotBlank()) LoginState.Enabled else LoginState.Disabled,
+                credentialsInfo =
+                    it.credentialsInfo.copy(
+                        password = password,
+                    ),
+                loginState =
+                    if (password.isNotBlank() &&
+                        it.credentialsInfo.username.isNotBlank()
+                    ) {
+                        LoginState.Enabled
+                    } else {
+                        LoginState.Disabled
+                    },
                 errorMessage = null,
             )
         }
     }
-
 
     fun onLoginClicked() {
         _credentialsScreenState.update {
@@ -143,39 +164,42 @@ class CredentialsViewModel(
                 loginState = LoginState.Running,
             )
         }
-        loginJob = viewModelScope.launch {
-            val result = loginUser(
-                serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                username = _credentialsScreenState.value.credentialsInfo.username,
-                password = _credentialsScreenState.value.credentialsInfo.password,
-                isNetworkAvailable = isNetworkOnline.value,
-            )
-            when (result) {
-                is LoginResult.Success -> {
-                    _credentialsScreenState.update {
-                        it.copy(
-                            afterLoginActions = buildList {
-                                if (result.displayTrackingMessage) {
-                                    add(AfterLoginAction.DisplayTrackingMessage)
-                                }
-                                if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
-                                    add(AfterLoginAction.DisplayBiometricsMessage)
-                                }
-                                add(AfterLoginAction.NavigateToNextScreen(result.initialSyncDone))
-                            },
-                        )
+        loginJob =
+            viewModelScope.launch {
+                val result =
+                    loginUser(
+                        serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                        username = _credentialsScreenState.value.credentialsInfo.username,
+                        password = _credentialsScreenState.value.credentialsInfo.password,
+                        isNetworkAvailable = isNetworkOnline.value,
+                    )
+                when (result) {
+                    is LoginResult.Success -> {
+                        _credentialsScreenState.update {
+                            it.copy(
+                                afterLoginActions =
+                                    buildList {
+                                        if (result.displayTrackingMessage) {
+                                            add(AfterLoginAction.DisplayTrackingMessage)
+                                        }
+                                        if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
+                                            add(AfterLoginAction.DisplayBiometricsMessage)
+                                        }
+                                        add(AfterLoginAction.NavigateToNextScreen(result.initialSyncDone))
+                                    },
+                            )
+                        }
                     }
-                }
 
-                is LoginResult.Error -> {
-                    _credentialsScreenState.update {
-                        it.copy(
-                            errorMessage = result.message,
-                        )
+                    is LoginResult.Error -> {
+                        _credentialsScreenState.update {
+                            it.copy(
+                                errorMessage = result.message,
+                            )
+                        }
                     }
                 }
             }
-        }
         loginJob?.invokeOnCompletion {
             _credentialsScreenState.update {
                 it.copy(
@@ -186,7 +210,7 @@ class CredentialsViewModel(
     }
 
     fun onOpenIdLogin(url: String) {
-        //TODO
+        // TODO
     }
 
     fun cancelLogin() {
@@ -224,9 +248,10 @@ class CredentialsViewModel(
             updateTrackingPermission(granted)
             _credentialsScreenState.update {
                 it.copy(
-                    afterLoginActions = it.afterLoginActions.toMutableList().apply {
-                        remove(AfterLoginAction.DisplayTrackingMessage)
-                    },
+                    afterLoginActions =
+                        it.afterLoginActions.toMutableList().apply {
+                            remove(AfterLoginAction.DisplayTrackingMessage)
+                        },
                 )
             }
         }
@@ -239,21 +264,20 @@ class CredentialsViewModel(
     }
 
     context(platformContext: PlatformContext)
-    fun onEnableBiometrics(
-        granted: Boolean
-    ) {
+    fun onEnableBiometrics(granted: Boolean) {
         viewModelScope.launch {
             updateBiometricPermission(
                 serverUrl,
                 credentialsScreenState.value.credentialsInfo.username,
                 credentialsScreenState.value.credentialsInfo.password,
-                granted
+                granted,
             )
             _credentialsScreenState.update {
                 it.copy(
-                    afterLoginActions = it.afterLoginActions.toMutableList().apply {
-                        remove(AfterLoginAction.DisplayBiometricsMessage)
-                    },
+                    afterLoginActions =
+                        it.afterLoginActions.toMutableList().apply {
+                            remove(AfterLoginAction.DisplayBiometricsMessage)
+                        },
                 )
             }
         }

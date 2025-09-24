@@ -13,15 +13,17 @@ import timber.log.Timber
 
 const val DATA_STORE_CRASH_PERMISSION_KEY = "analytics_permission"
 
-class CrashReportControllerImpl(private val context: Context) : CrashReportController {
-
+class CrashReportControllerImpl(
+    private val context: Context,
+) : CrashReportController {
     override fun init() {
         SentryAndroid.init(context) { options: SentryAndroidOptions? ->
             options!!.setDsn(BuildConfig.SENTRY_DSN)
             options.isAnrReportInDebug = true
-            options.beforeSend = BeforeSendCallback { event, hint ->
-                if (SentryLevel.DEBUG == event.level) null else event
-            }
+            options.beforeSend =
+                BeforeSendCallback { event, hint ->
+                    if (SentryLevel.DEBUG == event.level) null else event
+                }
             options.environment = if (BuildConfig.DEBUG) "debug" else "production"
             options.isDebug = BuildConfig.DEBUG
             options.isAttachViewHierarchy = true
@@ -97,18 +99,18 @@ class CrashReportControllerImpl(private val context: Context) : CrashReportContr
 
     private fun isCrashReportPermissionGranted(): Boolean =
         (
-                D2Manager.isD2Instantiated() &&
-                        D2Manager
-                            .getD2()
-                            .dataStoreModule()
-                            .localDataStore()
-                            .value(DATA_STORE_CRASH_PERMISSION_KEY)
-                            .blockingGet()
-                            ?.value()
-                            ?.toBoolean() == true
-                ).also { granted ->
-                if (!granted) {
-                    Timber.d("Tracking is disabled")
-                }
+            D2Manager.isD2Instantiated() &&
+                D2Manager
+                    .getD2()
+                    .dataStoreModule()
+                    .localDataStore()
+                    .value(DATA_STORE_CRASH_PERMISSION_KEY)
+                    .blockingGet()
+                    ?.value()
+                    ?.toBoolean() == true
+        ).also { granted ->
+            if (!granted) {
+                Timber.d("Tracking is disabled")
             }
+        }
 }

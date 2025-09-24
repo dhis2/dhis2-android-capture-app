@@ -21,7 +21,7 @@ class AccountRepositoryImpl(
                 oidcIcon = oidcProviders?.icon,
                 oidcLoginText = oidcProviders?.loginText,
                 oidcUrl = oidcProviders?.url,
-                isOauthEnabled = it.loginConfig()?.isOauthEnabled() == true
+                isOauthEnabled = it.loginConfig()?.isOauthEnabled() == true,
             )
         }
 

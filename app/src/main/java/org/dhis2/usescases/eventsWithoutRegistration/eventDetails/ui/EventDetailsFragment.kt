@@ -79,8 +79,7 @@ class EventDetailsFragment : FragmentGlobalAbstract() {
 
     private val requestLocationByMap =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK && result.data?.extras != null
-            ) {
+            if (result.resultCode == Activity.RESULT_OK && result.data?.extras != null) {
                 val featureType: String =
                     result.data!!.getStringExtra(MapSelectorActivity.LOCATION_TYPE_EXTRA)!!
                 val coordinates = result.data?.getStringExtra(MapSelectorActivity.DATA_EXTRA)

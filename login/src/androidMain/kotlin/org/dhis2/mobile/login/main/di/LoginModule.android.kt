@@ -26,7 +26,7 @@ internal actual val accountModule =
                 get(),
                 get { parametersOf(hasConnectionCallback) },
                 get(),
-                get()
+                get(),
             )
         }
         viewModelOf(::AccountsViewModel)

@@ -65,7 +65,6 @@ class LoginViewModel(
     private var userManager: UserManager?,
     private val repository: LoginRepository,
 ) : ViewModel() {
-
     var disposable: CompositeDisposable = CompositeDisposable()
     private val _canLoginWithBiometrics = MutableLiveData<Boolean>()
     val canLoginWithBiometrics: LiveData<Boolean> = _canLoginWithBiometrics
@@ -115,7 +114,7 @@ class LoginViewModel(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         {},
-                        {t->},
+                        { t -> },
                     ),
             )
         }
@@ -144,8 +143,7 @@ class LoginViewModel(
         }
     }
 
-    fun canEnableBiometric(): Boolean =
-        biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
+    fun canEnableBiometric(): Boolean = biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
 
     fun saveUserCredentials(
         fragmentActivity: FragmentActivity,
@@ -175,7 +173,8 @@ class LoginViewModel(
                             ciphertextWrapper,
                         )
                         onDone()
-                    }, cryptoObject
+                    },
+                    cryptoObject,
                 )
             }
             preferenceProvider.saveUserCredentials(
@@ -188,9 +187,7 @@ class LoginViewModel(
         }
     }
 
-    fun authenticateWithBiometric(
-        fragmentActivity: FragmentActivity,
-    ) {
+    fun authenticateWithBiometric(fragmentActivity: FragmentActivity) {
         val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
         if (ciphertextWrapper != null) {
             val cryptoObject =
@@ -208,7 +205,8 @@ class LoginViewModel(
                             it.cryptoObject?.cipher!!,
                         )*/
 //                    logIn()
-                }, cryptoObject
+                },
+                cryptoObject,
             )
         }
     }

@@ -60,8 +60,7 @@ class EnrollmentModule(
 ) {
     @Provides
     @PerActivity
-    fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository =
-        d2.enrollmentModule().enrollments().uid(enrollmentUid)
+    fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository = d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
     @Provides
     @PerActivity
@@ -76,8 +75,7 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideProgramRepository(d2: D2): ReadOnlyOneObjectRepositoryFinalImpl<Program> =
-        d2.programModule().programs().uid(programUid)
+    fun provideProgramRepository(d2: D2): ReadOnlyOneObjectRepositoryFinalImpl<Program> = d2.programModule().programs().uid(programUid)
 
     @Provides
     @PerActivity
@@ -106,8 +104,7 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    fun provideEnrollmentFormLabelsProvider(resourceManager: ResourceManager) =
-        EnrollmentFormLabelsProvider(resourceManager)
+    fun provideEnrollmentFormLabelsProvider(resourceManager: ResourceManager) = EnrollmentFormLabelsProvider(resourceManager)
 
     @Provides
     @PerActivity
@@ -212,7 +209,7 @@ class EnrollmentModule(
     @PerActivity
     internal fun searchRepository(
         d2: D2,
-        crashController: CrashReportController
+        crashController: CrashReportController,
     ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashController)
 
     @Provides

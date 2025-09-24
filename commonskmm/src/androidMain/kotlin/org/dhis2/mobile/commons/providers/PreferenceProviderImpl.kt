@@ -10,7 +10,9 @@ import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import timber.log.Timber
 
-internal class PreferenceProviderImpl(context: Context) : PreferenceProvider {
+internal class PreferenceProviderImpl(
+    context: Context,
+) : PreferenceProvider {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(SHARE_PREFS, Context.MODE_PRIVATE)
 
@@ -130,9 +132,9 @@ internal class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     override fun contains(vararg keys: String): Boolean =
         keys.all { key ->
             sharedPreferences.contains(key) or
-                    css
-                        .getAllKeys()
-                        .any { storedKey -> storedKey.startsWith(key) }
+                css
+                    .getAllKeys()
+                    .any { storedKey -> storedKey.startsWith(key) }
         }
 
     override fun saveUserCredentials(
@@ -169,7 +171,7 @@ internal class PreferenceProviderImpl(context: Context) : PreferenceProvider {
         userName: String?,
     ): Boolean =
         getString(SECURE_SERVER_URL, "") == serverUrl &&
-                getString(SECURE_USER_NAME, "") == userName
+            getString(SECURE_USER_NAME, "") == userName
 
     override fun clear() {
         sharedPreferences.edit { clear() }
@@ -185,13 +187,12 @@ internal class PreferenceProviderImpl(context: Context) : PreferenceProvider {
     override fun <T> getObjectFromJson(
         key: String,
         default: T,
-    ): T {
-        return getObjectFromJson(
+    ): T =
+        getObjectFromJson(
             key,
             object : TypeToken<T>() {},
-            default
+            default,
         )
-    }
 
     private fun <T> getObjectFromJson(
         key: String,

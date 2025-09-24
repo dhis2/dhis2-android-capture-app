@@ -243,47 +243,9 @@ class LoginActivity :
         presenter.logOut()
     }
 
-    private fun onLoginDataUpdated() {
-        when {
-            else -> {
-                presenter.saveUserCredentials(this) {
-                    goToNextScreen()
-                }
-            }
-        }
-    }
-
-    private fun showBiometricDialog() {
-        BottomSheetDialog(
-            BottomSheetDialogUiModel(
-                title = getString(R.string.biometrics_login_title),
-                message = getString(R.string.biometrics_login_text),
-                iconResource = R.drawable.ic_fingerprint,
-                mainButton = DialogButtonStyle.MainButton(textResource = R.string.yes),
-                secondaryButton =
-                    DialogButtonStyle.SecondaryButton(
-                        textResource = R.string.not_now,
-                        buttonStyle = ButtonStyle.OUTLINED,
-                    ),
-            ),
-            showTopDivider = true,
-            onMainButtonClicked = {
-                /*presenter.saveUserCredentials(binding.userPassEdit.text.toString()) {
-                    onLoginDataUpdated(false)
-                }*/
-            },
-            onSecondaryButtonClicked = {
-                presenter.saveUserCredentials(this) {
-                    onLoginDataUpdated()
-                }
-            },
-        ).show(supportFragmentManager, BottomSheetDialog::class.simpleName)
-    }
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (isPinScreenVisible) {
-//            binding.pinLayout.root.visibility = View.GONE
             isPinScreenVisible = false
         } else {
             super.onBackPressed()
@@ -299,25 +261,17 @@ class LoginActivity :
     ) {
         if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
-                /*presenter.handleAuthResponseData(
-                    binding.serverUrlEdit.text.toString(),
+                presenter.handleAuthResponseData(
+                    "server_url", // TODO: Move this to login module and pass server url
                     data,
                     requestCode,
-                )*/
+                )
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun initLogin(): UserManager = app().createServerComponent().userManager()
-
-    override fun openAccountRecovery() {
-        val intent = Intent(this, WebViewActivity::class.java)
-//        intent.putExtra(WEB_VIEW_URL, binding.serverUrlEdit.text.toString() + ACCOUNT_RECOVERY)
-        startActivity(intent)
-    }
-
-    override fun getDefaultServerProtocol(): String = getString(R.string.login_https)
 
     override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
         intentData?.let {

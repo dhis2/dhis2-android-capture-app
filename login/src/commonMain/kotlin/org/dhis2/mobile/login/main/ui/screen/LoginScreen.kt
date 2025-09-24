@@ -63,8 +63,8 @@ fun LoginScreen(
     versionName: String,
     onImportDatabase: () -> Unit,
     onNavigateToSync: () -> Unit,
-    onNavigateToHome:()->Unit,
-    onNavigateToPrivacyPolicy:()->Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
@@ -142,7 +142,7 @@ fun LoginScreen(
                 CredentialsScreen(
                     selectedServer = arg.selectedServer,
                     selectedServerName = arg.serverName,
-                    selectedUsername = arg.selectedUsername?.takeIf {username-> username.isNotEmpty() },
+                    selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
                     allowRecovery = arg.allowRecovery,
                 )
             }

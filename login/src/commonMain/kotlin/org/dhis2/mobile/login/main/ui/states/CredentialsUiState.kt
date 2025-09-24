@@ -34,13 +34,18 @@ data class OidcInfo(
 
 sealed interface AfterLoginAction {
     data object DisplayTrackingMessage : AfterLoginAction
+
     data object DisplayBiometricsMessage : AfterLoginAction
-    data class NavigateToNextScreen(val initialSyncDone: Boolean) : AfterLoginAction
+
+    data class NavigateToNextScreen(
+        val initialSyncDone: Boolean,
+    ) : AfterLoginAction
 }
 
 sealed class LoginState {
     data object Disabled : LoginState()
-    data object Enabled : LoginState()
-    data object Running : LoginState()
 
+    data object Enabled : LoginState()
+
+    data object Running : LoginState()
 }

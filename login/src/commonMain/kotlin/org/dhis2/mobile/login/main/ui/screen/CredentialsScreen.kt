@@ -52,8 +52,21 @@ import org.dhis2.mobile.login.main.ui.states.LoginState
 import org.dhis2.mobile.login.main.ui.states.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.action_log_in
+import org.dhis2.mobile.login.resources.action_no_now
+import org.dhis2.mobile.login.resources.action_openid_log_in
+import org.dhis2.mobile.login.resources.action_recover_account
+import org.dhis2.mobile.login.resources.action_yes
 import org.dhis2.mobile.login.resources.biometrics_login_text
 import org.dhis2.mobile.login.resources.biometrics_login_title
+import org.dhis2.mobile.login.resources.logging_in
+import org.dhis2.mobile.login.resources.openid_or
+import org.dhis2.mobile.login.resources.password_hint
+import org.dhis2.mobile.login.resources.privacy_policy
+import org.dhis2.mobile.login.resources.tracking_description
+import org.dhis2.mobile.login.resources.tracking_description_link
+import org.dhis2.mobile.login.resources.tracking_title
+import org.dhis2.mobile.login.resources.username_hint
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
 import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
@@ -89,9 +102,10 @@ fun CredentialsScreen(
     selectedUsername: String?,
     allowRecovery: Boolean,
 ) {
-    val viewModel = koinViewModel<CredentialsViewModel> {
-        parametersOf(selectedServerName, selectedServer, selectedUsername, allowRecovery)
-    }
+    val viewModel =
+        koinViewModel<CredentialsViewModel> {
+            parametersOf(selectedServerName, selectedServer, selectedUsername, allowRecovery)
+        }
     val context = LocalPlatformContext.current
     val screenState by viewModel.credentialsScreenState.collectAsState()
     val displayBiometricMessage by remember(screenState) {
@@ -107,21 +121,23 @@ fun CredentialsScreen(
 
     LaunchedEffect(screenState) {
         val action = screenState.afterLoginActions.firstOrNull()
-        if(action is AfterLoginAction.NavigateToNextScreen){
+        if (action is AfterLoginAction.NavigateToNextScreen) {
             viewModel.goToNextScreen(action.initialSyncDone)
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(Spacing.Spacing16),
-        verticalArrangement = spacedBy(Spacing.Spacing24)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(Spacing.Spacing16),
+        verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
         ServerInfo(
             serverName = selectedServerName,
             serverUrl = selectedServer,
             selectedUsername = selectedUsername,
-            serverImageUrl = "https://avatars.githubusercontent.com/u/1089987?s=200&v=4",
+            serverImageUrl = "https://avatars.githubusercontent.com/u/1089987?s=200&v=4", // TODO: Replace with flag / server image
         )
         CredentialsContainer(
             availableUsernames = screenState.credentialsInfo.availableUsernames,
@@ -134,12 +150,12 @@ fun CredentialsScreen(
             },
             onPasswordChanged = {
                 viewModel.updatePassword(it)
-            }
+            },
         )
         LoginStatus(
             isLoggingIn = screenState.loginState == LoginState.Running,
             loginErrorMessage = screenState.errorMessage,
-            onCancelLogin = viewModel::cancelLogin
+            onCancelLogin = viewModel::cancelLogin,
         )
         CredentialActions(
             allowRecovery = screenState.allowRecovery,
@@ -167,7 +183,7 @@ fun CredentialsScreen(
                 with(context) {
                     viewModel.onEnableBiometrics(granted)
                 }
-            }
+            },
         )
     }
 }
@@ -181,57 +197,65 @@ private fun ServerInfo(
 ) {
     ListCard(
         modifier = Modifier.fillMaxWidth(),
-        listCardState = rememberListCardState(
-            title = ListCardTitleModel(
-                text = serverName ?: "-"
-            ),
-            description = ListCardDescriptionModel(
-                text = serverUrl
-            ),
-            additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                additionalInfoList = selectedUsername?.let {
-                    listOf(
-                        AdditionalInfoItem(
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Person,
-                                    contentDescription = "",
-                                    tint = TextColor.OnSurfaceLight,
+        listCardState =
+            rememberListCardState(
+                title =
+                    ListCardTitleModel(
+                        text = serverName ?: "-",
+                    ),
+                description =
+                    ListCardDescriptionModel(
+                        text = serverUrl,
+                    ),
+                additionalInfoColumnState =
+                    rememberAdditionalInfoColumnState(
+                        additionalInfoList =
+                            selectedUsername?.let {
+                                listOf(
+                                    AdditionalInfoItem(
+                                        icon = {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Person,
+                                                contentDescription = "",
+                                                tint = TextColor.OnSurfaceLight,
+                                            )
+                                        },
+                                        value = it,
+                                    ),
                                 )
-                            },
-                            value = it
-                        )
-                    )
-                } ?: emptyList(),
-                syncProgressItem = AdditionalInfoItem(
-                    value = ""
-                )
+                            } ?: emptyList(),
+                        syncProgressItem =
+                            AdditionalInfoItem(
+                                value = "",
+                            ),
+                    ),
             ),
-        ),
         listAvatar = {
-
             if (serverImageUrl != null) {
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalPlatformContext.current)
-                        .data(serverImageUrl)
-                        .crossfade(true)
-                        .build(),
+                    model =
+                        ImageRequest
+                            .Builder(LocalPlatformContext.current)
+                            .data(serverImageUrl)
+                            .crossfade(true)
+                            .build(),
                     contentDescription = "",
-                    modifier = Modifier.size(40.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = CircleShape
-                        )
-                        .border(
-                            1.dp,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            shape = CircleShape
-                        ),
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = CircleShape,
+                            ).border(
+                                1.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = CircleShape,
+                            ),
                     contentScale = ContentScale.Crop,
                 )
             } else if (serverName?.isNotBlank() == true) {
                 Avatar(
-                    style = AvatarStyleData.Text(serverName.take(1))
+                    style = AvatarStyleData.Text(serverName.take(1)),
                 )
             }
         },
@@ -247,17 +271,17 @@ private fun CredentialsContainer(
     isUsernameEditable: Boolean,
     isLoggingIn: Boolean,
     onUserNameChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit
+    onPasswordChanged: (String) -> Unit,
 ) {
     var usernameTextValue by remember(username) {
         mutableStateOf(
-            TextFieldValue(username)
+            TextFieldValue(username),
         )
     }
 
     var passwordTextValue by remember(password) {
         mutableStateOf(
-            TextFieldValue(password)
+            TextFieldValue(password),
         )
     }
 
@@ -272,55 +296,54 @@ private fun CredentialsContainer(
             when {
                 isLoggingIn -> InputShellState.DISABLED
                 else -> InputShellState.UNFOCUSED
-            }
+            },
         )
     }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = spacedBy(Spacing.Spacing8)
+        verticalArrangement = spacedBy(Spacing.Spacing8),
     ) {
         if (isUsernameEditable) {
             InputUser(
                 modifier = Modifier.fillMaxWidth(),
-                uiModel = InputUserModel(
-                    title = "Username",
-                    state = inputShellState,
-                    inputTextFieldValue = usernameTextValue,
-                    autoCompleteList = availableUsernames,
-                    autoCompleteItemSelected = {
-                        usernameTextValue =
-                            it?.let { text -> TextFieldValue(text) } ?: TextFieldValue("")
-
-                    },
-                    onNextClicked = {
-
-                    },
-                    onValueChanged = {
-                        usernameTextValue = it ?: TextFieldValue("")
-                        onUserNameChanged(usernameTextValue.text)
-                    },
-                    onFocusChanged = {
-
-                    },
-                    imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
-                ),
+                uiModel =
+                    InputUserModel(
+                        title = stringResource(Res.string.username_hint),
+                        state = inputShellState,
+                        inputTextFieldValue = usernameTextValue,
+                        autoCompleteList = availableUsernames,
+                        autoCompleteItemSelected = {
+                            usernameTextValue =
+                                it?.let { text -> TextFieldValue(text) } ?: TextFieldValue("")
+                        },
+                        onNextClicked = {
+                        },
+                        onValueChanged = {
+                            usernameTextValue = it ?: TextFieldValue("")
+                            onUserNameChanged(usernameTextValue.text)
+                        },
+                        onFocusChanged = {
+                        },
+                        imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
+                    ),
             )
         }
         InputPassword(
             modifier = Modifier.fillMaxWidth(),
-            uiModel = InputPasswordModel(
-                title = "Password",
-                state = InputShellState.UNFOCUSED,
-                inputTextFieldValue = passwordTextValue,
-                onNextClicked = {},
-                onValueChanged = {
-                    passwordTextValue = it ?: TextFieldValue("")
-                    onPasswordChanged(passwordTextValue.text)
-                },
-                onFocusChanged = {},
-                imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
-            )
+            uiModel =
+                InputPasswordModel(
+                    title = stringResource(Res.string.password_hint),
+                    state = InputShellState.UNFOCUSED,
+                    inputTextFieldValue = passwordTextValue,
+                    onNextClicked = {},
+                    onValueChanged = {
+                        passwordTextValue = it ?: TextFieldValue("")
+                        onPasswordChanged(passwordTextValue.text)
+                    },
+                    onFocusChanged = {},
+                    imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
+                ),
         )
     }
 }
@@ -336,10 +359,10 @@ private fun LoginStatus(
             modifier = Modifier,
             taskRunning = true,
             actionText = "",
-            taskRunningText = "Logging in...",
+            taskRunningText = stringResource(Res.string.logging_in),
             icon = {},
             onClick = {},
-            onCancel = onCancelLogin
+            onCancel = onCancelLogin,
         )
     } else if (loginErrorMessage != null) {
         InfoBar(
@@ -376,27 +399,28 @@ private fun CredentialActions(
         Button(
             modifier = Modifier.fillMaxWidth(),
             enabled = canLogin,
-            text = "Log in",
+            text = stringResource(Res.string.action_log_in),
             style = ButtonStyle.FILLED,
             onClick = onLoginClicked,
             icon = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Login,
-                    contentDescription = "Log in icon"
+                    contentDescription = "Log in icon",
                 )
             },
         )
         if (allowRecovery) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Recover account",
+                text = stringResource(Res.string.action_recover_account),
                 style = ButtonStyle.TONAL,
-                onClick = onLoginClicked
+                onClick = onLoginClicked,
             )
         }
         if (hasBiometrics) {
             Box(
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .padding(vertical = Spacing.Spacing24),
                 contentAlignment = Alignment.Center,
             ) {
@@ -410,7 +434,7 @@ private fun CredentialActions(
                             tint = MaterialTheme.colorScheme.primary,
                         )
                     },
-                    onClick = onBiometricsClicked
+                    onClick = onBiometricsClicked,
                 )
             }
         }
@@ -418,41 +442,43 @@ private fun CredentialActions(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = spacedBy(Spacing.Spacing16)
+                horizontalArrangement = spacedBy(Spacing.Spacing16),
             ) {
                 HorizontalDivider(modifier = Modifier.weight(1f))
-                Text("Or")
+                Text(stringResource(Res.string.openid_or))
                 HorizontalDivider(modifier = Modifier.weight(1f))
             }
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = oidcInfo.oidcLoginText ?: "Log in with openID",
-                icon = oidcInfo.oidcIcon?.let {
-                    {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.Login,
-                            contentDescription = "",
-                            tint = Color.Unspecified,
-                        )
-                    }
-                },
+                text = oidcInfo.oidcLoginText ?: stringResource(Res.string.action_openid_log_in),
+                icon =
+                    oidcInfo.oidcIcon?.let {
+                        {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.Login,
+                                contentDescription = "",
+                                tint = Color.Unspecified,
+                            )
+                        }
+                    },
                 style = ButtonStyle.OUTLINED,
                 onClick = {
                     oidcInfo.oidcUrl?.let { onOpenIdLogin(it) }
-                }
+                },
             )
         }
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
             contentAlignment = Alignment.BottomCenter,
         ) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Manage accounts",
                 style = ButtonStyle.OUTLINED,
-                onClick = onManageAccounts
+                onClick = onManageAccounts,
             )
         }
     }
@@ -465,39 +491,38 @@ fun TrackingPermissionDialog(
 ) {
     BottomSheetShell(
         modifier = Modifier,
-        uiState = BottomSheetShellUIState(
-            title = "Do you want to help us improve this app?",
-            showTopSectionDivider = true,
-            showBottomSectionDivider = true,
-            headerTextAlignment = TextAlign.Start,
-        ),
+        uiState =
+            BottomSheetShellUIState(
+                title = stringResource(Res.string.tracking_title),
+                showTopSectionDivider = true,
+                showBottomSectionDivider = true,
+                headerTextAlignment = TextAlign.Start,
+            ),
         content = {
             Text(
-                text = buildAnnotatedString {
-                    append(
-                        "If you say yes the app will send anonymous statistics and error logs which" +
-                                " help us improve user experience and performance."
-                    )
-                    append("\n\n")
-                    append(
-                        "For further details, please refer to our "
-                    )
-                    withLink(
-                        LinkAnnotation.Clickable(
-                            tag = "privacy policy",
-                            styles = TextLinkStyles(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.primary,
-                                ),
+                text =
+                    buildAnnotatedString {
+                        append(stringResource(Res.string.tracking_description))
+                        append("\n\n")
+                        append(stringResource(Res.string.tracking_description_link))
+                        withLink(
+                            LinkAnnotation.Clickable(
+                                tag = stringResource(Res.string.privacy_policy),
+                                styles =
+                                    TextLinkStyles(
+                                        style =
+                                            SpanStyle(
+                                                color = MaterialTheme.colorScheme.primary,
+                                            ),
+                                    ),
+                                linkInteractionListener = {
+                                    onOpenPrivacyPolicy()
+                                },
                             ),
-                            linkInteractionListener = {
-                                onOpenPrivacyPolicy()
-                            }
-                        )
-                    ) {
-                        append("privacy policy")
-                    }
-                },
+                        ) {
+                            append(stringResource(Res.string.privacy_policy))
+                        }
+                    },
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextColor.OnSurfaceLight,
             )
@@ -516,7 +541,7 @@ fun TrackingPermissionDialog(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.OUTLINED,
-                        text = "Not now",
+                        text = stringResource(Res.string.action_no_now),
                         onClick = {
                             onPermissionResult(true)
                         },
@@ -526,12 +551,12 @@ fun TrackingPermissionDialog(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
-                        text = "Yes",
+                        text = stringResource(Res.string.action_yes),
                         onClick = {
                             onPermissionResult(false)
                         },
                     )
-                }
+                },
             )
         },
         onDismiss = {
@@ -541,18 +566,17 @@ fun TrackingPermissionDialog(
 }
 
 @Composable
-private fun BiometricsDialog(
-    onPermissionResult: (granted: Boolean) -> Unit,
-) {
+private fun BiometricsDialog(onPermissionResult: (granted: Boolean) -> Unit) {
     BottomSheetShell(
         modifier = Modifier,
-        uiState = BottomSheetShellUIState(
-            title = stringResource(Res.string.biometrics_login_title),
-            description = stringResource(Res.string.biometrics_login_text),
-            showTopSectionDivider = true,
-            showBottomSectionDivider = true,
-            headerTextAlignment = TextAlign.Start,
-        ),
+        uiState =
+            BottomSheetShellUIState(
+                title = stringResource(Res.string.biometrics_login_title),
+                description = stringResource(Res.string.biometrics_login_text),
+                showTopSectionDivider = true,
+                showBottomSectionDivider = true,
+                headerTextAlignment = TextAlign.Start,
+            ),
         content = null,
         icon = {
             Icon(
@@ -568,7 +592,7 @@ private fun BiometricsDialog(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.OUTLINED,
-                        text = "Not now",
+                        text = stringResource(Res.string.action_no_now),
                         onClick = {
                             onPermissionResult(true)
                         },
@@ -578,12 +602,12 @@ private fun BiometricsDialog(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         style = ButtonStyle.FILLED,
-                        text = "Yes",
+                        text = stringResource(Res.string.action_yes),
                         onClick = {
                             onPermissionResult(false)
                         },
                     )
-                }
+                },
             )
         },
         onDismiss = {

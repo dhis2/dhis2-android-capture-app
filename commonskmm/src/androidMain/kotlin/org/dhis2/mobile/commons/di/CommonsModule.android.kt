@@ -15,7 +15,6 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.PreferenceProviderImpl
-import org.dhis2.mobile.commons.reporting.AnalyticActions
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider

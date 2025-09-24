@@ -15,16 +15,17 @@ import org.dhis2.mobile.login.main.ui.screen.CredentialsScreen
 @Composable
 fun CredentialsScreenPreview() {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White)
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(16.dp),
     ) {
         CredentialsScreen(
             selectedServer = "https:pdsafijasodifh.com",
             selectedUsername = "juanito",
             selectedServerName = "Server name",
-            allowRecovery = true
+            allowRecovery = true,
         )
     }
 }

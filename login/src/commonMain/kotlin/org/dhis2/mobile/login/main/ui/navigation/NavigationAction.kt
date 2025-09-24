@@ -12,6 +12,8 @@ sealed interface NavigationAction {
     data object NavigateUp : NavigationAction
 
     data object NavigateToHome : NavigationAction
+
     data object NavigateToSync : NavigationAction
+
     data object NavigateToPrivacyPolicy : NavigationAction
 }

@@ -12,8 +12,8 @@ import androidx.fragment.app.FragmentActivity
 import coil3.PlatformContext
 import org.dhis2.R
 import org.dhis2.mobile.commons.biometrics.BiometricActions
-import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
+import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import java.nio.charset.Charset
 import java.security.KeyStore
 import javax.crypto.Cipher
@@ -30,8 +30,9 @@ const val KEY_NAME = "DHIS2_BIOMETRIC_KEY"
 
 class BiometricAuthenticator(
     private val context: Context,
-): BiometricActions {
+) : BiometricActions {
     private var biometricPrompt: BiometricPrompt? = null
+
     override fun hasBiometric(): Boolean {
         val biometricManager = BiometricManager.from(context)
         return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
@@ -43,14 +44,15 @@ class BiometricAuthenticator(
     context(context: PlatformContext)
     override fun authenticate(
         cipher: Cipher,
-        callback:(Cipher)-> Unit,
+        callback: (Cipher) -> Unit,
     ) {
         val cryptoObject = BiometricPrompt.CryptoObject(cipher)
         authenticate(
             context as FragmentActivity,
             {
-                it.cryptoObject?.cipher?.let {cipher-> callback(cipher) }
-            }, cryptoObject
+                it.cryptoObject?.cipher?.let { cipher -> callback(cipher) }
+            },
+            cryptoObject,
         )
     }
 
@@ -88,7 +90,7 @@ class BiometricAuthenticator(
     }
 }
 
-class CryptographyManager: CryptographicActions {
+class CryptographyManager : CryptographicActions {
     private val keyStore =
         KeyStore.getInstance(ANDROID_KEYSTORE).apply {
             load(null)

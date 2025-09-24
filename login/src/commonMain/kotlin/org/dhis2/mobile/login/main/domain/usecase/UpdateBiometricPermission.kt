@@ -1,9 +1,14 @@
 package org.dhis2.mobile.login.main.domain.usecase
 
 import coil3.PlatformContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.biometrics_permission_already_saved
+import org.dhis2.mobile.login.resources.biometrics_permission_cancelled
+import org.jetbrains.compose.resources.getString
 
 class UpdateBiometricPermission(
     private val preferences: PreferenceProvider,
@@ -15,28 +20,37 @@ class UpdateBiometricPermission(
         serverUrl: String,
         username: String,
         password: String,
-        granted: Boolean
-    ) {
+        granted: Boolean,
+    ): Result<Unit> =
         if (preferences.areSameCredentials(serverUrl, username).not()) {
-            val pass = if (granted) password else serverUrl
             if (biometrics.hasBiometric() && cryptographics.isKeyReady().not()) {
-
-                cryptographics.getInitializedCipherForEncryption()?.let {
-                    biometrics.authenticate(it) { cryptoObjectCipher ->
-                        val ciphertextWrapper = cryptographics.encryptData(pass, cryptoObjectCipher)
-                        preferences.saveUserCredentialsAndCipher(
-                            serverUrl,
-                            username,
-                            ciphertextWrapper
-                        )
+                val cancellationMessage = getString(Res.string.biometrics_permission_cancelled)
+                suspendCancellableCoroutine { continuation ->
+                    cryptographics.getInitializedCipherForEncryption()?.let {
+                        biometrics.authenticate(it) { cryptoObjectCipher ->
+                            val ciphertextWrapper =
+                                cryptographics.encryptData(password, cryptoObjectCipher)
+                            preferences.saveUserCredentialsAndCipher(
+                                serverUrl,
+                                username,
+                                ciphertextWrapper,
+                            )
+                            continuation.resume(Result.success(Unit)) { cause, _, _ -> Unit }
+                        }
+                    }
+                    continuation.invokeOnCancellation {
+                        Result.failure<Unit>(Exception(cancellationMessage))
                     }
                 }
+            } else {
+                preferences.saveUserCredentials(
+                    serverUrl,
+                    username,
+                    password,
+                )
+                Result.success(Unit)
             }
-            preferences.saveUserCredentials(
-                serverUrl,
-                username,
-                password
-            )
+        } else {
+            Result.failure(Exception(getString(Res.string.biometrics_permission_already_saved)))
         }
-    }
 }

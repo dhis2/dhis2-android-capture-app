@@ -50,7 +50,7 @@ internal val mainLoginModule =
                 serverName = serverName,
                 serverUrl = serverUrl,
                 username = userName,
-                allowRecovery =allowRecovery,
+                allowRecovery = allowRecovery,
             )
         }
     }

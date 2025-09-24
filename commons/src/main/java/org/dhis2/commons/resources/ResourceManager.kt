@@ -92,8 +92,7 @@ class ResourceManager(
                     "drawable",
                     getWrapperContext().packageName,
                 )
-            if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)
-            ) {
+            if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)) {
                 iconResource
             } else {
                 R.drawable.ic_default_icon
