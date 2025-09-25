@@ -18,14 +18,7 @@ class LoginViewModelFactory(
     private val preferenceProvider: PreferenceProvider,
     private val resourceManager: ResourceManager,
     private val schedulerProvider: SchedulerProvider,
-    private val dispatcherProvider: DispatcherProvider,
-    private val biometricAuthenticator: BiometricAuthenticator,
-    private val cryptographyManager: CryptographyManager,
-    private val analyticsHelper: AnalyticsHelper,
-    private val crashReportController: CrashReportController,
-    private val networkUtils: NetworkUtils,
     private val userManager: UserManager?,
-    private val repository: LoginRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         LoginViewModel(
@@ -33,13 +26,6 @@ class LoginViewModelFactory(
             preferenceProvider,
             resourceManager,
             schedulerProvider,
-            dispatcherProvider,
-            biometricAuthenticator,
-            cryptographyManager,
-            analyticsHelper,
-            crashReportController,
-            networkUtils,
             userManager,
-            repository,
         ) as T
 }

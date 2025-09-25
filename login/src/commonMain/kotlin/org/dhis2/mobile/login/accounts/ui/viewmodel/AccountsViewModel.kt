@@ -39,6 +39,11 @@ class AccountsViewModel(
                 LoginScreenState.LegacyLogin(
                     selectedServer = account.serverUrl,
                     selectedUsername = account.name,
+                    serverName = account.serverName,
+                    allowRecovery = account.allowRecovery,
+                    oidcIcon = account.oidcIcon,
+                    oidcLoginText = account.oidcLoginText,
+                    oidcUrl = account.oidcUrl,
                 ),
             )
         }

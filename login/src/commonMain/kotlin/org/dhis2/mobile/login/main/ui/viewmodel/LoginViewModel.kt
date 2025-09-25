@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
-import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState.OauthLogin
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
@@ -78,13 +79,23 @@ class LoginViewModel(
                         }
                     }
 
-                    ServerValidationResult.Legacy -> {
-                        navigator.navigate(LoginScreenState.LegacyLogin(serverUrl, ""))
+                    is ServerValidationResult.Legacy -> {
+                        navigator.navigate(
+                            LegacyLogin(
+                                serverName = result.serverName,
+                                allowRecovery = result.allowRecovery,
+                                selectedServer = serverUrl,
+                                selectedUsername = null,
+                                oidcIcon = result.oidcIcon,
+                                oidcLoginText = result.oidcLoginText,
+                                oidcUrl = result.oidcUrl,
+                            ),
+                        )
                         stopValidation()
                     }
 
                     ServerValidationResult.Oauth -> {
-                        navigator.navigate(LoginScreenState.OauthLogin(serverUrl))
+                        navigator.navigate(OauthLogin(serverUrl))
                         stopValidation()
                     }
                 }

@@ -40,13 +40,6 @@ class LoginModule(
         preferenceProvider: PreferenceProvider,
         resourceManager: ResourceManager,
         schedulerProvider: SchedulerProvider,
-        dispatcherProvider: DispatcherProvider,
-        biometricAuthenticator: BiometricAuthenticator,
-        cryptographyManager: CryptographyManager,
-        analyticsHelper: AnalyticsHelper,
-        crashReportController: CrashReportController,
-        networkUtils: NetworkUtils,
-        repository: LoginRepository,
     ): LoginViewModel =
         ViewModelProvider(
             viewModelStoreOwner,
@@ -55,14 +48,7 @@ class LoginModule(
                 preferenceProvider,
                 resourceManager,
                 schedulerProvider,
-                dispatcherProvider,
-                biometricAuthenticator,
-                cryptographyManager,
-                analyticsHelper,
-                crashReportController,
-                networkUtils,
                 userManager,
-                repository,
             ),
         )[LoginViewModel::class.java]
 
