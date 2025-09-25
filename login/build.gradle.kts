@@ -17,11 +17,6 @@ kotlin {
         }
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
-
-        dependencies {
-            androidTestImplementation(libs.test.compose.ui.test.junit4.android)
-            debugImplementation(libs.test.ui.test.manifest)
-        }
     }
 
     jvm("desktop")
@@ -41,8 +36,8 @@ kotlin {
                 implementation(compose.material3)
                 api(compose.materialIconsExtended)
                 val designSystem = libs.dhis2.mobile.designsystem
-                implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}"){
-                    isChanging= true
+                implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}") {
+                    isChanging = true
                 }
                 implementation(libs.compose.material3.window)
                 implementation(compose.components.resources)
@@ -116,10 +111,10 @@ android {
     }
 
     buildTypes {
-        getByName("debug"){
+        getByName("debug") {
 
         }
-        getByName("release"){
+        getByName("release") {
 
         }
     }
@@ -128,14 +123,14 @@ android {
     flavorDimensions += listOf("default")
     productFlavors {
         create("dhis2") {
-            buildConfigField("String","LOGIN_TEST", "\"test\"")
+            buildConfigField("String", "LOGIN_TEST", "\"test\"")
         }
         create("dhis2PlayServices") {
-            buildConfigField("String","LOGIN_TEST", "\"test\"")
+            buildConfigField("String", "LOGIN_TEST", "\"test\"")
 
         }
         create("dhis2Training") {
-            buildConfigField("String","LOGIN_TEST", "\"test\"")
+            buildConfigField("String", "LOGIN_TEST", "\"test\"")
         }
     }
 }
@@ -148,4 +143,6 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     debugImplementation(libs.androidx.compose.preview)
     debugImplementation(libs.androidx.compose.uitooling)
+    androidTestImplementation(libs.test.compose.ui.test.junit4.android)
+    debugImplementation(libs.test.ui.test.manifest)
 }
