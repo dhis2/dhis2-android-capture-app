@@ -73,15 +73,6 @@ class TeiDataRepositoryImpl(
             .uid(teiUid)
             .get()
 
-    fun enrollingOrgUnit(): String? =
-        if (programUid == null) {
-            getTrackedEntityInstance()
-                .map { it.organisationUnit() }
-        } else {
-            getEnrollment()
-                .map { it.organisationUnit() }
-        }.blockingGet()
-
     override fun eventsWithoutCatCombo(): Single<List<EventModel>> {
         return getEnrollmentProgram()
             .flatMap { program ->
@@ -270,14 +261,7 @@ class TeiDataRepositoryImpl(
                                     isSelected = true,
                                     canAddNewEvent = true,
                                     orgUnitName = orgUnitName(event.organisationUnit()),
-                                    orgUnitIsInCaptureScope =
-                                        if (event.status() == EventStatus.SCHEDULE ||
-                                            event.status() == EventStatus.OVERDUE
-                                        ) {
-                                            eventOrgUnitWithNoAccessName(event.organisationUnit())
-                                        } else {
-                                            true
-                                        },
+                                    orgUnitIsInCaptureScope = hasAccessToEvent(event.organisationUnit(), event.status()),
                                     catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                     dataElementValues =
                                         getEventValues(
@@ -369,14 +353,7 @@ class TeiDataRepositoryImpl(
                                 isSelected = true,
                                 canAddNewEvent = true,
                                 orgUnitName = orgUnitName(event.organisationUnit()),
-                                orgUnitIsInCaptureScope =
-                                    if (event.status() == EventStatus.SCHEDULE ||
-                                        event.status() == EventStatus.OVERDUE
-                                    ) {
-                                        eventOrgUnitWithNoAccessName(event.organisationUnit())
-                                    } else {
-                                        true
-                                    },
+                                orgUnitIsInCaptureScope = hasAccessToEvent(event.organisationUnit(), event.status()),
                                 catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                 dataElementValues = getEventValues(event.uid(), programStage.uid()),
                                 groupedByStage = false,
@@ -468,14 +445,23 @@ class TeiDataRepositoryImpl(
             .blockingGet()
             ?.displayName() ?: ""
 
-    private fun eventOrgUnitWithNoAccessName(eventOrgUnitUid: String?): Boolean =
-        eventOrgUnitUid?.let {
-            d2
-                .organisationUnitModule()
-                .organisationUnitService()
-                .isInCaptureScope(it)
-                .blockingGet()
-        } ?: true
+    private fun hasAccessToEvent(
+        eventOrgUnitUid: String?,
+        eventStatus: EventStatus?,
+    ): Boolean =
+        if (eventStatus == EventStatus.SCHEDULE ||
+            eventStatus == EventStatus.OVERDUE
+        ) {
+            eventOrgUnitUid?.let {
+                d2
+                    .organisationUnitModule()
+                    .organisationUnitService()
+                    .isInCaptureScope(it)
+                    .blockingGet()
+            } ?: true
+        } else {
+            true
+        }
 
     private fun checkEventStatus(events: List<Event>): List<Event> =
         events.mapNotNull { event ->
