@@ -85,7 +85,10 @@ class TEIDataModule(
 
     @Provides
     @PerFragment
-    fun searchTEIRepository(d2: D2): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
+    fun searchTEIRepository(
+        d2: D2,
+        crashReportController: CrashReportController,
+    ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashReportController)
 
     @Provides
     @PerFragment

@@ -11,7 +11,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 class SearchTEIRepositoryImpl(
     private val d2: D2,
     private val enrollmentUtils: DhisEnrollmentUtils,
-    private val crashController: CrashReportController = CrashReportControllerImpl(),
+    private val crashController: CrashReportController,
 ) : SearchTEIRepository {
     override fun isUniqueTEIAttributeOnline(
         uid: String,
