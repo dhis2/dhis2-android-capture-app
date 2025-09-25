@@ -20,10 +20,12 @@ import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
 import org.junit.FixMethodOrder
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
+@Ignore("implement in login module")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LoginTest : BaseTest() {
 

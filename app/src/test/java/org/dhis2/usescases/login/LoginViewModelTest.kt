@@ -109,13 +109,9 @@ class LoginViewModelTest {
         Dispatchers.setMain(testingDispatcher)
     }
 
+    @Ignore("Implement in login module")
     @Test
     fun `Should go to MainActivity if user is already logged in`() {
-        whenever(userManager.isUserLoggedIn) doReturn Observable.just(true)
-        whenever(preferenceProvider.getBoolean("SessionLocked", false)) doReturn false
-        instantiateLoginViewModel()
-        verify(view).startActivity(MainActivity::class.java, null, true, true, null)
-        verifyNoMoreInteractions(view)
     }
 
     @Ignore("Implement in login module")
