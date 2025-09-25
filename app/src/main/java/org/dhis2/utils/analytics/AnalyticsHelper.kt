@@ -1,14 +1,15 @@
 package org.dhis2.utils.analytics
 
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.mobile.commons.reporting.AnalyticActions
 import javax.inject.Inject
 
 class AnalyticsHelper
     @Inject
     constructor(
         private val matomoAnalyticsController: MatomoAnalyticsController,
-    ) {
-        fun setEvent(
+    ) : AnalyticActions {
+        override fun setEvent(
             param: String,
             value: String,
             event: String,
@@ -16,7 +17,7 @@ class AnalyticsHelper
             // TODO: Track in matomo
         }
 
-        fun trackMatomoEvent(
+        override fun trackMatomoEvent(
             category: String,
             action: String,
             label: String,
@@ -24,7 +25,7 @@ class AnalyticsHelper
             matomoAnalyticsController.trackEvent(category, action, label)
         }
 
-        fun updateMatomoSecondaryTracker(
+        override fun updateMatomoSecondaryTracker(
             matomoUrl: String,
             matomoID: Int,
             trackerName: String,
@@ -36,7 +37,7 @@ class AnalyticsHelper
             )
         }
 
-        fun clearMatomoSecondaryTracker() {
+        override fun clearMatomoSecondaryTracker() {
             matomoAnalyticsController.clearDhisImplementation()
         }
     }

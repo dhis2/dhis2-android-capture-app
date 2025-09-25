@@ -226,7 +226,7 @@ object Injector {
             entryMode = entryMode,
             enrollmentRepository = enrollmentObjectRepository,
             eventRepository = eventObjectRepository,
-            crashReportController = provideCrashReportController(),
+            crashReportController = provideCrashReportController(context),
             networkUtils = provideNetworkUtils(context),
             resourceManager = provideResourcesManager(context),
         )
@@ -237,7 +237,7 @@ object Injector {
     private fun provideEnrollmentObjectRepository(enrollmentUid: String): EnrollmentObjectRepository =
         provideD2().enrollmentModule().enrollments().uid(enrollmentUid)
 
-    private fun provideCrashReportController() = CrashReportControllerImpl()
+    private fun provideCrashReportController(context: Context) = CrashReportControllerImpl(context)
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 

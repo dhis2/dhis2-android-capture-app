@@ -64,6 +64,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.model.MapScope;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.events.EventInfoProvider;
@@ -218,8 +219,11 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
-    SearchTEIRepository searchTEIRepository(D2 d2) {
-        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), new CrashReportControllerImpl());
+    SearchTEIRepository searchTEIRepository(
+            D2 d2,
+            CrashReportController crashReportController
+    ) {
+        return new SearchTEIRepositoryImpl(d2, new DhisEnrollmentUtils(d2), crashReportController);
     }
 
     @Provides

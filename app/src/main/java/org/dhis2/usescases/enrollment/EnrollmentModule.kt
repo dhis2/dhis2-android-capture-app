@@ -207,7 +207,10 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    internal fun searchRepository(d2: D2): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2))
+    internal fun searchRepository(
+        d2: D2,
+        crashController: CrashReportController,
+    ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashController)
 
     @Provides
     @PerActivity
