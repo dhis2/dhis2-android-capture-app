@@ -12,10 +12,16 @@ class AccountRepositoryImpl(
     override suspend fun getLoggedInAccounts(): List<AccountModel> =
         d2.userModule().accountManager().getAccounts().map {
             val oidcProviders = it.loginConfig()?.oidcProviders?.firstOrNull()
+            val serverName =
+                it.loginConfig()?.applicationTitle ?: try {
+                    it.serverUrl().substringAfter("://").substringBefore("/")
+                } catch (_: Exception) {
+                    it.serverUrl()
+                }
             AccountModel(
                 name = it.username(),
+                serverName = serverName,
                 serverUrl = it.serverUrl(),
-                serverName = it.loginConfig()?.applicationTitle,
                 serverDescription = it.loginConfig()?.applicationDescription,
                 serverFlag = it.loginConfig()?.countryFlag,
                 allowRecovery = it.loginConfig()?.allowAccountRecovery == true,

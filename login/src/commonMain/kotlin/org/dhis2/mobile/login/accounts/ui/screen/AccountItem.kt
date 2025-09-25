@@ -30,7 +30,7 @@ fun AccountItem(
         rememberListCardState(
             title =
                 ListCardTitleModel(
-                    text = account.serverName ?: "Server",
+                    text = account.serverName,
                 ),
             description =
                 ListCardDescriptionModel(
@@ -67,13 +67,7 @@ fun AccountItem(
                     flag?.let { painter ->
                         AvatarStyleData.Image(painter)
                     } ?: run {
-                        AvatarStyleData.Text(
-                            if (!account.serverName.isNullOrEmpty()) {
-                                account.name.first().toString()
-                            } else {
-                                account.serverName!!.first().toString()
-                            },
-                        )
+                        AvatarStyleData.Text(account.serverName.first().toString())
                     },
                 onImageClick = { onItemClicked(account) },
             )
