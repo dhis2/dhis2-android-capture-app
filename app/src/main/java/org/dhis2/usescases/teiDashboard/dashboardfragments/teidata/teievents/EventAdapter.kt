@@ -152,8 +152,8 @@ class EventAdapter(
                                     eventModel.event?.let { event ->
                                         when (event.status()) {
                                             EventStatus.SCHEDULE, EventStatus.OVERDUE -> {
-                                                if (eventModel.enrollmentOrgUnitWithoutAccess != null) {
-                                                    presenter.onScheduleEventWithoutAccess(eventModel.enrollmentOrgUnitWithoutAccess)
+                                                if (!eventModel.orgUnitIsInCaptureScope) {
+                                                    presenter.onScheduleEventWithoutAccess(eventModel.orgUnitName)
                                                 } else {
                                                     presenter.onScheduleSelected(
                                                         event.uid(),

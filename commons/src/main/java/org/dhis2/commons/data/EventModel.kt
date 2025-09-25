@@ -14,7 +14,7 @@ data class EventModel(
     var isSelected: Boolean,
     val canAddNewEvent: Boolean,
     val orgUnitName: String,
-    val enrollmentOrgUnitWithoutAccess: String? = null,
+    val orgUnitIsInCaptureScope: Boolean = true,
     val catComboName: String?,
     val dataElementValues: List<Pair<String, String?>>?,
     val groupedByStage: Boolean? = false,

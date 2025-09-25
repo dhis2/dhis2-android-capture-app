@@ -55,9 +55,9 @@ class TEIEventCardMapper(
                 },
             title = getTitle(event),
             description = getDescription(event),
-            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit, event.enrollmentOrgUnitWithoutAccess),
+            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit, event.orgUnitIsInCaptureScope),
             actionButton = {
-                if (event.enrollmentOrgUnitWithoutAccess == null) {
+                if (event.orgUnitIsInCaptureScope) {
                     ProvideActionButton(
                         event = event,
                         onActionButtonClick = onCardClick,
@@ -103,7 +103,7 @@ class TEIEventCardMapper(
         event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
-        enrollmentOrgUnitWithoutAccess: String?,
+        eventOrgUnitIsInCaptureScope: Boolean,
     ): List<AdditionalInfoItem> {
         val list =
             event.dataElementValues
@@ -142,20 +142,23 @@ class TEIEventCardMapper(
         checkViewOnly(
             list = list,
             editable = editable,
+            hasAccessToOrgUnit = eventOrgUnitIsInCaptureScope,
         )
 
         checkHasNoAccessToOrgUnit(
             list = list,
-            enrollmentOrgUnitWithoutAccess = enrollmentOrgUnitWithoutAccess,
+            eventOrgUnit = event.orgUnitName,
+            eventOrgUnitIsInCaptureScope,
         )
         return list
     }
 
     private fun checkHasNoAccessToOrgUnit(
         list: MutableList<AdditionalInfoItem>,
-        enrollmentOrgUnitWithoutAccess: String?,
+        eventOrgUnit: String,
+        orgUnitIsInCaptureScope: Boolean,
     ) {
-        enrollmentOrgUnitWithoutAccess?.let {
+        if (!orgUnitIsInCaptureScope) {
             list.add(
                 AdditionalInfoItem(
                     icon = {
@@ -168,7 +171,7 @@ class TEIEventCardMapper(
                     value =
                         resourceManager
                             .getString(R.string.at_enroll_org_unit)
-                            .format(enrollmentOrgUnitWithoutAccess),
+                            .format(eventOrgUnit),
                     isConstantItem = true,
                     color = AdditionalInfoItemColor.WARNING.color,
                 ),
@@ -363,8 +366,9 @@ class TEIEventCardMapper(
     private fun checkViewOnly(
         list: MutableList<AdditionalInfoItem>,
         editable: Boolean,
+        hasAccessToOrgUnit: Boolean,
     ) {
-        if (!editable) {
+        if (!editable && hasAccessToOrgUnit) {
             list.add(
                 AdditionalInfoItem(
                     icon = {

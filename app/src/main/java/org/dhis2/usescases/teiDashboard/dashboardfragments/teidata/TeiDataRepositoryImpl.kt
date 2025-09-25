@@ -242,7 +242,6 @@ class TeiDataRepositoryImpl(
                             selectedStage.showOptions,
                             canAddEventToEnrollment,
                             orgUnitName = "",
-                            enrollmentOrgUnitWithoutAccess = enrollOwnerOrgUnitWithNoAccessName(teiUid),
                             catComboName = "",
                             dataElementValues = emptyList(),
                             groupedByStage = true,
@@ -271,13 +270,13 @@ class TeiDataRepositoryImpl(
                                     isSelected = true,
                                     canAddNewEvent = true,
                                     orgUnitName = orgUnitName(event.organisationUnit()),
-                                    enrollmentOrgUnitWithoutAccess =
+                                    orgUnitIsInCaptureScope =
                                         if (event.status() == EventStatus.SCHEDULE ||
                                             event.status() == EventStatus.OVERDUE
                                         ) {
-                                            enrollOwnerOrgUnitWithNoAccessName(teiUid, event.uid())
+                                            eventOrgUnitWithNoAccessName(event.organisationUnit())
                                         } else {
-                                            null
+                                            true
                                         },
                                     catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                     dataElementValues =
@@ -370,13 +369,13 @@ class TeiDataRepositoryImpl(
                                 isSelected = true,
                                 canAddNewEvent = true,
                                 orgUnitName = orgUnitName(event.organisationUnit()),
-                                enrollmentOrgUnitWithoutAccess =
+                                orgUnitIsInCaptureScope =
                                     if (event.status() == EventStatus.SCHEDULE ||
                                         event.status() == EventStatus.OVERDUE
                                     ) {
-                                        enrollOwnerOrgUnitWithNoAccessName(teiUid, event.uid())
+                                        eventOrgUnitWithNoAccessName(event.organisationUnit())
                                     } else {
-                                        null
+                                        true
                                     },
                                 catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                 dataElementValues = getEventValues(event.uid(), programStage.uid()),
@@ -469,43 +468,14 @@ class TeiDataRepositoryImpl(
             .blockingGet()
             ?.displayName() ?: ""
 
-    private fun enrollOwnerOrgUnitWithNoAccessName(
-        teiUid: String,
-        eventUid: String? = null,
-    ): String? {
-        val ownerOrgUnitId =
-            d2
-                .trackedEntityModule()
-                .trackedEntityInstances()
-                .withProgramOwners()
-                .uid(teiUid)
-                .blockingGet()
-                ?.programOwners()
-                ?.first { it.trackedEntityInstance() == teiUid }
-                ?.ownerOrgUnit()
-
-        val enrollmentOrgUnitUid = enrollingOrgUnit()
-
-        val hasAccessToEnrollmentOrgUnit =
-            eventUid?.let {
-                d2
-                    .organisationUnitModule()
-                    .organisationUnitService()
-                    .isInCaptureScope(enrollmentOrgUnitUid ?: "")
-                    .blockingGet()
-            } ?: true
-
-        return if (ownerOrgUnitId != enrollmentOrgUnitUid && !hasAccessToEnrollmentOrgUnit) {
+    private fun eventOrgUnitWithNoAccessName(eventOrgUnitUid: String?): Boolean =
+        eventOrgUnitUid?.let {
             d2
                 .organisationUnitModule()
-                .organisationUnits()
-                .uid(enrollmentOrgUnitUid)
+                .organisationUnitService()
+                .isInCaptureScope(it)
                 .blockingGet()
-                ?.displayName()
-        } else {
-            null
-        }
-    }
+        } ?: true
 
     private fun checkEventStatus(events: List<Event>): List<Event> =
         events.mapNotNull { event ->
