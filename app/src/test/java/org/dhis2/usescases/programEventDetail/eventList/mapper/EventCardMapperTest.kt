@@ -2,7 +2,7 @@ package org.dhis2.usescases.programEventDetail.eventList.mapper
 
 import android.content.Context
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ResourceManager
@@ -64,13 +64,13 @@ class EventCardMapperTest {
         )
     }
 
-    private fun createFakeModel(): EventViewModel {
+    private fun createFakeModel(): EventModel {
         val dataElements = mutableListOf<Pair<String, String>>()
         dataElements.add(
             Pair("Name", "Peter"),
         )
 
-        return EventViewModel(
+        return EventModel(
             type = EventViewModelType.EVENT,
             stage = null,
             event =

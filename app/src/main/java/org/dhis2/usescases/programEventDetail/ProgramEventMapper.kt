@@ -1,7 +1,7 @@
 package org.dhis2.usescases.programEventDetail
 
 import org.dhis2.bindings.userFriendlyValue
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.ProgramEventViewModel
 import org.dhis2.commons.date.DateUtils
@@ -28,7 +28,7 @@ class ProgramEventMapper(
     val periodUtils: DhisPeriodUtils,
     val metadataIconProvider: MetadataIconProvider,
 ) {
-    fun eventToEventViewModel(event: Event): EventViewModel {
+    fun eventToEventViewModel(event: Event): EventModel {
         val programStage =
             d2
                 .programModule()
@@ -44,7 +44,7 @@ class ProgramEventMapper(
                 .uid(event.program())
                 .blockingGet()
 
-        return EventViewModel(
+        return EventModel(
             EventViewModelType.EVENT,
             programStage,
             event,

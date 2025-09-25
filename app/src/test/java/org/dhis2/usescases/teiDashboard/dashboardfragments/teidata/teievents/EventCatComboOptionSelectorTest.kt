@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents
 
 import androidx.fragment.app.FragmentManager
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -24,15 +24,15 @@ class EventCatComboOptionSelectorTest {
 
     @Test
     fun should_set_events() {
-        val list = listOf(mock<EventViewModel>())
+        val list = listOf(mock<EventModel>())
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(list)
         assertTrue(eventCatComboOptionSelector.pollEvent() == list.first())
     }
 
     @Test
     fun should_clear_previous_queue_and_set_events() {
-        val prevList = listOf(mock<EventViewModel>())
-        val list = listOf(mock<EventViewModel>())
+        val prevList = listOf(mock<EventModel>())
+        val list = listOf(mock<EventModel>())
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(prevList)
         assertTrue(eventCatComboOptionSelector.pollEvent() == prevList.first())
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(list)
@@ -50,11 +50,11 @@ class EventCatComboOptionSelectorTest {
                 on { eventDate() } doReturn mock()
                 on { uid() } doReturn "eventUid"
             }
-        val mockedEventViewModel =
-            mock<EventViewModel> {
+        val mockedEventModel =
+            mock<EventModel> {
                 on { event } doReturn mockedEvent
             }
-        val list = listOf(mockedEventViewModel)
+        val list = listOf(mockedEventModel)
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(list)
         eventCatComboOptionSelector.requestCatComboOption { eventUid, selectedCatOptComboUid -> }
         verify(categoryDialogInteractions).showDialog(any(), any(), any(), any())
@@ -62,7 +62,7 @@ class EventCatComboOptionSelectorTest {
 
     @Test
     fun should_not_request_cat_option_combo() {
-        val list = emptyList<EventViewModel>()
+        val list = emptyList<EventModel>()
         eventCatComboOptionSelector.setEventsWithoutCatComboOption(list)
         eventCatComboOptionSelector.requestCatComboOption { eventUid, selectedCatOptComboUid -> }
         verify(categoryDialogInteractions, times(0)).showDialog(any(), any(), any(), any())

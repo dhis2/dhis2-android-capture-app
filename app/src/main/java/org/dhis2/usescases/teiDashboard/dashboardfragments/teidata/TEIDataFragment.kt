@@ -30,7 +30,7 @@ import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.CustomDialog
@@ -460,7 +460,7 @@ class TEIDataFragment :
         return eventAdapter?.stageSelector() ?: Flowable.empty()
     }
 
-    override fun setEvents(events: List<EventViewModel>) {
+    override fun setEvents(events: List<EventModel>) {
         if (events.isEmpty()) {
             binding.emptyTeis.visibility = View.VISIBLE
             binding.teiRecycler.visibility = View.GONE
@@ -729,7 +729,7 @@ class TEIDataFragment :
             }.show(enrollmentUid)
     }
 
-    override fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>) {
+    override fun displayCatComboOptionSelectorForEvents(data: List<EventModel>) {
         eventCatComboOptionSelector?.setEventsWithoutCatComboOption(data)
         eventCatComboOptionSelector?.requestCatComboOption(presenter::changeCatOption)
     }

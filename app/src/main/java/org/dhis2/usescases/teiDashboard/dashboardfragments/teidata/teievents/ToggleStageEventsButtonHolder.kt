@@ -6,7 +6,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.StageSection
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -16,13 +16,13 @@ class ToggleStageEventsButtonHolder(
     val composeView: ComposeView,
     private val stageSelector: FlowableProcessor<StageSection>,
 ) : RecyclerView.ViewHolder(composeView) {
-    fun bind(eventViewModel: EventViewModel) {
+    fun bind(eventModel: EventModel) {
         composeView.setContent {
             Button(
                 modifier =
                     Modifier.padding(
                         start =
-                            if (eventViewModel.groupedByStage == true) {
+                            if (eventModel.groupedByStage == true) {
                                 Spacing.Spacing48
                             } else {
                                 Spacing.Spacing0
@@ -30,20 +30,20 @@ class ToggleStageEventsButtonHolder(
                     ),
                 style = ButtonStyle.TEXT,
                 text =
-                    if (eventViewModel.showAllEvents) {
+                    if (eventModel.showAllEvents) {
                         composeView.context.getString(R.string.show_less_events)
                     } else {
                         composeView.context.getString(
                             R.string.show_more_events,
-                            (eventViewModel.eventCount - eventViewModel.maxEventsToShow).toString(),
+                            (eventModel.eventCount - eventModel.maxEventsToShow).toString(),
                         )
                     },
             ) {
                 stageSelector.onNext(
                     StageSection(
-                        stageUid = eventViewModel.stage?.uid() ?: "",
+                        stageUid = eventModel.stage?.uid() ?: "",
                         showOptions = false,
-                        showAllEvents = !eventViewModel.showAllEvents,
+                        showAllEvents = !eventModel.showAllEvents,
                     ),
                 )
             }

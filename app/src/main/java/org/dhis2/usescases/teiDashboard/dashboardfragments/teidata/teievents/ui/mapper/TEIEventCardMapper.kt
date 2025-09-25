@@ -13,7 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
@@ -38,7 +38,7 @@ class TEIEventCardMapper(
     val dateUtils: DateUtils,
 ) {
     fun map(
-        event: EventViewModel,
+        event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
         onCardClick: () -> Unit,
@@ -67,7 +67,7 @@ class TEIEventCardMapper(
         )
 
     @Composable
-    private fun ProvideAvatar(eventItem: EventViewModel) {
+    private fun ProvideAvatar(eventItem: EventModel) {
         Avatar(
             style =
                 AvatarStyleData.Metadata(
@@ -78,7 +78,7 @@ class TEIEventCardMapper(
         )
     }
 
-    private fun getTitle(event: EventViewModel): String =
+    private fun getTitle(event: EventModel): String =
         when (event.event?.status()) {
             EventStatus.SCHEDULE -> {
                 resourceManager
@@ -89,7 +89,7 @@ class TEIEventCardMapper(
             else -> event.displayDate ?: ""
         }
 
-    private fun getDescription(event: EventViewModel): String? =
+    private fun getDescription(event: EventModel): String? =
         if (event.groupedByStage == true) {
             null
         } else {
@@ -97,7 +97,7 @@ class TEIEventCardMapper(
         }
 
     private fun getAdditionalInfoList(
-        event: EventViewModel,
+        event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
     ): List<AdditionalInfoItem> {
@@ -158,7 +158,7 @@ class TEIEventCardMapper(
 
     private fun checkCategoryCombination(
         list: MutableList<AdditionalInfoItem>,
-        event: EventViewModel,
+        event: EventModel,
     ) {
         if (!event.nameCategoryOptionCombo.isNullOrEmpty() &&
             event.nameCategoryOptionCombo != "default"
@@ -351,7 +351,7 @@ class TEIEventCardMapper(
 
     @Composable
     private fun ProvideActionButton(
-        event: EventViewModel,
+        event: EventModel,
         onActionButtonClick: () -> Unit,
     ) {
         when (event.event?.status()) {

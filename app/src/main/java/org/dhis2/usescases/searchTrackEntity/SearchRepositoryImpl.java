@@ -8,7 +8,7 @@ import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
-import org.dhis2.commons.data.EventViewModel;
+import org.dhis2.commons.data.EventModel;
 import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterManager;
@@ -653,8 +653,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis) {
-        List<EventViewModel> eventViewModels = new ArrayList<>();
+    public List<EventModel> getEventsForMap(List<SearchTeiModel> teis) {
+        List<EventModel> eventModels = new ArrayList<>();
         List<String> teiUidList = new ArrayList<>();
         for (SearchTeiModel tei : teis) {
             teiUidList.add(tei.getTei().uid());
@@ -675,8 +675,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 cacheStages.put(event.programStage(), stage);
             }
 
-            eventViewModels.add(
-                    new EventViewModel(
+            eventModels.add(
+                    new EventModel(
                             EventViewModelType.EVENT,
                             cacheStages.get(event.programStage()),
                             event,
@@ -701,7 +701,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                     ));
         }
 
-        return eventViewModels;
+        return eventModels;
     }
 
     private String orgUnitName(String orgUnitUid) {

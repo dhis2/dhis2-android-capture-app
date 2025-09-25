@@ -18,7 +18,7 @@ import org.dhis2.commons.bindings.enrollment
 import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.EventViewModelType
 import org.dhis2.commons.data.StageSection
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -84,8 +84,8 @@ class TEIDataPresenter(
     private val _shouldDisplayEventCreationButton = MutableLiveData(false)
     val shouldDisplayEventCreationButton: LiveData<Boolean> = _shouldDisplayEventCreationButton
 
-    private val _events: MutableLiveData<List<EventViewModel>> = MutableLiveData()
-    val events: LiveData<List<EventViewModel>> = _events
+    private val _events: MutableLiveData<List<EventModel>> = MutableLiveData()
+    val events: LiveData<List<EventModel>> = _events
 
     private val singleEventEnforcer = SingleEventEnforcer.get()
 
@@ -163,9 +163,9 @@ class TEIDataPresenter(
     }
 
     private fun applyEffects(
-        events: List<EventViewModel>,
+        events: List<EventModel>,
         calcResult: Result<List<RuleEffect>>,
-    ): List<EventViewModel> {
+    ): List<EventModel> {
         Timber.d("APPLYING EFFECTS")
         if (calcResult.isFailure) {
             Timber.e(calcResult.exceptionOrNull())
