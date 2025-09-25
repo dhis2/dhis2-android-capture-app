@@ -86,6 +86,7 @@ allprojects {
     }
 
     ktlint {
+        version.set("1.7.1")
         debug.set(true)
         verbose.set(true)
         android.set(true)
@@ -114,7 +115,7 @@ allprojects {
                         totalTestsRun += result.testCount
                         totalTestsPassed += result.successfulTestCount
                         totalTestsFailed += result.failedTestCount
-                        totalTestsFailed += result.skippedTestCount
+                        totalTestsSkipped += result.skippedTestCount
                     }
                 }
             })
