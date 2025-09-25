@@ -113,12 +113,6 @@ class ResourceManager(
             colorUtils.parseColor(it)
         } ?: -1
 
-    fun getColorOrDefaultFrom(hexColor: String?): Int =
-        colorUtils.getColorFrom(
-            hexColor,
-            colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
-        )
-
     fun parseD2Error(throwable: Throwable) =
         D2ErrorUtils(getWrapperContext(), NetworkUtils(getWrapperContext()))
             .getErrorMessage(throwable)
@@ -135,20 +129,14 @@ class ResourceManager(
 
     fun sectionCharts(): String = getWrapperContext().getString(R.string.section_charts)
 
-    fun sectionChartsAndIndicators(): String =
-        getWrapperContext().getString(R.string.section_charts_indicators)
+    fun sectionChartsAndIndicators(): String = getWrapperContext().getString(R.string.section_charts_indicators)
 
     fun defaultIndicatorLabel(): String = getWrapperContext().getString(R.string.info)
 
     fun getWrapperContext() =
         try {
             LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             context
         }
-
-    fun defaultTableLabel(): String = context.getString(R.string.default_table_header_label)
-
-    fun defaultEmptyDataSetSectionLabel(): String =
-        context.getString(R.string.default_empty_dataset_section_label)
 }
