@@ -31,7 +31,6 @@ object KoinInitialization {
                 stockModule,
                 loginModule,
                 settingsProgramModule,
-                biometricModule,
                 matomoModule,
             )
         }
