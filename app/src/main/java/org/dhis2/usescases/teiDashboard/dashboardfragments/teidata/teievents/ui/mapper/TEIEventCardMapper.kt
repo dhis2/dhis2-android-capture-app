@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.EventBusy
@@ -54,12 +55,14 @@ class TEIEventCardMapper(
                 },
             title = getTitle(event),
             description = getDescription(event),
-            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
+            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit, event.enrollmentOrgUnitWithoutAccess),
             actionButton = {
-                ProvideActionButton(
-                    event = event,
-                    onActionButtonClick = onCardClick,
-                )
+                if (event.enrollmentOrgUnitWithoutAccess == null) {
+                    ProvideActionButton(
+                        event = event,
+                        onActionButtonClick = onCardClick,
+                    )
+                }
             },
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
@@ -100,6 +103,7 @@ class TEIEventCardMapper(
         event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
+        enrollmentOrgUnitWithoutAccess: String?,
     ): List<AdditionalInfoItem> {
         val list =
             event.dataElementValues
@@ -140,7 +144,36 @@ class TEIEventCardMapper(
             editable = editable,
         )
 
+        checkHasNoAccessToOrgUnit(
+            list = list,
+            enrollmentOrgUnitWithoutAccess = enrollmentOrgUnitWithoutAccess,
+        )
         return list
+    }
+
+    private fun checkHasNoAccessToOrgUnit(
+        list: MutableList<AdditionalInfoItem>,
+        enrollmentOrgUnitWithoutAccess: String?,
+    ) {
+        enrollmentOrgUnitWithoutAccess?.let {
+            list.add(
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Block,
+                            contentDescription = resourceManager.getString(R.string.at_enroll_org_unit),
+                            tint = AdditionalInfoItemColor.WARNING.color,
+                        )
+                    },
+                    value =
+                        resourceManager
+                            .getString(R.string.at_enroll_org_unit)
+                            .format(enrollmentOrgUnitWithoutAccess),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.WARNING.color,
+                ),
+            )
+        }
     }
 
     private fun checkRegisteredIn(

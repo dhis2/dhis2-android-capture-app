@@ -20,8 +20,6 @@ interface TeiDataRepository {
 
     fun getTrackedEntityInstance(): Single<TrackedEntityInstance?>
 
-    fun enrollingOrgUnit(): Single<OrganisationUnit>
-
     fun eventsWithoutCatCombo(): Single<List<EventModel>>
 
     fun getOrgUnitName(orgUnitUid: String): String

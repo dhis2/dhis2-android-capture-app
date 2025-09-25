@@ -148,13 +148,18 @@ class EventAdapter(
                                 editable = it.editable,
                                 displayOrgUnit = it.displayOrgUnit,
                                 onCardClick = {
-                                    it.event?.let { event ->
+                                    val eventModel = it
+                                    eventModel.event?.let { event ->
                                         when (event.status()) {
                                             EventStatus.SCHEDULE, EventStatus.OVERDUE -> {
-                                                presenter.onScheduleSelected(
-                                                    event.uid(),
-                                                    composeView,
-                                                )
+                                                if (eventModel.enrollmentOrgUnitWithoutAccess != null) {
+                                                    presenter.onScheduleEventWithoutAccess(eventModel.enrollmentOrgUnitWithoutAccess)
+                                                } else {
+                                                    presenter.onScheduleSelected(
+                                                        event.uid(),
+                                                        composeView,
+                                                    )
+                                                }
                                             }
 
                                             else -> {

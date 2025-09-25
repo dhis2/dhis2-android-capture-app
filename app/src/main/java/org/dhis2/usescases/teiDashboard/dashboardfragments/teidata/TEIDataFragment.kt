@@ -541,6 +541,15 @@ class TEIDataFragment :
             ).show(parentFragmentManager, SCHEDULING_DIALOG)
     }
 
+    override fun displayNoAccessToEventSnackbar(enrollmentOrgUnit: String) {
+        Snackbar
+            .make(
+                binding.root,
+                getString(R.string.at_enroll_org_unit).format(enrollmentOrgUnit),
+                Snackbar.LENGTH_SHORT,
+            ).show()
+    }
+
     override fun showDialogCloseProgram() {
         dialog =
             CustomDialog(

@@ -945,6 +945,7 @@
     <string name="overdue">Overdue %s</string>
     <string name="registered_in">Registered in</string>
     <string name="view_only">View only</string>
+    <string name="at_enroll_org_unit">At %s.\n    You don\'t have access to it.</string>
     <string name="scheduled">Scheduled: %s</string>
     <string name="scheduled_for">Scheduled for %s</string>
     <string name="skipped">Skipped</string>
