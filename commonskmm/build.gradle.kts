@@ -1,4 +1,3 @@
-import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -12,14 +11,16 @@ plugins {
 }
 
 
-repositories{
+repositories {
     maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
     mavenCentral()
     google()
 }
 
 kotlin {
-
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
     androidTarget {
         compilations.all {
             compileTaskProvider.configure {
@@ -61,6 +62,9 @@ kotlin {
             // Atomicfu
             implementation(libs.atomicfu)
 
+            //Coil
+            api(libs.coil)
+            api(libs.coil.network)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))
@@ -107,10 +111,15 @@ compose.resources {
 }
 
 android {
-    namespace = "org.dhis2.mobile.commonskmm"
+    namespace = "org.dhis2.mobile.commons"
     compileSdk = libs.versions.sdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
+        val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
+        buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         isCoreLibraryDesugaringEnabled = true

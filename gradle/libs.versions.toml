@@ -96,6 +96,7 @@ ktlint = "13.1.0"
 sonarqube = "6.3.1.5724"
 browser = "1.9.0"
 biometric = "1.1.0"
+coil = "3.3.0"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -219,6 +220,8 @@ junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.r
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
+coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
+coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
 
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
