@@ -189,7 +189,7 @@ class SearchRepositoryTest {
         val events =
             listOf(
                 createEvent("eventUid", EventStatus.OVERDUE, overdueDate.time),
-                createEvent("eventUid", EventStatus.SCHEDULE, Date()),
+                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
             )
 
         mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
@@ -221,7 +221,7 @@ class SearchRepositoryTest {
             )
         val events =
             listOf(
-                createEvent("eventUid", EventStatus.SCHEDULE, Date()),
+                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
             )
 
         mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
