@@ -55,12 +55,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 const val TURN_ON_BUTTON_TEST_TAG = "turn_on_button_test_tag"
 
@@ -298,5 +300,22 @@ fun TwoFAAuthStepThree(
                 onClick = { onEnableButtonClicked(textValue.text) },
             )
         }
+    }
+}
+
+@Preview(
+    name = "Two Factor enable screen",
+    group = "Two Factor authentication",
+    showBackground = true,
+)
+@Composable
+fun TwoFAToEnableScreenPreview() {
+    DHIS2Theme {
+        TwoFAToEnableScreen(
+            enableUiState = TwoFAUiState.Enable("SECRETCODE", isEnabling = false),
+            onAuthenticatorButtonClicked = {},
+            onCopyCodeButtonClicked = {},
+            onEnableButtonClicked = {},
+        )
     }
 }
