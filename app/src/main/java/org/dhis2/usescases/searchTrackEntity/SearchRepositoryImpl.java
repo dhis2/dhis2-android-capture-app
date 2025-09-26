@@ -1,10 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import android.database.sqlite.SQLiteConstraintException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
