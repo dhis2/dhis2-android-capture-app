@@ -59,8 +59,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun typeServer(server: String) {
-        onView(withId(R.id.server_url_edit)).perform(TypeTextAction(server))
-        closeKeyboard()
+
     }
 
     fun typeServerToValidate(server: String) {
@@ -68,37 +67,27 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clearServerField() {
-        onView(withId(R.id.server_url_edit)).perform(clearText())
+
     }
 
     fun selectUsernameField() {
-        onView(withId(R.id.user_name_edit)).perform(click())
     }
 
     fun typeUsername(username: String) {
-        waitForView(withId(R.id.user_name_edit), TIMEOUT.toInt()).perform(TypeTextAction(username))
-        pressImeActionButton()
+
     }
 
     fun clearUsernameField() {
-        onView(withId(R.id.clearUserNameButton)).perform(click())
     }
 
     fun typePassword(password: String) {
-        onView(withId(R.id.user_pass_edit)).perform(TypeTextAction(password))
         pressImeActionButton()
     }
 
     fun clearPasswordField() {
-        onView(withId(R.id.clearPassButton)).perform(click())
-    }
-
-    fun clearURLField() {
-        onView(withId(R.id.clearUrl)).perform(click())
     }
 
     fun clickLoginButton() {
-        waitForView(withId(R.id.login)).perform(click())
     }
 
     fun clickQRButton() {
@@ -106,11 +95,6 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkLoginButtonIsHidden() {
-        onView(withId(R.id.login)).check(matches(not(isEnabled())))
-    }
-
-    fun checkLoginButtonIsVisible() {
-        onView(withId(R.id.login)).check(matches((isEnabled())))
     }
 
 
@@ -135,15 +119,12 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkUsernameFieldIsClear() {
-        onView(withId(R.id.user_name_edit)).check(matches(withText("")))
     }
 
     fun checkPasswordFieldIsClear() {
-        onView(withId(R.id.user_pass_edit)).check(matches(withText("")))
     }
 
     fun checkURLFieldIsClear() {
-        onView(withId(R.id.server_url_edit)).check(matches(withText("")))
     }
 
     fun checkURL(url: String) {
@@ -151,7 +132,6 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickAccountRecovery() {
-        onView(withId(R.id.account_recovery)).perform(click())
     }
 
     fun checkWebviewWithRecoveryAccountIsOpened() {

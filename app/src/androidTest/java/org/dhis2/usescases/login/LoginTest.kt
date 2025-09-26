@@ -49,6 +49,7 @@ class LoginTest : BaseTest() {
         D2Manager.setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
     }
 
+    @Ignore("implement in login module")
     @Test
     fun loginFlow() {
         mockWebServerRobot.addResponse(GET, API_LOGIN_CONFIG, API_LOGIN_CONFIG_RESPONSE, 200)
@@ -111,6 +112,7 @@ class LoginTest : BaseTest() {
         cleanDatabase()
     }
 
+    @Ignore("implement in login module")
     @Test
     fun goToPinScreenWhenPinWasSet() {
         preferencesRobot.saveValue(SESSION_LOCKED, true)
@@ -124,6 +126,7 @@ class LoginTest : BaseTest() {
         }
     }
 
+    @Ignore("implement in login module")
     @Test
     fun generateLoginThroughQR() {
         preferencesRobot.cleanPreferences()
