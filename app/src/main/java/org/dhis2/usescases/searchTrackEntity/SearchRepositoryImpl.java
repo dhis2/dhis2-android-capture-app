@@ -1,8 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity;
 
 import android.database.sqlite.SQLiteConstraintException;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import org.dhis2.R;
 import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
@@ -417,17 +419,39 @@ public class SearchRepositoryImpl implements SearchRepository {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
 
-        EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
+        EventCollectionRepository overdueEvents = d2.eventModule().events()
+                .byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
+                .byStatus().eq(EventStatus.OVERDUE);
+
+        EventCollectionRepository overdueScheduledEvents = d2.eventModule().events()
+                .byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
+                .byStatus().eq(EventStatus.SCHEDULE);
 
         if (selectedProgram != null) {
             overdueEvents = overdueEvents.byProgramUid().eq(selectedProgram.uid());
+            overdueScheduledEvents = overdueScheduledEvents.byProgramUid().eq(selectedProgram.uid());
         }
 
         List<Event> overdueList = overdueEvents.orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
+        List<Event> scheduledList = overdueScheduledEvents.orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
-        if (!overdueList.isEmpty()) {
+        List<Event> filteredScheduled = new ArrayList<>();
+        for (Event event : scheduledList) {
+            if (DateUtils.getInstance().isEventDueDateOverdue(event.dueDate())) {
+                filteredScheduled.add(event);
+            }
+        }
+
+        List<Event> combinedOverdue = new ArrayList<>(overdueList);
+        combinedOverdue.addAll(filteredScheduled);
+
+        if (!combinedOverdue.isEmpty()) {
+            combinedOverdue.sort((e1, e2) -> {
+                if (e1.dueDate() == null || e2.dueDate() == null) return 0;
+                return e2.dueDate().compareTo(e1.dueDate());
+            });
             tei.setHasOverdue(true);
-            tei.setOverdueDate(overdueList.get(0).dueDate());
+            tei.setOverdueDate(combinedOverdue.get(0).dueDate());
         }
     }
 
@@ -965,8 +989,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byProgramUids(Collections.singletonList(currentProgram))
                 .blockingCount() > 1;
     }
+
     private static final String OPTION_SET_REGEX = "_os_";
 
-    }
+}
 
 
