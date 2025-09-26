@@ -46,6 +46,7 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation(project(":commonskmm"))
                 implementation(libs.navigation.compose)
+                implementation(compose.components.uiToolingPreview)
 
                 // Koin
                 api(libs.koin.core)
