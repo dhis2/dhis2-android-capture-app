@@ -9,6 +9,7 @@ import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.login.main.di.loginModule
 import org.dhis2.usescases.datasets.di.dataSetModules
 import org.dhis2.usescases.settingsprogram.di.settingsProgramModule
+import org.dhis2.utils.analytics.matomo.matomoModule
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -29,6 +30,7 @@ object KoinInitialization {
                 stockModule,
                 loginModule,
                 settingsProgramModule,
+                matomoModule,
             )
         }
     }

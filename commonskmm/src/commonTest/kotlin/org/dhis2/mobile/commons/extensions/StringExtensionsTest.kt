@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.commons.data.ValueParser
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.commons.model.internal.ValueInfo
+import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.junit.After
 import org.junit.Before
 import org.koin.core.context.startKoin
@@ -41,6 +42,7 @@ class StringExtensionsTest : KoinTest {
             }
 
             val valueParser = declareMock<ValueParser>()
+            val crashReportController = declareMock<CrashReportController>()
 
             whenever(valueParser.getValueInfo(any(), any())) doReturnConsecutively
                 listOf(

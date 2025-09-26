@@ -21,7 +21,6 @@ import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl
 import org.dhis2.form.data.FormValueStore
 import org.dhis2.form.data.OptionsRepository
 import org.dhis2.mobile.commons.reporting.CrashReportController
-import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.tracker.events.CreateEventUseCase
 import org.dhis2.tracker.events.CreateEventUseCaseRepositoryImpl
@@ -85,7 +84,10 @@ class TEIDataModule(
 
     @Provides
     @PerFragment
-    fun searchTEIRepository(d2: D2): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
+    fun searchTEIRepository(
+        d2: D2,
+        crashReportController: CrashReportController,
+    ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashReportController)
 
     @Provides
     @PerFragment

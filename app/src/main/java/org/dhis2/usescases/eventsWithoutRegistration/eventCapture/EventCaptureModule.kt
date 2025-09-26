@@ -21,7 +21,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.reporting.CrashReportController
-import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository
@@ -98,7 +97,10 @@ class EventCaptureModule(
 
     @Provides
     @PerActivity
-    fun searchTEIRepository(d2: D2): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
+    fun searchTEIRepository(
+        d2: D2,
+        crashReportController: CrashReportController,
+    ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashReportController)
 
     @get:PerActivity
     @get:Provides
