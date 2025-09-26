@@ -21,7 +21,7 @@ class CrashReportControllerImpl(
             options!!.setDsn(BuildConfig.SENTRY_DSN)
             options.isAnrReportInDebug = true
             options.beforeSend =
-                BeforeSendCallback { event, hint ->
+                BeforeSendCallback { event, _ ->
                     if (SentryLevel.DEBUG == event.level) null else event
                 }
             options.environment = if (BuildConfig.DEBUG) "debug" else "production"
