@@ -104,6 +104,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String currentProgram;
     private final Charts charts;
     private final CrashReportController crashReportController;
+    private DateUtils dateUtils;
     private final NetworkUtils networkUtils;
     private final SearchTEIRepository searchTEIRepository;
     private TrackedEntityInstanceDownloader downloadRepository = null;
@@ -135,7 +136,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          SearchTEIRepository searchTEIRepository,
                          ThemeManager themeManager,
                          MetadataIconProvider metadataIconProvider,
-                         ProfilePictureProvider profilePictureProvider
+                         ProfilePictureProvider profilePictureProvider,
+                         DateUtils dateUtils
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -145,6 +147,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
+        this.dateUtils = dateUtils;
         this.currentProgram = initialProgram;
         this.networkUtils = networkUtils;
         this.searchTEIRepository = searchTEIRepository;
@@ -329,7 +332,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getStartOfDay(new Date()));
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(dateUtils.getStartOfDay(new Date()));
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return new Pair<>(enrollmentUid, uid);
                         })
@@ -435,13 +438,18 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         List<Event> filteredScheduled = new ArrayList<>();
         for (Event event : scheduledList) {
-            if (DateUtils.getInstance().isEventDueDateOverdue(event.dueDate())) {
+            if (dateUtils.isEventDueDateOverdue(event.dueDate())) {
                 filteredScheduled.add(event);
             }
         }
 
-        List<Event> combinedOverdue = new ArrayList<>(overdueList);
-        combinedOverdue.addAll(filteredScheduled);
+        for (Event event : overdueList) {
+            if (dateUtils.isEventDueDateOverdue(event.dueDate())) {
+                filteredScheduled.add(event);
+            }
+        }
+
+        List<Event> combinedOverdue = new ArrayList<>(filteredScheduled);
 
         if (!combinedOverdue.isEmpty()) {
             combinedOverdue.sort((e1, e2) -> {

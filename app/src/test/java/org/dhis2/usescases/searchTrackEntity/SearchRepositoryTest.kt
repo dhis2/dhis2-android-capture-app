@@ -98,6 +98,7 @@ class SearchRepositoryTest {
     private val searchTEIRepository: SearchTEIRepository = mock()
     private val themeManager: ThemeManager = mock()
     private val profilePictureProvider: ProfilePictureProvider = mock()
+    private val dateUtils: DateUtils = DateUtils()
 
     @Before
     fun setUp() {
@@ -144,6 +145,7 @@ class SearchRepositoryTest {
                 themeManager,
                 metadataIconProvider,
                 profilePictureProvider,
+                dateUtils,
             )
     }
 
@@ -171,7 +173,7 @@ class SearchRepositoryTest {
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
-        val overdueDate = DateUtils.getInstance().getCalendarByDate(Date())
+        val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
         val enrollmentsInProgram =
@@ -198,13 +200,13 @@ class SearchRepositoryTest {
     }
 
     @Test
-    fun shouldTransformToSearchTeiModelWithOutOverdueEvents() {
+    fun shouldTransformToSearchTeiModelWithOverdueScheduledEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
         val program = Program.builder().uid("programUid").build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
-        val overdueDate = DateUtils.getInstance().getCalendarByDate(Date())
+        val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
         val enrollmentsInProgram =
@@ -220,6 +222,38 @@ class SearchRepositoryTest {
         val events =
             listOf(
                 createEvent("eventUid", EventStatus.SCHEDULE, Date()),
+            )
+
+        mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
+
+        val result = searchRepositoryJava.transform(searchItem, program, true, sorting)
+
+        assertTrue(result.isHasOverdue)
+    }
+
+    @Test
+    fun shouldTransformToSearchTeiModelWithOutOverdueEvents() {
+        val searchItem = getTrackedEntitySearchItem("header")
+        val program = Program.builder().uid("programUid").build()
+        val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
+        val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
+
+        val overdueDate = dateUtils.getCalendarByDate(Date())
+        overdueDate.add(Calendar.DATE, 2)
+
+        val enrollmentsInProgram =
+            listOf(
+                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
+                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
+            )
+        val allEnrollments =
+            listOf(
+                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
+                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
+            )
+        val events =
+            listOf(
+                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
             )
 
         mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
@@ -354,7 +388,11 @@ class SearchRepositoryTest {
         whenever(
             eventCollectionRepository.blockingGet(),
         ) doReturn eventsToReturn.filter { it.status() == EventStatus.OVERDUE }
-
+        whenever(enumEventFilterConnector.eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.byStatus().eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.byProgramUid().eq(any())).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.orderByDueDate(RepositoryScope.OrderByDirection.DESC)).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.blockingGet()).thenReturn(eventsToReturn.filter { it.status() == EventStatus.SCHEDULE })
         // mock orgUnitName(orgUnitUid)
         whenever(d2.organisationUnitModule().organisationUnits()) doReturn orgUnitCollectionRepository
         whenever(
