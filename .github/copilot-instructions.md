@@ -20,7 +20,7 @@ This project is a DHIS2 Android application that is migrating from a traditional
 
 ### Data Layer
 - **DHIS2 Android SDK**: Use `@dhis2/dhis2-android-sdk` for all data operations
-  - Version: `1.13.0-SNAPSHOT`
+  - Use latest stable version (check `gradle/libs.versions.toml` for current version)
   - Import: `org.hisp.dhis.android.core.*`
   - Handles persistence, offline/online synchronization, and DHIS2 API communication
   - Never create direct network calls or database operations - use the SDK
@@ -37,6 +37,7 @@ This project is a DHIS2 Android application that is migrating from a traditional
   - Use `@Composable` functions for UI components
   - Collect state using `collectAsState()`
   - Keep composables pure and stateless when possible
+  - Use Compose multiplatform previews (`@Preview`) to validate UI components
 
 ### Repository Pattern
 - **Repositories**: Abstract data access layer
@@ -252,3 +253,4 @@ fun ExampleScreen(
 - [DHIS2 Android SDK Documentation](https://docs.dhis2.org/en/develop/using-the-api/dhis-core-version-master/android-sdk.html)
 - [Compose Multiplatform Documentation](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html)
 - [Koin Multiplatform Documentation](https://insert-koin.io/docs/reference/koin-mp/kmp)
+- [Android Architecture Guidelines](https://developer.android.com/topic/architecture)
