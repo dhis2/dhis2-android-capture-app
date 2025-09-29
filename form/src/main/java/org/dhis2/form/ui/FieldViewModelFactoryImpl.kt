@@ -71,9 +71,9 @@ class FieldViewModelFactoryImpl(
             programStageSection = programStageSection,
             hint = hintProvider.provideDateHint(valueType),
             description = description,
-            valueType = if (optionSet != null && valueType == ValueType.TEXT) ValueType.MULTI_TEXT else valueType,
+            valueType = valueType,
             legend = legendValueProvider.provideLegendValue(id, value),
-            optionSet = if (valueType == ValueType.MULTI_TEXT) null else optionSet,
+            optionSet = optionSet,
             allowFutureDates = allowFutureDates,
             uiEventFactory =
                 UiEventFactoryImpl(

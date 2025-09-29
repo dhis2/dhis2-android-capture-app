@@ -509,6 +509,7 @@ class FormRepositoryImpl(
         fieldsWithOptionEffects.forEach { field ->
             field.optionSet?.let { optionSetUid ->
                 fetchOptions(field.uid, optionSetUid)
+                fieldMap[field.uid] = itemList.first { it.uid == field.uid }
             }
         }
 
@@ -520,6 +521,7 @@ class FormRepositoryImpl(
             item?.let { field ->
                 field.optionSet?.let { optionSetUid ->
                     fetchOptions(field.uid, optionSetUid)
+                    fieldMap[field.uid] = itemList.first { it.uid == field.uid }
                 }
                 fieldsWithOptionEffects.add(field)
             }
@@ -854,11 +856,10 @@ class FormRepositoryImpl(
                 .find { item ->
                     item.uid == uid
                 }?.let { item ->
-                    item.optionSetConfiguration = newConf
                     itemList =
                         list.updated(
                             list.indexOf(item),
-                            item,
+                            item.setOptionSetConfiguration(newConf),
                         )
                 }
         }
