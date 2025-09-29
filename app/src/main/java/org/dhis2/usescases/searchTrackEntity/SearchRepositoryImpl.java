@@ -438,13 +438,13 @@ public class SearchRepositoryImpl implements SearchRepository {
 
         List<Event> filteredScheduled = new ArrayList<>();
         for (Event event : scheduledList) {
-            if (dateUtils.isEventDueDateOverdue(event.dueDate())) {
+            if (Boolean.TRUE.equals(dateUtils.isEventDueDateOverdue(event.dueDate()))) {
                 filteredScheduled.add(event);
             }
         }
 
         for (Event event : overdueList) {
-            if (dateUtils.isEventDueDateOverdue(event.dueDate())) {
+            if (Boolean.TRUE.equals(dateUtils.isEventDueDateOverdue(event.dueDate()))) {
                 filteredScheduled.add(event);
             }
         }
