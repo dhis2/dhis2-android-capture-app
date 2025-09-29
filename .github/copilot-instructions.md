@@ -14,7 +14,7 @@ This project is a DHIS2 Android application that is migrating from a traditional
 
 ### UI Framework
 - **Primary UI**: Use `@dhis2/dhis2-mobile-ui` design system (based on Compose Multiplatform)
-  - Version: `0.6.0-SNAPSHOT`
+  - Use latest stable version (check `gradle/libs.versions.toml` for current version)
   - Import: `org.hisp.dhis.mobile.ui.designsystem.*`
   - Always prefer DHIS2 design system components over Material components when available
 
@@ -137,10 +137,10 @@ modulekmm/
 
 ## Common Patterns
 
-### ViewModel with Repository
+### ViewModel with Use Cases
 ```kotlin
 class ExampleViewModel(
-    private val repository: ExampleRepository
+    private val getDataUseCase: GetDataUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -151,7 +151,7 @@ class ExampleViewModel(
     
     private fun loadData() {
         viewModelScope.launch {
-            repository.getData()
+            getDataUseCase()
                 .catch { _uiState.value = UiState.Error(it.message ?: "Unknown error") }
                 .collect { _uiState.value = UiState.Success(it) }
         }
@@ -173,10 +173,23 @@ class ExampleRepositoryImpl(
 }
 ```
 
+### Use Case Implementation
+```kotlin
+class GetDataUseCase(
+    private val repository: ExampleRepository
+) {
+    suspend operator fun invoke(): Flow<List<ExampleData>> {
+        return repository.getData()
+            .map { data -> data.filter { it.isValid } }
+    }
+}
+```
+
 ### Koin Module Definition
 ```kotlin
 val exampleModule = module {
     single<ExampleRepository> { ExampleRepositoryImpl(get()) }
+    single<GetDataUseCase> { GetDataUseCase(get()) }
     viewModel { ExampleViewModel(get()) }
 }
 ```
