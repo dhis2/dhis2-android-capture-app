@@ -115,7 +115,7 @@ class LoginViewModel(
         if (urlString.startsWith(redirectUri)) {
             val code = urlString.substringAfter("code=").substringBefore('&')
             if (code.isNotEmpty()) {
-                // TODO: Use the authorization code to get a token and log in, then show statistics screen
+                TODO("Use the authorization code to get a token and log in, then show statistics screen")
             } else {
                 val error = urlString.substringAfter("error=").substringBefore('&')
                 _serverValidationState.update {

@@ -54,6 +54,7 @@ import org.dhis2.mobile.login.main.ui.states.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_log_in
+import org.dhis2.mobile.login.resources.action_manage_account
 import org.dhis2.mobile.login.resources.action_no_now
 import org.dhis2.mobile.login.resources.action_openid_log_in
 import org.dhis2.mobile.login.resources.action_recover_account
@@ -138,7 +139,7 @@ fun CredentialsScreen(
             serverName = selectedServerName,
             serverUrl = selectedServer,
             selectedUsername = selectedUsername,
-            serverImageUrl = "https://avatars.githubusercontent.com/u/1089987?s=200&v=4", // TODO: Replace with flag / server image
+            serverImageUrl = "https://avatars.githubusercontent.com/u/1089987?s=200&v=4", // TODO("Replace with flag / server image")
         )
         CredentialsContainer(
             availableUsernames = screenState.credentialsInfo.availableUsernames,
@@ -480,7 +481,7 @@ private fun CredentialActions(
         ) {
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = "Manage accounts",
+                text = stringResource(Res.string.action_manage_account),
                 style = ButtonStyle.OUTLINED,
                 onClick = onManageAccounts,
             )

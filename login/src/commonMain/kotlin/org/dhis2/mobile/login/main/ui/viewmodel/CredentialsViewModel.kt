@@ -108,7 +108,7 @@ class CredentialsViewModel(
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
                     oidcInfo =
                         OidcInfo(
-                            // TODO: This should either be received from validate server or with a new usecase
+                            // TODO("This should either be received from validate server or with a new usecase")
                             oidcIcon = "icon",
                             oidcLoginText = "Open id connect",
                             oidcUrl = "https://openid.login.test",
@@ -211,7 +211,7 @@ class CredentialsViewModel(
     }
 
     fun onOpenIdLogin(url: String) {
-        // TODO
+        TODO("Not implemented yet")
     }
 
     fun cancelLogin() {

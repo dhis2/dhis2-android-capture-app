@@ -174,7 +174,7 @@ class LoginRepositoryImpl(
                                     ciphertextWrapper.ciphertext,
                                     cipher,
                                 )
-                            continuation.resume(value = kotlin.Result.success(pass)) { cause, _, _ -> }
+                            continuation.resume(value = kotlin.Result.success(pass)) { _, _, _ -> }
                         }
                         continuation.invokeOnCancellation {
                             // If needed perform action on cancelation

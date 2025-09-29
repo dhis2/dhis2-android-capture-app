@@ -265,7 +265,7 @@ class LoginActivity :
         if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
                 presenter.handleAuthResponseData(
-                    "server_url", // TODO: Move this to login module and pass server url
+                    "server_url", // TODO ("Move this to login module and pass server url")
                     data,
                     requestCode,
                 )
