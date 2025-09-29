@@ -13,7 +13,6 @@ class ProgramViewModelMapper {
         recordCount: Int,
         recordLabel: String,
         state: State,
-        hasOverdue: Boolean,
         filtersAreActive: Boolean,
         metadataIconData: MetadataIconData,
     ): ProgramUiModel =
@@ -34,7 +33,6 @@ class ProgramViewModelMapper {
             onlyEnrollOnce = program.onlyEnrollOnce() == true,
             accessDataWrite = program.access().data().write(),
             state = State.valueOf(state.name),
-            hasOverdueEvent = hasOverdue,
             filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
             isStockUseCase = false,
@@ -61,7 +59,6 @@ class ProgramViewModelMapper {
             onlyEnrollOnce = false,
             accessDataWrite = dataSet.access().data().write(),
             state = dataSetInstanceSummary.state(),
-            hasOverdueEvent = false,
             filtersAreActive = filtersAreActive,
             downloadState = ProgramDownloadState.NONE,
             isStockUseCase = false,

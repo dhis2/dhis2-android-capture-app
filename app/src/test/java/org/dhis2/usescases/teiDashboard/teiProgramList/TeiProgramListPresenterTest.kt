@@ -183,7 +183,6 @@ class TeiProgramListPresenterTest {
             isStockUseCase = false,
             lastUpdated = Date(),
             filtersAreActive = false,
-            hasOverdueEvent = false,
         )
 
     private fun mockedEnrollmentViewModel(): EnrollmentViewModel =

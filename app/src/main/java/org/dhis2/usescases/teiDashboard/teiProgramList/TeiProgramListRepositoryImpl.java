@@ -108,7 +108,6 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                                 "",
                                 State.SYNCED,
                                 false,
-                                false,
                                 metadataIconProvider.invoke(program.style())
                         )
                 )
