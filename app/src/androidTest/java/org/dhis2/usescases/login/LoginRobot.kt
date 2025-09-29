@@ -11,15 +11,12 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.TypeTextAction
-import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
@@ -32,7 +29,6 @@ import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.utils.WebViewActivity
 import org.hamcrest.CoreMatchers
-import org.hamcrest.CoreMatchers.not
 
 
 fun loginRobot(
@@ -58,43 +54,12 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG).performClick()
     }
 
-    fun typeServer(server: String) {
-
-    }
-
     fun typeServerToValidate(server: String) {
         composeTestRule.onNodeWithTag("INPUT_QR_CODE_FIELD").performTextReplacement(server)
     }
 
-    fun clearServerField() {
-
-    }
-
-    fun selectUsernameField() {
-    }
-
-    fun typeUsername(username: String) {
-
-    }
-
-    fun clearUsernameField() {
-    }
-
-    fun typePassword(password: String) {
-        pressImeActionButton()
-    }
-
-    fun clearPasswordField() {
-    }
-
-    fun clickLoginButton() {
-    }
-
     fun clickQRButton() {
         composeTestRule.onNodeWithTag("INPUT_QR_CODE_BUTTON").performClick()
-    }
-
-    fun checkLoginButtonIsHidden() {
     }
 
 
@@ -106,32 +71,12 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         onView(withText(OK)).perform(click())
     }
 
-    fun clickCancelAuthErrorAlert() {
-        onView(withText(Cancel)).perform(click())
-    }
-
-    fun checkAuthErrorOKButtonIsVisible() {
-        onView(withText(OK)).check(matches(isDisplayed()))
-    }
-
     fun checkUnblockSessionViewIsVisible() {
         onView(withId(R.id.cardview_pin)).check(matches(isDisplayed()))
     }
 
-    fun checkUsernameFieldIsClear() {
-    }
-
-    fun checkPasswordFieldIsClear() {
-    }
-
-    fun checkURLFieldIsClear() {
-    }
-
     fun checkURL(url: String) {
         composeTestRule.onNodeWithTag("INPUT_QR_CODE_FIELD").assert(hasText(url))
-    }
-
-    fun clickAccountRecovery() {
     }
 
     fun checkWebviewWithRecoveryAccountIsOpened() {
@@ -179,6 +124,5 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     companion object {
         const val LOGIN_ERROR_TITLE = "Login error"
         const val OK = "OK"
-        const val Cancel = "cancel"
     }
 }
