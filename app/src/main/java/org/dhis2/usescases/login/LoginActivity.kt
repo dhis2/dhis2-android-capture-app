@@ -11,9 +11,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.biometric.BiometricPrompt
 import androidx.compose.ui.graphics.toArgb
-import androidx.core.content.ContextCompat
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -21,9 +19,6 @@ import org.dhis2.bindings.buildInfo
 import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialog
-import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
-import org.dhis2.commons.dialogs.bottomsheet.DialogButtonStyle
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.data.server.UserManager
@@ -42,7 +37,6 @@ import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
-import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.koin.android.ext.android.inject

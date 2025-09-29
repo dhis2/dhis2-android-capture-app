@@ -7,19 +7,15 @@ import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.BiometricAuthenticator
 import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
-import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.auth.OpenIdProviders
-import org.dhis2.utils.analytics.AnalyticsHelper
 
 @Module
 class LoginModule(
