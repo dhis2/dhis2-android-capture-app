@@ -74,7 +74,9 @@ class LoginViewModel(
                     .observeOn(schedulers.ui())
                     .subscribe(
                         {},
-                        { t -> },
+                        { _ ->
+                            TODO("Move this to login module and pass server url")
+                        },
                     ),
             )
         }

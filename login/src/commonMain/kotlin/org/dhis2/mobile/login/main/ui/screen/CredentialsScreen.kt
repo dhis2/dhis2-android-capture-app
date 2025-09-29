@@ -433,7 +433,7 @@ private fun CredentialActions(
                     style = IconButtonStyle.STANDARD,
                     icon = {
                         Icon(
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(Spacing.Spacing48),
                             imageVector = Icons.Outlined.Fingerprint,
                             contentDescription = "fingerprint",
                             tint = MaterialTheme.colorScheme.primary,
