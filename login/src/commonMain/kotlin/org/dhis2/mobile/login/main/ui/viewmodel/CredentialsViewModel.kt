@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
@@ -107,7 +108,8 @@ class CredentialsViewModel(
                     allowRecovery = allowRecovery,
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
                     oidcInfo =
-                        OidcInfo( // TODO: This should either be received from validate server or with a new usecase
+                        OidcInfo(
+                            // TODO: This should either be received from validate server or with a new usecase
                             oidcIcon = "icon",
                             oidcLoginText = "Open id connect",
                             oidcUrl = "https://openid.login.test",
@@ -226,6 +228,7 @@ class CredentialsViewModel(
                     updatePassword(password = result.getOrNull() ?: "")
                     onLoginClicked()
                 }
+
                 else -> {
                     _credentialsScreenState.update {
                         it.copy(
@@ -240,6 +243,17 @@ class CredentialsViewModel(
     fun onManageAccountsClicked() {
         viewModelScope.launch {
             navigator.navigate(destination = LoginScreenState.Accounts)
+        }
+    }
+
+    fun onRecoverAccountClicked() {
+        viewModelScope.launch {
+            navigator.navigate(
+                destination =
+                    LoginScreenState.RecoverAccount(
+                        selectedServer = serverUrl,
+                    ),
+            )
         }
     }
 

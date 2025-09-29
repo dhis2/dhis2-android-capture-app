@@ -32,4 +32,9 @@ sealed interface LoginScreenState {
 
     @Serializable
     data object Accounts : LoginScreenState
+
+    @Serializable
+    data class RecoverAccount(
+        val selectedServer: String,
+    ) : LoginScreenState
 }

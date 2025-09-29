@@ -171,6 +171,7 @@ fun CredentialsScreen(
                 }
             },
             onManageAccounts = viewModel::onManageAccountsClicked,
+            onRecoverAccount = viewModel::onRecoverAccountClicked,
         )
     }
     if (displayTrackingMessage) {
@@ -393,6 +394,7 @@ private fun CredentialActions(
     onOpenIdLogin: (url: String) -> Unit,
     onBiometricsClicked: () -> Unit,
     onManageAccounts: () -> Unit,
+    onRecoverAccount: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -416,7 +418,7 @@ private fun CredentialActions(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(Res.string.action_recover_account),
                 style = ButtonStyle.TONAL,
-                onClick = onLoginClicked,
+                onClick = onRecoverAccount,
             )
         }
         if (hasBiometrics) {

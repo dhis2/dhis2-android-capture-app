@@ -65,6 +65,7 @@ fun LoginScreen(
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
+    onNavigateToRecoverAccount: (serverUrl: String) -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
@@ -87,13 +88,16 @@ fun LoginScreen(
                 is NavigationAction.Navigate -> {
                     navController.navigate(action.destination) {
                         action.navOptions(this)
-                        val currentRouteString = navController.currentBackStackEntry?.destination?.route
-                        val startDestinationRouteString = LoginScreenState.Loading::class.qualifiedName
+                        val currentRouteString =
+                            navController.currentBackStackEntry?.destination?.route
+                        val startDestinationRouteString =
+                            LoginScreenState.Loading::class.qualifiedName
                         if (currentRouteString != null && currentRouteString == startDestinationRouteString) {
                             popUpTo(LoginScreenState.Loading::class) { inclusive = true }
                         }
                     }
                 }
+
                 NavigationAction.NavigateUp -> navController.navigateUp()
                 NavigationAction.NavigateToHome -> onNavigateToHome()
                 NavigationAction.NavigateToSync -> onNavigateToSync()
@@ -155,6 +159,10 @@ fun LoginScreen(
             composable<LoginScreenState.Accounts> {
                 displayMoreActions = true
                 AccountsScreen()
+            }
+            composable<LoginScreenState.RecoverAccount> {
+                val arg = it.toRoute<LoginScreenState.RecoverAccount>()
+                onNavigateToRecoverAccount(arg.selectedServer)
             }
         }
     }
