@@ -15,19 +15,16 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
-      # Ignore development versions with + in the version number
-      - dependency-name: "*"
-        versions: ["*+*"]
-      # Ignore common pre-release version patterns
-      - dependency-name: "*"
-        versions: ["*-SNAPSHOT", "*-alpha*", "*-beta*", "*-rc*", "*-RC*", "*-M*"]
-      # Ignore specific JetBrains Compose dev versions
+      # Ignore development versions using dependency-specific rules
+      - dependency-name: "org.jetbrains.androidx.lifecycle:*"
+        versions: [">= 2.10.0+dev"]
       - dependency-name: "org.jetbrains.compose*"
-        versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
-      - dependency-name: "org.jetbrains.androidx.*"
-        versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
+        versions: [">= 1.10.0+dev"]
       - dependency-name: "org.jetbrains.compose.*"
-        versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
+        versions: [">= 1.10.0+dev"]
+      # Use update-types to control version updates for major dependencies
+      - dependency-name: "org.jetbrains.*"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
       - dependency-name: "org.hisp.dhis:android-core"
