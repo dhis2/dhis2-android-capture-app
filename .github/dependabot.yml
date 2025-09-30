@@ -18,9 +18,9 @@ updates:
       # Ignore development versions with + in the version number
       - dependency-name: "*"
         versions: ["*+*"]
-      # Ignore all pre-release versions using update-types
+      # Ignore common pre-release version patterns
       - dependency-name: "*"
-        update-types: ["version-update:semver-prerelease"]
+        versions: ["*-SNAPSHOT", "*-alpha*", "*-beta*", "*-rc*", "*-RC*", "*-M*"]
       # Ignore specific JetBrains Compose dev versions
       - dependency-name: "org.jetbrains.compose*"
         versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
