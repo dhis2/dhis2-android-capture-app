@@ -17,14 +17,11 @@ class SettingsProgramPresenterTest {
     @Test
     fun `Should initialize the settings program`() =
         runTest {
-            val testSettings =
-                listOf(
-                    mock<SpecificSettings>(),
-                )
+            val testSettings = listOf(mock<SpecificSettings>())
             whenever(getProgramSpecificSettings()).doReturn(testSettings)
 
             viewmodel.programSettings.test {
-                assertEquals(emptyList<SpecificSettings>(), expectMostRecentItem())
+                assertEquals(emptyList<SpecificSettings>(), awaitItem())
                 assertEquals(testSettings, awaitItem())
                 cancelAndConsumeRemainingEvents()
             }
