@@ -14,11 +14,23 @@ class GetInitialScreen(
                     currentServer = "",
                     availableServers = accountRepository.availableServers(),
                 )
-            accounts.size == 1 ->
-                LoginScreenState.LegacyLogin(
+            accounts.size == 1 && accounts.first().isOauthEnabled ->
+                LoginScreenState.OauthLogin(
                     selectedServer = accounts.first().serverUrl,
-                    selectedUsername = accounts.first().name,
                 )
+
+            accounts.size == 1 ->
+                with(accounts.first()) {
+                    LoginScreenState.LegacyLogin(
+                        selectedServer = serverUrl,
+                        selectedUsername = name,
+                        serverName = serverName,
+                        allowRecovery = allowRecovery,
+                        oidcIcon = oidcIcon,
+                        oidcLoginText = oidcLoginText,
+                        oidcUrl = oidcUrl,
+                    )
+                }
 
             else -> LoginScreenState.Accounts
         }

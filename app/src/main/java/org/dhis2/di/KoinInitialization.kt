@@ -4,6 +4,7 @@ import android.app.Application
 import org.dhis2.android.rtsm.di.stockModule
 import org.dhis2.commons.di.resourceManagerModule
 import org.dhis2.commons.filters.periods.di.filterPeriodsModule
+import org.dhis2.data.biometric.biometricModule
 import org.dhis2.mobile.aggregates.di.aggregatesModule
 import org.dhis2.mobile.commons.di.commonsModule
 import org.dhis2.mobile.login.main.di.loginModule
@@ -30,6 +31,7 @@ object KoinInitialization {
                 stockModule,
                 loginModule,
                 settingsProgramModule,
+                biometricModule,
                 matomoModule,
             )
         }

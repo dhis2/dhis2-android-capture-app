@@ -1,6 +1,13 @@
 package org.dhis2.mobile.login.accounts.domain.model
 
 data class AccountModel(
-    var name: String,
-    var serverUrl: String,
+    val name: String,
+    val serverUrl: String,
+    val serverName: String?,
+    val serverDescription: String?,
+    val allowRecovery: Boolean,
+    val oidcIcon: String?,
+    val oidcLoginText: String?,
+    val oidcUrl: String?,
+    val isOauthEnabled: Boolean,
 )

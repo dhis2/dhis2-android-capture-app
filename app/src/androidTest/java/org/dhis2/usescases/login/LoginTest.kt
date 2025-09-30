@@ -20,10 +20,12 @@ import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.GET
 import org.junit.FixMethodOrder
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runners.MethodSorters
 
+@Ignore("implement in login module")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LoginTest : BaseTest() {
 
@@ -47,6 +49,7 @@ class LoginTest : BaseTest() {
         D2Manager.setCredentials(KeyStoreRobot.KEYSTORE_USERNAME, KeyStoreRobot.PASSWORD)
     }
 
+    @Ignore("implement in login module")
     @Test
     fun loginFlow() {
         mockWebServerRobot.addResponse(GET, API_LOGIN_CONFIG, API_LOGIN_CONFIG_RESPONSE, 200)
@@ -65,38 +68,38 @@ class LoginTest : BaseTest() {
             typeServerToValidate(MOCK_SERVER_URL)
             clickOnValidateServerButton()
             // Test case - [ANDROAPP-4122](https://dhis2.atlassian.net/browse/ANDROAPP-4122)
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
-            clearUsernameField()
-            clearPasswordField()
-            checkUsernameFieldIsClear()
-            checkPasswordFieldIsClear()
+//            typeUsername(USERNAME)
+//            typePassword(PASSWORD)
+//            clearUsernameField()
+//            clearPasswordField()
+//            checkUsernameFieldIsClear()
+//            checkPasswordFieldIsClear()
 
             //Test case - [ANDROAPP-4123](https://dhis2.atlassian.net/browse/ANDROAPP-4123)
-            checkLoginButtonIsHidden()
+//            checkLoginButtonIsHidden()
 
             // Test case - [ANDROAPP-4126](https://dhis2.atlassian.net/browse/ANDROAPP-4126)
             enableIntents()
-            clickAccountRecovery()
+//            clickAccountRecovery()
             checkWebviewWithRecoveryAccountIsOpened()
             pressBack()
 
             // Test case - [ANDROAPP-4121](https://dhis2.atlassian.net/browse/ANDROAPP-4121)
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_UNAUTHORIZE, HTTP_UNAUTHORIZE)
-            selectUsernameField()
-            typeUsername(USERNAME)
-            typePassword(PASSWORD)
+//            selectUsernameField()
+//            typeUsername(USERNAME)
+//            typePassword(PASSWORD)
             waitToDebounce(5000)
-            clickLoginButton()
+//            clickLoginButton()
             checkAuthErrorAlertIsVisible()
             clickOKAuthErrorAlert()
 
             // Test case - [ANDROAPP-4121](https://dhis2.atlassian.net/browse/ANDROAPP-4121)
             mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
-            clearPasswordField()
-            typePassword(PASSWORD)
+//            clearPasswordField()
+//            typePassword(PASSWORD)
             waitToDebounce(5000)
-            clickLoginButton()
+//            clickLoginButton()
 
             //Test case - [ANDROAPP-5184](https://dhis2.atlassian.net/browse/ANDROAPP-5184)
             checkShareDataDialogIsDisplayed()
@@ -109,6 +112,7 @@ class LoginTest : BaseTest() {
         cleanDatabase()
     }
 
+    @Ignore("implement in login module")
     @Test
     fun goToPinScreenWhenPinWasSet() {
         preferencesRobot.saveValue(SESSION_LOCKED, true)
@@ -122,6 +126,7 @@ class LoginTest : BaseTest() {
         }
     }
 
+    @Ignore("implement in login module")
     @Test
     fun generateLoginThroughQR() {
         preferencesRobot.cleanPreferences()

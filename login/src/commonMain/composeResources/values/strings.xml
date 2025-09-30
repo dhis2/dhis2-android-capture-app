@@ -33,4 +33,25 @@
     <string name="two_fa_disabling_button">Turning off...</string>
     <string name="two_fa_disable_error">Fail to turn two factor authentication off.</string>
     <string name="server_url_error">Not a valid server URL</string>
+    <string name="biometrics_login_title">Quick login</string>
+    <string name="biometrics_login_text">Would you like to use your fingerprint or another biometric method to log in?</string>
+    <string name="biometrics_permission_already_saved">Credentials had already been saved</string>
+    <string name="biometrics_permission_cancelled">Credentials had not been saved</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="action_log_in">Log in</string>
+    <string name="action_recover_account">Recover account</string>
+    <string name="openid_or">Or</string>
+    <string name="action_openid_log_in">Log in with openID</string>
+    <string name="action_manage_account">Manage accounts</string>
+    <string name="tracking_title">Do you want to help us improve this app?</string>
+    <string name="tracking_description">"If you say yes the app will send anonymous statistics and error logs which" +
+                                " help us improve user experience and performance."</string>
+    <string name="tracking_description_link">For further details, please refer to our </string>
+    <string name="privacy_policy">privacy policy</string>
+    <string name="action_no_now">Not now</string>
+    <string name="action_yes">Yes</string>
+
+
 </resources>

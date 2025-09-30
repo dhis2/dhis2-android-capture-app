@@ -46,7 +46,8 @@ class ResourceManager(
         quantity: Int,
         formatWithQuantity: Boolean = false,
     ): String {
-        val enrollmentLabel = defaultEnrollmentLabel(programUid, getString(stringResource).startsWith("%s"), quantity)
+        val enrollmentLabel =
+            defaultEnrollmentLabel(programUid, getString(stringResource).startsWith("%s"), quantity)
 
         return if (formatWithQuantity) {
             getString(stringResource).format(quantity, enrollmentLabel)
@@ -92,8 +93,7 @@ class ResourceManager(
                     "drawable",
                     getWrapperContext().packageName,
                 )
-            if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)
-            ) {
+            if (iconResource != 0 && iconResource != -1 && drawableExists(iconResource)) {
                 iconResource
             } else {
                 R.drawable.ic_default_icon
@@ -112,12 +112,6 @@ class ResourceManager(
         hexColor?.let {
             colorUtils.parseColor(it)
         } ?: -1
-
-    fun getColorOrDefaultFrom(hexColor: String?): Int =
-        colorUtils.getColorFrom(
-            hexColor,
-            colorUtils.getPrimaryColor(context, ColorType.PRIMARY_LIGHT),
-        )
 
     fun parseD2Error(throwable: Throwable) =
         D2ErrorUtils(getWrapperContext(), NetworkUtils(getWrapperContext()))
@@ -142,11 +136,7 @@ class ResourceManager(
     fun getWrapperContext() =
         try {
             LocaleSelector(context, D2Manager.getD2()).updateUiLanguage()
-        } catch (exception: Exception) {
+        } catch (_: Exception) {
             context
         }
-
-    fun defaultTableLabel(): String = context.getString(R.string.default_table_header_label)
-
-    fun defaultEmptyDataSetSectionLabel(): String = context.getString(R.string.default_empty_dataset_section_label)
 }

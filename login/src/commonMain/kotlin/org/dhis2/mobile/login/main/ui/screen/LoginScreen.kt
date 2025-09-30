@@ -62,7 +62,10 @@ fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     versionName: String,
     onImportDatabase: () -> Unit,
-    legacyLoginContent: @Composable (server: String, username: String) -> Unit,
+    onNavigateToSync: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit,
+    onNavigateToRecoverAccount: (serverUrl: String) -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
@@ -85,14 +88,20 @@ fun LoginScreen(
                 is NavigationAction.Navigate -> {
                     navController.navigate(action.destination) {
                         action.navOptions(this)
-                        val currentRouteString = navController.currentBackStackEntry?.destination?.route
-                        val startDestinationRouteString = LoginScreenState.Loading::class.qualifiedName
+                        val currentRouteString =
+                            navController.currentBackStackEntry?.destination?.route
+                        val startDestinationRouteString =
+                            LoginScreenState.Loading::class.qualifiedName
                         if (currentRouteString != null && currentRouteString == startDestinationRouteString) {
                             popUpTo(LoginScreenState.Loading::class) { inclusive = true }
                         }
                     }
                 }
+
                 NavigationAction.NavigateUp -> navController.navigateUp()
+                NavigationAction.NavigateToHome -> onNavigateToHome()
+                NavigationAction.NavigateToSync -> onNavigateToSync()
+                NavigationAction.NavigateToPrivacyPolicy -> onNavigateToPrivacyPolicy()
             }
         }
 
@@ -134,7 +143,12 @@ fun LoginScreen(
             composable<LoginScreenState.LegacyLogin> {
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
-                legacyLoginContent(arg.selectedServer, arg.selectedUsername)
+                CredentialsScreen(
+                    selectedServer = arg.selectedServer,
+                    selectedServerName = arg.serverName,
+                    selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
+                    allowRecovery = arg.allowRecovery,
+                )
             }
             composable<LoginScreenState.OauthLogin> {
                 val args = it.toRoute<LoginScreenState.OauthLogin>()
@@ -145,6 +159,10 @@ fun LoginScreen(
             composable<LoginScreenState.Accounts> {
                 displayMoreActions = true
                 AccountsScreen()
+            }
+            composable<LoginScreenState.RecoverAccount> {
+                val arg = it.toRoute<LoginScreenState.RecoverAccount>()
+                onNavigateToRecoverAccount(arg.selectedServer)
             }
         }
     }

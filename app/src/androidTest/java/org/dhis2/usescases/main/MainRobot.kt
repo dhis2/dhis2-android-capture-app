@@ -11,15 +11,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.NavigationViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.program.HOME_ITEMS
 import org.dhis2.usescases.main.program.hasPrograms
-import org.hamcrest.CoreMatchers.allOf
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
     MainRobot().apply {
@@ -59,10 +55,6 @@ class MainRobot : BaseRobot() {
         composeTestRule.onNodeWithTag(HOME_ITEMS).assert(
             SemanticsMatcher.expectValue(hasPrograms, true)
         )
-    }
-
-    fun checkLogInIsLaunched() {
-        Intents.intended(allOf(IntentMatchers.hasComponent(LoginActivity::class.java.name)))
     }
 
     @OptIn(ExperimentalTestApi::class)

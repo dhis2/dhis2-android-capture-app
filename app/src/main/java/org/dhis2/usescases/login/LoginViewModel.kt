@@ -1,10 +1,6 @@
 package org.dhis2.usescases.login
 
 import android.content.Intent
-import androidx.annotation.VisibleForTesting
-import androidx.biometric.BiometricPrompt
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
@@ -12,40 +8,13 @@ import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.dhis2.R
-import org.dhis2.commons.Constants.PREFS_URLS
-import org.dhis2.commons.Constants.PREFS_USERS
-import org.dhis2.commons.Constants.USER_TEST_ANDROID
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
-import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.biometric.BiometricAuthenticator
-import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
-import org.dhis2.mobile.commons.providers.SECURE_PASS
-import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
-import org.dhis2.mobile.commons.providers.SECURE_USER_NAME
-import org.dhis2.mobile.commons.reporting.CrashReportController
-import org.dhis2.mobile.login.main.domain.model.LoginScreenState
-import org.dhis2.mobile.login.main.ui.navigation.Navigator
-import org.dhis2.usescases.main.MainActivity
-import org.dhis2.utils.TestingCredential
-import org.dhis2.utils.analytics.ACCOUNT_RECOVERY
-import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.DATA_STORE_ANALYTICS_PERMISSION_KEY
-import org.dhis2.utils.analytics.LOGIN
-import org.dhis2.utils.analytics.SERVER_QR_SCANNER
-import org.dhis2.utils.analytics.USER_PROPERTY_SERVER
-import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.maintenance.D2ErrorCode
-import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.File
 
@@ -56,209 +25,9 @@ class LoginViewModel(
     private val preferenceProvider: PreferenceProvider,
     private val resourceManager: ResourceManager,
     private val schedulers: SchedulerProvider,
-    private val dispatchers: DispatcherProvider,
-    private val biometricAuthenticator: BiometricAuthenticator,
-    private val cryptographyManager: CryptographyManager,
-    private val analyticsHelper: AnalyticsHelper,
-    private val crashReportController: CrashReportController,
-    private val network: NetworkUtils,
     private var userManager: UserManager?,
-    private val repository: LoginRepository,
-) : ViewModel(),
-    KoinComponent {
-    private val navigator: Navigator by inject()
-
-    private val syncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
+) : ViewModel() {
     var disposable: CompositeDisposable = CompositeDisposable()
-
-    val serverUrl = MutableLiveData<String>()
-    val userName = MutableLiveData<String>()
-    val password = MutableLiveData<String>()
-    val isDataComplete = MutableLiveData<Boolean>()
-    val isTestingEnvironment = MutableLiveData<Triple<String, String, String>>()
-    private var testingCredentials: List<TestingCredential> = emptyList()
-    private val _loginProgressVisible = MutableLiveData(false)
-    val loginProgressVisible: LiveData<Boolean> = _loginProgressVisible
-
-    private val _hasAccounts = MutableLiveData<Boolean>()
-    val hasAccounts: LiveData<Boolean> = _hasAccounts
-
-    private val _canLoginWithBiometrics = MutableLiveData<Boolean>()
-    val canLoginWithBiometrics: LiveData<Boolean> = _canLoginWithBiometrics
-    private val _autoCompleteData = MutableLiveData<Pair<List<String>, List<String>>>()
-    val autoCompleteData: LiveData<Pair<List<String>, List<String>>> = _autoCompleteData
-
-    init {
-        this.userManager?.let {
-            disposable.add(
-                it.isUserLoggedIn
-                    .subscribeOn(schedulers.io())
-                    .observeOn(schedulers.ui())
-                    .subscribe(
-                        { isUserLoggedIn ->
-                            val isSessionLocked =
-                                preferenceProvider.getBoolean(SESSION_LOCKED, false)
-                            if (isUserLoggedIn && !isSessionLocked) {
-                                view.startActivity(MainActivity::class.java, null, true, true, null)
-                            } else if (isSessionLocked) {
-                                view.showUnlockButton()
-                            }
-                            if (!isUserLoggedIn) {
-                                val serverUrl =
-                                    preferenceProvider.getString(
-                                        SECURE_SERVER_URL,
-                                        view.getDefaultServerProtocol(),
-                                    )
-                                val user = preferenceProvider.getString(SECURE_USER_NAME, "")
-                                if (!serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
-                                    setAccountInfo(serverUrl, user)
-                                } else {
-                                    setAccountInfo(view.getDefaultServerProtocol(), null)
-                                }
-                            }
-                        },
-                        { exception -> Timber.e(exception) },
-                    ),
-            )
-        } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
-        displayManageAccount()
-
-        viewModelScope.launch {
-            testingCredentials = repository.getTestingCredentials()
-            loadAutoCompleteData(testingCredentials)
-        }
-    }
-
-    private fun trackServerVersion() {
-        userManager
-            ?.d2
-            ?.systemInfoModule()
-            ?.systemInfo()
-            ?.blockingGet()
-            ?.version()
-            ?.let { analyticsHelper.trackMatomoEvent(USER_PROPERTY_SERVER, VERSION, it) }
-    }
-
-    fun checkServerInfoAndShowBiometricButton() {
-        userManager?.let { userManager ->
-            disposable.add(
-                Observable
-                    .just(getSystemInfoIfUserIsLogged(userManager))
-                    .subscribeOn(schedulers.io())
-                    .observeOn(schedulers.ui())
-                    .subscribe(
-                        { systemInfo ->
-                            setServerAndUserInfo(systemInfo.contextPath())
-                            checkBiometricVisibility()
-                        },
-                        { Timber.e(it) },
-                    ),
-            )
-        } ?: setAccountInfo(view.getDefaultServerProtocol(), null)
-    }
-
-    private fun setServerAndUserInfo(contextPath: String?) {
-        contextPath?.let {
-            setAccountInfo(it, userManager?.userName()?.blockingGet())
-        } ?: {
-            val isSessionLocked =
-                preferenceProvider.getBoolean(SESSION_LOCKED, false)
-            val serverUrl =
-                preferenceProvider.getString(
-                    SECURE_SERVER_URL,
-                    view.getDefaultServerProtocol(),
-                )
-            val user = preferenceProvider.getString(SECURE_USER_NAME, "")
-
-            if (!isSessionLocked && !serverUrl.isNullOrEmpty() && !user.isNullOrEmpty()) {
-                setAccountInfo(serverUrl, user)
-            } else {
-                setAccountInfo(view.getDefaultServerProtocol(), null)
-            }
-        }
-    }
-
-    private fun getSystemInfoIfUserIsLogged(userManager: UserManager): SystemInfo =
-        if (userManager.isUserLoggedIn.blockingFirst() &&
-            userManager.d2
-                .systemInfoModule()
-                .systemInfo()
-                .blockingGet() != null
-        ) {
-            userManager.d2
-                .systemInfoModule()
-                .systemInfo()
-                .blockingGet() ?: SystemInfo
-                .builder()
-                .build()
-        } else {
-            SystemInfo.builder().build()
-        }
-
-    fun checkBiometricVisibility() {
-        _canLoginWithBiometrics.value =
-            biometricAuthenticator.hasBiometric() &&
-            userManager
-                ?.d2
-                ?.userModule()
-                ?.accountManager()
-                ?.getAccounts()
-                ?.count() == 1 &&
-            preferenceProvider
-                .getString(SECURE_SERVER_URL)
-                ?.let { it == serverUrl.value } ?: false &&
-            (
-                preferenceProvider.contains(SECURE_PASS) ||
-                    cryptographyManager.isKeyReady()
-            )
-    }
-
-    fun onLoginButtonClick() {
-        try {
-            view.hideKeyboard()
-            analyticsHelper.setEvent(LOGIN, CLICK, LOGIN)
-            logIn()
-        } catch (throwable: Throwable) {
-            Timber.e(throwable)
-            handleError(throwable)
-        }
-    }
-
-    private fun logIn() {
-        _loginProgressVisible.postValue(true)
-        disposable.add(
-            Observable
-                .just(view.initLogin())
-                .flatMap { userManager ->
-                    LoginIdlingResource.increment()
-                    this.userManager = userManager
-                    userManager
-                        .logIn(
-                            userName.value!!.trim { it <= ' ' },
-                            password.value!!,
-                            serverUrl.value!!,
-                        ).map {
-                            run {
-                                with(preferenceProvider) {
-                                    setValue(SESSION_LOCKED, false)
-                                }
-                                deletePin()
-                                Result.success(null)
-                            }
-                        }
-                }.doOnError {
-                    LoginIdlingResource.decrement()
-                }.doOnTerminate {
-                    LoginIdlingResource.decrement()
-                    _loginProgressVisible.postValue(false)
-                }.subscribeOn(schedulers.io())
-                .observeOn(schedulers.ui())
-                .subscribe(
-                    this::handleResponse,
-                    this::handleError,
-                ),
-        )
-    }
 
     fun openIdLogin(config: OpenIDConnectConfig) {
         try {
@@ -281,7 +50,6 @@ class LoginViewModel(
             )
         } catch (throwable: Throwable) {
             Timber.e(throwable)
-            handleError(throwable)
         }
     }
 
@@ -305,28 +73,13 @@ class LoginViewModel(
                     }.subscribeOn(schedulers.io())
                     .observeOn(schedulers.ui())
                     .subscribe(
-                        this::handleResponse,
-                        this::handleError,
+                        {},
+                        { _ ->
+                            TODO("Move this to login module and pass server url")
+                        },
                     ),
             )
         }
-    }
-
-    private fun trackUserInfo() {
-        val serverVersion =
-            userManager
-                ?.d2
-                ?.systemInfoModule()
-                ?.systemInfo()
-                ?.blockingGet()
-                ?.version() ?: ""
-        crashReportController.trackServer(serverUrl.value, serverVersion)
-        crashReportController.trackUser(userName.value, serverUrl.value)
-    }
-
-    fun onQRClick() {
-        analyticsHelper.setEvent(SERVER_QR_SCANNER, CLICK, SERVER_QR_SCANNER)
-        view.navigateToQRActivity()
     }
 
     fun onDestroy() {
@@ -352,182 +105,6 @@ class LoginViewModel(
         }
     }
 
-    @VisibleForTesting
-    fun handleResponse(userResponse: Result<*>) {
-        if (userResponse.isSuccess) {
-            updateServerUrls()
-            updateLoginUsers()
-            val displayTrackingMessage = hasToDisplayTrackingMessage()
-            val isInitialSyncDone = syncIsPerformedInteractor.execute()
-            view.saveUsersData(displayTrackingMessage, isInitialSyncDone)
-        }
-    }
-
-    private fun updateServerUrls() {
-        (preferenceProvider.getSet(PREFS_URLS, HashSet()) as HashSet).apply {
-            serverUrl.value?.let {
-                if (!contains(it)) {
-                    add(it)
-                }
-                preferenceProvider.setValue(PREFS_URLS, this)
-            }
-        }
-    }
-
-    private fun updateLoginUsers() {
-        (preferenceProvider.getSet(PREFS_USERS, HashSet()) as HashSet).apply {
-            userName.value?.let {
-                if (!contains(it)) {
-                    add(it)
-                }
-                preferenceProvider.setValue(PREFS_USERS, this)
-            }
-        }
-    }
-
-    private fun handleError(throwable: Throwable) {
-        if (throwable is D2Error && throwable.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
-            userManager?.d2?.userModule()?.blockingLogOut()
-            logIn()
-        } else {
-            view.renderError(throwable)
-        }
-    }
-
-    private fun hasToDisplayTrackingMessage(): Boolean =
-        userManager
-            ?.d2
-            ?.dataStoreModule()
-            ?.localDataStore()
-            ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.blockingGet()
-            ?.value() == null
-
-    fun canEnableBiometric(): Boolean = biometricAuthenticator.hasBiometric() && !cryptographyManager.isKeyReady()
-
-    fun saveUserCredentials(
-        userPass: String? = null,
-        onDone: () -> Unit,
-    ) {
-        val serverUrl = serverUrl.value ?: ""
-        val userName = userName.value ?: ""
-        if (serverUrl.isEmpty() or userName.isEmpty()) return
-
-        if (!preferenceProvider.areSameCredentials(serverUrl, userName)) {
-            val pass = userPass ?: serverUrl
-            if (canEnableBiometric()) {
-                val cryptoObject =
-                    cryptographyManager.getInitializedCipherForEncryption()?.let { cipher ->
-                        BiometricPrompt.CryptoObject(cipher)
-                    }
-
-                biometricAuthenticator.authenticate({
-                    val ciphertextWrapper =
-                        cryptographyManager.encryptData(pass, it.cryptoObject?.cipher!!)
-                    preferenceProvider.saveUserCredentialsAndCipher(
-                        serverUrl,
-                        userName,
-                        ciphertextWrapper,
-                    )
-                    onDone()
-                }, cryptoObject)
-            }
-            preferenceProvider.saveUserCredentials(
-                serverUrl,
-                userName,
-                pass,
-            )
-        } else {
-            onDone()
-        }
-    }
-
-    fun authenticateWithBiometric() {
-        val ciphertextWrapper = preferenceProvider.getBiometricCredentials()
-        if (ciphertextWrapper != null) {
-            val cryptoObject =
-                cryptographyManager
-                    .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
-                    ?.let { cipher ->
-                        BiometricPrompt.CryptoObject(cipher)
-                    }
-            biometricAuthenticator.authenticate({
-                password.value =
-                    cryptographyManager.decryptData(
-                        ciphertextWrapper.ciphertext,
-                        it.cryptoObject?.cipher!!,
-                    )
-                logIn()
-            }, cryptoObject)
-        }
-    }
-
-    fun onAccountRecovery() {
-        if (network.isOnline()) {
-            analyticsHelper.setEvent(ACCOUNT_RECOVERY, CLICK, ACCOUNT_RECOVERY)
-            view.openAccountRecovery()
-        } else {
-            view.showNoConnectionDialog()
-        }
-    }
-
-    private fun loadAutoCompleteData(testingCredentials: List<TestingCredential>) {
-        val urls =
-            preferenceProvider.getSet(PREFS_URLS, emptySet())?.toMutableList() ?: mutableListOf()
-        val users =
-            preferenceProvider.getSet(PREFS_USERS, emptySet())?.toMutableList() ?: mutableListOf()
-
-        urls.let {
-            for (testingCredential in testingCredentials) {
-                if (!it.contains(testingCredential.server_url)) {
-                    it.add(testingCredential.server_url)
-                }
-            }
-
-            preferenceProvider.setValue(PREFS_URLS, HashSet(urls))
-        }
-
-        users.let {
-            if (!it.contains(USER_TEST_ANDROID)) {
-                it.add(USER_TEST_ANDROID)
-            }
-
-            preferenceProvider.setValue(PREFS_USERS, HashSet(users))
-        }
-
-        _autoCompleteData.value = Pair(urls, users)
-    }
-
-    fun displayManageAccount() {
-        val users =
-            userManager
-                ?.d2
-                ?.userModule()
-                ?.accountManager()
-                ?.getAccounts()
-                ?.count() ?: 0
-        _hasAccounts.value = (users >= 1)
-    }
-
-    fun onManageAccountClicked() {
-        viewModelScope.launch(dispatchers.io()) {
-            navigator.navigate(LoginScreenState.Accounts)
-        }
-    }
-
-    fun grantTrackingPermissions(granted: Boolean) {
-        userManager
-            ?.d2
-            ?.dataStoreModule()
-            ?.localDataStore()
-            ?.value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-            ?.blockingSet(granted.toString())
-        if (granted) {
-            trackServerVersion()
-            trackUserInfo()
-        }
-    }
-
     private fun deletePin() {
         userManager
             ?.d2
@@ -535,86 +112,6 @@ class LoginViewModel(
             ?.localDataStore()
             ?.value(PIN)
             ?.blockingDeleteIfExist()
-    }
-
-    companion object {
-        const val EMPTY_CREDENTIALS = "Empty credentials"
-        const val AUTH_ERROR = "AUTH ERROR"
-    }
-
-    fun onServerChanged(
-        serverUrl: CharSequence,
-        start: Int,
-        before: Int,
-        count: Int,
-    ) {
-        if (serverUrl.toString() != this.serverUrl.value) {
-            this.serverUrl.value = serverUrl.toString()
-            checkData()
-            if (this.serverUrl.value != null) {
-                checkTestingEnvironment(this.serverUrl.value!!)
-            }
-        }
-    }
-
-    fun onUserChanged(
-        userName: CharSequence,
-        start: Int,
-        before: Int,
-        count: Int,
-    ) {
-        LoginIdlingResource.increment()
-        if (userName.toString() != this.userName.value) {
-            this.userName.value = userName.toString()
-            checkData()
-        }
-        LoginIdlingResource.decrement()
-    }
-
-    fun onPassChanged(
-        password: CharSequence,
-        start: Int,
-        before: Int,
-        count: Int,
-    ) {
-        LoginIdlingResource.increment()
-        if (password.toString() != this.password.value) {
-            this.password.value = password.toString()
-            checkData()
-        }
-        LoginIdlingResource.decrement()
-    }
-
-    private fun checkData() {
-        val newValue =
-            !serverUrl.value.isNullOrEmpty() &&
-                !userName.value.isNullOrEmpty() &&
-                !password.value.isNullOrEmpty()
-        if (isDataComplete.value == null || isDataComplete.value != newValue) {
-            isDataComplete.value = newValue
-        }
-        checkBiometricVisibility()
-    }
-
-    private fun checkTestingEnvironment(serverUrl: String) {
-        testingCredentials.find { it.server_url == serverUrl }?.let { credentials ->
-            isTestingEnvironment.value =
-                Triple(
-                    serverUrl,
-                    credentials.user_name,
-                    credentials.user_pass,
-                )
-        }
-    }
-
-    fun setAccountInfo(
-        serverUrl: String?,
-        userName: String?,
-    ) {
-        this.serverUrl.value = serverUrl
-        this.userName.value = userName
-        view.setUrl(serverUrl)
-        view.setUser(userName)
     }
 
     fun onImportDataBase(file: File) {
@@ -638,22 +135,13 @@ class LoginViewModel(
 
                 result.fold(
                     onSuccess = {
-                        setAccountInfo(it.serverUrl, it.username)
-                        displayManageAccount()
                         view.displayMessage(resourceManager.getString(R.string.importing_successful))
                     },
                     onFailure = {
                         view.displayMessage(resourceManager.parseD2Error(it))
                     },
                 )
-
-                view.onDbImportFinished(result.isSuccess)
             }
         }
     }
-
-    fun shouldAskForBiometrics(): Boolean =
-        biometricAuthenticator.hasBiometric() &&
-            !preferenceProvider.areCredentialsSet() &&
-            hasAccounts.value == false
 }

@@ -15,6 +15,12 @@ interface Navigator {
     )
 
     suspend fun navigateUp()
+
+    suspend fun navigateToHome()
+
+    suspend fun navigateToSync()
+
+    suspend fun navigateToPrivacyPolicy()
 }
 
 class DefaultNavigator : Navigator {
@@ -35,5 +41,17 @@ class DefaultNavigator : Navigator {
 
     override suspend fun navigateUp() {
         _navigationActions.send(NavigationAction.NavigateUp)
+    }
+
+    override suspend fun navigateToHome() {
+        _navigationActions.send(NavigationAction.NavigateToHome)
+    }
+
+    override suspend fun navigateToSync() {
+        _navigationActions.send(NavigationAction.NavigateToSync)
+    }
+
+    override suspend fun navigateToPrivacyPolicy() {
+        _navigationActions.send(NavigationAction.NavigateToPrivacyPolicy)
     }
 }

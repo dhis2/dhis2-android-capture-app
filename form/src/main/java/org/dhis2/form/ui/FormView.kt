@@ -97,8 +97,7 @@ class FormView : Fragment() {
 
     private val mapContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == RESULT_OK && it.data?.extras != null
-            ) {
+            if (it.resultCode == RESULT_OK && it.data?.extras != null) {
                 val uid = it.data?.getStringExtra(FIELD_UID)
                 val featureType = it.data?.getStringExtra(LOCATION_TYPE_EXTRA)
                 val coordinates = it.data?.getStringExtra(DATA_EXTRA)
