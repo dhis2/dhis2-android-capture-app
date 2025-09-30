@@ -50,7 +50,7 @@ class DataSetTest : BaseTest() {
         )
 
         tableIsVisible()
-
+        checkImmunizationTableIsDisplayed()
         syncButtonIsAvailableStep()
         checkIndicatorsStep()
         checkTotals()
@@ -631,6 +631,13 @@ class DataSetTest : BaseTest() {
         }
     }
 
+    private suspend fun checkImmunizationTableIsDisplayed() {
+        composeTestRule.awaitIdle()
+        dataSetTableRobot(composeTestRule) {
+            assertImmunizationTableIsDisplayed()
+        }
+    }
+
     private suspend fun syncButtonIsAvailableStep() {
         composeTestRule.awaitIdle()
         dataSetTableRobot(composeTestRule) {
@@ -720,7 +727,7 @@ class DataSetTest : BaseTest() {
         dataSetDetailRobot(composeTestRule) {
             clickOnDataSetAtPosition(0)
         }
-        tableIsVisible()
+        checkImmunizationTableIsDisplayed()
 
         dataSetTableRobot(composeTestRule) {
             assertCellHasValue("dzjKKQq0cSO", cell00Id, "12")

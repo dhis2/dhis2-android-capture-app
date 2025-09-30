@@ -126,7 +126,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
 
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN")
-            .performScrollToNode(hasText("Moderate malnutrition rate", true))
+            .performScrollToNode(hasText("Moderate malnutrition rate", false))
         composeTestRule.onNodeWithText("Moderate malnutrition rate", useUnmergedTree = true)
             .assertIsDisplayed()
 
@@ -245,6 +245,14 @@ internal class DataSetTableRobot(
         composeTestRule.waitUntilExactlyOneExists(
             hasTestTag("TABLE_SCROLLABLE_COLUMN"),
             timeoutMillis = 3000
+        )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun assertImmunizationTableIsDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Fixed"),
+            timeoutMillis = 5000
         )
     }
 
