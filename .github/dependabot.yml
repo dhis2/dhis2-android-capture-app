@@ -15,26 +15,12 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
-      # Ignore development versions with + in the version number
+      # Ignore development versions with +dev suffix for all dependencies
       - dependency-name: "*"
-        versions: ["*+*"]
-      # Ignore common pre-release version patterns
-      - dependency-name: "*"
-        versions: ["*-SNAPSHOT", "*-alpha*", "*-beta*", "*-rc*", "*-RC*", "*-M*"]
-      # Ignore specific JetBrains Compose dev versions
-      - dependency-name: "org.jetbrains.compose*"
-        versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
-      - dependency-name: "org.jetbrains.androidx.*"
-        versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
-      - dependency-name: "org.jetbrains.compose.*"
-        versions: ["*+dev*", "*-dev*", "*dev*", "*+*"]
+        versions: [">= 0.0.0+dev"]
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
       - dependency-name: "org.hisp.dhis:android-core"
-        update-types:
-          - "version-update:semver-major"
-          - "version-update:semver-minor"
-          - "version-update:semver-patch"
     groups:
       gradle-updates:
         patterns:
