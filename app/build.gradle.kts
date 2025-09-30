@@ -2,7 +2,6 @@
 
 import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -32,12 +31,15 @@ android {
 
     val getCommitHash by extra {
         fun(): String {
-            val stdout = ByteArrayOutputStream()
-            exec {
-                commandLine("git", "rev-parse", "--short", "HEAD")
-                standardOutput = stdout
+            return try {
+                val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                    .redirectError(ProcessBuilder.Redirect.PIPE)
+                    .start()
+                process.inputStream.bufferedReader().readText().trim()
+            } catch (e: Exception) {
+                "unknown"
             }
-            return stdout.toString().trim()
         }
     }
 
@@ -243,6 +245,7 @@ kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
         freeCompilerArgs.add("-Xcontext-parameters")
+        freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
 }
 

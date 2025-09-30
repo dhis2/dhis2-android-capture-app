@@ -53,7 +53,8 @@ sonarqube {
 allprojects {
     configurations.all {
         resolutionStrategy {
-            cacheDynamicVersionsFor(0, TimeUnit.SECONDS)
+            cacheDynamicVersionsFor(10, TimeUnit.MINUTES)
+            cacheChangingModulesFor(0, TimeUnit.SECONDS)
             eachDependency {
                 if (requested.group == "org.jacoco")
                     useVersion("0.8.10")
