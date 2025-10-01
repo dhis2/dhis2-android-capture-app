@@ -2,13 +2,23 @@
 <resources>
     <string name="input_age_date_of_birth">जन्म तिथि</string>
     <string name="input_age">आयु</string>
+    <string name="input_age_or">या</string>
+    <string name="input_action_accept">स्वीकार करें</string>
     <string name="input_action_cancel">रद्द करें</string>
+    <string name="no_results_found">कोई परिणाम नहीं मिला</string>
+    <string name="search_to_find_more">खोजें और अधिक पाएं</string>
     <string name="action_done">पूरा हुआ</string>
+    <string name="input_coordinate_add_location">लोकेशन</string>
+    <string name="completion_dialog_title">सब ठीक है</string>
+    <string name="validation_success_title">सब ठीक है</string>
     <string name="not_now">अभी नहीं</string>
+    <string name="complete">पूरा हुआ</string>
     <string name="ok">ठीक है</string>
     <string name="no">नहीं</string>
     <string name="yes">हाँ</string>
     <string name="error">त्रुटि</string>
     <string name="review">रिव्यू</string>
     <string name="action_next">आगे</string>
+    <string name="add_file">फ़ाइल जोड़ें</string>
+    <string name="add_image">इमेज जोड़ें</string>
     </resources>

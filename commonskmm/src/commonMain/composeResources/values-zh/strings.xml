@@ -202,6 +202,9 @@
     <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
     <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
     <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
+    <string name="database_import_failed">数据库导入失败</string>
+    <string name="invalid_file">无效文件</string>
+    <string name="not_in_totp_2fa_enrollment_mode">未进入 TOTP 2FA 注册模式</string>
     <!--*******************->
        END OF D2 Error Messages
     **********************-->

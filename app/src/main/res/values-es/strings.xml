@@ -34,11 +34,7 @@
     <string name="sync_error_title">Error en sincronizacion</string>
     <string name="sync_error_text">La sincronizacion ha fallado. Intentelo de nuevo.</string>
     <string name="sync_incomplete_error_text">La sincronización ha terminado pero no se ha recibido confirmación del servidor en algunos rescursos. Éstos estarán marcados como \"no sincronizados\" en la App. Recomendamos reintentar la sincronización.</string>
-    <string name="metadata_sync_error">ERROR: algo ha ido mal al sincronizar. Si tiene Internet, pruebe de nuevo. Si sigue fallando, contacte al administrador del sistema.</string>
-    <string name="data_sync_warning">WARNING: la mayoría de ess datos se han sincronizado, pero algunos generaron conflictos. Sincronice su configuración y pruebe otra vez. Para revisar el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @ </string>
     <string name="data_sync_warning_program">WARNING: la mayoría de sus datos se han sincronizado, pero algunos generaron conflictos. Sincronice su configuración y pruebe otra vez. Si el error persiste, revise el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @</string>
-    <string name="data_sync_error">ERROR: algunos de sus datos fallaron al sincronizar. Revise su estado de sincronización: los programas con errores están marcados como @, TEIs y eventos como $  </string>
-    <string name="data_sync_error_program">ERROR: algunos de tus datos fallaron al sincronizar. Revise su estado de sincronización:  TEIs y eventos con errores están marcados como $</string>
     <string name="server_sync_error">Hubo un error y el serivdor no respondío. Contacte su administrador.</string>
 
     <string name="search_result_text">%s resultados</string>
@@ -218,7 +214,6 @@
         <item quantity="many">Hay %s programas con configuraciones específicas</item>
         <item quantity="other">Hay %s programas con configuraciones específicas</item>
     </plurals>
-    <string name="settings_sync_period">Periodo de sincronización</string>
     <string name="settings_limit_scope">Configuración limitada</string>
     <string name="settings_limit_globally">Globalmente</string>
     <string name="settings_limit_program">por programa</string>
@@ -245,6 +240,7 @@
     <string name="settingsExportDB">Exportar base de datos</string>
     <string name="settingsExportDBMessage">Exporta tu base de datos y compártela con tu administrador</string>
     <string name="settingTwoFA">Autenticación de dos factores</string>
+    <string name="settingsTwoFAStatus">Estado</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Fecha de inscripción</string>
