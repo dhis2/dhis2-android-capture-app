@@ -13,6 +13,7 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import org.dhis2.R
 import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.date.DateUtils
@@ -172,6 +173,22 @@ class TEIEventCardMapper(
                         resourceManager
                             .getString(R.string.at_enroll_org_unit)
                             .format(eventOrgUnit),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.WARNING.color,
+                ),
+            )
+            list.add(
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Block,
+                            contentDescription = "no_access_to_org_unit",
+                            tint = Color.Transparent,
+                        )
+                    },
+                    value =
+                        resourceManager
+                            .getString(R.string.no_access_to_it),
                     isConstantItem = true,
                     color = AdditionalInfoItemColor.WARNING.color,
                 ),
