@@ -42,7 +42,7 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
     }
 
     private fun loadCustomIcons() {
-        binding!!.forceCustomIcon.setOnClickListener { view: View? ->
+        binding!!.forceCustomIcon.setOnClickListener { _: View? ->
             val d2: D2 = D2Manager.getD2()
             val fileResource =
                 d2
@@ -97,7 +97,7 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
                 .eq(ValueType.MULTI_TEXT)
                 .blockingIsEmpty()
         binding!!.multitext.text = if (hasMultiText) "REVERT" else "FORCE MULTITEXT"
-        binding!!.multitext.setOnClickListener { view: View? ->
+        binding!!.multitext.setOnClickListener { _: View? ->
             if (hasMultiText) {
                 runBlocking {
                     d2.databaseAdapter().execSQL(
@@ -115,11 +115,11 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
     }
 
     private fun loadConflicts() {
-        binding!!.addConflicts.setOnClickListener { view: View? ->
+        binding!!.addConflicts.setOnClickListener { _: View? ->
             val d2: D2 = D2Manager.getD2()
             ConflictGenerator(d2).generate()
         }
-        binding!!.clearConflicts.setOnClickListener { view: View? ->
+        binding!!.clearConflicts.setOnClickListener { _: View? ->
             val d2: D2 = D2Manager.getD2()
             ConflictGenerator(d2).clear()
         }
@@ -154,11 +154,11 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
             )
         count = 0
 
-        binding!!.iconButton.setOnClickListener { view: View? ->
+        binding!!.iconButton.setOnClickListener { _: View? ->
             nextDrawable()
         }
 
-        binding!!.automaticErrorCheck.setOnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
+        binding!!.automaticErrorCheck.setOnCheckedChangeListener { _: CompoundButton?, isChecked: Boolean ->
             if (isChecked) nextDrawable()
         }
 
@@ -259,13 +259,13 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
     }
 
     private fun loadCrashControl() {
-        binding!!.crashButton.setOnClickListener { view: View? ->
+        binding!!.crashButton.setOnClickListener { _: View? ->
             throw IllegalArgumentException("KA BOOOOOM!")
         }
     }
 
     private fun loadFeatureConfig() {
-        binding!!.featureConfigButton.setOnClickListener { view: View? ->
+        binding!!.featureConfigButton.setOnClickListener { _: View? ->
             startActivity(
                 FeatureConfigView::class.java,
                 null,
@@ -275,10 +275,4 @@ class DevelopmentActivity : ActivityGlobalAbstract() {
             )
         }
     }
-
-//    override fun onBackPressed() {
-//        super.onBackPressed()
-//        setResult(RESULT_OK)
-//        finish()
-//    }
 }

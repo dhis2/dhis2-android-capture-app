@@ -50,14 +50,14 @@ class QRCodeGenerator(
         GsonBuilder().setDateFormat(DateUtils.DATABASE_FORMAT_EXPRESSION).create()
 
     override fun teiQRs(teiUid: String): Observable<List<QrViewModel>> {
-        val bitmaps: MutableList<QrViewModel> = ArrayList()
+        var bitmaps: MutableList<QrViewModel> = ArrayList()
 
         return d2
             .trackedEntityModule()
             .trackedEntityInstances()
             .uid(teiUid)
             .get()
-            .map<Boolean>(
+            .map(
                 Function { data: TrackedEntityInstance? ->
                     bitmaps.add(
                         QrViewModel(
@@ -67,7 +67,7 @@ class QRCodeGenerator(
                     )
                 },
             ).flatMap(
-                Function<Boolean, SingleSource<out List<TrackedEntityAttributeValue>>> { data: Boolean? ->
+                Function<Boolean, SingleSource<out List<TrackedEntityAttributeValue>>> { _: Boolean? ->
                     d2
                         .trackedEntityModule()
                         .trackedEntityAttributeValues()
@@ -77,25 +77,12 @@ class QRCodeGenerator(
                 },
             ).map(
                 Function { data: List<TrackedEntityAttributeValue> ->
-                    val arrayListAux = ArrayList<TrackedEntityAttributeValue>()
                     // DIVIDE ATTR QR GENERATION -> 1 QR PER 2 ATTR
-                    var count = 0
-                    for (i in data.indices) {
-                        arrayListAux.add(data[i])
-                        if (count == 1) {
-                            count = 0
-                            bitmaps.add(QrViewModel(QRjson.ATTR_JSON, gson.toJson(arrayListAux)))
-                            arrayListAux.clear()
-                        } else if (i == data.size - 1) {
-                            bitmaps.add(QrViewModel(QRjson.ATTR_JSON, gson.toJson(arrayListAux)))
-                        } else {
-                            count++
-                        }
-                    }
+                    bitmaps = divideAttributesInQrGeneration(bitmaps, data)
                     true
                 },
             ).flatMap(
-                Function<Boolean, SingleSource<out List<Enrollment>>> { data: Boolean? ->
+                Function<Boolean, SingleSource<out List<Enrollment>>> { _: Boolean? ->
                     d2
                         .enrollmentModule()
                         .enrollments()
@@ -105,31 +92,9 @@ class QRCodeGenerator(
                 },
             ).map(
                 Function { data: List<Enrollment> ->
-                    val arrayListAux = ArrayList<Enrollment>()
                     // DIVIDE ENROLLMENT QR GENERATION -> 1 QR PER 2 ENROLLMENT
-                    var count = 0
-                    for (i in data.indices) {
-                        arrayListAux.add(data[i])
-                        if (count == 1) {
-                            count = 0
-                            bitmaps.add(
-                                QrViewModel(
-                                    QRjson.ENROLLMENT_JSON,
-                                    gson.toJson(arrayListAux),
-                                ),
-                            )
-                            arrayListAux.clear()
-                        } else if (i == data.size - 1) {
-                            bitmaps.add(
-                                QrViewModel(
-                                    QRjson.ENROLLMENT_JSON,
-                                    gson.toJson(arrayListAux),
-                                ),
-                            )
-                        } else {
-                            count++
-                        }
-                    }
+                    bitmaps = divideEnrollmentsInQrGeneration(bitmaps, data)
+
                     data
                 },
             ).toObservable()
@@ -192,7 +157,7 @@ class QRCodeGenerator(
                         },
                     )
                 },
-            ).map(Function<Boolean, List<QrViewModel>> { data: Boolean? -> bitmaps })
+            ).map(Function<Boolean, List<QrViewModel>> { _: Boolean? -> bitmaps })
     }
 
     override fun eventWORegistrationQRs(eventUid: String): Observable<List<QrViewModel>> {
@@ -247,7 +212,7 @@ class QRCodeGenerator(
                     true
                 },
             ).toObservable()
-            .map(Function<Boolean, List<QrViewModel>> { data: Boolean? -> bitmaps })
+            .map(Function<Boolean, List<QrViewModel>> { _: Boolean? -> bitmaps })
     }
 
     private fun decodeData(data: String): String {
@@ -269,42 +234,20 @@ class QRCodeGenerator(
     override fun setData(inputData: String): Observable<Boolean> =
         Observable
             .fromCallable(Callable { decompress(decodeData(inputData).toByteArray()) })
-            .map(Function { data: String -> getTEIInfo(data) })
-
-    private fun getTEIInfo(formattedData: String): Boolean {
-        val initialString = TEI_PATTERN.matcher(formattedData).group(1)
-        val teiSubstring = initialString!!.substring(0, initialString.indexOf(ENROLLMENT_FLAG))
-
-        val teiSubstringSplit =
-            teiSubstring.split("|".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
-        /*    TrackedEntityInstance tei = TrackedEntityInstance.builder() TODO: UPDATE QR GENERATION WITH SMS LIBRARY
-                .uid(tei_substring_split[0])
-                .created(*/
-
-        // DateUtils.databaseDateFormat().parse(teiSubstring[1])
-
-        /*new Date())
-                .organisationUnit(tei_substring_split[2])
-                .trackedEntityType(tei_substring_split[3])
-                .coordinates(!isEmpty(tei_substring_split[5]) ? tei_substring_split[5] : null)
-                .state(State.valueOf(tei_substring_split[6]))
-                .build();*/
-        return true
-    }
+            .map(Function { _: String -> true })
 
     fun compress(dataToCompress: String): ByteArray {
         val input = dataToCompress.toByteArray(StandardCharsets.UTF_8)
-        val compresser = Deflater(Deflater.BEST_COMPRESSION)
-        compresser.setInput(input)
-        compresser.finish()
+        val compressor = Deflater(Deflater.BEST_COMPRESSION)
+        compressor.setInput(input)
+        compressor.finish()
         val baos = ByteArrayOutputStream()
         val buf = ByteArray(8192)
-        while (!compresser.finished()) {
-            val byteCount = compresser.deflate(buf)
+        while (!compressor.finished()) {
+            val byteCount = compressor.deflate(buf)
             baos.write(buf, 0, byteCount)
         }
-        compresser.end()
+        compressor.end()
         return baos.toByteArray()
     }
 
@@ -438,7 +381,7 @@ class QRCodeGenerator(
                 ""
             },
         )
-        data.add(if (event.state() != null) event.state()!!.name else "")
+        data.add(if (event.aggregatedSyncState() != null) event.aggregatedSyncState()?.name else "")
         data.add(event.organisationUnit())
 
         return TextUtils.join("|", data)
@@ -451,10 +394,7 @@ class QRCodeGenerator(
         data.add(tei.organisationUnit())
         data.add(tei.trackedEntityType())
 
-        /*    data.add(tei.featureType() != null ? tei.featureType().name() : "");
-        data.add(tei.coordinates() != null ? tei.coordinates() : "");*/
-
-        data.add(if (tei.state() != null) tei.state()!!.name else "")
+        data.add(if (tei.aggregatedSyncState() != null) tei.aggregatedSyncState()!!.name else "")
         return TextUtils.join("|", data)
     }
 
@@ -481,10 +421,7 @@ class QRCodeGenerator(
         data.add(if (enrollment.followUp()!!) "t" else "f")
         data.add(enrollment.status()!!.name)
 
-        /* data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().latitude()) : "");
-        data.add(enrollment.coordinate() != null ? String.valueOf(enrollment.coordinate().longitude()) : "");*/
-
-        data.add(enrollment.state()!!.name)
+        data.add(enrollment.aggregatedSyncState()!!.name)
         return TextUtils.join("|", data)
     }
 
@@ -554,7 +491,7 @@ class QRCodeGenerator(
                             .coordinates(data[5])
                             .build()
                     },
-                ).state(State.valueOf(data[6]))
+                ).aggregatedSyncState(State.valueOf(data[6]))
                 .build()
 
         runBlocking { d2.databaseAdapter().upsertObject(tei, TrackedEntityInstance::class) }
@@ -581,7 +518,7 @@ class QRCodeGenerator(
             Timber.e(e)
         }
 
-        if (!data[5].isEmpty()) {
+        if (data[5].isNotEmpty()) {
             try {
                 incidentDate = DateUtils.databaseDateFormat().parse(data[5])
             } catch (e: ParseException) {
@@ -615,7 +552,7 @@ class QRCodeGenerator(
                                     .toString(),
                             ).build()
                     },
-                ).state(State.valueOf(data[10]))
+                ).aggregatedSyncState(State.valueOf(data[10]))
                 .trackedEntityInstance(tei.uid())
                 .build()
 
@@ -657,21 +594,21 @@ class QRCodeGenerator(
         } catch (e: ParseException) {
             Timber.e(e)
         }
-        if (!data[7].isEmpty()) {
+        if (data[7].isNotEmpty()) {
             try {
                 eventDate = DateUtils.databaseDateFormat().parse(data[7])
             } catch (e: ParseException) {
                 Timber.e(e)
             }
         }
-        if (!data[8].isEmpty()) {
+        if (data[8].isNotEmpty()) {
             try {
                 completeDate = DateUtils.databaseDateFormat().parse(data[8])
             } catch (e: ParseException) {
                 Timber.e(e)
             }
         }
-        if (!data[9].isEmpty()) {
+        if (data[9].isNotEmpty()) {
             try {
                 dueDate = DateUtils.databaseDateFormat().parse(data[9])
             } catch (e: ParseException) {
@@ -689,7 +626,7 @@ class QRCodeGenerator(
                         null
                     } else {
                         Geometry
-                            .builder() // TODO: CHANGE TO SUPPORT ALL FEATYRE TYPES
+                            .builder() // TODO: CHANGE TO SUPPORT ALL FEATURE TYPES
                             .type(FeatureType.POINT)
                             .coordinates(
                                 Coordinates
@@ -705,7 +642,7 @@ class QRCodeGenerator(
                 .dueDate(dueDate)
                 .enrollment(enrollment.uid())
                 .lastUpdated(Calendar.getInstance().time)
-                .state(State.valueOf(data[10]))
+                .aggregatedSyncState(State.valueOf(data[10]))
                 .build()
 
         runBlocking { d2.databaseAdapter().upsertObject(event, Event::class) }
@@ -788,4 +725,47 @@ class QRCodeGenerator(
             return bitmap
         }
     }
+}
+
+private fun divideEnrollmentsInQrGeneration(
+    bitmaps: MutableList<QrViewModel>,
+    data: List<Enrollment>,
+): MutableList<QrViewModel> {
+    val arrayListAux = ArrayList<Enrollment>()
+    var count = 0
+    for (i in data.indices) {
+        arrayListAux.add(data[i])
+        if (count == 1) {
+            count = 0
+            bitmaps.add(QrViewModel(QRjson.ENROLLMENT_JSON, Gson().toJson(arrayListAux)))
+            arrayListAux.clear()
+        } else if (i == data.size - 1) {
+            bitmaps.add(QrViewModel(QRjson.ENROLLMENT_JSON, Gson().toJson(arrayListAux)))
+        } else {
+            count++
+        }
+    }
+    return bitmaps
+}
+
+private fun divideAttributesInQrGeneration(
+    bitmaps: MutableList<QrViewModel>,
+    data: List<TrackedEntityAttributeValue>,
+): MutableList<QrViewModel> {
+    val arrayListAux = ArrayList<TrackedEntityAttributeValue>()
+
+    var count = 0
+    for (i in data.indices) {
+        arrayListAux.add(data[i])
+        if (count == 1) {
+            count = 0
+            bitmaps.add(QrViewModel(QRjson.ATTR_JSON, Gson().toJson(arrayListAux)))
+            arrayListAux.clear()
+        } else if (i == data.size - 1) {
+            bitmaps.add(QrViewModel(QRjson.ATTR_JSON, Gson().toJson(arrayListAux)))
+        } else {
+            count++
+        }
+    }
+    return bitmaps
 }
