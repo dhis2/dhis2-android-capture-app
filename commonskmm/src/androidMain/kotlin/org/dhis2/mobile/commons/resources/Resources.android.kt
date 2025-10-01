@@ -17,9 +17,9 @@ actual fun getDrawableResource(name: String): Painter? {
         try {
             context.resources.getIdentifier(resName, "drawable", pkg)
         } catch (_: Exception) {
-            -1
+            0
         }
 
     val resource = getResource(appPackage, name)
-    return if (resource != -1) painterResource(resource) else null
+    return if (resource != 0) painterResource(resource) else null
 }

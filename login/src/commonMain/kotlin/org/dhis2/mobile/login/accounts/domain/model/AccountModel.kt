@@ -3,7 +3,7 @@ package org.dhis2.mobile.login.accounts.domain.model
 data class AccountModel(
     val name: String,
     val serverUrl: String,
-    val serverName: String?,
+    val serverName: String,
     val serverDescription: String?,
     var serverFlag: String?,
     val allowRecovery: Boolean,
