@@ -104,6 +104,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String currentProgram;
     private final Charts charts;
     private final CrashReportController crashReportController;
+    private DateUtils dateUtils;
     private final NetworkUtils networkUtils;
     private final SearchTEIRepository searchTEIRepository;
     private TrackedEntityInstanceDownloader downloadRepository = null;
@@ -135,7 +136,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          SearchTEIRepository searchTEIRepository,
                          ThemeManager themeManager,
                          MetadataIconProvider metadataIconProvider,
-                         ProfilePictureProvider profilePictureProvider
+                         ProfilePictureProvider profilePictureProvider,
+                         DateUtils dateUtils
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -145,6 +147,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
+        this.dateUtils = dateUtils;
         this.currentProgram = initialProgram;
         this.networkUtils = networkUtils;
         this.searchTEIRepository = searchTEIRepository;
@@ -329,7 +332,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                                         .organisationUnit(orgUnit)
                                         .build())
                         .map(enrollmentUid -> {
-                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(DateUtils.getInstance().getStartOfDay(new Date()));
+                            d2.enrollmentModule().enrollments().uid(enrollmentUid).setEnrollmentDate(dateUtils.getStartOfDay(new Date()));
                             d2.enrollmentModule().enrollments().uid(enrollmentUid).setFollowUp(false);
                             return new Pair<>(enrollmentUid, uid);
                         })
@@ -417,17 +420,44 @@ public class SearchRepositoryImpl implements SearchRepository {
         String teiId = tei.getTei() != null && tei.getTei().uid() != null ? tei.getTei().uid() : "";
         List<Enrollment> enrollments = d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(teiId).blockingGet();
 
-        EventCollectionRepository overdueEvents = d2.eventModule().events().byEnrollmentUid().in(UidsHelper.getUidsList(enrollments)).byStatus().eq(EventStatus.OVERDUE);
+        EventCollectionRepository overdueEvents = d2.eventModule().events()
+                .byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
+                .byStatus().eq(EventStatus.OVERDUE);
+
+        EventCollectionRepository overdueScheduledEvents = d2.eventModule().events()
+                .byEnrollmentUid().in(UidsHelper.getUidsList(enrollments))
+                .byStatus().eq(EventStatus.SCHEDULE);
 
         if (selectedProgram != null) {
             overdueEvents = overdueEvents.byProgramUid().eq(selectedProgram.uid());
+            overdueScheduledEvents = overdueScheduledEvents.byProgramUid().eq(selectedProgram.uid());
         }
 
         List<Event> overdueList = overdueEvents.orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
+        List<Event> scheduledList = overdueScheduledEvents.orderByDueDate(RepositoryScope.OrderByDirection.DESC).blockingGet();
 
-        if (!overdueList.isEmpty()) {
+        List<Event> filteredScheduled = new ArrayList<>();
+        for (Event event : scheduledList) {
+            if (Boolean.TRUE.equals(dateUtils.isEventDueDateOverdue(event.dueDate()))) {
+                filteredScheduled.add(event);
+            }
+        }
+
+        for (Event event : overdueList) {
+            if (Boolean.TRUE.equals(dateUtils.isEventDueDateOverdue(event.dueDate()))) {
+                filteredScheduled.add(event);
+            }
+        }
+
+        List<Event> combinedOverdue = new ArrayList<>(filteredScheduled);
+
+        if (!combinedOverdue.isEmpty()) {
+            combinedOverdue.sort((e1, e2) -> {
+                if (e1.dueDate() == null || e2.dueDate() == null) return 0;
+                return e2.dueDate().compareTo(e1.dueDate());
+            });
             tei.setHasOverdue(true);
-            tei.setOverdueDate(overdueList.get(0).dueDate());
+            tei.setOverdueDate(combinedOverdue.get(0).dueDate());
         }
     }
 
@@ -965,8 +995,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .byProgramUids(Collections.singletonList(currentProgram))
                 .blockingCount() > 1;
     }
+
     private static final String OPTION_SET_REGEX = "_os_";
 
-    }
+}
 
 
