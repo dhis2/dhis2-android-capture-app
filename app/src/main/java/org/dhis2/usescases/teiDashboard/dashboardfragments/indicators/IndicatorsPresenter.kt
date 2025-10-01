@@ -1,5 +1,6 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.indicators
 
+import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import dhis2.org.analytics.charts.ui.ChartFilter
 import dhis2.org.analytics.charts.ui.ChartModel
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
@@ -20,6 +21,8 @@ class IndicatorsPresenter(
     val publishProcessor = PublishProcessor.create<Unit>()
 
     fun init() {
+        AnalyticsCountingIdlingResource.increment()
+
         compositeDisposable.add(
             publishProcessor
                 .startWith(Unit)

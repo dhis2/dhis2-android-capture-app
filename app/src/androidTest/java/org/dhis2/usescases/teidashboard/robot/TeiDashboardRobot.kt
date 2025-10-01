@@ -82,7 +82,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithText(
             InstrumentationRegistry.getInstrumentation().targetContext.getString(
                 R.string.navigation_analytics
-            )
+            ),
+            useUnmergedTree = true,
         ).performClick()
         Thread.sleep(500)
     }

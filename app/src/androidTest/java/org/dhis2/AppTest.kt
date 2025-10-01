@@ -23,14 +23,14 @@ class AppTest : App() {
     val mutableWorkInfoStatuses = MutableLiveData<List<WorkInfo>>()
 
     fun restoreDB() {
-        TestingInjector.provideDBImporter(applicationContext).apply {
-            copyDatabaseFromAssetsIfNeeded(true)
-        }
-        setUpServerComponent()
+
     }
 
     @Override
     override fun setUpServerComponent() {
+        TestingInjector.provideDBImporter(applicationContext).apply {
+            copyDatabaseFromAssetsIfNeeded(true)
+        }
         D2Manager.setTestingDatabase(MOCK_SERVER_URL, DB_TO_IMPORT, USERNAME)
         val keystoreRobot = TestingInjector.providesKeyStoreRobot(applicationContext)
         keystoreRobot.apply {

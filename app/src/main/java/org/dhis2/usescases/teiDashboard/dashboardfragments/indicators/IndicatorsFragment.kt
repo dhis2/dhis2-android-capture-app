@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import dhis2.org.analytics.charts.extensions.isNotCurrent
+import dhis2.org.analytics.charts.idling.AnalyticsCountingIdlingResource
 import dhis2.org.analytics.charts.ui.AnalyticsAdapter
 import dhis2.org.analytics.charts.ui.AnalyticsModel
 import dhis2.org.analytics.charts.ui.ChartModel
@@ -119,6 +120,7 @@ class IndicatorsFragment :
         } else {
             binding.emptyIndicators.visibility = View.VISIBLE
         }
+        AnalyticsCountingIdlingResource.decrement()
     }
 
     private fun showAlertDialogCurrentPeriod(
