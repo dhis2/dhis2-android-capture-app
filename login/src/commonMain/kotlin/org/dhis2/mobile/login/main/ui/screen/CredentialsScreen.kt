@@ -503,7 +503,7 @@ fun TrackingPermissionDialog(
         uiState =
             BottomSheetShellUIState(
                 title = stringResource(Res.string.tracking_title),
-                showTopSectionDivider = true,
+                showTopSectionDivider = false,
                 showBottomSectionDivider = true,
                 headerTextAlignment = TextAlign.Start,
             ),
