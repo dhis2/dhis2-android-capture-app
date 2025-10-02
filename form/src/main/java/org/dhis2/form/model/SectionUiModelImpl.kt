@@ -38,7 +38,7 @@ data class SectionUiModelImpl(
     var rendering: String? = null,
     var selectedField: ObservableField<String?> = ObservableField(null),
     override val isLoadingData: Boolean = false,
-    override var optionSetConfiguration: OptionSetConfiguration? = null,
+    override val optionSetConfiguration: OptionSetConfiguration? = null,
     override val autocompleteList: List<String>? = null,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
@@ -123,6 +123,9 @@ data class SectionUiModelImpl(
     override fun setWarning(warning: String) = this.copy(warning = warning)
 
     override fun setFieldMandatory() = this.copy(mandatory = true)
+
+    override fun setOptionSetConfiguration(optionSetConfiguration: OptionSetConfiguration) =
+        this.copy(optionSetConfiguration = optionSetConfiguration)
 
     override fun isSectionWithFields() = totalFields > 0
 

@@ -104,7 +104,7 @@ fun FieldProvider(
     }
 
     when {
-        fieldUiModel.optionSet != null ->
+        fieldUiModel.optionSet != null && fieldUiModel.valueType != ValueType.MULTI_TEXT ->
             ProvideByOptionSet(
                 modifier = modifierWithFocus,
                 inputStyle = inputStyle,

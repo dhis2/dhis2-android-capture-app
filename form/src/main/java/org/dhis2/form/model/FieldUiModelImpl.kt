@@ -29,7 +29,7 @@ data class FieldUiModelImpl(
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
     override val isLoadingData: Boolean = false,
-    override var optionSetConfiguration: OptionSetConfiguration?,
+    override val optionSetConfiguration: OptionSetConfiguration?,
     override var autocompleteList: List<String>?,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
@@ -104,6 +104,9 @@ data class FieldUiModelImpl(
 
     override fun setFieldMandatory() = this.copy(mandatory = true)
 
+    override fun setOptionSetConfiguration(optionSetConfiguration: OptionSetConfiguration) =
+        this.copy(optionSetConfiguration = optionSetConfiguration)
+
     override fun equals(item: FieldUiModel): Boolean {
         if (this === item) return true
         if (javaClass != item.javaClass) return false
@@ -129,6 +132,7 @@ data class FieldUiModelImpl(
         if (selectableDates != item.selectableDates) return false
         if (eventCategories != item.eventCategories) return false
         if (customIntent != item.customIntent) return false
+        if (optionSetConfiguration != item.optionSetConfiguration) return false
         return true
     }
 }

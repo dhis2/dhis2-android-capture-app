@@ -47,7 +47,7 @@ interface FieldUiModel {
 
     val renderingType: UiRenderType?
 
-    var optionSetConfiguration: OptionSetConfiguration?
+    val optionSetConfiguration: OptionSetConfiguration?
 
     var customIntent: CustomIntentModel?
 
@@ -106,6 +106,8 @@ interface FieldUiModel {
     fun setDisplayName(displayName: String?): FieldUiModel
 
     fun setKeyBoardActionDone(): FieldUiModel
+
+    fun setOptionSetConfiguration(optionSetConfiguration: OptionSetConfiguration): FieldUiModel
 
     interface Callback {
         fun intent(intent: FormIntent)
