@@ -149,7 +149,6 @@ private fun testingProgramModel(downloadState: ProgramDownloadState) =
         downloadState = downloadState,
         isStockUseCase = false,
         lastUpdated = Date(),
-        hasOverdueEvent = false,
         filtersAreActive = false,
     )
 

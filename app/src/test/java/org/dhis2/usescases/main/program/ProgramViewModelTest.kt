@@ -161,7 +161,6 @@ class ProgramViewModelTest {
             downloadState = ProgramDownloadState.NONE,
             isStockUseCase = false,
             lastUpdated = Date(),
-            hasOverdueEvent = false,
             filtersAreActive = false,
         )
 
@@ -191,7 +190,6 @@ class ProgramViewModelTest {
             downloadState = ProgramDownloadState.NONE,
             isStockUseCase = false,
             lastUpdated = Date(),
-            hasOverdueEvent = false,
             filtersAreActive = false,
         )
 }

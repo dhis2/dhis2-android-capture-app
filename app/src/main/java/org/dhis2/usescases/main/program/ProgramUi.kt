@@ -720,7 +720,6 @@ private fun testingProgramModel() =
         onlyEnrollOnce = false,
         accessDataWrite = true,
         state = State.SYNCED,
-        hasOverdueEvent = false,
         filtersAreActive = false,
         downloadState = ProgramDownloadState.NONE,
         isStockUseCase = false,
