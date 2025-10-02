@@ -23,7 +23,6 @@ import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
-import org.hisp.dhis.android.core.arch.repositories.filters.internal.EnumFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -35,6 +34,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.event.internal.EventStatusFilterConnector
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository
 import org.hisp.dhis.android.core.program.Program
@@ -82,7 +82,7 @@ class SearchRepositoryTest {
     private val programReadOnlyOneObjectRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program> = mock()
 
     private val eventCollectionRepository: EventCollectionRepository = mock()
-    private val enumEventFilterConnector: EnumFilterConnector<EventCollectionRepository, EventStatus> = mock()
+    private val eventStatusFilterConnector: EventStatusFilterConnector = mock()
     private val stringEventFilterConnector: StringFilterConnector<EventCollectionRepository> = mock()
 
     private val orgUnitCollectionRepository: OrganisationUnitCollectionRepository = mock()
@@ -369,9 +369,9 @@ class SearchRepositoryTest {
         ) doReturn eventCollectionRepository
         whenever(
             eventCollectionRepository.byStatus(),
-        ) doReturn enumEventFilterConnector
+        ) doReturn eventStatusFilterConnector
         whenever(
-            enumEventFilterConnector.eq(EventStatus.OVERDUE),
+            eventStatusFilterConnector.eq(EventStatus.OVERDUE),
         ) doReturn eventCollectionRepository
         whenever(
             eventCollectionRepository.byStatus().eq(EventStatus.OVERDUE),
@@ -388,7 +388,7 @@ class SearchRepositoryTest {
         whenever(
             eventCollectionRepository.blockingGet(),
         ) doReturn eventsToReturn.filter { it.status() == EventStatus.OVERDUE }
-        whenever(enumEventFilterConnector.eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
+        whenever(eventStatusFilterConnector.eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
         whenever(eventCollectionRepository.byStatus().eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
         whenever(eventCollectionRepository.byProgramUid().eq(any())).thenReturn(eventCollectionRepository)
         whenever(eventCollectionRepository.orderByDueDate(RepositoryScope.OrderByDirection.DESC)).thenReturn(eventCollectionRepository)

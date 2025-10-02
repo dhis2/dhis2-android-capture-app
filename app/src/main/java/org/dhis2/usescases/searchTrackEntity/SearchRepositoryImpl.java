@@ -715,6 +715,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                             true,
                             true,
                             orgUnitName(event.organisationUnit()),
+                            true,
                             null,
                             null,
                             false,

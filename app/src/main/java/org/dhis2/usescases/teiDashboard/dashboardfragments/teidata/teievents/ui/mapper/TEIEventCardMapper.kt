@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Event
 import androidx.compose.material.icons.outlined.EventBusy
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import org.dhis2.R
 import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.date.DateUtils
@@ -54,12 +56,14 @@ class TEIEventCardMapper(
                 },
             title = getTitle(event),
             description = getDescription(event),
-            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
+            additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit, event.orgUnitIsInCaptureScope),
             actionButton = {
-                ProvideActionButton(
-                    event = event,
-                    onActionButtonClick = onCardClick,
-                )
+                if (event.orgUnitIsInCaptureScope) {
+                    ProvideActionButton(
+                        event = event,
+                        onActionButtonClick = onCardClick,
+                    )
+                }
             },
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
@@ -100,6 +104,7 @@ class TEIEventCardMapper(
         event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
+        eventOrgUnitIsInCaptureScope: Boolean,
     ): List<AdditionalInfoItem> {
         val list =
             event.dataElementValues
@@ -138,9 +143,57 @@ class TEIEventCardMapper(
         checkViewOnly(
             list = list,
             editable = editable,
+            hasAccessToOrgUnit = eventOrgUnitIsInCaptureScope,
         )
 
+        checkHasNoAccessToOrgUnit(
+            list = list,
+            eventOrgUnit = event.orgUnitName,
+            eventOrgUnitIsInCaptureScope,
+        )
         return list
+    }
+
+    private fun checkHasNoAccessToOrgUnit(
+        list: MutableList<AdditionalInfoItem>,
+        eventOrgUnit: String,
+        orgUnitIsInCaptureScope: Boolean,
+    ) {
+        if (!orgUnitIsInCaptureScope) {
+            list.add(
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Block,
+                            contentDescription = resourceManager.getString(R.string.at_enroll_org_unit),
+                            tint = AdditionalInfoItemColor.WARNING.color,
+                        )
+                    },
+                    value =
+                        resourceManager
+                            .getString(R.string.at_enroll_org_unit)
+                            .format(eventOrgUnit),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.WARNING.color,
+                ),
+            )
+            list.add(
+                AdditionalInfoItem(
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Block,
+                            contentDescription = "no_access_to_org_unit",
+                            tint = Color.Transparent,
+                        )
+                    },
+                    value =
+                        resourceManager
+                            .getString(R.string.no_access_to_it),
+                    isConstantItem = true,
+                    color = AdditionalInfoItemColor.WARNING.color,
+                ),
+            )
+        }
     }
 
     private fun checkRegisteredIn(
@@ -330,8 +383,9 @@ class TEIEventCardMapper(
     private fun checkViewOnly(
         list: MutableList<AdditionalInfoItem>,
         editable: Boolean,
+        hasAccessToOrgUnit: Boolean,
     ) {
-        if (!editable) {
+        if (!editable && hasAccessToOrgUnit) {
             list.add(
                 AdditionalInfoItem(
                     icon = {

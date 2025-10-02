@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
@@ -72,21 +73,6 @@ class TeiDataRepositoryImpl(
             .trackedEntityInstances()
             .uid(teiUid)
             .get()
-
-    override fun enrollingOrgUnit(): Single<OrganisationUnit> =
-        if (programUid == null) {
-            getTrackedEntityInstance()
-                .map { it.organisationUnit() }
-        } else {
-            getEnrollment()
-                .map { it.organisationUnit() }
-        }.flatMap {
-            d2
-                .organisationUnitModule()
-                .organisationUnits()
-                .uid(it)
-                .get()
-        }
 
     override fun eventsWithoutCatCombo(): Single<List<EventModel>> {
         return getEnrollmentProgram()
@@ -275,14 +261,8 @@ class TeiDataRepositoryImpl(
                                     null,
                                     isSelected = true,
                                     canAddNewEvent = true,
-                                    orgUnitName =
-                                        d2
-                                            .organisationUnitModule()
-                                            .organisationUnits()
-                                            .uid(event.organisationUnit())
-                                            .blockingGet()
-                                            ?.displayName()
-                                            ?: "",
+                                    orgUnitName = orgUnitName(event.organisationUnit()),
+                                    orgUnitIsInCaptureScope = hasAccessToEvent(event.organisationUnit(), event.status()),
                                     catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                     dataElementValues =
                                         getEventValues(
@@ -373,14 +353,8 @@ class TeiDataRepositoryImpl(
                                 null,
                                 isSelected = true,
                                 canAddNewEvent = true,
-                                orgUnitName =
-                                    d2
-                                        .organisationUnitModule()
-                                        .organisationUnits()
-                                        .uid(event.organisationUnit())
-                                        .blockingGet()
-                                        ?.displayName()
-                                        ?: "",
+                                orgUnitName = orgUnitName(event.organisationUnit()),
+                                orgUnitIsInCaptureScope = hasAccessToEvent(event.organisationUnit(), event.status()),
                                 catComboName = getCatOptionComboName(event.attributeOptionCombo()),
                                 dataElementValues = getEventValues(event.uid(), programStage.uid()),
                                 groupedByStage = false,
@@ -463,6 +437,32 @@ class TeiDataRepositoryImpl(
                 .blockingGet()
         }
     }
+
+    private fun orgUnitName(orgUnitUid: String?): String =
+        d2
+            .organisationUnitModule()
+            .organisationUnits()
+            .uid(orgUnitUid)
+            .blockingGet()
+            ?.displayName() ?: ""
+
+    private fun hasAccessToEvent(
+        eventOrgUnitUid: String?,
+        eventStatus: EventStatus?,
+    ): Boolean =
+        if (eventStatus == EventStatus.SCHEDULE ||
+            eventStatus == EventStatus.OVERDUE
+        ) {
+            eventOrgUnitUid?.let {
+                d2
+                    .organisationUnitModule()
+                    .organisationUnitService()
+                    .isInCaptureScope(it)
+                    .blockingGet()
+            } ?: true
+        } else {
+            true
+        }
 
     private fun getEventValues(
         eventUid: String,
