@@ -61,4 +61,22 @@
     <string name="cat_combo">Cat Combo</string>
     <string name="yes">ya</string>
     <string name="no">tidak</string>
-    </resources>
+    <string name="input_age_date_of_birth">Tanggal lahir</string>
+    <string name="input_age">Usia(tahun)</string>
+    <string name="input_age_or">atau</string>
+    <string name="input_action_accept">Terima</string>
+    <string name="input_action_cancel">Batal</string>
+    <string name="input_coordinate_latitude">Garis lintang</string>
+    <string name="input_coordinate_longitude">Garis bujur</string>
+    <string name="add_file">Tambahkan berkas</string>
+    <string name="add_image">Tambahkan gambar</string>
+    <string name="no_results_found">Tidak ada hasil ditemukan</string>
+    <string name="action_done">Selesai</string>
+    <string name="input_not_supported">Tidak didukung</string>
+    <string name="login_error_dhis_version">Server ini menjalankan versi dhis yang berbeda dari 2.29. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
+    <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

@@ -12,4 +12,6 @@
     <string name="action_close">إغلاق</string>
     <string name="incident_date">تاريخ الواقعة</string>
     <string name="download">تنزيل</string>
+    <string name="input_action_accept">قبول</string>
+    <string name="input_action_cancel">إلغاء</string>
     </resources>

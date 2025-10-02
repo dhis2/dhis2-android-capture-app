@@ -329,4 +329,7 @@
     <string name="period_yearly_title">年</string>
     <string name="period_financial_year_title">财政年度</string>
     <string name="no_periods">无可用时段</string>
+    <string name="database_import_failed">数据库导入失败</string>
+    <string name="invalid_file">无效文件</string>
+    <string name="not_in_totp_2fa_enrollment_mode">未进入 TOTP 2FA 注册模式</string>
 </resources>

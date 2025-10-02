@@ -9,4 +9,8 @@
     <string name="share">Partajare</string>
     <string name="action_close">Închidere</string>
     <string name="incident_date">Data incidentului</string>
+    <string name="input_action_accept">Accept</string>
+    <string name="input_action_cancel">Anulare</string>
+    <string name="no_results_found">Nu au fost găsite rezultate</string>
+    <string name="action_done">Terminat</string>
     </resources>

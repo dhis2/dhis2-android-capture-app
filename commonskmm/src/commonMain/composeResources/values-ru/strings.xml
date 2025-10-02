@@ -111,4 +111,77 @@
     <string name="yes">Да</string>
     <string name="no">нет</string>
     <string name="re_open_to_edit">Повторно открыть форму для редактирования</string>
+    <string name="input_age_date_of_birth">Дата рождения</string>
+    <string name="input_age">Возраст</string>
+    <string name="input_age_or">или</string>
+    <string name="input_action_accept">Принять</string>
+    <string name="input_action_cancel">Отменить</string>
+    <string name="input_coordinate_latitude">Широта</string>
+    <string name="input_coordinate_longitude">Долгота</string>
+    <string name="input_coordinate_add_location">Добавить локацию</string>
+    <string name="input_date_out_of_range">Вне спектра</string>
+    <string name="format_error">Неверный формат</string>
+    <string name="add_file">Добавить файл</string>
+    <string name="add_image">Добавить изображение</string>
+    <string name="from_gallery">Добавить из галереи</string>
+    <string name="no_results_found">Результаты не найдены</string>
+    <string name="search_to_find_more">Искать, чтобы найти больше</string>
+    <string name="action_done">Готово</string>
+    <string name="input_not_supported">Не поддерживается</string>
+    <!--*******************->
+        D2 Error Messages
+    **********************-->
+    <string name="login_error_null_pass">Пароль отсутствует. Пожалуйста, введите пароль.</string>
+    <string name="login_error_null_username">Имя пользователя отсутствует. Пожалуйста, введите имя пользователя.</string>
+    <string name="login_error_dhis_version">На этом сервере установлена версия dhis, отличная от 2.29. Обновите версию своего сервера или используйте тестовую среду для продолжения работы.</string>
+    <string name="login_error_dhis_version_v2">На этом сервере установлена версия DHIS2, отличная от %s. Обновите версию сервера или обратитесь к администратору.</string>
+    <string name="login_error_unsuccessful_response">Что-то пошло не так. Пожалуйста, проверьте правильность URL-адреса сервера, имени пользователя и пароля и повторите попытку.</string>
+    <string name="login_error_error_response">Извините! Что-то не получилось на стороне сервера.</string>
+    <string name="login_error_no_dhis_instance">Указанный URL-адрес не является сервером DHIS2.</string>
+    <string name="login_error_bad_credentials">Имя пользователя или пароль неверны</string>
+    <string name="login_error_unknown_host">Неизвестный сервер</string>
+    <string name="online_search_parsing_error">Ошибка при отображении результатов</string>
+    <string name="error_unexpected">Что-то неожиданно пошло не так.</string>
+    <string name="error_too_manu_org_units">Ваш пользователь имеет более одной корневой организационной единицы. Пересмотрите свою конфигурацию или обратитесь к администратору.</string>
+    <string name="error_many_requests">В данный момент сервер немного занят. Пожалуйста, попробуйте немного позже.</string>
+    <string name="error_already_authenticated">Пользователь уже вошел в систему.</string>
+    <string name="error_already_executed">Запрос уже выполнен.</string>
+    <string name="error_api_invalid_query">Запрос сервера недействителен.</string>
+    <string name="error_app_name_not_set">Имя приложения не задано.</string>
+    <string name="error_app_version_not_set">Версия приложения не установлена.</string>
+    <string name="error_access_keystore">Невозможно получить доступ к хранилищу ключей устройства.</string>
+    <string name="error_create_existing_error">Создание прервано. Объект уже существует.</string>
+    <string name="error_delete_non_existing_object">Удаление прервано. Объект не существует.</string>
+    <string name="error_reserve_value_on_server">Мы не смогли зарезервировать значения для этих записей. Пожалуйста, свяжитесь с вашим администратором.</string>
+    <string name="error_export_login">Пожалуйста, войдите в систему, чтобы экспортировать базу данных.</string>
+    <string name="error_export_encrypted">Экспорт зашифрованной базы данных не поддерживается.</string>
+    <string name="error_import_exist">Вы импортируете уже существующую базу данных.</string>
+    <string name="error_import_logout">Пожалуйста, выйдите из системы, чтобы импортировать новую базу данных.</string>
+    <string name="error_import_version">Версия импортируемой базы данных выше поддерживаемой.</string>
+    <string name="error_file_not_found">Файл не найден.</string>
+    <string name="error_file_resize">Произошла ошибка при изменении размера изображения.</string>
+    <string name="error_user_no_authenticated">Нет пользователя, прошедшего аутентификацию.</string>
+    <string name="error_user_no_authenticated_offline">Нет пользователя, прошедшего аутентификацию в автономном режиме.</string>
+    <string name="error_different_offline_user">Вы пытаетесь войти в систему в автономном режиме под другим пользователем.</string>
+    <string name="error_object_update">Объект не удалось обновить.</string>
+    <string name="error_object_insert">Объект не удалось вставить.</string>
+    <string name="error_ownership_access">У вас нет доступа.</string>
+    <string name="error_null_url">Отсутствует URL-адрес сервера. Пожалуйста, введите URL.</string>
+    <string name="error_server_malformed">URL-адрес сервера сформирован неправильно. Пожалуйста, проверьте его.</string>
+    <string name="error_socket_timeout">Серверу потребовалось слишком много времени для ответа. Мы отменили запрос. </string>
+    <string name="error_relationship_updated">Связь не может быть обновлена.</string>
+    <string name="error_too_many_periods">Слишком много периодов.</string>
+    <string name="error_url_not_found">Мы не смогли найти URL-адрес. Пожалуйста, проверьте его.</string>
+    <string name="error_account_disabled">Ваша учетная запись пользователя была отключена. Если это ошибка, обратитесь к своему администратору.</string>
+    <string name="error_account_locked">Ваша учетная запись заблокирована. Если это ошибка, обратитесь к своему администратору.</string>
+    <string name="error_set_value">Значение не удалось установить.</string>
+    <string name="error_ssl">Возникла проблема с сертификатами сервера. Пожалуйста, свяжитесь с вашим администратором.</string>
+    <string name="error_min_attributes">Для выполнения поиска недостаточно атрибутов. Пожалуйста, уточните поиск, добавив больше атрибутов.</string>
+    <string name="error_org_unit_scope">Онлайн-поиск доступен только для подразделений вашей организации по поиску пользователей.</string>
+    <string name="error_server_unavailable">Сервер в настоящее время недоступен. Повторите попытку позже.</string>
+    <string name="error_no_internet_connection">Вы находитесь оффлайн. Подключитесь к Интернету и повторите попытку.</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
 </resources>
