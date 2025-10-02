@@ -140,6 +140,13 @@ class LoginRepositoryImpl(
         return hasBiometrics && hasOnlyOneAccount && credentialsNotSet
     }
 
+    override suspend fun hasOtherAccounts(): Boolean =
+        d2
+            .userModule()
+            .accountManager()
+            .getAccounts()
+            .count() != 0
+
     override suspend fun updateTrackingPermissions(granted: Boolean) {
         d2
             .dataStoreModule()

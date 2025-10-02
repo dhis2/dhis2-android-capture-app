@@ -173,6 +173,7 @@ fun CredentialsScreen(
             },
             onManageAccounts = viewModel::onManageAccountsClicked,
             onRecoverAccount = viewModel::onRecoverAccountClicked,
+            hasOtherAccounts = screenState.hasOtherAccounts,
         )
     }
     if (displayTrackingMessage) {
@@ -391,6 +392,7 @@ private fun CredentialActions(
     hasBiometrics: Boolean,
     oidcInfo: OidcInfo?,
     canLogin: Boolean,
+    hasOtherAccounts: Boolean,
     onLoginClicked: () -> Unit,
     onOpenIdLogin: (url: String) -> Unit,
     onBiometricsClicked: () -> Unit,
@@ -472,19 +474,21 @@ private fun CredentialActions(
                 },
             )
         }
-        Box(
-            modifier =
-                Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.action_manage_account),
-                style = ButtonStyle.OUTLINED,
-                onClick = onManageAccounts,
-            )
+        if (hasOtherAccounts) {
+            Box(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.action_manage_account),
+                    style = ButtonStyle.OUTLINED,
+                    onClick = onManageAccounts,
+                )
+            }
         }
     }
 }

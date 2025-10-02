@@ -9,6 +9,7 @@ data class CredentialsUiState(
     val oidcInfo: OidcInfo?,
     val errorMessage: String?,
     val afterLoginActions: List<AfterLoginAction>,
+    val hasOtherAccounts: Boolean,
 ) {
     fun username() = serverInfo.username ?: credentialsInfo.username
 }

@@ -34,6 +34,8 @@ interface LoginRepository {
 
     suspend fun displayBiometricMessage(): Boolean
 
+    suspend fun hasOtherAccounts(): Boolean
+
     suspend fun updateTrackingPermissions(granted: Boolean)
 
     context(context: PlatformContext)
