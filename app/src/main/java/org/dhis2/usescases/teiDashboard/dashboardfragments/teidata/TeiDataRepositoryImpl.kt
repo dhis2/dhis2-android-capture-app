@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.PeriodType
 import org.hisp.dhis.android.core.program.Program
@@ -461,26 +462,6 @@ class TeiDataRepositoryImpl(
             } ?: true
         } else {
             true
-        }
-
-    private fun checkEventStatus(events: List<Event>): List<Event> =
-        events.mapNotNull { event ->
-            if (event.status() == EventStatus.SCHEDULE &&
-                dateUtils.isEventDueDateOverdue(event.dueDate())
-            ) {
-                d2
-                    .eventModule()
-                    .events()
-                    .uid(event.uid())
-                    .setStatus(EventStatus.OVERDUE)
-                d2
-                    .eventModule()
-                    .events()
-                    .uid(event.uid())
-                    .blockingGet()
-            } else {
-                event
-            }
         }
 
     private fun getEventValues(
