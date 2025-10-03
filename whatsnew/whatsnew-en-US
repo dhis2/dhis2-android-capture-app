@@ -1,9 +1,7 @@
 This is a patch version that fixes:
 
-- ANDROAPP-6867 Make whole data set table screen scrollable
-- ANDROAPP-6899 Implement persist table resizing layout
-- ANDROAPP-6909 Wrong border color in selected cells with error or warning
-- ANDROAPP-6912 Incorrect render of rowHeader total
-- ANDROAPP-6920  Incorrect selection when tapping on first row header
-....
+- ANDROSDK-2164 Metadata sync not finishing in certain configurations
+
+Translations update from Transifex
+
 You can find all the details on Jira and Github.
