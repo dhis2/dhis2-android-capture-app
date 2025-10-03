@@ -10,6 +10,7 @@ data class CredentialsUiState(
     val errorMessage: String?,
     val afterLoginActions: List<AfterLoginAction>,
     val hasOtherAccounts: Boolean,
+    val isSessionLocked: Boolean,
 ) {
     fun username() = serverInfo.username ?: credentialsInfo.username
 }

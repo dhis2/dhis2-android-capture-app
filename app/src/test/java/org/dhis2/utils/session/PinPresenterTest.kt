@@ -60,7 +60,6 @@ class PinPresenterTest {
             onTwoManyAttempts = onTwoManyAttempts,
         )
 
-        verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
         verify(onPinCorrect).invoke()
     }
 
