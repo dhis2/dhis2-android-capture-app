@@ -12,6 +12,7 @@
     <string name="date">তারিখ</string>
     <!--Event Detail-->
     <string name="due_date">নির্ধারিত তারিখ</string>
+    <string name="settingsTwoFAStatus">অবস্থা</string>
     <!--endregion-->
 
     <string name="enrollmment_date">নিবন্ধনের তারিখ</string>

@@ -32,11 +32,7 @@
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Xảy ra lỗi trong quá trình đồng bộ. Vui lòng thử lại.</string>
     <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận cho tất cả dữ liệu. Đó là các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
-    <string name="metadata_sync_error">LỖI: Đã xảy ra lỗi trong quá trình đồng bộ hóa. Nếu bạn có kết nối, vui lòng thử lại. Nếu lỗi vẫn tiếp diễn, hãy liên hệ với quản trị viên của bạn.</string>
-    <string name="data_sync_warning">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một số dữ liệu có xung đột. Hãy Đồng bộ cấu hình và thử lại. Kiểm tra trạng thái đồng bộ của: các chương trình, Đối Tượng Theo Dõi và các sự kiện có xung đột được đánh dấu tại @.</string>
     <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy thử đồng bộ cấu hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của chương trình, các Đối Tượng Theo Dõi và các sự kiện với các dấu hiệu xung đột là @.</string>
-    <string name="data_sync_error">LỖI: Một số dữ liệu không thể đồng bộ. Hãy kiểm tra trạng thái đồng bộ của: các chương trình với các lỗi được đánh dấu là @, các Đối Tượng Theo Dõi và các sự kiện đánh dấu là $\".</string>
-    <string name="data_sync_error_program">LỖI: Một số dữ liệu của bạn không thể đồng bộ. Hãy kiểm tra trạng thái đồng bộ của Đối Tượng Theo Dõi và các sự kiện với các xung đột được đánh dấu là $\".</string>
     <string name="server_sync_error">Có lỗi và máy chủ không phản hồi. Liên hệ quản trị viên của bạn.</string>
 
     <string name="search_result_text">Tìm thấy %s kết quả</string>
@@ -214,7 +210,6 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">Có %s chương trình với các cài đặt riêng</item>
     </plurals>
-    <string name="settings_sync_period">Đang đồng bộ</string>
     <string name="settings_limit_scope">Cài đặt bị giới hạn</string>
     <string name="settings_limit_globally">Toàn cầu</string>
     <string name="settings_limit_program">theo chương trình</string>
@@ -241,6 +236,7 @@
     <string name="settingsExportDB">Xuất cơ sở dữ liệu</string>
     <string name="settingsExportDBMessage">Xuất cơ sở dữ liệu và chia sẻ nó với quản trị của bạn</string>
     <string name="settingTwoFA">Xác thực hai yếu tố</string>
+    <string name="settingsTwoFAStatus">Trạng thái</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Ngày đăng ký</string>
