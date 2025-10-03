@@ -1,11 +1,13 @@
 package org.dhis2.mobile.login.accounts.ui.screen
 
-import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -16,14 +18,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
 import org.dhis2.mobile.login.resources.Res
@@ -46,19 +44,40 @@ fun AccountsScreen() {
         verticalArrangement = spacedBy(16.dp),
     ) {
         val scrollState = rememberLazyListState()
-        LazyColumn(
-            Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .drawFadingEdgesBasic(scrollState),
-            state = scrollState,
-            contentPadding = PaddingValues(vertical = 16.dp),
-            verticalArrangement = spacedBy(8.dp),
-        ) {
-            items(items = accounts) { account ->
-                AccountItem(
-                    account = account,
-                    onItemClicked = viewModel::onAccountClicked,
+        Box(modifier = Modifier.weight(1f)) {
+            LazyColumn(
+                Modifier
+                    .fillMaxWidth(),
+                state = scrollState,
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = spacedBy(8.dp),
+            ) {
+                items(items = accounts) { account ->
+                    AccountItem(
+                        account = account,
+                        onItemClicked = viewModel::onAccountClicked,
+                    )
+                }
+            }
+
+            if (scrollState.canScrollBackward) {
+                FadingEdge(
+                    modifier =
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .height(16.dp),
+                    colors = listOf(Color.White, Color.Transparent),
+                )
+            }
+            if (scrollState.canScrollForward) {
+                FadingEdge(
+                    modifier =
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .height(16.dp),
+                    colors = listOf(Color.Transparent, Color.White),
                 )
             }
         }
@@ -78,39 +97,15 @@ fun AccountsScreen() {
     }
 }
 
-fun Modifier.drawFadingEdgesBasic(
-    scrollableState: ScrollableState,
-    topEdgeHeight: Dp = 16.dp,
-) = then(
-    Modifier
-        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-        .drawWithContent {
-            drawContent()
-
-            val topEdgeHeightPx = topEdgeHeight.toPx()
-
-            if (scrollableState.canScrollBackward && topEdgeHeightPx >= 1f) {
-                drawRect(
-                    brush =
-                        Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.White),
-                            startY = 0f,
-                            endY = topEdgeHeightPx,
-                        ),
-                    blendMode = BlendMode.DstIn,
-                )
-            }
-
-            if (scrollableState.canScrollForward && topEdgeHeightPx >= 1f) {
-                drawRect(
-                    brush =
-                        Brush.verticalGradient(
-                            colors = listOf(Color.White, Color.Transparent),
-                            startY = size.height - topEdgeHeightPx,
-                            endY = size.height,
-                        ),
-                    blendMode = BlendMode.DstIn,
-                )
-            }
-        },
-)
+@Composable
+fun FadingEdge(
+    modifier: Modifier,
+    colors: List<Color>,
+) {
+    Box(
+        modifier =
+            modifier.background(
+                brush = Brush.verticalGradient(colors),
+            ),
+    )
+}

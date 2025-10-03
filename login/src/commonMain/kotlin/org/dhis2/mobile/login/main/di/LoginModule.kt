@@ -4,6 +4,7 @@ import org.dhis2.mobile.login.authentication.di.twoFAModule
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
+import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
@@ -28,6 +29,7 @@ internal val mainLoginModule =
         viewModelOf(::LoginViewModel)
         single<AppLinkNavigation> { AppLinkNavigation() }
         factoryOf(::GetAvailableUsernames)
+        factoryOf(::GetHasOtherAccounts)
         factoryOf(::GetBiometricInfo)
         factoryOf(::LoginUser)
         factoryOf(::BiometricLogin)
@@ -42,6 +44,7 @@ internal val mainLoginModule =
                 navigator = get(),
                 getAvailableUsernames = get(),
                 getBiometricInfo = get(),
+                getHasOtherAccounts = get(),
                 loginUser = get(),
                 biometricLogin = get(),
                 updateTrackingPermission = get(),

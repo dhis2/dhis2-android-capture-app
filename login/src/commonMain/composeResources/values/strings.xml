@@ -46,8 +46,7 @@
     <string name="action_openid_log_in">Log in with openID</string>
     <string name="action_manage_account">Manage accounts</string>
     <string name="tracking_title">Do you want to help us improve this app?</string>
-    <string name="tracking_description">"If you say yes the app will send anonymous statistics and error logs which" +
-                                " help us improve user experience and performance."</string>
+    <string name="tracking_description">If you say yes the app will send anonymous statistics and error logs which help us improve user experience and performance.</string>
     <string name="tracking_description_link">For further details, please refer to our </string>
     <string name="privacy_policy">privacy policy</string>
     <string name="action_no_now">Not now</string>

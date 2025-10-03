@@ -16,6 +16,7 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
+import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
@@ -31,6 +32,7 @@ class CredentialsViewModel(
     private val navigator: Navigator,
     private val getAvailableUsernames: GetAvailableUsernames,
     private val getBiometricInfo: GetBiometricInfo,
+    private val getHasOtherAccounts: GetHasOtherAccounts,
     private val loginUser: LoginUser,
     private val biometricLogin: BiometricLogin,
     private val updateTrackingPermission: UpdateTrackingPermission,
@@ -70,6 +72,7 @@ class CredentialsViewModel(
             canUseBiometrics = false,
             oidcInfo = null,
             afterLoginActions = emptyList(),
+            hasOtherAccounts = false,
         )
 
     private var loginJob: Job? = null
@@ -114,6 +117,7 @@ class CredentialsViewModel(
                             oidcUrl = "https://openid.login.test",
                         ),
                     afterLoginActions = emptyList(),
+                    hasOtherAccounts = getHasOtherAccounts.invoke(),
                 ),
             )
         }
@@ -211,7 +215,7 @@ class CredentialsViewModel(
     }
 
     fun onOpenIdLogin(url: String) {
-        TODO("Not implemented yet")
+        // TODO("Not implemented yet")
     }
 
     fun cancelLogin() {
