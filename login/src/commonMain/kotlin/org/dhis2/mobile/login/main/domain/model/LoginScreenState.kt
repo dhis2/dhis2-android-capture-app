@@ -19,6 +19,7 @@ sealed interface LoginScreenState {
         val selectedServer: String,
         val selectedUsername: String?,
         val serverName: String?,
+        val selectedServerFlag: String?,
         val allowRecovery: Boolean,
         val oidcIcon: String?,
         val oidcLoginText: String?,

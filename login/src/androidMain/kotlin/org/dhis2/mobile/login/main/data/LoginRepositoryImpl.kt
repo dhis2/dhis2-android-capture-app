@@ -45,9 +45,16 @@ class LoginRepositoryImpl(
                     ServerValidationResult.Oauth
                 } else {
                     val oidcProvider = result.value.oidcProviders.firstOrNull()
+                    val serverName =
+                        result.value.applicationTitle ?: try {
+                            server.substringAfter("://").substringBefore("/")
+                        } catch (_: Exception) {
+                            server
+                        }
                     ServerValidationResult.Legacy(
-                        serverName = result.value.applicationTitle,
+                        serverName = serverName,
                         serverDescription = result.value.applicationDescription,
+                        countryFlag = result.value.countryFlag,
                         allowRecovery = result.value.allowAccountRecovery,
                         oidcIcon = oidcProvider?.icon,
                         oidcLoginText = oidcProvider?.loginText,
