@@ -141,6 +141,7 @@
     <string name="last_data_sync_date">បានបញ្ជូនចុងក្រោយ: %s</string>
     <string name="last_metadata_sync_date">បានបញ្ជូនចុងក្រោយ: %s</string>
     <string name="settingsReset">កំណត់កម្មវិធីឡើងវិញ</string>
+    <string name="settingsTwoFAStatus">ស្ថានភាព</string>
     <!--endregion-->
 
     <string name="enrollmment_date">ថ្ងៃខែឆ្នាំចុះឈ្មោះ</string>

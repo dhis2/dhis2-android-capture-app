@@ -33,10 +33,9 @@
     <string name="sync_error_text">同步中发生错误，请重试</string>
     <string name="sync_incomplete_error_text">同步完成，但我们没有收到所有记录的服务器确认。这些记录在应用程序中仍被标记为“离线”状态。我们建议重试同步。</string>
     <string name="metadata_sync_error">失败：同步过程中出了问题。如果有连接，请重试。如果错误仍然存在，请联系您的管理员。</string>
-    <string name="data_sync_warning">警告：大部分数据已同步，但某些字段出现冲突。同步配置后再试一次。检查它们的同步状态：有冲突的程序、TEI 和事件会被标记为 @。</string>
+    <string name="data_sync_warning_v2">您的数据存在冲突。请同步您的配置，查看数据并尝试再次同步。</string>
     <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
-    <string name="data_sync_error">错误：你有些数据同步失败。检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
-    <string name="data_sync_error_program">错误：同步数据失败。检查同步状态：所有冲突的实体和事件标记为$\" 。</string>
+    <string name="data_sync_error_v2">您的部分数据未能同步。</string>
     <string name="server_sync_error">发生错误，服务器未响应。与您的管理员联系。</string>
 
     <string name="search_result_text">发现结果：1%s</string>
@@ -200,6 +199,7 @@
     <string name="SYNC_META">现在同步配置</string>
     <string name="SYNC_MANAGER">设置</string>
     <string name="last_data_sync_date">上次同步：1%s</string>
+    <string name="last_data_sync">最后一次同步时间</string>
     <string name="last_metadata_sync_date">上次同步：%s</string>
     <string name="refill_reserved_values">重新填充</string>
     <string name="settings_sms_module_title">短信模块：</string>
@@ -214,7 +214,7 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">这里有%s个项目有特定的设置</item>
     </plurals>
-    <string name="settings_sync_period">同步期间</string>
+    <string name="settings_sync_period_v2">同步周期</string>
     <string name="settings_limit_scope">设置限制</string>
     <string name="settings_limit_globally">全局</string>
     <string name="settings_limit_program">按项目</string>
@@ -241,7 +241,7 @@
     <string name="settingsExportDB">导出数据库</string>
     <string name="settingsExportDBMessage">导出数据库并与管理员共享</string>
     <string name="settingTwoFA">双重身份验证</string>
-    <string name="settingsTwoFAStatus">状态%s</string>
+    <string name="settingsTwoFAStatus">状态</string>
     <string name="settingTwoFADescr">分两步启用或禁用身份验证。</string>
     <!--endregion-->
 
@@ -621,6 +621,7 @@
     <string name="filter_event_status_skipped">跳过的</string>
     <string name="event_tei_limits">事件：%s 最大：%s%s 当前：%s ，实体：%s 最大：%s%s 当前：%s</string>
     <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
+    <string name="limit_setting">设置限制%s</string>
     <string name="enrollment_data_hide">隐藏加入数据</string>
     <string name="enrollment_data_show">显示加入数据</string>
     <string name="sms_enabled">短信模块被激活</string>

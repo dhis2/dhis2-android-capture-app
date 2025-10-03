@@ -35,11 +35,7 @@
     <string name="sync_error_title">Chyba synchronizace</string>
     <string name="sync_error_text">Během synchronizace došlo k chybě. Zkuste to prosím znovu.</string>
     <string name="sync_incomplete_error_text">Synchronizace dokončena, ale neobdrželi jsme potvrzení serveru pro všechny záznamy. Tyto záznamy jsou v aplikaci stále označeny jako „offline“. Doporučujeme synchronizaci zopakovat.</string>
-    <string name="metadata_sync_error">CHYBA: V procesu synchronizace se něco pokazilo. Pokud máte připojení, zkuste to znovu. Pokud chyba přetrvává, obraťte se na svého správce.</string>
-    <string name="data_sync_warning">UPOZORNĚNÍ: Většina vašich dat je synchronizována, ale některá pole vykazovala konflikty. Synchronizujte svou konfiguraci a zkuste to znovu. Zkontrolujte jejich stav synchronizace: programy, TEI a události s konflikty jsou označeny jako @.</string>
     <string name="data_sync_warning_program">UPOZORNĚNÍ: Většina vašich dat je synchronizována, ale některá pole vykazovala konflikty. Synchronizujte svou konfiguraci a zkuste to znovu. Pokud varování přetrvává, zkontrolujte jejich stav synchronizace: programy, TEI a události s konflikty jsou označeny jako @.</string>
-    <string name="data_sync_error">CHYBA: Některá data se nepodařilo synchronizovat. Zkontrolujte jejich stav synchronizace: programy s chybami jsou označeny jako @, TEI a události jako $\".</string>
-    <string name="data_sync_error_program">CHYBA: Některá data se nepodařilo synchronizovat. Zkontrolujte jejich stav synchronizace: TEI a události s konflikty jsou označeny jako $\".</string>
     <string name="server_sync_error">Došlo k chybě a server neodpovídá. Kontaktujte svého správce.</string>
 
     <string name="search_result_text">Nalezeno %s výsledků</string>
@@ -220,7 +216,6 @@
         <item quantity="many">Je tu %s programů se specifickým nastavením</item>
         <item quantity="other">Jsou tu %s programy se specifickým nastavením</item>
     </plurals>
-    <string name="settings_sync_period">Synchronizační období</string>
     <string name="settings_limit_scope">Nastavení omezeno</string>
     <string name="settings_limit_globally">Globálně</string>
     <string name="settings_limit_program">podle programu</string>
@@ -246,6 +241,7 @@
     <string name="settingsCheckVersionMessage">Software</string>
     <string name="settingsExportDB">Export databáze</string>
     <string name="settingsExportDBMessage">Export databáze a její sdílení se správcem</string>
+    <string name="settingsTwoFAStatus">Stav</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Datum zápisu</string>

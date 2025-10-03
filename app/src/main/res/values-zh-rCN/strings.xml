@@ -32,11 +32,7 @@
     <string name="sync_error_title">同步错误</string>
     <string name="sync_error_text">同步中发生错误，请重试</string>
     <string name="sync_incomplete_error_text">同步完成，但我们没有收到所有记录的服务器确认。这些记录在应用程序中仍被标记为“离线”状态。我们建议重试同步。</string>
-    <string name="metadata_sync_error">同步中发生错误</string>
-    <string name="data_sync_warning">警告：大多数数据已经同步，但是一些自动出现冲突，同步配置再试。检查你的同步状态：冲突的项目、跟踪的实体和事件标记为@</string>
     <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
-    <string name="data_sync_error">错误：你有些数据同步失败。检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
-    <string name="data_sync_error_program">错误：同步数据失败。检查同步状态：所有冲突的实体和事件标记为$\" 。</string>
     <string name="server_sync_error">发生错误，服务器未响应。与您的管理员联系。</string>
 
     <string name="search_result_text">发现结果：1%s</string>
@@ -215,7 +211,6 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">这里有%s个项目有特定的设置</item>
     </plurals>
-    <string name="settings_sync_period">同步期间</string>
     <string name="settings_limit_scope">设置限制</string>
     <string name="settings_limit_globally">全局</string>
     <string name="settings_limit_program">按项目</string>
@@ -241,6 +236,7 @@
     <string name="settingsCheckVersionMessage">软件</string>
     <string name="settingsExportDB">导出数据库</string>
     <string name="settingsExportDBMessage">导出数据库并与管理员共享</string>
+    <string name="settingsTwoFAStatus">状态</string>
     <!--endregion-->
 
     <string name="enrollmment_date">注册日期</string>
