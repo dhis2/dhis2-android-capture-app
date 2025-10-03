@@ -132,7 +132,7 @@ class CredentialsViewModel(
                     ),
                 loginState =
                     if (username.isNotBlank() &&
-                        it.credentialsInfo.username.isNotBlank()
+                        it.credentialsInfo.password.isNotBlank()
                     ) {
                         LoginState.Enabled
                     } else {

@@ -40,6 +40,7 @@ class AccountsViewModel(
                     selectedServer = account.serverUrl,
                     selectedUsername = account.name,
                     serverName = account.serverName,
+                    selectedServerFlag = account.serverFlag,
                     allowRecovery = account.allowRecovery,
                     oidcIcon = account.oidcIcon,
                     oidcLoginText = account.oidcLoginText,
