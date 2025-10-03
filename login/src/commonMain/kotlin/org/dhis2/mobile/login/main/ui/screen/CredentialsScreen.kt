@@ -1,7 +1,5 @@
 package org.dhis2.mobile.login.main.ui.screen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
@@ -32,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -42,11 +38,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
-import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+import org.dhis2.mobile.commons.resources.getDrawableResource
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
 import org.dhis2.mobile.login.main.ui.states.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.states.LoginState
@@ -102,6 +95,7 @@ fun CredentialsScreen(
     selectedServer: String,
     selectedServerName: String?,
     selectedUsername: String?,
+    selectedServerFlag: String?,
     allowRecovery: Boolean,
 ) {
     val viewModel =
@@ -139,7 +133,7 @@ fun CredentialsScreen(
             serverName = selectedServerName,
             serverUrl = selectedServer,
             selectedUsername = selectedUsername,
-            serverImageUrl = "https://avatars.githubusercontent.com/u/1089987?s=200&v=4", // TODO("Replace with flag / server image")
+            serverImageUrl = selectedServerFlag,
         )
         CredentialsContainer(
             availableUsernames = screenState.credentialsInfo.availableUsernames,
@@ -199,6 +193,8 @@ private fun ServerInfo(
     selectedUsername: String?,
     serverImageUrl: String?,
 ) {
+    val flag = serverImageUrl?.let { getDrawableResource(it) }
+
     ListCard(
         modifier = Modifier.fillMaxWidth(),
         listCardState =
@@ -235,33 +231,14 @@ private fun ServerInfo(
                     ),
             ),
         listAvatar = {
-            if (serverImageUrl != null) {
-                AsyncImage(
-                    model =
-                        ImageRequest
-                            .Builder(LocalPlatformContext.current)
-                            .data(serverImageUrl)
-                            .crossfade(true)
-                            .build(),
-                    contentDescription = "",
-                    modifier =
-                        Modifier
-                            .size(40.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = CircleShape,
-                            ).border(
-                                1.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = CircleShape,
-                            ),
-                    contentScale = ContentScale.Crop,
-                )
-            } else if (serverName?.isNotBlank() == true) {
-                Avatar(
-                    style = AvatarStyleData.Text(serverName.take(1)),
-                )
-            }
+            Avatar(
+                style =
+                    flag?.let { painter ->
+                        AvatarStyleData.Image(painter)
+                    } ?: run {
+                        AvatarStyleData.Text(serverName?.first().toString())
+                    },
+            )
         },
         onCardClick = { },
     )
@@ -447,7 +424,7 @@ private fun CredentialActions(
         }
         if (oidcInfo != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = spacedBy(Spacing.Spacing16),
             ) {

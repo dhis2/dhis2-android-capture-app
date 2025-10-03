@@ -85,6 +85,7 @@ class LoginViewModel(
                                 serverName = result.serverName,
                                 allowRecovery = result.allowRecovery,
                                 selectedServer = serverUrl,
+                                selectedServerFlag = result.countryFlag,
                                 selectedUsername = null,
                                 oidcIcon = result.oidcIcon,
                                 oidcLoginText = result.oidcLoginText,
