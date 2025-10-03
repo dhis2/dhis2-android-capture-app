@@ -115,13 +115,6 @@ fun setSortingIcon(
                             R.drawable.ic_sort_deactivated,
                         ),
                     )
-                else ->
-                    sortingIcon.setImageDrawable(
-                        AppCompatResources.getDrawable(
-                            sortingIcon.context,
-                            R.drawable.ic_sort_deactivated,
-                        ),
-                    )
             }
         }
     }
