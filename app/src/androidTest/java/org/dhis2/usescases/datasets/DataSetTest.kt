@@ -1,11 +1,16 @@
 package org.dhis2.usescases.datasets
 
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.test.runTest
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
@@ -19,6 +24,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @RunWith(AndroidJUnit4::class)
@@ -156,6 +165,75 @@ class DataSetTest : BaseTest() {
         checkCompleteDialogIsDisplayedAndAttemptToCompleteStep()
 
         checkDataSetInstanceHasBeenCreatedAndIsCompleted(orgUnit)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun testPeriodScrollBehaviorWithFuturePeriods() = runTest {
+        val dataSetUid = "BfMAe6Itzgt"
+        val dataSetName = "Child Health"
+        val orgUnit = "Ngelehun CHC"
+        val openFuturePeriods = 10
+
+        enterDataSetStep(
+            uid = dataSetUid,
+            name = dataSetName,
+        )
+
+        dataSetDetailRobot(composeTestRule) {
+            clickOnAddDataSet()
+        }
+
+        dataSetInitialRobot(composeTestRule) {
+            clickOnInputOrgUnit()
+        }
+
+        orgUnitSelectorRobot(composeTestRule) {
+            selectTreeOrgUnit(orgUnit)
+        }
+
+        // open the period input
+        dataSetInitialRobot(composeTestRule) {
+            clickOnInputPeriod()
+        }
+
+        reportPeriodSelectorRobot(composeTestRule) {
+
+            val today = LocalDate.now()
+            val latest = today.plusMonths(openFuturePeriods - 1L)
+
+            val df = DateTimeFormatter.ofPattern("MMMM yyyy")
+
+            // wait until the period selector is on the screen
+            composeTestRule.waitUntil {
+                composeTestRule
+                    .onNodeWithTag("period_selector")
+                    .isDisplayed()
+            }
+
+            // assert the item corresponding to "today" is the first item being displayed
+            composeTestRule
+                .onNodeWithTag("period_item_${openFuturePeriods - 1}")
+                .assertIsDisplayed()
+                .assertTextEquals(today.format(df))
+
+            // assert the next period after "today", which is in the future, is not being displayed
+            composeTestRule
+                .onNodeWithTag("period_item_${openFuturePeriods - 2}")
+                .assertIsNotDisplayed()
+
+            // scroll the the latest future date in the selector and check it is the month/year
+            // we expect based on the number of future periods
+
+            composeTestRule
+                .onNodeWithTag("period_selector")
+                .performScrollToNode(hasTestTag("period_item_0"))
+
+            composeTestRule
+                .onNodeWithTag("period_item_0")
+                .assertIsDisplayed()
+                .assertTextEquals(df.format(latest))
+        }
     }
 
     @Test
@@ -824,9 +902,18 @@ class DataSetTest : BaseTest() {
             clickOnInputPeriod()
         }
 
+        // wait until the period selector is on the screen
+        composeTestRule.waitUntil {
+            composeTestRule
+                .onNodeWithTag("period_selector")
+                .isDisplayed()
+        }
+
         reportPeriodSelectorRobot(composeTestRule) {
-            openFuturePeriods?.let { checkFuturePeriodAvailable(it) }
-            selectFirstPeriod()
+            openFuturePeriods
+                ?.let { checkFuturePeriodAvailable(it) }
+
+            selectPeriod(openFuturePeriods?: 0)
         }
 
         dataSetInitialRobot(composeTestRule) {

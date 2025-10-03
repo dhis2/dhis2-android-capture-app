@@ -35,7 +35,11 @@ fun PeriodSelectorContent(
     onPeriodSelected: (Period) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().animateContentSize(),
+        modifier =
+            Modifier
+                .testTag("period_selector")
+                .fillMaxWidth()
+                .animateContentSize(),
         state = scrollState,
     ) {
         when (periods.loadState.refresh) {
