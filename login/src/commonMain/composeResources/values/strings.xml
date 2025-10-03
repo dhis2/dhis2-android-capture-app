@@ -51,6 +51,16 @@
     <string name="privacy_policy">privacy policy</string>
     <string name="action_no_now">Not now</string>
     <string name="action_yes">Yes</string>
-
-
+    <string name="create_pin">Create a PIN</string>
+    <string name="create_pin_description">Set a PIN for fast and offline access to the app.</string>
+    <string name="create_pin_button">Create PIN</string>
+    <string name="enter_pin">Enter your PIN</string>
+    <string name="enter_pin_description">Enter your 4-digit PIN to access your account.</string>
+    <string name="enter_pin_button">Unlock</string>
+    <string name="forgot_pin_button">Forgot your PIN?</string>
+    <string name="pin_error_incorrect">Incorrect PIN</string>
+    <string name="pin_error_no_pin">No PIN configured</string>
+    <string name="pin_error_save_failed">Failed to save PIN</string>
+    <string name="pin_error_reset_failed">Failed to reset PIN</string>
+    <string name="pin_error_remaining_attempts">%d attempts remaining</string>
 </resources>
