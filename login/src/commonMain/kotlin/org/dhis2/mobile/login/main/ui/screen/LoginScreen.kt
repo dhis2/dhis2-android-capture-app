@@ -65,7 +65,6 @@ fun LoginScreen(
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
-    onNavigateToRecoverAccount: (serverUrl: String) -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
@@ -162,7 +161,9 @@ fun LoginScreen(
             }
             composable<LoginScreenState.RecoverAccount> {
                 val arg = it.toRoute<LoginScreenState.RecoverAccount>()
-                onNavigateToRecoverAccount(arg.selectedServer)
+                WebRecovery(arg.selectedServer) {
+                    viewModel.onRecoveryCancelled()
+                }
             }
         }
     }
