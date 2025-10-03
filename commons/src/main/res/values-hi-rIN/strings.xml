@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="action_accept">स्वीकार करें</string>
     <string name="next">आगे</string>
     <string name="cancel">रद्द करें</string>
     <string name="yes">हाँ</string>
@@ -14,6 +15,7 @@
     <string name="state_error">त्रुटि</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
+    <string name="enrollment_status_completed">पूरा हुआ</string>
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
@@ -25,9 +27,12 @@
     <string name="filter_sync_error">सिंक की गलती</string>
     <string name="interval_yesterday">कल (बिता हुआ)</string>
 
+    <string name="add_image">इमेज जोड़ें</string>
+    <string name="add_file">फ़ाइल जोड़ें</string>
     <string name="keep_editing">संपादन करते रहें</string>
     <string name="not_now">अभी नहीं</string>
     <string name="review">रिव्यू</string>
+    <string name="complete">पूरा हुआ</string>
     <string name="overdue_today">आज</string>
     <plurals name="overdue_days">
         <item quantity="one">%d दिन बाकी है</item>

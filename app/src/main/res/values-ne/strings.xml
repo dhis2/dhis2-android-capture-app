@@ -12,6 +12,7 @@
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="wipe_data_ok">स्वीकार</string>
     <string name="wipe_data_no">रद्द गर्नुहोस्</string>
+    <string name="settingsTwoFAStatus">स्थिती</string>
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">खोज</string>
     <string name="period">अबधि</string>

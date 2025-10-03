@@ -32,7 +32,6 @@
 
     <string name="sync_error_title">هەڵە لە هاوکاتگەری</string>
     <string name="sync_error_text">هەڵەیەک لە کاتی هاوکاتگەری کردن ڕووی دا. تکایە دووبارەی بکەوە.</string>
-    <string name="metadata_sync_error">شکست: هەڵەیەک لە کاتی هاوکاتگەری کردن ڕووی دا. گەر پەیوەستی بە ئینتەرنێتەوە تکایە دووبارەی بکەوە. ئەگەر هەڵەکە بەردەوام بوو، پەیوەندی بە بەڕێوەبەرەکەتەوە بکە</string>
     <string name="action_accept">پەسندکردن</string>
     <!-- Input hints -->
     <string name="search">طةران</string>
@@ -51,6 +50,7 @@
     <string name="wipe_data_ok">پەسندکردن</string>
     <string name="wipe_data_no">لابردن</string>
     <string name="SYNC_MANAGER">ريكخستن</string>
+    <string name="settingsTwoFAStatus">پێگە</string>
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">طةران</string>
     <!--AGE CUSTOM VIEW-->

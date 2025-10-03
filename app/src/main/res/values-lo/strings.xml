@@ -32,11 +32,7 @@
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
     <string name="sync_incomplete_error_text">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ ແຕ່ພວກເຮົາບໍ່ໄດ້ຮັບການຢືນຢັນຈາກເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ສຳລັບບັນທຶກທັງໝົດ. ເຫຼົ່ານັ້ນຍັງຖືກໝາຍເປັນ \"ອອບລາຍ\" ໃນແອັບ. ພວກເຮົາແນະນຳໃຫ້ລອງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນອີກຄັ້ງ.</string>
-    <string name="metadata_sync_error">ລົ້ມເຫຼວ: ມີບາງຢ່າງຜິດພາດໃນການຊິ້ງຂໍ້ມູນ ຫຼາກທ່ານມີການເຊື່ອມຕໍ່ກັບອີນເຕີເນັດກະລຸນາລອງໃໝ່ອີກຄັ້ງ. ຫາກຂໍ້ຜິດພາດຍັງຄົງຢູ່ ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
-    <string name="data_sync_warning">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ.ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ສາຍງານ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
     <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
-    <string name="data_sync_error">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານ ບໍສາມາດຊິ້ງໄດ້. ກວດສອບສະຖານະການຊິ້ງ: ສາຍງານທີ່ມີຂໍ້ຜິດພາດຈະຖຶກໝາຍເປັນ @, TEI\'s ແລະ ເຫດການເປັນ $.</string>
-    <string name="data_sync_error_program">ຂໍ້ຜິດພາດ: ຂໍ້ມູນບາງສ່ວນຂອງທ່ານບໍສາມາດຊິ້ງໄດ້. ກວດສອບເບີ່ງສະຖານະການຊິ້ງ: TEI\'s ແລະ ເຫດການທີມີຂໍ້ຂັດແຍ້ງທີມີເຄື່ອງໝາຍເປັນ $.</string>
     <string name="server_sync_error">ເກີດຂໍ້ຜິດພາດ ແລະເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍ່ຕອບສະໜອງ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
 
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
@@ -206,7 +202,6 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">ມີ%s ສາຍງານທີ່ມີການຕັ້ງຄ່າສະເພາະ</item>
     </plurals>
-    <string name="settings_sync_period">ໄລຍະເວລາການອັບເດດຂໍ້ມູນ</string>
     <string name="settings_limit_scope">ຈໍາກັດການຕັ້ງຄ່າ</string>
     <string name="settings_limit_globally">ໃນທົ່ວໂລກ</string>
     <string name="settings_limit_program">ຕໍ່ແຜນງານ</string>
@@ -230,6 +225,7 @@
     <string name="settingsCheckVersion">ອັບເດດຊັອບແວ</string>
     <string name="settingsCheckVersionMessage">ຊອບແວ</string>
     <string name="settingTwoFA">ກວດສອບຄວາມຖືກຕ້ອງແບບ 2 ຂັ້ນ</string>
+    <string name="settingsTwoFAStatus">ສະຖານະ</string>
     <!--endregion-->
 
     <string name="enrollmment_date">ວັນທີ່ລົງທະບຽນ</string>

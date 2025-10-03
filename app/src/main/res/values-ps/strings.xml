@@ -54,6 +54,7 @@
     <string name="wipe_data_ok">د منلو وړ</string>
     <string name="wipe_data_no">رد یې کړئ [ ژباړه ـ ردول ]</string>
     <string name="SYNC_MANAGER">تنظیمات</string>
+    <string name="settingsTwoFAStatus">وضعیت</string>
     <!--endregion-->
 
     <string name="enrollmment_date">د نوم ثبتونې نېټه</string>

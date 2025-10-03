@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="action_accept">स्वीकार करें</string>
     <string name="none">कोई नहीं</string>
     <string name="daily">रोज़ाना</string>
     <string name="today">आज</string>

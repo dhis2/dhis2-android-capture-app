@@ -143,6 +143,7 @@
     <string name="last_data_sync_date">Senaste synkronisering %s</string>
     <string name="last_metadata_sync_date">Senaste synkronisering %s</string>
     <string name="settingsReset">Återställ app</string>
+    <string name="settingsTwoFAStatus">Status</string>
     <!--endregion-->
 
     <string name="enrollmment_date">inskrivning datum</string>
