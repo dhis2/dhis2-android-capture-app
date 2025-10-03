@@ -31,12 +31,8 @@ class ValidatePinUseCase(
         }
 
         return if (storedPin == pin) {
-            // PIN is correct - unlock session
-            sessionRepository.setSessionLocked(false)
-            sessionRepository.setPinEnabled(true)
             PinResult.Success
         } else {
-            // PIN is incorrect
             val attemptsLeft = MAX_ATTEMPTS - (currentAttempts + 1)
             if (attemptsLeft <= 0) {
                 PinResult.TooManyAttempts

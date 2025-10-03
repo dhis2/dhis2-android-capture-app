@@ -330,11 +330,7 @@ class CredentialsViewModel(
 
     fun onPinDismissed() {
         // User dismissed the PIN dialog (forgot PIN)
-        // Navigate to accounts screen or handle accordingly
-        /*viewModelScope.launch {
-            navigator.navigate(destination = LoginScreenState.Accounts)
-        }*/
-        // TODO Logout the user from the app and ask for the password
+        // Logout the user from the app and ask for the password
         viewModelScope.launch {
             forgotPinUseCase()
             _credentialsScreenState.update {

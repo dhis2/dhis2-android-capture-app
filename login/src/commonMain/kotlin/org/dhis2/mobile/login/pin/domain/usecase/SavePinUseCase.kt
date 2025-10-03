@@ -18,7 +18,6 @@ class SavePinUseCase(
         try {
             sessionRepository.savePin(pin)
             sessionRepository.setSessionLocked(true)
-            sessionRepository.setPinEnabled(true)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -38,10 +38,4 @@ interface SessionRepository {
      * Logs out the current user and clears session data.
      */
     suspend fun logout()
-
-    /**
-     * Enables or disables PIN protection.
-     * @param enabled True to enable PIN, false to disable.
-     */
-    suspend fun setPinEnabled(enabled: Boolean)
 }

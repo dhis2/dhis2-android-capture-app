@@ -15,7 +15,6 @@ class SessionRepositoryImpl(
     companion object {
         private const val PIN_KEY = "pin"
         private const val PREF_SESSION_LOCKED = "SessionLocked"
-        private const val PREF_PIN_ENABLED = "PinEnabled"
     }
 
     override suspend fun savePin(pin: String) {
@@ -79,15 +78,6 @@ class SessionRepositoryImpl(
             d2.userModule().blockingLogOut()
         } catch (e: Exception) {
             Timber.e(e, "Failed to logout")
-            throw e
-        }
-    }
-
-    override suspend fun setPinEnabled(enabled: Boolean) {
-        try {
-            preferenceProvider.setValue(PREF_PIN_ENABLED, enabled)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to set PIN enabled state")
             throw e
         }
     }
