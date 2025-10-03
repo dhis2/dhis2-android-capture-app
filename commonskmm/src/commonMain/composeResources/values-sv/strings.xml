@@ -37,4 +37,16 @@
     <string name="cat_combo">Kategori kombination</string>
     <string name="yes">ja</string>
     <string name="no">nej</string>
-    </resources>
+    <string name="input_action_accept">Acceptera</string>
+    <string name="input_action_cancel">Avbryt</string>
+    <string name="input_coordinate_latitude">Latitud</string>
+    <string name="input_coordinate_longitude">Longitud</string>
+    <string name="add_file">Lägg till fil</string>
+    <string name="no_results_found">Inga resultat hittades</string>
+    <string name="login_error_dhis_version">Den här servern kör en dhis-version som skiljer sig från 2.29. Uppdatera din serverversion eller använd testmiljön för att fortsätta.</string>
+    <string name="online_search_parsing_error">Fel vid tolkning av resultat</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>
