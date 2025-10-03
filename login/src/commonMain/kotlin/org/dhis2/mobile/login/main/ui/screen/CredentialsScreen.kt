@@ -52,6 +52,8 @@ import org.dhis2.mobile.login.main.ui.states.AfterLoginAction
 import org.dhis2.mobile.login.main.ui.states.LoginState
 import org.dhis2.mobile.login.main.ui.states.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
+import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
+import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_log_in
 import org.dhis2.mobile.login.resources.action_manage_account
@@ -187,6 +189,18 @@ fun CredentialsScreen(
                 with(context) {
                     viewModel.onEnableBiometrics(granted)
                 }
+            },
+        )
+    }
+
+    if (screenState.isSessionLocked) {
+        PinBottomSheet(
+            mode = PinMode.ASK,
+            onSuccess = {
+                viewModel.onPinUnlocked()
+            },
+            onDismiss = {
+                viewModel.onPinDismissed()
             },
         )
     }

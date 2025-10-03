@@ -29,5 +29,6 @@ internal actual val accountModule =
                 get(),
             )
         }
+
         viewModelOf(::AccountsViewModel)
     }
