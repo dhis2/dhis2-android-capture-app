@@ -145,7 +145,7 @@ class LoginRepositoryImpl(
             .userModule()
             .accountManager()
             .getAccounts()
-            .count() != 0
+            .isNotEmpty()
 
     override suspend fun updateTrackingPermissions(granted: Boolean) {
         d2
