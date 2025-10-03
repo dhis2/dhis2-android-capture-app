@@ -28,21 +28,18 @@ class SessionManagerServiceImpl(
         scope: LifecycleCoroutineScope,
     ): Boolean {
         val currentTime = System.currentTimeMillis()
+        val hasPinProtection = preferences.getBoolean(Preference.SESSION_LOCKED, false)
+
         return if (currentTime - preferences.getLong(Preference.LAST_USER_INTERACTION.toString(), 0L)!! > SESSION_TIMEOUT_DURATION &&
-            !preferences.getBoolean(
-                Preference.PIN_ENABLED,
-                false,
-            ) &&
+            !hasPinProtection &&
             featureConfig.isFeatureEnable(
                 Feature.AUTO_LOGOUT,
             )
         ) {
             logoutUser(navigateAction, scope)
             true
-            // Session timeout reached
         } else {
             false
-            // Session timeout not reached
         }
     }
 
