@@ -150,10 +150,6 @@ class LoginViewModel(
         navigateUp()
     }
 
-    fun onOpenIdCancelled() {
-        navigateUp()
-    }
-
     private fun navigateUp() {
         viewModelScope.launch {
             navigator.navigateUp()
