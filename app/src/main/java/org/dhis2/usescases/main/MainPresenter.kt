@@ -242,7 +242,6 @@ class MainPresenter(
                     syncStatusController.restore()
                     filterManager.clearAllFilters()
                     preferences.setValue(Preference.SESSION_LOCKED, false)
-                    preferences.setValue(Preference.PIN_ENABLED, false)
                     userManager.d2
                         .dataStoreModule()
                         .localDataStore()

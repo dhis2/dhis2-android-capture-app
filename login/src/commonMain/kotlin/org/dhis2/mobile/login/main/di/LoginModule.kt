@@ -16,6 +16,7 @@ import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
+import org.dhis2.mobile.login.pin.di.completePinModule
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModel
@@ -37,6 +38,7 @@ internal val mainLoginModule =
         factoryOf(::BiometricLogin)
         factoryOf(::UpdateTrackingPermission)
         factoryOf(::UpdateBiometricPermission)
+
         viewModel { parameters ->
             val serverName = parameters.get<String?>(0)
             val serverUrl = parameters.get<String>(1)
@@ -56,6 +58,8 @@ internal val mainLoginModule =
                 serverUrl = serverUrl,
                 username = userName,
                 allowRecovery = allowRecovery,
+                getIsSessionLockedUseCase = get(),
+                forgotPinUseCase = get(),
             )
         }
     }
@@ -64,5 +68,5 @@ internal expect val accountModule: Module
 
 val loginModule =
     module {
-        includes(mainLoginModule, twoFAModule, accountModule)
+        includes(mainLoginModule, twoFAModule, accountModule, completePinModule)
     }
