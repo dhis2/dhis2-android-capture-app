@@ -79,6 +79,7 @@ kotlin {
             implementation(libs.dhis2.android.sdk)
             implementation(libs.test.espresso.idlingresource)
             api(libs.analytics.timber)
+            implementation(libs.androidx.browser)
             // Sentry
             api(libs.analytics.sentry)
         }

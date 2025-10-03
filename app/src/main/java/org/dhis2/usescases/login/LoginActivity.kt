@@ -14,7 +14,6 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.bindings.buildInfo
-import org.dhis2.commons.Constants.ACCOUNT_RECOVERY
 import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.resources.ResourceManager
@@ -28,8 +27,6 @@ import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
 import org.dhis2.utils.NetworkUtils
-import org.dhis2.utils.WebViewActivity
-import org.dhis2.utils.WebViewActivity.Companion.WEB_VIEW_URL
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
@@ -134,13 +131,6 @@ class LoginActivity :
                     onNavigateToPrivacyPolicy = {
                         activity?.let {
                             startActivity(Intent(it, PolicyView::class.java))
-                        }
-                    },
-                    onNavigateToRecoverAccount = { serverUrl ->
-                        activity?.let {
-                            val intent = Intent(this, WebViewActivity::class.java)
-                            intent.putExtra(WEB_VIEW_URL, serverUrl + ACCOUNT_RECOVERY)
-                            startActivity(intent)
                         }
                     },
                 )

@@ -135,6 +135,14 @@ class LoginViewModel(
     }
 
     fun onOauthLoginCancelled() {
+        navigateUp()
+    }
+
+    fun onRecoveryCancelled() {
+        navigateUp()
+    }
+
+    private fun navigateUp() {
         viewModelScope.launch {
             navigator.navigateUp()
         }

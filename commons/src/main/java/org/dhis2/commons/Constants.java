@@ -44,10 +44,6 @@ public class Constants {
     public static final int CAMERA_REQUEST = 108;
     public static final int GALLERY_REQUEST = 143;
 
-
-    // LOGIN
-    public static final String ACCOUNT_RECOVERY = "/dhis-web-commons/security/recovery.action";
-
     //EVENT_CREATION
     public static final String PREVIOUS_DASHBOARD_PROGRAM = "previous_dashboard_program";
     public static final String PROGRAM_THEME = "PROGRAM_THEME";
