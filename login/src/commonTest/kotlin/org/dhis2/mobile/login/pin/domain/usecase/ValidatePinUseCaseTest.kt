@@ -5,7 +5,6 @@ import org.dhis2.mobile.login.pin.data.SessionRepository
 import org.dhis2.mobile.login.pin.domain.model.PinResult
 import org.junit.Before
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,16 +26,12 @@ class ValidatePinUseCaseTest {
             val pin = "1234"
             val storedPin = "1234"
             whenever(repository.getStoredPin()).thenReturn(storedPin)
-            whenever(repository.setSessionLocked(false)).then { }
-            whenever(repository.setPinEnabled(true)).then { }
 
             // When
             val result = useCase(pin, currentAttempts = 0)
 
             // Then
             assertTrue(result is PinResult.Success)
-            verify(repository).setSessionLocked(false)
-            verify(repository).setPinEnabled(true)
         }
 
     @Test

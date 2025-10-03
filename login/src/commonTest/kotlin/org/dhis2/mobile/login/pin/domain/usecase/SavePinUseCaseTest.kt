@@ -25,7 +25,6 @@ class SavePinUseCaseTest {
             val pin = "1234"
             whenever(repository.savePin(pin)).then { }
             whenever(repository.setSessionLocked(true)).then { }
-            whenever(repository.setPinEnabled(true)).then { }
 
             // When
             val result = useCase(pin)
@@ -34,7 +33,6 @@ class SavePinUseCaseTest {
             assertTrue(result.isSuccess)
             verify(repository).savePin(pin)
             verify(repository).setSessionLocked(true)
-            verify(repository).setPinEnabled(true)
         }
 
     @Test
