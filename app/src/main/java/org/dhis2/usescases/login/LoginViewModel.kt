@@ -2,12 +2,8 @@ package org.dhis2.usescases.login
 
 import android.content.Intent
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import org.dhis2.R
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
@@ -16,7 +12,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import timber.log.Timber
-import java.io.File
 
 const val VERSION = "version"
 
@@ -112,36 +107,5 @@ class LoginViewModel(
             ?.localDataStore()
             ?.value(PIN)
             ?.blockingDeleteIfExist()
-    }
-
-    fun onImportDataBase(file: File) {
-        userManager?.let {
-            viewModelScope.launch {
-                val resultJob =
-                    async {
-                        try {
-                            val importedMetadata =
-                                it.d2
-                                    .maintenanceModule()
-                                    .databaseImportExport()
-                                    .importDatabase(file)
-                            Result.success(importedMetadata)
-                        } catch (e: Exception) {
-                            Result.failure(e)
-                        }
-                    }
-
-                val result = resultJob.await()
-
-                result.fold(
-                    onSuccess = {
-                        view.displayMessage(resourceManager.getString(R.string.importing_successful))
-                    },
-                    onFailure = {
-                        view.displayMessage(resourceManager.parseD2Error(it))
-                    },
-                )
-            }
-        }
     }
 }

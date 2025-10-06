@@ -2,9 +2,7 @@ package org.dhis2.mobile.login.main.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -20,16 +18,19 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,11 +49,23 @@ import androidx.navigation.toRoute
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
+import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
+import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.ic_dhis_logo
+import org.dhis2.mobile.login.resources.import_database
+import org.dhis2.mobile.login.resources.importing_successful
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
+import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -61,7 +74,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     versionName: String,
-    onImportDatabase: () -> Unit,
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
@@ -69,6 +81,29 @@ fun LoginScreen(
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val databaseImportState by viewModel.importDatabaseState.collectAsState()
+
+    val picker =
+        filePicker { path ->
+            path?.let { viewModel.importDb(it) }
+        }
+
+    LaunchedEffect(databaseImportState) {
+        when (databaseImportState) {
+            is DatabaseImportState.OnFailure -> {
+                snackBarHostState.showSnackbar(
+                    (databaseImportState as DatabaseImportState.OnFailure).message,
+                )
+            }
+            is DatabaseImportState.OnSuccess -> {
+                snackBarHostState.showSnackbar(
+                    getString(Res.string.importing_successful),
+                )
+            }
+            else -> {}
+        }
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -76,8 +111,18 @@ fun LoginScreen(
             LoginTopBar(
                 version = versionName,
                 displayMoreActions = displayMoreActions,
-                onImportDatabase = onImportDatabase,
+                onImportDatabase = { picker.launch() },
             )
+        },
+        snackbarHost = {
+            SnackbarHost(snackBarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.dropShadow(shape = SnackbarDefaults.shape),
+                    snackbarData = data,
+                    containerColor = SurfaceColor.SurfaceBright,
+                    contentColor = TextColor.OnSurface,
+                )
+            }
         },
         containerColor = MaterialTheme.colorScheme.primary,
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -212,35 +257,25 @@ fun LoginTopBar(
                         },
                     )
 
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        DropdownMenuItem(
-                            onClick = {
-                                expanded = false
-                                onImportDatabase()
-                            },
-                            text = {
-                                Row(
-                                    modifier =
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .height(48.dp)
-                                            .padding(horizontal = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = spacedBy(16.dp),
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Upload,
-                                        contentDescription = "Import database",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                    )
-
-                                    Text(
-                                        text = "Import database",
-                                        style = MaterialTheme.typography.bodyLarge,
-                                    )
-                                }
-                            },
+                    val items =
+                        listOf(
+                            MenuItemData(
+                                id = 1,
+                                label = stringResource(Res.string.import_database),
+                                leadingElement =
+                                    MenuLeadingElement.Icon(
+                                        icon = Icons.Filled.FileUpload,
+                                    ),
+                            ),
                         )
+
+                    DropDownMenu(
+                        items = items,
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        expanded = false
+                        onImportDatabase()
                     }
                 }
             }

@@ -13,9 +13,11 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
+import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 import org.junit.Before
 import org.mockito.kotlin.mock
@@ -30,6 +32,7 @@ class LoginViewModelTest {
     private lateinit var viewModel: LoginViewModel
     private val navigator: Navigator = mock()
     private val getInitialScreen: GetInitialScreen = mock()
+    private val importDatabase: ImportDatabase = mock()
     private val validateServer: ValidateServer = mock()
     private val appLinkNavigation: AppLinkNavigation = mock()
     private val testDispatcher = StandardTestDispatcher()
@@ -59,6 +62,7 @@ class LoginViewModelTest {
                 LoginViewModel(
                     navigator = navigator,
                     getInitialScreen = getInitialScreen,
+                    importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
                     networkStatusProvider = networkStatusProvider,
@@ -91,6 +95,7 @@ class LoginViewModelTest {
                 LoginViewModel(
                     navigator = navigator,
                     getInitialScreen = getInitialScreen,
+                    importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
                     networkStatusProvider = networkStatusProvider,
@@ -131,6 +136,7 @@ class LoginViewModelTest {
                 LoginViewModel(
                     navigator = navigator,
                     getInitialScreen = getInitialScreen,
+                    importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
                     networkStatusProvider = networkStatusProvider,
@@ -171,6 +177,7 @@ class LoginViewModelTest {
                 LoginViewModel(
                     navigator = navigator,
                     getInitialScreen = getInitialScreen,
+                    importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
                     networkStatusProvider = networkStatusProvider,
@@ -186,6 +193,61 @@ class LoginViewModelTest {
                 // Currently the LoginViewModel has a TODO comment for this functionality
 
                 expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `successfully import database`() =
+        runTest {
+            whenever(importDatabase("path")).thenReturn(
+                Result.success("https://test.dhis2.org"),
+            )
+
+            viewModel =
+                LoginViewModel(
+                    navigator = navigator,
+                    getInitialScreen = getInitialScreen,
+                    importDatabase = importDatabase,
+                    validateServer = validateServer,
+                    appLinkNavigation = appLinkNavigation,
+                    networkStatusProvider = networkStatusProvider,
+                )
+
+            viewModel.importDatabaseState.test {
+                assertEquals(DatabaseImportState.OnStandBy, awaitItem())
+
+                viewModel.importDb("path")
+
+                val importState = awaitItem()
+                assertEquals(true, importState is DatabaseImportState.OnSuccess)
+            }
+        }
+
+    @Test
+    fun `failed import database`() =
+        runTest {
+            whenever(importDatabase("path")).thenReturn(
+                Result.failure(Exception("Database already exists")),
+            )
+
+            viewModel =
+                LoginViewModel(
+                    navigator = navigator,
+                    getInitialScreen = getInitialScreen,
+                    importDatabase = importDatabase,
+                    validateServer = validateServer,
+                    appLinkNavigation = appLinkNavigation,
+                    networkStatusProvider = networkStatusProvider,
+                )
+
+            viewModel.importDatabaseState.test {
+                assertEquals(DatabaseImportState.OnStandBy, awaitItem())
+
+                viewModel.importDb("path")
+
+                val importState = awaitItem()
+                assertEquals(true, importState is DatabaseImportState.OnFailure)
+                assertEquals("Database already exists", (importState as DatabaseImportState.OnFailure).message)
             }
         }
 }
