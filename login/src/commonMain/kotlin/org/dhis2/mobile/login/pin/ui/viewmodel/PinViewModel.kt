@@ -12,6 +12,12 @@ import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
 import org.dhis2.mobile.login.pin.ui.components.PinMode
+import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.pin_error_incorrect
+import org.dhis2.mobile.login.resources.pin_error_no_pin
+import org.dhis2.mobile.login.resources.pin_error_reset_failed
+import org.dhis2.mobile.login.resources.pin_error_save_failed
+import org.jetbrains.compose.resources.getString
 
 /**
  * ViewModel for managing PIN operations.
@@ -55,7 +61,7 @@ class PinViewModel(
                 }.onFailure { error ->
                     _uiState.value =
                         PinState.Error(
-                            message = error.message ?: "Failed to save PIN",
+                            message = error.message ?: getString(Res.string.pin_error_save_failed),
                         )
                 }
         }
@@ -77,7 +83,7 @@ class PinViewModel(
                     pinAttempts++
                     _uiState.value =
                         PinState.Error(
-                            message = "Incorrect PIN",
+                            message = getString(Res.string.pin_error_incorrect),
                             remainingAttempts = result.attemptsLeft,
                         )
                 }
@@ -87,7 +93,7 @@ class PinViewModel(
                 is PinResult.NoPinStored -> {
                     _uiState.value =
                         PinState.Error(
-                            message = "No PIN configured",
+                            message = getString(Res.string.pin_error_no_pin),
                         )
                 }
             }
@@ -107,7 +113,7 @@ class PinViewModel(
                 }.onFailure { error ->
                     _uiState.value =
                         PinState.Error(
-                            message = error.message ?: "Failed to reset PIN",
+                            message = error.message ?: getString(Res.string.pin_error_reset_failed),
                         )
                 }
         }
