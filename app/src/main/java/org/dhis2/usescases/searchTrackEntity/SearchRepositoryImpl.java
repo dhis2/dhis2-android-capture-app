@@ -232,12 +232,9 @@ public class SearchRepositoryImpl implements SearchRepository {
                 boolean isUnique = attribute.unique();
                 boolean isOptionSet = (attribute.optionSet() != null);
                 assert dataValues != null;
-                if(!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(dataId, CustomIntentActionTypeModel.SEARCH)) {
-                    if (dataValues != null && dataValues.size() > 1) {
-                        dataValues = Collections.singletonList(String.join(",", dataValues));
-                    }
+                if(!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(dataId, CustomIntentActionTypeModel.SEARCH) && dataValues.size() > 1) {
+                    dataValues = Collections.singletonList(String.join(",", dataValues));
                 }
-
                 trackedEntityInstanceQuery = getTrackedEntityQuery(dataId, dataValues, isUnique, isOptionSet);
             }
         }
