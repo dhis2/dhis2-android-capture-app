@@ -171,11 +171,17 @@ class EnrollmentRepository(
                     programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
                 ),
             )
+
+        val enrollmentOrgUnitUid =
+            conf
+                .enrollment()
+                ?.organisationUnit()
+        val ownerOrgUnitUid = conf.ownerOrgUnit()
+
         val attributeCustomIntent =
             customIntentRepository.getCustomIntent(
                 programTrackedEntityAttribute.trackedEntityAttribute()?.uid(),
-                programUid,
-                null,
+                enrollmentOrgUnitUid,
                 CustomIntentActionTypeModel.DATA_ENTRY,
             )
 
@@ -183,12 +189,6 @@ class EnrollmentRepository(
         var mandatory = programTrackedEntityAttribute.mandatory() ?: false
         val optionSet = attribute.optionSet()?.uid()
         val generated = attribute.generated() ?: false
-
-        val enrollmentOrgUnitUid =
-            conf
-                .enrollment()
-                ?.organisationUnit()
-        val ownerOrgUnitUid = conf.ownerOrgUnit()
 
         var dataValue: String? =
             attribute

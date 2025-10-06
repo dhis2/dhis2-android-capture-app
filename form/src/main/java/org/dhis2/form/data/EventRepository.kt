@@ -624,8 +624,7 @@ class EventRepository(
         val customIntent =
             customIntentRepository.getCustomIntent(
                 uid,
-                programUid,
-                programStage?.uid(),
+                event?.organisationUnit(),
                 CustomIntentActionTypeModel.DATA_ENTRY,
             )
         val displayName = de?.displayName() ?: ""
