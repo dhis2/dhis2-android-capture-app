@@ -12,12 +12,7 @@ import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
 import org.dhis2.mobile.login.pin.ui.components.PinMode
-import org.dhis2.mobile.login.resources.Res
-import org.dhis2.mobile.login.resources.pin_error_incorrect
-import org.dhis2.mobile.login.resources.pin_error_no_pin
-import org.dhis2.mobile.login.resources.pin_error_reset_failed
-import org.dhis2.mobile.login.resources.pin_error_save_failed
-import org.jetbrains.compose.resources.getString
+import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 
 /**
  * ViewModel for managing PIN operations.
@@ -27,6 +22,7 @@ class PinViewModel(
     private val savePinUseCase: SavePinUseCase,
     private val validatePinUseCase: ValidatePinUseCase,
     private val forgotPinUseCase: ForgotPinUseCase,
+    private val resourceProvider: PinResourceProvider,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<PinState>(PinState.Idle)
     val uiState: StateFlow<PinState> = _uiState.asStateFlow()
@@ -61,7 +57,7 @@ class PinViewModel(
                 }.onFailure { error ->
                     _uiState.value =
                         PinState.Error(
-                            message = error.message ?: getString(Res.string.pin_error_save_failed),
+                            message = error.message ?: resourceProvider.getPinErrorSaveFailed(),
                         )
                 }
         }
@@ -83,7 +79,7 @@ class PinViewModel(
                     pinAttempts++
                     _uiState.value =
                         PinState.Error(
-                            message = getString(Res.string.pin_error_incorrect),
+                            message = resourceProvider.getPinErrorIncorrect(),
                             remainingAttempts = result.attemptsLeft,
                         )
                 }
@@ -93,7 +89,7 @@ class PinViewModel(
                 is PinResult.NoPinStored -> {
                     _uiState.value =
                         PinState.Error(
-                            message = getString(Res.string.pin_error_no_pin),
+                            message = resourceProvider.getPinErrorNoPinStored(),
                         )
                 }
             }
@@ -113,7 +109,7 @@ class PinViewModel(
                 }.onFailure { error ->
                     _uiState.value =
                         PinState.Error(
-                            message = error.message ?: getString(Res.string.pin_error_reset_failed),
+                            message = error.message ?: resourceProvider.getPinErrorResetFailed(),
                         )
                 }
         }

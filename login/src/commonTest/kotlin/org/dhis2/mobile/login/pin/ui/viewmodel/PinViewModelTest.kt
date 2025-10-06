@@ -13,6 +13,7 @@ import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
 import org.dhis2.mobile.login.pin.ui.components.PinMode
+import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -26,6 +27,7 @@ class PinViewModelTest {
     private val savePinUseCase: SavePinUseCase = mock()
     private val validatePinUseCase: ValidatePinUseCase = mock()
     private val forgotPinUseCase: ForgotPinUseCase = mock()
+    private val resourceProvider: PinResourceProvider = mock()
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
@@ -79,6 +81,26 @@ class PinViewModelTest {
         }
 
     @Test
+    fun `onPinComplete with SET mode uses resource provider when error message is null`() =
+        runTest {
+            // Given
+            viewModel = createViewModel()
+            val pin = "1234"
+            val error = Exception()
+            whenever(savePinUseCase(pin)).thenReturn(Result.failure(error))
+            whenever(resourceProvider.getPinErrorSaveFailed()).thenReturn("Failed to save PIN")
+
+            // When
+            viewModel.onPinComplete(pin, PinMode.SET)
+            advanceUntilIdle()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state is PinState.Error)
+            assertEquals("Failed to save PIN", state.message)
+        }
+
+    @Test
     fun `onPinComplete with ASK mode validates PIN successfully`() =
         runTest {
             // Given
@@ -101,6 +123,7 @@ class PinViewModelTest {
             viewModel = createViewModel()
             val pin = "0000"
             whenever(validatePinUseCase(pin, 0)).thenReturn(PinResult.Failed(attemptsLeft = 2))
+            whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
 
             // When
             viewModel.onPinComplete(pin, PinMode.ASK)
@@ -119,6 +142,7 @@ class PinViewModelTest {
             // Given
             viewModel = createViewModel()
             val pin = "0000"
+            whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
 
             // First attempt
             whenever(validatePinUseCase(pin, 0)).thenReturn(PinResult.Failed(attemptsLeft = 2))
@@ -146,6 +170,7 @@ class PinViewModelTest {
             viewModel = createViewModel()
             val pin = "1234"
             whenever(validatePinUseCase(pin, 0)).thenReturn(PinResult.NoPinStored)
+            whenever(resourceProvider.getPinErrorNoPinStored()).thenReturn("No PIN stored")
 
             // When
             viewModel.onPinComplete(pin, PinMode.ASK)
@@ -154,7 +179,7 @@ class PinViewModelTest {
             // Then
             val state = viewModel.uiState.value
             assertTrue(state is PinState.Error)
-            assertEquals("No PIN configured", state.message)
+            assertEquals("No PIN stored", state.message)
         }
 
     @Test
@@ -191,12 +216,32 @@ class PinViewModelTest {
         }
 
     @Test
+    fun `onForgotPin uses resource provider when error message is null`() =
+        runTest {
+            // Given
+            viewModel = createViewModel()
+            val error = Exception()
+            whenever(forgotPinUseCase()).thenReturn(Result.failure(error))
+            whenever(resourceProvider.getPinErrorResetFailed()).thenReturn("Failed to reset PIN")
+
+            // When
+            viewModel.onForgotPin()
+            advanceUntilIdle()
+
+            // Then
+            val state = viewModel.uiState.value
+            assertTrue(state is PinState.Error)
+            assertEquals("Failed to reset PIN", state.message)
+        }
+
+    @Test
     fun `resetState changes state to Idle`() =
         runTest {
             // Given
             viewModel = createViewModel()
             val pin = "0000"
             whenever(validatePinUseCase(pin, 0)).thenReturn(PinResult.Failed(attemptsLeft = 2))
+            whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
             viewModel.onPinComplete(pin, PinMode.ASK)
             advanceUntilIdle()
 
@@ -213,6 +258,7 @@ class PinViewModelTest {
             // Given
             viewModel = createViewModel()
             val pin = "0000"
+            whenever(resourceProvider.getPinErrorIncorrect()).thenReturn("Incorrect PIN")
 
             // Make a failed attempt
             whenever(validatePinUseCase(pin, 0)).thenReturn(PinResult.Failed(attemptsLeft = 2))
@@ -264,5 +310,6 @@ class PinViewModelTest {
             savePinUseCase = savePinUseCase,
             validatePinUseCase = validatePinUseCase,
             forgotPinUseCase = forgotPinUseCase,
+            resourceProvider = resourceProvider,
         )
 }
