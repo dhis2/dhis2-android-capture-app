@@ -157,7 +157,8 @@ public class SearchTEModule {
                                       SearchTEIRepository searchTEIRepository,
                                       ThemeManager themeManager,
                                       MetadataIconProvider metadataIconProvider,
-                                      DateUtils dateUtils) {
+                                      DateUtils dateUtils,
+                                      CustomIntentRepository customIntentRepository) {
         ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new SearchRepositoryImpl(teiType,
                 initialProgram,
@@ -173,7 +174,8 @@ public class SearchTEModule {
                 themeManager,
                 metadataIconProvider,
                 profilePictureProvider,
-                dateUtils);
+                dateUtils,
+                customIntentRepository);
     }
 
     @Provides

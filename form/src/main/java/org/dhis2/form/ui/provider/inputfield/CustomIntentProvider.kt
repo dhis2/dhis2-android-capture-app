@@ -187,13 +187,18 @@ private fun extractObjectValue(
     intent: Intent,
     objectCache: Map<String, JsonObject?>,
 ): List<String>? {
-    val jsonString = intent.getStringExtra(extra.name) ?: return null
-    val jsonObject = objectCache[jsonString] ?: getComplexObject(jsonString) ?: return null
+    try {
+        val jsonString = intent.getStringExtra(extra.name) ?: return null
+        val jsonObject = objectCache[jsonString] ?: getComplexObject(jsonString) ?: return null
 
-    return if (jsonObject.has(extra.key)) {
-        listOf(jsonObject[extra.key].asString)
-    } else {
-        null
+        return if (jsonObject.has(extra.key)) {
+            listOf(jsonObject[extra.key].asString)
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        Timber.d(e)
+        return null
     }
 }
 
@@ -202,13 +207,18 @@ private fun extractListValues(
     intent: Intent,
     listCache: Map<String, List<JsonObject>?>,
 ): List<String>? {
-    val jsonString = intent.getStringExtra(extra.name) ?: return null
-    val objectsList = listCache[jsonString] ?: getListOfObjects(jsonString) ?: return null
+    try {
+        val jsonString = intent.getStringExtra(extra.name) ?: return null
+        val objectsList = listCache[jsonString] ?: getListOfObjects(jsonString) ?: return null
 
-    return objectsList
-        .filter { it.has(extra.key) }
-        .map { it[extra.key].asString }
-        .takeIf { it.isNotEmpty() }
+        return objectsList
+            .filter { it.has(extra.key) }
+            .map { it[extra.key].asString }
+            .takeIf { it.isNotEmpty() }
+    } catch (e: Exception) {
+        Timber.d(e)
+        return null
+    }
 }
 
 fun getComplexObject(jsonString: String): JsonObject? =

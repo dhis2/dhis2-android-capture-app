@@ -22,6 +22,18 @@ class CustomIntentRepositoryImpl(
         actionType: CustomIntentActionTypeModel,
     ): CustomIntentModel? = getCustomIntentFromUid(triggerUid, CustomIntentContext(orgunitUid = orgunitUid), actionType)
 
+    override fun attributeHasCustomIntentAndReturnsAListOfValues(
+        triggerUid: String,
+        actionType: CustomIntentActionTypeModel,
+    ): Boolean {
+        val customIntent = getCustomIntentFromUid(triggerUid, CustomIntentContext(null, null), actionType)
+        return customIntent != null &&
+            (
+                customIntent.customIntentResponse.size > 1 ||
+                    customIntent.customIntentResponse.any { it.extraType == CustomIntentResponseExtraType.LIST_OF_OBJECTS }
+            )
+    }
+
     private fun getCustomIntentActionType(actionType: CustomIntentActionTypeModel): CustomIntentType =
         when (actionType) {
             CustomIntentActionTypeModel.DATA_ENTRY -> CustomIntentType.DATA_ENTRY
