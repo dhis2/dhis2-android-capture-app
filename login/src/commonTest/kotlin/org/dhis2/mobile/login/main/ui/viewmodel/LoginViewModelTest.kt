@@ -45,7 +45,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `initial screen is set correctly when starting`() =
+    fun initialScreenIsSetCorrectlyWhenStarting() =
         runTest {
             val initialScreenState =
                 LoginScreenState.ServerValidation(
@@ -70,7 +70,7 @@ class LoginViewModelTest {
         }
 
     @Test
-    fun `server validation shows error when validation fails`() =
+    fun serverValidationShowsErrorWhenValidationFails() =
         runTest {
             val serverUrl = "https://invalid-server.com"
             val errorMessage = "Server not found"
@@ -118,7 +118,7 @@ class LoginViewModelTest {
         }
 
     @Test
-    fun `cancel server validation stops the validation job`() =
+    fun cancelServerValidationStopsTheValidationJob() =
         runTest {
             whenever(getInitialScreen()).thenReturn(
                 LoginScreenState.ServerValidation(
@@ -154,7 +154,7 @@ class LoginViewModelTest {
         }
 
     @Test
-    fun `app link with valid code is handled correctly`() =
+    fun appLinkWithValidCodeIsHandledCorrectly() =
         runTest {
             val redirectUri = "https://vgarciabnz.github.io"
             val code = "auth_code_123"

@@ -48,7 +48,7 @@ class TwoFASettingsViewModelTest {
     }
 
     @Test
-    fun `TwoFAStatus is enabled`() =
+    fun twoFAStatusIsEnabled() =
         runTest {
             val enabledStatus = TwoFAStatus.Enabled()
             val disableUiState =
@@ -81,7 +81,7 @@ class TwoFASettingsViewModelTest {
         }
 
     @Test
-    fun `retry calls checkTwoFAStatus`() =
+    fun retryCallsCheckTwoFAStatus() =
         runTest {
             val noConnectionUiState = TwoFAStatus.NoConnection
             val disabledStatus = TwoFAStatus.Disabled(secretCode = "SECRETCODE")

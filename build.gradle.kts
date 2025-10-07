@@ -9,6 +9,7 @@ buildscript {
         classpath(libs.kotlinPlugin)
         classpath(libs.jacoco)
         classpath(libs.kotlinSerialization)
+        classpath(libs.browserstack.gradle)
     }
 }
 
@@ -59,6 +60,12 @@ allprojects {
                 if (requested.group == "org.jacoco")
                     useVersion("0.8.10")
             }
+        }
+        // Exclude dependencies from androidTest configurations to avoid conflicts with BrowserStack SDK
+        // BrowserStack SDK bundles these dependencies internally
+        if (name.contains("androidTest", ignoreCase = true)) {
+            exclude(group = "org.checkerframework", module = "checker-qual")
+            exclude(group = "com.google.code.findbugs", module = "jsr305")
         }
     }
 

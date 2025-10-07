@@ -97,8 +97,12 @@ sonarqube = "6.3.1.5724"
 browser = "1.9.0"
 biometric = "1.1.0"
 coil = "3.3.0"
+browserstackgradleTool = "1.1.0"
+browserstack = "1.41.5"
+
 
 [libraries]
+browserstack-gradle = { module = "com.browserstack:gradle-tool", version.ref = "browserstackgradleTool" }
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinSerialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
@@ -222,6 +226,7 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+test-browserstack = { group = "com.browserstack", name = "browserstack-java-sdk", version.ref = "browserstack" }
 
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

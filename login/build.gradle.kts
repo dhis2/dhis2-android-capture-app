@@ -26,6 +26,7 @@ kotlin {
 
     configurations.all {
         resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
+        exclude(group = "io.insert-koin", module = "koin-annotations")
     }
 
     sourceSets {
@@ -123,6 +124,12 @@ android {
         }
     }
     buildFeatures.buildConfig = true
+
+    packaging {
+        resources {
+            excludes += setOf("META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
+        }
+    }
 
     flavorDimensions += listOf("default")
     productFlavors {

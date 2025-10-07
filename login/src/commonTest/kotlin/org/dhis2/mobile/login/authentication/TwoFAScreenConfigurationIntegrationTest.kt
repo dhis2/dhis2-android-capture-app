@@ -63,7 +63,7 @@ class TwoFAScreenConfigurationIntegrationTest {
     }
 
     @Test
-    fun `Given user taps on 2FA settings, When 2FA status is disabled, Then loading screen and enable 2FA screen are displayed`() =
+    fun givenUserTapsOn2FASettingsWhen2FAStatusIsDisabledThenLoadingScreenAndEnable2FAScreenAreDisplayed() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
@@ -97,7 +97,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given user taps on 2FA settings, When 2FA status is enabled, Then loading screen and disable 2FA screen are displayed`() =
+    fun givenUserTapsOn2FASettingsWhen2FAStatusIsEnabledThenLoadingScreenAndDisable2FAScreenAreDisplayed() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
@@ -128,7 +128,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given user taps on 2FA settings, When 2FA status has no internet, Then loading screen and no connection screen are displayed`() =
+    fun givenUserTapsOn2FASettingsWhen2FAStatusHasNoInternetThenLoadingScreenAndNoConnectionScreenAreDisplayed() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
@@ -159,7 +159,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given 2FA enabled, When correct code is entered, Then enable 2FA screen is displayed`() =
+    fun given2FAEnabledWhenCorrectCodeIsEnteredThenEnable2FAScreenIsDisplayed() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()) doReturnConsecutively
@@ -220,7 +220,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given 2FA enabled, When incorrect code, Then disable screen is displayed with error`() =
+    fun given2FAEnabledWhenIncorrectCodeThenDisableScreenIsDisplayedWithError() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()).thenReturn(
@@ -274,7 +274,7 @@ class TwoFAScreenConfigurationIntegrationTest {
         }
 
     @Test
-    fun `Given user is in enable 2FA, when 2FA is enabled, go to disable screen`() =
+    fun givenUserIsInEnable2FAWhen2FAIsEnabledGoToDisableScreen() =
         runTest {
             // Given: User taps on 2FA settings
             whenever(repository.getTwoFAStatus()) doReturnConsecutively
