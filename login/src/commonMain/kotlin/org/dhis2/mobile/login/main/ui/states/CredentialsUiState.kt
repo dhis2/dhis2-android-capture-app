@@ -1,5 +1,7 @@
 package org.dhis2.mobile.login.main.ui.states
 
+import kotlinx.serialization.Serializable
+
 data class CredentialsUiState(
     val serverInfo: ServerInfo,
     val credentialsInfo: CredentialsInfo,
@@ -28,11 +30,49 @@ data class CredentialsInfo(
     val usernameCanBeEdited: Boolean,
 )
 
-data class OidcInfo(
-    val oidcIcon: String?,
-    val oidcLoginText: String?,
-    val oidcUrl: String?,
-)
+@Serializable
+sealed class OidcInfo(
+    val buttonText: String?,
+    val oidcClientId: String,
+    val oidcRedirectUri: String,
+) {
+    @Serializable
+    data class Discovery(
+        val server: String,
+        val loginButtonText: String?,
+        val clientId: String,
+        val redirectUri: String,
+        val discoveryUri: String,
+    ) : OidcInfo(loginButtonText, clientId, redirectUri)
+
+    @Serializable
+    data class Token(
+        val serverUrl: String,
+        val loginLabel: String?,
+        val clientId: String,
+        val redirectUri: String,
+        val authorizationUrl: String,
+        val tokenUrl: String,
+    ) : OidcInfo(loginLabel, clientId, redirectUri)
+
+    fun discoveryUri() =
+        when (this) {
+            is Discovery -> discoveryUri
+            is Token -> null
+        }
+
+    fun authorizationUri() =
+        when (this) {
+            is Discovery -> null
+            is Token -> authorizationUrl
+        }
+
+    fun tokenUrl() =
+        when (this) {
+            is Discovery -> null
+            is Token -> tokenUrl
+        }
+}
 
 sealed interface AfterLoginAction {
     data object DisplayTrackingMessage : AfterLoginAction

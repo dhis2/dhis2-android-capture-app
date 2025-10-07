@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.add_account
@@ -30,10 +31,12 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun AccountsScreen() {
-    val viewModel = koinViewModel<AccountsViewModel>()
+    val context = LocalPlatformContext.current
+    val viewModel = koinViewModel<AccountsViewModel> { parametersOf(context) }
     val accounts by viewModel.accounts.collectAsState()
 
     Column(

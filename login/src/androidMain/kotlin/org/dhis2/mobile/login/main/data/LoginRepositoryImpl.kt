@@ -1,7 +1,9 @@
 package org.dhis2.mobile.login.main.data
 
+import androidx.core.net.toUri
 import coil3.PlatformContext
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.providers.PreferenceProvider
@@ -15,6 +17,8 @@ import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
+import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.jetbrains.compose.resources.getString
 import java.io.File
 
@@ -35,6 +39,7 @@ class LoginRepositoryImpl(
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
     private val crashReportController: CrashReportController,
     private val analyticActions: AnalyticActions,
+    private val openIdController: OpenIdController,
 ) : LoginRepository {
     override suspend fun validateServer(
         server: String,
@@ -205,11 +210,74 @@ class LoginRepositoryImpl(
                             continuation.resume(value = kotlin.Result.success(pass)) { _, _, _ -> }
                         }
                         continuation.invokeOnCancellation {
-                            // If needed perform action on cancelation
+                            // If needed perform action on cancellation
                         }
                     }
                 }
         } ?: kotlin.Result.failure(Exception("No biometrics found"))
+
+    override suspend fun loginWithOpenId(
+        serverUrl: String,
+        isNetworkAvailable: Boolean,
+        clientId: String,
+        redirectUri: String,
+        discoveryUri: String?,
+        authorizationUri: String?,
+        tokenUrl: String?,
+    ): kotlin.Result<Unit> =
+        suspendCancellableCoroutine { continuation ->
+            val intent =
+                d2
+                    .userModule()
+                    .openIdHandler()
+                    .blockingLogIn(
+                        OpenIDConnectConfig(
+                            clientId = clientId,
+                            redirectUri = redirectUri.toUri(),
+                            discoveryUri = discoveryUri?.toUri(),
+                            authorizationUri = authorizationUri,
+                            tokenUrl = tokenUrl,
+                        ),
+                    )
+            openIdController.handleIntent(intent) { resultIntent ->
+                val result =
+                    if (resultIntent !is IntentWithRequestCode) {
+                        kotlin.Result.failure(Exception("Invalid authorization result"))
+                    } else {
+                        try {
+                            d2
+                                .userModule()
+                                .openIdHandler()
+                                .blockingHandleLogInResponse(
+                                    serverUrl = serverUrl,
+                                    intent = resultIntent.intent,
+                                    requestCode = resultIntent.requestCode,
+                                )
+                            kotlin.Result.success(Unit)
+                        } catch (e: Exception) {
+                            kotlin.Result.failure(
+                                Exception(
+                                    d2ErrorMessageProvider.getErrorMessage(
+                                        e,
+                                        isNetworkAvailable,
+                                    ),
+                                ),
+                            )
+                        }
+                    }
+                continuation.resume(value = result) { _, _, _ -> }
+            }
+            continuation.invokeOnCancellation {
+                kotlin.Result.failure<Unit>(Exception(""))
+            }
+        }
+
+    override suspend fun getUsername(): String =
+        d2
+            .userModule()
+            .user()
+            .blockingGet()
+            ?.username() ?: ""
 
     private fun isImportedDatabase(
         serverUrl: String,

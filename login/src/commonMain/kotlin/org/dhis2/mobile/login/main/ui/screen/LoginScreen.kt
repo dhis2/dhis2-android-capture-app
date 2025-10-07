@@ -48,12 +48,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
+import org.dhis2.mobile.login.main.ui.states.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.ic_dhis_logo
@@ -72,6 +74,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +86,8 @@ fun LoginScreen(
     onNavigateToPrivacyPolicy: () -> Unit,
     onFinish: () -> Unit,
 ) {
-    val viewModel = koinViewModel<LoginViewModel>()
+    val context = LocalPlatformContext.current
+    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -193,12 +197,25 @@ fun LoginScreen(
                 displayMoreActions = arg.selectedServer.isEmpty()
                 displayBackArrow = true
 
+                val oidcInfo =
+                    OidcInfo.Token(
+                        serverUrl = arg.selectedServer,
+                        loginLabel = "Login with Github",
+                        clientId = "Ov23liss2iuMqqrmn3n4",
+                        redirectUri = "dhis2androidapp://oauth2redirect",
+                        authorizationUrl = "https://github.com/login/oauth/authorize",
+                        tokenUrl = "https://github.com/login/oauth/access_token",
+                    )
                 CredentialsScreen(
                     selectedServer = arg.selectedServer,
                     selectedServerName = arg.serverName,
                     selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
                     selectedServerFlag = arg.selectedServerFlag,
                     allowRecovery = arg.allowRecovery,
+                    oidcInfo =
+                        oidcInfo.takeIf { info ->
+                            info.serverUrl == arg.selectedServer
+                        },
                 )
             }
             composable<LoginScreenState.OauthLogin> {

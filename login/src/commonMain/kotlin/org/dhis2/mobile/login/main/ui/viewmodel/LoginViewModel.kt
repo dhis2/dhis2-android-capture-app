@@ -102,11 +102,8 @@ class LoginViewModel(
                                     allowRecovery = result.allowRecovery,
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
-                                    selectedUsername = null,
-                                    oidcIcon = result.oidcIcon,
-                                    oidcLoginText = result.oidcLoginText,
-                                    oidcUrl = result.oidcUrl,
-                                ),
+                                selectedUsername = null,
+                            ),
                         )
                         stopValidation()
                     }
@@ -150,6 +147,10 @@ class LoginViewModel(
     }
 
     fun onRecoveryCancelled() {
+        navigateUp()
+    }
+
+    fun onOpenIdCancelled() {
         navigateUp()
     }
 
