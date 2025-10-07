@@ -18,10 +18,9 @@ class CustomIntentRepositoryImpl(
 
     override fun getCustomIntent(
         triggerUid: String?,
-        programUid: String?,
-        programStageUid: String?,
+        orgunitUid: String?,
         actionType: CustomIntentActionTypeModel,
-    ): CustomIntentModel? = getCustomIntentFromUid(triggerUid, CustomIntentContext(programUid, programStageUid), actionType)
+    ): CustomIntentModel? = getCustomIntentFromUid(triggerUid, CustomIntentContext(orgunitUid = orgunitUid), actionType)
 
     private fun getCustomIntentActionType(actionType: CustomIntentActionTypeModel): CustomIntentType =
         when (actionType) {
