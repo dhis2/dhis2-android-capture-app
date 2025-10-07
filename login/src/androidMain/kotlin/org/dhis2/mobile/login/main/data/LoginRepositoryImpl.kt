@@ -14,7 +14,6 @@ import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.db.access.DatabaseExportMetadata
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.jetbrains.compose.resources.getString
 import java.io.File
@@ -216,12 +215,11 @@ class LoginRepositoryImpl(
 
     override suspend fun importDatabase(path: String) =
         try {
-            val metadata: DatabaseExportMetadata =
-                d2
-                    .maintenanceModule()
-                    .databaseImportExport()
-                    .importDatabase(File(path))
-            kotlin.Result.success(metadata.serverUrl)
+            d2
+                .maintenanceModule()
+                .databaseImportExport()
+                .importDatabase(File(path))
+            kotlin.Result.success(Unit)
         } catch (e: Exception) {
             kotlin.Result.failure(
                 Exception(

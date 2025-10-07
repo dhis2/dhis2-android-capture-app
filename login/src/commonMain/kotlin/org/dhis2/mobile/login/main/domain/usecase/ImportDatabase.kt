@@ -5,5 +5,5 @@ import org.dhis2.mobile.login.main.data.LoginRepository
 class ImportDatabase(
     private val repository: LoginRepository,
 ) {
-    suspend operator fun invoke(path: String): Result<String> = repository.importDatabase(path)
+    suspend operator fun invoke(path: String): Result<Unit> = repository.importDatabase(path)
 }

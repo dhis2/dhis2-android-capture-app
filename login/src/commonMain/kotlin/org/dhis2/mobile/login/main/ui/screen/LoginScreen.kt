@@ -90,18 +90,15 @@ fun LoginScreen(
         }
 
     LaunchedEffect(databaseImportState) {
-        when (databaseImportState) {
-            is DatabaseImportState.OnFailure -> {
-                snackBarHostState.showSnackbar(
-                    (databaseImportState as DatabaseImportState.OnFailure).message,
-                )
+        databaseImportState?.let { state ->
+            when (state) {
+                is DatabaseImportState.OnFailure -> {
+                    snackBarHostState.showSnackbar(state.message)
+                }
+                is DatabaseImportState.OnSuccess -> {
+                    snackBarHostState.showSnackbar(getString(Res.string.importing_successful))
+                }
             }
-            is DatabaseImportState.OnSuccess -> {
-                snackBarHostState.showSnackbar(
-                    getString(Res.string.importing_successful),
-                )
-            }
-            else -> {}
         }
     }
 

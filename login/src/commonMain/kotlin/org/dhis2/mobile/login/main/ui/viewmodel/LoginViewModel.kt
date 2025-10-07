@@ -41,7 +41,7 @@ class LoginViewModel(
     private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
     val serverValidationState = _serverValidationState.asStateFlow()
 
-    private val _importDatabaseState = MutableStateFlow<DatabaseImportState>(DatabaseImportState.OnStandBy)
+    private val _importDatabaseState = MutableStateFlow<DatabaseImportState?>(null)
     val importDatabaseState = _importDatabaseState.asStateFlow()
 
     private var serverValidationJob: Job? = null
@@ -144,7 +144,7 @@ class LoginViewModel(
         viewModelScope.launch {
             importDatabase(path)
                 .fold(
-                    onSuccess = { serverUrl ->
+                    onSuccess = {
                         _importDatabaseState.update {
                             DatabaseImportState.OnSuccess
                         }

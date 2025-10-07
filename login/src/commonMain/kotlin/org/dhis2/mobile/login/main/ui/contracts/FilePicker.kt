@@ -5,6 +5,6 @@ import androidx.compose.runtime.Composable
 @Composable
 expect fun filePicker(onResult: (String?) -> Unit): FilePicker
 
-interface FilePicker {
+fun interface FilePicker {
     fun launch()
 }
