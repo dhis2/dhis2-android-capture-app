@@ -19,6 +19,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
+import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -36,6 +37,7 @@ class CredentialsViewModel(
     private val getHasOtherAccounts: GetHasOtherAccounts,
     private val loginUser: LoginUser,
     private val biometricLogin: BiometricLogin,
+    private val openIdLogin: OpenIdLogin,
     private val updateTrackingPermission: UpdateTrackingPermission,
     private val updateBiometricPermission: UpdateBiometricPermission,
     networkStatusProvider: NetworkStatusProvider,
@@ -43,6 +45,7 @@ class CredentialsViewModel(
     private val serverUrl: String,
     private val username: String?,
     private val allowRecovery: Boolean,
+    private val oidcInfo: OidcInfo?,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -110,13 +113,7 @@ class CredentialsViewModel(
                     errorMessage = null,
                     allowRecovery = allowRecovery,
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
-                    oidcInfo =
-                        OidcInfo(
-                            // TODO("This should either be received from validate server or with a new usecase")
-                            oidcIcon = "icon",
-                            oidcLoginText = "Open id connect",
-                            oidcUrl = "https://openid.login.test",
-                        ),
+                    oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts.invoke(),
                 ),
@@ -181,32 +178,7 @@ class CredentialsViewModel(
                             isNetworkAvailable = isNetworkOnline.value,
                         )
                     }
-                when (result) {
-                    is LoginResult.Success -> {
-                        _credentialsScreenState.update {
-                            it.copy(
-                                afterLoginActions =
-                                    buildList {
-                                        if (result.displayTrackingMessage) {
-                                            add(AfterLoginAction.DisplayTrackingMessage)
-                                        }
-                                        if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
-                                            add(AfterLoginAction.DisplayBiometricsMessage)
-                                        }
-                                        add(AfterLoginAction.NavigateToNextScreen(result.initialSyncDone))
-                                    },
-                            )
-                        }
-                    }
-
-                    is LoginResult.Error -> {
-                        _credentialsScreenState.update {
-                            it.copy(
-                                errorMessage = result.message,
-                            )
-                        }
-                    }
-                }
+                handleLoginResult(result)
             }
         loginJob?.invokeOnCompletion {
             _credentialsScreenState.update {
@@ -217,9 +189,49 @@ class CredentialsViewModel(
         }
     }
 
-    fun onOpenIdLogin(url: String) {
-        // TODO("Not implemented yet")
+    fun onOpenIdLogin() {
+        viewModelScope.launch {
+            val result =
+                openIdLogin(
+                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                    isNetworkAvailable = isNetworkOnline.value,
+                    clientId = _credentialsScreenState.value.oidcInfo?.oidcClientId ?: "",
+                    redirectUri = _credentialsScreenState.value.oidcInfo?.oidcRedirectUri ?: "",
+                    discoveryUri = _credentialsScreenState.value.oidcInfo?.discoveryUri(),
+                    authorizationUri = _credentialsScreenState.value.oidcInfo?.authorizationUri(),
+                    tokenUrl = _credentialsScreenState.value.oidcInfo?.tokenUrl(),
+                )
+            handleLoginResult(result)
+        }
     }
+
+    private suspend fun handleLoginResult(result: LoginResult) =
+        when (result) {
+            is LoginResult.Success -> {
+                _credentialsScreenState.update {
+                    it.copy(
+                        afterLoginActions =
+                            buildList {
+                                if (result.displayTrackingMessage) {
+                                    add(AfterLoginAction.DisplayTrackingMessage)
+                                }
+                                if (getBiometricInfo(serverUrl).displayBiometricsMessageAfterLogin) {
+                                    add(AfterLoginAction.DisplayBiometricsMessage)
+                                }
+                                add(AfterLoginAction.NavigateToNextScreen(result.initialSyncDone))
+                            },
+                    )
+                }
+            }
+
+            is LoginResult.Error -> {
+                _credentialsScreenState.update {
+                    it.copy(
+                        errorMessage = result.message,
+                    )
+                }
+            }
+        }
 
     fun cancelLogin() {
         loginJob?.cancel()
