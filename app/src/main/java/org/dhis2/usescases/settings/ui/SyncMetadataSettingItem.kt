@@ -119,6 +119,7 @@ internal fun SyncMetadataSettingItem(
                         },
                         showSearchBar = false,
                         loadOptions = {},
+                        showDeleteButton = false,
                     )
                 } else {
                     Text(

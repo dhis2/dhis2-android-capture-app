@@ -46,11 +46,16 @@ internal fun ReservedValuesSettingItem(
                         remember {
                             InputShellState.UNFOCUSED
                         }
+                    var value =
+                        remember {
+                            TextFieldValue(text = reservedValuesSettings.numberOfReservedValuesToDownload.toString())
+                        }
                     InputPositiveIntegerOrZero(
                         title = stringResource(R.string.reserved_values_hint),
                         state = inputReservedValuesState,
-                        inputTextFieldValue = TextFieldValue(text = reservedValuesSettings.numberOfReservedValuesToDownload.toString()),
+                        inputTextFieldValue = value,
                         onValueChanged = { fieldValue ->
+                            value = fieldValue ?: TextFieldValue()
                             onReservedValuesToDownloadUpdate(
                                 fieldValue?.text?.toIntOrNull() ?: 0,
                             )
@@ -64,6 +69,7 @@ internal fun ReservedValuesSettingItem(
                                     InputShellState.UNFOCUSED
                                 }
                         },
+                        showDeleteButton = false,
                     )
                 } else {
                     Text(

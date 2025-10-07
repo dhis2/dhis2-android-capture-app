@@ -103,6 +103,7 @@ internal fun SyncParametersSettingItem(
                             onScopeLimitSelected(selectedScope)
                         },
                         loadOptions = {},
+                        showDeleteButton = false,
                     )
 
                     var eventsToDownload =
