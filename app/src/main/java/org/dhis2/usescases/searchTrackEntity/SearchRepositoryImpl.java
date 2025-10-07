@@ -233,6 +233,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 boolean isOptionSet = (attribute.optionSet() != null);
                 assert dataValues != null;
                 if(!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(dataId, CustomIntentActionTypeModel.SEARCH) && dataValues.size() > 1) {
+                    //Only search with a list of values when the attribute is linked to a custom intent
+                    //that returns a list of values, otherwise the comma was one of the search characters
                     dataValues = Collections.singletonList(String.join(",", dataValues));
                 }
                 trackedEntityInstanceQuery = getTrackedEntityQuery(dataId, dataValues, isUnique, isOptionSet);
