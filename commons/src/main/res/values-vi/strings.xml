@@ -237,8 +237,10 @@
     <string name="open_with">Mở với</string>
 
     <string name="enrollment_data_section_label_V2">Dữ liệu %s</string>
+    <string name="enrollment_cancelled_V2">%s đã hủy</string>
     <string name="new_enrollment">%sMới</string>
-    <string name="enrolling_ou">Đã đăng ký vào:</string> <string name="new_event_label">%sMới</string>
+    <string name="enrolling_ou">Đã đăng ký vào:</string>
+    <string name="new_event_label">%sMới</string>
     <string name="delete_event_label">Xóa %s</string>
     <string name="week_period_span_default_label">Tuần %d %s đến %s</string>
     <string name="enrollment_reopen">mở lại</string>

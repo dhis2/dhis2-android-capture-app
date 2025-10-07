@@ -31,11 +31,7 @@
 
     <string name="sync_error_title">Sync error</string>
     <string name="sync_error_text">Terjadi kesalahan saat sinkronisasi. Silakan coba kembali.</string>
-    <string name="metadata_sync_error">GAGAL: Terjadi kesalahan saat sinkronisasi. Jika Anda memiliki koneksi silakan coba kembali. Jika kesalahan tetap terjadi, hubungi administrator Anda.</string>
-    <string name="data_sync_warning">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Periksa kembali status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
     <string name="data_sync_warning_program">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Jika status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
-    <string name="data_sync_error">ERROR: Beberapa data gagal disinkronkan. Silahkan cek status sinkronisasi: program yang error ditandai sebagai @, TEI dan even sebagai $\"</string>
-    <string name="data_sync_error_program">KESALAHAN: Beberapa data gagal disinkronkan. Silahkan cek status sinkronisasi: TEI dan even dengan konflik ditandai dengan $\"</string>
     <string name="server_sync_error">Terjadi kesalahan dan server tidak merespon. Hubungi administrator anda.</string>
 
     <string name="search_result_text">%s hasil ditemukan</string>
@@ -194,7 +190,6 @@
     <plurals name="settings_specific_programs">
         <item quantity="other">Terdapat %s program dengan pengaturan khusus</item>
     </plurals>
-    <string name="settings_sync_period">Periode sinkronisasi</string>
     <string name="settings_limit_scope">pengaturan terbatas</string>
     <string name="settings_limit_globally">Secara global</string>
     <string name="settings_limit_program">berdasarkan program</string>
@@ -216,6 +211,7 @@
     <string name="settingsReset_descr">Konfigurasi dan aplikasi penyimpan data pada perangkat Anda akan dihapus. Anda akan diminta untuk masuk kembali dan data yang belum disinkronkan pada server akan hilang.</string>
     <string name="settingsSms">Pengaturan SMS</string>
     <string name="settingsSms_descr">Periksa dan edit parameter yang terkait dengan SMS gateway</string>
+    <string name="settingsTwoFAStatus">Status</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Tanggal pendaftaran</string>
