@@ -43,10 +43,10 @@ class RulesRepositoryTest {
         assertTrue(supplData.containsKey("USER_GROUPS"))
         assertTrue(supplData.containsKey("org_unit_group_test_code"))
         assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData["USER_ROLES"]?.contains("role1") ?: false)
-        assertTrue(supplData["USER_ROLES"]?.contains("role2") ?: false)
-        assertTrue(supplData["USER_GROUPS"]?.contains("Child Health") ?: false)
-        assertTrue(supplData["USER_GROUPS"]?.contains("Antenatal care") ?: false)
+        assertTrue(supplData["USER_ROLES"]?.contains("UtXToHNI0Cb") ?: false)
+        assertTrue(supplData["USER_ROLES"]?.contains("oPNOIj7zJ1m") ?: false)
+        assertTrue(supplData["USER_GROUPS"]?.contains("gVC8vCfNAx8") ?: false)
+        assertTrue(supplData["USER_GROUPS"]?.contains("Kk12LkEWtXp") ?: false)
         assertTrue(
             supplData
                 .getOrElse("org_unit_group_test") { arrayListOf() }
@@ -82,8 +82,8 @@ class RulesRepositoryTest {
         assertTrue(supplData.containsKey("USER_ROLES"))
         assertTrue(!supplData.containsKey("org_unit_group_test_code"))
         assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role1"))
-        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role2"))
+        assertTrue(supplData["USER_ROLES"]?.contains("UtXToHNI0Cb") ?: false)
+        assertTrue(supplData["USER_ROLES"]?.contains("oPNOIj7zJ1m") ?: false)
         assertTrue(
             supplData
                 .getOrElse("org_unit_group_test") { arrayListOf() }
@@ -92,9 +92,9 @@ class RulesRepositoryTest {
         assertTrue(supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }.isEmpty())
     }
 
-    private fun getTestUserRoles(): List<String> = arrayListOf("role1", "role2")
+    private fun getTestUserRoles(): List<String> = arrayListOf("UtXToHNI0Cb", "oPNOIj7zJ1m")
 
-    private fun getTestUserGroups(): List<String> = listOf("Child Health", "Antenatal care")
+    private fun getTestUserGroups(): List<String> = listOf("gVC8vCfNAx8", "Kk12LkEWtXp")
 
     private fun getTestOrgUnit(): OrganisationUnit =
         OrganisationUnit
