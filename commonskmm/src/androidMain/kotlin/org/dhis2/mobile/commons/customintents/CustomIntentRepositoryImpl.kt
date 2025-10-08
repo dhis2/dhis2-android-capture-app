@@ -26,7 +26,7 @@ class CustomIntentRepositoryImpl(
         triggerUid: String,
         actionType: CustomIntentActionTypeModel,
     ): Boolean {
-        val customIntent = getCustomIntentFromUid(triggerUid, CustomIntentContext(null, null), actionType)
+        val customIntent = getCustomIntentFromUid(triggerUid, CustomIntentContext(null), actionType)
         return customIntent != null &&
             (
                 customIntent.customIntentResponse.size > 1 ||
