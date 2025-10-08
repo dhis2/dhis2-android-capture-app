@@ -146,6 +146,7 @@ class SearchRepositoryTest {
                 metadataIconProvider,
                 profilePictureProvider,
                 dateUtils,
+                customIntentRepository,
             )
     }
 

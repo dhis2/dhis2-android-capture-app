@@ -9,4 +9,9 @@ interface CustomIntentRepository {
         orgunitUid: String?,
         actionType: CustomIntentActionTypeModel,
     ): CustomIntentModel?
+
+    fun attributeHasCustomIntentAndReturnsAListOfValues(
+        triggerUid: String,
+        actionType: CustomIntentActionTypeModel,
+    ): Boolean
 }

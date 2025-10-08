@@ -27,6 +27,8 @@ import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.metadata.usecases.FileResourceConfiguration;
 import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository;
+import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel;
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.tracker.data.ProfilePictureProvider;
@@ -122,6 +124,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final MetadataIconProvider metadataIconProvider;
     private final ProfilePictureProvider profilePictureProvider;
+    private CustomIntentRepository customIntentRepository;
 
     SearchRepositoryImpl(String teiType,
                          @Nullable String initialProgram,
@@ -137,7 +140,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                          ThemeManager themeManager,
                          MetadataIconProvider metadataIconProvider,
                          ProfilePictureProvider profilePictureProvider,
-                         DateUtils dateUtils
+                         DateUtils dateUtils,
+                         CustomIntentRepository customIntentRepository
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -160,6 +164,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 resources);
         this.metadataIconProvider = metadataIconProvider;
         this.profilePictureProvider = profilePictureProvider;
+        this.customIntentRepository = customIntentRepository;
     }
 
 
@@ -227,7 +232,11 @@ public class SearchRepositoryImpl implements SearchRepository {
                 boolean isUnique = attribute.unique();
                 boolean isOptionSet = (attribute.optionSet() != null);
                 assert dataValues != null;
-
+                if(!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(dataId, CustomIntentActionTypeModel.SEARCH) && dataValues.size() > 1) {
+                    //Only search with a list of values when the attribute is linked to a custom intent
+                    //that returns a list of values, otherwise the comma was one of the search characters
+                    dataValues = Collections.singletonList(String.join(",", dataValues));
+                }
                 trackedEntityInstanceQuery = getTrackedEntityQuery(dataId, dataValues, isUnique, isOptionSet);
             }
         }
