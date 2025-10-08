@@ -144,6 +144,7 @@ internal fun SyncDataSettingItem(
                         },
                         showSearchBar = false,
                         loadOptions = {},
+                        showDeleteButton = false,
                     )
                 } else {
                     Text(
