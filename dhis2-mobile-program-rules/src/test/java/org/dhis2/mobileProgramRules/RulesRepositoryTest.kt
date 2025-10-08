@@ -32,17 +32,17 @@ class RulesRepositoryTest {
                 .uid("org_unit_test")
                 .blockingGet(),
         ) doReturn getTestOrgUnit()
-        whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
+        whenever(d2.userModule().userRoles().blockingGetUids()) doReturn getTestUserRoles()
         val supplData =
             runBlocking {
                 repository.supplementaryData("org_unit_test")
             }
         assertTrue(supplData.isNotEmpty())
-        assertTrue(supplData.containsKey("USER"))
+        assertTrue(supplData.containsKey("USER_ROLES"))
         assertTrue(supplData.containsKey("org_unit_group_test_code"))
         assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role1"))
-        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role2"))
+        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role1"))
+        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role2"))
         assertTrue(
             supplData
                 .getOrElse("org_unit_group_test") { arrayListOf() }
@@ -65,7 +65,7 @@ class RulesRepositoryTest {
                 .uid("org_unit_test")
                 .blockingGet(),
         ) doReturn getTestOrgUnitWithNullCodeGroup()
-        whenever(d2.userModule().userRoles().blockingGet()) doReturn getTestUserRoles()
+        whenever(d2.userModule().userRoles().blockingGetUids()) doReturn getTestUserRoles()
         val supplData =
             runBlocking {
                 repository.supplementaryData("org_unit_test")
@@ -73,11 +73,11 @@ class RulesRepositoryTest {
 
         assertTrue(supplData.isNotEmpty())
 
-        assertTrue(supplData.containsKey("USER"))
+        assertTrue(supplData.containsKey("USER_ROLES"))
         assertTrue(!supplData.containsKey("org_unit_group_test_code"))
         assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role1"))
-        assertTrue(supplData.getOrElse("USER") { arrayListOf() }.contains("role2"))
+        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role1"))
+        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role2"))
         assertTrue(
             supplData
                 .getOrElse("org_unit_group_test") { arrayListOf() }
@@ -86,21 +86,7 @@ class RulesRepositoryTest {
         assertTrue(supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }.isEmpty())
     }
 
-    private fun getTestUserRoles(): List<UserRole> =
-        arrayListOf(
-            UserRole
-                .builder()
-                .uid("role1")
-                .name("roleName1")
-                .code("roleCode1")
-                .build(),
-            UserRole
-                .builder()
-                .uid("role2")
-                .name("roleName2")
-                .code("roleCode2")
-                .build(),
-        )
+    private fun getTestUserRoles(): List<String> = arrayListOf("role1", "role2")
 
     private fun getTestOrgUnit(): OrganisationUnit =
         OrganisationUnit

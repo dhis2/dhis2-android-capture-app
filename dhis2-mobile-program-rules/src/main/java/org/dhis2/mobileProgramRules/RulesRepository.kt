@@ -12,7 +12,6 @@ import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.programStage
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.helpers.UidsHelper
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
@@ -50,9 +49,8 @@ class RulesRepository(
                 }
             }
 
-        val userRoleUids =
-            UidsHelper.getUidsList(d2.userModule().userRoles().blockingGet())
-        supData["USER"] = userRoleUids
+        val userRoleUids = d2.userModule().userRoles().blockingGetUids()
+        supData["USER_ROLES"] = userRoleUids
         supData["android_version"] = listOf(Build.VERSION.SDK_INT.toString())
 
         return supData
