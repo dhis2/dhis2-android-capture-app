@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
@@ -172,12 +173,14 @@ class CredentialsViewModel(
         loginJob =
             viewModelScope.launch {
                 val result =
-                    loginUser(
-                        serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                        username = _credentialsScreenState.value.credentialsInfo.username,
-                        password = _credentialsScreenState.value.credentialsInfo.password,
-                        isNetworkAvailable = isNetworkOnline.value,
-                    )
+                    withMinimumDuration {
+                        loginUser(
+                            serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                            username = _credentialsScreenState.value.credentialsInfo.username,
+                            password = _credentialsScreenState.value.credentialsInfo.password,
+                            isNetworkAvailable = isNetworkOnline.value,
+                        )
+                    }
                 when (result) {
                     is LoginResult.Success -> {
                         _credentialsScreenState.update {

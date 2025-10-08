@@ -133,6 +133,9 @@ class LoginActivity :
                             startActivity(Intent(it, PolicyView::class.java))
                         }
                     },
+                    onFinish = {
+                        finish()
+                    },
                 )
             }
         }

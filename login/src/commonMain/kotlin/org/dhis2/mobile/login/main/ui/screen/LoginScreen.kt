@@ -79,6 +79,7 @@ fun LoginScreen(
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
+    onFinish: () -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
@@ -112,7 +113,11 @@ fun LoginScreen(
                 version = versionName,
                 displayMoreActions = displayMoreActions,
                 displayBackArrow = displayBackArrow,
-                onBack = { navController.popBackStack() },
+                onBack = {
+                    if (!navController.popBackStack()) {
+                        onFinish()
+                    }
+                },
                 onImportDatabase = { picker.launch() },
             )
         },
@@ -133,16 +138,8 @@ fun LoginScreen(
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
                 is NavigationAction.Navigate -> {
-                    navController.navigate(action.destination) {
-                        action.navOptions(this)
-                        val currentRouteString =
-                            navController.currentBackStackEntry?.destination?.route
-                        val startDestinationRouteString =
-                            LoginScreenState.Loading::class.qualifiedName
-                        if (currentRouteString != null && currentRouteString == startDestinationRouteString) {
-                            popUpTo(LoginScreenState.Loading::class) { inclusive = true }
-                        }
-                    }
+                    navController.popBackStack(LoginScreenState.Loading, true)
+                    navController.navigate(action.destination)
                 }
 
                 NavigationAction.NavigateUp -> navController.navigateUp()

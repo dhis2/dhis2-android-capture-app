@@ -115,6 +115,12 @@ fun CredentialsScreen(
         }
     }
 
+    val isLoggingIn by remember(screenState) {
+        derivedStateOf {
+            screenState.loginState == LoginState.Running
+        }
+    }
+
     LaunchedEffect(screenState) {
         val action = screenState.afterLoginActions.firstOrNull()
         if (action is AfterLoginAction.NavigateToNextScreen) {
@@ -140,7 +146,7 @@ fun CredentialsScreen(
             username = screenState.credentialsInfo.username,
             password = screenState.credentialsInfo.password,
             isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
-            isLoggingIn = screenState.loginState == LoginState.Running,
+            isLoggingIn = isLoggingIn,
             onUserNameChanged = {
                 viewModel.updateUsername(it)
             },
@@ -149,26 +155,28 @@ fun CredentialsScreen(
             },
         )
         LoginStatus(
-            isLoggingIn = screenState.loginState == LoginState.Running,
+            isLoggingIn = isLoggingIn,
             loginErrorMessage = screenState.errorMessage,
             onCancelLogin = viewModel::cancelLogin,
         )
-        CredentialActions(
-            allowRecovery = screenState.allowRecovery,
-            oidcInfo = screenState.oidcInfo,
-            hasBiometrics = screenState.canUseBiometrics,
-            canLogin = screenState.loginState == LoginState.Enabled,
-            onLoginClicked = viewModel::onLoginClicked,
-            onOpenIdLogin = viewModel::onOpenIdLogin,
-            onBiometricsClicked = {
-                with(context) {
-                    viewModel.onBiometricsClicked()
-                }
-            },
-            onManageAccounts = viewModel::onManageAccountsClicked,
-            onRecoverAccount = viewModel::onRecoverAccountClicked,
-            hasOtherAccounts = screenState.hasOtherAccounts,
-        )
+        if (isLoggingIn.not()) {
+            CredentialActions(
+                allowRecovery = screenState.allowRecovery,
+                oidcInfo = screenState.oidcInfo,
+                hasBiometrics = screenState.canUseBiometrics,
+                canLogin = screenState.loginState == LoginState.Enabled,
+                onLoginClicked = viewModel::onLoginClicked,
+                onOpenIdLogin = viewModel::onOpenIdLogin,
+                onBiometricsClicked = {
+                    with(context) {
+                        viewModel.onBiometricsClicked()
+                    }
+                },
+                onManageAccounts = viewModel::onManageAccountsClicked,
+                onRecoverAccount = viewModel::onRecoverAccountClicked,
+                hasOtherAccounts = screenState.hasOtherAccounts,
+            )
+        }
     }
     if (displayTrackingMessage) {
         TrackingPermissionDialog(
@@ -316,7 +324,7 @@ private fun CredentialsContainer(
             uiModel =
                 InputPasswordModel(
                     title = stringResource(Res.string.password_hint),
-                    state = InputShellState.UNFOCUSED,
+                    state = inputShellState,
                     inputTextFieldValue = passwordTextValue,
                     onNextClicked = {},
                     onValueChanged = {
