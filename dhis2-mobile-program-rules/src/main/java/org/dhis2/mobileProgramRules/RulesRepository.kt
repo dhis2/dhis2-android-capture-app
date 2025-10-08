@@ -50,7 +50,9 @@ class RulesRepository(
             }
 
         val userRoleUids = d2.userModule().userRoles().blockingGetUids()
+        val userGroupUids = d2.userModule().userGroups().blockingGetUids()
         supData["USER_ROLES"] = userRoleUids
+        supData["USER_GROUPS"] = userGroupUids
         supData["android_version"] = listOf(Build.VERSION.SDK_INT.toString())
 
         return supData

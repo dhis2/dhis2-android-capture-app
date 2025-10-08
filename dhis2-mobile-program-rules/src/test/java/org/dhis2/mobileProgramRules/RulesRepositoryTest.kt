@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitGroup
-import org.hisp.dhis.android.core.user.UserRole
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -33,16 +32,21 @@ class RulesRepositoryTest {
                 .blockingGet(),
         ) doReturn getTestOrgUnit()
         whenever(d2.userModule().userRoles().blockingGetUids()) doReturn getTestUserRoles()
+        whenever(d2.userModule().userGroups().blockingGetUids()) doReturn getTestUserGroups()
+
         val supplData =
             runBlocking {
                 repository.supplementaryData("org_unit_test")
             }
         assertTrue(supplData.isNotEmpty())
         assertTrue(supplData.containsKey("USER_ROLES"))
+        assertTrue(supplData.containsKey("USER_GROUPS"))
         assertTrue(supplData.containsKey("org_unit_group_test_code"))
         assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role1"))
-        assertTrue(supplData.getOrElse("USER_ROLES") { arrayListOf() }.contains("role2"))
+        assertTrue(supplData["USER_ROLES"]?.contains("role1") ?: false)
+        assertTrue(supplData["USER_ROLES"]?.contains("role2") ?: false)
+        assertTrue(supplData["USER_GROUPS"]?.contains("Child Health") ?: false)
+        assertTrue(supplData["USER_GROUPS"]?.contains("Antenatal care") ?: false)
         assertTrue(
             supplData
                 .getOrElse("org_unit_group_test") { arrayListOf() }
@@ -66,6 +70,8 @@ class RulesRepositoryTest {
                 .blockingGet(),
         ) doReturn getTestOrgUnitWithNullCodeGroup()
         whenever(d2.userModule().userRoles().blockingGetUids()) doReturn getTestUserRoles()
+        whenever(d2.userModule().userGroups().blockingGetUids()) doReturn getTestUserGroups()
+
         val supplData =
             runBlocking {
                 repository.supplementaryData("org_unit_test")
@@ -87,6 +93,8 @@ class RulesRepositoryTest {
     }
 
     private fun getTestUserRoles(): List<String> = arrayListOf("role1", "role2")
+
+    private fun getTestUserGroups(): List<String> = listOf("Child Health", "Antenatal care")
 
     private fun getTestOrgUnit(): OrganisationUnit =
         OrganisationUnit
