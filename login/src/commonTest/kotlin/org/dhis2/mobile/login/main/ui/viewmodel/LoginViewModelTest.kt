@@ -200,7 +200,7 @@ class LoginViewModelTest {
     fun `successfully import database`() =
         runTest {
             whenever(importDatabase("path")).thenReturn(
-                Result.success("https://test.dhis2.org"),
+                Result.success(Unit),
             )
 
             viewModel =
@@ -214,7 +214,7 @@ class LoginViewModelTest {
                 )
 
             viewModel.importDatabaseState.test {
-                assertEquals(DatabaseImportState.OnStandBy, awaitItem())
+                assertEquals(null, awaitItem())
 
                 viewModel.importDb("path")
 
@@ -241,7 +241,7 @@ class LoginViewModelTest {
                 )
 
             viewModel.importDatabaseState.test {
-                assertEquals(DatabaseImportState.OnStandBy, awaitItem())
+                assertEquals(null, awaitItem())
 
                 viewModel.importDb("path")
 
