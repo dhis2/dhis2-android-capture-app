@@ -1,5 +1,6 @@
 package org.dhis2.mobileProgramRules
 
+import org.dhis2.commons.extensions.toDate
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
@@ -26,6 +28,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
+import kotlin.time.ExperimentalTime
 
 class RuleEngineExtensionsTest {
     private val dataElementRepository: DataElementCollectionRepository =
@@ -52,6 +55,20 @@ class RuleEngineExtensionsTest {
             TrackedEntityAttributeCollectionRepository::class.java,
             RETURNS_DEEP_STUBS,
         )
+
+    @OptIn(ExperimentalTime::class)
+    @Test
+    fun `Should remove the time component`() {
+        val date1 = "2025-09-25T11:43:32.431".toDate()!!
+        val date2 = "2025-09-25T00:00:00.000".toDate()!!
+
+        assertEquals(date1.toRuleEngineInstantWithNoTime(), date2.toRuleEngineInstantWithNoTime())
+
+        val date3 = "2025-09-25T11:43:32.431".toDate()!!
+        val date4 = "2025-09-26T00:00:00.000".toDate()!!
+
+        assertNotEquals(date3.toRuleEngineInstantWithNoTime(), date4.toRuleEngineInstantWithNoTime())
+    }
 
     @Test
     fun `Should transform trackedEntityDataValues to ruleDataValues with optionName value`() {
