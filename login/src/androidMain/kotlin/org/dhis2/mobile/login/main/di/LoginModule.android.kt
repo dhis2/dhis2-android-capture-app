@@ -1,6 +1,5 @@
 package org.dhis2.mobile.login.main.di
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.auth.OpenIdControllerImpl
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
