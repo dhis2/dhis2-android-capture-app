@@ -103,9 +103,6 @@ android {
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
         buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
-
-//        manifestPlaceholders["appAuthRedirectScheme"] = ""
-
     }
     packaging {
         jniLibs {
