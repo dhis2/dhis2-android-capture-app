@@ -23,6 +23,8 @@ interface LoginRepository {
 
     suspend fun updateAvailableUsers(username: String)
 
+    suspend fun updateServerUrls(serverUrl: String)
+
     suspend fun displayTrackingMessage(): Boolean
 
     suspend fun initialSyncDone(

@@ -14,6 +14,7 @@ internal actual val accountModule =
         factory<AccountRepository> {
             AccountRepositoryImpl(
                 get(),
+                get(),
             )
         }
 
