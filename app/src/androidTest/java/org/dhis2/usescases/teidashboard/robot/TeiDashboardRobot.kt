@@ -78,14 +78,17 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         Thread.sleep(500)
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun goToAnalytics() {
-        composeTestRule.onNodeWithText(
-            InstrumentationRegistry.getInstrumentation().targetContext.getString(
-                R.string.navigation_analytics
-            ),
-            useUnmergedTree = true,
-        ).performClick()
-        Thread.sleep(500)
+        val analyticsText = InstrumentationRegistry.getInstrumentation().targetContext.getString(
+            R.string.navigation_analytics
+        )
+        composeTestRule.waitUntilExactlyOneExists(
+            hasText(analyticsText,true),
+            TIMEOUT
+        )
+        composeTestRule.onNodeWithText(analyticsText, useUnmergedTree = true).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun clickOnMenuMoreOptions() {
@@ -99,7 +102,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkCancelledStateInfoBarIsDisplay() {
-        composeTestRule.onNodeWithTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name)
+            .assertIsDisplayed()
         composeTestRule.onNodeWithText("Enrollment cancelled").assertIsDisplayed()
     }
 
@@ -138,7 +142,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkProgramStageSelectionActivityIsLaunched() {
         Intents.intended(allOf(IntentMatchers.hasComponent(ProgramStageSelectionActivity::class.java.name)))
-   }
+    }
 
 
     fun clickOnReferralOption(oneTime: String) {
@@ -185,7 +189,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkCompleteStateInfoBarIsDisplay() {
-        composeTestRule.onNodeWithTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(INFO_BAR_TEST_TAG + InfoBarType.ENROLLMENT_STATUS.name)
+            .assertIsDisplayed()
         composeTestRule.onNodeWithText("Enrollment completed").assertIsDisplayed()
     }
 
