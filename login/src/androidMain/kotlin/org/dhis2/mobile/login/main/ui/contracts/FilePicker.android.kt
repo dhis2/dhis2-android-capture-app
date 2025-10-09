@@ -43,9 +43,7 @@ actual fun filePicker(onResult: (String?) -> Unit): FilePicker {
             } ?: onResult(null)
         }
 
-    return object : FilePicker {
-        override fun launch() {
-            launcher.launch("*/*")
-        }
+    return FilePicker {
+        launcher.launch("*/*")
     }
 }
