@@ -65,5 +65,4 @@
     <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
     <string name="import_database">Import Database</string>
     <string name="importing_successful">Import successful</string>
-    <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
 </resources>
