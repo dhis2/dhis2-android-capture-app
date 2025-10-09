@@ -20,6 +20,8 @@ import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 import org.junit.Before
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -70,7 +72,10 @@ class LoginViewModelTest {
 
             advanceUntilIdle()
 
-            verify(navigator).navigate(initialScreenState)
+            verify(navigator).navigate(
+                eq(initialScreenState),
+                any()
+            )
         }
 
     @Test
@@ -247,7 +252,10 @@ class LoginViewModelTest {
 
                 val importState = awaitItem()
                 assertEquals(true, importState is DatabaseImportState.OnFailure)
-                assertEquals("Database already exists", (importState as DatabaseImportState.OnFailure).message)
+                assertEquals(
+                    "Database already exists",
+                    (importState as DatabaseImportState.OnFailure).message
+                )
             }
         }
 }
