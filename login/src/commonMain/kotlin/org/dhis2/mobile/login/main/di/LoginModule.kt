@@ -59,10 +59,12 @@ internal val mainLoginModule =
             OpenIdLogin(get { parametersOf(params.get()) })
         }
         viewModel { parameters ->
+            val context = parameters.get<PlatformContext>()
             LoginViewModel(
                 get(),
                 get(),
-                get { parametersOf(parameters.get()) },
+                get { parametersOf(context) },
+                get { parametersOf(context) },
                 get(),
                 get(),
             )
