@@ -16,6 +16,7 @@ import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.jetbrains.compose.resources.getString
+import java.io.File
 
 private const val PREF_USERS = "PREF_USERS"
 private const val PREF_SESSION_LOCKED = "SessionLocked"
@@ -211,4 +212,22 @@ class LoginRepositoryImpl(
             ?.value()
             ?.lowercase()
             ?.toBooleanStrictOrNull() == true
+
+    override suspend fun importDatabase(path: String) =
+        try {
+            d2
+                .maintenanceModule()
+                .databaseImportExport()
+                .importDatabase(File(path))
+            kotlin.Result.success(Unit)
+        } catch (e: Exception) {
+            kotlin.Result.failure(
+                Exception(
+                    d2ErrorMessageProvider.getErrorMessage(
+                        e,
+                        isNetworkAvailable = true,
+                    ),
+                ),
+            )
+        }
 }

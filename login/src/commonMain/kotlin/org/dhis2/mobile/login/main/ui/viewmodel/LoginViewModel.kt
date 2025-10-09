@@ -15,14 +15,17 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.OauthLogin
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
+import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
+import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 
 class LoginViewModel(
     val navigator: Navigator,
     private val getInitialScreen: GetInitialScreen,
+    private val importDatabase: ImportDatabase,
     private val validateServer: ValidateServer,
     private val appLinkNavigation: AppLinkNavigation,
     networkStatusProvider: NetworkStatusProvider,
@@ -37,6 +40,9 @@ class LoginViewModel(
 
     private val _serverValidationState = MutableStateFlow(ServerValidationUiState())
     val serverValidationState = _serverValidationState.asStateFlow()
+
+    private val _importDatabaseState = MutableStateFlow<DatabaseImportState?>(null)
+    val importDatabaseState = _importDatabaseState.asStateFlow()
 
     private var serverValidationJob: Job? = null
     private val redirectUri = "https://vgarciabnz.github.io"
@@ -131,6 +137,27 @@ class LoginViewModel(
     fun onOauthLoginCancelled() {
         viewModelScope.launch {
             navigator.navigateUp()
+        }
+    }
+
+    fun importDb(path: String) {
+        viewModelScope.launch {
+            importDatabase(path)
+                .fold(
+                    onSuccess = {
+                        _importDatabaseState.update {
+                            DatabaseImportState.OnSuccess
+                        }
+                        goToInitialScreen()
+                    },
+                    onFailure = { error ->
+                        _importDatabaseState.update {
+                            error.message?.let {
+                                DatabaseImportState.OnFailure(it)
+                            }!!
+                        }
+                    },
+                )
         }
     }
 }

@@ -40,4 +40,6 @@ interface LoginRepository {
 
     context(context: PlatformContext)
     suspend fun loginWithBiometric(): Result<UserPassword>
+
+    suspend fun importDatabase(path: String): Result<Unit>
 }

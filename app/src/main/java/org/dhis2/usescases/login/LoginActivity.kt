@@ -6,11 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.webkit.MimeTypeMap
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.graphics.toArgb
 import org.dhis2.App
 import org.dhis2.R
@@ -40,10 +38,6 @@ import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.koin.android.ext.android.inject
-import timber.log.Timber
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 const val EXTRA_SKIP_SYNC = "SKIP_SYNC"
@@ -74,32 +68,6 @@ class LoginActivity :
 
     private var skipSync = false
     private var openIDRequestCode = -1
-
-    private val filePickerLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            result.data?.data?.let { uri ->
-                val fileType =
-                    with(contentResolver) {
-                        MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
-                    }
-                val file = File.createTempFile("importedDb", fileType)
-                val inputStream = contentResolver.openInputStream(uri)!!
-                try {
-                    FileOutputStream(file, false).use { outputStream ->
-                        var read: Int
-                        val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
-                        while (inputStream.read(bytes).also { read = it } != -1) {
-                            outputStream.write(bytes, 0, read)
-                        }
-                    }
-                } catch (e: IOException) {
-                    Timber.e("Failed to load file: %s", e.message.toString())
-                }
-                if (file.exists()) {
-                    presenter.onImportDataBase(file)
-                }
-            }
-        }
 
     companion object {
         fun bundle(
@@ -155,12 +123,6 @@ class LoginActivity :
             DHIS2Theme {
                 LoginScreen(
                     versionName = buildInfo(),
-                    onImportDatabase = {
-                        val intent = Intent()
-                        intent.type = "*/*"
-                        intent.action = Intent.ACTION_GET_CONTENT
-                        filePickerLauncher.launch(intent)
-                    },
                     onNavigateToHome = {
                         app().createUserComponent()
                         startActivity(MainActivity::class.java, null, true, true, null)
