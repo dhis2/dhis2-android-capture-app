@@ -11,6 +11,7 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_UNIQUE_ID
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -348,6 +349,7 @@ class TeiDashboardTest : BaseTest() {
                 selectTreeOrgUnit(orgUnit)
             }
 
+            waitUntilActivityVisible<EnrollmentActivity>()
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()
