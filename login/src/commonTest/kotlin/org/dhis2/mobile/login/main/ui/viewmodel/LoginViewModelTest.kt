@@ -74,7 +74,7 @@ class LoginViewModelTest {
 
             verify(navigator).navigate(
                 eq(initialScreenState),
-                any()
+                any(),
             )
         }
 
@@ -254,7 +254,7 @@ class LoginViewModelTest {
                 assertEquals(true, importState is DatabaseImportState.OnFailure)
                 assertEquals(
                     "Database already exists",
-                    (importState as DatabaseImportState.OnFailure).message
+                    (importState as DatabaseImportState.OnFailure).message,
                 )
             }
         }
