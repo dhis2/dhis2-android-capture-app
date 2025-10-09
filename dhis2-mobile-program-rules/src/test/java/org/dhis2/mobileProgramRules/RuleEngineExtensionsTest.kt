@@ -1,7 +1,7 @@
 package org.dhis2.mobileProgramRules
 
-import org.dhis2.commons.extensions.toDate
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -59,13 +59,13 @@ class RuleEngineExtensionsTest {
     @OptIn(ExperimentalTime::class)
     @Test
     fun `Should remove the time component`() {
-        val date1 = "2025-09-25T11:43:32.431".toDate()!!
-        val date2 = "2025-09-25T00:00:00.000".toDate()!!
+        val date1 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
+        val date2 = DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000")
 
         assertEquals(date1.toRuleEngineInstantWithNoTime(), date2.toRuleEngineInstantWithNoTime())
 
-        val date3 = "2025-09-25T11:43:32.431".toDate()!!
-        val date4 = "2025-09-26T00:00:00.000".toDate()!!
+        val date3 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
+        val date4 = DateUtils.DATE_FORMAT.parse("2025-09-26T00:00:00.000")
 
         assertNotEquals(date3.toRuleEngineInstantWithNoTime(), date4.toRuleEngineInstantWithNoTime())
     }

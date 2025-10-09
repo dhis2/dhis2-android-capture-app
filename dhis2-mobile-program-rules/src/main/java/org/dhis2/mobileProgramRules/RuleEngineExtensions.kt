@@ -45,7 +45,8 @@ fun Date.toRuleEngineLocalDate() = toRuleEngineInstant().toLocalDateTime(TimeZon
 @OptIn(ExperimentalTime::class)
 fun Date.toRuleEngineInstantWithNoTime() =
     LocalDateTime(toRuleEngineLocalDate(), LocalTime(0, 0, 0, 0))
-        .toInstant(TimeZone.currentSystemDefault()).toDeprecatedInstant()
+        .toInstant(TimeZone.currentSystemDefault())
+        .toDeprecatedInstant()
 
 fun List<ProgramRule>.toRuleList(): List<Rule> =
     map {
