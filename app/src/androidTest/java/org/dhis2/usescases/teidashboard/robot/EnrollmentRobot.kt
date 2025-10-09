@@ -44,6 +44,7 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
             .performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun checkEnrollmentListActivityIsLaunched() {
@@ -130,6 +131,7 @@ class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitForIdle()
         composeTestRule.waitUntilAtLeastOneExists(hasText(personAttribute, true), TIMEOUT)
         composeTestRule.onNodeWithText(personAttribute).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun typeOnInputDateField(dateValue: String, title: String) {

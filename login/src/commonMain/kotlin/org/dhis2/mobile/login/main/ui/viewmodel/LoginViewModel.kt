@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.OauthLogin
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
@@ -58,7 +59,15 @@ class LoginViewModel(
 
     private fun goToInitialScreen() {
         viewModelScope.launch {
-            navigator.navigate(destination = getInitialScreen())
+            val destination = getInitialScreen()
+            navigator.navigate(
+                destination = destination,
+                navOptions = {
+                    popUpTo(LoginScreenState.Loading) {
+                        inclusive = true
+                    }
+                },
+            )
         }
     }
 
@@ -87,15 +96,17 @@ class LoginViewModel(
 
                     is ServerValidationResult.Legacy -> {
                         navigator.navigate(
-                            LegacyLogin(
-                                serverName = result.serverName,
-                                allowRecovery = result.allowRecovery,
-                                selectedServer = serverUrl,
-                                selectedUsername = null,
-                                oidcIcon = result.oidcIcon,
-                                oidcLoginText = result.oidcLoginText,
-                                oidcUrl = result.oidcUrl,
-                            ),
+                            destination =
+                                LegacyLogin(
+                                    serverName = result.serverName,
+                                    allowRecovery = result.allowRecovery,
+                                    selectedServer = serverUrl,
+                                    selectedServerFlag = result.countryFlag,
+                                    selectedUsername = null,
+                                    oidcIcon = result.oidcIcon,
+                                    oidcLoginText = result.oidcLoginText,
+                                    oidcUrl = result.oidcUrl,
+                                ),
                         )
                         stopValidation()
                     }
@@ -146,6 +157,10 @@ class LoginViewModel(
         viewModelScope.launch {
             navigator.navigateUp()
         }
+    }
+
+    fun onBackClicked() {
+        navigateUp()
     }
 
     fun importDb(path: String) {

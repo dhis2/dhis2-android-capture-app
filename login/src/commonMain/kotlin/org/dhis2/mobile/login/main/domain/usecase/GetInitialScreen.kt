@@ -25,6 +25,7 @@ class GetInitialScreen(
                         selectedServer = serverUrl,
                         selectedUsername = name,
                         serverName = serverName,
+                        selectedServerFlag = serverFlag,
                         allowRecovery = allowRecovery,
                         oidcIcon = oidcIcon,
                         oidcLoginText = oidcLoginText,

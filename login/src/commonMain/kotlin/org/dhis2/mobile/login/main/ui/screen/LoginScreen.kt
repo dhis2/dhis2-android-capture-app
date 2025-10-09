@@ -18,10 +18,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -61,12 +63,14 @@ import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.DropDownMenu
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuItemData
 import org.hisp.dhis.mobile.ui.designsystem.component.menu.MenuLeadingElement
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,9 +81,11 @@ fun LoginScreen(
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
+    onFinish: () -> Unit,
 ) {
     val viewModel = koinViewModel<LoginViewModel>()
     var displayMoreActions by remember { mutableStateOf(false) }
+    var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
     val databaseImportState by viewModel.importDatabaseState.collectAsState()
 
@@ -94,6 +100,7 @@ fun LoginScreen(
                 is DatabaseImportState.OnFailure -> {
                     snackBarHostState.showSnackbar(state.message)
                 }
+
                 is DatabaseImportState.OnSuccess -> {
                     snackBarHostState.showSnackbar(getString(Res.string.importing_successful))
                 }
@@ -107,6 +114,12 @@ fun LoginScreen(
             LoginTopBar(
                 version = versionName,
                 displayMoreActions = displayMoreActions,
+                displayBackArrow = displayBackArrow,
+                onBack = {
+                    if (!navController.popBackStack()) {
+                        onFinish()
+                    }
+                },
                 onImportDatabase = { picker.launch() },
             )
         },
@@ -127,16 +140,8 @@ fun LoginScreen(
         ObserveAsEvents(viewModel.navigator.navigationActions) { action ->
             when (action) {
                 is NavigationAction.Navigate -> {
-                    navController.navigate(action.destination) {
-                        action.navOptions(this)
-                        val currentRouteString =
-                            navController.currentBackStackEntry?.destination?.route
-                        val startDestinationRouteString =
-                            LoginScreenState.Loading::class.qualifiedName
-                        if (currentRouteString != null && currentRouteString == startDestinationRouteString) {
-                            popUpTo(LoginScreenState.Loading::class) { inclusive = true }
-                        }
-                    }
+                    navController.popBackStack(LoginScreenState.Loading, true)
+                    navController.navigate(action.destination)
                 }
 
                 NavigationAction.NavigateUp -> navController.navigateUp()
@@ -167,11 +172,13 @@ fun LoginScreen(
         ) {
             composable<LoginScreenState.Loading> {
                 displayMoreActions = false
+                displayBackArrow = false
                 LoadingScreen()
             }
             composable<LoginScreenState.ServerValidation> {
                 val args = it.toRoute<LoginScreenState.ServerValidation>()
                 displayMoreActions = true
+                displayBackArrow = false
 
                 val uiState by viewModel.serverValidationState.collectAsState()
                 ServerValidationContent(
@@ -184,10 +191,13 @@ fun LoginScreen(
             composable<LoginScreenState.LegacyLogin> {
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
+                displayBackArrow = true
+
                 CredentialsScreen(
                     selectedServer = arg.selectedServer,
                     selectedServerName = arg.serverName,
                     selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
+                    selectedServerFlag = arg.selectedServerFlag,
                     allowRecovery = arg.allowRecovery,
                 )
             }
@@ -199,6 +209,7 @@ fun LoginScreen(
             }
             composable<LoginScreenState.Accounts> {
                 displayMoreActions = true
+                displayBackArrow = false
                 AccountsScreen()
             }
             composable<LoginScreenState.RecoverAccount> {
@@ -215,6 +226,8 @@ fun LoginScreen(
 fun LoginTopBar(
     version: String,
     displayMoreActions: Boolean = true,
+    displayBackArrow: Boolean = true,
+    onBack: () -> Unit,
     onImportDatabase: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -229,11 +242,24 @@ fun LoginTopBar(
                 Modifier
                     .height(80.dp)
                     .fillMaxWidth()
-                    .padding(start = 4.dp, end = 4.dp, top = 16.dp, bottom = 8.dp),
+                    .padding(horizontal = 4.dp, vertical = 8.dp),
         ) {
+            if (displayBackArrow) {
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterStart),
+                    onClick = onBack,
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                        contentDescription = "back",
+                        tint = MaterialTheme.colorScheme.surfaceBright,
+                    )
+                }
+            }
             Image(
                 modifier =
                     Modifier
+                        .padding(8.dp)
                         .height(48.dp)
                         .align(Alignment.Center),
                 imageVector = vectorResource(resource = Res.drawable.ic_dhis_logo),
@@ -288,5 +314,13 @@ fun LoginTopBar(
                 style = MaterialTheme.typography.bodySmall,
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun TopBarPreview() {
+    DHIS2Theme {
+        LoginTopBar("v3.3.0-DEV : 0b3f5487", true, onBack = {}) {}
     }
 }
