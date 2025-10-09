@@ -194,7 +194,7 @@ class PinViewModelTest {
             advanceUntilIdle()
 
             // Then
-            assertTrue(viewModel.uiState.value is PinState.Success)
+            assertTrue(viewModel.uiState.value is PinState.Dismissed)
         }
 
     @Test
