@@ -62,8 +62,7 @@
     <string name="pin_error_no_pin">No PIN configured</string>
     <string name="pin_error_save_failed">Failed to save PIN</string>
     <string name="pin_error_reset_failed">Failed to reset PIN</string>
-    <string name="pin_error_remaining_attempts">%d attempts remaining</string>
+    <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
     <string name="import_database">Import Database</string>
     <string name="importing_successful">Import successful</string>
-    <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
 </resources>

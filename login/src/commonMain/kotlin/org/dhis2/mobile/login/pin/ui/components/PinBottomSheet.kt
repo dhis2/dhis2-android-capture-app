@@ -97,6 +97,12 @@ fun PinBottomSheet(
                 viewModel.onForgotPin()
             }
 
+            is PinState.Dismissed -> {
+                viewModel.resetAttempts()
+                viewModel.resetState()
+                onDismiss()
+            }
+
             else -> { // Do nothing for Idle, Loading, Error
             }
         }
