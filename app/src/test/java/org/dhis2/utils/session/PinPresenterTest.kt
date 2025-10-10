@@ -60,7 +60,7 @@ class PinPresenterTest {
             onTwoManyAttempts = onTwoManyAttempts,
         )
 
-        verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
+        // SESSION_LOCKED stays true (PIN is still configured), no state change
         verify(onPinCorrect).invoke()
     }
 

@@ -20,6 +20,11 @@ sealed class PinState {
     data object Success : PinState()
 
     /**
+     * The PIN entry UI was dismissed.
+     */
+    data object Dismissed : PinState()
+
+    /**
      * PIN validation failed with an error message.
      * @param message The error message to display.
      * @param remainingAttempts Number of remaining attempts before forced logout (null if not applicable).

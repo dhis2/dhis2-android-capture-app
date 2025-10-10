@@ -109,7 +109,7 @@ class PinViewModel(
             _uiState.value = PinState.Loading
             forgotPinUseCase()
                 .onSuccess {
-                    _uiState.value = PinState.Success
+                    _uiState.value = PinState.Dismissed
                 }.onFailure { error ->
                     _uiState.value =
                         PinState.Error(

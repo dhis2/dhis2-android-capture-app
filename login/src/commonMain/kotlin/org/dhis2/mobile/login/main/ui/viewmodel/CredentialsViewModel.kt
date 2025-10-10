@@ -28,6 +28,8 @@ import org.dhis2.mobile.login.main.ui.states.CredentialsUiState
 import org.dhis2.mobile.login.main.ui.states.LoginState
 import org.dhis2.mobile.login.main.ui.states.OidcInfo
 import org.dhis2.mobile.login.main.ui.states.ServerInfo
+import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
+import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 
 class CredentialsViewModel(
     private val navigator: Navigator,
@@ -43,6 +45,8 @@ class CredentialsViewModel(
     private val serverUrl: String,
     private val username: String?,
     private val allowRecovery: Boolean,
+    private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase,
+    private val forgotPinUseCase: ForgotPinUseCase,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -74,6 +78,7 @@ class CredentialsViewModel(
             oidcInfo = null,
             afterLoginActions = emptyList(),
             hasOtherAccounts = false,
+            isSessionLocked = false,
         )
 
     private var loginJob: Job? = null
@@ -119,6 +124,7 @@ class CredentialsViewModel(
                         ),
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts.invoke(),
+                    isSessionLocked = getIsSessionLockedUseCase(),
                 ),
             )
         }
@@ -309,6 +315,31 @@ class CredentialsViewModel(
                 navigator.navigateToHome()
             } else {
                 navigator.navigateToSync()
+            }
+        }
+    }
+
+    fun onPinUnlocked() {
+        // Session unlocked successfully, update the state
+        viewModelScope.launch {
+            _credentialsScreenState.update {
+                it.copy(
+                    isSessionLocked = false,
+                )
+            }
+            navigator.navigateToHome()
+        }
+    }
+
+    fun onPinDismissed() {
+        // User dismissed the PIN dialog (forgot PIN)
+        // Logout the user from the app and ask for the password
+        viewModelScope.launch {
+            forgotPinUseCase()
+            _credentialsScreenState.update {
+                it.copy(
+                    isSessionLocked = false,
+                )
             }
         }
     }

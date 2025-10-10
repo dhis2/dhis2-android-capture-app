@@ -92,10 +92,19 @@ fun PinBottomSheet(
             is PinState.Success -> {
                 onSuccess()
             }
+
             is PinState.TooManyAttempts -> {
                 viewModel.onForgotPin()
             }
-            else -> { /* Do nothing for Idle, Loading, Error */ }
+
+            is PinState.Dismissed -> {
+                viewModel.resetAttempts()
+                viewModel.resetState()
+                onDismiss()
+            }
+
+            else -> { // Do nothing for Idle, Loading, Error
+            }
         }
     }
 
@@ -127,9 +136,15 @@ fun PinBottomSheet(
         when (val state = uiState) {
             is PinState.Error -> {
                 state.remainingAttempts?.let { attempts ->
-                    "${state.message}. ${stringResource(Res.string.pin_error_remaining_attempts, attempts)}"
+                    "${state.message}. ${
+                        stringResource(
+                            Res.string.pin_error_remaining_attempts,
+                            attempts,
+                        )
+                    }"
                 } ?: state.message
             }
+
             else -> null
         }
 
@@ -146,7 +161,11 @@ fun PinBottomSheet(
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Center,
                 animateHeaderOnKeyboardAppearance = false,
-                contentPadding = PaddingValues(horizontal = Spacing.Spacing24, vertical = Spacing.Spacing0),
+                contentPadding =
+                    PaddingValues(
+                        horizontal = Spacing.Spacing24,
+                        vertical = Spacing.Spacing0,
+                    ),
             ),
         modifier = modifier,
         content = {
