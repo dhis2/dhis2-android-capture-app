@@ -13,7 +13,6 @@ class LoginUser(
         isNetworkAvailable: Boolean,
     ): LoginResult {
         val result = repository.loginUser(serverUrl, username, password, isNetworkAvailable)
-        repository.updateServerUrls(serverUrl)
         return handleResult(result, serverUrl, username)
     }
 }

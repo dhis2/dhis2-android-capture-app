@@ -236,7 +236,7 @@ fun LoginScreen(
 * documentation for more info.
 * */
 private fun fixedOpenIdProvider(): OidcInfo? {
-    //Change to the correct provider
+    // Change to the correct provider
     return null
 }
 
