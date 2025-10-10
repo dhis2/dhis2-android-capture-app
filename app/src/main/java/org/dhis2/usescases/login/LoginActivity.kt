@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.toArgb
-import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.app
 import org.dhis2.bindings.buildInfo
@@ -23,10 +21,6 @@ import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.analytics.CLICK
-import org.dhis2.utils.analytics.FORGOT_CODE
-import org.dhis2.utils.session.PIN_DIALOG_TAG
-import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.koin.android.ext.android.inject
@@ -39,13 +33,8 @@ const val IS_DELETION = "IS_DELETION"
 const val ACCOUNTS_COUNT = "ACCOUNTS_COUNT"
 const val FROM_SPLASH = "FROM_SPLASH"
 
-class LoginActivity :
-    ActivityGlobalAbstract(),
-    LoginContracts.View {
+class LoginActivity : ActivityGlobalAbstract() {
     override var handleEdgeToEdge = false
-
-    @Inject
-    lateinit var presenter: LoginViewModel
 
     @Inject
     lateinit var resourceManager: ResourceManager
@@ -89,17 +78,6 @@ class LoginActivity :
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(SurfaceColor.Primary.toArgb()),
         )
-        val loginComponent =
-            app().loginComponent() ?: app().createLoginComponent(
-                LoginModule(
-                    view = this,
-                    viewModelStoreOwner = this,
-                    userManager = app().serverComponent?.userManager(),
-                ),
-            )
-
-        loginComponent.inject(this)
-
         super.onCreate(savedInstanceState)
 
         checkMessage()
@@ -144,24 +122,6 @@ class LoginActivity :
             appLinkNavigation.appLink.tryEmit(appLinkData.toString())
             intent?.action = null
         }
-    }
-
-    override fun onDestroy() {
-        (applicationContext as App).releaseLoginComponent()
-        super.onDestroy()
-    }
-
-    override fun onUnlockClick() {
-        PinDialog(
-            PinDialog.Mode.ASK,
-            false,
-            {
-                startActivity(MainActivity::class.java, null, true, true, null)
-            },
-            {
-                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-            },
-        ).show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     @Deprecated("Deprecated in Java")

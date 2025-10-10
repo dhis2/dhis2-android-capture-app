@@ -29,7 +29,6 @@ import org.dhis2.mobile.commons.coroutine.AndroidIdlingResource
 import org.dhis2.mobile.commons.coroutine.IdlingResourceProvider
 import org.dhis2.mobile.commons.coroutine.NoOpIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
-import org.dhis2.usescases.login.LoginIdlingResource
 import org.dhis2.usescases.notes.NotesIdlingResource
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
@@ -123,7 +122,6 @@ open class BaseTest {
         OnMapReadyIdlingResourceSingleton.countingIdlingResource,
         AnalyticsCountingIdlingResource.countingIdlingResource,
         NotesIdlingResource.countingIdlingResource,
-        LoginIdlingResource.countingIdlingResource,
         OrgUnitIdlingResource.countingIdlingResource,
         AndroidIdlingResource.getIdlingResource(),
     )
