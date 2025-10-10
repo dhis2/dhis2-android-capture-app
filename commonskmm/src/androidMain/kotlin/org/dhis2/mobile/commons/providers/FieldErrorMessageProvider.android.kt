@@ -214,6 +214,7 @@ actual class FieldErrorMessageProvider {
     suspend fun defaultValidationErrorMessage(): String = getString(Res.string.validation_error_message)
 }
 
+//To be improved and refactored in ANDROAPP-7268
 sealed class CustomIntentFailure : Throwable() {
     object CouldNotRetrieveCustomIntentData : CustomIntentFailure() {
         private fun readResolve(): Any = CouldNotRetrieveCustomIntentData

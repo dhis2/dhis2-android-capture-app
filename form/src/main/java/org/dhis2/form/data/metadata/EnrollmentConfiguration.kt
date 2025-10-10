@@ -17,7 +17,7 @@ class EnrollmentConfiguration(
     private val enrollmentUid: String,
     dispatcher: DispatcherProvider,
 ) : FormBaseConfiguration(d2, dispatcher) {
-    fun enrollment() = d2.enrollment(enrollmentUid)!!
+    fun enrollment() = d2.enrollment(enrollmentUid)
 
     fun program() =
         enrollment()?.program()?.let {
