@@ -143,7 +143,7 @@ class FormView : Fragment() {
                         FormIntent.OnSaveCustomIntent(
                             it.fieldUid,
                             null,
-                            true
+                            true,
                         )
                     intentHandler(intent)
                 }
