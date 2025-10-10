@@ -196,16 +196,6 @@ fun LoginScreen(
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
                 displayBackArrow = true
-
-                val oidcInfo =
-                    OidcInfo.Token(
-                        serverUrl = arg.selectedServer,
-                        loginLabel = "Login with Github",
-                        clientId = "Ov23liss2iuMqqrmn3n4",
-                        redirectUri = "dhis2androidapp://oauth2redirect",
-                        authorizationUrl = "https://github.com/login/oauth/authorize",
-                        tokenUrl = "https://github.com/login/oauth/access_token",
-                    )
                 CredentialsScreen(
                     selectedServer = arg.selectedServer,
                     selectedServerName = arg.serverName,
@@ -213,7 +203,7 @@ fun LoginScreen(
                     selectedServerFlag = arg.selectedServerFlag,
                     allowRecovery = arg.allowRecovery,
                     oidcInfo =
-                        oidcInfo.takeIf { info ->
+                        fixedOpenIdProvider()?.takeIf { info ->
                             info.serverUrl == arg.selectedServer
                         },
                 )
@@ -237,6 +227,17 @@ fun LoginScreen(
             }
         }
     }
+}
+
+/**
+* OpenId Configuration
+* Return either OidcInfo.Token or OidcInfo.Discovery classes to configure the login screen.
+* Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
+* documentation for more info.
+* */
+private fun fixedOpenIdProvider(): OidcInfo? {
+    //Change to the correct provider
+    return null
 }
 
 @Composable
