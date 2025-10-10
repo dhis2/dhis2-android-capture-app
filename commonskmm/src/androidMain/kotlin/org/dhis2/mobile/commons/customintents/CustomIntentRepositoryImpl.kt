@@ -18,9 +18,9 @@ class CustomIntentRepositoryImpl(
 
     override fun getCustomIntent(
         triggerUid: String?,
-        orgunitUid: String?,
+        orgUnitUid: String?,
         actionType: CustomIntentActionTypeModel,
-    ): CustomIntentModel? = getCustomIntentFromUid(triggerUid, CustomIntentContext(orgunitUid = orgunitUid), actionType)
+    ): CustomIntentModel? = getCustomIntentFromUid(triggerUid, CustomIntentContext(orgunitUid = orgUnitUid), actionType)
 
     override fun attributeHasCustomIntentAndReturnsAListOfValues(
         triggerUid: String,
@@ -100,4 +100,15 @@ class CustomIntentRepositoryImpl(
             .settingModule()
             .customIntentService()
             .blockingEvaluateRequestParams(customIntent, context)
+
+    override fun reEvaluateCustomIntentRequestParams(
+        orgUnitUid: String,
+        customIntentUid: String,
+    ): Map<String, Any?> {
+        val customIntent = customIntents.firstOrNull { it?.uid() == customIntentUid }
+        val context = CustomIntentContext(orgunitUid = orgUnitUid)
+        return customIntent?.let {
+            evaluateCustomIntentRequestParams(customIntent, context)
+        } ?: emptyMap()
+    }
 }

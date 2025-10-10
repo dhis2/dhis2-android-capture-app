@@ -415,7 +415,7 @@ class SearchRepositoryImplKt(
                         val customIntentModel =
                             customIntentRepository.getCustomIntent(
                                 triggerUid = attribute.uid(),
-                                orgunitUid = null,
+                                orgUnitUid = null,
                                 actionType = CustomIntentActionTypeModel.SEARCH,
                             )
                         createField(

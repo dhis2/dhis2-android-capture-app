@@ -2,6 +2,7 @@ package org.dhis2.form.ui.event
 
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
+import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.period.PeriodType
@@ -43,6 +44,11 @@ sealed class RecyclerViewUiEvents {
     data class OpenChooserIntent(
         val action: String,
         val value: String?,
+        val uid: String,
+    ) : RecyclerViewUiEvents()
+
+    data class LaunchCustomIntent(
+        val customIntent: CustomIntentModel?,
         val uid: String,
     ) : RecyclerViewUiEvents()
 

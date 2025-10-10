@@ -64,6 +64,7 @@ fun FieldProvider(
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
     onFileSelected: (String) -> Unit,
+    reEvaluateCustomIntentRequestParameters: Boolean,
 ) {
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
     val focusRequester = remember { FocusRequester() }
@@ -125,8 +126,10 @@ fun FieldProvider(
             ProvideCustomIntentInput(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
+                uiEventHandler = uiEventHandler,
                 resources = resources,
                 inputStyle = inputStyle,
+                reEvaluateRequestParams = reEvaluateCustomIntentRequestParameters,
                 modifier = modifierWithFocus,
             )
         }

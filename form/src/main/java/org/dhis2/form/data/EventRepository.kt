@@ -559,6 +559,15 @@ class EventRepository(
         )
     }
 
+    override fun evaluateCustomIntentRequestParameters(customIntentUid: String): Map<String, Any?> {
+        val orgUnitUid =
+            event
+                ?.organisationUnit()
+        return orgUnitUid?.let {
+            customIntentRepository.reEvaluateCustomIntentRequestParams(it, customIntentUid)
+        } ?: emptyMap()
+    }
+
     private fun getFieldsForSingleSection(): Single<List<FieldUiModel>> =
         Single.fromCallable {
             val stageDataElements =

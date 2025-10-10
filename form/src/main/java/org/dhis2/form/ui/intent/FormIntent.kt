@@ -26,6 +26,12 @@ sealed class FormIntent {
         val allowFutureDates: Boolean? = false,
     ) : FormIntent()
 
+    data class OnSaveCustomIntent(
+        val uid: String,
+        val value: String?,
+        val error: Boolean,
+    ) : FormIntent()
+
     data class OnQrCodeScanned(
         val uid: String,
         val value: String?,

@@ -49,6 +49,8 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
+import org.dhis2.mobile.commons.providers.CustomIntentFailure
 import org.dhis2.mobile.commons.validation.validators.FieldMaskValidator
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.FeatureType
@@ -64,6 +66,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import kotlin.collections.forEach
+import kotlin.toString
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -256,7 +260,7 @@ class FormViewModel(
 
     private suspend fun handleOnSaveAction(action: RowAction): StoreResult {
         if (action.valueType == ValueType.COORDINATE) {
-            repository.setFieldRequestingCoordinates(action.id, false)
+            repository.setFieldLoading(action.id, false)
         }
 
         repository.updateErrorList(action)
@@ -319,7 +323,7 @@ class FormViewModel(
     }
 
     private fun handleOnRequestCoordinatesAction(action: RowAction): StoreResult {
-        repository.setFieldRequestingCoordinates(action.id, true)
+        repository.setFieldLoading(action.id, true)
         return StoreResult(
             action.id,
             ValueStoreResult.VALUE_HAS_NOT_CHANGED,
@@ -327,7 +331,7 @@ class FormViewModel(
     }
 
     private fun handleOnCancelRequestCoordinatesAction(action: RowAction): StoreResult {
-        repository.setFieldRequestingCoordinates(action.id, false)
+        repository.setFieldLoading(action.id, false)
         return StoreResult(
             action.id,
             ValueStoreResult.VALUE_HAS_NOT_CHANGED,
@@ -515,6 +519,15 @@ class FormViewModel(
                     value = intent.value,
                     error = error,
                     valueType = intent.valueType,
+                )
+            }
+
+            is FormIntent.OnSaveCustomIntent -> {
+                createRowAction(
+                    uid = intent.uid,
+                    value = intent.value,
+                    error = if (intent.error) CustomIntentFailure.CouldNotRetrieveCustomIntentData else null,
+                    valueType = ValueType.TEXT,
                 )
             }
 
@@ -1033,6 +1046,9 @@ class FormViewModel(
                 )
         }
     }
+
+    fun getCustomIntentRequestParams(customIntentUid: String): List<CustomIntentRequestArgumentModel> =
+        repository.reEvaluateRequestParams(customIntentUid)
 
     fun fetchPeriods(): Flow<PagingData<Period>> = repository.fetchPeriods().flowOn(dispatcher.io())
 

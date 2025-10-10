@@ -52,6 +52,9 @@ import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.model.exception.RepositoryRecordsException
+import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
+import org.dhis2.form.ui.customintent.CustomIntentInput
+import org.dhis2.form.ui.customintent.CustomIntentResult
 import org.dhis2.form.ui.dialog.QRDetailBottomDialog
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
@@ -127,6 +130,32 @@ class FormView : Fragment() {
                         requireContext().getString(R.string.storage_permission_denied),
                         Toast.LENGTH_LONG,
                     ).show()
+            }
+        }
+
+    private var openCustomIntentLauncher =
+        registerForActivityResult(
+            CustomIntentActivityResultContract(),
+        ) {
+            when (it) {
+                is CustomIntentResult.Error -> {
+                    val intent =
+                        FormIntent.OnSaveCustomIntent(
+                            it.fieldUid,
+                            null,
+                            true
+                        )
+                    intentHandler(intent)
+                }
+                is CustomIntentResult.Success -> {
+                    val intent =
+                        FormIntent.OnSaveCustomIntent(
+                            it.fieldUid,
+                            it.value,
+                            false,
+                        )
+                    intentHandler(intent)
+                }
             }
         }
 
@@ -319,6 +348,21 @@ class FormView : Fragment() {
             is RecyclerViewUiEvents.OpenFile -> openFile(uiEvent)
             is RecyclerViewUiEvents.OpenChooserIntent -> openChooserIntent(uiEvent)
             is RecyclerViewUiEvents.SelectPeriod -> showPeriodDialog(uiEvent)
+            is RecyclerViewUiEvents.LaunchCustomIntent -> launchCustomIntent(uiEvent)
+        }
+    }
+
+    private fun launchCustomIntent(uiEvent: RecyclerViewUiEvents.LaunchCustomIntent) {
+        uiEvent.customIntent?.let {
+            val updatedRequestParams = viewModel.getCustomIntentRequestParams(it.uid)
+            val updatedCustomIntent = uiEvent.customIntent.copy(customIntentRequest = updatedRequestParams)
+            openCustomIntentLauncher.launch(
+                CustomIntentInput(
+                    fieldUid = uiEvent.uid,
+                    customIntent = updatedCustomIntent,
+                    defaultTitle = resources.getString(R.string.select_app_intent),
+                ),
+            )
         }
     }
 

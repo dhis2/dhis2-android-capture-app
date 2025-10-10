@@ -6,7 +6,7 @@ import org.dhis2.mobile.commons.model.CustomIntentModel
 interface CustomIntentRepository {
     fun getCustomIntent(
         triggerUid: String?,
-        orgunitUid: String?,
+        orgUnitUid: String?,
         actionType: CustomIntentActionTypeModel,
     ): CustomIntentModel?
 
@@ -14,4 +14,9 @@ interface CustomIntentRepository {
         triggerUid: String,
         actionType: CustomIntentActionTypeModel,
     ): Boolean
+
+    fun reEvaluateCustomIntentRequestParams(
+        orgUnitUid: String,
+        customIntentUid: String,
+    ): Map<String, Any?>
 }

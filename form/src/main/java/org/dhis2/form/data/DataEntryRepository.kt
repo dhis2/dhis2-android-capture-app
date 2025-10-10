@@ -54,4 +54,6 @@ interface DataEntryRepository {
         optionGroupsToHide: List<String>,
         optionGroupsToShow: List<String>,
     ): Pair<MutableStateFlow<String>, Flow<PagingData<OptionSetConfiguration.OptionData>>>
+
+    fun evaluateCustomIntentRequestParameters(customIntentUid: String): Map<String, Any?>
 }

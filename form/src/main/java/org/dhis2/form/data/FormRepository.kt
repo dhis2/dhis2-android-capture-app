@@ -6,6 +6,7 @@ import org.dhis2.commons.periods.model.Period
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.StoreResult
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.hisp.dhis.android.core.common.ValueType
 
 interface FormRepository {
@@ -49,7 +50,7 @@ interface FormRepository {
 
     fun removeAllValues()
 
-    fun setFieldRequestingCoordinates(
+    fun setFieldLoading(
         uid: String,
         requestInProcess: Boolean,
     )
@@ -85,4 +86,6 @@ interface FormRepository {
         id: String,
         optionSetUid: String,
     )
+
+    fun reEvaluateRequestParams(customIntentUid: String): List<CustomIntentRequestArgumentModel>
 }
