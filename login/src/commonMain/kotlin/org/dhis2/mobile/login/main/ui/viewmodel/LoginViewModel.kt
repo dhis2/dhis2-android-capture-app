@@ -102,8 +102,8 @@ class LoginViewModel(
                                     allowRecovery = result.allowRecovery,
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
-                                selectedUsername = null,
-                            ),
+                                    selectedUsername = null,
+                                ),
                         )
                         stopValidation()
                     }
