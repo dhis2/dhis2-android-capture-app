@@ -168,6 +168,31 @@ class CredentialsViewModel(
     }
 
     fun onLoginClicked() {
+        startLoginJob {
+            loginUser(
+                serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                username = _credentialsScreenState.value.credentialsInfo.username,
+                password = _credentialsScreenState.value.credentialsInfo.password,
+                isNetworkAvailable = isNetworkOnline.value,
+            )
+        }
+    }
+
+    fun onOpenIdLogin() {
+        startLoginJob {
+            openIdLogin(
+                serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                isNetworkAvailable = isNetworkOnline.value,
+                clientId = _credentialsScreenState.value.oidcInfo?.oidcClientId ?: "",
+                redirectUri = _credentialsScreenState.value.oidcInfo?.oidcRedirectUri ?: "",
+                discoveryUri = _credentialsScreenState.value.oidcInfo?.discoveryUri(),
+                authorizationUri = _credentialsScreenState.value.oidcInfo?.authorizationUri(),
+                tokenUrl = _credentialsScreenState.value.oidcInfo?.tokenUrl(),
+            )
+        }
+    }
+
+    private fun startLoginJob(loginCall: suspend () -> LoginResult) {
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
@@ -177,12 +202,7 @@ class CredentialsViewModel(
             viewModelScope.launch {
                 val result =
                     withMinimumDuration {
-                        loginUser(
-                            serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                            username = _credentialsScreenState.value.credentialsInfo.username,
-                            password = _credentialsScreenState.value.credentialsInfo.password,
-                            isNetworkAvailable = isNetworkOnline.value,
-                        )
+                        loginCall()
                     }
                 handleLoginResult(result)
             }
@@ -192,22 +212,6 @@ class CredentialsViewModel(
                     loginState = LoginState.Enabled,
                 )
             }
-        }
-    }
-
-    fun onOpenIdLogin() {
-        viewModelScope.launch {
-            val result =
-                openIdLogin(
-                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                    isNetworkAvailable = isNetworkOnline.value,
-                    clientId = _credentialsScreenState.value.oidcInfo?.oidcClientId ?: "",
-                    redirectUri = _credentialsScreenState.value.oidcInfo?.oidcRedirectUri ?: "",
-                    discoveryUri = _credentialsScreenState.value.oidcInfo?.discoveryUri(),
-                    authorizationUri = _credentialsScreenState.value.oidcInfo?.authorizationUri(),
-                    tokenUrl = _credentialsScreenState.value.oidcInfo?.tokenUrl(),
-                )
-            handleLoginResult(result)
         }
     }
 

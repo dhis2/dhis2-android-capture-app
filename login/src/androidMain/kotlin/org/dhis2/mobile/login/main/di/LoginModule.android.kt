@@ -20,7 +20,7 @@ internal actual val accountModule =
             )
         }
 
-        factory<OpenIdController> { params ->
+        single<OpenIdController> { params ->
             OpenIdControllerImpl(params.get())
         }
 

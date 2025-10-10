@@ -14,6 +14,8 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.openid_invalid_auth_result
+import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
@@ -241,30 +243,43 @@ class LoginRepositoryImpl(
                     )
             openIdController.handleIntent(intent) { resultIntent ->
                 val result =
-                    if (resultIntent !is IntentWithRequestCode) {
-                        kotlin.Result.failure(Exception("Invalid authorization result"))
-                    } else {
-                        try {
-                            d2
-                                .userModule()
-                                .openIdHandler()
-                                .blockingHandleLogInResponse(
-                                    serverUrl = serverUrl,
-                                    intent = resultIntent.intent,
-                                    requestCode = resultIntent.requestCode,
-                                )
-                            kotlin.Result.success(Unit)
-                        } catch (e: Exception) {
+                    when {
+                        resultIntent.isFailure -> {
                             kotlin.Result.failure(
-                                Exception(
-                                    d2ErrorMessageProvider.getErrorMessage(
-                                        e,
-                                        isNetworkAvailable,
-                                    ),
-                                ),
+                                resultIntent.exceptionOrNull() ?: Exception(getString(Res.string.openid_process_cancelled)),
                             )
                         }
+
+                        resultIntent.isSuccess and (resultIntent.getOrNull() !is IntentWithRequestCode) -> {
+                            kotlin.Result.failure(Exception(getString(Res.string.openid_invalid_auth_result)))
+                        }
+
+                        else -> {
+                            try {
+                                val intent = resultIntent.getOrNull() as IntentWithRequestCode
+                                d2
+                                    .userModule()
+                                    .openIdHandler()
+                                    .blockingHandleLogInResponse(
+                                        serverUrl = serverUrl,
+                                        intent = intent.intent,
+                                        requestCode = intent.requestCode,
+                                    )
+
+                                kotlin.Result.success(Unit)
+                            } catch (e: Exception) {
+                                kotlin.Result.failure(
+                                    Exception(
+                                        d2ErrorMessageProvider.getErrorMessage(
+                                            e,
+                                            isNetworkAvailable,
+                                        ),
+                                    ),
+                                )
+                            }
+                        }
                     }
+
                 continuation.resume(value = result) { _, _, _ -> }
             }
             continuation.invokeOnCancellation {
