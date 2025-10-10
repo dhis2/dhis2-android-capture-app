@@ -39,21 +39,24 @@ class DataSetInstanceRepositoryImplTest {
     private val attrOptionComboUid = "attrOptionComboUid"
     private val categoryOptionComboUid = "categoryOptionComboUid"
 
-    private val mockedDataSet = mock<DataSet> {
-        on { categoryCombo() } doReturn ObjectWithUid.create(categoryOptionComboUid)
-        on { displayName() } doReturn "dataSetDisplayName"
-    }
+    private val mockedDataSet =
+        mock<DataSet> {
+            on { categoryCombo() } doReturn ObjectWithUid.create(categoryOptionComboUid)
+            on { displayName() } doReturn "dataSetDisplayName"
+        }
 
-    private val mockedCategoryCombo = mock<CategoryCombo> {
-        on { isDefault } doReturn false
-    }
+    private val mockedCategoryCombo =
+        mock<CategoryCombo> {
+            on { isDefault } doReturn false
+        }
 
-    private val mockedPeriod = mock<Period> {
-        on { periodType() } doReturn PeriodType.Daily
-        on { periodId() } doReturn periodId
-        on { startDate() } doReturn Date()
-        on { endDate() } doReturn Date()
-    }
+    private val mockedPeriod =
+        mock<Period> {
+            on { periodType() } doReturn PeriodType.Daily
+            on { periodId() } doReturn periodId
+            on { startDate() } doReturn Date()
+            on { endDate() } doReturn Date()
+        }
 
     @Test
     fun shouldProvideCorrectDataElementInfoLabel() =
@@ -191,24 +194,35 @@ class DataSetInstanceRepositoryImplTest {
         }
 
     @Test
-    fun shouldGeneratePeriodIfNotAvailable() = runTest {
-        mockGetDataSetInstanceMethodInnerCalls()
+    fun shouldGeneratePeriodIfNotAvailable() =
+        runTest {
+            mockGetDataSetInstanceMethodInnerCalls()
 
-        repository.getDataSetInstance(
-            dataSetUid = dataSetUid,
-            periodId = periodId,
-            orgUnitUid = orgUnitUid,
-            attrOptionComboUid = attrOptionComboUid,
-        )
+            repository.getDataSetInstance(
+                dataSetUid = dataSetUid,
+                periodId = periodId,
+                orgUnitUid = orgUnitUid,
+                attrOptionComboUid = attrOptionComboUid,
+            )
 
-        verify(d2.periodModule().periodHelper()).blockingGetPeriodForPeriodId(any())
-    }
+            verify(d2.periodModule().periodHelper()).blockingGetPeriodForPeriodId(any())
+        }
 
     private fun mockGetDataSetInstanceMethodInnerCalls() {
-        whenever(d2.dataSetModule().dataSets().uid(any()).blockingGet()) doReturn mockedDataSet
+        whenever(
+            d2
+                .dataSetModule()
+                .dataSets()
+                .uid(any())
+                .blockingGet(),
+        ) doReturn mockedDataSet
 
         whenever(
-            d2.categoryModule().categoryCombos().uid(any()).blockingGet(),
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .uid(any())
+                .blockingGet(),
         ) doReturn mockedCategoryCombo
 
         whenever(
@@ -216,15 +230,30 @@ class DataSetInstanceRepositoryImplTest {
         ) doReturn mock()
 
         whenever(
-            d2.periodModule().periods().byPeriodId().eq(periodId),
+            d2
+                .periodModule()
+                .periods()
+                .byPeriodId()
+                .eq(periodId),
         ) doReturn mock()
 
         whenever(
-            d2.periodModule().periods().byPeriodId().eq(periodId).one(),
+            d2
+                .periodModule()
+                .periods()
+                .byPeriodId()
+                .eq(periodId)
+                .one(),
         ) doReturn mock()
 
         whenever(
-            d2.periodModule().periods().byPeriodId().eq(periodId).one().blockingGet(),
+            d2
+                .periodModule()
+                .periods()
+                .byPeriodId()
+                .eq(periodId)
+                .one()
+                .blockingGet(),
         ) doReturn null
 
         whenever(
@@ -245,82 +274,134 @@ class DataSetInstanceRepositoryImplTest {
         ) doReturn DataSetEditableStatus.Editable
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
                 .byDataSetUid(),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid),
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
                 .byPeriod(),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId),
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
                 .byOrganisationUnitUid(),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
-                .byOrganisationUnitUid().eq(orgUnitUid),
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
+                .byOrganisationUnitUid()
+                .eq(orgUnitUid),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
-                .byOrganisationUnitUid().eq(orgUnitUid)
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
+                .byOrganisationUnitUid()
+                .eq(orgUnitUid)
                 .byAttributeOptionComboUid(),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byAttributeOptionComboUid().eq(attrOptionComboUid),
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
+                .byOrganisationUnitUid()
+                .eq(orgUnitUid)
+                .byAttributeOptionComboUid()
+                .eq(attrOptionComboUid),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byAttributeOptionComboUid().eq(attrOptionComboUid)
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
+                .byOrganisationUnitUid()
+                .eq(orgUnitUid)
+                .byAttributeOptionComboUid()
+                .eq(attrOptionComboUid)
                 .byDeleted(),
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byAttributeOptionComboUid().eq(attrOptionComboUid)
-                .byDeleted().isFalse,
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
+                .byOrganisationUnitUid()
+                .eq(orgUnitUid)
+                .byAttributeOptionComboUid()
+                .eq(attrOptionComboUid)
+                .byDeleted()
+                .isFalse,
         ) doReturn mock()
 
         whenever(
-            d2.dataSetModule().dataSetCompleteRegistrations()
-                .byDataSetUid().eq(dataSetUid)
-                .byPeriod().eq(periodId)
-                .byOrganisationUnitUid().eq(orgUnitUid)
-                .byAttributeOptionComboUid().eq(attrOptionComboUid)
-                .byDeleted().isFalse
+            d2
+                .dataSetModule()
+                .dataSetCompleteRegistrations()
+                .byDataSetUid()
+                .eq(dataSetUid)
+                .byPeriod()
+                .eq(periodId)
+                .byOrganisationUnitUid()
+                .eq(orgUnitUid)
+                .byAttributeOptionComboUid()
+                .eq(attrOptionComboUid)
+                .byDeleted()
+                .isFalse
                 .blockingIsEmpty(),
         ) doReturn true
     }
