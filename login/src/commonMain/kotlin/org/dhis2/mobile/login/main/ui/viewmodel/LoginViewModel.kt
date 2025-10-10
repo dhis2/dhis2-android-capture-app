@@ -101,8 +101,9 @@ class LoginViewModel(
                                     serverName = result.serverName,
                                     allowRecovery = result.allowRecovery,
                                     selectedServer = serverUrl,
-                                    selectedServerFlag = result.countryFlag,selectedUsername = null,
-                            ),
+                                    selectedServerFlag = result.countryFlag,
+                                    selectedUsername = null,
+                                ),
                         )
                         stopValidation()
                     }
@@ -149,18 +150,10 @@ class LoginViewModel(
         navigateUp()
     }
 
-    fun onOpenIdCancelled() {
-        navigateUp()
-    }
-
     private fun navigateUp() {
         viewModelScope.launch {
             navigator.navigateUp()
         }
-    }
-
-    fun onBackClicked() {
-        navigateUp()
     }
 
     fun importDb(path: String) {

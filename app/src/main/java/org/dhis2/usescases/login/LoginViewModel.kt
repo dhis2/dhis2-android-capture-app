@@ -1,11 +1,6 @@
 package org.dhis2.usescases.login
 
 import androidx.lifecycle.ViewModel
-import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.commons.prefs.Preference.Companion.PIN
-import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
-import org.dhis2.commons.prefs.PreferenceProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -13,8 +8,6 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.UserManager
 import java.io.File
-import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
-import timber.log.Timber
 
 const val VERSION = "version"
 
