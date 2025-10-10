@@ -19,6 +19,7 @@ import org.jetbrains.compose.resources.getString
 import java.io.File
 
 private const val PREF_USERS = "PREF_USERS"
+const val PREF_URLS = "PREF_URLS"
 private const val PREF_SESSION_LOCKED = "SessionLocked"
 private const val PIN = "pin"
 private const val DATA_STORE_ANALYTICS_PERMISSION_KEY = "analytics_permission"
@@ -92,7 +93,7 @@ class LoginRepositoryImpl(
         )
     }
 
-    override suspend fun getAvailableLoginUsernames(): List<String> = preferences.getList(PREF_USERS, emptyList())
+    override suspend fun getAvailableLoginUsernames(): List<String> = preferences.getSet(PREF_USERS, HashSet())?.toList() ?: emptyList()
 
     override suspend fun unlockSession() {
         preferences.setValue(PREF_SESSION_LOCKED, false)
@@ -104,9 +105,21 @@ class LoginRepositoryImpl(
     }
 
     override suspend fun updateAvailableUsers(username: String) {
-        val availableUsers = preferences.getList(PREF_USERS, emptyList()).toMutableList()
-        if (!availableUsers.contains(username)) availableUsers.add(username)
-        preferences.setValue(PREF_USERS, availableUsers)
+        (preferences.getSet(PREF_USERS, HashSet()) as HashSet).apply {
+            if (!contains(username)) {
+                add(username)
+            }
+            preferences.setValue(PREF_USERS, this)
+        }
+    }
+
+    override suspend fun updateServerUrls(serverUrl: String) {
+        (preferences.getSet(PREF_URLS, HashSet()) as HashSet).apply {
+            if (!contains(serverUrl)) {
+                add(serverUrl)
+            }
+            preferences.setValue(PREF_URLS, this)
+        }
     }
 
     override suspend fun displayTrackingMessage(): Boolean =
