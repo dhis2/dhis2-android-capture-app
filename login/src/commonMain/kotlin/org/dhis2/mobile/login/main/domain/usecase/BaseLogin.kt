@@ -13,8 +13,10 @@ abstract class BaseLogin(
     ) = when {
         result.isSuccess -> {
             repository.unlockSession()
-            repository.updateAvailableUsers(username)
-            repository.updateServerUrls(serverUrl)
+            if (result.isSuccess) {
+                repository.updateAvailableUsers(username)
+                repository.updateServerUrls(serverUrl)
+            }
             LoginResult.Success(
                 displayTrackingMessage = repository.displayTrackingMessage(),
                 initialSyncDone =

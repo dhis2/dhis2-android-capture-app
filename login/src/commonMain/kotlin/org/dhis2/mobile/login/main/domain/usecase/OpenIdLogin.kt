@@ -25,7 +25,7 @@ class OpenIdLogin(
                 authorizationUri = authorizationUri,
                 tokenUrl = tokenUrl,
             )
-        val username = repository.getUsername()
+        val username = if (result.isSuccess) repository.getUsername() else ""
         return handleResult(result, serverUrl, username)
     }
 }
