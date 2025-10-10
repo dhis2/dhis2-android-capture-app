@@ -93,6 +93,7 @@ internal val mainLoginModule =
                 username = userName,
                 allowRecovery = allowRecovery,
                 getIsSessionLockedUseCase = get(),
+                oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
             )
         }
