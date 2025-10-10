@@ -263,7 +263,7 @@ class EventCapturePresenterTest {
 
         presenter.saveAndExit(EventStatus.COMPLETED)
 
-        verify(view).saveAndFinish()
+        verify(view).saveAndFinish(true)
     }
 
     @Test
@@ -301,7 +301,7 @@ class EventCapturePresenterTest {
             eventRepository.isEnrollmentOpen,
         ) doReturn true
         presenter.saveAndExit(EventStatus.COMPLETED)
-        verify(view).saveAndFinish()
+        verify(view).saveAndFinish(true)
     }
 
     @Test

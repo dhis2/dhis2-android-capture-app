@@ -18,6 +18,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageSection
 import org.hisp.dhis.android.core.settings.ProgramConfigurationSetting
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
@@ -370,23 +371,41 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should get event access`() {
+    fun `Should has access to edit or delete event`() {
         mockEvent()
         mockSections()
 
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
+        val repository = EventCaptureRepositoryImpl(eventUid, d2)
 
         whenever(
-            d2.eventModule().eventService(),
-        ) doReturn mock()
+            d2
+                .eventModule()
+                .eventService()
+                .blockingIsEditable(eventUid),
+        ) doReturn true
 
-        repository.accessDataWrite
+        val hasAccess = repository.accessDataWrite
 
-        verify(d2.eventModule().eventService()).blockingHasDataWriteAccess(eventUid)
+        assertTrue(hasAccess)
+    }
+
+    @Test
+    fun `Should not has access to edit or delete event`() {
+        mockEvent()
+        mockSections()
+
+        val repository = EventCaptureRepositoryImpl(eventUid, d2)
+
+        whenever(
+            d2
+                .eventModule()
+                .eventService()
+                .blockingIsEditable(eventUid),
+        ) doReturn false
+
+        val hasAccess = repository.accessDataWrite
+
+        assertFalse(hasAccess)
     }
 
     @Test

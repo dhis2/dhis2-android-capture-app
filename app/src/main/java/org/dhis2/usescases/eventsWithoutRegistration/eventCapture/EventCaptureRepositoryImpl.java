@@ -129,7 +129,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
 
     @Override
     public boolean getAccessDataWrite() {
-        return d2.eventModule().eventService().blockingHasDataWriteAccess(eventUid);
+        return d2.eventModule().eventService().blockingIsEditable(eventUid);
     }
 
     @Override

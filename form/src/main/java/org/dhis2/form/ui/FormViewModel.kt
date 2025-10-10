@@ -833,8 +833,10 @@ class FormViewModel(
     }
 
     private suspend fun handleDataIntegrityResult(result: DataIntegrityCheckResult) {
+        val isEvent = repository.isEvent()
         val action =
             when {
+                isEvent && repository.isEventEditable() == false -> FormActions.OnFinish
                 (result is SuccessfulResult) and (result.eventResultDetails.eventStatus == null) -> FormActions.OnFinish
                 else -> showDataEntryResultDialogDeprecated(result)
             }

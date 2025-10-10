@@ -213,6 +213,12 @@ class EventRepository(
 
     override fun isEvent(): Boolean = true
 
+    override fun isEventEditable() =
+        d2
+            .eventModule()
+            .eventService()
+            .blockingIsEditable(eventUid)
+
     override fun eventMode(): EventMode = eventMode
 
     override fun validationStrategy(): ValidationStrategy? =
@@ -796,8 +802,6 @@ class EventRepository(
         }
 
     private fun getSectionRenderingType(programStageSection: ProgramStageSection?) = programStageSection?.renderType()?.mobile()?.type()
-
-    private fun isEventEditable() = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
     companion object {
         const val EVENT_DETAILS_SECTION_UID = "EVENT_DETAILS_SECTION_UID"

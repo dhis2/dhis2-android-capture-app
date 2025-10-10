@@ -25,7 +25,7 @@ class EventCaptureContract {
 
         fun finishDataEntry()
 
-        fun saveAndFinish()
+        fun saveAndFinish(isEventEditable: Boolean)
 
         fun showSnackBar(
             messageId: Int,

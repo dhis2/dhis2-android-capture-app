@@ -230,7 +230,7 @@ class EventCapturePresenterImpl(
 
     override fun saveAndExit(eventStatus: EventStatus?) {
         if (!hasExpired && !eventCaptureRepository.isEnrollmentCancelled) {
-            view.saveAndFinish()
+            view.saveAndFinish(eventCaptureRepository.isEventEditable(eventUid))
         } else {
             view.finishDataEntry()
         }

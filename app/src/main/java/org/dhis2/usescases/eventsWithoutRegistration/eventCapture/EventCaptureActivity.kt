@@ -350,8 +350,10 @@ class EventCaptureActivity :
         }
     }
 
-    override fun saveAndFinish() {
-        displayMessage(getString(R.string.saved))
+    override fun saveAndFinish(isEventEditable: Boolean) {
+        if (isEventEditable) {
+            displayMessage(getString(R.string.saved))
+        }
         finishDataEntry()
     }
 

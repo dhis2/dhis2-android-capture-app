@@ -907,4 +907,8 @@ class FormRepositoryImpl(
     ) {
         preferenceProvider.saveAsJson(uid, list)
     }
+
+    override fun isEvent(): Boolean = dataEntryRepository.isEvent()
+
+    override fun isEventEditable(): Boolean? = dataEntryRepository.isEventEditable()
 }

@@ -126,6 +126,8 @@ class EnrollmentRepository(
 
     override fun isEvent(): Boolean = false
 
+    override fun isEventEditable(): Boolean? = null
+
     override fun eventMode(): EventMode? = null
 
     override fun validationStrategy(): ValidationStrategy? = null
