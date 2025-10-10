@@ -32,6 +32,7 @@ data class CredentialsInfo(
 
 @Serializable
 sealed class OidcInfo(
+    val serverUrl: String?,
     val buttonText: String?,
     val oidcClientId: String,
     val oidcRedirectUri: String,
@@ -43,17 +44,17 @@ sealed class OidcInfo(
         val clientId: String,
         val redirectUri: String,
         val discoveryUri: String,
-    ) : OidcInfo(loginButtonText, clientId, redirectUri)
+    ) : OidcInfo(server, loginButtonText, clientId, redirectUri)
 
     @Serializable
     data class Token(
-        val serverUrl: String,
+        val server: String,
         val loginLabel: String?,
         val clientId: String,
         val redirectUri: String,
         val authorizationUrl: String,
         val tokenUrl: String,
-    ) : OidcInfo(loginLabel, clientId, redirectUri)
+    ) : OidcInfo(server, loginLabel, clientId, redirectUri)
 
     fun discoveryUri() =
         when (this) {
