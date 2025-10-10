@@ -1,7 +1,6 @@
 package org.dhis2.usescases.login
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -18,20 +17,16 @@ import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
-import org.dhis2.data.server.UserManager
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.screen.LoginScreen
 import org.dhis2.usescases.about.PolicyView
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import org.dhis2.usescases.login.auth.OpenIdProviders
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.sync.SyncActivity
-import org.dhis2.utils.NetworkUtils
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
-import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.koin.android.ext.android.inject
@@ -53,18 +48,13 @@ class LoginActivity :
     lateinit var presenter: LoginViewModel
 
     @Inject
-    lateinit var openIdProviders: OpenIdProviders
-
-    @Inject
     lateinit var resourceManager: ResourceManager
 
     private val appLinkNavigation: AppLinkNavigation by inject()
 
     private var isPinScreenVisible = false
-    private var qrUrl: String? = null
 
     private var skipSync = false
-    private var openIDRequestCode = -1
 
     companion object {
         fun bundle(
@@ -156,32 +146,9 @@ class LoginActivity :
         }
     }
 
-    override fun onPause() {
-        presenter.onDestroy()
-        super.onPause()
-    }
-
     override fun onDestroy() {
         (applicationContext as App).releaseLoginComponent()
         super.onDestroy()
-    }
-
-    override fun goToNextScreen() {
-        if (isNetworkAvailable() && !skipSync) {
-            startActivity(SyncActivity::class.java, null, true, true, null)
-        } else {
-            startActivity(MainActivity::class.java, null, true, true, null)
-        }
-    }
-
-    override fun isNetworkAvailable(): Boolean = NetworkUtils.isOnline(this)
-
-    override fun handleLogout() {
-        recreate()
-    }
-
-    override fun alreadyAuthenticated() {
-        startActivity(MainActivity::class.java, null, true, true, null)
     }
 
     override fun onUnlockClick() {
@@ -197,10 +164,6 @@ class LoginActivity :
         ).show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
-    override fun onLogoutClick(android: View) {
-        presenter.logOut()
-    }
-
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (isPinScreenVisible) {
@@ -208,33 +171,6 @@ class LoginActivity :
         } else {
             super.onBackPressed()
             finish()
-        }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(
-        requestCode: Int,
-        resultCode: Int,
-        data: Intent?,
-    ) {
-        if (requestCode == openIDRequestCode && resultCode == Activity.RESULT_OK) {
-            data?.let {
-                presenter.handleAuthResponseData(
-                    "server_url", // TODO ("Move this to login module and pass server url")
-                    data,
-                    requestCode,
-                )
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun initLogin(): UserManager = app().createServerComponent().userManager()
-
-    override fun openOpenIDActivity(intentData: IntentWithRequestCode?) {
-        intentData?.let {
-            openIDRequestCode = intentData.requestCode
-            startActivityForResult(intentData.intent, intentData.requestCode)
         }
     }
 
@@ -274,19 +210,5 @@ class LoginActivity :
             )
         sessionDialog.setCancelable(false)
         sessionDialog.show()
-    }
-
-    override fun showNoConnectionDialog() {
-        val dialog =
-            CustomDialog(
-                this,
-                getString(R.string.network_unavailable),
-                getString(R.string.no_network_to_recover_account),
-                getString(R.string.action_ok),
-                null,
-                CustomDialog.NO_RQ_CODE,
-                null,
-            )
-        dialog.show()
     }
 }
