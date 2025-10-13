@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FileUpload
@@ -163,6 +165,7 @@ fun LoginScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(
                         top = padding.calculateTopPadding(),
                         start = padding.calculateStartPadding(layoutDirection),

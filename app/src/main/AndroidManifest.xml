@@ -72,8 +72,7 @@
             android:name=".usescases.login.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan">
+            android:launchMode="singleTask">
         </activity>
         <activity android:name=".usescases.main.MainActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />

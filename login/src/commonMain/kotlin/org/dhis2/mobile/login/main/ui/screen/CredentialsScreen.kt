@@ -409,7 +409,7 @@ private fun CredentialActions(
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = spacedBy(Spacing.Spacing8),
+        verticalArrangement = spacedBy(Spacing.Spacing0),
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(),
