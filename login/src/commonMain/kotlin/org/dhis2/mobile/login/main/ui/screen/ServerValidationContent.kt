@@ -142,8 +142,8 @@ internal fun ServerValidationContent(
             modifier = Modifier.fillMaxWidth(),
         )
 
-        if (shouldClearFocus.value) {
-            LaunchedEffect(Unit) {
+        LaunchedEffect(shouldClearFocus.value) {
+            if (shouldClearFocus.value) {
                 focusManager.clearFocus()
                 shouldClearFocus.value = false
             }
