@@ -44,13 +44,13 @@ class AccountRepositoryImpl(
             } else {
                 emptyList()
             }
+
         val providedServerUrls = providedServers.map { it.server }
         val previousLoggedInServers =
             preferenceProvider
                 .getSet(PREF_URLS, HashSet())
-                ?.toList()
-                ?.filterNot { providedServerUrls.contains(it) }
-                ?: emptyList()
-        return providedServers.map { it.server } + previousLoggedInServers
+                .orEmpty()
+                .filterNot { it in providedServerUrls }
+        return providedServerUrls + previousLoggedInServers
     }
 }
