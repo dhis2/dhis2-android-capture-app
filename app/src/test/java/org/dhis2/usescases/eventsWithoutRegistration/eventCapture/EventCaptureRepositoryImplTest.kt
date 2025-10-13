@@ -371,7 +371,7 @@ class EventCaptureRepositoryImplTest {
     }
 
     @Test
-    fun `Should has access to edit or delete event`() {
+    fun `Should have access to edit or delete event`() {
         mockEvent()
         mockSections()
 
