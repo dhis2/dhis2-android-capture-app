@@ -261,6 +261,9 @@ class MainActivity :
 
     private fun setUpDevelopmentMode() {
         if (BuildConfig.DEBUG || BuildConfig.FLAVOR == "dhis2Training") {
+            binding.navView.menu
+                .findItem(R.id.menu_troubleshooting)
+                .isVisible = true
             binding.menu.setOnLongClickListener {
                 getDevActivityContent.launch(Intent(this, DevelopmentActivity::class.java))
                 false
