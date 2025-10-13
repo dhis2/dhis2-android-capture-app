@@ -545,7 +545,7 @@ class TEIDataFragment :
         Snackbar
             .make(
                 binding.root,
-                getString(R.string.at_enroll_org_unit).format(enrollmentOrgUnit),
+                getString(R.string.at_enroll_org_unit).format(enrollmentOrgUnit) + "\n" + getString(R.string.no_access_to_it),
                 Snackbar.LENGTH_SHORT,
             ).show()
     }
