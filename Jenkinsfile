@@ -123,11 +123,11 @@ pipeline {
             }
         }
         stage('Run UI Tests in Landscape') {
-            when {
+            /* when {
                 expression {
                     return JOB_NAME.startsWith('android-multibranch-PUSH')
                 }
-            }
+            } */
             environment {
                 BROWSERSTACK = credentials('android-browserstack')
                 app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
