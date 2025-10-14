@@ -121,12 +121,7 @@ class LoginRepositoryImpl(
     }
 
     override suspend fun updateServerUrls(serverUrl: String) {
-        (preferences.getSet(PREF_URLS, HashSet()) as HashSet).apply {
-            if (!contains(serverUrl)) {
-                add(serverUrl)
-            }
-            preferences.setValue(PREF_URLS, this)
-        }
+        preferences.updateLoginServers(serverUrl)
     }
 
     override suspend fun displayTrackingMessage(): Boolean =

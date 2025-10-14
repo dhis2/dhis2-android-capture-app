@@ -45,12 +45,13 @@ class AccountRepositoryImpl(
                 emptyList()
             }
 
-        val providedServerUrls = providedServers.map { it.server }
-        val previousLoggedInServers =
-            preferenceProvider
-                .getSet(PREF_URLS, HashSet())
-                .orEmpty()
-                .filterNot { it in providedServerUrls }
-        return providedServerUrls + previousLoggedInServers
+        providedServers.forEach {
+            preferenceProvider.updateLoginServers(it.server)
+        }
+
+        return preferenceProvider
+            .getSet(PREF_URLS, HashSet())
+            .orEmpty()
+            .toList()
     }
 }

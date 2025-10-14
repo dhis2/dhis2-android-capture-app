@@ -89,4 +89,6 @@ interface PreferenceProvider {
         key: String,
         default: List<String>,
     ): List<String>
+
+    fun updateLoginServers(serverUrl: String)
 }

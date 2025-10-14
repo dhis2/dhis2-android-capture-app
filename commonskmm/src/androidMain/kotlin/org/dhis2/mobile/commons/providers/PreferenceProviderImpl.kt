@@ -10,6 +10,8 @@ import org.hisp.dhis.android.core.arch.storage.internal.AndroidSecureStore
 import org.hisp.dhis.android.core.arch.storage.internal.ChunkedSecureStore
 import timber.log.Timber
 
+const val PREF_URLS = "PREF_URLS"
+
 internal class PreferenceProviderImpl(
     context: Context,
 ) : PreferenceProvider {
@@ -76,6 +78,15 @@ internal class PreferenceProviderImpl(
                 }
             }
         } ?: removeValue(key)
+    }
+
+    override fun updateLoginServers(serverUrl: String) {
+        (getSet(PREF_URLS, HashSet()) as HashSet).apply {
+            if (!contains(serverUrl)) {
+                add(serverUrl)
+            }
+            setValue(PREF_URLS, this)
+        }
     }
 
     override fun removeValue(key: String) {
