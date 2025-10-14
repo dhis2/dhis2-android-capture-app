@@ -15,9 +15,6 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
-      # Ignore development versions with +dev suffix for all dependencies
-      - dependency-name: "*"
-        versions: [">= 0.0.0+dev"]
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
       - dependency-name: "org.hisp.dhis:android-core"
@@ -32,3 +29,4 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "develop"
+    open-pull-requests-limit: 5
