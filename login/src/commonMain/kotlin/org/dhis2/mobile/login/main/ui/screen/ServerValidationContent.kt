@@ -102,8 +102,6 @@ internal fun ServerValidationContent(
             }
         val focusManager = LocalFocusManager.current
 
-        val shouldClearFocus = remember { mutableStateOf(false) }
-
         InputQRCode(
             title = stringResource(Res.string.server_url_title),
             state = inputFocusState,
@@ -124,7 +122,7 @@ internal fun ServerValidationContent(
             displayQRCapturedIcon = false,
             autoCompleteItemSelected = { selectedServer ->
                 selectedServer?.let { server = TextFieldValue(it, TextRange(it.length)) }
-                shouldClearFocus.value = true
+                focusManager.clearFocus()
             },
             onValueChanged = {
                 server = it ?: TextFieldValue()
@@ -141,13 +139,6 @@ internal fun ServerValidationContent(
             },
             modifier = Modifier.fillMaxWidth(),
         )
-
-        LaunchedEffect(shouldClearFocus.value) {
-            if (shouldClearFocus.value) {
-                focusManager.clearFocus()
-                shouldClearFocus.value = false
-            }
-        }
 
         Spacer(Modifier.size(Spacing.Spacing24))
 
