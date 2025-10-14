@@ -4,8 +4,8 @@ import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 
 class LoginUser(
-    private val repository: LoginRepository,
-) {
+    repository: LoginRepository,
+) : BaseLogin(repository) {
     suspend operator fun invoke(
         serverUrl: String,
         username: String,
@@ -13,22 +13,6 @@ class LoginUser(
         isNetworkAvailable: Boolean,
     ): LoginResult {
         val result = repository.loginUser(serverUrl, username, password, isNetworkAvailable)
-        return when {
-            result.isSuccess -> {
-                repository.unlockSession()
-                repository.updateAvailableUsers(username)
-                repository.updateServerUrls(serverUrl)
-                LoginResult.Success(
-                    displayTrackingMessage = repository.displayTrackingMessage(),
-                    initialSyncDone =
-                        repository.initialSyncDone(
-                            serverUrl,
-                            username,
-                        ),
-                )
-            }
-
-            else -> LoginResult.Error(result.exceptionOrNull()?.message)
-        }
+        return handleResult(result, serverUrl, username)
     }
 }

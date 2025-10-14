@@ -103,9 +103,6 @@ class LoginViewModel(
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
                                     selectedUsername = null,
-                                    oidcIcon = result.oidcIcon,
-                                    oidcLoginText = result.oidcLoginText,
-                                    oidcUrl = result.oidcUrl,
                                 ),
                         )
                         stopValidation()
@@ -157,10 +154,6 @@ class LoginViewModel(
         viewModelScope.launch {
             navigator.navigateUp()
         }
-    }
-
-    fun onBackClicked() {
-        navigateUp()
     }
 
     fun importDb(path: String) {

@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -99,12 +98,22 @@ fun CredentialsScreen(
     selectedUsername: String?,
     selectedServerFlag: String?,
     allowRecovery: Boolean,
+    oidcInfo: OidcInfo?,
 ) {
+    val context = LocalPlatformContext.current
+
     val viewModel =
         koinViewModel<CredentialsViewModel> {
-            parametersOf(selectedServerName, selectedServer, selectedUsername, allowRecovery)
+            parametersOf(
+                selectedServerName,
+                selectedServer,
+                selectedUsername,
+                allowRecovery,
+                oidcInfo,
+                context,
+            )
         }
-    val context = LocalPlatformContext.current
+
     val screenState by viewModel.credentialsScreenState.collectAsState()
     val displayBiometricMessage by remember(screenState) {
         derivedStateOf {
@@ -393,14 +402,14 @@ private fun CredentialActions(
     canLogin: Boolean,
     hasOtherAccounts: Boolean,
     onLoginClicked: () -> Unit,
-    onOpenIdLogin: (url: String) -> Unit,
+    onOpenIdLogin: () -> Unit,
     onBiometricsClicked: () -> Unit,
     onManageAccounts: () -> Unit,
     onRecoverAccount: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = spacedBy(Spacing.Spacing8),
+        verticalArrangement = spacedBy(Spacing.Spacing0),
     ) {
         Button(
             modifier = Modifier.fillMaxWidth(),
@@ -456,21 +465,16 @@ private fun CredentialActions(
             }
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                text = oidcInfo.oidcLoginText ?: stringResource(Res.string.action_openid_log_in),
-                icon =
-                    oidcInfo.oidcIcon?.let {
-                        {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Login,
-                                contentDescription = "",
-                                tint = Color.Unspecified,
-                            )
-                        }
-                    },
-                style = ButtonStyle.OUTLINED,
-                onClick = {
-                    oidcInfo.oidcUrl?.let { onOpenIdLogin(it) }
+                text = oidcInfo.buttonText ?: stringResource(Res.string.action_openid_log_in),
+                icon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.Login,
+                        contentDescription = "",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
                 },
+                style = ButtonStyle.OUTLINED,
+                onClick = onOpenIdLogin,
             )
         }
         if (hasOtherAccounts) {

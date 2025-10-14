@@ -18,8 +18,6 @@ import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
-import org.dhis2.usescases.login.LoginComponent;
-import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
@@ -93,6 +91,4 @@ public  interface AppComponent {
     ServerComponent plus(ServerModule serverModule);
 
     SplashComponent plus(SplashModule module);
-
-    LoginComponent plus(LoginModule loginContractsModule);
 }

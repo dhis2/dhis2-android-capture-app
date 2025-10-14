@@ -65,4 +65,6 @@
     <string name="pin_error_remaining_attempts">%1$s attempts remaining</string>
     <string name="import_database">Import Database</string>
     <string name="importing_successful">Import successful</string>
+    <string name="openid_process_cancelled">The login was cancelled</string>
+    <string name="openid_invalid_auth_result">Invalid authorization result</string>
 </resources>

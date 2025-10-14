@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FileUpload
@@ -48,12 +50,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.login.accounts.ui.screen.AccountsScreen
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
+import org.dhis2.mobile.login.main.ui.states.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.ic_dhis_logo
@@ -72,6 +76,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.vectorResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +88,8 @@ fun LoginScreen(
     onNavigateToPrivacyPolicy: () -> Unit,
     onFinish: () -> Unit,
 ) {
-    val viewModel = koinViewModel<LoginViewModel>()
+    val context = LocalPlatformContext.current
+    val viewModel = koinViewModel<LoginViewModel> { parametersOf(context) }
     var displayMoreActions by remember { mutableStateOf(false) }
     var displayBackArrow by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -159,6 +165,7 @@ fun LoginScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(
                         top = padding.calculateTopPadding(),
                         start = padding.calculateStartPadding(layoutDirection),
@@ -192,13 +199,16 @@ fun LoginScreen(
                 val arg = it.toRoute<LoginScreenState.LegacyLogin>()
                 displayMoreActions = arg.selectedServer.isEmpty()
                 displayBackArrow = true
-
                 CredentialsScreen(
                     selectedServer = arg.selectedServer,
                     selectedServerName = arg.serverName,
                     selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
                     selectedServerFlag = arg.selectedServerFlag,
                     allowRecovery = arg.allowRecovery,
+                    oidcInfo =
+                        fixedOpenIdProvider()?.takeIf { info ->
+                            info.serverUrl == arg.selectedServer
+                        },
                 )
             }
             composable<LoginScreenState.OauthLogin> {
@@ -220,6 +230,17 @@ fun LoginScreen(
             }
         }
     }
+}
+
+/**
+* OpenId Configuration
+* Return either OidcInfo.Token or OidcInfo.Discovery classes to configure the login screen.
+* Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
+* documentation for more info.
+* */
+private fun fixedOpenIdProvider(): OidcInfo? {
+    // Change to the correct provider
+    return null
 }
 
 @Composable

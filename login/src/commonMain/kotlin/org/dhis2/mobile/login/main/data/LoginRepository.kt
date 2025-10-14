@@ -44,4 +44,16 @@ interface LoginRepository {
     suspend fun loginWithBiometric(): Result<UserPassword>
 
     suspend fun importDatabase(path: String): Result<Unit>
+
+    suspend fun loginWithOpenId(
+        serverUrl: String,
+        isNetworkAvailable: Boolean,
+        clientId: String,
+        redirectUri: String,
+        discoveryUri: String?,
+        authorizationUri: String?,
+        tokenUrl: String?,
+    ): Result<Unit>
+
+    suspend fun getUsername(): String
 }
