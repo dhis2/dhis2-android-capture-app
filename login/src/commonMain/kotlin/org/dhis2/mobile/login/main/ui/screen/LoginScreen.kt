@@ -1,5 +1,7 @@
 package org.dhis2.mobile.login.main.ui.screen
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -78,7 +80,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
@@ -159,73 +161,78 @@ fun LoginScreen(
 
         val layoutDirection = LocalLayoutDirection.current
 
-        NavHost(
-            navController = navController,
-            startDestination = LoginScreenState.Loading,
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(
-                        top = padding.calculateTopPadding(),
-                        start = padding.calculateStartPadding(layoutDirection),
-                        end = padding.calculateEndPadding(layoutDirection),
-                        bottom = 0.dp,
-                    ).consumeWindowInsets(padding)
-                    .background(
-                        Color.White,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                    ).padding(bottom = padding.calculateBottomPadding()),
-        ) {
-            composable<LoginScreenState.Loading> {
-                displayMoreActions = false
-                displayBackArrow = false
-                LoadingScreen()
-            }
-            composable<LoginScreenState.ServerValidation> {
-                val args = it.toRoute<LoginScreenState.ServerValidation>()
-                displayMoreActions = true
-                displayBackArrow = false
-
-                val uiState by viewModel.serverValidationState.collectAsState()
-                ServerValidationContent(
-                    availableServers = args.availableServers,
-                    state = uiState,
-                    onValidate = viewModel::onValidateServer,
-                    onCancel = viewModel::cancelServerValidation,
-                )
-            }
-            composable<LoginScreenState.LegacyLogin> {
-                val arg = it.toRoute<LoginScreenState.LegacyLogin>()
-                displayMoreActions = arg.selectedServer.isEmpty()
-                displayBackArrow = true
-                CredentialsScreen(
-                    selectedServer = arg.selectedServer,
-                    selectedServerName = arg.serverName,
-                    selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
-                    selectedServerFlag = arg.selectedServerFlag,
-                    allowRecovery = arg.allowRecovery,
-                    oidcInfo =
-                        fixedOpenIdProvider()?.takeIf { info ->
-                            info.serverUrl == arg.selectedServer
-                        },
-                )
-            }
-            composable<LoginScreenState.OauthLogin> {
-                val args = it.toRoute<LoginScreenState.OauthLogin>()
-                WebAuthenticator(url = args.selectedServer) {
-                    viewModel.onOauthLoginCancelled()
+        SharedTransitionLayout {
+            NavHost(
+                navController = navController,
+                startDestination = LoginScreenState.Loading,
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(
+                            top = padding.calculateTopPadding(),
+                            start = padding.calculateStartPadding(layoutDirection),
+                            end = padding.calculateEndPadding(layoutDirection),
+                            bottom = 0.dp,
+                        ).consumeWindowInsets(padding)
+                        .background(
+                            Color.White,
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                        ).padding(bottom = padding.calculateBottomPadding()),
+            ) {
+                composable<LoginScreenState.Loading> {
+                    displayMoreActions = false
+                    displayBackArrow = false
+                    LoadingScreen()
                 }
-            }
-            composable<LoginScreenState.Accounts> {
-                displayMoreActions = true
-                displayBackArrow = false
-                AccountsScreen()
-            }
-            composable<LoginScreenState.RecoverAccount> {
-                val arg = it.toRoute<LoginScreenState.RecoverAccount>()
-                WebRecovery(arg.selectedServer) {
-                    viewModel.onRecoveryCancelled()
+                composable<LoginScreenState.ServerValidation> {
+                    val args = it.toRoute<LoginScreenState.ServerValidation>()
+                    displayMoreActions = true
+                    displayBackArrow = false
+
+                    val uiState by viewModel.serverValidationState.collectAsState()
+                    ServerValidationContent(
+                        availableServers = args.availableServers,
+                        state = uiState,
+                        onValidate = viewModel::onValidateServer,
+                        onCancel = viewModel::cancelServerValidation,
+                    )
+                }
+                composable<LoginScreenState.LegacyLogin> {
+                    val arg = it.toRoute<LoginScreenState.LegacyLogin>()
+                    displayMoreActions = arg.selectedServer.isEmpty()
+                    displayBackArrow = true
+                    CredentialsScreen(
+                        selectedServer = arg.selectedServer,
+                        selectedServerName = arg.serverName,
+                        selectedUsername = arg.selectedUsername?.takeIf { username -> username.isNotEmpty() },
+                        selectedServerFlag = arg.selectedServerFlag,
+                        allowRecovery = arg.allowRecovery,
+                        oidcInfo =
+                            fixedOpenIdProvider()?.takeIf { info ->
+                                info.serverUrl == arg.selectedServer
+                            },
+                    )
+                }
+                composable<LoginScreenState.OauthLogin> {
+                    val args = it.toRoute<LoginScreenState.OauthLogin>()
+                    WebAuthenticator(url = args.selectedServer) {
+                        viewModel.onOauthLoginCancelled()
+                    }
+                }
+                composable<LoginScreenState.Accounts> {
+                    displayMoreActions = true
+                    displayBackArrow = false
+                    AccountsScreen(
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable,
+                    )
+                }
+                composable<LoginScreenState.RecoverAccount> {
+                    val arg = it.toRoute<LoginScreenState.RecoverAccount>()
+                    WebRecovery(arg.selectedServer) {
+                        viewModel.onRecoveryCancelled()
+                    }
                 }
             }
         }

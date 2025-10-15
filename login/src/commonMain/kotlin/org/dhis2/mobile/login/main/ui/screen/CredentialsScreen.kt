@@ -1,5 +1,8 @@
 package org.dhis2.mobile.login.main.ui.screen
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,7 +94,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
+context(sharedTransitionScope: SharedTransitionScope, animatedVisibilityScope: AnimatedVisibilityScope)
 fun CredentialsScreen(
     selectedServer: String,
     selectedServerName: String?,
@@ -146,12 +151,20 @@ fun CredentialsScreen(
                 .padding(Spacing.Spacing16),
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
-        ServerInfo(
-            serverName = selectedServerName,
-            serverUrl = selectedServer,
-            selectedUsername = selectedUsername,
-            serverImageUrl = selectedServerFlag,
-        )
+        with(sharedTransitionScope) {
+            ServerInfo(
+                modifier =
+                    Modifier
+                        .sharedElement(
+                            sharedContentState = rememberSharedContentState(key = "$selectedUsername@$selectedServer"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                        ),
+                serverName = selectedServerName,
+                serverUrl = selectedServer,
+                selectedUsername = selectedUsername,
+                serverImageUrl = selectedServerFlag,
+            )
+        }
         CredentialsContainer(
             availableUsernames = screenState.credentialsInfo.availableUsernames,
             username = screenState.credentialsInfo.username,
@@ -172,6 +185,7 @@ fun CredentialsScreen(
         )
         if (isLoggingIn.not()) {
             CredentialActions(
+                modifier = Modifier.weight(1f),
                 allowRecovery = screenState.allowRecovery,
                 oidcInfo = screenState.oidcInfo,
                 hasBiometrics = screenState.canUseBiometrics,
@@ -219,6 +233,7 @@ fun CredentialsScreen(
 
 @Composable
 private fun ServerInfo(
+    modifier: Modifier,
     serverName: String?,
     serverUrl: String,
     selectedUsername: String?,
@@ -227,7 +242,7 @@ private fun ServerInfo(
     val flag = serverImageUrl?.let { getDrawableResource(it) }
 
     ListCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         listCardState =
             rememberListCardState(
                 title =
@@ -396,6 +411,7 @@ private fun LoginStatus(
 
 @Composable
 private fun CredentialActions(
+    modifier: Modifier,
     allowRecovery: Boolean,
     hasBiometrics: Boolean,
     oidcInfo: OidcInfo?,
@@ -408,7 +424,7 @@ private fun CredentialActions(
     onRecoverAccount: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         verticalArrangement = spacedBy(Spacing.Spacing0),
     ) {
         Button(
