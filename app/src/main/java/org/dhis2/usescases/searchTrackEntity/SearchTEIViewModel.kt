@@ -175,6 +175,7 @@ class SearchTEIViewModel(
     }
 
     private fun loadNavigationBarItems() {
+        CoroutineTracker.increment()
         val pageConfigurator = searchNavPageConfigurator.initVariables()
         pageConfiguration.postValue(pageConfigurator)
 
@@ -222,6 +223,7 @@ class SearchTEIViewModel(
         if (enrollmentItems.isNotEmpty()) {
             onNavigationPageChanged(enrollmentItems.first().id)
         }
+        CoroutineTracker.decrement()
     }
 
     fun onNavigationPageChanged(page: NavigationPage) {
