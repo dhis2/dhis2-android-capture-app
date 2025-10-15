@@ -44,8 +44,14 @@ class AccountRepositoryImpl(
             } else {
                 emptyList()
             }
-        val previousLoggedInServers =
-            preferenceProvider.getSet(PREF_URLS, HashSet())?.toList() ?: emptyList()
-        return providedServers.map { it.server } + previousLoggedInServers
+
+        providedServers.forEach {
+            preferenceProvider.updateLoginServers(it.server)
+        }
+
+        return preferenceProvider
+            .getSet(PREF_URLS, HashSet())
+            .orEmpty()
+            .toList()
     }
 }

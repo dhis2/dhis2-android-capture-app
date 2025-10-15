@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -99,6 +100,7 @@ internal fun ServerValidationContent(
                         selection = TextRange(serverUrl?.length ?: 0),
                     )
             }
+        val focusManager = LocalFocusManager.current
 
         InputQRCode(
             title = stringResource(Res.string.server_url_title),
@@ -120,6 +122,7 @@ internal fun ServerValidationContent(
             displayQRCapturedIcon = false,
             autoCompleteItemSelected = { selectedServer ->
                 selectedServer?.let { server = TextFieldValue(it, TextRange(it.length)) }
+                focusManager.clearFocus()
             },
             onValueChanged = {
                 server = it ?: TextFieldValue()
