@@ -139,6 +139,8 @@ class FormView : Fragment() {
         ) {
             when (it) {
                 is CustomIntentResult.Error -> {
+                    val loadingIntent = FormIntent.OnFieldFinishedLoadingData(it.fieldUid)
+                    intentHandler(loadingIntent)
                     val intent =
                         FormIntent.OnSaveCustomIntent(
                             it.fieldUid,
@@ -148,6 +150,8 @@ class FormView : Fragment() {
                     intentHandler(intent)
                 }
                 is CustomIntentResult.Success -> {
+                    val loadingIntent = FormIntent.OnFieldFinishedLoadingData(it.fieldUid)
+                    intentHandler(loadingIntent)
                     val intent =
                         FormIntent.OnSaveCustomIntent(
                             it.fieldUid,
@@ -356,6 +360,8 @@ class FormView : Fragment() {
         uiEvent.customIntent?.let {
             val updatedRequestParams = viewModel.getCustomIntentRequestParams(it.uid)
             val updatedCustomIntent = uiEvent.customIntent.copy(customIntentRequest = updatedRequestParams)
+            val intent = FormIntent.OnFieldLoadingData(uiEvent.uid)
+            intentHandler(intent)
             openCustomIntentLauncher.launch(
                 CustomIntentInput(
                     fieldUid = uiEvent.uid,

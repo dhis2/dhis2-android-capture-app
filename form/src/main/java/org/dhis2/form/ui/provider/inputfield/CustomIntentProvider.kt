@@ -42,8 +42,8 @@ fun ProvideCustomIntentInput(
                 mutableStateListOf(*value.split(",").toTypedArray())
             } ?: mutableStateListOf()
         }
-    var customIntentState by remember(values) {
-        mutableStateOf(getCustomIntentState(values))
+    var customIntentState by remember(values, fieldUiModel) {
+        mutableStateOf(getCustomIntentState(values, fieldUiModel.isLoadingData))
     }
     val errorGettingDataMessage =
         SupportingTextData(
@@ -66,6 +66,7 @@ fun ProvideCustomIntentInput(
         rememberLauncherForActivityResult(contract = CustomIntentActivityResultContract()) {
             when (it) {
                 is CustomIntentResult.Error -> {
+                    customIntentState = CustomIntentState.LAUNCH
                     inputShellState = InputShellState.ERROR
                     if (!supportingTextList.contains(errorGettingDataMessage)) {
                         supportingTextList.add(
@@ -74,6 +75,7 @@ fun ProvideCustomIntentInput(
                     }
                 }
                 is CustomIntentResult.Success -> {
+                    customIntentState = CustomIntentState.LOADED
                     intentHandler(
                         FormIntent.OnSave(
                             it.fieldUid,
@@ -101,6 +103,7 @@ fun ProvideCustomIntentInput(
                     ),
                 )
             } else {
+                customIntentState = CustomIntentState.LOADING
                 if (supportingTextList.contains(errorGettingDataMessage)) {
                     supportingTextList.remove(errorGettingDataMessage)
                 }
@@ -124,9 +127,14 @@ fun ProvideCustomIntentInput(
     )
 }
 
-fun getCustomIntentState(values: SnapshotStateList<String>): CustomIntentState =
+fun getCustomIntentState(
+    values: SnapshotStateList<String>,
+    isLoading: Boolean,
+): CustomIntentState =
     if (values.isEmpty()) {
         CustomIntentState.LAUNCH
+    } else if (isLoading) {
+        CustomIntentState.LOADING
     } else {
         CustomIntentState.LOADED
     }

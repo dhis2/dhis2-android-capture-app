@@ -15,8 +15,10 @@ import timber.log.Timber
 import kotlin.collections.forEach
 
 class CustomIntentActivityResultContract : ActivityResultContract<CustomIntentInput, CustomIntentResult>() {
-    var customIntent: CustomIntentModel? = null
-    var fieldUid: String = ""
+    companion object {
+        private var fieldUid: String = ""
+        private var customIntent: CustomIntentModel? = null
+    }
 
     override fun createIntent(
         context: Context,

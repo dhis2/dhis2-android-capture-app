@@ -238,9 +238,9 @@ class FormViewModel(
             ActionType.ON_TEXT_CHANGE -> handleOnTextChangeAction(action)
             ActionType.ON_SECTION_CHANGE -> handleOnSectionChangeAction(action)
             ActionType.ON_FINISH -> handleOnFinishAction(action)
-            ActionType.ON_REQUEST_COORDINATES -> handleOnRequestCoordinatesAction(action)
-            ActionType.ON_CANCEL_REQUEST_COORDINATES ->
-                handleOnCancelRequestCoordinatesAction(
+            ActionType.ON_FIELD_LOADING -> handleOnFieldLoadingAction(action)
+            ActionType.ON_FINISH_LOADING ->
+                handleOnFieldFinishedLoadingAction(
                     action,
                 )
 
@@ -321,7 +321,7 @@ class FormViewModel(
         )
     }
 
-    private fun handleOnRequestCoordinatesAction(action: RowAction): StoreResult {
+    private fun handleOnFieldLoadingAction(action: RowAction): StoreResult {
         repository.setFieldLoading(action.id, true)
         return StoreResult(
             action.id,
@@ -329,7 +329,7 @@ class FormViewModel(
         )
     }
 
-    private fun handleOnCancelRequestCoordinatesAction(action: RowAction): StoreResult {
+    private fun handleOnFieldFinishedLoadingAction(action: RowAction): StoreResult {
         repository.setFieldLoading(action.id, false)
         return StoreResult(
             action.id,
@@ -574,18 +574,18 @@ class FormViewModel(
                     actionType = ActionType.ON_FINISH,
                 )
 
-            is FormIntent.OnRequestCoordinates ->
+            is FormIntent.OnFieldLoadingData ->
                 createRowAction(
                     uid = intent.uid,
                     value = null,
-                    actionType = ActionType.ON_REQUEST_COORDINATES,
+                    actionType = ActionType.ON_FIELD_LOADING,
                 )
 
-            is FormIntent.OnCancelRequestCoordinates ->
+            is FormIntent.OnFieldFinishedLoadingData ->
                 createRowAction(
                     uid = intent.uid,
                     value = null,
-                    actionType = ActionType.ON_CANCEL_REQUEST_COORDINATES,
+                    actionType = ActionType.ON_FINISH_LOADING,
                 )
 
             is FormIntent.OnAddImageFinished ->
@@ -1044,6 +1044,15 @@ class FormViewModel(
                     type = ActionType.ON_SAVE,
                 )
         }
+    }
+
+    fun setFieldLoading(
+        fieldUid: String,
+        isLoading: Boolean,
+        value: String,
+    ) {
+        repository.setFieldLoading(fieldUid, isLoading)
+        repository.updateValueOnList(fieldUid, null, null)
     }
 
     fun getCustomIntentRequestParams(customIntentUid: String): List<CustomIntentRequestArgumentModel> =

@@ -76,11 +76,11 @@ sealed class FormIntent {
         val sectionUid: String,
     ) : FormIntent()
 
-    data class OnRequestCoordinates(
+    data class OnFieldLoadingData(
         val uid: String,
     ) : FormIntent()
 
-    data class OnCancelRequestCoordinates(
+    data class OnFieldFinishedLoadingData(
         val uid: String,
     ) : FormIntent()
 
