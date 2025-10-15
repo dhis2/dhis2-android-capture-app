@@ -92,10 +92,10 @@ DHIS2 Android Capture App is a mobile application for Android that allows offlin
 
 ### Build & Development Tools
 
-- **[ktlint](https://pinterest.github.io/ktlint/)** `13.1.0` - Kotlin linter
-- **[SonarQube](https://www.sonarqube.org/)** `6.3.1.5724` - Code quality and security analysis
+- **[ktlint](https://pinterest.github.io/ktlint/)** - Kotlin linter (Gradle plugin `13.1.0`)
+- **[SonarQube](https://www.sonarqube.org/)** - Code quality and security analysis (Plugin `6.3.1.5724`)
 - **[Jacoco](https://www.jacoco.org/jacoco/)** `0.8.13` - Code coverage tool
-- **[KSP (Kotlin Symbol Processing)](https://kotlinlang.org/docs/ksp-overview.html)** `2.2.20-2.0.3` - Annotation processing for Kotlin
+- **[KSP (Kotlin Symbol Processing)](https://kotlinlang.org/docs/ksp-overview.html)** - Annotation processing for Kotlin (Plugin `2.2.20-2.0.3`)
 
 ## Documentation
 
