@@ -103,30 +103,6 @@ class EventCapturePresenterTest {
     }
 
     @Test
-    fun `Should complete an event and finish data entry`() {
-        whenever(eventRepository.completeEvent()) doReturn Observable.just(true)
-
-        presenter.completeEvent(false)
-        verify(view).finishDataEntry()
-    }
-
-    @Test
-    fun `Should complete an event and restart data entry`() {
-        whenever(eventRepository.completeEvent()) doReturn Observable.just(true)
-
-        presenter.completeEvent(true)
-        verify(view).restartDataEntry()
-    }
-
-    @Test
-    fun `Should not complete an event`() {
-        whenever(eventRepository.completeEvent()) doReturn Observable.just(false)
-
-        presenter.completeEvent(true)
-        verify(view).restartDataEntry()
-    }
-
-    @Test
     fun `Should delete an event`() {
         whenever(eventRepository.deleteEvent()) doReturn Observable.just(true)
         whenever(eventRepository.programStage()) doReturn Observable.just("programStage")

@@ -23,6 +23,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.EventCreateProjection
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitMode
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
@@ -185,6 +186,7 @@ class StockManagerImpl(
         items: List<StockEntry>,
         transaction: Transaction,
         stockUseCase: StockUseCase,
+        hasErrorOnComplete: Boolean,
     ): Single<Unit> {
         Timber.i("SAVING TRANSACTION")
 
@@ -199,7 +201,7 @@ class StockManagerImpl(
 
         items.forEach { entry ->
             getEnrollment(entry.item.id)?.let { enrollment ->
-                createEvent(entry, programStage, enrollment, transaction, stockUseCase)
+                createEvent(entry, programStage, enrollment, transaction, stockUseCase, hasErrorOnComplete)
             }
         }
         return Single.just(Unit)
@@ -216,6 +218,7 @@ class StockManagerImpl(
         enrollment: Enrollment,
         transaction: Transaction,
         stockUseCase: StockUseCase,
+        hasErrorOnComplete: Boolean,
     ) {
         val eventUid =
             try {
@@ -246,6 +249,51 @@ class StockManagerImpl(
                 if (e is D2Error) {
                     Timber.e(e.originalException())
                     Timber.e("Unable to set event date: %s", e.errorCode().toString())
+                } else {
+                    Timber.e(e)
+                }
+            }
+
+            try {
+                // set event status as complete
+                val hasEmptyMandatoryFields =
+                    d2
+                        .programModule()
+                        .programStageDataElements()
+                        .byProgramStage()
+                        .eq(programStage.uid())
+                        .byCompulsory()
+                        .isTrue
+                        .blockingGet()
+                        .any { programStageDataElement ->
+                            val mandatoryDataElement = programStageDataElement.dataElement()?.uid()
+                            val dataElementValue =
+                                mandatoryDataElement?.let {
+                                    d2
+                                        .trackedEntityModule()
+                                        .trackedEntityDataValues()
+                                        .value(eventUid, it)
+                                        .blockingGet()
+                                        ?.value()
+                                }
+                            dataElementValue.isNullOrEmpty()
+                        }
+                val canComplete = hasErrorOnComplete.not() and hasEmptyMandatoryFields.not()
+                d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .setStatus(
+                        if (canComplete) {
+                            EventStatus.COMPLETED
+                        } else {
+                            EventStatus.ACTIVE
+                        },
+                    )
+            } catch (e: Exception) {
+                if (e is D2Error) {
+                    Timber.e(e.originalException())
+                    Timber.e("Unable to set event status: %s", e.errorCode().toString())
                 } else {
                     Timber.e(e)
                 }

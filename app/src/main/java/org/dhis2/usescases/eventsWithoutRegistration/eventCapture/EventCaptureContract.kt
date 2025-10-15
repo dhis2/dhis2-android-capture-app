@@ -58,8 +58,6 @@ class EventCaptureContract {
 
         fun isEnrollmentOpen(): Boolean
 
-        fun completeEvent(addNew: Boolean)
-
         fun deleteEvent()
 
         fun skipEvent()
@@ -105,8 +103,6 @@ class EventCaptureContract {
         fun programStageName(): Flowable<String>
 
         fun orgUnit(): Flowable<OrganisationUnit>
-
-        fun completeEvent(): Observable<Boolean>
 
         fun eventStatus(): Flowable<EventStatus>
 
