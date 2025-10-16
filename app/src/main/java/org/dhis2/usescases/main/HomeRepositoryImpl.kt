@@ -27,6 +27,11 @@ class HomeRepositoryImpl(
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
     private val dispatcher: Dispatcher,
 ) : HomeRepository {
+
+    companion object {
+        const val BIOMETRICS_PERMISSION = "biometrics_permission"
+    }
+
     private suspend fun <T> execute(block: suspend () -> Result<T>): Result<T> =
         withContext(dispatcher.io) {
             try {
@@ -86,6 +91,22 @@ class HomeRepositoryImpl(
         } else {
             false
         }
+
+    override fun checkDeleteBiometricsPermission() {
+        val hasOnlyTwoAccounts =
+            d2
+                .userModule()
+                .accountManager()
+                .getAccounts()
+                .count() == 2
+        if (hasOnlyTwoAccounts) {
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(BIOMETRICS_PERMISSION)
+                .blockingDeleteIfExist()
+        }
+    }
 
     override fun hasHomeAnalytics(): Boolean = charts?.getVisualizationGroups(null)?.isNotEmpty() == true
 

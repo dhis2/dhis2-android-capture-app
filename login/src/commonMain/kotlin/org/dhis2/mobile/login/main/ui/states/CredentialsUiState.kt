@@ -11,6 +11,7 @@ data class CredentialsUiState(
     val oidcInfo: OidcInfo?,
     val errorMessage: String?,
     val afterLoginActions: List<AfterLoginAction>,
+    val displayBiometricsDialog: Boolean,
     val hasOtherAccounts: Boolean,
     val isSessionLocked: Boolean,
 ) {

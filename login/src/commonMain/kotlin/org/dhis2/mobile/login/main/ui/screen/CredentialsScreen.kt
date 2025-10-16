@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.main.ui.screen
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -17,8 +18,10 @@ import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -42,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
+import androidx.compose.ui.unit.dp
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.resources.getDrawableResource
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
@@ -75,8 +80,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.BottomSheetShell
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonBlock
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
-import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPassword
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
@@ -143,6 +146,14 @@ fun CredentialsScreen(
         val action = screenState.afterLoginActions.firstOrNull()
         if (action is AfterLoginAction.NavigateToNextScreen) {
             viewModel.goToNextScreen(action.initialSyncDone)
+        }
+    }
+
+    LaunchedEffect(screenState.displayBiometricsDialog) {
+        if(screenState.displayBiometricsDialog) {
+            with(context) {
+                viewModel.onBiometricsClicked()
+            }
         }
     }
 
@@ -499,18 +510,24 @@ private fun CredentialActions(
                     .padding(vertical = Spacing.Spacing24),
                 contentAlignment = Alignment.Center,
             ) {
-                IconButton(
-                    style = IconButtonStyle.STANDARD,
-                    icon = {
-                        Icon(
-                            modifier = Modifier.size(Spacing.Spacing48),
-                            imageVector = Icons.Outlined.Fingerprint,
-                            contentDescription = "fingerprint",
-                            tint = MaterialTheme.colorScheme.primary,
-                        )
-                    },
+                val interactionSource = remember { MutableInteractionSource() }
+                FilledTonalIconButton(
+                    modifier = Modifier.size(Spacing.Spacing48),
                     onClick = onBiometricsClicked,
-                )
+                    interactionSource = interactionSource,
+                    colors = IconButtonColors(containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.primary,
+                        disabledContentColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        )
+                ) {
+                    Icon(
+                        modifier = Modifier.size(36.dp, 40.dp),
+                        imageVector = Icons.Outlined.Fingerprint,
+                        contentDescription = "fingerprint",
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         }
         if (oidcInfo != null) {
@@ -615,7 +632,7 @@ fun TrackingPermissionDialog(
                         style = ButtonStyle.OUTLINED,
                         text = stringResource(Res.string.action_no_now),
                         onClick = {
-                            onPermissionResult(true)
+                            onPermissionResult(false)
                         },
                     )
                 },
@@ -625,7 +642,7 @@ fun TrackingPermissionDialog(
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.action_yes),
                         onClick = {
-                            onPermissionResult(false)
+                            onPermissionResult(true)
                         },
                     )
                 },
@@ -666,7 +683,7 @@ private fun BiometricsDialog(onPermissionResult: (granted: Boolean) -> Unit) {
                         style = ButtonStyle.OUTLINED,
                         text = stringResource(Res.string.action_no_now),
                         onClick = {
-                            onPermissionResult(true)
+                            onPermissionResult(false)
                         },
                     )
                 },
@@ -676,7 +693,7 @@ private fun BiometricsDialog(onPermissionResult: (granted: Boolean) -> Unit) {
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.action_yes),
                         onClick = {
-                            onPermissionResult(false)
+                            onPermissionResult(true)
                         },
                     )
                 },
