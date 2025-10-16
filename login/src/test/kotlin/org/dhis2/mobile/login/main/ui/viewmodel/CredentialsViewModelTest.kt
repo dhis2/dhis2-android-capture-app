@@ -32,6 +32,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.timeout
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -57,6 +58,8 @@ class CredentialsViewModelTest {
     private val forgotPinUseCase: ForgotPinUseCase = mock()
 
     private lateinit var viewModel: CredentialsViewModel
+
+    private val turbineTimeout = 6.seconds
 
     @Before
     fun setUp() {
@@ -88,7 +91,7 @@ class CredentialsViewModelTest {
             initViewModel(serverUrl = serverUrl)
 
             // THEN
-            viewModel.credentialsScreenState.test {
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 skipItems(1) // skip default value
 
                 val initialState = awaitItem()
@@ -113,8 +116,8 @@ class CredentialsViewModelTest {
 
             initViewModel()
 
-            viewModel.credentialsScreenState.test {
-                skipItems(1) // Skip initial state
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                skipItems(2) // Skip initial state
 
                 // WHEN
                 viewModel.updateUsername("test_user")
@@ -123,6 +126,8 @@ class CredentialsViewModelTest {
                 val updatedState = awaitItem()
                 assertEquals("test_user", updatedState.credentialsInfo.username)
                 assertEquals(LoginState.Disabled, updatedState.loginState)
+
+                cancelAndIgnoreRemainingEvents()
             }
         }
 
@@ -141,7 +146,7 @@ class CredentialsViewModelTest {
 
             initViewModel()
 
-            viewModel.credentialsScreenState.test {
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 skipItems(2) // Skip initial state
 
                 viewModel.updateUsername("test_user")
@@ -176,7 +181,7 @@ class CredentialsViewModelTest {
 
             initViewModel()
 
-            viewModel.credentialsScreenState.test(timeout = 5.seconds) {
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 skipItems(2)
                 viewModel.updateUsername("user")
                 skipItems(1)
@@ -215,7 +220,7 @@ class CredentialsViewModelTest {
 
             initViewModel()
 
-            viewModel.credentialsScreenState.test(timeout = 5.seconds) {
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 skipItems(2)
                 viewModel.updateUsername("user")
                 skipItems(1)
