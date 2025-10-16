@@ -57,11 +57,12 @@ internal val mainLoginModule =
         }
 
         factory { params ->
-            UpdateBiometricPermission(get { parametersOf(params.get()) },
+            UpdateBiometricPermission(
                 get { parametersOf(params.get()) },
                 get { parametersOf(params.get()) },
                 get { parametersOf(params.get()) },
-                )
+                get { parametersOf(params.get()) },
+            )
         }
         factory { params ->
             OpenIdLogin(get { parametersOf(params.get()) })

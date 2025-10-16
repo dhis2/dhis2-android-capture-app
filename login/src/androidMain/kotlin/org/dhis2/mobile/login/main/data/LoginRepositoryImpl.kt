@@ -236,7 +236,7 @@ class LoginRepositoryImpl(
         }
     }
 
-    override  fun updateBiometricsPermissions(granted: Boolean) {
+    override fun updateBiometricsPermissions(granted: Boolean) {
         d2
             .dataStoreModule()
             .localDataStore()
