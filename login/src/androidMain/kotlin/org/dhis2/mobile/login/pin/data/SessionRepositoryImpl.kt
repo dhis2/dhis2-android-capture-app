@@ -86,7 +86,7 @@ class SessionRepositoryImpl(
 
     override suspend fun isSessionLocked(): Boolean =
         try {
-            preferenceProvider.getBoolean(PREF_SESSION_LOCKED, false)
+            getStoredPin() != null
         } catch (e: Exception) {
             Timber.e(e, "Failed to get session locked state")
             false
