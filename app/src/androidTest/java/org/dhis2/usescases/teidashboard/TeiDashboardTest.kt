@@ -121,6 +121,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnFabAddNewNote()
             typeNote(NOTE_EXISTING_TEXT)
             clickOnSaveButton()
+            clickOnNoteWithPosition(0)
             checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
     }
