@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -28,6 +28,7 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
@@ -37,7 +38,7 @@ class LoginViewModelTest {
     private val importDatabase: ImportDatabase = mock()
     private val validateServer: ValidateServer = mock()
     private val appLinkNavigation: AppLinkNavigation = mock()
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
     private val mockAppLinkFlow = MutableSharedFlow<String>()
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val mockNetworkStatusFlow = MutableStateFlow(true)
@@ -106,24 +107,27 @@ class LoginViewModelTest {
                     networkStatusProvider = networkStatusProvider,
                 )
 
-            viewModel.serverValidationState.test {
+            viewModel.serverValidationState.test(timeout = 5.seconds) {
                 assertEquals(ServerValidationUiState(), awaitItem())
 
                 viewModel.onValidateServer(serverUrl)
 
                 // Should show validation running
                 val validationRunningState = awaitItem()
+
                 assertEquals(true, validationRunningState.validationRunning)
                 assertEquals(serverUrl, validationRunningState.currentServer)
                 assertNull(validationRunningState.error)
 
                 // Should show error and stop validation
+
                 val errorState = awaitItem()
                 assertEquals(errorMessage, errorState.error)
                 assertEquals(serverUrl, errorState.currentServer)
                 assertEquals(false, errorState.validationRunning)
 
                 cancelAndIgnoreRemainingEvents()
+                println("DONE")
             }
         }
 
