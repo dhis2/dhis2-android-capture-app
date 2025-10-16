@@ -53,6 +53,7 @@ class AccountsViewModel(
                 LoginScreenState.ServerValidation(
                     currentServer = "",
                     availableServers = repository.availableServers(),
+                    hasAccounts = _accounts.value.isNotEmpty(),
                 ),
             )
         }

@@ -4,6 +4,7 @@ package org.dhis2.mobile.login.main.ui.screen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.login.main.ui.contracts.serverQrReader
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
 import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.action_manage_account
 import org.dhis2.mobile.login.resources.action_next
 import org.dhis2.mobile.login.resources.server_url_title
 import org.dhis2.mobile.login.resources.server_verification_running
@@ -58,8 +61,10 @@ const val SERVER_VALIDATION_CONTENT_BUTTON_TAG = "ServerValidationContentButtonT
 internal fun ServerValidationContent(
     availableServers: List<String>,
     state: ServerValidationUiState,
+    hasAccount: Boolean,
     onValidate: (String) -> Unit,
     onCancel: () -> Unit,
+    onManageAccounts: () -> Unit,
 ) {
     Column(
         modifier =
@@ -187,6 +192,23 @@ internal fun ServerValidationContent(
                         )
                     },
                     onClick = onCancel,
+                )
+            }
+        }
+
+        if (hasAccount) {
+            Box(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                contentAlignment = Alignment.BottomCenter,
+            ) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.action_manage_account),
+                    style = ButtonStyle.OUTLINED,
+                    onClick = onManageAccounts,
                 )
             }
         }

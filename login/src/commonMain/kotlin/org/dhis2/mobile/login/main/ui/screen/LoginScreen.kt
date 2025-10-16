@@ -194,8 +194,10 @@ fun LoginScreen(
                     ServerValidationContent(
                         availableServers = args.availableServers,
                         state = uiState,
-                        onValidate = viewModel::onValidateServer,
-                        onCancel = viewModel::cancelServerValidation,
+                        hasAccount = args.hasAccounts,
+                    onValidate = viewModel::onValidateServer,
+                    onCancel = viewModel::cancelServerValidation,
+                    onManageAccounts = viewModel::onBackToManageAccounts,
                     )
                 }
                 composable<LoginScreenState.LegacyLogin> {
