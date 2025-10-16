@@ -195,9 +195,9 @@ fun LoginScreen(
                         availableServers = args.availableServers,
                         state = uiState,
                         hasAccount = args.hasAccounts,
-                    onValidate = viewModel::onValidateServer,
-                    onCancel = viewModel::cancelServerValidation,
-                    onManageAccounts = viewModel::onBackToManageAccounts,
+                        onValidate = viewModel::onValidateServer,
+                        onCancel = viewModel::cancelServerValidation,
+                        onManageAccounts = viewModel::onBackToManageAccounts,
                     )
                 }
                 composable<LoginScreenState.LegacyLogin> {
@@ -242,11 +242,11 @@ fun LoginScreen(
 }
 
 /**
-* OpenId Configuration
-* Return either OidcInfo.Token or OidcInfo.Discovery classes to configure the login screen.
-* Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
-* documentation for more info.
-* */
+ * OpenId Configuration
+ * Return either OidcInfo.Token or OidcInfo.Discovery classes to configure the login screen.
+ * Don't forget to add the RedirectUriReceiverActivity in the android manifest. Check the
+ * documentation for more info.
+ * */
 private fun fixedOpenIdProvider(): OidcInfo? {
     // Change to the correct provider
     return null
