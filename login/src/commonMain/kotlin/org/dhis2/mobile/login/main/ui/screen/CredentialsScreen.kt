@@ -1,9 +1,9 @@
 package org.dhis2.mobile.login.main.ui.screen
 
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -150,7 +150,7 @@ fun CredentialsScreen(
     }
 
     LaunchedEffect(screenState.displayBiometricsDialog) {
-        if(screenState.displayBiometricsDialog) {
+        if (screenState.displayBiometricsDialog) {
             with(context) {
                 viewModel.onBiometricsClicked()
             }
@@ -515,11 +515,13 @@ private fun CredentialActions(
                     modifier = Modifier.size(Spacing.Spacing48),
                     onClick = onBiometricsClicked,
                     interactionSource = interactionSource,
-                    colors = IconButtonColors(containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.primary,
-                        disabledContentColor = Color.Transparent,
-                        disabledContainerColor = Color.Transparent,
-                        )
+                    colors =
+                        IconButtonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.primary,
+                            disabledContentColor = Color.Transparent,
+                            disabledContainerColor = Color.Transparent,
+                        ),
                 ) {
                     Icon(
                         modifier = Modifier.size(36.dp, 40.dp),

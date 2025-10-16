@@ -27,7 +27,6 @@ class HomeRepositoryImpl(
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
     private val dispatcher: Dispatcher,
 ) : HomeRepository {
-
     companion object {
         const val BIOMETRICS_PERMISSION = "biometrics_permission"
     }

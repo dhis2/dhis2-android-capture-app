@@ -125,7 +125,7 @@ class CredentialsViewModel(
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics,
                 ),
             )
         }
