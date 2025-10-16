@@ -400,13 +400,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    private fun createExpectedUpperInformation() =
-        UpperEnrollmentUIModel(
-            "10/1/2024",
-            "10/1/2021",
-            "Ngelehun CHC"
-        )
-
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
             "10/01/2025",
