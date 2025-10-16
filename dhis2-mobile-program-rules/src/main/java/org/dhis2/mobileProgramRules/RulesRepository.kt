@@ -190,8 +190,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
         } else {
             d2
                 .eventModule()
@@ -209,8 +209,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
                 .let { list ->
                     val currentEventIndex = list.indexOfFirst { it.uid() == eventToEvaluate.uid() }
 

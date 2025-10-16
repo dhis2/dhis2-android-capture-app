@@ -56,7 +56,6 @@ class RuleEngineExtensionsTest {
             RETURNS_DEEP_STUBS,
         )
 
-    @OptIn(ExperimentalTime::class)
     @Test
     fun `Should remove the time component`() {
         val date1 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
@@ -68,6 +67,32 @@ class RuleEngineExtensionsTest {
         val date4 = DateUtils.DATE_FORMAT.parse("2025-09-26T00:00:00.000")
 
         assertNotEquals(date3.toRuleEngineInstantWithNoTime(), date4.toRuleEngineInstantWithNoTime())
+    }
+
+    @Test
+    fun `Should order events by event date with no time and created`() {
+        val event1 = Event.builder()
+            .uid("event1")
+            .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431"))
+            .created(DateUtils.DATE_FORMAT.parse("2025-09-25T11:50:32.431"))
+            .build()
+
+        val event2 = Event.builder()
+            .uid("event2")
+            .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
+            .created(DateUtils.DATE_FORMAT.parse("2025-09-25T10:10:32.431"))
+            .build()
+
+        val event3 = Event.builder()
+            .uid("event3")
+            .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
+            .created(DateUtils.DATE_FORMAT.parse("2025-09-25T14:30:32.431"))
+            .build()
+
+        val events = listOf(event1, event2, event3)
+        val sortedEvents = events.sortForRuleEngine()
+
+        assertEquals(listOf(event3, event1, event2), sortedEvents)
     }
 
     @Test

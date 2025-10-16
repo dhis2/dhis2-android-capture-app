@@ -48,6 +48,14 @@ fun Date.toRuleEngineInstantWithNoTime() =
         .toInstant(TimeZone.currentSystemDefault())
         .toDeprecatedInstant()
 
+fun List<Event>.sortForRuleEngine(): List<Event> =
+    sortedWith(
+        compareBy<Event>(
+            { it.eventDate()?.toRuleEngineInstantWithNoTime() },
+            { it.created() },
+        ).reversed()
+    )
+
 fun List<ProgramRule>.toRuleList(): List<Rule> =
     map {
         it.toRuleEngineObject()
