@@ -55,7 +55,14 @@ internal val mainLoginModule =
         factory { params ->
             UpdateTrackingPermission(get { parametersOf(params.get()) })
         }
-        factoryOf(::UpdateBiometricPermission)
+
+        factory { params ->
+            UpdateBiometricPermission(get { parametersOf(params.get()) },
+                get { parametersOf(params.get()) },
+                get { parametersOf(params.get()) },
+                get { parametersOf(params.get()) },
+                )
+        }
         factory { params ->
             OpenIdLogin(get { parametersOf(params.get()) })
         }
@@ -86,7 +93,7 @@ internal val mainLoginModule =
                 openIdLogin = get { parametersOf(context) },
                 biometricLogin = get { parametersOf(context) },
                 updateTrackingPermission = get { parametersOf(context) },
-                updateBiometricPermission = get(),
+                updateBiometricPermission = get { parametersOf(context) },
                 networkStatusProvider = get(),
                 serverName = serverName,
                 serverUrl = serverUrl,

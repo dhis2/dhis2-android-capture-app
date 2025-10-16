@@ -15,6 +15,8 @@ interface HomeRepository {
 
     fun hasProgramWithAssignment(): Boolean
 
+    fun checkDeleteBiometricsPermission()
+
     fun hasHomeAnalytics(): Boolean
 
     fun getServerVersion(): Single<SystemInfo?>

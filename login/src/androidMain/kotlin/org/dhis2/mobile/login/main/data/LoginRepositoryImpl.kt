@@ -31,6 +31,7 @@ const val PREF_URLS = "PREF_URLS"
 private const val PREF_SESSION_LOCKED = "SessionLocked"
 private const val PIN = "pin"
 private const val DATA_STORE_ANALYTICS_PERMISSION_KEY = "analytics_permission"
+private const val BIOMETRICS_PERMISSION = "biometrics_permission"
 private const val WAS_INITIAL_SYNC_DONE = "WasInitialSyncDone"
 const val USER_PROPERTY_SERVER = "serverUrl"
 private const val VERSION = "version"
@@ -149,6 +150,20 @@ class LoginRepositoryImpl(
                 ?.value() == null
         }
 
+    fun hasEnabledBiometricsPermission(): Boolean =
+        try {
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(BIOMETRICS_PERMISSION)
+                .blockingGet()
+                ?.value()
+                ?.lowercase()
+                ?.toBooleanStrictOrNull() ?: true
+        } catch (e: Exception) {
+            false
+        }
+
     override suspend fun initialSyncDone(
         serverUrl: String,
         username: String,
@@ -157,6 +172,7 @@ class LoginRepositoryImpl(
     override suspend fun canLoginWithBiometrics(serverUrl: String): Boolean =
         withContext(dispatcher.io) {
             val hasBiometrics = authenticator.hasBiometric()
+            val biometricPermissionGranted = hasEnabledBiometricsPermission()
             val hasOnlyOneAccount =
                 d2
                     .userModule()
@@ -166,7 +182,7 @@ class LoginRepositoryImpl(
             val isSameServer =
                 preferences.getString(SECURE_SERVER_URL)?.let { it == serverUrl } ?: false
             val hasKey = preferences.contains(SECURE_PASS) || cryptographyManager.isKeyReady()
-            hasBiometrics && hasOnlyOneAccount && isSameServer && hasKey
+            hasBiometrics && hasOnlyOneAccount && isSameServer && hasKey && biometricPermissionGranted
         }
 
     override suspend fun displayBiometricMessage(): Boolean =
@@ -218,6 +234,14 @@ class LoginRepositoryImpl(
                 )
             }
         }
+    }
+
+    override  fun updateBiometricsPermissions(granted: Boolean) {
+        d2
+            .dataStoreModule()
+            .localDataStore()
+            .value(BIOMETRICS_PERMISSION)
+            .blockingSet(granted.toString())
     }
 
     context(context: PlatformContext)

@@ -82,6 +82,7 @@ class CredentialsViewModel(
             afterLoginActions = emptyList(),
             hasOtherAccounts = false,
             isSessionLocked = false,
+            displayBiometricsDialog = false,
         )
 
     private var loginJob: Job? = null
@@ -99,6 +100,8 @@ class CredentialsViewModel(
 
     private fun loadData() {
         launchUseCase {
+            val biometricInfo = getBiometricInfo(serverUrl)
+
             _credentialsScreenState.emit(
                 CredentialsUiState(
                     serverInfo =
@@ -122,6 +125,7 @@ class CredentialsViewModel(
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics
                 ),
             )
         }
@@ -261,6 +265,7 @@ class CredentialsViewModel(
                     _credentialsScreenState.update {
                         it.copy(
                             errorMessage = result.exceptionOrNull()?.message,
+                            displayBiometricsDialog = false,
                         )
                     }
                 }
