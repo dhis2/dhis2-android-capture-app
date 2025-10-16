@@ -16,6 +16,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.ValidationStrategy
@@ -726,7 +727,7 @@ class FormRepositoryImpl(
             }
     }
 
-    override fun setFieldRequestingCoordinates(
+    override fun setFieldLoading(
         uid: String,
         requestInProcess: Boolean,
     ) {
@@ -863,6 +864,20 @@ class FormRepositoryImpl(
                         )
                 }
         }
+    }
+
+    override fun reEvaluateRequestParams(customIntentUid: String): List<CustomIntentRequestArgumentModel> {
+        val requestParams = dataEntryRepository.evaluateCustomIntentRequestParameters(customIntentUid)
+        val customIntentRequestsModel =
+            requestParams.mapNotNull { param ->
+                param.value?.let { value ->
+                    CustomIntentRequestArgumentModel(
+                        key = param.key,
+                        value = value,
+                    )
+                }
+            }
+        return customIntentRequestsModel
     }
 
     override fun clearFocusItem() {

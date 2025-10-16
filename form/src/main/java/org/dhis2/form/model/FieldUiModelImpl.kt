@@ -61,7 +61,7 @@ data class FieldUiModelImpl(
     }
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
-        callback?.intent(FormIntent.OnRequestCoordinates(uid))
+        callback?.intent(FormIntent.OnFieldLoadingData(uid))
         if (!focused) {
             onItemClick()
         }

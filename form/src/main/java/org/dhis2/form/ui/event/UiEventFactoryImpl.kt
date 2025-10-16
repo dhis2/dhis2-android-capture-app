@@ -3,6 +3,7 @@ package org.dhis2.form.ui.event
 import android.content.Intent
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiEventType.OPEN_CUSTOM_INTENT
 import org.dhis2.form.model.UiEventType.OPEN_FILE
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
 import org.dhis2.form.model.UiEventType.SHARE_IMAGE
@@ -40,6 +41,12 @@ class UiEventFactoryImpl(
                         RecyclerViewUiEvents.OpenChooserIntent(
                             Intent.ACTION_SEND,
                             fieldUiModel.displayName,
+                            uid,
+                        )
+
+                    OPEN_CUSTOM_INTENT ->
+                        RecyclerViewUiEvents.LaunchCustomIntent(
+                            fieldUiModel.customIntent,
                             uid,
                         )
 

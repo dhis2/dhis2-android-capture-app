@@ -67,6 +67,7 @@ fun provideParameterSelectorItem(
                 onFileSelected = {
                     // Not supported for search
                 },
+                reEvaluateCustomIntentRequestParameters = false,
             )
         },
         status = status,

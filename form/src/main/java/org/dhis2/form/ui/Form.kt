@@ -151,6 +151,7 @@ fun Form(
                                             ),
                                         )
                                     },
+                                    reEvaluateCustomIntentRequestParameters = true,
                                 )
                             }
                         }

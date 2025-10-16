@@ -84,6 +84,13 @@ class EnrollmentRepository(
             }
         }
 
+    override fun evaluateCustomIntentRequestParameters(customIntentUid: String): Map<String, Any?> {
+        val orgUnitUid = conf.enrollment()?.organisationUnit()
+        return orgUnitUid?.let {
+            customIntentRepository.reEvaluateCustomIntentRequestParams(it, customIntentUid)
+        } ?: emptyMap()
+    }
+
     override fun fetchPeriods(): Flow<PagingData<Period>> = emptyFlow()
 
     override fun sectionUids(): Flowable<List<String>> {

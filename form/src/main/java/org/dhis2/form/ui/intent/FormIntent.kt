@@ -26,6 +26,12 @@ sealed class FormIntent {
         val allowFutureDates: Boolean? = false,
     ) : FormIntent()
 
+    data class OnSaveCustomIntent(
+        val uid: String,
+        val value: String?,
+        val error: Boolean,
+    ) : FormIntent()
+
     data class OnQrCodeScanned(
         val uid: String,
         val value: String?,
@@ -70,11 +76,11 @@ sealed class FormIntent {
         val sectionUid: String,
     ) : FormIntent()
 
-    data class OnRequestCoordinates(
+    data class OnFieldLoadingData(
         val uid: String,
     ) : FormIntent()
 
-    data class OnCancelRequestCoordinates(
+    data class OnFieldFinishedLoadingData(
         val uid: String,
     ) : FormIntent()
 

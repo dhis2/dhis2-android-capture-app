@@ -2,6 +2,7 @@ package org.dhis2.mobile.commons.providers
 
 import org.dhis2.form.ui.validation.failures.FieldMaskFailure
 import org.dhis2.mobile.commons.resources.Res
+import org.dhis2.mobile.commons.resources.custom_intent_error
 import org.dhis2.mobile.commons.resources.error_boolean_malformed
 import org.dhis2.mobile.commons.resources.error_boolean_one_is_not_true
 import org.dhis2.mobile.commons.resources.error_boolean_zero_is_not_false
@@ -75,6 +76,7 @@ actual class FieldErrorMessageProvider {
             is NumberFailure -> getNumberError(error)
             is FieldMaskFailure -> getFieldMaskError(error)
             is CoordinateFailure -> getCoordinateError(error)
+            is CustomIntentFailure -> getCustomIntentError(error)
             else -> Res.string.invalid_field
         }
 
@@ -195,6 +197,11 @@ actual class FieldErrorMessageProvider {
             IntegerFailure.LeadingZeroException -> Res.string.leading_zero_error
         }
 
+    private fun getCustomIntentError(error: CustomIntentFailure) =
+        when (error) {
+            CustomIntentFailure.CouldNotRetrieveCustomIntentData -> Res.string.custom_intent_error
+        }
+
     private fun getNumberError(error: NumberFailure) =
         when (error) {
             NumberFailure.NumberFormatException -> Res.string.formatting_error
@@ -205,4 +212,11 @@ actual class FieldErrorMessageProvider {
     suspend fun mandatoryWarning(): String = getString(Res.string.required)
 
     suspend fun defaultValidationErrorMessage(): String = getString(Res.string.validation_error_message)
+}
+
+// To be improved and refactored in ANDROAPP-7268
+sealed class CustomIntentFailure : Throwable() {
+    object CouldNotRetrieveCustomIntentData : CustomIntentFailure() {
+        private fun readResolve(): Any = CouldNotRetrieveCustomIntentData
+    }
 }
