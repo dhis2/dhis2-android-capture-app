@@ -127,7 +127,6 @@ class LoginViewModelTest {
                 assertEquals(false, errorState.validationRunning)
 
                 cancelAndIgnoreRemainingEvents()
-                println("DONE")
             }
         }
 
