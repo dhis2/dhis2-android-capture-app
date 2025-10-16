@@ -88,4 +88,8 @@ interface FormRepository {
     )
 
     fun reEvaluateRequestParams(customIntentUid: String): List<CustomIntentRequestArgumentModel>
+
+    fun isEvent(): Boolean
+
+    fun isEventEditable(): Boolean?
 }

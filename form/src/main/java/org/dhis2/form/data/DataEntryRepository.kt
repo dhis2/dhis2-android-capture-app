@@ -36,6 +36,8 @@ interface DataEntryRepository {
 
     fun isEvent(): Boolean
 
+    fun isEventEditable(): Boolean?
+
     fun eventMode(): EventMode?
 
     fun validationStrategy(): ValidationStrategy?
