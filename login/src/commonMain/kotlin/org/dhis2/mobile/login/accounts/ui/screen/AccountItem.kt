@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.accounts.ui.screen
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
@@ -19,7 +20,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun AccountItem(
     modifier: Modifier = Modifier,
@@ -58,7 +59,9 @@ fun AccountItem(
     val flag = account.serverFlag?.let { getDrawableResource(it) }
 
     ListCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier =
+            modifier
+                .fillMaxWidth(),
         listCardState = listCardState,
         onCardClick = { onItemClicked(account) },
         listAvatar = {

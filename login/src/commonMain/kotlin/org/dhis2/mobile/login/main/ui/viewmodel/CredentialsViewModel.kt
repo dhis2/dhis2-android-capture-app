@@ -120,7 +120,7 @@ class CredentialsViewModel(
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
                     oidcInfo = oidcInfo,
                     afterLoginActions = emptyList(),
-                    hasOtherAccounts = getHasOtherAccounts.invoke(),
+                    hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
                 ),
             )
