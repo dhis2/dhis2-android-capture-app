@@ -31,6 +31,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -177,6 +179,7 @@ fun CredentialsScreen(
             onPasswordChanged = {
                 viewModel.updatePassword(it)
             },
+            onCredentialsCompleted = viewModel::onLoginClicked,
         )
         LoginStatus(
             isLoggingIn = isLoggingIn,
@@ -299,6 +302,7 @@ private fun CredentialsContainer(
     isLoggingIn: Boolean,
     onUserNameChanged: (String) -> Unit,
     onPasswordChanged: (String) -> Unit,
+    onCredentialsCompleted: () -> Unit,
 ) {
     var usernameTextValue by remember(username) {
         mutableStateOf(
@@ -312,20 +316,39 @@ private fun CredentialsContainer(
         )
     }
 
-    val areCredentialsComplete by remember(username, password) {
+    val areCredentialsComplete by remember(usernameTextValue, passwordTextValue) {
         derivedStateOf {
-            username.isNotBlank() && password.isNotBlank()
+            usernameTextValue.text.isNotEmpty() && passwordTextValue.text.isNotEmpty()
         }
     }
 
-    val inputShellState by remember(isLoggingIn) {
+    var usernameHasFocus by remember {
+        mutableStateOf(false)
+    }
+    var passwordHasFocus by remember {
+        mutableStateOf(false)
+    }
+    val inputShellStateUsername by remember(isLoggingIn, usernameHasFocus) {
         mutableStateOf(
             when {
                 isLoggingIn -> InputShellState.DISABLED
+                usernameHasFocus -> InputShellState.FOCUSED
                 else -> InputShellState.UNFOCUSED
             },
         )
     }
+
+    val inputShellStatePassword by remember(isLoggingIn, passwordHasFocus) {
+        mutableStateOf(
+            when {
+                isLoggingIn -> InputShellState.DISABLED
+                passwordHasFocus -> InputShellState.FOCUSED
+                else -> InputShellState.UNFOCUSED
+            },
+        )
+    }
+
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -337,7 +360,7 @@ private fun CredentialsContainer(
                 uiModel =
                     InputUserModel(
                         title = stringResource(Res.string.username_hint),
-                        state = inputShellState,
+                        state = inputShellStateUsername,
                         inputTextFieldValue = usernameTextValue,
                         autoCompleteList = availableUsernames,
                         autoCompleteItemSelected = {
@@ -346,14 +369,21 @@ private fun CredentialsContainer(
                                     ?: TextFieldValue("")
                         },
                         onNextClicked = {
+                            if (areCredentialsComplete) {
+                                focusManager.clearFocus()
+                                onCredentialsCompleted()
+                            } else {
+                                focusManager.moveFocus(FocusDirection.Down)
+                            }
                         },
                         onValueChanged = {
                             usernameTextValue = it ?: TextFieldValue("")
                             onUserNameChanged(usernameTextValue.text)
                         },
-                        onFocusChanged = {
+                        onFocusChanged = { hasFocus ->
+                            usernameHasFocus = hasFocus
                         },
-                        imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
+                        imeAction = ImeAction.Next,
                     ),
             )
         }
@@ -362,15 +392,24 @@ private fun CredentialsContainer(
             uiModel =
                 InputPasswordModel(
                     title = stringResource(Res.string.password_hint),
-                    state = inputShellState,
+                    state = inputShellStatePassword,
                     inputTextFieldValue = passwordTextValue,
-                    onNextClicked = {},
+                    onNextClicked = {
+                        if (areCredentialsComplete) {
+                            focusManager.clearFocus()
+                            onCredentialsCompleted()
+                        } else {
+                            focusManager.moveFocus(focusDirection = FocusDirection.Previous)
+                        }
+                    },
                     onValueChanged = {
                         passwordTextValue = it ?: TextFieldValue("")
                         onPasswordChanged(passwordTextValue.text)
                     },
-                    onFocusChanged = {},
-                    imeAction = if (areCredentialsComplete) ImeAction.Done else ImeAction.Next,
+                    onFocusChanged = { hasFocus ->
+                        passwordHasFocus = hasFocus
+                    },
+                    imeAction = ImeAction.Next,
                 ),
         )
     }
