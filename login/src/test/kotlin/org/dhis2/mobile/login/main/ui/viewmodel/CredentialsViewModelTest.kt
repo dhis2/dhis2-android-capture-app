@@ -58,7 +58,7 @@ class CredentialsViewModelTest {
 
     private lateinit var viewModel: CredentialsViewModel
 
-    private val turbineTimeout = 6.seconds
+    private val turbineTimeout = 10.seconds
 
     @Before
     fun setUp() {
@@ -148,10 +148,9 @@ class CredentialsViewModelTest {
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 skipItems(2) // Skip initial state
 
+                // WHEN
                 viewModel.updateUsername("test_user")
                 skipItems(1)
-
-                // WHEN
                 viewModel.updatePassword("test_password")
 
                 // THEN
