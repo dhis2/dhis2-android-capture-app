@@ -1,11 +1,10 @@
-
 package org.dhis2.mobile.login.main.ui.viewmodel
 
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -41,7 +40,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @ExperimentalCoroutinesApi
 class CredentialsViewModelTest {
-    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testDispatcher = StandardTestDispatcher()
 
     private val navigator: Navigator = mock()
     private val getAvailableUsernames: GetAvailableUsernames = mock()
@@ -91,12 +90,13 @@ class CredentialsViewModelTest {
 
             // THEN
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                skipItems(1) // skip default value
+                awaitItem()
+                val loadedState = awaitItem()
+                assertFalse(loadedState.hasOtherAccounts)
+                assertTrue(loadedState.canUseBiometrics)
+                assertEquals(loadedState.credentialsInfo.availableUsernames, usernames)
 
-                val initialState = awaitItem()
-                assertFalse(initialState.hasOtherAccounts)
-                assertTrue(initialState.canUseBiometrics)
-                assertEquals(initialState.credentialsInfo.availableUsernames, usernames)
+                cancelAndIgnoreRemainingEvents()
             }
         }
 
@@ -180,24 +180,30 @@ class CredentialsViewModelTest {
             initViewModel()
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                skipItems(2)
+                awaitItem()
+                awaitItem()
                 viewModel.updateUsername("user")
-                skipItems(1)
+                awaitItem()
                 viewModel.updatePassword("password")
-                skipItems(1)
+                awaitItem()
 
                 // WHEN
                 viewModel.onLoginClicked()
 
                 // THEN
-                var updatedState = awaitItem()
+                val updatedState = awaitItem()
                 assertEquals(LoginState.Running, updatedState.loginState)
 
-                updatedState = awaitItem()
-                assertTrue(updatedState.afterLoginActions.isNotEmpty())
+                // We must advance the virtual clock to allow the login coroutine (with delay) to complete
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // updatedState = awaitItem()
+                // assertTrue(updatedState.afterLoginActions.isNotEmpty())
 
                 val finalState = awaitItem()
                 assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+                cancelAndIgnoreRemainingEvents()
             }
         }
 
@@ -219,11 +225,12 @@ class CredentialsViewModelTest {
             initViewModel()
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
-                skipItems(2)
+                awaitItem()
+                awaitItem()
                 viewModel.updateUsername("user")
-                skipItems(1)
+                awaitItem()
                 viewModel.updatePassword("password")
-                skipItems(1)
+                awaitItem()
 
                 // WHEN
                 viewModel.onLoginClicked()
@@ -231,11 +238,10 @@ class CredentialsViewModelTest {
                 // THEN
                 var updatedState = awaitItem()
                 assertEquals(LoginState.Running, updatedState.loginState)
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
 
                 updatedState = awaitItem()
                 assertEquals(errorMessage, updatedState.errorMessage)
-
-                updatedState = awaitItem()
                 assertEquals(LoginState.Enabled, updatedState.loginState)
             }
         }
