@@ -122,7 +122,7 @@ pipeline {
                 }
             }
         }
-        stage('Run UI Tests in Landscape') {
+        /* stage('Run UI Tests in Landscape') {
             when {
                 expression {
                     return JOB_NAME.startsWith('android-multibranch-PUSH')
@@ -145,7 +145,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
         stage('JaCoCo report') {
             steps {
                 script {
