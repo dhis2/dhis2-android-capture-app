@@ -28,7 +28,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
-import kotlin.time.ExperimentalTime
 
 class RuleEngineExtensionsTest {
     private val dataElementRepository: DataElementCollectionRepository =
@@ -71,23 +70,29 @@ class RuleEngineExtensionsTest {
 
     @Test
     fun `Should order events by event date with no time and created`() {
-        val event1 = Event.builder()
-            .uid("event1")
-            .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431"))
-            .created(DateUtils.DATE_FORMAT.parse("2025-09-25T11:50:32.431"))
-            .build()
+        val event1 =
+            Event
+                .builder()
+                .uid("event1")
+                .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431"))
+                .created(DateUtils.DATE_FORMAT.parse("2025-09-25T11:50:32.431"))
+                .build()
 
-        val event2 = Event.builder()
-            .uid("event2")
-            .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
-            .created(DateUtils.DATE_FORMAT.parse("2025-09-25T10:10:32.431"))
-            .build()
+        val event2 =
+            Event
+                .builder()
+                .uid("event2")
+                .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
+                .created(DateUtils.DATE_FORMAT.parse("2025-09-25T10:10:32.431"))
+                .build()
 
-        val event3 = Event.builder()
-            .uid("event3")
-            .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
-            .created(DateUtils.DATE_FORMAT.parse("2025-09-25T14:30:32.431"))
-            .build()
+        val event3 =
+            Event
+                .builder()
+                .uid("event3")
+                .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
+                .created(DateUtils.DATE_FORMAT.parse("2025-09-25T14:30:32.431"))
+                .build()
 
         val events = listOf(event1, event2, event3)
         val sortedEvents = events.sortForRuleEngine()

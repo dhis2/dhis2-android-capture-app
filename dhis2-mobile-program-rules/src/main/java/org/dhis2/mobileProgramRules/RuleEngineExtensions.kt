@@ -53,7 +53,7 @@ fun List<Event>.sortForRuleEngine(): List<Event> =
         compareBy<Event>(
             { it.eventDate()?.toRuleEngineInstantWithNoTime() },
             { it.created() },
-        ).reversed()
+        ).reversed(),
     )
 
 fun List<ProgramRule>.toRuleList(): List<Rule> =
