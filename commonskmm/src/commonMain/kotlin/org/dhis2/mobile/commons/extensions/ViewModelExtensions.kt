@@ -2,9 +2,7 @@ package org.dhis2.mobile.commons.extensions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 
