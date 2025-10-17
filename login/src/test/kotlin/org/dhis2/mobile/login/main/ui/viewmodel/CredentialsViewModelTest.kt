@@ -32,7 +32,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.timeout
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -255,6 +254,8 @@ class CredentialsViewModelTest {
 
             // WHEN
             viewModel.onManageAccountsClicked()
+
+            testDispatcher.scheduler.advanceUntilIdle()
 
             // THEN
             verify(navigator).navigate(eq(LoginScreenState.Accounts), any())

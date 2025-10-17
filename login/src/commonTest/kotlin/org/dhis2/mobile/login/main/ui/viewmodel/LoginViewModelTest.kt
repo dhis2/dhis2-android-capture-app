@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
@@ -70,8 +69,6 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     networkStatusProvider = networkStatusProvider,
                 )
-
-            advanceUntilIdle()
 
             verify(navigator).navigate(
                 eq(initialScreenState),
