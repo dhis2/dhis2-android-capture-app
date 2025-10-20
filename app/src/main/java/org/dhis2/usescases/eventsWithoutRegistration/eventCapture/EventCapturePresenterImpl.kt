@@ -238,30 +238,6 @@ class EventCapturePresenterImpl(
 
     override fun isEnrollmentOpen(): Boolean = eventCaptureRepository.isEnrollmentOpen
 
-    override fun completeEvent(addNew: Boolean) {
-        EventIdlingResourceSingleton.increment()
-        compositeDisposable.add(
-            eventCaptureRepository
-                .completeEvent()
-                .defaultSubscribe(
-                    schedulerProvider,
-                    onNext = {
-                        if (addNew) {
-                            view.restartDataEntry()
-                        } else {
-                            preferences.setValue(Preference.PREF_COMPLETED_EVENT, eventUid)
-                            view.finishDataEntry()
-                        }
-                        EventIdlingResourceSingleton.decrement()
-                    },
-                    onError = {
-                        EventIdlingResourceSingleton.decrement()
-                        Timber.e(it)
-                    },
-                ),
-        )
-    }
-
     override fun deleteEvent() {
         val programStage = programStage()
         EventIdlingResourceSingleton.increment()

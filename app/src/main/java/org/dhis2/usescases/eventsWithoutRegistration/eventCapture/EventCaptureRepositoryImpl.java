@@ -1,5 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventCapture;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.dhis2.commons.bindings.SdkExtensionsKt;
@@ -13,7 +14,6 @@ import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
 import org.hisp.dhis.android.core.event.EventNonEditableReason;
 import org.hisp.dhis.android.core.event.EventStatus;
-import org.hisp.dhis.android.core.maintenance.D2Error;
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit;
 import org.hisp.dhis.android.core.program.ProgramRule;
 import org.hisp.dhis.android.core.program.ProgramRuleAction;
@@ -27,7 +27,6 @@ import java.util.Objects;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import timber.log.Timber;
 
 public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCaptureRepository {
 
@@ -59,10 +58,11 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
     }
 
     @Override
-    public boolean isEventEditable(String eventUid) {
+    public boolean isEventEditable(@NonNull String eventUid) {
         return d2.eventModule().eventService().blockingIsEditable(eventUid);
     }
 
+    @NonNull
     @Override
     public Flowable<String> programStageName() {
         return d2.programModule().programStages().uid(getCurrentEvent().programStage()).get()
@@ -70,6 +70,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .toFlowable();
     }
 
+    @NonNull
     @Override
     public Flowable<OrganisationUnit> orgUnit() {
         return Flowable.just(
@@ -82,27 +83,16 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         );
     }
 
-    @Override
-    public Observable<Boolean> completeEvent() {
-        return Observable.fromCallable(() -> {
-            try {
-                d2.eventModule().events().uid(eventUid).setStatus(EventStatus.COMPLETED);
-                return true;
-            } catch (D2Error d2Error) {
-                Timber.e(d2Error);
-                return false;
-            }
-        });
-    }
-
+    @NonNull
     @Override
     public Observable<Boolean> deleteEvent() {
         return d2.eventModule().events().uid(eventUid).delete()
                 .andThen(Observable.just(true));
     }
 
+    @NonNull
     @Override
-    public Observable<Boolean> updateEventStatus(EventStatus status) {
+    public Observable<Boolean> updateEventStatus(@NonNull EventStatus status) {
 
         return Observable.fromCallable(() -> {
             d2.eventModule().events().uid(eventUid)
@@ -111,8 +101,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         });
     }
 
+    @NonNull
     @Override
-    public Observable<Boolean> rescheduleEvent(Date newDate) {
+    public Observable<Boolean> rescheduleEvent(@NonNull Date newDate) {
         return Observable.fromCallable(() -> {
             d2.eventModule().events().uid(eventUid)
                     .setDueDate(newDate);
@@ -122,6 +113,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         });
     }
 
+    @NonNull
     @Override
     public Observable<String> programStage() {
         return Observable.just(Objects.requireNonNull(getCurrentEvent().programStage()));
@@ -132,11 +124,13 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         return d2.eventModule().eventService().blockingIsEditable(eventUid);
     }
 
+    @NonNull
     @Override
     public Flowable<EventStatus> eventStatus() {
         return Flowable.just(Objects.requireNonNull(getCurrentEvent().status()));
     }
 
+    @NonNull
     @Override
     public Single<Boolean> canReOpenEvent() {
         return Single.fromCallable(() -> d2.userModule().authorities()
@@ -144,8 +138,9 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         );
     }
 
+    @NonNull
     @Override
-    public Observable<Boolean> isCompletedEventExpired(String eventUid) {
+    public Observable<Boolean> isCompletedEventExpired(@NonNull String eventUid) {
         return d2.eventModule().eventService().getEditableStatus(eventUid).map(editionStatus -> {
             if (editionStatus instanceof EventEditableStatus.NonEditable nonEditableStatus) {
                 return nonEditableStatus.getReason() == EventNonEditableReason.EXPIRED;
@@ -155,6 +150,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         }).toObservable();
     }
 
+    @NonNull
     @Override
     public Flowable<Boolean> eventIntegrityCheck() {
         Event currentEvent = getCurrentEvent();
@@ -166,6 +162,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
         );
     }
 
+    @NonNull
     @Override
     public Single<Integer> getNoteCount() {
         return d2.noteModule().notes().byEventUid().eq(eventUid).count();
@@ -211,6 +208,7 @@ public class EventCaptureRepositoryImpl implements EventCaptureContract.EventCap
                 .blockingIsEmpty();
     }
 
+    @NonNull
     @Override
     public ValidationStrategy validationStrategy() {
         ValidationStrategy validationStrategy =

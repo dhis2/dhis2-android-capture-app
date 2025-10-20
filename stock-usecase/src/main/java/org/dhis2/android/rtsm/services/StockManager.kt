@@ -28,6 +28,7 @@ interface StockManager {
         items: List<StockEntry>,
         transaction: Transaction,
         stockUseCase: StockUseCase,
+        hasErrorOnComplete: Boolean,
     ): Single<Unit>
 
     suspend fun stockUseCase(program: String): StockUseCase?

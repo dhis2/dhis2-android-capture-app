@@ -12,8 +12,6 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus
 import org.hisp.dhis.android.core.event.EventNonEditableReason
 import org.hisp.dhis.android.core.event.EventStatus
-import org.hisp.dhis.android.core.maintenance.D2Error
-import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.program.ProgramStageSection
@@ -24,7 +22,6 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -221,62 +218,6 @@ class EventCaptureRepositoryImplTest {
             .test()
             .assertNoErrors()
             .assertValue { it.uid() == testEventOrgUnitUid }
-    }
-
-    @Test
-    fun `Should complete event`() {
-        mockEvent()
-        mockSections()
-
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
-
-        whenever(
-            d2.eventModule().events().uid(eventUid),
-        ) doReturn mock()
-
-        repository
-            .completeEvent()
-            .test()
-            .assertNoErrors()
-            .assertValue { it }
-    }
-
-    @Test
-    fun `Should throw error when completing event`() {
-        mockEvent()
-        mockSections()
-
-        val repository =
-            EventCaptureRepositoryImpl(
-                eventUid,
-                d2,
-            )
-
-        whenever(
-            d2.eventModule().events().uid(eventUid),
-        ) doReturn mock()
-        whenever(
-            d2
-                .eventModule()
-                .events()
-                .uid(eventUid)
-                .setStatus(any()),
-        ) doThrow
-            D2Error
-                .builder()
-                .errorCode(D2ErrorCode.UNEXPECTED)
-                .errorDescription("error test")
-                .build()
-
-        repository
-            .completeEvent()
-            .test()
-            .assertNoErrors()
-            .assertValue { !it }
     }
 
     @Test

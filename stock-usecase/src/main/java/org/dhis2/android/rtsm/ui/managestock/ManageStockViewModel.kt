@@ -128,6 +128,8 @@ class ManageStockViewModel(
 
     private var inputHelperText: String? = null
 
+    private var hasErrorOnComplete = false
+
     init {
         loadStockUseCase(program)
         configureRelays()
@@ -319,6 +321,7 @@ class ManageStockViewModel(
                     getPopulatedEntries(),
                     transaction.value!!,
                     config,
+                    hasErrorOnComplete,
                 ).subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -411,6 +414,10 @@ class ManageStockViewModel(
                                         ruleEffects.forEach { ruleEffect ->
                                             applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
                                         }
+                                        hasErrorOnComplete =
+                                            ruleEffects.any {
+                                                it.ruleAction.type == ProgramRuleActionType.ERRORONCOMPLETE.name
+                                            }
                                         populateTable()
                                     }
                                 },
