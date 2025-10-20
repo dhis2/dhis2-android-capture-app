@@ -2,7 +2,9 @@ package org.dhis2.android.rtsm.services
 
 import com.google.common.collect.Lists
 import org.dhis2.mobileProgramRules.toRuleEngineInstant
+import org.dhis2.mobileProgramRules.toRuleEngineInstantWithNoTime
 import org.dhis2.mobileProgramRules.toRuleEngineLocalDate
+import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.api.RuleEngine
 import org.hisp.dhis.rules.api.RuleEngineContext
@@ -123,17 +125,7 @@ class ProgramRuleTests {
     @Throws(Exception::class)
     fun evaluateTOneRuleTest() {
         val ruleEngineContext = getRuleEngineContext(createRules())
-        val enrollment =
-            RuleEnrollment(
-                "test_enrollment",
-                "test_program",
-                Date().toRuleEngineLocalDate(),
-                Date().toRuleEngineLocalDate(),
-                RuleEnrollmentStatus.ACTIVE,
-                "test_ou",
-                "test_ou_code",
-                emptyList(),
-            )
+        val enrollment = getEmptyRuleEnrollment()
 
         val ruleEvent =
             RuleEvent(
@@ -141,7 +133,7 @@ class ProgramRuleTests {
                 "test_program_stage",
                 "",
                 RuleEventStatus.ACTIVE,
-                Date().toRuleEngineInstant(),
+                Date().toRuleEngineInstantWithNoTime(),
                 Date().toRuleEngineInstant(),
                 Date().toRuleEngineLocalDate(),
                 null,
@@ -185,4 +177,119 @@ class ProgramRuleTests {
             )
         assertEquals(ruleEffects.find { it.ruleId == "rule1Uid" }?.data, "1")
     }
+
+    @Test
+    fun evaluateMostRecentEvent() {
+        val dataElement1 = "oc8tn8CewiP"
+        val dataElement2 = "eEZWHV8OFG0"
+        val ruleEventAndroid =
+            getRuleEvent(
+                uid = "event_android",
+                eventDate = "2025-09-25T13:04:13.783",
+                created = "2025-09-25T13:04:13.783",
+                dataValues =
+                    listOf(
+                        RuleDataValue(
+                            dataElement1,
+                            "3",
+                        ),
+                    ),
+            )
+        val ruleEventWeb =
+            getRuleEvent(
+                uid = "event_web",
+                eventDate = "2025-09-25T00:00:00.000",
+                created = "2025-09-25T15:06:41.483",
+                dataValues =
+                    listOf(
+                        RuleDataValue(
+                            dataElement1,
+                            "10",
+                        ),
+                    ),
+            )
+        val ruleEventNew =
+            getRuleEvent(
+                uid = "event_new",
+                eventDate = "2025-09-25T18:06:41.483",
+                created = "2025-09-25T18:06:41.483",
+                dataValues = listOf(),
+            )
+
+        val ruleEngineContext =
+            RuleEngineContext(
+                rules =
+                    listOf(
+                        Rule(
+                            condition = "true",
+                            actions =
+                                listOf(
+                                    RuleAction(
+                                        data = "#{previousValue}",
+                                        type = ProgramRuleActionType.ASSIGN.name,
+                                        values =
+                                            mapOf(
+                                                "field" to dataElement2,
+                                            ),
+                                    ),
+                                ),
+                        ),
+                    ),
+                ruleVariables =
+                    listOf(
+                        RuleVariablePreviousEvent(
+                            name = "previousValue",
+                            useCodeForOptionSet = false,
+                            options = emptyList(),
+                            field = dataElement1,
+                            fieldType = RuleValueType.NUMERIC,
+                        ),
+                    ),
+            )
+
+        val ruleEffects =
+            RuleEngine.getInstance().evaluate(
+                ruleEventNew,
+                getEmptyRuleEnrollment(),
+                listOf(ruleEventAndroid, ruleEventWeb),
+                ruleEngineContext,
+            )
+
+        // The rule effect must assigned the value coming from event_web because its created date
+        // is most recent compared to event_android.
+        assertEquals(ruleEffects.size, 1)
+        assertEquals(ruleEffects.first().data, "10")
+    }
+
+    private fun getRuleEvent(
+        uid: String,
+        eventDate: String,
+        created: String,
+        dataValues: List<RuleDataValue>,
+    ): RuleEvent =
+        RuleEvent(
+            uid,
+            "test_program_stage",
+            "",
+            RuleEventStatus.ACTIVE,
+            DateUtils.DATE_FORMAT.parse(eventDate).toRuleEngineInstantWithNoTime(),
+            DateUtils.DATE_FORMAT.parse(created).toRuleEngineInstant(),
+            null,
+            null,
+            "",
+            "",
+            dataValues,
+        )
+
+    private fun getEmptyRuleEnrollment(): RuleEnrollment =
+        RuleEnrollment(
+            "test_enrollment",
+            "test_program",
+            Date().toRuleEngineLocalDate(),
+            Date().toRuleEngineLocalDate(),
+            RuleEnrollmentStatus.ACTIVE,
+            "test_ou",
+            "test_ou_code",
+            emptyList(),
+        )
 }

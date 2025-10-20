@@ -132,7 +132,7 @@ class RulesRepository(
                                 } else {
                                     RuleEventStatus.valueOf(event.status()!!.name)
                                 },
-                            eventDate = Instant.fromEpochMilliseconds(event.eventDate()!!.time),
+                            eventDate = event.eventDate()!!.toRuleEngineInstantWithNoTime(),
                             dueDate =
                                 event.dueDate()?.let {
                                     Instant
@@ -190,8 +190,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
         } else {
             d2
                 .eventModule()
@@ -209,8 +209,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
                 .let { list ->
                     val currentEventIndex = list.indexOfFirst { it.uid() == eventToEvaluate.uid() }
 
@@ -273,7 +273,7 @@ class RulesRepository(
                         } else {
                             RuleEventStatus.valueOf(event.status()!!.name)
                         },
-                    eventDate = event.eventDate()!!.toRuleEngineInstant(),
+                    eventDate = event.eventDate()!!.toRuleEngineInstantWithNoTime(),
                     dueDate = event.dueDate()?.toRuleEngineLocalDate(),
                     completedDate = event.completedDate()?.toRuleEngineLocalDate(),
                     organisationUnit = event.organisationUnit()!!,
@@ -439,7 +439,7 @@ class RulesRepository(
             programStage = event.programStage()!!,
             programStageName = d2.programStage(event.programStage()!!)?.name()!!,
             status = RuleEventStatus.valueOf(event.status()!!.name),
-            eventDate = event.eventDate()!!.toRuleEngineInstant(),
+            eventDate = event.eventDate()!!.toRuleEngineInstantWithNoTime(),
             dueDate = event.dueDate()?.toRuleEngineLocalDate(),
             completedDate = event.completedDate()?.toRuleEngineLocalDate(),
             organisationUnit = event.organisationUnit()!!,

@@ -15,6 +15,7 @@ import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.rules.RuleEngineContextData
 import org.dhis2.mobileProgramRules.toRuleDataValue
 import org.dhis2.mobileProgramRules.toRuleEngineInstant
+import org.dhis2.mobileProgramRules.toRuleEngineInstantWithNoTime
 import org.dhis2.mobileProgramRules.toRuleEngineLocalDate
 import org.dhis2.mobileProgramRules.toRuleList
 import org.dhis2.mobileProgramRules.toRuleVariableList
@@ -131,7 +132,7 @@ class RuleValidationHelperImpl(
         programStage.uid(),
         programStage.name()!!,
         RuleEventStatus.ACTIVE,
-        period.toRuleEngineInstant(),
+        period.toRuleEngineInstantWithNoTime(),
         period.toRuleEngineInstant(),
         period.toRuleEngineLocalDate(),
         period.toRuleEngineLocalDate(),
@@ -269,7 +270,7 @@ class RuleValidationHelperImpl(
                         } else {
                             RuleEventStatus.valueOf(event.status()!!.name)
                         },
-                    eventDate = (event.eventDate() ?: Date()).toRuleEngineInstant(),
+                    eventDate = (event.eventDate() ?: Date()).toRuleEngineInstantWithNoTime(),
                     createdDate =
                         event
                             .created()

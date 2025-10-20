@@ -1,6 +1,7 @@
 package org.dhis2.mobileProgramRules
 
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
@@ -18,6 +19,7 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeCollection
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
@@ -52,6 +54,51 @@ class RuleEngineExtensionsTest {
             TrackedEntityAttributeCollectionRepository::class.java,
             RETURNS_DEEP_STUBS,
         )
+
+    @Test
+    fun `Should remove the time component`() {
+        val date1 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
+        val date2 = DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000")
+
+        assertEquals(date1.toRuleEngineInstantWithNoTime(), date2.toRuleEngineInstantWithNoTime())
+
+        val date3 = DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431")
+        val date4 = DateUtils.DATE_FORMAT.parse("2025-09-26T00:00:00.000")
+
+        assertNotEquals(date3.toRuleEngineInstantWithNoTime(), date4.toRuleEngineInstantWithNoTime())
+    }
+
+    @Test
+    fun `Should order events by event date with no time and created`() {
+        val event1 =
+            Event
+                .builder()
+                .uid("event1")
+                .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T11:43:32.431"))
+                .created(DateUtils.DATE_FORMAT.parse("2025-09-25T11:50:32.431"))
+                .build()
+
+        val event2 =
+            Event
+                .builder()
+                .uid("event2")
+                .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
+                .created(DateUtils.DATE_FORMAT.parse("2025-09-25T10:10:32.431"))
+                .build()
+
+        val event3 =
+            Event
+                .builder()
+                .uid("event3")
+                .eventDate(DateUtils.DATE_FORMAT.parse("2025-09-25T00:00:00.000"))
+                .created(DateUtils.DATE_FORMAT.parse("2025-09-25T14:30:32.431"))
+                .build()
+
+        val events = listOf(event1, event2, event3)
+        val sortedEvents = events.sortForRuleEngine()
+
+        assertEquals(listOf(event3, event1, event2), sortedEvents)
+    }
 
     @Test
     fun `Should transform trackedEntityDataValues to ruleDataValues with optionName value`() {

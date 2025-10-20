@@ -1,7 +1,11 @@
 package org.dhis2.mobileProgramRules
 
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toDeprecatedInstant
+import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -32,10 +36,25 @@ import org.hisp.dhis.rules.models.RuleVariableNewestStageEvent
 import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import timber.log.Timber
 import java.util.Date
+import kotlin.time.ExperimentalTime
 
 fun Date.toRuleEngineInstant() = Instant.fromEpochMilliseconds(this.time)
 
 fun Date.toRuleEngineLocalDate() = toRuleEngineInstant().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+@OptIn(ExperimentalTime::class)
+fun Date.toRuleEngineInstantWithNoTime() =
+    LocalDateTime(toRuleEngineLocalDate(), LocalTime(0, 0, 0, 0))
+        .toInstant(TimeZone.currentSystemDefault())
+        .toDeprecatedInstant()
+
+fun List<Event>.sortForRuleEngine(): List<Event> =
+    sortedWith(
+        compareBy<Event>(
+            { it.eventDate()?.toRuleEngineInstantWithNoTime() },
+            { it.created() },
+        ).reversed(),
+    )
 
 fun List<ProgramRule>.toRuleList(): List<Rule> =
     map {

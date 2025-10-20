@@ -18,6 +18,7 @@ import org.dhis2.android.rtsm.utils.AttributeHelper
 import org.dhis2.android.rtsm.utils.ConfigUtils.getTransactionDataElement
 import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.bindings.stockUseCase
+import org.dhis2.mobileProgramRules.sortForRuleEngine
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -141,8 +142,8 @@ class StockManagerImpl(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
 
         events.forEach { event ->
             event.trackedEntityDataValues()?.forEach { dataValue ->
