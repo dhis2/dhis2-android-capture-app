@@ -2,7 +2,8 @@ package org.dhis2.mobile.login.pin.domain.usecase
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.pin.data.SessionRepository
-import org.dhis2.mobile.login.pin.domain.model.PinResult
+import org.dhis2.mobile.login.pin.domain.model.PinError
+import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -28,10 +29,10 @@ class ValidatePinUseCaseTest {
             whenever(repository.getStoredPin()).thenReturn(storedPin)
 
             // When
-            val result = useCase(pin, currentAttempts = 0)
+            val result = useCase(ValidatePinInput(pin, 0))
 
             // Then
-            assertTrue(result is PinResult.Success)
+            assertTrue(result.isSuccess)
         }
 
     @Test
@@ -43,11 +44,13 @@ class ValidatePinUseCaseTest {
             whenever(repository.getStoredPin()).thenReturn(storedPin)
 
             // When - First attempt
-            val result = useCase(pin, currentAttempts = 0)
+            val result = useCase(ValidatePinInput(pin, 0))
 
             // Then
-            assertTrue(result is PinResult.Failed)
-            assertEquals(2, result.attemptsLeft)
+            assertTrue(result.isFailure)
+            val err = result.exceptionOrNull()
+            assertTrue(err is PinError.Failed)
+            assertEquals(2, (err as PinError.Failed).attemptsLeft)
         }
 
     @Test
@@ -59,10 +62,12 @@ class ValidatePinUseCaseTest {
             whenever(repository.getStoredPin()).thenReturn(storedPin)
 
             // When - Third attempt (last one)
-            val result = useCase(pin, currentAttempts = 2)
+            val result = useCase(ValidatePinInput(pin, 2))
 
             // Then
-            assertTrue(result is PinResult.TooManyAttempts)
+            assertTrue(result.isFailure)
+            val err = result.exceptionOrNull()
+            assertTrue(err is PinError.TooManyAttempts)
         }
 
     @Test
@@ -72,10 +77,12 @@ class ValidatePinUseCaseTest {
             whenever(repository.getStoredPin()).thenReturn(null)
 
             // When
-            val result = useCase("1234", currentAttempts = 0)
+            val result = useCase(ValidatePinInput("1234", 0))
 
             // Then
-            assertTrue(result is PinResult.NoPinStored)
+            assertTrue(result.isFailure)
+            val err = result.exceptionOrNull()
+            assertTrue(err is PinError.NoPinStored)
         }
 
     @Test
@@ -87,10 +94,12 @@ class ValidatePinUseCaseTest {
             whenever(repository.getStoredPin()).thenReturn(storedPin)
 
             // When - Second attempt
-            val result = useCase(pin, currentAttempts = 1)
+            val result = useCase(ValidatePinInput(pin, 1))
 
             // Then
-            assertTrue(result is PinResult.Failed)
-            assertEquals(1, result.attemptsLeft)
+            assertTrue(result.isFailure)
+            val err = result.exceptionOrNull()
+            assertTrue(err is PinError.Failed)
+            assertEquals(1, (err as PinError.Failed).attemptsLeft)
         }
 }
