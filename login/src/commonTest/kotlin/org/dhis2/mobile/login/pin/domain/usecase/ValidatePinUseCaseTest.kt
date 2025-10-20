@@ -50,7 +50,7 @@ class ValidatePinUseCaseTest {
             assertTrue(result.isFailure)
             val err = result.exceptionOrNull()
             assertTrue(err is PinError.Failed)
-            assertEquals(2, (err as PinError.Failed).attemptsLeft)
+            assertEquals(2, err.attemptsLeft)
         }
 
     @Test
@@ -100,6 +100,6 @@ class ValidatePinUseCaseTest {
             assertTrue(result.isFailure)
             val err = result.exceptionOrNull()
             assertTrue(err is PinError.Failed)
-            assertEquals(1, (err as PinError.Failed).attemptsLeft)
+            assertEquals(1, err.attemptsLeft)
         }
 }
