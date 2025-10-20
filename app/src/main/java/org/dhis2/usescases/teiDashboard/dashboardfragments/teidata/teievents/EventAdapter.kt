@@ -7,8 +7,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
@@ -32,9 +35,11 @@ import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.teievents.ui.
 import org.dhis2.utils.isLandscape
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 class EventAdapter(
     val presenter: TEIDataPresenter,
@@ -199,6 +204,17 @@ class EventAdapter(
                         ) {
                             ListCardProvider(
                                 card = card,
+                                title =
+                                    ListCardTitleModel(
+                                        text = card.title,
+                                        style =
+                                            LocalTextStyle.current.copy(
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight(500),
+                                                lineHeight = 20.sp,
+                                            ),
+                                        color = TextColor.OnSurface,
+                                    ),
                                 syncingResourceId = R.string.syncing,
                             )
 
