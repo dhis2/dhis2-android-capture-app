@@ -1,5 +1,8 @@
 package org.dhis2.mobile.commons.error
 
+/**
+ * A sealed class representing different types of domain errors that can occur in the application.
+ */
 sealed class DomainError : Throwable() {
     data class NetworkError(
         override val message: String,

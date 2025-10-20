@@ -9,6 +9,11 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.jetbrains.compose.resources.getString
 
+/**
+ * Maps D2Error to DomainError
+ * Just implemented in androidMain since D2Error belongs to Android SDK which is only available
+ * in Android for now.
+ */
 class DomainErrorMapper(
     private val d2ErrorMessageProvider: D2ErrorMessageProvider,
     private val networkStatusProvider: NetworkStatusProvider,
