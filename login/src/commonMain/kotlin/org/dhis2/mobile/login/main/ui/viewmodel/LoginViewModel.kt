@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
@@ -49,7 +49,7 @@ class LoginViewModel(
     private val redirectUri = "https://vgarciabnz.github.io"
 
     init {
-        viewModelScope.launch {
+        launchUseCase {
             appLinkNavigation.appLink.collect { urlString ->
                 handleAppLink(urlString)
             }
@@ -58,7 +58,7 @@ class LoginViewModel(
     }
 
     private fun goToInitialScreen() {
-        viewModelScope.launch {
+        launchUseCase {
             val destination = getInitialScreen()
             navigator.navigate(
                 destination = destination,
@@ -80,7 +80,7 @@ class LoginViewModel(
             )
         }
         serverValidationJob =
-            viewModelScope.launch {
+            launchUseCase {
                 val result =
                     withMinimumDuration { validateServer(serverUrl, isNetworkOnline.value) }
                 when (result) {
@@ -129,7 +129,7 @@ class LoginViewModel(
         if (urlString.startsWith(redirectUri)) {
             val code = urlString.substringAfter("code=").substringBefore('&')
             if (code.isNotEmpty()) {
-                TODO("Use the authorization code to get a token and log in, then show statistics screen")
+                // TODO "Use the authorization code to get a token and log in, then show statistics screen"
             } else {
                 val error = urlString.substringAfter("error=").substringBefore('&')
                 _serverValidationState.update {
@@ -151,13 +151,13 @@ class LoginViewModel(
     }
 
     private fun navigateUp() {
-        viewModelScope.launch {
+        launchUseCase {
             navigator.navigateUp()
         }
     }
 
     fun importDb(path: String) {
-        viewModelScope.launch {
+        launchUseCase {
             importDatabase(path)
                 .fold(
                     onSuccess = {

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginResult
@@ -98,7 +98,7 @@ class CredentialsViewModel(
             )
 
     private fun loadData() {
-        viewModelScope.launch {
+        launchUseCase {
             _credentialsScreenState.emit(
                 CredentialsUiState(
                     serverInfo =
@@ -199,7 +199,7 @@ class CredentialsViewModel(
             )
         }
         loginJob =
-            viewModelScope.launch {
+            launchUseCase {
                 val result =
                     withMinimumDuration {
                         loginCall()
@@ -249,7 +249,7 @@ class CredentialsViewModel(
 
     context(platformContext: PlatformContext)
     fun onBiometricsClicked() {
-        viewModelScope.launch {
+        launchUseCase {
             val result = biometricLogin()
             when {
                 result.isSuccess -> {
@@ -269,13 +269,13 @@ class CredentialsViewModel(
     }
 
     fun onManageAccountsClicked() {
-        viewModelScope.launch {
+        launchUseCase {
             navigator.navigate(destination = LoginScreenState.Accounts)
         }
     }
 
     fun onRecoverAccountClicked() {
-        viewModelScope.launch {
+        launchUseCase {
             navigator.navigate(
                 destination =
                     LoginScreenState.RecoverAccount(
@@ -286,7 +286,7 @@ class CredentialsViewModel(
     }
 
     fun onTrackingPermission(granted: Boolean) {
-        viewModelScope.launch {
+        launchUseCase {
             updateTrackingPermission(granted)
             _credentialsScreenState.update {
                 it.copy(
@@ -300,14 +300,14 @@ class CredentialsViewModel(
     }
 
     fun checkPrivacyPolicy() {
-        viewModelScope.launch {
+        launchUseCase {
             navigator.navigateToPrivacyPolicy()
         }
     }
 
     context(platformContext: PlatformContext)
     fun onEnableBiometrics(granted: Boolean) {
-        viewModelScope.launch {
+        launchUseCase {
             updateBiometricPermission(
                 serverUrl,
                 credentialsScreenState.value.credentialsInfo.username,
@@ -326,7 +326,7 @@ class CredentialsViewModel(
     }
 
     fun goToNextScreen(initialSyncDone: Boolean) {
-        viewModelScope.launch {
+        launchUseCase {
             if (initialSyncDone) {
                 navigator.navigateToHome()
             } else {
@@ -337,7 +337,7 @@ class CredentialsViewModel(
 
     fun onPinUnlocked() {
         // Session unlocked successfully, update the state
-        viewModelScope.launch {
+        launchUseCase {
             _credentialsScreenState.update {
                 it.copy(
                     isSessionLocked = false,
@@ -350,7 +350,7 @@ class CredentialsViewModel(
     fun onPinDismissed() {
         // User dismissed the PIN dialog (forgot PIN)
         // Logout the user from the app and ask for the password
-        viewModelScope.launch {
+        launchUseCase {
             forgotPinUseCase()
             _credentialsScreenState.update {
                 it.copy(
