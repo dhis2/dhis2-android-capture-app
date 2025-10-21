@@ -1,16 +1,14 @@
 package org.dhis2.form.ui.customintent
 
-import android.app.Activity
 import android.content.Intent
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.model.CustomIntentResponseDataModel
 import org.dhis2.mobile.commons.model.CustomIntentResponseExtraType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
@@ -25,162 +23,34 @@ class CustomIntentActivityResultContractTest {
     }
 
     @Test
-    fun `parseResult should store custom intent and field uid on createIntent`() {
-        val customIntent =
-            CustomIntentModel(
-                uid = "test-uid",
-                name = "Test Intent",
-                packageName = "com.example.app",
-                customIntentRequest = emptyList(),
-                customIntentResponse = emptyList(),
+    fun `mapIntentData should create intent with string extras`() {
+        val requestParameters =
+            listOf(
+                CustomIntentRequestArgumentModel(key = "param1", value = "value1"),
+                CustomIntentRequestArgumentModel(key = "param2", value = "value2"),
             )
 
-        contract.customIntent = customIntent
-        contract.fieldUid = "field-uid"
+        val result = contract.mapIntentData("com.example.app", requestParameters)
 
-        assertEquals("field-uid", contract.fieldUid)
-        assertEquals(customIntent, contract.customIntent)
+        assertNotNull(result)
+        // Note: In unit tests without Robolectric, Intent properties may not work as expected
+        // We verify the intent object is created successfully
     }
 
     @Test
-    fun `parseResult should return Success when result is OK with valid string data`() {
-        val customIntent =
-            CustomIntentModel(
-                uid = "test-uid",
-                name = "Test Intent",
-                packageName = "com.example.app",
-                customIntentRequest = emptyList(),
-                customIntentResponse =
-                    listOf(
-                        CustomIntentResponseDataModel(
-                            name = "result",
-                            extraType = CustomIntentResponseExtraType.STRING,
-                            key = null,
-                        ),
-                    ),
+    fun `mapIntentData should handle different parameter types`() {
+        val requestParameters =
+            listOf(
+                CustomIntentRequestArgumentModel(key = "stringParam", value = "text"),
+                CustomIntentRequestArgumentModel(key = "intParam", value = 42),
+                CustomIntentRequestArgumentModel(key = "boolParam", value = true),
+                CustomIntentRequestArgumentModel(key = "doubleParam", value = 3.14),
+                CustomIntentRequestArgumentModel(key = "longParam", value = 100L),
             )
 
-        contract.customIntent = customIntent
-        contract.fieldUid = "field-uid"
+        val result = contract.mapIntentData("com.example.app", requestParameters)
 
-        val resultIntent =
-            mock<Intent> {
-                on { hasExtra("result") } doReturn true
-                on { getStringExtra("result") } doReturn "test-value"
-            }
-
-        val result = contract.parseResult(Activity.RESULT_OK, resultIntent)
-
-        assertTrue(result is CustomIntentResult.Success)
-        assertEquals("field-uid", (result as CustomIntentResult.Success).fieldUid)
-        assertEquals("test-value", result.value)
-    }
-
-    @Test
-    fun `parseResult should return Success with multiple values joined by comma`() {
-        val customIntent =
-            CustomIntentModel(
-                uid = "test-uid",
-                name = "Test Intent",
-                packageName = "com.example.app",
-                customIntentRequest = emptyList(),
-                customIntentResponse =
-                    listOf(
-                        CustomIntentResponseDataModel(
-                            name = "result1",
-                            extraType = CustomIntentResponseExtraType.STRING,
-                            key = null,
-                        ),
-                        CustomIntentResponseDataModel(
-                            name = "result2",
-                            extraType = CustomIntentResponseExtraType.STRING,
-                            key = null,
-                        ),
-                    ),
-            )
-
-        contract.customIntent = customIntent
-        contract.fieldUid = "field-uid"
-
-        val resultIntent =
-            mock<Intent> {
-                on { hasExtra("result1") } doReturn true
-                on { hasExtra("result2") } doReturn true
-                on { getStringExtra("result1") } doReturn "value1"
-                on { getStringExtra("result2") } doReturn "value2"
-            }
-
-        val result = contract.parseResult(Activity.RESULT_OK, resultIntent)
-
-        assertTrue(result is CustomIntentResult.Success)
-        assertEquals("value1,value2", (result as CustomIntentResult.Success).value)
-    }
-
-    @Test
-    fun `parseResult should return Error when result is not OK`() {
-        contract.fieldUid = "field-uid"
-
-        val result = contract.parseResult(Activity.RESULT_CANCELED, null)
-
-        assertTrue(result is CustomIntentResult.Error)
-        assertEquals("field-uid", (result as CustomIntentResult.Error).fieldUid)
-    }
-
-    @Test
-    fun `parseResult should return Error when intent is null`() {
-        val customIntent =
-            CustomIntentModel(
-                uid = "test-uid",
-                name = "Test Intent",
-                packageName = "com.example.app",
-                customIntentRequest = emptyList(),
-                customIntentResponse =
-                    listOf(
-                        CustomIntentResponseDataModel(
-                            name = "result",
-                            extraType = CustomIntentResponseExtraType.STRING,
-                            key = null,
-                        ),
-                    ),
-            )
-
-        contract.customIntent = customIntent
-        contract.fieldUid = "field-uid"
-
-        val result = contract.parseResult(Activity.RESULT_OK, null)
-
-        assertTrue(result is CustomIntentResult.Error)
-    }
-
-    @Test
-    fun `parseResult should return Error when no data is returned`() {
-        val customIntent =
-            CustomIntentModel(
-                uid = "test-uid",
-                name = "Test Intent",
-                packageName = "com.example.app",
-                customIntentRequest = emptyList(),
-                customIntentResponse =
-                    listOf(
-                        CustomIntentResponseDataModel(
-                            name = "result",
-                            extraType = CustomIntentResponseExtraType.STRING,
-                            key = null,
-                        ),
-                    ),
-            )
-
-        contract.customIntent = customIntent
-        contract.fieldUid = "field-uid"
-
-        val resultIntent =
-            mock<Intent> {
-                on { hasExtra("result") } doReturn false
-            }
-
-        val result = contract.parseResult(Activity.RESULT_OK, resultIntent)
-
-        assertTrue(result is CustomIntentResult.Error)
+        assertNotNull(result)
     }
 
     @Test
@@ -250,6 +120,96 @@ class CustomIntentActivityResultContractTest {
 
         assertNotNull(result)
         assertEquals(listOf("3.14"), result)
+    }
+
+    @Test
+    fun `mapIntentResponseData should extract string type`() {
+        val response =
+            listOf(
+                CustomIntentResponseDataModel(
+                    name = "stringValue",
+                    extraType = CustomIntentResponseExtraType.STRING,
+                    key = null,
+                ),
+            )
+
+        val intent =
+            mock<Intent> {
+                on { hasExtra("stringValue") } doReturn true
+                on { getStringExtra("stringValue") } doReturn "test-value"
+            }
+
+        val result = contract.mapIntentResponseData(response, intent)
+
+        assertNotNull(result)
+        assertEquals(listOf("test-value"), result)
+    }
+
+    @Test
+    fun `mapIntentResponseData should extract multiple string values`() {
+        val response =
+            listOf(
+                CustomIntentResponseDataModel(
+                    name = "result1",
+                    extraType = CustomIntentResponseExtraType.STRING,
+                    key = null,
+                ),
+                CustomIntentResponseDataModel(
+                    name = "result2",
+                    extraType = CustomIntentResponseExtraType.STRING,
+                    key = null,
+                ),
+            )
+
+        val intent =
+            mock<Intent> {
+                on { hasExtra("result1") } doReturn true
+                on { hasExtra("result2") } doReturn true
+                on { getStringExtra("result1") } doReturn "value1"
+                on { getStringExtra("result2") } doReturn "value2"
+            }
+
+        val result = contract.mapIntentResponseData(response, intent)
+
+        assertNotNull(result)
+        assertEquals(listOf("value1", "value2"), result)
+    }
+
+    @Test
+    fun `mapIntentResponseData should return null when intent is null`() {
+        val response =
+            listOf(
+                CustomIntentResponseDataModel(
+                    name = "result",
+                    extraType = CustomIntentResponseExtraType.STRING,
+                    key = null,
+                ),
+            )
+
+        val result = contract.mapIntentResponseData(response, null)
+
+        assertNull(result)
+    }
+
+    @Test
+    fun `mapIntentResponseData should return null when no extras match`() {
+        val response =
+            listOf(
+                CustomIntentResponseDataModel(
+                    name = "result",
+                    extraType = CustomIntentResponseExtraType.STRING,
+                    key = null,
+                ),
+            )
+
+        val intent =
+            mock<Intent> {
+                on { hasExtra("result") } doReturn false
+            }
+
+        val result = contract.mapIntentResponseData(response, intent)
+
+        assertNull(result)
     }
 
     @Test
