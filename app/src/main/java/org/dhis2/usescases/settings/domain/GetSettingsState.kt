@@ -19,17 +19,17 @@ class GetSettingsState(
             openedItem = openedItem,
             hasConnection = hasConnection,
             metadataSettingsViewModel =
-                settingsRepository.metaSync().blockingGet().copy(
+                settingsRepository.metaSync().copy(
                     syncInProgress = metadataSyncInProgress,
                 ),
             dataSettingsViewModel =
-                settingsRepository.dataSync().blockingGet().copy(
+                settingsRepository.dataSync().copy(
                     syncInProgress = dataSyncInProgress,
                 ),
-            syncParametersViewModel = settingsRepository.syncParameters().blockingGet(),
-            reservedValueSettingsViewModel = settingsRepository.reservedValues().blockingGet(),
+            syncParametersViewModel = settingsRepository.syncParameters(),
+            reservedValueSettingsViewModel = settingsRepository.reservedValues(),
             smsSettingsViewModel =
-                with(settingsRepository.sms().blockingGet()) {
+                with(settingsRepository.sms()) {
                     copy(
                         gatewayValidationResult = gatewayValidator(this.gatewayNumber),
                     )

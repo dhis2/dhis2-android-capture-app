@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -55,7 +56,7 @@ class SyncManagerPresenter(
                 loadData()
             }.stateIn(
                 viewModelScope,
-                SharingStarted.WhileSubscribed(),
+                SharingStarted.WhileSubscribed(5000),
                 null,
             )
 
@@ -116,7 +117,7 @@ class SyncManagerPresenter(
         val settingsState =
             getSettingsState(
                 openedItem = _settingsState.value?.openedItem,
-                hasConnection = _settingsState.value?.hasConnection == true,
+                hasConnection = connectionStatus.first(),
                 metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
                 dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
             )
