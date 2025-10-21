@@ -241,7 +241,7 @@ fun SearchParametersScreen(
                 } else {
                     itemsIndexed(
                         items = uiState.items,
-                        key = { index, fieldUiModel ->
+                        key = { _, fieldUiModel ->
                             fieldUiModel.uid
                         },
                     ) { index, fieldUiModel ->
