@@ -7,7 +7,6 @@ import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.work.ExistingWorkPolicy
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +29,6 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -43,6 +41,7 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
+import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
 import org.dhis2.utils.TRUE
@@ -76,6 +75,7 @@ class MainPresenter(
     private val versionRepository: VersionRepository,
     val dispatcherProvider: DispatcherProvider,
     private val forceToNotSynced: Boolean,
+    private val logoutUser: LogoutUser,
 ) : CoroutineScope {
     private var job = Job()
     override val coroutineContext: CoroutineContext
@@ -235,29 +235,16 @@ class MainPresenter(
         }
 
     fun logOut() {
-        disposable.add(
-            Completable
-                .fromCallable {
-                    workManagerController.cancelAllWork()
-                    syncStatusController.restore()
-                    filterManager.clearAllFilters()
-                    preferences.setValue(Preference.SESSION_LOCKED, false)
-                    userManager.d2
-                        .dataStoreModule()
-                        .localDataStore()
-                        .value(PIN)
-                        .blockingDeleteIfExist()
-                }.andThen(
-                    repository.logOut(),
-                ).subscribeOn(schedulerProvider.ui())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    {
-                        view.goToLogin(repository.accountsCount(), isDeletion = false)
-                    },
-                    { Timber.e(it) },
-                ),
-        )
+        launch(dispatcherProvider.ui()) {
+            logoutUser().fold(
+                onSuccess = { accounts ->
+                    view.goToLogin(accounts, isDeletion = false)
+                },
+                onFailure = {
+                    Timber.e(it)
+                },
+            )
+        }
     }
 
     fun onDeleteAccount() {

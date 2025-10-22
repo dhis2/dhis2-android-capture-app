@@ -1,16 +1,21 @@
 package org.dhis2.usescases.main
 
 import dhis2.org.analytics.charts.Charts
-import io.reactivex.Completable
 import io.reactivex.Single
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.bindings.dataSet
 import org.dhis2.commons.bindings.dataSetInstanceSummaries
 import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.programs
+import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
+import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
@@ -18,7 +23,22 @@ import org.hisp.dhis.android.core.user.User
 class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?,
+    private val preferences: PreferenceProvider,
+    private val d2ErrorMessageProvider: D2ErrorMessageProvider,
+    private val dispatcher: Dispatcher,
 ) : HomeRepository {
+    private suspend fun <T> execute(block: suspend () -> Result<T>): Result<T> =
+        withContext(dispatcher.io) {
+            try {
+                block()
+            } catch (d2Error: D2Error) {
+                val parsedError = d2ErrorMessageProvider.getErrorMessage(d2Error, false)
+                Result.failure(Exception(parsedError))
+            } catch (e: Exception) {
+                Result.failure(e)
+            }
+        }
+
     override fun user(): Single<User?> = d2.userModule().user().get()
 
     override fun defaultCatCombo(): Single<CategoryCombo?> =
@@ -39,7 +59,21 @@ class HomeRepositoryImpl(
             .one()
             .get()
 
-    override fun logOut(): Completable = d2.userModule().logOut()
+    override suspend fun logOut(): Result<Unit> =
+        execute {
+            Result.success(d2.userModule().blockingLogOut())
+        }
+
+    override suspend fun clearSessionLock(): Result<Unit> =
+        execute {
+            preferences.setValue(Preference.SESSION_LOCKED, false)
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(PIN)
+                .blockingDeleteIfExist()
+            Result.success(Unit)
+        }
 
     override fun hasProgramWithAssignment(): Boolean =
         if (d2.userModule().isLogged().blockingGet()) {
