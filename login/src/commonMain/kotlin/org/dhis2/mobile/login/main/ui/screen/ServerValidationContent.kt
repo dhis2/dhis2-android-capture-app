@@ -89,11 +89,7 @@ internal fun ServerValidationContent(
 
         var inputFocusState by remember(state.error, state.validationRunning) {
             mutableStateOf(
-                when {
-                    state.validationRunning -> InputShellState.DISABLED
-                    state.error != null -> InputShellState.ERROR
-                    else -> InputShellState.UNFOCUSED
-                },
+                getInputState(state.error, state.validationRunning),
             )
         }
 
@@ -139,8 +135,7 @@ internal fun ServerValidationContent(
                 inputFocusState = InputShellState.UNFOCUSED
             },
             onFocusChanged = { focused ->
-                inputFocusState =
-                    if (focused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
+                inputFocusState = getInputFocusState(focused)
             },
             modifier = Modifier.fillMaxWidth(),
         )
@@ -163,15 +158,7 @@ internal fun ServerValidationContent(
                 enabled = enabled,
                 style = ButtonStyle.FILLED,
                 icon = {
-                    if (state.validationRunning) {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
-                    } else {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = "Check login flow button",
-                            tint = if (enabled) MaterialTheme.colorScheme.onPrimary else TextColor.OnDisabledSurface,
-                        )
-                    }
+                    ServerValidationButtonIcon(state.validationRunning, enabled)
                 },
                 text =
                     if (state.validationRunning) {
@@ -214,3 +201,31 @@ internal fun ServerValidationContent(
         }
     }
 }
+
+@Composable
+fun ServerValidationButtonIcon(
+    validationRunning: Boolean,
+    enabled: Boolean,
+) {
+    if (validationRunning) {
+        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
+    } else {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+            contentDescription = "Check login flow button",
+            tint = if (enabled) MaterialTheme.colorScheme.onPrimary else TextColor.OnDisabledSurface,
+        )
+    }
+}
+
+fun getInputState(
+    error: String?,
+    validationRunning: Boolean,
+): InputShellState =
+    when {
+        validationRunning -> InputShellState.DISABLED
+        error != null -> InputShellState.ERROR
+        else -> InputShellState.UNFOCUSED
+    }
+
+fun getInputFocusState(focused: Boolean): InputShellState = if (focused) InputShellState.FOCUSED else InputShellState.UNFOCUSED
