@@ -197,6 +197,7 @@ fun LoginScreen(
                         hasAccount = args.hasAccounts,
                         onValidate = viewModel::onValidateServer,
                         onCancel = viewModel::cancelServerValidation,
+
                         onManageAccounts = viewModel::onBackToManageAccounts,
                     )
                 }
