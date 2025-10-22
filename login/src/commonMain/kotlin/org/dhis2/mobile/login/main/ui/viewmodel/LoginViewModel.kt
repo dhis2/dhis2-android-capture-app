@@ -150,6 +150,10 @@ class LoginViewModel(
         navigateUp()
     }
 
+    fun onBackToManageAccounts() {
+        navigateUp()
+    }
+
     private fun navigateUp() {
         launchUseCase {
             navigator.navigateUp()

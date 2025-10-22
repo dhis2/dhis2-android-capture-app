@@ -13,6 +13,7 @@ class GetInitialScreen(
                 LoginScreenState.ServerValidation(
                     currentServer = "",
                     availableServers = accountRepository.availableServers(),
+                    hasAccounts = false,
                 )
             accounts.size == 1 && accounts.first().isOauthEnabled ->
                 LoginScreenState.OauthLogin(
