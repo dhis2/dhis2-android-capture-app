@@ -161,6 +161,7 @@ fun PinBottomSheet(
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Center,
                 animateHeaderOnKeyboardAppearance = false,
+                scrollableContainerMinHeight = Spacing.Spacing40,
                 contentPadding =
                     PaddingValues(
                         horizontal = Spacing.Spacing24,
