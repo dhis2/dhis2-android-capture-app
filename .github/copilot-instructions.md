@@ -121,18 +121,6 @@ between SDK models and domain models.
     - Map SDK exceptions to domain errors: repository implementations should translate platform/SDK
       exceptions into domain-level errors using the project's `DomainErrorMapper` (or equivalent).
       This keeps the domain layer SDK-agnostic and makes error handling consistent across the app.
-      See `login/src/androidMain/kotlin/org/dhis2/mobile/login/pin/data/SessionRepositoryImpl.kt`for
-      an example where `D2Error` is mapped and rethrown as a domain error.
-        - Typical pattern:
-
-          ```kotlin
-          try {
-              // SDK call, e.g. d2.dataStoreModule()...blockingGet()
-          } catch (d2Error: D2Error) {
-              // map SDK error to a DomainError and rethrow
-              throw domainErrorMapper.mapToDomainError(d2Error)
-          }
-          ```
         - Imports you will commonly need in Android implementations:
           ```
           import org.dhis2.mobile.commons.error.DomainErrorMapper
@@ -149,13 +137,18 @@ between SDK models and domain models.
 
 ```kotlin
 class ExampleRepositoryImpl(
-    private val d2: D2
+    private val d2: D2,
+    private val domainErrorMapper: DomainErrorMapper
 ) : ExampleRepository {
-    override fun getData(): Flow<List<ExampleData>> {
-        return d2.exampleModule().examples()
-            .get()
-            .asFlow()
-            .map { it.map { example -> example.toDomainModel() } }
+    override suspend fun getData(): Flow<List<ExampleData>> {
+        return try {
+            d2.exampleModule().examples()
+                .get()
+                .asFlow()
+                .map { it.map { example -> example.toDomainModel() } }
+        } catch (d2Error: D2Error) {
+            throw domainErrorMapper.mapToDomainError(d2Error)
+        }
     }
 }
 ```
