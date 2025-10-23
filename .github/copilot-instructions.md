@@ -45,6 +45,26 @@ This project is a DHIS2 Android application that is migrating from a traditional
   - Implement platform-specific versions in `androidMain`, `desktopMain`, etc.
   - Use DHIS2 SDK for data operations
   - Handle data mapping between SDK models and domain models
+  - Map SDK exceptions to domain errors: repository implementations should translate platform/SDK exceptions into domain-level errors using the project's `DomainErrorMapper` (or equivalent). This keeps the domain layer SDK-agnostic and makes error handling consistent across the app. See `login/src/androidMain/kotlin/org/dhis2/mobile/login/pin/data/SessionRepositoryImpl.kt` for an example where `D2Error` is mapped and rethrown as a domain error.
+    - Typical pattern:
+
+      ```kotlin
+      try {
+          // SDK call, e.g. d2.dataStoreModule()...blockingGet()
+      } catch (d2Error: D2Error) {
+          // map SDK error to a DomainError and rethrow
+          throw domainErrorMapper.mapToDomainError(d2Error)
+      }
+      ```
+    - Imports you will commonly need in Android implementations:
+      ```kotlin
+      import org.dhis2.mobile.commons.error.DomainErrorMapper
+      import org.hisp.dhis.android.core.maintenance.D2Error
+      ```
+    - Recommendations:
+      - Keep repository method signatures `suspend` and let them throw domain-level exceptions rather than returning raw SDK exceptions.
+      - Catch/translate only SDK-specific exceptions; allow unexpected exceptions to bubble up or wrap them in a generic domain error if appropriate.
+      - Write unit tests that mock `DomainErrorMapper` to assert error mapping behavior.
 
 ### Use Cases
 - **Use Cases**: Encapsulate complex business logic
