@@ -1,12 +1,9 @@
 package org.dhis2.mobile.login.pin.data
 
-import kotlinx.coroutines.flow.firstOrNull
-import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.PreferenceProvider
-import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.maintenance.D2Error
-import timber.log.Timber
 
 /**
  * Android implementation of SessionRepository using DHIS2 SDK.
@@ -15,8 +12,7 @@ import timber.log.Timber
 class SessionRepositoryImpl(
     private val d2: D2,
     private val preferenceProvider: PreferenceProvider,
-    private val d2ErrorMessageProvider: D2ErrorMessageProvider,
-    private val networkStatusProvider: NetworkStatusProvider,
+    private val domainErrorMapper: DomainErrorMapper,
 ) : SessionRepository {
     companion object {
         private const val PIN_KEY = "pin"
@@ -31,13 +27,7 @@ class SessionRepositoryImpl(
                 .value(PIN_KEY)
                 .blockingSet(pin)
         } catch (d2Error: D2Error) {
-            Timber.e(d2Error, "Failed to save PIN")
-            val isNetworkAvailable = networkStatusProvider.connectionStatus.firstOrNull() ?: false
-            val errorMessage = d2ErrorMessageProvider.getErrorMessage(d2Error, isNetworkAvailable)
-            throw Exception(errorMessage, d2Error)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to save PIN")
-            throw e
+            throw domainErrorMapper.mapToDomainError(d2Error)
         }
     }
 
@@ -50,11 +40,7 @@ class SessionRepositoryImpl(
                 .blockingGet()
                 ?.value()
         } catch (d2Error: D2Error) {
-            Timber.e(d2Error, "Failed to retrieve PIN")
-            null
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to retrieve PIN")
-            null
+            throw domainErrorMapper.mapToDomainError(d2Error)
         }
 
     override suspend fun deletePin() {
@@ -65,13 +51,7 @@ class SessionRepositoryImpl(
                 .value(PIN_KEY)
                 .blockingDeleteIfExist()
         } catch (d2Error: D2Error) {
-            Timber.e(d2Error, "Failed to delete PIN")
-            val isNetworkAvailable = networkStatusProvider.connectionStatus.firstOrNull() ?: false
-            val errorMessage = d2ErrorMessageProvider.getErrorMessage(d2Error, isNetworkAvailable)
-            throw Exception(errorMessage, d2Error)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to delete PIN")
-            throw e
+            throw domainErrorMapper.mapToDomainError(d2Error)
         }
     }
 
@@ -79,7 +59,6 @@ class SessionRepositoryImpl(
         try {
             preferenceProvider.setValue(PREF_SESSION_LOCKED, locked)
         } catch (e: Exception) {
-            Timber.e(e, "Failed to set session locked state")
             throw e
         }
     }
@@ -87,8 +66,7 @@ class SessionRepositoryImpl(
     override suspend fun isSessionLocked(): Boolean =
         try {
             preferenceProvider.getBoolean(PREF_SESSION_LOCKED, false)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to get session locked state")
+        } catch (_: Exception) {
             false
         }
 
@@ -96,13 +74,7 @@ class SessionRepositoryImpl(
         try {
             d2.userModule().blockingLogOut()
         } catch (d2Error: D2Error) {
-            Timber.e(d2Error, "Failed to logout")
-            val isNetworkAvailable = networkStatusProvider.connectionStatus.firstOrNull() ?: false
-            val errorMessage = d2ErrorMessageProvider.getErrorMessage(d2Error, isNetworkAvailable)
-            throw Exception(errorMessage, d2Error)
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to logout")
-            throw e
+            throw domainErrorMapper.mapToDomainError(d2Error)
         }
     }
 }

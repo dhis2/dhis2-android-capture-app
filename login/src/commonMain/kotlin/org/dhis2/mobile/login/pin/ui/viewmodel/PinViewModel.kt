@@ -6,8 +6,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.dhis2.mobile.login.pin.domain.model.PinResult
+import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.login.pin.domain.model.PinError
 import org.dhis2.mobile.login.pin.domain.model.PinState
+import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
@@ -70,29 +72,42 @@ class PinViewModel(
     private fun validatePin(pin: String) {
         viewModelScope.launch {
             _uiState.value = PinState.Loading
-            when (val result = validatePinUseCase(pin, pinAttempts)) {
-                is PinResult.Success -> {
+            validatePinUseCase(ValidatePinInput(pin, pinAttempts)).fold(
+                onSuccess = {
                     _uiState.value = PinState.Success
                     pinAttempts = 0
-                }
-                is PinResult.Failed -> {
-                    pinAttempts++
-                    _uiState.value =
-                        PinState.Error(
-                            message = resourceProvider.getPinErrorIncorrect(),
-                            remainingAttempts = result.attemptsLeft,
-                        )
-                }
-                is PinResult.TooManyAttempts -> {
-                    _uiState.value = PinState.TooManyAttempts
-                }
-                is PinResult.NoPinStored -> {
-                    _uiState.value =
-                        PinState.Error(
-                            message = resourceProvider.getPinErrorNoPinStored(),
-                        )
-                }
-            }
+                },
+                onFailure = { failure: Throwable ->
+                    when (failure) {
+                        is PinError.Failed -> {
+                            pinAttempts++
+                            _uiState.value =
+                                PinState.Error(
+                                    message = resourceProvider.getPinErrorIncorrect(),
+                                    remainingAttempts = failure.attemptsLeft,
+                                )
+                        }
+
+                        is PinError.TooManyAttempts -> {
+                            _uiState.value = PinState.TooManyAttempts
+                        }
+
+                        is PinError.NoPinStored -> {
+                            _uiState.value =
+                                PinState.Error(
+                                    message = resourceProvider.getPinErrorNoPinStored(),
+                                )
+                        }
+
+                        else -> {
+                            _uiState.value =
+                                PinState.Error(
+                                    message = failure.message ?: "Unknown error occurred",
+                                )
+                        }
+                    }
+                },
+            )
         }
     }
 
