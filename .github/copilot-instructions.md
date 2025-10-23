@@ -154,7 +154,9 @@ class ExampleViewModel(
     }
     
     private fun loadData() {
-        viewModelScope.launch {
+        // Use the `launchUseCase` ViewModel extension which wraps coroutine tracking and uses
+        // a background dispatcher by default (it increments/decrements CoroutineTracker).
+        launchUseCase {
             // `getDataUseCase()` is an extension for `UseCase<Unit, T>` that calls the use case with Unit
             val result = getDataUseCase()
             result.fold(
