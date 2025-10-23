@@ -159,8 +159,8 @@ class LoginRepositoryImpl(
                 .blockingGet()
                 ?.value()
                 ?.lowercase()
-                ?.toBooleanStrictOrNull() ?: true
-        } catch (e: Exception) {
+                ?.toBooleanStrictOrNull() ?: false
+        } catch (_: Exception) {
             false
         }
 
