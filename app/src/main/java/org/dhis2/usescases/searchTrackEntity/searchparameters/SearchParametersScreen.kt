@@ -3,14 +3,17 @@ package org.dhis2.usescases.searchTrackEntity.searchparameters
 import android.content.res.Configuration
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material.icons.outlined.ErrorOutline
@@ -30,6 +33,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +59,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelectorItem
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
@@ -193,48 +196,55 @@ fun SearchParametersScreen(
             )
         },
     ) { paddingValues ->
+        val layoutDirection = LocalLayoutDirection.current
         Column(
             modifier =
                 Modifier
                     .fillMaxSize()
                     .background(color = Color.White, shape = backgroundShape)
-                    .padding(paddingValues),
+                    .padding(
+                        top = 0.dp,
+                        bottom = paddingValues.calculateBottomPadding(),
+                        start = paddingValues.calculateStartPadding(layoutDirection),
+                        end = paddingValues.calculateEndPadding(layoutDirection),
+                    ),
         ) {
-            Column(
+            LazyColumn(
                 modifier =
                     Modifier
-                        .weight(1F)
-                        .verticalScroll(rememberScrollState()),
+                        .weight(1F),
             ) {
                 if (uiState.items.isEmpty()) {
-                    Column(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        InfoBar(
-                            infoBarData =
-                                InfoBarData(
-                                    text = resourceManager.getString(R.string.empty_search_attributes_message),
-                                    icon = {
-                                        Icon(
-                                            imageVector = Icons.Outlined.ErrorOutline,
-                                            contentDescription = "warning",
-                                            tint = AdditionalInfoItemColor.WARNING.color,
-                                        )
-                                    },
-                                    color = AdditionalInfoItemColor.WARNING.color,
-                                    backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                                    actionText = null,
-                                    onClick = {},
-                                ),
-                            Modifier.testTag("EMPTY_SEARCH_ATTRIBUTES_TEXT_TAG"),
-                        )
+                    item {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            InfoBar(
+                                modifier = Modifier.testTag("EMPTY_SEARCH_ATTRIBUTES_TEXT_TAG"),
+                                text = resourceManager.getString(R.string.empty_search_attributes_message),
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ErrorOutline,
+                                        contentDescription = "warning",
+                                        tint = AdditionalInfoItemColor.WARNING.color,
+                                    )
+                                },
+                                textColor = AdditionalInfoItemColor.WARNING.color,
+                                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                            )
+                        }
                     }
                 } else {
-                    uiState.items.forEachIndexed { index, fieldUiModel ->
+                    itemsIndexed(
+                        items = uiState.items,
+                        key = { _, fieldUiModel ->
+                            fieldUiModel.uid
+                        },
+                    ) { index, fieldUiModel ->
                         fieldUiModel.setCallback(callback)
                         ParameterSelectorItem(
                             modifier =
@@ -258,23 +268,25 @@ fun SearchParametersScreen(
                 }
 
                 if (uiState.clearSearchEnabled) {
-                    Button(
-                        modifier =
-                            Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .padding(16.dp, 24.dp, 16.dp, 8.dp),
-                        style = ButtonStyle.TEXT,
-                        text = resourceManager.getString(R.string.clear_search),
-                        icon = {
-                            Icon(
-                                imageVector = Icons.Outlined.Cancel,
-                                contentDescription = resourceManager.getString(R.string.clear_search),
-                                tint = SurfaceColor.Primary,
-                            )
-                        },
-                    ) {
-                        focusManager.clearFocus()
-                        onClear()
+                    item {
+                        Button(
+                            modifier =
+                                Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .padding(16.dp, 24.dp, 16.dp, 8.dp),
+                            style = ButtonStyle.TEXT,
+                            text = resourceManager.getString(R.string.clear_search),
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Outlined.Cancel,
+                                    contentDescription = resourceManager.getString(R.string.clear_search),
+                                    tint = SurfaceColor.Primary,
+                                )
+                            },
+                        ) {
+                            focusManager.clearFocus()
+                            onClear()
+                        }
                     }
                 }
             }
@@ -318,24 +330,50 @@ fun SearchFormPreview() {
         uiState =
             SearchParametersUiState(
                 items =
-                    listOf(
-                        FieldUiModelImpl(
-                            uid = "uid1",
-                            label = "Label 1",
-                            autocompleteList = emptyList(),
-                            optionSetConfiguration = null,
-                            valueType = ValueType.TEXT,
-                            customIntent = null,
-                        ),
-                        FieldUiModelImpl(
-                            uid = "uid2",
-                            label = "Label 2",
-                            autocompleteList = emptyList(),
-                            optionSetConfiguration = null,
-                            valueType = ValueType.TEXT,
-                            customIntent = null,
-                        ),
-                    ),
+                    buildList {
+                        repeat(times = 20) { index ->
+                            add(
+                                FieldUiModelImpl(
+                                    uid = "uid$index",
+                                    label = "Label $index",
+                                    autocompleteList = emptyList(),
+                                    optionSetConfiguration = null,
+                                    valueType = ValueType.TEXT,
+                                ),
+                            )
+                        }
+                    },
+            ),
+        intentHandler = {},
+        onShowOrgUnit = { _, _, _, _ -> },
+        onSearch = {},
+        onClear = {},
+        onClose = {},
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SearchFormPreviewWithClear() {
+    SearchParametersScreen(
+        resourceManager = ResourceManager(LocalContext.current, ColorUtils()),
+        uiState =
+            SearchParametersUiState(
+                items =
+                    buildList {
+                        repeat(times = 20) { index ->
+                            add(
+                                FieldUiModelImpl(
+                                    uid = "uid$index",
+                                    label = "Label $index",
+                                    value = "test value",
+                                    autocompleteList = emptyList(),
+                                    optionSetConfiguration = null,
+                                    valueType = ValueType.TEXT,
+                                ),
+                            )
+                        }
+                    },
             ),
         intentHandler = {},
         onShowOrgUnit = { _, _, _, _ -> },
