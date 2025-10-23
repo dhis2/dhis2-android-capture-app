@@ -49,6 +49,9 @@ This project is a DHIS2 Android application that is migrating from a traditional
 ### Use Cases
 - **Use Cases**: Encapsulate complex business logic
   - Single responsibility principle
+  - Implement the shared `UseCase` interface: `UseCase<in R, out T>` (see `commonskmm/src/commonMain/kotlin/org/dhis2/mobile/commons/domain/UseCase.kt`). Use cases must implement/extend this interface so they return a `Result<T>` from their `invoke` method.
+  - For parameterless use cases use `UseCase<Unit, T>` and the provided extension `suspend operator fun <T> UseCase<Unit, T>.invoke() = this(Unit)` to call them without passing `Unit` explicitly.
+  - Return `Result<T>` (often wrapping a `Flow<T>` when the use case emits a stream). Handle exceptions inside the use case and wrap success/failure using `Result.success` / `Result.failure`.
   - Coordinate between multiple repositories if needed
   - Return `Flow` or `suspend` functions for async operations
   - Place in domain layer
@@ -110,10 +113,10 @@ modulekmm/
 
 ### Compose Multiplatform
 - **Components**: Always check DHIS2 design system first
-  ```kotlin
-  import org.hisp.dhis.mobile.ui.designsystem.component.*
-  import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-  ```
+```
+import org.hisp.dhis.mobile.ui.designsystem.component.*
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+```
 - **Navigation**: Use Compose Navigation for multiplatform
 - **Resources**: Place in `commonMain/composeResources/`
 - **Theming**: Use DHIS2Theme wrapper
@@ -152,9 +155,18 @@ class ExampleViewModel(
     
     private fun loadData() {
         viewModelScope.launch {
-            getDataUseCase()
-                .catch { _uiState.value = UiState.Error(it.message ?: "Unknown error") }
-                .collect { _uiState.value = UiState.Success(it) }
+            // `getDataUseCase()` is an extension for `UseCase<Unit, T>` that calls the use case with Unit
+            val result = getDataUseCase()
+            result.fold(
+                onSuccess = { flow ->
+                    flow
+                        .catch { _uiState.value = UiState.Error(it.message ?: "Unknown error") }
+                        .collect { _uiState.value = UiState.Success(it) }
+                },
+                onFailure = { throwable ->
+                    _uiState.value = UiState.Error(throwable.message ?: "Unknown error")
+                }
+            )
         }
     }
 }
@@ -178,10 +190,15 @@ class ExampleRepositoryImpl(
 ```kotlin
 class GetDataUseCase(
     private val repository: ExampleRepository
-) {
-    suspend operator fun invoke(): Flow<List<ExampleData>> {
-        return repository.getData()
-            .map { data -> data.filter { it.isValid } }
+) : UseCase<Unit, Flow<List<ExampleData>>> {
+    override suspend operator fun invoke(input: Unit): Result<Flow<List<ExampleData>>> {
+        return try {
+            val flow = repository.getData()
+                .map { data -> data.filter { it.isValid } }
+            Result.success(flow)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
 ```
