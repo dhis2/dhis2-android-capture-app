@@ -207,6 +207,7 @@ fun CredentialsScreen(
         TrackingPermissionDialog(
             onPermissionResult = viewModel::onTrackingPermission,
             onOpenPrivacyPolicy = viewModel::checkPrivacyPolicy,
+            onDismiss = viewModel::onTrackingPermissionDismissed,
         )
     } else if (displayBiometricMessage) {
         BiometricsDialog(
@@ -516,6 +517,7 @@ private fun CredentialActions(
 fun TrackingPermissionDialog(
     onPermissionResult: (granted: Boolean) -> Unit,
     onOpenPrivacyPolicy: () -> Unit,
+    onDismiss: () -> Unit,
 ) {
     BottomSheetShell(
         modifier = Modifier,
@@ -571,7 +573,7 @@ fun TrackingPermissionDialog(
                         style = ButtonStyle.OUTLINED,
                         text = stringResource(Res.string.action_no_now),
                         onClick = {
-                            onPermissionResult(true)
+                            onPermissionResult(false)
                         },
                     )
                 },
@@ -581,14 +583,14 @@ fun TrackingPermissionDialog(
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.action_yes),
                         onClick = {
-                            onPermissionResult(false)
+                            onPermissionResult(true)
                         },
                     )
                 },
             )
         },
         onDismiss = {
-            onPermissionResult(false)
+            onDismiss()
         },
     )
 }

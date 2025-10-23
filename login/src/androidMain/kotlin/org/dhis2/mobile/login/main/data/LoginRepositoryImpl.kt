@@ -21,6 +21,8 @@ import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.jetbrains.compose.resources.getString
@@ -96,14 +98,18 @@ class LoginRepositoryImpl(
             d2.userModule().blockingLogIn(username, password, serverUrl)
             kotlin.Result.success(Unit)
         } catch (e: Exception) {
-            kotlin.Result.failure(
-                Exception(
-                    d2ErrorMessageProvider.getErrorMessage(
-                        e,
-                        isNetworkAvailable,
+            if (e is D2Error && e.errorCode() == D2ErrorCode.ALREADY_AUTHENTICATED) {
+                kotlin.Result.success(Unit)
+            } else {
+                kotlin.Result.failure(
+                    Exception(
+                        d2ErrorMessageProvider.getErrorMessage(
+                            e,
+                            isNetworkAvailable,
+                        ),
                     ),
-                ),
-            )
+                )
+            }
         }
     }
 

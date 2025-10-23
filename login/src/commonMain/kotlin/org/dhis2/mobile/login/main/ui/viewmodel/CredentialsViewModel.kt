@@ -299,6 +299,16 @@ class CredentialsViewModel(
         }
     }
 
+    fun onTrackingPermissionDismissed() {
+        launchUseCase {
+            _credentialsScreenState.update {
+                it.copy(
+                    afterLoginActions = emptyList(),
+                )
+            }
+        }
+    }
+
     fun checkPrivacyPolicy() {
         launchUseCase {
             navigator.navigateToPrivacyPolicy()
