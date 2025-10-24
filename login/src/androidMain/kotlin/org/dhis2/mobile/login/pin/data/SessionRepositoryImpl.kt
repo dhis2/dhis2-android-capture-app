@@ -93,11 +93,17 @@ class SessionRepositoryImpl(
         }
 
     override suspend fun isSessionLocked(): Boolean =
-        try {
-            getStoredPin() != null
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to get session locked state")
-            false
+        withContext(dispatcher.io) {
+            try {
+                d2
+                    .dataStoreModule()
+                    .localDataStore()
+                    .value(PIN_KEY)
+                    .blockingExists()
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to check session locked state")
+                false
+            }
         }
 
     override suspend fun logout() =

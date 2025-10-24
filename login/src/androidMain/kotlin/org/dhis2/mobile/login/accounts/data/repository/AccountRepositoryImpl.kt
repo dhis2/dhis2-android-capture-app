@@ -7,6 +7,7 @@ import org.dhis2.mobile.login.accounts.data.credentials.trainingTestingCredentia
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
 import org.dhis2.mobile.login.main.data.PREF_URLS
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 
 class AccountRepositoryImpl(
     private val d2: D2,
@@ -14,25 +15,7 @@ class AccountRepositoryImpl(
 ) : AccountRepository {
     override suspend fun getLoggedInAccounts(): List<AccountModel> =
         d2.userModule().accountManager().getAccounts().map {
-            val oidcProviders = it.loginConfig()?.oidcProviders?.firstOrNull()
-            val serverName =
-                it.loginConfig()?.applicationTitle ?: try {
-                    it.serverUrl().substringAfter("://").substringBefore("/")
-                } catch (_: Exception) {
-                    it.serverUrl()
-                }
-            AccountModel(
-                name = it.username(),
-                serverName = serverName,
-                serverUrl = it.serverUrl(),
-                serverDescription = it.loginConfig()?.applicationDescription,
-                serverFlag = it.loginConfig()?.countryFlag,
-                allowRecovery = it.loginConfig()?.allowAccountRecovery == true,
-                oidcIcon = oidcProviders?.icon,
-                oidcLoginText = oidcProviders?.loginText,
-                oidcUrl = oidcProviders?.url,
-                isOauthEnabled = it.loginConfig()?.isOauthEnabled() == true,
-            )
+            mapDatabaseAccountToAccountModel(it)
         }
 
     override suspend fun availableServers(): List<String> {
@@ -53,5 +36,32 @@ class AccountRepositoryImpl(
             .getSet(PREF_URLS, HashSet())
             .orEmpty()
             .toList()
+    }
+
+    override suspend fun getActiveAccount(): AccountModel? =
+        d2.userModule().accountManager().getCurrentAccount()?.let {
+            mapDatabaseAccountToAccountModel(it)
+        }
+
+    private fun mapDatabaseAccountToAccountModel(databaseAccount: DatabaseAccount): AccountModel {
+        val oidcProviders = databaseAccount.loginConfig()?.oidcProviders?.firstOrNull()
+        val serverName =
+            databaseAccount.loginConfig()?.applicationTitle ?: try {
+                databaseAccount.serverUrl().substringAfter("://").substringBefore("/")
+            } catch (_: Exception) {
+                databaseAccount.serverUrl()
+            }
+        return AccountModel(
+            name = databaseAccount.username(),
+            serverName = serverName,
+            serverUrl = databaseAccount.serverUrl(),
+            serverDescription = databaseAccount.loginConfig()?.applicationDescription,
+            serverFlag = databaseAccount.loginConfig()?.countryFlag,
+            allowRecovery = databaseAccount.loginConfig()?.allowAccountRecovery == true,
+            oidcIcon = oidcProviders?.icon,
+            oidcLoginText = oidcProviders?.loginText,
+            oidcUrl = oidcProviders?.url,
+            isOauthEnabled = databaseAccount.loginConfig()?.isOauthEnabled() == true,
+        )
     }
 }
