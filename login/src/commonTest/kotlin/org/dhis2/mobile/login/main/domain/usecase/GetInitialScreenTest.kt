@@ -22,6 +22,47 @@ class GetInitialScreenTest {
         useCase = GetInitialScreen(accountRepository, sessionRepository)
     }
 
+    // Helper methods to reduce code duplication
+    private fun createLegacyAccount(
+        name: String = "testuser",
+        serverUrl: String = "https://test.dhis2.org",
+        serverName: String = "Test Server",
+        serverDescription: String? = null,
+        serverFlag: String? = null,
+        allowRecovery: Boolean = false,
+    ) = AccountModel(
+        name = name,
+        serverUrl = serverUrl,
+        serverName = serverName,
+        serverDescription = serverDescription,
+        serverFlag = serverFlag,
+        allowRecovery = allowRecovery,
+        oidcIcon = null,
+        oidcLoginText = null,
+        oidcUrl = null,
+        isOauthEnabled = false,
+    )
+
+    private fun createOAuthAccount(
+        name: String = "oauthuser",
+        serverUrl: String = "https://oauth.dhis2.org",
+        serverName: String = "OAuth Server",
+        oidcIcon: String = "icon_url",
+        oidcLoginText: String = "Login with OAuth",
+        oidcUrl: String = "https://oauth.provider.com",
+    ) = AccountModel(
+        name = name,
+        serverUrl = serverUrl,
+        serverName = serverName,
+        serverDescription = null,
+        serverFlag = null,
+        allowRecovery = false,
+        oidcIcon = oidcIcon,
+        oidcLoginText = oidcLoginText,
+        oidcUrl = oidcUrl,
+        isOauthEnabled = true,
+    )
+
     @Test
     fun `invoke returns ServerValidation when no accounts exist`() =
         runTest {
@@ -44,17 +85,9 @@ class GetInitialScreenTest {
     fun `invoke returns LegacyLogin when single account exists with OAuth disabled`() =
         runTest {
             // Given
-            val account = AccountModel(
-                name = "testuser",
-                serverUrl = "https://test.dhis2.org",
-                serverName = "Test Server",
-                serverDescription = "Test Description",
+            val account = createLegacyAccount(
                 serverFlag = "test_flag",
                 allowRecovery = true,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account))
 
@@ -74,18 +107,7 @@ class GetInitialScreenTest {
     fun `invoke returns OauthLogin when single account exists with OAuth enabled`() =
         runTest {
             // Given
-            val account = AccountModel(
-                name = "oauthuser",
-                serverUrl = "https://oauth.dhis2.org",
-                serverName = "OAuth Server",
-                serverDescription = "OAuth Description",
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = "icon_url",
-                oidcLoginText = "Login with OAuth",
-                oidcUrl = "https://oauth.provider.com",
-                isOauthEnabled = true,
-            )
+            val account = createOAuthAccount()
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account))
 
             // When
@@ -100,29 +122,15 @@ class GetInitialScreenTest {
     fun `invoke returns Accounts when multiple accounts exist and session is not locked`() =
         runTest {
             // Given
-            val account1 = AccountModel(
+            val account1 = createLegacyAccount(
                 name = "user1",
                 serverUrl = "https://server1.dhis2.org",
                 serverName = "Server 1",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
-            val account2 = AccountModel(
+            val account2 = createLegacyAccount(
                 name = "user2",
                 serverUrl = "https://server2.dhis2.org",
                 serverName = "Server 2",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account1, account2))
             whenever(sessionRepository.isSessionLocked()).thenReturn(false)
@@ -138,41 +146,20 @@ class GetInitialScreenTest {
     fun `invoke returns OauthLogin when session is locked and active account has OAuth enabled`() =
         runTest {
             // Given
-            val account1 = AccountModel(
+            val account1 = createLegacyAccount(
                 name = "user1",
                 serverUrl = "https://server1.dhis2.org",
                 serverName = "Server 1",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
-            val account2 = AccountModel(
+            val account2 = createLegacyAccount(
                 name = "user2",
                 serverUrl = "https://server2.dhis2.org",
                 serverName = "Server 2",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
-            val activeAccount = AccountModel(
+            val activeAccount = createOAuthAccount(
                 name = "activeuser",
                 serverUrl = "https://active.dhis2.org",
                 serverName = "Active Server",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = "icon",
-                oidcLoginText = "Login",
-                oidcUrl = "https://oauth.com",
-                isOauthEnabled = true,
             )
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account1, account2))
             whenever(sessionRepository.isSessionLocked()).thenReturn(true)
@@ -190,41 +177,23 @@ class GetInitialScreenTest {
     fun `invoke returns LegacyLogin when session is locked and active account has OAuth disabled`() =
         runTest {
             // Given
-            val account1 = AccountModel(
+            val account1 = createLegacyAccount(
                 name = "user1",
                 serverUrl = "https://server1.dhis2.org",
                 serverName = "Server 1",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
-            val account2 = AccountModel(
+            val account2 = createLegacyAccount(
                 name = "user2",
                 serverUrl = "https://server2.dhis2.org",
                 serverName = "Server 2",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
-            val activeAccount = AccountModel(
+            val activeAccount = createLegacyAccount(
                 name = "activeuser",
                 serverUrl = "https://active.dhis2.org",
                 serverName = "Active Server",
                 serverDescription = "Active Description",
                 serverFlag = "active_flag",
                 allowRecovery = true,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account1, account2))
             whenever(sessionRepository.isSessionLocked()).thenReturn(true)
@@ -246,29 +215,15 @@ class GetInitialScreenTest {
     fun `invoke returns Accounts when session is locked but no active account exists`() =
         runTest {
             // Given
-            val account1 = AccountModel(
+            val account1 = createLegacyAccount(
                 name = "user1",
                 serverUrl = "https://server1.dhis2.org",
                 serverName = "Server 1",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
-            val account2 = AccountModel(
+            val account2 = createLegacyAccount(
                 name = "user2",
                 serverUrl = "https://server2.dhis2.org",
                 serverName = "Server 2",
-                serverDescription = null,
-                serverFlag = null,
-                allowRecovery = false,
-                oidcIcon = null,
-                oidcLoginText = null,
-                oidcUrl = null,
-                isOauthEnabled = false,
             )
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account1, account2))
             whenever(sessionRepository.isSessionLocked()).thenReturn(true)
@@ -279,24 +234,5 @@ class GetInitialScreenTest {
 
             // Then
             assertTrue(result is LoginScreenState.Accounts)
-        }
-
-    @Test
-    fun `invoke returns ServerValidation with empty current server when no accounts`() =
-        runTest {
-            // Given
-            whenever(accountRepository.getLoggedInAccounts()).thenReturn(emptyList())
-            whenever(accountRepository.availableServers()).thenReturn(emptyList())
-
-            // When
-            val result = useCase()
-
-            // Then
-            assertTrue(result is LoginScreenState.ServerValidation)
-            assertEquals("", result.currentServer)
-            assertEquals(emptyList(), result.availableServers)
-            assertEquals(false, result.hasAccounts)
-            assertEquals(null, result.error)
-            assertEquals(false, result.validationRunning)
         }
 }
