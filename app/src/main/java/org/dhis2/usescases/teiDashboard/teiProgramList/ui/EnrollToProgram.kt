@@ -18,9 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -102,7 +101,7 @@ fun EnrollToProgram(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .semantics { testTag = PROGRAM_TO_ENROLL.format(programUiModel.title) },
+                        .testTag(PROGRAM_TO_ENROLL.format(programUiModel.title)),
                 enabled = !programUiModel.isDownloading(),
                 onClick = onEnrollClickListener,
                 style = ButtonStyle.TONAL,
