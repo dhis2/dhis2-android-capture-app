@@ -246,7 +246,7 @@ class LoginRepositoryImpl(
 
     context(context: PlatformContext)
     override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> =
-        withContext(dispatcher.io) {
+        withContext(dispatcher.main) {
             preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
                 cryptographyManager
                     .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
