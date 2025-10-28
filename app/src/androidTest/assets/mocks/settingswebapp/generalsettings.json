@@ -1,0 +1,9 @@
+{
+  "encryptDB": false,
+  "mobileConfiguration": {
+    "disableAllSettings": false
+  },
+  "reservedValues": 100,
+  "smsGateway": "",
+  "smsResultSender": ""
+}
