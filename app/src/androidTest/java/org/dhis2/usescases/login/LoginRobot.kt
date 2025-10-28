@@ -10,9 +10,6 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.VerificationModes.times
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.platform.app.InstrumentationRegistry
 import org.dhis2.common.BaseRobot
 import org.dhis2.mobile.login.accounts.ui.screen.ACCOUNT_ITEM_TAG
@@ -22,8 +19,6 @@ import org.dhis2.mobile.login.main.ui.screen.CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_
 import org.dhis2.mobile.login.main.ui.screen.CREDENTIALS_PASSWORD_INPUT_TAG
 import org.dhis2.mobile.login.main.ui.screen.CREDENTIALS_USERNAME_INPUT_TAG
 import org.dhis2.mobile.login.main.ui.screen.SERVER_VALIDATION_CONTENT_BUTTON_TAG
-import org.dhis2.usescases.main.MainActivity
-import org.hamcrest.CoreMatchers.allOf
 
 
 fun loginRobot(
@@ -134,10 +129,6 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             TIMEOUT,
         )
         composeTestRule.onNodeWithTag(CREDENTIALS_ERROR_INFO_BAR_TAG).assertIsDisplayed()
-    }
-
-    fun checkHomeIsDisplayed(expectedTimes: Int = 1) {
-        intended(allOf(hasComponent(MainActivity::class.java.name)), times(expectedTimes))
     }
 
     @OptIn(ExperimentalTestApi::class)
