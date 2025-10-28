@@ -212,11 +212,13 @@ class SyncPresenterImpl(
             syncStatusController.startDownloadingDataSets()
             Completable
                 .fromObservable(d2.dataValueModule().dataValues().upload())
+                .doOnError { Timber.d("error while downloading Datasets") }
                 .andThen(
                     Completable.fromObservable(
                         d2.dataSetModule().dataSetCompleteRegistrations().upload(),
                     ),
-                ).andThen(
+                ).doOnError { Timber.d("error while downloading Datasets") }
+                .andThen(
                     Completable
                         .fromObservable(
                             d2
@@ -226,7 +228,7 @@ class SyncPresenterImpl(
                                 .doOnNext {
                                     syncStatusController.updateDownloadProcess(it.dataSets())
                                 },
-                        ).doOnError { Timber.d("error while downloading TEIs") }
+                        ).doOnError { Timber.d("error while downloading Datasets") }
                         .onErrorComplete()
                         .doOnComplete {
                             syncStatusController.finishDownloadingTracker(
@@ -320,7 +322,9 @@ class SyncPresenterImpl(
                     .trackedEntityModule()
                     .reservedValueManager()
                     .downloadAllReservedValues(maxNumberOfValuesToReserve),
-            ).blockingAwait()
+            ).doOnError {
+                Timber.d("error while downloading reserved values")
+            }.blockingAwait()
     }
 
     override fun checkSyncStatus(): SyncResult {
