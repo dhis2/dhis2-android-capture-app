@@ -141,12 +141,16 @@ class LoginRepositoryImpl(
 
     override suspend fun displayTrackingMessage(): Boolean =
         withContext(dispatcher.io) {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
-                .blockingGet()
-                ?.value() == null
+            try {
+                d2
+                    .dataStoreModule()
+                    .localDataStore()
+                    .value(DATA_STORE_ANALYTICS_PERMISSION_KEY)
+                    .blockingGet()
+                    ?.value() == null
+            } catch (_: Exception) {
+                false
+            }
         }
 
     override suspend fun initialSyncDone(
