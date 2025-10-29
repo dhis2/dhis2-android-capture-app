@@ -17,7 +17,10 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
+import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
@@ -43,6 +46,7 @@ class MainModule(
         syncStatusController: SyncStatusController,
         versionRepository: VersionRepository,
         dispatcherProvider: DispatcherProvider,
+        logoutUser: LogoutUser,
     ): MainPresenter =
         MainPresenter(
             view,
@@ -60,6 +64,24 @@ class MainModule(
             versionRepository,
             dispatcherProvider,
             forceToNotSynced,
+            logoutUser,
+        )
+
+    @Provides
+    @PerActivity
+    fun provideLogoutUser(
+        homeRepository: HomeRepository,
+        workManagerController: WorkManagerController,
+        syncStatusController: SyncStatusController,
+        filterManager: FilterManager,
+        preferences: PreferenceProvider,
+    ): LogoutUser =
+        LogoutUser(
+            homeRepository,
+            workManagerController,
+            syncStatusController,
+            filterManager,
+            preferences,
         )
 
     @Provides
@@ -71,7 +93,15 @@ class MainModule(
     fun provideHomeRepository(
         d2: D2,
         charts: Charts?,
-    ): HomeRepository = HomeRepositoryImpl(d2, charts)
+        preferencesProvider: PreferenceProvider,
+    ): HomeRepository =
+        HomeRepositoryImpl(
+            d2,
+            charts,
+            preferencesProvider,
+            D2ErrorMessageProviderImpl(),
+            Dispatcher(),
+        )
 
     @Provides
     @PerActivity

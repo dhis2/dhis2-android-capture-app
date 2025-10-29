@@ -1,6 +1,5 @@
 package org.dhis2.usescases.main
 
-import io.reactivex.Completable
 import io.reactivex.Single
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -13,8 +12,6 @@ interface HomeRepository {
     fun defaultCatCombo(): Single<CategoryCombo?>
 
     fun defaultCatOptCombo(): Single<CategoryOptionCombo?>
-
-    fun logOut(): Completable
 
     fun hasProgramWithAssignment(): Boolean
 
@@ -29,4 +26,8 @@ interface HomeRepository {
     fun homeItemCount(): Int
 
     suspend fun singleHomeItemData(): HomeItemData?
+
+    suspend fun logOut(): Result<Unit>
+
+    suspend fun clearSessionLock(): Result<Unit>
 }
