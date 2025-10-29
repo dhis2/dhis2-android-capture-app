@@ -8,6 +8,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
@@ -48,6 +49,9 @@ internal val mainLoginModule =
         }
         factory { params ->
             LoginUser(get { parametersOf(params.get()) })
+        }
+        factory { params ->
+            LogOutUser(get { parametersOf(params.get()) })
         }
         factory { params ->
             BiometricLogin(get { parametersOf(params.get()) })
@@ -91,6 +95,7 @@ internal val mainLoginModule =
                 getBiometricInfo = get { parametersOf(context) },
                 getHasOtherAccounts = get { parametersOf(context) },
                 loginUser = get { parametersOf(context) },
+                logOutUser = get { parametersOf(context) },
                 openIdLogin = get { parametersOf(context) },
                 biometricLogin = get { parametersOf(context) },
                 updateTrackingPermission = get { parametersOf(context) },

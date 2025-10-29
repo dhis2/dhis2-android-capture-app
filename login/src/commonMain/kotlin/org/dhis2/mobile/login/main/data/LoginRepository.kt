@@ -58,4 +58,6 @@ interface LoginRepository {
     ): Result<Unit>
 
     suspend fun getUsername(): String
+
+    suspend fun logoutUser(): Result<Unit>
 }

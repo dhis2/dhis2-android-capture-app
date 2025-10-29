@@ -85,6 +85,7 @@ import org.koin.core.parameter.parametersOf
 fun LoginScreen(
     navController: NavHostController = rememberNavController(),
     versionName: String,
+    fromHome: Boolean,
     onNavigateToSync: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
@@ -214,6 +215,7 @@ fun LoginScreen(
                             fixedOpenIdProvider()?.takeIf { info ->
                                 info.serverUrl == arg.selectedServer
                             },
+                        fromHome = fromHome,
                     )
                 }
                 composable<LoginScreenState.OauthLogin> {
