@@ -109,6 +109,7 @@ fun CredentialsScreen(
     selectedServerFlag: String?,
     allowRecovery: Boolean,
     oidcInfo: OidcInfo?,
+    fromHome: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -149,7 +150,7 @@ fun CredentialsScreen(
         }
     }
 
-    LaunchedEffect(screenState.displayBiometricsDialog) {
+    LaunchedEffect(screenState.displayBiometricsDialog && !fromHome) {
         if (screenState.displayBiometricsDialog) {
             with(context) {
                 viewModel.onBiometricsClicked()

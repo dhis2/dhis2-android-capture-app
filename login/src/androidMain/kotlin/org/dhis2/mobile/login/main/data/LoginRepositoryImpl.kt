@@ -108,6 +108,20 @@ class LoginRepositoryImpl(
         }
     }
 
+    override suspend fun logoutUser() =
+        withContext(dispatcher.io) {
+            try {
+                d2.userModule().blockingLogOut()
+                kotlin.Result.success(Unit)
+            } catch (e: Exception) {
+                kotlin.Result.failure(
+                    Exception(
+                        e.cause,
+                    ),
+                )
+            }
+        }
+
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
             preferences.getSet(PREF_USERS, HashSet())?.toList() ?: emptyList()

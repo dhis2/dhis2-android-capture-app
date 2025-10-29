@@ -31,8 +31,6 @@ const val KEY_NAME = "DHIS2_BIOMETRIC_KEY"
 class BiometricAuthenticator(
     private val context: Context,
 ) : BiometricActions {
-    private var biometricPrompt: BiometricPrompt? = null
-
     override fun hasBiometric(): Boolean {
         val biometricManager = BiometricManager.from(context)
         return when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
@@ -61,19 +59,18 @@ class BiometricAuthenticator(
         onSuccess: (BiometricPrompt.AuthenticationResult) -> Unit,
         cryptoObject: BiometricPrompt.CryptoObject? = null,
     ) {
-        if (biometricPrompt == null) {
-            biometricPrompt =
-                BiometricPrompt(
-                    fragmentActivity,
-                    ContextCompat.getMainExecutor(context),
-                    object : BiometricPrompt.AuthenticationCallback() {
-                        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                            super.onAuthenticationSucceeded(result)
-                            onSuccess(result)
-                        }
-                    },
-                )
-        }
+        // Always create a fresh BiometricPrompt to avoid reusing old callbacks
+        val biometricPrompt =
+            BiometricPrompt(
+                fragmentActivity,
+                ContextCompat.getMainExecutor(context),
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        super.onAuthenticationSucceeded(result)
+                        onSuccess(result)
+                    }
+                },
+            )
 
         val promptInfo =
             BiometricPrompt.PromptInfo
@@ -83,9 +80,9 @@ class BiometricAuthenticator(
                 .setNegativeButtonText(context.getString(R.string.use_password))
                 .build()
         if (cryptoObject == null) {
-            biometricPrompt?.authenticate(promptInfo)
+            biometricPrompt.authenticate(promptInfo)
         } else {
-            biometricPrompt?.authenticate(promptInfo, cryptoObject)
+            biometricPrompt.authenticate(promptInfo, cryptoObject)
         }
     }
 }
