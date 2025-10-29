@@ -16,6 +16,7 @@ import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
@@ -47,6 +48,7 @@ class CredentialsViewModelTest {
     private val getBiometricInfo: GetBiometricInfo = mock()
     private val getHasOtherAccounts: GetHasOtherAccounts = mock()
     private val loginUser: LoginUser = mock()
+    private val loginOutUser: LogOutUser = mock()
     private val biometricLogin: BiometricLogin = mock()
     private val openIdLogin: OpenIdLogin = mock()
     private val updateTrackingPermission: UpdateTrackingPermission = mock()
@@ -279,6 +281,7 @@ class CredentialsViewModelTest {
                 getBiometricInfo,
                 getHasOtherAccounts,
                 loginUser,
+                loginOutUser,
                 biometricLogin,
                 openIdLogin,
                 updateTrackingPermission,
