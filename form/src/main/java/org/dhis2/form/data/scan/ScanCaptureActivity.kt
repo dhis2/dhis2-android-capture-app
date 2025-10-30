@@ -18,10 +18,11 @@ class ScanCaptureActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.zxing_capture)
         barcodeScanner = findViewById(R.id.zxing_barcode_scanner)
-        capture = ScanCaptureManager(this, barcodeScanner).apply {
-            initializeFromIntent(intent, savedInstanceState)
-            decode()
-        }
+        capture =
+            ScanCaptureManager(this, barcodeScanner).apply {
+                initializeFromIntent(intent, savedInstanceState)
+                decode()
+            }
     }
 
     override fun onResume() {
@@ -52,9 +53,10 @@ class ScanCaptureActivity : Activity() {
         capture.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        return barcodeScanner.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
-    }
+    override fun onKeyDown(
+        keyCode: Int,
+        event: KeyEvent?,
+    ): Boolean = barcodeScanner.onKeyDown(keyCode, event) || super.onKeyDown(keyCode, event)
 }
 
 fun Context.scanCaptureActivityIntent(scanOptions: ScanOptions?): Intent {

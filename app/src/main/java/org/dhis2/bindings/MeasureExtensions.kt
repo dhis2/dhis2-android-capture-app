@@ -4,21 +4,20 @@ import android.content.Context
 import android.widget.TextView
 import org.hisp.dhis.android.core.dataelement.DataElement
 
-fun List<DataElement>.toDisplayNameList(): List<String> {
-    return map { it.displayName() ?: it.uid() }
-}
+fun List<DataElement>.toDisplayNameList(): List<String> = map { it.displayName() ?: it.uid() }
 
-fun List<DataElement>.maxLengthLabel(): String {
-    return toDisplayNameList().maxByOrNull {
+fun List<DataElement>.maxLengthLabel(): String =
+    toDisplayNameList().maxByOrNull {
         it.length
     } ?: ""
-}
 
-fun List<DataElement>.measureText(context: Context, widthFactor: Int): Triple<String, Int, Int> {
-    return toDisplayNameList()
+fun List<DataElement>.measureText(
+    context: Context,
+    widthFactor: Int,
+): Triple<String, Int, Int> =
+    toDisplayNameList()
         .calculateWidth(context)
         .calculateHeight(context, widthFactor)
-}
 
 fun List<String>.calculateWidth(context: Context): Pair<String, Int> {
     var maxLabel = ""

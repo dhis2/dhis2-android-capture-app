@@ -23,16 +23,17 @@ class EventPeriodRepository(
 
         val expiryDays = program?.expiryDays()
 
-        val currentDate = if (!isScheduling && eventEnrollmentUid != null) {
-            val enrollment = d2.enrollment(eventEnrollmentUid)
-            if (programStage.generatedByEnrollmentDate() == true) {
-                enrollment?.enrollmentDate()
+        val currentDate =
+            if (!isScheduling && eventEnrollmentUid != null) {
+                val enrollment = d2.enrollment(eventEnrollmentUid)
+                if (programStage.generatedByEnrollmentDate() == true) {
+                    enrollment?.enrollmentDate()
+                } else {
+                    enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
+                }
             } else {
-                enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
-            }
-        } else {
-            generatePeriod(periodType, offset = 1).startDate()
-        } ?: Date()
+                generatePeriod(periodType, offset = 1).startDate()
+            } ?: Date()
 
         val currentPeriod = generatePeriod(periodType, currentDate)
         val previousPeriodLastDay =
@@ -59,16 +60,17 @@ class EventPeriodRepository(
 
         val expiryDays = program?.expiryDays()
 
-        val currentDate = if (expiryDays == null) {
-            val enrollment = eventEnrollmentUid?.let { d2.enrollment(it) }
-            if (programStage.generatedByEnrollmentDate() == true) {
-                enrollment?.enrollmentDate()
+        val currentDate =
+            if (expiryDays == null) {
+                val enrollment = eventEnrollmentUid?.let { d2.enrollment(it) }
+                if (programStage.generatedByEnrollmentDate() == true) {
+                    enrollment?.enrollmentDate()
+                } else {
+                    enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
+                }
             } else {
-                enrollment?.incidentDate() ?: enrollment?.enrollmentDate()
-            }
-        } else {
-            Date()
-        } ?: Date()
+                Date()
+            } ?: Date()
 
         val currentPeriod = generatePeriod(periodType, currentDate)
 
@@ -98,7 +100,9 @@ class EventPeriodRepository(
         periodType: PeriodType,
         date: Date = Date(),
         offset: Int = 0,
-    ) = d2.periodModule().periodHelper()
+    ) = d2
+        .periodModule()
+        .periodHelper()
         .blockingGetPeriodForPeriodTypeAndDate(periodType, date, offset)
 
     fun getPeriodSource(
@@ -107,8 +111,8 @@ class EventPeriodRepository(
         periodType: PeriodType,
         initialDate: Date,
         maxDate: Date?,
-    ): PeriodSource {
-        return PeriodSource(
+    ): PeriodSource =
+        PeriodSource(
             d2 = d2,
             periodLabelProvider = periodLabelProvider,
             periodType = periodType,
@@ -116,5 +120,4 @@ class EventPeriodRepository(
             maxDate = maxDate,
             selectedDate = selectedDate,
         )
-    }
 }

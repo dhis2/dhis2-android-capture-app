@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="complete">पूरा हुआ</string>
     <string name="not_now">अभी नहीं</string>
     <string name="keep_editing">संपादन करते रहें</string>
     <string name="review">रिव्यू</string>

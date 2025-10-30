@@ -28,8 +28,7 @@ fun TableItemRow(
     tableModel: TableModel,
     horizontalScrollState: ScrollState,
     rowModel: TableRowModel,
-    rowHeaderCellStyle: @Composable
-    (rowHeaderIndex: Int?) -> CellStyle,
+    rowHeaderCellStyle: @Composable (rowHeaderIndex: Int?) -> CellStyle,
     onRowHeaderClick: (rowHeaderIndex: Int?) -> Unit,
     onDecorationClick: (dialogModel: TableDialogModel) -> Unit,
     onHeaderResize: (Float) -> Unit,
@@ -42,18 +41,20 @@ fun TableItemRow(
     ) {
         Row(Modifier.height(IntrinsicSize.Min)) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .zIndex(1f),
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .zIndex(1f),
             ) {
                 ItemHeader(
                     ItemHeaderUiState(
                         tableId = tableModel.id ?: "",
                         rowHeader = rowModel.rowHeader,
                         cellStyle = rowHeaderCellStyle(rowModel.rowHeader.row),
-                        width = with(LocalDensity.current) {
-                            TableTheme.dimensions.rowHeaderWidth(tableModel.id ?: "").toDp()
-                        },
+                        width =
+                            with(LocalDensity.current) {
+                                TableTheme.dimensions.rowHeaderWidth(tableModel.id ?: "").toDp()
+                            },
                         maxLines = rowModel.maxLines,
                         onCellSelected = onRowHeaderClick,
                         onDecorationClick = onDecorationClick,
@@ -75,9 +76,10 @@ fun TableItemRow(
         }
         if (!rowModel.isLastRow) {
             Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = TableTheme.dimensions.tableEndExtraScroll),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = TableTheme.dimensions.tableEndExtraScroll),
             )
         }
     }

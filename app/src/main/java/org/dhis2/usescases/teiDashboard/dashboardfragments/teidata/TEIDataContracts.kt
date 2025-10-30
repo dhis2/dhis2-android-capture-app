@@ -7,7 +7,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.functions.Consumer
 import org.dhis2.commons.data.EventCreationType
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.StageSection
 import org.dhis2.form.model.EventMode
 import org.dhis2.usescases.general.AbstractActivityContracts
@@ -17,26 +17,64 @@ import org.hisp.dhis.android.core.program.ProgramStage
 class TEIDataContracts {
     interface View : AbstractActivityContracts.View {
         fun viewLifecycleOwner(): LifecycleOwner
-        fun setEvents(events: List<EventViewModel>)
-        fun displayScheduleEvent(programStage: ProgramStage?, showYesNoOptions: Boolean, eventCreationType: EventCreationType)
-        fun displayEnterEvent(eventUid: String, showYesNoOptions: Boolean, eventCreationType: EventCreationType)
-        fun showDialogCloseProgram()
-        fun areEventsCompleted(): Consumer<Single<Boolean>>
-        fun displayGenerateEvent(eventUid: String)
-        fun restoreAdapter(programUid: String, teiUid: String, enrollmentUid: String)
-        fun openEventDetails(intent: Intent, options: ActivityOptionsCompat)
-        fun openEventInitial(intent: Intent)
-        fun openEventCapture(intent: Intent)
-        fun observeStageSelection(
-            currentProgram: Program,
-        ): Flowable<StageSection>
 
-        fun showSyncDialog(eventUid: String, enrollmentUid: String)
-        fun displayCatComboOptionSelectorForEvents(data: List<EventViewModel>)
+        fun setEvents(events: List<EventModel>)
+
+        fun displayScheduleEvent(
+            programStage: ProgramStage?,
+            showYesNoOptions: Boolean,
+            eventCreationType: EventCreationType,
+        )
+
+        fun displayEnterEvent(
+            eventUid: String,
+            showYesNoOptions: Boolean,
+            eventCreationType: EventCreationType,
+        )
+
+        fun displayNoAccessToEventSnackbar(enrollmentOrgUnit: String)
+
+        fun showDialogCloseProgram()
+
+        fun areEventsCompleted(): Consumer<Single<Boolean>>
+
+        fun displayGenerateEvent(eventUid: String)
+
+        fun restoreAdapter(
+            programUid: String,
+            teiUid: String,
+            enrollmentUid: String,
+        )
+
+        fun openEventDetails(
+            intent: Intent,
+            options: ActivityOptionsCompat,
+        )
+
+        fun openEventInitial(intent: Intent)
+
+        fun openEventCapture(intent: Intent)
+
+        fun observeStageSelection(currentProgram: Program): Flowable<StageSection>
+
+        fun showSyncDialog(
+            eventUid: String,
+            enrollmentUid: String,
+        )
+
+        fun displayCatComboOptionSelectorForEvents(data: List<EventModel>)
 
         fun showProgramRuleErrorMessage()
-        fun goToEventInitial(eventCreationType: EventCreationType, programStage: ProgramStage)
-        fun displayOrgUnitSelectorForNewEvent(programUid: String, programStageUid: String)
+
+        fun goToEventInitial(
+            eventCreationType: EventCreationType,
+            programStage: ProgramStage,
+        )
+
+        fun displayOrgUnitSelectorForNewEvent(
+            programUid: String,
+            programStageUid: String,
+        )
 
         fun goToEventDetails(
             eventUid: String,

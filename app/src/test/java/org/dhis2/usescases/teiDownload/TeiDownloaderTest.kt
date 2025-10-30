@@ -27,13 +27,14 @@ class TeiDownloaderTest {
     private val resources: ResourceManager = mock()
     private val trackedEntityDownloader: TrackedEntityInstanceDownloader = mock()
 
-    private fun teiDownloader(programUid: String?) = TeiDownloader(
-        programConfiguration,
-        teiConfiguration,
-        fileConfiguration,
-        programUid,
-        resources,
-    )
+    private fun teiDownloader(programUid: String?) =
+        TeiDownloader(
+            programConfiguration,
+            teiConfiguration,
+            fileConfiguration,
+            programUid,
+            resources,
+        )
 
     @Before
     fun setUp() {
@@ -83,11 +84,11 @@ class TeiDownloaderTest {
     @Test
     fun shouldReturnBreakTheGlassResult() {
         given(teiConfiguration.downloadAndOverwrite(trackedEntityDownloader)).willAnswer {
-            throw D2Error.builder()
+            throw D2Error
+                .builder()
                 .errorCode(
                     D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
-                )
-                .errorComponent(D2ErrorComponent.Server)
+                ).errorComponent(D2ErrorComponent.Server)
                 .errorDescription("description")
                 .build()
         }
@@ -99,10 +100,11 @@ class TeiDownloaderTest {
     fun shouldReturnBreakTheGlassResultWithCause() {
         given(teiConfiguration.downloadAndOverwrite(trackedEntityDownloader)).willAnswer {
             throw Exception(
-                D2Error.builder().errorCode(
-                    D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
-                )
-                    .errorComponent(D2ErrorComponent.Server)
+                D2Error
+                    .builder()
+                    .errorCode(
+                        D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
+                    ).errorComponent(D2ErrorComponent.Server)
                     .errorDescription("description")
                     .build(),
             )
@@ -123,11 +125,11 @@ class TeiDownloaderTest {
     @Test
     fun shouldDownloadWithBreakTheGlass() {
         given(teiConfiguration.downloadAndOverwrite(trackedEntityDownloader)).willAnswer {
-            throw D2Error.builder()
+            throw D2Error
+                .builder()
                 .errorCode(
                     D2ErrorCode.OWNERSHIP_ACCESS_DENIED,
-                )
-                .errorComponent(D2ErrorComponent.Server)
+                ).errorComponent(D2ErrorComponent.Server)
                 .errorDescription("description")
                 .build()
         }

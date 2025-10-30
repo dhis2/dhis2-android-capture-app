@@ -1,15 +1,24 @@
 package org.dhis2.usescases.settings
 
-import org.dhis2.utils.Validator
+class GatewayValidator {
+    private val regex = Regex("^\\+[1-9][0-9]{3,16}\$")
+    private val maxSize = 16
 
-class GatewayValidator : Validator {
+    sealed class GatewayValidationResult {
+        data object Empty : GatewayValidationResult()
 
-    override fun validate(text: String): Boolean {
-        return text.matches(regex)
+        data object Valid : GatewayValidationResult()
+
+        data object Invalid : GatewayValidationResult()
     }
 
-    companion object {
-        val max_size = 16
-        val regex = Regex("^\\+[1-9][0-9]{3,16}\$")
-    }
+    operator fun invoke(text: String): GatewayValidationResult =
+        when {
+            text.isEmpty() -> GatewayValidationResult.Empty
+            text.matches(regex) && !plusIsMissingOrIsTooLong(text) -> GatewayValidationResult.Valid
+            else -> GatewayValidationResult.Invalid
+        }
+
+    private fun plusIsMissingOrIsTooLong(gateway: String): Boolean =
+        !gateway.startsWith("+") && gateway.length == 1 || gateway.length > maxSize
 }

@@ -6,7 +6,6 @@ import org.hisp.dhis.android.core.common.FeatureType
 class SearchPageConfigurator(
     val searchRepository: SearchRepository,
 ) : NavigationPageConfigurator {
-
     private var canDisplayMap: Boolean = false
     private var canDisplayAnalytics: Boolean = false
 
@@ -16,26 +15,19 @@ class SearchPageConfigurator(
         return this
     }
 
-    override fun displayListView(): Boolean {
-        return true
-    }
+    override fun displayListView(): Boolean = true
 
-    override fun displayTableView(): Boolean {
-        return false
-    }
+    override fun displayTableView(): Boolean = false
 
-    override fun displayMapView(): Boolean {
-        return canDisplayMap
-    }
+    override fun displayMapView(): Boolean = canDisplayMap
 
-    override fun displayAnalytics(): Boolean {
-        return canDisplayAnalytics
-    }
+    override fun displayAnalytics(): Boolean = canDisplayAnalytics
 
     internal fun programHasCoordinates(): Boolean {
-        val program = searchRepository.currentProgram()?.let { programId ->
-            searchRepository.getProgram(programId)
-        } ?: return false
+        val program =
+            searchRepository.currentProgram()?.let { programId ->
+                searchRepository.getProgram(programId)
+            } ?: return false
 
         val programHasCoordinates = program.featureType() != null && program.featureType() != FeatureType.NONE
 

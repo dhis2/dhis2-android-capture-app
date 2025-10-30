@@ -20,9 +20,8 @@ data class MapSelectorScreenState(
     val forcedLocationAccuracy: Int,
     val lastGPSLocation: SelectedLocation.GPSResult?,
 ) {
-
-    private fun getDoneButtonEnabledState(): Boolean {
-        return when {
+    private fun getDoneButtonEnabledState(): Boolean =
+        when {
             displayPolygonInfo -> {
                 (mapData.featureCollection.features()?.size ?: 0) >= 4
             }
@@ -42,9 +41,10 @@ data class MapSelectorScreenState(
                 selectedLocation !is SelectedLocation.None && !captureMode.isSwipe()
             }
         }
-    }
 
     val doneButtonEnabled = getDoneButtonEnabledState()
-    fun canCaptureGps(newAccuracy: Float) = captureMode.isGps() &&
-        newAccuracy < accuracyRange.value.toFloat()
+
+    fun canCaptureGps(newAccuracy: Float) =
+        captureMode.isGps() &&
+            newAccuracy < accuracyRange.value.toFloat()
 }

@@ -15,21 +15,20 @@ class UniqueAttributeController(
         teiUid: String,
         attributeUid: String,
         attributeValue: String,
-    ): Boolean {
-        return if (!orgUnitScope) {
+    ): Boolean =
+        if (!orgUnitScope) {
             val hasValue =
                 getTrackedEntityAttributeValues(attributeUid, attributeValue, teiUid).isNotEmpty()
             !hasValue
         } else {
             val enrollingOrgUnit = getOrgUnit(teiUid)
-            val hasValue = getTrackedEntityAttributeValues(attributeUid, attributeValue, teiUid)
-                .map {
-                    getOrgUnit(it.trackedEntityInstance()!!)
-                }
-                .all { it != enrollingOrgUnit }
+            val hasValue =
+                getTrackedEntityAttributeValues(attributeUid, attributeValue, teiUid)
+                    .map {
+                        getOrgUnit(it.trackedEntityInstance()!!)
+                    }.all { it != enrollingOrgUnit }
             hasValue
         }
-    }
 
     fun checkAttributeOnline(
         orgUnitScope: Boolean,
@@ -39,13 +38,14 @@ class UniqueAttributeController(
         attributeValue: String,
     ): Boolean {
         try {
-            val teiList = teiCall(
-                orgUnitScope,
-                programUid,
-                teiUid,
-                attributeUid,
-                attributeValue,
-            )
+            val teiList =
+                teiCall(
+                    orgUnitScope,
+                    programUid,
+                    teiUid,
+                    attributeUid,
+                    attributeValue,
+                )
 
             if (teiList.isNullOrEmpty()) {
                 return true
@@ -66,27 +66,45 @@ class UniqueAttributeController(
     ) = if (orgUnitScope) {
         val orgUnit = getOrgUnit(teiUid)
 
-        d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-            .allowOnlineCache().eq(true)
-            .byProgram().eq(programUid)
-            .byAttribute(attributeUid).eq(attributeValue)
-            .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
-            .byOrgUnits().`in`(orgUnit)
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstanceQuery()
+            .onlineOnly()
+            .allowOnlineCache()
+            .eq(true)
+            .byProgram()
+            .eq(programUid)
+            .byAttribute(attributeUid)
+            .eq(attributeValue)
+            .byOrgUnitMode()
+            .eq(OrganisationUnitMode.DESCENDANTS)
+            .byOrgUnits()
+            .`in`(orgUnit)
             .blockingGet()
     } else {
-        d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-            .allowOnlineCache().eq(true)
-            .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-            .byProgram().eq(programUid)
-            .byAttribute(attributeUid).eq(attributeValue)
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstanceQuery()
+            .onlineOnly()
+            .allowOnlineCache()
+            .eq(true)
+            .byOrgUnitMode()
+            .eq(OrganisationUnitMode.ACCESSIBLE)
+            .byProgram()
+            .eq(programUid)
+            .byAttribute(attributeUid)
+            .eq(attributeValue)
             .blockingGet()
     }
 
-    private fun getOrgUnit(teiUid: String): String {
-        return d2.trackedEntityModule().trackedEntityInstances().uid(teiUid).blockingGet()
+    private fun getOrgUnit(teiUid: String): String =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .uid(teiUid)
+            .blockingGet()
             ?.organisationUnit()
             ?: throw NoSuchElementException("Organisation unit not found for trackedEntity $teiUid")
-    }
 
     private fun trackSentryError(
         e: Exception,
@@ -94,14 +112,15 @@ class UniqueAttributeController(
         attributeUid: String,
         value: String?,
     ): Boolean {
-        val exception = if (e.cause != null && e.cause is D2Error) {
-            val d2Error = e.cause as D2Error
-            "component: ${d2Error.errorComponent()}," +
-                " code: ${d2Error.errorCode()}," +
-                " description: ${d2Error.errorDescription()}"
-        } else {
-            "No d2 Error"
-        }
+        val exception =
+            if (e.cause != null && e.cause is D2Error) {
+                val d2Error = e.cause as D2Error
+                "component: ${d2Error.errorComponent()}," +
+                    " code: ${d2Error.errorCode()}," +
+                    " description: ${d2Error.errorDescription()}"
+            } else {
+                "No d2 Error"
+            }
         crashReportController.addBreadCrumb(
             "SearchTEIRepositoryImpl.isUniqueAttribute",
             "programUid: $programUid ," +
@@ -115,10 +134,15 @@ class UniqueAttributeController(
         uid: String,
         value: String,
         teiUid: String,
-    ): List<TrackedEntityAttributeValue> {
-        return d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityAttribute().eq(uid)
-            .byTrackedEntityInstance().neq(teiUid)
-            .byValue().eq(value).blockingGet()
-    }
+    ): List<TrackedEntityAttributeValue> =
+        d2
+            .trackedEntityModule()
+            .trackedEntityAttributeValues()
+            .byTrackedEntityAttribute()
+            .eq(uid)
+            .byTrackedEntityInstance()
+            .neq(teiUid)
+            .byValue()
+            .eq(value)
+            .blockingGet()
 }

@@ -18,8 +18,6 @@ import org.dhis2.data.server.ServerModule;
 import org.dhis2.data.service.workManager.WorkManagerController;
 import org.dhis2.data.service.workManager.WorkManagerModule;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
-import org.dhis2.usescases.login.LoginComponent;
-import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
@@ -27,11 +25,7 @@ import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import dispatch.core.DispatcherProvider;
 
-/**
- * Created by ppajuelo on 10/10/2017.
- */
 @Singleton
 @Component(modules = {
         AppModule.class,
@@ -46,7 +40,6 @@ import dispatch.core.DispatcherProvider;
         DispatcherModule.class,
         FeatureConfigModule.class,
         NetworkUtilsModule.class,
-        CustomDispatcherModule.class
 })
 public  interface AppComponent {
 
@@ -72,8 +65,6 @@ public  interface AppComponent {
 
         Builder networkUtilsModule(NetworkUtilsModule networkUtilsModule);
 
-        Builder customDispatcher(CustomDispatcherModule dispatcherProvider);
-
         AppComponent build();
     }
 
@@ -93,8 +84,6 @@ public  interface AppComponent {
 
     NetworkUtils networkUtilsProvider();
 
-    DispatcherProvider customDispatcherProvider();
-
     //injection targets
     void inject(App app);
 
@@ -102,6 +91,4 @@ public  interface AppComponent {
     ServerComponent plus(ServerModule serverModule);
 
     SplashComponent plus(SplashModule module);
-
-    LoginComponent plus(LoginModule loginContractsModule);
 }

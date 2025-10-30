@@ -7,10 +7,12 @@ import org.junit.Test
 class CategoryOptionCategoryDialogItemMapperTest {
     @Test
     fun `Should map category option`() {
-        val testCategory = CategoryOption.builder()
-            .uid("catOptUid")
-            .displayName("catOptName")
-            .build()
+        val testCategory =
+            CategoryOption
+                .builder()
+                .uid("catOptUid")
+                .displayName("catOptName")
+                .build()
         val result = CategoryOptionCategoryDialogItemMapper().map(testCategory)
         result.apply {
             assertTrue(this.uid == testCategory.uid())

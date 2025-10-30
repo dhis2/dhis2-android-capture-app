@@ -32,19 +32,33 @@ import androidx.lifecycle.LiveData
 import androidx.work.WorkInfo
 
 interface WorkManagerController {
-
     fun syncDataForWorker(workerItem: WorkerItem)
-    fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String)
-    fun syncDataForWorker(dataWorkerTag: String, workName: String)
+
+    fun syncMetaDataForWorker(
+        metadataWorkerTag: String,
+        workName: String,
+    )
+
+    fun syncDataForWorker(
+        dataWorkerTag: String,
+        workName: String,
+    )
+
     fun beginUniqueWork(workerItem: WorkerItem)
+
     fun enqueuePeriodicWork(workerItem: WorkerItem)
 
     fun getWorkInfosForUniqueWorkLiveData(workerName: String): LiveData<List<WorkInfo>>
+
     fun getWorkInfosByTagLiveData(tag: String): LiveData<List<WorkInfo>>
+
     fun getWorkInfosForTags(vararg tags: String): LiveData<List<WorkInfo>>
 
     fun cancelAllWork()
+
     fun cancelAllWorkByTag(tag: String)
+
     fun cancelUniqueWork(workName: String)
+
     fun pruneWork()
 }

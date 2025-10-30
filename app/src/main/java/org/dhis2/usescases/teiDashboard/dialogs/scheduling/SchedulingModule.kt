@@ -6,7 +6,6 @@ import org.dhis2.commons.date.DateUtils
 
 @Module
 class SchedulingModule {
-
     @Provides
     fun providesDateUtils(): DateUtils = DateUtils.getInstance()
 }

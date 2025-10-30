@@ -5,7 +5,6 @@ import androidx.annotation.Nullable;
 
 import org.dhis2.data.forms.FormSectionViewModel;
 import org.dhis2.form.model.FieldUiModel;
-import org.dhis2.utils.Result;
 import org.hisp.dhis.android.core.common.Geometry;
 import org.hisp.dhis.android.core.event.Event;
 import org.hisp.dhis.android.core.event.EventEditableStatus;
@@ -16,9 +15,9 @@ import org.hisp.dhis.rules.models.RuleEffect;
 import java.util.Date;
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import kotlin.Result;
 
 public interface EventInitialRepository {
 
@@ -28,14 +27,14 @@ public interface EventInitialRepository {
     Observable<String> createEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                    @NonNull String program,
                                    @NonNull String programStage, @NonNull Date date,
-                                   @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                   @NonNull String catOptionUid, @NonNull Geometry coordinates);
+                                   @NonNull String orgUnitUid,
+                                   @NonNull String catOptionUid, @Nullable Geometry coordinates);
 
     Observable<String> scheduleEvent(String enrollmentUid, @Nullable String trackedEntityInstanceUid,
                                      @NonNull String program,
                                      @NonNull String programStage, @NonNull Date dueDate,
-                                     @NonNull String orgUnitUid, @NonNull String catComboUid,
-                                     @NonNull String catOptionUid, @NonNull Geometry coordinates);
+                                     @NonNull String orgUnitUid,
+                                     @NonNull String catOptionUid, @Nullable Geometry coordinates);
 
     @NonNull
     Observable<ProgramStage> programStage(String programUid);
@@ -59,7 +58,7 @@ public interface EventInitialRepository {
 
     Flowable<List<FieldUiModel>> list();
 
-    Flowable<Result<RuleEffect>> calculate();
+    Flowable<Result<List<RuleEffect>>> calculate();
 
     Flowable<EventEditableStatus> getEditableStatus();
 }

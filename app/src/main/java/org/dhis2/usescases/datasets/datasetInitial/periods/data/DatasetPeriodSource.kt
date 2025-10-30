@@ -20,51 +20,54 @@ class DatasetPeriodSource(
     private val selectedDate: Date?,
     private val maxDate: Date,
 ) : PagingSource<Int, Period>() {
-
     private val minDate = LocalDate.of(1969, 12, 31).toDate()
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Period> {
-        return try {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Period> =
+        try {
             var maxPageReached = false
             val periodsPerPage = params.loadSize
             val page = params.key ?: 1
-            val periods: List<Period> = buildList {
-                if (dataInputPeriods.isNotEmpty()) {
-                    repeat(dataInputPeriods.size) { index ->
-                        add(
-                            createPeriod(
-                                dataInputPeriods[index].period,
-                                dataInputPeriods[index].initialPeriodDate,
-                                dataInputPeriods[index].endPeriodDate,
-                                selectedDate,
-                            ),
-                        )
-                    }
-                    maxPageReached = true
-                } else {
-                    repeat(periodsPerPage) { indexInPage ->
-                        val period = d2.periodModule().periodHelper()
-                            .blockingGetPeriodForPeriodTypeAndDate(
-                                periodType,
-                                maxDate,
-                                -(indexInPage + periodsPerPage * (page - 1)),
-                            )
-
-                        if (period.startDate()?.after(minDate) == true) {
+            val periods: List<Period> =
+                buildList {
+                    if (dataInputPeriods.isNotEmpty()) {
+                        repeat(dataInputPeriods.size) { index ->
                             add(
                                 createPeriod(
-                                    period.periodId()!!,
-                                    period.startDate()!!,
-                                    period.endDate()!!,
+                                    dataInputPeriods[index].period,
+                                    dataInputPeriods[index].initialPeriodDate,
+                                    dataInputPeriods[index].endPeriodDate,
                                     selectedDate,
                                 ),
                             )
-                        } else {
-                            maxPageReached = true
+                        }
+                        maxPageReached = true
+                    } else {
+                        repeat(periodsPerPage) { indexInPage ->
+                            val period =
+                                d2
+                                    .periodModule()
+                                    .periodHelper()
+                                    .blockingGetPeriodForPeriodTypeAndDate(
+                                        periodType,
+                                        maxDate,
+                                        -(indexInPage + periodsPerPage * (page - 1)),
+                                    )
+
+                            if (period.startDate()?.after(minDate) == true) {
+                                add(
+                                    createPeriod(
+                                        period.periodId()!!,
+                                        period.startDate()!!,
+                                        period.endDate()!!,
+                                        selectedDate,
+                                    ),
+                                )
+                            } else {
+                                maxPageReached = true
+                            }
                         }
                     }
                 }
-            }
 
             LoadResult.Page(
                 data = periods,
@@ -74,38 +77,34 @@ class DatasetPeriodSource(
         } catch (e: Exception) {
             LoadResult.Error(e)
         }
-    }
 
-    override fun getRefreshKey(state: PagingState<Int, Period>): Int? {
-        return state.anchorPosition?.let {
+    override fun getRefreshKey(state: PagingState<Int, Period>): Int? =
+        state.anchorPosition?.let {
             state.closestPageToPosition(it)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
         }
-    }
 
     private fun createPeriod(
         id: String,
         startDate: Date,
         endDate: Date,
         selectedDate: Date?,
-    ): Period {
-        return Period(
+    ): Period =
+        Period(
             id = id,
-            name = periodLabelProvider(
-                periodType = periodType,
-                periodId = id,
-                periodStartDate = startDate,
-                periodEndDate = endDate,
-                locale = Locale.getDefault(),
-            ),
+            name =
+                periodLabelProvider(
+                    periodType = periodType,
+                    periodId = id,
+                    periodStartDate = startDate,
+                    periodEndDate = endDate,
+                    locale = Locale.getDefault(),
+                ),
             startDate = startDate,
             endDate = endDate,
             enabled = true,
             selected = startDate == selectedDate,
         )
-    }
 
-    private fun LocalDate.toDate(): Date {
-        return Date(this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli())
-    }
+    private fun LocalDate.toDate(): Date = Date(this.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli())
 }

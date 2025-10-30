@@ -14,9 +14,10 @@ data class TableConfigurationState(
     val overwrittenRowHeaderWidth: Map<String, Float>? = null,
     val overwrittenColumnWidth: Map<String, Map<Int, Float>>? = null,
 ) {
-    fun isResized() = !overwrittenTableWidth.isNullOrEmpty() or
-        !overwrittenRowHeaderWidth.isNullOrEmpty() or
-        !overwrittenColumnWidth.isNullOrEmpty()
+    fun isResized() =
+        !overwrittenTableWidth.isNullOrEmpty() or
+            !overwrittenRowHeaderWidth.isNullOrEmpty() or
+            !overwrittenColumnWidth.isNullOrEmpty()
 }
 
 enum class TableState {

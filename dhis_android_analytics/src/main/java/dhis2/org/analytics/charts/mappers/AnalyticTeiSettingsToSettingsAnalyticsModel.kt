@@ -14,23 +14,22 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
     private val analyticDataElementMapper: AnalyticDataElementToDataElementData,
     private val analyticIndicatorMapper: AnalyticIndicatorToIndicatorData,
 ) {
-    fun map(analyticsTeiSetting: AnalyticsTeiSetting): SettingsAnalyticModel {
-        return if (analyticsTeiSetting.whoNutritionData() != null) {
+    fun map(analyticsTeiSetting: AnalyticsTeiSetting): SettingsAnalyticModel =
+        if (analyticsTeiSetting.whoNutritionData() != null) {
             mapNutrition(analyticsTeiSetting)
         } else {
             mapDefault(analyticsTeiSetting)
         }
-    }
 
-    private fun mapNutrition(
-        analyticsTeiSetting: AnalyticsTeiSetting,
-    ): NutritionSettingsAnalyticsModel {
-        val (zScoreContainer, zScoreStageUid, yIsDataElement) = getZscoreContainer(
-            analyticsTeiSetting.whoNutritionData()!!.y(),
-        )
-        val (ageOrHeightUid, ageOrHeightStageUid, xIsDataElement) = getAgeOrHeightContainer(
-            analyticsTeiSetting.whoNutritionData()!!.x(),
-        )
+    private fun mapNutrition(analyticsTeiSetting: AnalyticsTeiSetting): NutritionSettingsAnalyticsModel {
+        val (zScoreContainer, zScoreStageUid, yIsDataElement) =
+            getZscoreContainer(
+                analyticsTeiSetting.whoNutritionData()!!.y()!!,
+            )
+        val (ageOrHeightUid, ageOrHeightStageUid, xIsDataElement) =
+            getAgeOrHeightContainer(
+                analyticsTeiSetting.whoNutritionData()!!.x()!!,
+            )
 
         if (zScoreStageUid != ageOrHeightStageUid) {
             Log.d("NUTRITION_CHART", "Stage should be the same")
@@ -42,8 +41,16 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
             analyticsTeiSetting.type().toAnalyticsChartType(),
             NutritionGenderData(
                 analyticsTeiSetting.whoNutritionData()!!.gender().attribute(),
-                analyticsTeiSetting.whoNutritionData()!!.gender().values().female(),
-                analyticsTeiSetting.whoNutritionData()!!.gender().values().male(),
+                analyticsTeiSetting
+                    .whoNutritionData()!!
+                    .gender()
+                    .values()
+                    .female(),
+                analyticsTeiSetting
+                    .whoNutritionData()!!
+                    .gender()
+                    .values()
+                    .male(),
             ),
             zScoreStageUid,
             zScoreContainer,
@@ -53,8 +60,8 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
         )
     }
 
-    private fun mapDefault(analyticsTeiSetting: AnalyticsTeiSetting): DefaultSettingsAnalyticModel {
-        return DefaultSettingsAnalyticModel(
+    private fun mapDefault(analyticsTeiSetting: AnalyticsTeiSetting): DefaultSettingsAnalyticModel =
+        DefaultSettingsAnalyticModel(
             analyticsTeiSetting.name(),
             analyticsTeiSetting.program(),
             analyticsTeiSetting.type().toAnalyticsChartType(),
@@ -66,12 +73,9 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
             } ?: emptyList(),
             analyticsTeiSetting.period()?.name ?: PeriodType.Daily.name,
         )
-    }
 
-    private fun getZscoreContainer(
-        y: AnalyticsTeiWHONutritionItem,
-    ): Triple<String, String, Boolean> {
-        return if (y.dataElements().isNullOrEmpty()) {
+    private fun getZscoreContainer(y: AnalyticsTeiWHONutritionItem): Triple<String, String, Boolean> =
+        if (y.dataElements().isNullOrEmpty()) {
             Triple(
                 y.indicators().firstOrNull()?.indicator() ?: "",
                 y.indicators().firstOrNull()?.programStage() ?: "",
@@ -84,12 +88,9 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
                 true,
             )
         }
-    }
 
-    private fun getAgeOrHeightContainer(
-        x: AnalyticsTeiWHONutritionItem,
-    ): Triple<String, String, Boolean> {
-        return if (x.dataElements().isNullOrEmpty()) {
+    private fun getAgeOrHeightContainer(x: AnalyticsTeiWHONutritionItem): Triple<String, String, Boolean> =
+        if (x.dataElements().isNullOrEmpty()) {
             Triple(
                 x.indicators().firstOrNull()?.indicator() ?: "",
                 x.indicators().firstOrNull()?.programStage() ?: "",
@@ -102,5 +103,4 @@ class AnalyticTeiSettingsToSettingsAnalyticsModel(
                 true,
             )
         }
-    }
 }

@@ -39,6 +39,7 @@
     <string name="done_task">Саҳифаи асосӣ</string>
     <string name="wipe_data_no">Бекор кардан</string>
     <string name="SYNC_MANAGER">Танзимот</string>
+    <string name="settingsTwoFAStatus">Ҳолат</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Санаи номнавис</string>

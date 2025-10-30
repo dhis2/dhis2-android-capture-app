@@ -27,7 +27,6 @@ class EventListViewModel(
     val mapper: ProgramEventMapper,
     val cardMapper: EventCardMapper,
 ) : ViewModel() {
-
     var onSyncClickedListener: (eventUid: String?) -> Unit = { _ -> }
 
     var onCardClickedListener: (eventUid: String, orgUnitUid: String) -> Unit = { _, _ -> }
@@ -37,10 +36,12 @@ class EventListViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private var _eventList: Flow<PagingData<ListCardUiModel>> =
-        filterManager.asFlow(viewModelScope)
+        filterManager
+            .asFlow(viewModelScope)
             .flatMapLatest {
                 EventListIdlingResourceSingleton.increment()
-                eventRepository.filteredProgramEvents()
+                eventRepository
+                    .filteredProgramEvents()
                     .map { pagingData ->
                         pagingData.map { event ->
                             withContext(dispatchers.io()) {
@@ -75,8 +76,7 @@ class EventListViewModel(
             }.flowOn(dispatchers.io())
             .onEach {
                 EventListIdlingResourceSingleton.decrement()
-            }
-            .catch {
+            }.catch {
                 EventListIdlingResourceSingleton.decrement()
             }
 

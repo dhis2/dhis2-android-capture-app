@@ -8,7 +8,5 @@ internal class UploadFile(
     suspend operator fun invoke(
         path: String,
         isImage: Boolean = false,
-    ): Result<String?> {
-        return repository.uploadFile(path, isImage)
-    }
+    ): Result<String?> = repository.uploadFile(path, isImage)
 }

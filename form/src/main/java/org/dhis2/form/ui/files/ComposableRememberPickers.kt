@@ -13,17 +13,21 @@ import org.hisp.dhis.android.core.arch.helpers.FileResourceDirectoryHelper
 import java.io.File
 
 @Composable
-fun rememberFilePicker(
-    onResult: (String) -> Unit,
-) = with(LocalContext.current) {
-    val launcher = rememberLauncherForActivityResult(
-        contract = GetFileResource(),
-        onResult = { uris ->
-            uris.firstOrNull()?.toFileOverWrite(context = this)?.path?.let(onResult)
-        },
-    )
-    return@with launcher
-}
+fun rememberFilePicker(onResult: (String) -> Unit) =
+    with(LocalContext.current) {
+        val launcher =
+            rememberLauncherForActivityResult(
+                contract = GetFileResource(),
+                onResult = { uris ->
+                    uris
+                        .firstOrNull()
+                        ?.toFileOverWrite(context = this)
+                        ?.path
+                        ?.let(onResult)
+                },
+            )
+        return@with launcher
+    }
 
 @Composable
 fun rememberCameraPicker(
@@ -33,37 +37,41 @@ fun rememberCameraPicker(
 ) = with(
     LocalContext.current,
 ) {
-    val tempFile = File(
-        FileResourceDirectoryHelper.getFileResourceDirectory(this),
-        "tempFile.png",
-    )
+    val tempFile =
+        File(
+            FileResourceDirectoryHelper.getFileResourceDirectory(this),
+            "tempFile.png",
+        )
 
-    val photoUri = FileProvider.getUriForFile(
-        this,
-        FormFileProvider.fileProviderAuthority,
-        tempFile,
-    )
+    val photoUri =
+        FileProvider.getUriForFile(
+            this,
+            FormFileProvider.fileProviderAuthority,
+            tempFile,
+        )
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture(),
-        onResult = { success ->
-            if (success) {
-                onSuccess(tempFile.rotateImage(this).path)
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.TakePicture(),
+            onResult = { success ->
+                if (success) {
+                    onSuccess(tempFile.rotateImage(this).path)
+                } else {
+                    onError()
+                }
+            },
+        )
+    val cameraPermission =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { accepted ->
+            if (accepted) {
+                onPermissionAccepted()
+                launcher.launch(photoUri)
             } else {
                 onError()
             }
-        },
-    )
-    val cameraPermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { accepted ->
-        if (accepted) {
-            onPermissionAccepted()
-            launcher.launch(photoUri)
-        } else {
-            onError()
         }
-    }
 
     return@with Triple(photoUri, launcher, cameraPermission)
 }

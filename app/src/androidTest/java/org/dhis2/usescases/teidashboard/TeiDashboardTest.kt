@@ -1,6 +1,5 @@
 package org.dhis2.usescases.teidashboard
 
-import android.annotation.SuppressLint
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dhis2.org.analytics.charts.data.ChartType
@@ -12,6 +11,7 @@ import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_UNIQUE_ID
 import org.dhis2.common.mockwebserver.MockWebServerRobot.Companion.API_UNIQUE_ID_TRACKED_ENTITY_ATTRIBUTES_RESERVED_VALUES_RESPONSE
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
+import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
@@ -25,7 +25,6 @@ import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Assume
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -309,7 +308,6 @@ class TeiDashboardTest : BaseTest() {
         }
 
         indicatorsRobot(composeTestRule) {
-            composeTestRule.waitForIdle()
             checkDetails("0", "4817")
         }
     }
@@ -346,13 +344,12 @@ class TeiDashboardTest : BaseTest() {
         enrollmentRobot(composeTestRule) {
             clickOnAProgramForEnrollment(composeTestRule, womanProgram)
             clickOnAcceptInDatePicker()
-        }
 
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
+            orgUnitSelectorRobot(composeTestRule) {
+                selectTreeOrgUnit(orgUnit)
+            }
 
-        enrollmentRobot(composeTestRule) {
+            waitUntilActivityVisible<EnrollmentActivity>()
             openFormSection(personAttribute)
             typeOnInputDateField("01012000", "Date of birth")
             clickOnSaveEnrollment()

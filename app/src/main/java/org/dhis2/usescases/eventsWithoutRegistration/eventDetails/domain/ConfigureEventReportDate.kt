@@ -26,9 +26,8 @@ class ConfigureEventReportDate(
     private val enrollmentId: String? = null,
     private val scheduleInterval: Int = 0,
 ) {
-
-    operator fun invoke(selectedDate: Date? = null): Flow<EventDate> {
-        return flowOf(
+    operator fun invoke(selectedDate: Date? = null): Flow<EventDate> =
+        flowOf(
             EventDate(
                 active = isActive(),
                 label = getLabel(),
@@ -41,11 +40,8 @@ class ConfigureEventReportDate(
                 periodType = periodType,
             ),
         )
-    }
 
-    private fun isActive(): Boolean {
-        return !(creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true)
-    }
+    private fun isActive(): Boolean = !(creationType == SCHEDULE && getProgramStage()?.hideDueDate() == true)
 
     private fun getLabel(): String {
         val programStage = getProgramStage()
@@ -65,21 +61,23 @@ class ConfigureEventReportDate(
         }
     }
 
-    private fun getDate(selectedDate: Date?) = when {
-        selectedDate != null -> selectedDate
-        repository.getEvent() != null -> repository.getEvent()?.eventDate()
-        periodType != null || creationType == SCHEDULE -> getNextScheduleDate()
-        else -> getCurrentDay()
-    }
-
-    private fun getDateValue(selectedDate: Date?) = getDate(selectedDate)?.let { date ->
+    private fun getDate(selectedDate: Date?) =
         when {
-            periodType != null ->
-                periodUtils.getPeriodUIString(periodType, date, Locale.getDefault())
-
-            else -> DateUtils.uiDateFormat().format(date)
+            selectedDate != null -> selectedDate
+            repository.getEvent() != null -> repository.getEvent()?.eventDate()
+            periodType != null || creationType == SCHEDULE -> getNextScheduleDate()
+            else -> getCurrentDay()
         }
-    }
+
+    private fun getDateValue(selectedDate: Date?) =
+        getDate(selectedDate)?.let { date ->
+            when {
+                periodType != null ->
+                    periodUtils.getPeriodUIString(periodType, date, Locale.getDefault())
+
+                else -> DateUtils.uiDateFormat().format(date)
+            }
+        }
 
     private fun getProgramStage(): ProgramStage? = repository.getProgramStage()
 
@@ -100,7 +98,8 @@ class ConfigureEventReportDate(
                 }
             }
         }
-        return DateUtils.getInstance()
+        return DateUtils
+            .getInstance()
             .getNextPeriod(
                 periodType,
                 initialDate,
@@ -109,26 +108,29 @@ class ConfigureEventReportDate(
     }
 
     fun getNextScheduleDate(): Date {
-        val scheduleDate = repository.getStageLastDate(enrollmentId)?.let {
-            val lastStageDate = DateUtils.getInstance().getCalendarByDate(it)
-            lastStageDate.add(DAY_OF_YEAR, getScheduleInterval())
-            lastStageDate
-        } ?: run {
-            val enrollmentDate = with(repository) {
-                when (getProgramStage()?.generatedByEnrollmentDate()) {
-                    true -> getEnrollmentDate(enrollmentId)
-                    else -> getEnrollmentIncidentDate(enrollmentId)
-                        ?: getEnrollmentDate(enrollmentId)
+        val scheduleDate =
+            repository.getStageLastDate(enrollmentId)?.let {
+                val lastStageDate = DateUtils.getInstance().getCalendarByDate(it)
+                lastStageDate.add(DAY_OF_YEAR, getScheduleInterval())
+                lastStageDate
+            } ?: run {
+                val enrollmentDate =
+                    with(repository) {
+                        when (getProgramStage()?.generatedByEnrollmentDate()) {
+                            true -> getEnrollmentDate(enrollmentId)
+                            else ->
+                                getEnrollmentIncidentDate(enrollmentId)
+                                    ?: getEnrollmentDate(enrollmentId)
+                        }
+                    }
+                val date = DateUtils.getInstance().getCalendarByDate(enrollmentDate)
+                val minDateFromStart = repository.getMinDaysFromStartByProgramStage()
+                date.add(DAY_OF_YEAR, minDateFromStart)
+                periodType?.let {
+                    return getDateBasedOnPeriodType(date.time)
                 }
+                return date.time
             }
-            val date = DateUtils.getInstance().getCalendarByDate(enrollmentDate)
-            val minDateFromStart = repository.getMinDaysFromStartByProgramStage()
-            date.add(DAY_OF_YEAR, minDateFromStart)
-            periodType?.let {
-                return getDateBasedOnPeriodType(date.time)
-            }
-            return date.time
-        }
         return DateUtils.getInstance().getNextPeriod(periodType, scheduleDate.time, if (periodType != null) 1 else 0)
     }
 
@@ -146,17 +148,19 @@ class ConfigureEventReportDate(
                     )
                 }
             } else {
-                var minDate = DateUtils.getInstance().expDate(
-                    initialDate,
-                    program.expiryDays() ?: 0,
-                    periodType,
-                )
-                val lastPeriodDate = DateUtils.getInstance().getNextPeriod(
-                    periodType,
-                    minDate,
-                    -1,
-                    true,
-                )
+                var minDate =
+                    DateUtils.getInstance().expDate(
+                        initialDate,
+                        program.expiryDays() ?: 0,
+                        periodType,
+                    )
+                val lastPeriodDate =
+                    DateUtils.getInstance().getNextPeriod(
+                        periodType,
+                        minDate,
+                        -1,
+                        true,
+                    )
 
                 if (lastPeriodDate.after(
                         DateUtils.getInstance().getNextPeriod(
@@ -166,8 +170,10 @@ class ConfigureEventReportDate(
                         ),
                     )
                 ) {
-                    minDate = DateUtils.getInstance()
-                        .getNextPeriod(periodType, lastPeriodDate, 0)
+                    minDate =
+                        DateUtils
+                            .getInstance()
+                            .getNextPeriod(periodType, lastPeriodDate, 0)
                 }
                 return minDate
             }
@@ -175,8 +181,8 @@ class ConfigureEventReportDate(
         return null
     }
 
-    private fun getMaxDate(): Date? {
-        return if (periodType == null) {
+    private fun getMaxDate(): Date? =
+        if (periodType == null) {
             when (creationType) {
                 ADDNEW,
                 DEFAULT,
@@ -193,15 +199,16 @@ class ConfigureEventReportDate(
                 else -> null
             }
         }
-    }
 
-    private fun getAllowFutureDates() = when (creationType) {
-        SCHEDULE -> true
-        else -> false
-    }
+    private fun getAllowFutureDates() =
+        when (creationType) {
+            SCHEDULE -> true
+            else -> false
+        }
 
-    private fun getScheduleInterval() = when (creationType) {
-        SCHEDULE -> scheduleInterval
-        else -> 0
-    }
+    private fun getScheduleInterval() =
+        when (creationType) {
+            SCHEDULE -> scheduleInterval
+            else -> 0
+        }
 }

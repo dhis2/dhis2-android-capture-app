@@ -16,13 +16,13 @@ import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class DataSetDetailViewModelTest {
-
     @get:Rule
     val executorRule = InstantTaskExecutorRule()
 
-    private val dispatcher: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.IO
-    }
+    private val dispatcher: DispatcherProvider =
+        mock {
+            on { io() } doReturn Dispatchers.IO
+        }
     private val dataSetPageConfigurator: DataSetPageConfigurator = mock()
     private val initializedConfigurator: DataSetPageConfigurator = mock()
 
@@ -37,10 +37,11 @@ class DataSetDetailViewModelTest {
     fun `Should init variables of page configurator`() {
         whenever(dataSetPageConfigurator.initVariables()) doReturn initializedConfigurator
 
-        viewModel = DataSetDetailViewModel(
-            dispatcher,
-            dataSetPageConfigurator,
-        )
+        viewModel =
+            DataSetDetailViewModel(
+                dispatcher,
+                dataSetPageConfigurator,
+            )
         viewModel.pageConfiguration.observeForever { result ->
             assertEquals(result, initializedConfigurator)
         }

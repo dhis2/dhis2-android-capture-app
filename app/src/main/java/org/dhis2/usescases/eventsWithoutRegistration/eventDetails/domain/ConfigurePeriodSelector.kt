@@ -20,11 +20,12 @@ class ConfigurePeriodSelector(
         return getEventPeriods(
             eventUid = event?.uid(),
             periodType = periodType,
-            selectedDate = if (eventDetailRepository.isScheduling()) {
-                event?.dueDate()
-            } else {
-                event?.eventDate()
-            },
+            selectedDate =
+                if (eventDetailRepository.isScheduling()) {
+                    event?.dueDate()
+                } else {
+                    event?.eventDate()
+                },
             programStage = programStage,
             isScheduling = eventDetailRepository.isScheduling(),
             eventEnrollmentUid = enrollmentUid,

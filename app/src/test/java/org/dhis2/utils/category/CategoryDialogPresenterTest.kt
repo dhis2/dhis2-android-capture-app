@@ -24,24 +24,33 @@ class CategoryDialogPresenterTest {
 
     @Test
     fun `Should init for category options`() {
-        val presenter = CategoryDialogPresenter(
-            view,
-            d2,
-            CategoryDialog.Type.CATEGORY_OPTIONS,
-            "uid",
-            false,
-            null,
-            catOptMapper,
-            catOptCombMapper,
-            schedulerProvider,
-        )
+        val presenter =
+            CategoryDialogPresenter(
+                view,
+                d2,
+                CategoryDialog.Type.CATEGORY_OPTIONS,
+                "uid",
+                false,
+                null,
+                catOptMapper,
+                catOptCombMapper,
+                schedulerProvider,
+            )
 
-        whenever(d2.categoryModule().categories().uid("uid").get()) doReturn Single.just(
-            Category.builder()
+        whenever(
+            d2
+                .categoryModule()
+                .categories()
                 .uid("uid")
-                .displayName("name")
-                .build(),
-        )
+                .get(),
+        ) doReturn
+            Single.just(
+                Category
+                    .builder()
+                    .uid("uid")
+                    .displayName("name")
+                    .build(),
+            )
 
         whenever(view.searchSource()) doReturn Observable.just("test")
 
@@ -51,26 +60,33 @@ class CategoryDialogPresenterTest {
 
     @Test
     fun `Should init for category option combos`() {
-        val presenter = CategoryDialogPresenter(
-            view,
-            d2,
-            CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-            "uid",
-            false,
-            null,
-            catOptMapper,
-            catOptCombMapper,
-            schedulerProvider,
-        )
+        val presenter =
+            CategoryDialogPresenter(
+                view,
+                d2,
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                "uid",
+                false,
+                null,
+                catOptMapper,
+                catOptCombMapper,
+                schedulerProvider,
+            )
 
         whenever(
-            d2.categoryModule().categoryCombos().uid("uid").get(),
-        ) doReturn Single.just(
-            CategoryCombo.builder()
+            d2
+                .categoryModule()
+                .categoryCombos()
                 .uid("uid")
-                .displayName("name")
-                .build(),
-        )
+                .get(),
+        ) doReturn
+            Single.just(
+                CategoryCombo
+                    .builder()
+                    .uid("uid")
+                    .displayName("name")
+                    .build(),
+            )
 
         whenever(view.searchSource()) doReturn Observable.just("test")
 

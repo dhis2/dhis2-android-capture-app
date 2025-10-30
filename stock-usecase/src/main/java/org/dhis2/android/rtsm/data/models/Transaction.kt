@@ -10,7 +10,6 @@ class Transaction(
     val transactionDate: String,
     val distributedTo: IdentifiableModel?,
 ) : Parcelable {
-
     constructor(parcel: Parcel) : this(
         enumValueOf(parcel.readString()!!),
         // TODO: Find a way to get the OrganisationUnit given the UID,
@@ -24,7 +23,10 @@ class Transaction(
         ),
     )
 
-    override fun writeToParcel(out: Parcel, flags: Int) {
+    override fun writeToParcel(
+        out: Parcel,
+        flags: Int,
+    ) {
         out.writeString(transactionType.name)
         out.writeParcelable(facility, flags)
         out.writeString(transactionDate)
@@ -39,8 +41,8 @@ class Transaction(
         override fun newArray(size: Int): Array<Transaction?> = arrayOfNulls(size)
     }
 
-    override fun toString(): String {
-        return if (transactionType == TransactionType.DISTRIBUTION && distributedTo != null) {
+    override fun toString(): String =
+        if (transactionType == TransactionType.DISTRIBUTION && distributedTo != null) {
             "Transaction[Type: %s, Facility: %s, Date: %s, Distributed to: %s]".format(
                 transactionType.name,
                 facility.displayName,
@@ -54,5 +56,4 @@ class Transaction(
                 transactionDate,
             )
         }
-    }
 }

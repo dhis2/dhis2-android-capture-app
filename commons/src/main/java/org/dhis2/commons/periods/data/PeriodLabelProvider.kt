@@ -32,17 +32,18 @@ class PeriodLabelProvider(
         forTags: Boolean = false,
     ): String {
         val periodBetweenYears = periodIsBetweenYears(periodStartDate, periodEndDate)
-        val formattedDate = if (forTags) {
-            tagPeriodLabels(
-                periodType,
-                periodStartDate,
-                periodEndDate,
-                locale,
-                periodBetweenYears,
-            )
-        } else {
-            defaultPeriodLabels(periodType, periodId, periodStartDate, periodEndDate, locale)
-        }
+        val formattedDate =
+            if (forTags) {
+                tagPeriodLabels(
+                    periodType,
+                    periodStartDate,
+                    periodEndDate,
+                    locale,
+                    periodBetweenYears,
+                )
+            } else {
+                defaultPeriodLabels(periodType, periodId, periodStartDate, periodEndDate, locale)
+            }
         return WordUtils.capitalize(formattedDate)
     }
 
@@ -157,20 +158,21 @@ class PeriodLabelProvider(
         -> {
             val startYear = SimpleDateFormat(YEARLY_FORMAT, locale).format(periodStartDate)
             val endYear = SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate)
-            val (yearFormat, initMonthFormat) = if (startYear != endYear) {
-                Pair(
-                    SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate),
-                    SimpleDateFormat(
-                        MONTH_YEAR_FULL_FORMAT,
-                        locale,
-                    ).format(periodStartDate),
-                )
-            } else {
-                Pair(
-                    SimpleDateFormat(YEARLY_FORMAT, locale).format(periodStartDate),
-                    SimpleDateFormat(MONTH_FULL_FORMAT, locale).format(periodStartDate),
-                )
-            }
+            val (yearFormat, initMonthFormat) =
+                if (startYear != endYear) {
+                    Pair(
+                        SimpleDateFormat(YEARLY_FORMAT, locale).format(periodEndDate),
+                        SimpleDateFormat(
+                            MONTH_YEAR_FULL_FORMAT,
+                            locale,
+                        ).format(periodStartDate),
+                    )
+                } else {
+                    Pair(
+                        SimpleDateFormat(YEARLY_FORMAT, locale).format(periodStartDate),
+                        SimpleDateFormat(MONTH_FULL_FORMAT, locale).format(periodStartDate),
+                    )
+                }
             defaultQuarterlyLabel.format(
                 quarter(periodType, periodId),
                 yearFormat,
@@ -198,7 +200,10 @@ class PeriodLabelProvider(
             SimpleDateFormat(DAILY_FORMAT, locale).format(periodStartDate)
     }
 
-    private fun weekOfTheYear(periodType: PeriodType, periodId: String): Int {
+    private fun weekOfTheYear(
+        periodType: PeriodType,
+        periodId: String,
+    ): Int {
         val pattern =
             Pattern.compile(periodType.pattern)
         val matcher = pattern.matcher(periodId)
@@ -209,7 +214,10 @@ class PeriodLabelProvider(
         return weekNumber
     }
 
-    private fun quarter(periodType: PeriodType, periodId: String): Int {
+    private fun quarter(
+        periodType: PeriodType,
+        periodId: String,
+    ): Int {
         val pattern =
             Pattern.compile(periodType.pattern)
         val matcher = pattern.matcher(periodId)
@@ -220,7 +228,10 @@ class PeriodLabelProvider(
         return quarterNumber
     }
 
-    private fun periodIsBetweenYears(startDate: Date, endDate: Date): Boolean {
+    private fun periodIsBetweenYears(
+        startDate: Date,
+        endDate: Date,
+    ): Boolean {
         val startCalendar = Calendar.getInstance().apply { time = startDate }
         val endCalendar = Calendar.getInstance().apply { time = endDate }
         return startCalendar[Calendar.YEAR] != endCalendar[Calendar.YEAR]

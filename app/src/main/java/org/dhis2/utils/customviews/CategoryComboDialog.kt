@@ -23,7 +23,6 @@ class CategoryComboDialog(
     private val listenerNew: OnCatOptionComboSelected,
     private val title: String? = categoryCombo.displayName(),
 ) : AlertDialog(mContext) {
-
     @Inject
     lateinit var presenter: CategoryComboDialogPresenter
 
@@ -33,7 +32,8 @@ class CategoryComboDialog(
 
     override fun show() {
         if ((mContext.applicationContext as App).serverComponent() != null) {
-            (mContext.applicationContext as App).serverComponent()!!
+            (mContext.applicationContext as App)
+                .serverComponent()!!
                 .plus(CategoryComboDialogModule(categoryCombo))
                 .inject(this)
             setDialog()
@@ -72,7 +72,8 @@ class CategoryComboDialog(
         categoryEditText: TextInputEditText,
         anchor: View,
     ) {
-        CategoryOptionPopUp.getInstance()
+        CategoryOptionPopUp
+            .getInstance()
             .setCategory(category)
             .setOnClick { item ->
                 if (item != null) {
@@ -87,8 +88,7 @@ class CategoryComboDialog(
                     )
                     dismiss()
                 }
-            }
-            .show(mContext, anchor)
+            }.show(mContext, anchor)
     }
 
     override fun dismiss() {

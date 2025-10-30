@@ -24,7 +24,10 @@ const val X_AXIS_DEFAULT_MIN = -1f
 const val DEFAULT_CHART_HEIGHT = 850
 
 class GraphToLineChart {
-    fun map(context: Context, graph: Graph): LineChart {
+    fun map(
+        context: Context,
+        graph: Graph,
+    ): LineChart {
         val lineData = GraphToLineData().map(graph)
         return LineChart(context).apply {
             description.isEnabled = false
@@ -41,15 +44,16 @@ class GraphToLineChart {
                 )
                 setDrawLimitLinesBehindData(true)
                 position = XAxis.XAxisPosition.BOTTOM
-                valueFormatter = if (graph.categories.isNotEmpty()) {
-                    CategoryFormatter(graph.categories)
-                } else {
-                    DateLabelFormatter(
-                        datePattern = graph.eventPeriodType.datePattern(),
-                        dateFromValue = { graph.dateFromSteps(it) },
-                        localDateFromValue = { graph.localDateFromSteps(it) },
-                    )
-                }
+                valueFormatter =
+                    if (graph.categories.isNotEmpty()) {
+                        CategoryFormatter(graph.categories)
+                    } else {
+                        DateLabelFormatter(
+                            datePattern = graph.eventPeriodType.datePattern(),
+                            dateFromValue = { graph.dateFromSteps(it) },
+                            localDateFromValue = { graph.localDateFromSteps(it) },
+                        )
+                    }
                 granularity = DEFAULT_GRANULARITY
                 axisMinimum = X_AXIS_DEFAULT_MIN
                 axisMaximum = graph.xAxixMaximun() + 1
@@ -81,19 +85,24 @@ class GraphToLineChart {
             animateX(DEFAULT_ANIM_TIME)
 
             legend.withGlobalStyle()
-            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    if (e?.data is String) {
-                        data = GraphToLineData().map(graph, e.data as String)
+            setOnChartValueSelectedListener(
+                object : OnChartValueSelectedListener {
+                    override fun onValueSelected(
+                        e: Entry?,
+                        h: Highlight?,
+                    ) {
+                        if (e?.data is String) {
+                            data = GraphToLineData().map(graph, e.data as String)
+                            invalidate()
+                        }
+                    }
+
+                    override fun onNothingSelected() {
+                        data = GraphToLineData().map(graph)
                         invalidate()
                     }
-                }
-
-                override fun onNothingSelected() {
-                    data = GraphToLineData().map(graph)
-                    invalidate()
-                }
-            })
+                },
+            )
             extraBottomOffset = 10f
 
             marker = ChartMarker(context, viewPortHandler, xAxis, axisLeft)

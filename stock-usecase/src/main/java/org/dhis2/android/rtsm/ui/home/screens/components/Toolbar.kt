@@ -34,6 +34,7 @@ import org.dhis2.android.rtsm.R
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.utils.Utils.Companion.capitalizeText
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -59,9 +60,11 @@ fun Toolbar(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = capitalizeText(title).ifBlank {
-                        stringResource(R.string.title_activity_home)
-                    },
+                    text =
+                        capitalizeText(title).ifBlank {
+                            stringResource(R.string.title_activity_home)
+                        },
+                    color = SurfaceColor.SurfaceBright,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     fontSize = 17.sp,
@@ -141,7 +144,12 @@ fun Toolbar(
 }
 
 @Composable
-fun ColumnScope.ProvideToolBarIcons(to: String?, hasFacilitySelected: Boolean, hasDestinationSelected: Boolean?, title: String) {
+fun ColumnScope.ProvideToolBarIcons(
+    to: String?,
+    hasFacilitySelected: Boolean,
+    hasDestinationSelected: Boolean?,
+    title: String,
+) {
     if (to != null) {
         Icon(
             painter = painterResource(id = R.drawable.ic_from_to),
@@ -190,9 +198,10 @@ fun AnalyticsTopBar(
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
-                    text = capitalizeText(title).ifBlank {
-                        stringResource(R.string.title_activity_home)
-                    },
+                    text =
+                        capitalizeText(title).ifBlank {
+                            stringResource(R.string.title_activity_home)
+                        },
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     fontSize = 17.sp,

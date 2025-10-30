@@ -10,15 +10,13 @@ import org.hisp.dhis.android.core.common.FeatureType.NONE
 class ConfigureEventCoordinates(
     private val repository: EventDetailsRepository,
 ) {
-
-    operator fun invoke(value: String? = ""): Flow<EventCoordinates> {
-        return flowOf(
+    operator fun invoke(value: String? = ""): Flow<EventCoordinates> =
+        flowOf(
             EventCoordinates(
                 active = isActive(),
                 model = getGeometryModel(value),
             ),
         )
-    }
 
     private fun getGeometryModel(value: String?): FieldUiModel {
         var model = repository.getGeometryModel()

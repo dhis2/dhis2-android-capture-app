@@ -1,8 +1,9 @@
 package org.dhis2.form.model
 
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
@@ -28,14 +29,14 @@ data class FieldUiModelImpl(
     override val keyboardActionType: KeyboardActionType? = null,
     override val fieldMask: String? = null,
     override val isLoadingData: Boolean = false,
-    override var optionSetConfiguration: OptionSetConfiguration?,
+    override val optionSetConfiguration: OptionSetConfiguration?,
     override var autocompleteList: List<String>?,
     override val orgUnitSelectorScope: OrgUnitSelectorScope? = null,
     override val selectableDates: SelectableDates? = null,
     override val eventCategories: List<EventCategory>? = null,
     override val periodSelector: PeriodSelector? = null,
+    override var customIntent: CustomIntentModel? = null,
 ) : FieldUiModel {
-
     private var callback: FieldUiModel.Callback? = null
 
     override val formattedLabel: String
@@ -60,7 +61,7 @@ data class FieldUiModelImpl(
     }
 
     override fun invokeUiEvent(uiEventType: UiEventType) {
-        callback?.intent(FormIntent.OnRequestCoordinates(uid))
+        callback?.intent(FormIntent.OnFieldLoadingData(uid))
         if (!focused) {
             onItemClick()
         }
@@ -81,14 +82,14 @@ data class FieldUiModelImpl(
 
     override fun setValue(value: String?) = this.copy(value = value)
 
-    override fun setSelectableDates(selectableDates: SelectableDates?) =
-        this.copy(selectableDates = selectableDates)
+    override fun setSelectableDates(selectableDates: SelectableDates?) = this.copy(selectableDates = selectableDates)
 
     override fun setIsLoadingData(isLoadingData: Boolean) = this.copy(isLoadingData = isLoadingData)
 
     override fun setDisplayName(displayName: String?) = this.copy(displayName = displayName)
 
     override fun setKeyBoardActionDone() = this.copy(keyboardActionType = KeyboardActionType.DONE)
+
     override fun isSectionWithFields(): Boolean = false
 
     override fun setFocus() = this.copy(focused = true)
@@ -102,6 +103,9 @@ data class FieldUiModelImpl(
     override fun setWarning(warning: String) = this.copy(warning = warning)
 
     override fun setFieldMandatory() = this.copy(mandatory = true)
+
+    override fun setOptionSetConfiguration(optionSetConfiguration: OptionSetConfiguration) =
+        this.copy(optionSetConfiguration = optionSetConfiguration)
 
     override fun equals(item: FieldUiModel): Boolean {
         if (this === item) return true
@@ -127,7 +131,8 @@ data class FieldUiModelImpl(
         if (callback != item.callback) return false
         if (selectableDates != item.selectableDates) return false
         if (eventCategories != item.eventCategories) return false
-
+        if (customIntent != item.customIntent) return false
+        if (optionSetConfiguration != item.optionSetConfiguration) return false
         return true
     }
 }

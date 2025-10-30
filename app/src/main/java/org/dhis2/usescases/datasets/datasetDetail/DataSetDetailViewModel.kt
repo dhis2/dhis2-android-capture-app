@@ -13,7 +13,6 @@ class DataSetDetailViewModel(
     private val dispatchers: DispatcherProvider,
     private val dataSetPageConfigurator: DataSetPageConfigurator,
 ) : ViewModel() {
-
     private val _pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
     val pageConfiguration: LiveData<NavigationPageConfigurator> = _pageConfiguration
 

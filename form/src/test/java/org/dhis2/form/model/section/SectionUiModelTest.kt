@@ -8,7 +8,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SectionUiModelTest {
-
     @Test
     fun shouldShowDescriptionIconWhenTitleIsEllipsizedAndDescriptionIsNull() {
         val sectionUiModel = givenSectionUiModelWithNullDescription()
@@ -47,145 +46,152 @@ class SectionUiModelTest {
 
     @Test
     fun shouldShowNextButton() {
-        val sectionUiModel = givenSectionUiModelWithDescription().also {
-            it.setShowBottomShadow(true)
-        }
+        val sectionUiModel =
+            givenSectionUiModelWithDescription().also {
+                it.setShowBottomShadow(true)
+            }
         assertTrue(sectionUiModel.showNextButton())
     }
 
     @Test
     fun shouldNotShowNextButton() {
-        val sectionUiModel = givenSectionUiModelWithDescription().also {
-            it.setShowBottomShadow(false)
-        }
+        val sectionUiModel =
+            givenSectionUiModelWithDescription().also {
+                it.setShowBottomShadow(false)
+            }
         assertFalse(sectionUiModel.showNextButton())
     }
 
     @Test
     fun shouldNotShowNextButtonForClosingSection() {
-        val sectionUiModel = givenClosingSectionUiModel().also {
-            it.setShowBottomShadow(true)
-        }
+        val sectionUiModel =
+            givenClosingSectionUiModel().also {
+                it.setShowBottomShadow(true)
+            }
         assertFalse(sectionUiModel.showNextButton())
     }
 
-    private fun givenClosingSectionUiModel() = SectionUiModelImpl(
-        CLOSING_SECTION_UID,
-        null,
-        false,
-        null,
-        false,
-        null,
-        false,
-        "",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        false,
-        1,
-        1,
-        0,
-        0,
-        "",
-        ObservableField(),
-    )
+    private fun givenClosingSectionUiModel() =
+        SectionUiModelImpl(
+            CLOSING_SECTION_UID,
+            null,
+            false,
+            null,
+            false,
+            null,
+            false,
+            "",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            1,
+            1,
+            0,
+            0,
+            "",
+            ObservableField(),
+        )
 
-    private fun givenSectionUiModelWithNullDescription() = SectionUiModelImpl(
-        "",
-        null,
-        false,
-        null,
-        false,
-        null,
-        false,
-        "",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        false,
-        1,
-        1,
-        0,
-        0,
-        "",
-        ObservableField(),
-    )
+    private fun givenSectionUiModelWithNullDescription() =
+        SectionUiModelImpl(
+            "",
+            null,
+            false,
+            null,
+            false,
+            null,
+            false,
+            "",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            1,
+            1,
+            0,
+            0,
+            "",
+            ObservableField(),
+        )
 
-    private fun givenSectionUiModelWithEmptyDescription() = SectionUiModelImpl(
-        "",
-        null,
-        false,
-        null,
-        false,
-        null,
-        false,
-        "",
-        null,
-        null,
-        "",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        false,
-        1,
-        1,
-        0,
-        0,
-        "",
-        ObservableField(),
-    )
+    private fun givenSectionUiModelWithEmptyDescription() =
+        SectionUiModelImpl(
+            "",
+            null,
+            false,
+            null,
+            false,
+            null,
+            false,
+            "",
+            null,
+            null,
+            "",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            1,
+            1,
+            0,
+            0,
+            "",
+            ObservableField(),
+        )
 
-    private fun givenSectionUiModelWithDescription() = SectionUiModelImpl(
-        "",
-        null,
-        false,
-        null,
-        false,
-        null,
-        false,
-        "",
-        null,
-        null,
-        "This is a description",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        false,
-        1,
-        1,
-        0,
-        0,
-        "",
-        ObservableField(),
-    )
+    private fun givenSectionUiModelWithDescription() =
+        SectionUiModelImpl(
+            "",
+            null,
+            false,
+            null,
+            false,
+            null,
+            false,
+            "",
+            null,
+            null,
+            "This is a description",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            1,
+            1,
+            0,
+            0,
+            "",
+            ObservableField(),
+        )
 }

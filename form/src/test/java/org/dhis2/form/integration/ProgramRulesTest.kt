@@ -31,6 +31,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -52,7 +53,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class ProgramRulesTest {
-
     @get:Rule
     val rule = InstantTaskExecutorRule()
 
@@ -73,6 +73,8 @@ class ProgramRulesTest {
     private lateinit var formViewModel: FormViewModel
 
     private val testingDispatcher = StandardTestDispatcher()
+
+    private val resultDialogUiProvider: FormResultDialogProvider = mock()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -107,42 +109,40 @@ class ProgramRulesTest {
             invocationOnMock.getArgument(0) as FieldUiModel
         }
 
-        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn StoreResult(
-            "",
-            ValueStoreResult.VALUE_CHANGED,
-        )
+        whenever(formValueStore.save(any(), anyOrNull(), anyOrNull())) doReturn
+            StoreResult(
+                "",
+                ValueStoreResult.VALUE_CHANGED,
+            )
 
-        repository = FormRepositoryImpl(
-            formValueStore = formValueStore,
-            fieldErrorMessageProvider = mock(),
-            displayNameProvider = mock(),
-            dataEntryRepository = dataEntryRepository,
-            ruleEngineRepository = ruleEngineHelper,
-            rulesUtilsProvider = rulesUtilsProvider,
-            legendValueProvider = mock(),
-            useCompose = true,
-            preferenceProvider = preferenceProvider,
-        )
+        repository =
+            FormRepositoryImpl(
+                formValueStore = formValueStore,
+                fieldErrorMessageProvider = mock(),
+                displayNameProvider = mock(),
+                dataEntryRepository = dataEntryRepository,
+                ruleEngineRepository = ruleEngineHelper,
+                rulesUtilsProvider = rulesUtilsProvider,
+                legendValueProvider = mock(),
+                useCompose = true,
+                preferenceProvider = preferenceProvider,
+            )
 
         whenever(repository.getDateFormatConfiguration()) doReturn "ddMMyyyy"
 
-        formViewModel = FormViewModel(
-            repository,
-            object : DispatcherProvider {
-                override fun io(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+        formViewModel =
+            FormViewModel(
+                repository,
+                object : DispatcherProvider {
+                    override fun io(): CoroutineDispatcher = testingDispatcher
 
-                override fun computation(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+                    override fun computation(): CoroutineDispatcher = testingDispatcher
 
-                override fun ui(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
-            },
-            geometryController,
-        )
+                    override fun ui(): CoroutineDispatcher = testingDispatcher
+                },
+                geometryController,
+                resultDialogUiProvider = resultDialogUiProvider,
+            )
 
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -155,375 +155,401 @@ class ProgramRulesTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Should assign a value`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "",
-                RuleAction(
-                    "assignedValue",
-                    ProgramRuleActionType.ASSIGN.name,
-                    mutableMapOf(Pair("field", "uid001")),
-                ),
-                "newValue",
-            ),
-        )
-
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "newValue04",
-            valueType = ValueType.TEXT,
-        )
-
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
-
-        val items = formViewModel.items.value ?: emptyList()
-
-        assert(items.find { it.uid == "uid001" }?.value == "newValue")
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `Should hide field`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "ruleUid",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.HIDEFIELD.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "field" to "uid001",
+    fun `Should assign a value`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "",
+                        RuleAction(
+                            "assignedValue",
+                            ProgramRuleActionType.ASSIGN.name,
+                            mutableMapOf(Pair("field", "uid001")),
+                        ),
+                        "newValue",
                     ),
-                ),
-            ),
-        )
+                )
 
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "newValue04",
-            valueType = ValueType.TEXT,
-        )
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "newValue04",
+                    valueType = ValueType.TEXT,
+                )
 
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
 
-        val items = formViewModel.items.value ?: emptyList()
+            val items = formViewModel.items.value ?: emptyList()
 
-        items.forEach {
-            assert(it.uid != "uid001")
+            assert(items.find { it.uid == "uid001" }?.value == "newValue")
         }
-        assert(items.size == 6)
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Should hide section`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "ruleUid",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.HIDESECTION.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "programStageSection" to "section1",
+    fun `Should hide field`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.HIDEFIELD.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "field" to "uid001",
+                            ),
+                        ),
                     ),
-                ),
-                "data",
-            ),
-        )
+                )
 
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "newValue04",
-            valueType = ValueType.TEXT,
-        )
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "newValue04",
+                    valueType = ValueType.TEXT,
+                )
 
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
 
-        val items = formViewModel.items.value ?: emptyList()
+            val items = formViewModel.items.value ?: emptyList()
 
-        assertTrue(items.size == 4)
-        assertTrue(items[0].uid == "uid004")
-        assertTrue(items[1].uid == "uid005")
-        assertTrue(items[2].uid == "uid006")
-        assertTrue(items[3].uid == "uid007")
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `Should show warning and error message`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "ruleUid",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.SHOWWARNING.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "field" to "uid002",
-                    ),
-                ),
-                "warning message",
-            ),
-            RuleEffect(
-                "ruleUid2",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.SHOWERROR.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "field" to "uid005",
-                    ),
-                ),
-                "error message",
-            ),
-        )
-
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "value04",
-            valueType = ValueType.TEXT,
-        )
-
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
-
-        val items = formViewModel.items.value ?: emptyList()
-
-        items.forEach {
-            if (it.uid == "uid002") {
-                assertNotNull(it.warning)
-                assertEquals(it.warning, "content warning message")
+            items.forEach {
+                assert(it.uid != "uid001")
             }
-            if (it.uid == "uid005") {
-                assertNotNull(it.error)
-                assertEquals(it.error, "content error message")
-            }
+            assert(items.size == 6)
         }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Should set mandatory field`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "ruleUid",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.SETMANDATORYFIELD.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "field" to "uid003",
+    fun `Should hide section`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.HIDESECTION.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "programStageSection" to "section1",
+                            ),
+                        ),
+                        "data",
                     ),
-                ),
-                "data",
-            ),
-        )
+                )
 
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "value04",
-            valueType = ValueType.TEXT,
-        )
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "newValue04",
+                    valueType = ValueType.TEXT,
+                )
 
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
 
-        val items = formViewModel.items.value ?: emptyList()
+            val items = formViewModel.items.value ?: emptyList()
 
-        items.forEach {
-            if (it.uid == "uid003") {
-                assertTrue(it.mandatory)
+            assertTrue(items.size == 4)
+            assertTrue(items[0].uid == "uid004")
+            assertTrue(items[1].uid == "uid005")
+            assertTrue(items[2].uid == "uid006")
+            assertTrue(items[3].uid == "uid007")
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Should show warning and error message`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.SHOWWARNING.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "field" to "uid002",
+                            ),
+                        ),
+                        "warning message",
+                    ),
+                    RuleEffect(
+                        "ruleUid2",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.SHOWERROR.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "field" to "uid005",
+                            ),
+                        ),
+                        "error message",
+                    ),
+                )
+
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "value04",
+                    valueType = ValueType.TEXT,
+                )
+
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
+
+            val items = formViewModel.items.value ?: emptyList()
+
+            items.forEach {
+                if (it.uid == "uid002") {
+                    assertNotNull(it.warning)
+                    assertEquals(it.warning, "content warning message")
+                }
+                if (it.uid == "uid005") {
+                    assertNotNull(it.error)
+                    assertEquals(it.error, "content error message")
+                }
             }
         }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Should show option`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "ruleUid",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.SHOWOPTIONGROUP.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "field" to "uid006",
-                        "optionGroup" to "optionGroupId",
+    fun `Should set mandatory field`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.SETMANDATORYFIELD.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "field" to "uid003",
+                            ),
+                        ),
+                        "data",
                     ),
-                ),
-                "data",
-            ),
-        )
+                )
 
-        whenever(
-            dataEntryRepository.options(
-                any(),
-                any(),
-                any(),
-                any(),
-            ),
-        ) doReturn Pair(MutableStateFlow(""), emptyFlow())
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "value04",
+                    valueType = ValueType.TEXT,
+                )
 
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "value04",
-            valueType = ValueType.TEXT,
-        )
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
 
-        whenever(formValueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
-            "uid006",
-            ValueStoreResult.VALUE_CHANGED,
-        )
+            val items = formViewModel.items.value ?: emptyList()
 
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
-
-        verify(dataEntryRepository).options(
-            optionSetUid = "optionSetUid",
-            optionsToHide = emptyList(),
-            optionGroupsToHide = emptyList(),
-            optionGroupsToShow = listOf("optionGroupId"),
-        )
-    }
+            items.forEach {
+                if (it.uid == "uid003") {
+                    assertTrue(it.mandatory)
+                }
+            }
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Should hide option`() = runTest {
-        whenever(ruleEngineHelper.evaluate()) doReturn listOf(
-            RuleEffect(
-                "ruleUid",
-                RuleAction(
-                    "data",
-                    ProgramRuleActionType.HIDEOPTION.name,
-                    mutableMapOf(
-                        "content" to "content",
-                        "field" to "uid007",
-                        "option" to "Option2",
+    fun `Should show option`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.SHOWOPTIONGROUP.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "field" to "uid006",
+                                "optionGroup" to "optionGroupId",
+                            ),
+                        ),
+                        "data",
                     ),
+                )
+
+            whenever(
+                dataEntryRepository.options(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
                 ),
-                "data",
+            ) doReturn Pair(MutableStateFlow(""), emptyFlow())
+
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "value04",
+                    valueType = ValueType.TEXT,
+                )
+
+            whenever(formValueStore.deleteOptionValueIfSelected(any(), any())) doReturn
+                StoreResult(
+                    "uid006",
+                    ValueStoreResult.VALUE_CHANGED,
+                )
+
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
+
+            verify(dataEntryRepository).options(
+                optionSetUid = "optionSetUid",
+                optionsToHide = emptyList(),
+                optionGroupsToHide = emptyList(),
+                optionGroupsToShow = listOf("optionGroupId"),
+            )
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Should hide option`() =
+        runTest {
+            whenever(ruleEngineHelper.evaluate()) doReturn
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            "data",
+                            ProgramRuleActionType.HIDEOPTION.name,
+                            mutableMapOf(
+                                "content" to "content",
+                                "field" to "uid007",
+                                "option" to "Option2",
+                            ),
+                        ),
+                        "data",
+                    ),
+                )
+
+            whenever(
+                dataEntryRepository.options(
+                    any(),
+                    any(),
+                    any(),
+                    any(),
+                ),
+            ) doReturn Pair(MutableStateFlow(""), emptyFlow())
+
+            val intent =
+                FormIntent.OnSave(
+                    uid = "uid004",
+                    value = "value04",
+                    valueType = ValueType.TEXT,
+                )
+
+            whenever(formValueStore.deleteOptionValueIfSelected(any(), any())) doReturn
+                StoreResult(
+                    "uid007",
+                    ValueStoreResult.VALUE_HAS_NOT_CHANGED,
+                )
+
+            formViewModel.submitIntent(intent)
+            advanceUntilIdle()
+
+            verify(dataEntryRepository).options(
+                optionSetUid = "optionSetUid",
+                optionsToHide = listOf("Option2"),
+                optionGroupsToHide = emptyList(),
+                optionGroupsToShow = emptyList(),
+            )
+        }
+
+    private fun provideItemList() =
+        listOf(
+            SectionUiModelImpl(
+                uid = "section1",
+                label = "section1",
+                selectedField = ObservableField(""),
+            ),
+            FieldUiModelImpl(
+                uid = "uid001",
+                value = "value01",
+                label = "field1",
+                valueType = ValueType.TEXT,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+                programStageSection = "section1",
+            ),
+            FieldUiModelImpl(
+                uid = "uid002",
+                value = "value02",
+                label = "field2",
+                valueType = ValueType.TEXT,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+                programStageSection = "section1",
+            ),
+            FieldUiModelImpl(
+                uid = "uid003",
+                value = "value03",
+                label = "field3",
+                valueType = ValueType.TEXT,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+                programStageSection = "section1",
+            ),
+            SectionUiModelImpl(
+                uid = "section2",
+                label = "section2",
+                selectedField = ObservableField(""),
+            ),
+            FieldUiModelImpl(
+                uid = "uid004",
+                value = "value04",
+                label = "field4",
+                valueType = ValueType.TEXT,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+                programStageSection = "section2",
+            ),
+            FieldUiModelImpl(
+                uid = "uid005",
+                value = "value05",
+                label = "field5",
+                valueType = ValueType.TEXT,
+                optionSetConfiguration = null,
+                autocompleteList = null,
+                programStageSection = "section2",
+            ),
+            FieldUiModelImpl(
+                uid = "uid006",
+                value = "value06",
+                label = "field6",
+                valueType = ValueType.MULTI_TEXT,
+                optionSetConfiguration =
+                    OptionSetConfiguration(
+                        MutableStateFlow(""),
+                        {},
+                        emptyFlow(),
+                    ),
+                autocompleteList = null,
+                programStageSection = "section2",
+                optionSet = "optionSetUid",
+            ),
+            FieldUiModelImpl(
+                uid = "uid007",
+                value = "value07",
+                label = "field7",
+                valueType = ValueType.MULTI_TEXT,
+                optionSetConfiguration =
+                    OptionSetConfiguration(
+                        MutableStateFlow(""),
+                        {},
+                        emptyFlow(),
+                    ),
+                autocompleteList = null,
+                programStageSection = "section2",
+                optionSet = "optionSetUid",
             ),
         )
-
-        whenever(
-            dataEntryRepository.options(
-                any(),
-                any(),
-                any(),
-                any(),
-            ),
-        ) doReturn Pair(MutableStateFlow(""), emptyFlow())
-
-        val intent = FormIntent.OnSave(
-            uid = "uid004",
-            value = "value04",
-            valueType = ValueType.TEXT,
-        )
-
-        whenever(formValueStore.deleteOptionValueIfSelected(any(), any())) doReturn StoreResult(
-            "uid007",
-            ValueStoreResult.VALUE_HAS_NOT_CHANGED,
-        )
-
-        formViewModel.submitIntent(intent)
-        advanceUntilIdle()
-
-        verify(dataEntryRepository).options(
-            optionSetUid = "optionSetUid",
-            optionsToHide = listOf("Option2"),
-            optionGroupsToHide = emptyList(),
-            optionGroupsToShow = emptyList(),
-        )
-    }
-
-    private fun provideItemList() = listOf(
-        SectionUiModelImpl(
-            uid = "section1",
-            label = "section1",
-            selectedField = ObservableField(""),
-        ),
-        FieldUiModelImpl(
-            uid = "uid001",
-            value = "value01",
-            label = "field1",
-            valueType = ValueType.TEXT,
-            optionSetConfiguration = null,
-            autocompleteList = null,
-            programStageSection = "section1",
-        ),
-        FieldUiModelImpl(
-            uid = "uid002",
-            value = "value02",
-            label = "field2",
-            valueType = ValueType.TEXT,
-            optionSetConfiguration = null,
-            autocompleteList = null,
-            programStageSection = "section1",
-        ),
-        FieldUiModelImpl(
-            uid = "uid003",
-            value = "value03",
-            label = "field3",
-            valueType = ValueType.TEXT,
-            optionSetConfiguration = null,
-            autocompleteList = null,
-            programStageSection = "section1",
-        ),
-        SectionUiModelImpl(
-            uid = "section2",
-            label = "section2",
-            selectedField = ObservableField(""),
-        ),
-        FieldUiModelImpl(
-            uid = "uid004",
-            value = "value04",
-            label = "field4",
-            valueType = ValueType.TEXT,
-            optionSetConfiguration = null,
-            autocompleteList = null,
-            programStageSection = "section2",
-        ),
-        FieldUiModelImpl(
-            uid = "uid005",
-            value = "value05",
-            label = "field5",
-            valueType = ValueType.TEXT,
-            optionSetConfiguration = null,
-            autocompleteList = null,
-            programStageSection = "section2",
-        ),
-        FieldUiModelImpl(
-            uid = "uid006",
-            value = "value06",
-            label = "field6",
-            valueType = ValueType.MULTI_TEXT,
-            optionSetConfiguration = OptionSetConfiguration(
-                MutableStateFlow(""),
-                {},
-                emptyFlow(),
-            ),
-            autocompleteList = null,
-            programStageSection = "section2",
-            optionSet = "optionSetUid",
-        ),
-        FieldUiModelImpl(
-            uid = "uid007",
-            value = "value07",
-            label = "field7",
-            valueType = ValueType.MULTI_TEXT,
-            optionSetConfiguration = OptionSetConfiguration(
-                MutableStateFlow(""),
-                {},
-                emptyFlow(),
-            ),
-            autocompleteList = null,
-            programStageSection = "section2",
-            optionSet = "optionSetUid",
-        ),
-    )
 }

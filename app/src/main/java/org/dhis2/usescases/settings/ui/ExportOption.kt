@@ -20,10 +20,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -58,13 +58,14 @@ fun ExportOption(
 
     var onPermissionGrantedCallback: () -> Unit = {}
     var showPermissionDialog by remember { mutableStateOf(false) }
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { isGranted ->
-        onPermissionGrantedCallback.takeIf { isGranted }?.invoke() ?: run {
-            showPermissionDialog = true
+    val launcher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            onPermissionGrantedCallback.takeIf { isGranted }?.invoke() ?: run {
+                showPermissionDialog = true
+            }
         }
-    }
 
     val permissionSettingLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
@@ -90,15 +91,11 @@ fun ExportOption(
 
         if (targetState.not()) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Spacing.Spacing72)
-                    .padding(
-                        start = Spacing.Spacing48,
-                        top = Spacing.Spacing16,
-                        end = Spacing.Spacing16,
-                        bottom = Spacing.Spacing16,
-                    ),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(Spacing.Spacing72)
+                        .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
@@ -108,7 +105,7 @@ fun ExportOption(
                         onDownloadCLick(context, onDownload, launcher)
                         onPermissionGrantedCallback = onDownload
                     },
-                    style = ButtonStyle.TEXT,
+                    style = ButtonStyle.TONAL,
                     text = stringResource(id = R.string.download),
                     icon = {
                         Icon(
@@ -125,7 +122,7 @@ fun ExportOption(
                         onShareClick(context, onShare, launcher)
                         onPermissionGrantedCallback = onShare
                     },
-                    style = ButtonStyle.TEXT,
+                    style = ButtonStyle.TONAL,
                     text = stringResource(id = R.string.share),
                     icon = {
                         Icon(
@@ -138,10 +135,11 @@ fun ExportOption(
             }
         } else {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Spacing.Spacing72)
-                    .padding(Spacing.Spacing16),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(Spacing.Spacing72)
+                        .padding(Spacing.Spacing16),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = getHorizontalArrangement(displayProgress),
             ) {
@@ -155,23 +153,29 @@ fun ExportOption(
             labelText = stringResource(id = R.string.permission_denied),
             descriptionText = "You need to provide the permission to carry out this action",
             iconResource = R.drawable.ic_info,
-            dismissButton = ButtonUiModel("Cancel") {
-                showPermissionDialog = false
-                onPermissionGrantedCallback = {}
-            },
-            confirmButton = ButtonUiModel("Change permission") {
-                permissionSettingLauncher.launch(
-                    Intent(
-                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                        Uri.fromParts("package", context.packageName, null),
-                    ),
-                )
-            },
+            dismissButton =
+                ButtonUiModel("Cancel") {
+                    showPermissionDialog = false
+                    onPermissionGrantedCallback = {}
+                },
+            confirmButton =
+                ButtonUiModel("Change permission") {
+                    permissionSettingLauncher.launch(
+                        Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", context.packageName, null),
+                        ),
+                    )
+                },
         )
     }
 }
 
-private fun onDownloadCLick(context: Context, onSuccess: () -> Unit, launcher: ActivityResultLauncher<String>) {
+private fun onDownloadCLick(
+    context: Context,
+    onSuccess: () -> Unit,
+    launcher: ActivityResultLauncher<String>,
+) {
     if (checkPermissionAndAndroidVersion(context)) {
         onSuccess()
     } else {
@@ -179,7 +183,11 @@ private fun onDownloadCLick(context: Context, onSuccess: () -> Unit, launcher: A
     }
 }
 
-private fun onShareClick(context: Context, onSuccess: () -> Unit, launcher: ActivityResultLauncher<String>) {
+private fun onShareClick(
+    context: Context,
+    onSuccess: () -> Unit,
+    launcher: ActivityResultLauncher<String>,
+) {
     if (checkPermissionAndAndroidVersion(context)) {
         onSuccess()
     } else {
@@ -194,8 +202,7 @@ private fun checkPermissionAndAndroidVersion(context: Context) =
             android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
         ) == PackageManager.PERMISSION_GRANTED
 
-private fun getHorizontalArrangement(displayProgress: Boolean) =
-    if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16)
+private fun getHorizontalArrangement(displayProgress: Boolean) = if (displayProgress) Arrangement.Center else spacedBy(Spacing.Spacing16)
 
 @Preview
 @Composable

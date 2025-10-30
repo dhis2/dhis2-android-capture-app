@@ -1,6 +1,7 @@
 package org.dhis2.usescases.teiDashboard.teiProgramList.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -8,68 +9,99 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
-import org.dhis2.ui.MetadataIcon
-import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.main.program.ProgramDownloadState
 import org.dhis2.usescases.main.program.ProgramUiModel
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import java.util.Date
 
 @Composable
-fun EnrollToProgram(programUiModel: ProgramUiModel, onEnrollClickListener: () -> Unit) {
+fun EnrollToProgram(
+    programUiModel: ProgramUiModel,
+    onEnrollClickListener: () -> Unit,
+) {
     Column {
         Row(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .background(color = Color.White)
-                .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
+            modifier =
+                Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .background(color = Color.White)
+                    .padding(start = 21.dp, top = 8.dp, end = 21.dp, bottom = 0.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = spacedBy(8.dp),
         ) {
-            MetadataIcon(
-                modifier = Modifier
-                    .width(56.dp)
-                    .height(56.dp)
-                    .alpha(0.5f),
-                metadataIconData = programUiModel.metadataIconData,
+            MetadataAvatar(
+                modifier =
+                    Modifier
+                        .size(56.dp)
+                        .alpha(0.5f),
+                icon = {
+                    if (programUiModel.metadataIconData.isFileLoaded()) {
+                        MetadataIcon(
+                            imageCardData = programUiModel.metadataIconData.imageCardData,
+                        )
+                    } else {
+                        Icon(
+                            painter = provideDHIS2Icon("dhis2_image_not_supported"),
+                            contentDescription = "",
+                        )
+                    }
+                },
+                iconTint = programUiModel.metadataIconData.color,
+                size = MetadataAvatarSize.M(),
             )
-            Spacer(modifier = Modifier.width(8.dp))
             Text(
-                modifier = Modifier
-                    .weight(2f, true)
-                    .padding(end = 12.dp),
+                modifier =
+                    Modifier
+                        .weight(2f, true)
+                        .padding(end = 12.dp),
                 text = programUiModel.title,
                 fontSize = 14.sp,
             )
         }
         Row(
-            modifier = Modifier
-                .padding(top = 4.dp, bottom = 16.dp, end = 16.dp).fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(top = 4.dp, bottom = 16.dp, end = 16.dp)
+                    .fillMaxWidth(),
         ) {
-            Spacer(modifier = Modifier.width(68.dp).height(0.dp))
+            Spacer(
+                modifier =
+                    Modifier
+                        .width(68.dp)
+                        .height(0.dp),
+            )
 
             Button(
                 text = stringResource(id = R.string.enroll),
-                modifier = Modifier.fillMaxWidth()
-                    .semantics { testTag = PROGRAM_TO_ENROLL.format(programUiModel.title) },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .testTag(PROGRAM_TO_ENROLL.format(programUiModel.title)),
                 enabled = !programUiModel.isDownloading(),
                 onClick = onEnrollClickListener,
                 style = ButtonStyle.TONAL,
@@ -90,31 +122,33 @@ fun EnrollToProgramDisabledPreview() {
     EnrollToProgram(testingProgramModel(ProgramDownloadState.DOWNLOADED)) {}
 }
 
-private fun testingProgramModel(downloadState: ProgramDownloadState) = ProgramUiModel(
-    uid = "qweqwe",
-    title = "A very long long long program title",
-    metadataIconData = MetadataIconData(
-        imageCardData = ImageCardData.IconCardData(
-            uid = "7e0cb105-c276-4f12-9f56-a26af8314121",
-            label = "Stethoscope",
-            iconRes = "dhis2_stethoscope_positive",
-            iconTint = "#00BCD4".toColor(),
-        ),
-        color = "#00BCD4".toColor(),
-    ),
-    count = 12,
-    type = "type",
-    typeName = "Persons",
-    programType = "WITH_REGISTRATION",
-    description = null,
-    onlyEnrollOnce = false,
-    accessDataWrite = true,
-    state = State.SYNCED,
-    downloadState = downloadState,
-    isStockUseCase = false,
-    lastUpdated = Date(),
-    hasOverdueEvent = false,
-    filtersAreActive = false,
-)
+private fun testingProgramModel(downloadState: ProgramDownloadState) =
+    ProgramUiModel(
+        uid = "qweqwe",
+        title = "A very long long long program title",
+        metadataIconData =
+            MetadataIconData(
+                imageCardData =
+                    ImageCardData.IconCardData(
+                        uid = "7e0cb105-c276-4f12-9f56-a26af8314121",
+                        label = "Stethoscope",
+                        iconRes = "dhis2_stethoscope_positive",
+                        iconTint = "#00BCD4".toColor(),
+                    ),
+                color = "#00BCD4".toColor(),
+            ),
+        count = 12,
+        type = "type",
+        typeName = "Persons",
+        programType = "WITH_REGISTRATION",
+        description = null,
+        onlyEnrollOnce = false,
+        accessDataWrite = true,
+        state = State.SYNCED,
+        downloadState = downloadState,
+        isStockUseCase = false,
+        lastUpdated = Date(),
+        filtersAreActive = false,
+    )
 
 const val PROGRAM_TO_ENROLL = "PROGRAM_TO_ENROLL_%s"

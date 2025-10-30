@@ -14,14 +14,12 @@ class DashboardViewModelFactory(
     val pageConfigurator: NavigationPageConfigurator,
     val resourceManager: ResourceManager,
 ) : ViewModelProvider.Factory {
-
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return DashboardViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        DashboardViewModel(
             repository,
             analyticsHelper,
             dispatcher,
             pageConfigurator,
             resourceManager,
         ) as T
-    }
 }

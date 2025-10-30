@@ -18,14 +18,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -55,15 +55,15 @@ fun OptionSetDialogScreen(
     onOptionClick: (optionCode: String?) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(16.dp),
-            )
-            .padding(
-                vertical = 8.dp,
-                horizontal = 16.dp,
-            ),
+        modifier =
+            Modifier
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(16.dp),
+                ).padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp,
+                ),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         val searchValue by viewModel.searchValue.observeAsState("")
@@ -84,9 +84,10 @@ fun OptionSetDialogScreen(
             OptionList(options) { onOptionClick(it) }
         } else {
             Box(
-                modifier = Modifier
-                    .height(300.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .height(300.dp)
+                        .fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
                 when (searchValue.isNotEmpty()) {
@@ -106,11 +107,12 @@ fun OptionSetDialogScreen(
 private fun DialogTitle(title: String) {
     Text(
         text = title,
-        style = TextStyle(
-            color = colorResource(id = R.color.text_black_333),
-            fontSize = 20.sp,
-            fontFamily = FontFamily(Font(R.font.rubik_regular)),
-        ),
+        style =
+            TextStyle(
+                color = colorResource(id = R.color.text_black_333),
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
+            ),
     )
 }
 
@@ -121,21 +123,22 @@ private fun SearchBar(
     onClearSearchClick: () -> Unit,
 ) {
     BasicTextField(
-        modifier = Modifier
-            .height(32.dp)
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .height(32.dp)
+                .fillMaxWidth(),
         value = searchValue,
         onValueChange = onSearchValueChanged,
         singleLine = true,
         decorationBox = { innerTextField ->
             Row(
-                modifier = Modifier
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(16.dp),
-                    )
-                    .padding(horizontal = 12.dp),
+                modifier =
+                    Modifier
+                        .border(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(16.dp),
+                        ).padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -148,10 +151,11 @@ private fun SearchBar(
                     if (searchValue.isEmpty()) {
                         Text(
                             text = stringResource(id = R.string.search),
-                            style = LocalTextStyle.current.copy(
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
-                                fontSize = 16.sp,
-                            ),
+                            style =
+                                LocalTextStyle.current.copy(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
+                                    fontSize = 16.sp,
+                                ),
                         )
                     }
                     innerTextField()
@@ -174,38 +178,47 @@ private fun SearchBar(
 }
 
 @Composable
-private fun OptionList(options: List<Option>, onOptionClick: (code: String?) -> Unit) {
+private fun OptionList(
+    options: List<Option>,
+    onOptionClick: (code: String?) -> Unit,
+) {
     LazyColumn(
         modifier = Modifier.height(300.dp),
     ) {
         items(items = options) { option ->
             Box(
-                modifier = Modifier
-                    .defaultMinSize(minHeight = 42.dp)
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .clickable { onOptionClick(option.code()) },
+                modifier =
+                    Modifier
+                        .defaultMinSize(minHeight = 42.dp)
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .clickable { onOptionClick(option.code()) },
                 contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
                     text = option.displayName() ?: option.uid(),
-                    style = TextStyle(
-                        color = colorResource(id = R.color.text_black_333),
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                    ),
+                    style =
+                        TextStyle(
+                            color = colorResource(id = R.color.text_black_333),
+                            fontSize = 14.sp,
+                            fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                        ),
                 )
             }
-            Divider()
+            HorizontalDivider()
         }
     }
 }
 
 @Composable
-private fun DialogButtonActions(onClearClick: () -> Unit, onCancelClick: () -> Unit) {
+private fun DialogButtonActions(
+    onClearClick: () -> Unit,
+    onCancelClick: () -> Unit,
+) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier =
+            Modifier
+                .fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
     ) {
         Button(

@@ -6,7 +6,14 @@ import java.util.Locale
 
 interface PeriodStepProvider {
     fun periodStep(periodType: PeriodType?): Long
-    fun periodUIString(locale: Locale, period: Period): String
 
-    fun getPeriodDiff(initialPeriod: Period, currentPeriod: Period): Int
+    fun periodUIString(
+        locale: Locale,
+        period: Period,
+    ): String
+
+    fun getPeriodDiff(
+        initialPeriod: Period,
+        currentPeriod: Period,
+    ): Int
 }

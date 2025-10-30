@@ -17,7 +17,6 @@ import org.dhis2.usescases.programEventDetail.eventList.ui.mapper.EventCardMappe
 import javax.inject.Inject
 
 class EventListFragment : FragmentGlobalAbstract() {
-
     @Inject
     lateinit var eventListViewModelFactory: EventListPresenterFactory
 
@@ -34,7 +33,8 @@ class EventListFragment : FragmentGlobalAbstract() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-        (activity as ProgramEventDetailActivity).component
+        (activity as ProgramEventDetailActivity)
+            .component
             ?.plus(EventListModule())
             ?.inject(this)
 

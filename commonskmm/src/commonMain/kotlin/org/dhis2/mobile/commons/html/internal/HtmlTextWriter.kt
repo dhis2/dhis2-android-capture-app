@@ -67,7 +67,10 @@ internal class HtmlTextWriter(
         }
     }
 
-    private inline fun CharSequence.indexOfFirst(startIndex: Int, predicate: (Char) -> Boolean): Int {
+    private inline fun CharSequence.indexOfFirst(
+        startIndex: Int,
+        predicate: (Char) -> Boolean,
+    ): Int {
         for (index in startIndex..<length) {
             if (predicate(this[index])) {
                 return index

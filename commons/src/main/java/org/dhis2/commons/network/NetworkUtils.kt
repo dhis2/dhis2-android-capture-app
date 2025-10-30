@@ -4,15 +4,26 @@ import android.content.Context
 import android.net.ConnectivityManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.dhis2.commons.R
+import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
 import timber.log.Timber
 
-class NetworkUtils(val context: Context) {
+@Deprecated(
+    message = "This has been deprecated",
+    replaceWith = ReplaceWith("NetworkStatusProvider"),
+)
+class NetworkUtils(
+    val context: Context,
+) {
+    private val networkStatusProvider = NetworkStatusProviderImpl(context)
+    val connectionStatus = networkStatusProvider.connectionStatus
+
     fun isOnline(): Boolean {
         var isOnline = false
         try {
-            val manager = context.getSystemService(
-                Context.CONNECTIVITY_SERVICE,
-            ) as ConnectivityManager?
+            val manager =
+                context.getSystemService(
+                    Context.CONNECTIVITY_SERVICE,
+                ) as ConnectivityManager?
             if (manager != null) {
                 val netInfo = manager.activeNetworkInfo
                 isOnline = netInfo != null && netInfo.isConnectedOrConnecting
@@ -46,8 +57,7 @@ class NetworkUtils(val context: Context) {
             .setMessage(noNetworkMessage)
             .setPositiveButton(context.getString(R.string.action_accept)) { _, _ ->
                 onDialogDismissed()
-            }
-            .setCancelable(false)
+            }.setCancelable(false)
             .show()
     }
 }

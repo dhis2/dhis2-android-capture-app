@@ -16,22 +16,25 @@ interface TroubleshootingComponent {
 }
 
 @Module
-class TroubleshootingModule(private val openLanguageSection: Boolean) {
-
+class TroubleshootingModule(
+    private val openLanguageSection: Boolean,
+) {
     @Provides
     fun providesViewModelFactory(
         localeSelector: LocaleSelector,
         repository: TroubleshootingRepository,
-    ): TroubleshootingViewModelFactory {
-        return TroubleshootingViewModelFactory(
+    ): TroubleshootingViewModelFactory =
+        TroubleshootingViewModelFactory(
             localeSelector,
             repository,
             openLanguageSection,
         )
-    }
 
     @Provides
-    fun providesLocaleSelector(context: Context, d2: D2) = LocaleSelector(context, d2)
+    fun providesLocaleSelector(
+        context: Context,
+        d2: D2,
+    ) = LocaleSelector(context, d2)
 
     @Provides
     fun provideRepository(

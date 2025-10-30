@@ -14,49 +14,50 @@ data class TableModel(
     fun countChildrenOfSelectedHeader(
         headerRowIndex: Int,
         headerColumnIndex: Int,
-    ): Map<Int, TableSelection.HeaderCellRange> {
-        return tableHeaderModel.rows
+    ): Map<Int, TableSelection.HeaderCellRange> =
+        tableHeaderModel.rows
             .filterIndexed { index, _ -> index > headerRowIndex }
             .mapIndexed { index, _ ->
                 val rowIndex = headerRowIndex + 1 + index
                 val rowSize =
-                    tableHeaderModel.numberOfColumns(rowIndex) / tableHeaderModel.numberOfColumns(
-                        headerRowIndex,
-                    )
+                    tableHeaderModel.numberOfColumns(rowIndex) /
+                        tableHeaderModel.numberOfColumns(
+                            headerRowIndex,
+                        )
                 val init = headerColumnIndex * rowSize
                 val end = (headerColumnIndex + 1) * rowSize - 1
                 rowIndex to TableSelection.HeaderCellRange(rowSize, init, end)
             }.toMap()
-    }
 
     fun getNextCell(
         cellSelection: TableSelection.CellSelection,
         successValidation: Boolean,
-    ): Pair<TableCell, TableSelection.CellSelection>? = when {
-        !successValidation ->
-            cellSelection
+    ): Pair<TableCell, TableSelection.CellSelection>? =
+        when {
+            !successValidation ->
+                cellSelection
 
-        cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
-            cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
+            cellSelection.columnIndex < tableHeaderModel.tableMaxColumns() - 1 ->
+                cellSelection.copy(columnIndex = cellSelection.columnIndex + 1)
 
-        cellSelection.rowIndex < tableRows.size - 1 ->
-            cellSelection.copy(
-                columnIndex = 0,
-                rowIndex = cellSelection.rowIndex + 1,
-                globalIndex = cellSelection.globalIndex + 1,
-            )
+            cellSelection.rowIndex < tableRows.size - 1 ->
+                cellSelection.copy(
+                    columnIndex = 0,
+                    rowIndex = cellSelection.rowIndex + 1,
+                    globalIndex = cellSelection.globalIndex + 1,
+                )
 
-        else -> null
-    }?.let { nextCell ->
-        val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
-        when (tableCell?.editable) {
-            true -> Pair(tableCell, nextCell)
-            else -> getNextCell(nextCell, successValidation)
+            else -> null
+        }?.let { nextCell ->
+            val tableCell = tableRows[nextCell.rowIndex].values[nextCell.columnIndex]
+            when (tableCell?.editable) {
+                true -> Pair(tableCell, nextCell)
+                else -> getNextCell(nextCell, successValidation)
+            }
         }
-    }
 
-    fun cellHasError(cell: TableSelection.CellSelection): TableCell? {
-        return when {
+    fun cellHasError(cell: TableSelection.CellSelection): TableCell? =
+        when {
             tableRows.size == 1 && tableRows.size == cell.rowIndex -> {
                 tableRows[0].values[cell.columnIndex]?.takeIf { it.error != null }
             }
@@ -65,17 +66,18 @@ data class TableModel(
                 tableRows[cell.rowIndex - 1].values[cell.columnIndex]?.takeIf { it.error != null }
             }
 
-            else -> tableRows.getOrNull(cell.rowIndex)
-                ?.values?.get(cell.columnIndex)
-                ?.takeIf { it.error != null }
+            else ->
+                tableRows
+                    .getOrNull(cell.rowIndex)
+                    ?.values
+                    ?.get(cell.columnIndex)
+                    ?.takeIf { it.error != null }
         }
-    }
 
-    fun hasCellWithId(cellId: String?): Boolean {
-        return tableRows.any { row ->
+    fun hasCellWithId(cellId: String?): Boolean =
+        tableRows.any { row ->
             row.rowHeader.id?.let {
                 it.isNotEmpty() && cellId?.contains(it) == true
             } ?: false
         }
-    }
 }

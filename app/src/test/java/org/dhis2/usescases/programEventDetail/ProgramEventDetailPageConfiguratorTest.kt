@@ -9,7 +9,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class ProgramEventDetailPageConfiguratorTest {
-
     private val repository: ProgramEventDetailRepository = mock()
     private val pageConfigurator: NavigationPageConfigurator =
         ProgramEventPageConfigurator(repository)

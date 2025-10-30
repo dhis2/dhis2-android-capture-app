@@ -184,13 +184,9 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     GetRelationshipsByType provideGetRelationshipsByType(
-            RelationshipsRepository relationshipsRepository,
-            DispatcherProvider dispatcherProvider
+            RelationshipsRepository relationshipsRepository
     ) {
-        return new GetRelationshipsByType(
-                relationshipsRepository,
-                dispatcherProvider
-        );
+        return new GetRelationshipsByType(relationshipsRepository);
     }
 
     @Provides
@@ -204,10 +200,9 @@ public class RelationshipModule {
     @Provides
     @PerFragment
     AddRelationship provideAddRelationship(
-            DispatcherProvider dispatcherProvider,
             RelationshipsRepository relationshipsRepository
     ) {
-        return new AddRelationship(dispatcherProvider, relationshipsRepository);
+        return new AddRelationship(relationshipsRepository);
     }
 
     @Provides

@@ -39,30 +39,32 @@ fun MapScreen(
     actionButtons: @Composable (ColumnScope.() -> Unit),
     map: @Composable (BoxScope.() -> Unit),
     onItem: @Composable LazyItemScope.(item: MapItemModel) -> Unit,
-
 ) {
     var pagerMaxHeight by remember { mutableStateOf(Dp.Unspecified) }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .onGloballyPositioned {
-                pagerMaxHeight = (it.size.height * 0.7).dp
-            },
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .onGloballyPositioned {
+                    pagerMaxHeight = (it.size.height * 0.7).dp
+                },
     ) {
         map()
         Column(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp),
         ) {
             actionButtons()
         }
         MapItemHorizontalPager(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .testTag("MAP_CAROUSEL")
-                .heightIn(max = pagerMaxHeight),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .testTag("MAP_CAROUSEL")
+                    .heightIn(max = pagerMaxHeight),
             state = listState,
             items = items,
             onItem = onItem,
@@ -82,9 +84,10 @@ fun MapScreen(
     Box(modifier = modifier.fillMaxSize()) {
         map()
         Column(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(8.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp),
         ) {
             actionButtons()
         }
@@ -93,18 +96,22 @@ fun MapScreen(
 }
 
 @Composable
-fun LocationIcon(locationState: LocationState, onLocationButtonClicked: () -> Unit) {
+fun LocationIcon(
+    locationState: LocationState,
+    onLocationButtonClicked: () -> Unit,
+) {
     IconButton(
         style = IconButtonStyle.TONAL,
         icon = {
             Icon(
-                painter = painterResource(
-                    when (locationState) {
-                        LocationState.FIXED -> R.drawable.ic_gps_fixed
-                        LocationState.NOT_FIXED -> R.drawable.ic_gps_not_fixed
-                        LocationState.OFF -> R.drawable.ic_gps_off
-                    },
-                ),
+                painter =
+                    painterResource(
+                        when (locationState) {
+                            LocationState.FIXED -> R.drawable.ic_gps_fixed
+                            LocationState.NOT_FIXED -> R.drawable.ic_gps_not_fixed
+                            LocationState.OFF -> R.drawable.ic_gps_off
+                        },
+                    ),
                 contentDescription = "location",
                 tint = TextColor.OnPrimaryContainer,
             )

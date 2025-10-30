@@ -12,14 +12,13 @@ object FacilityFactory {
     fun create(id: Long): OrganisationUnit {
         val name = faker.address().streetName()
 
-        return OrganisationUnit.builder()
-            .id(id)
+        return OrganisationUnit
+            .builder()
             .uid(uidGenerator.generate())
             .name(name)
-            .displayName(name).build()
+            .displayName(name)
+            .build()
     }
 
-    fun getListOf(num: Int): List<OrganisationUnit> {
-        return (1..num).map { create(it.toLong()) }
-    }
+    fun getListOf(num: Int): List<OrganisationUnit> = (1..num).map { create(it.toLong()) }
 }

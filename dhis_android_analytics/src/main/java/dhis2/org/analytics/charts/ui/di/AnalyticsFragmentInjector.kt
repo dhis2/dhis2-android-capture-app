@@ -23,7 +23,5 @@ class AnalyticsFragmentModule(
     fun provideViewModelFactory(
         charts: Charts,
         matomoAnalyticsController: MatomoAnalyticsController,
-    ): GroupAnalyticsViewModelFactory {
-        return GroupAnalyticsViewModelFactory(mode, uid, charts, matomoAnalyticsController)
-    }
+    ): GroupAnalyticsViewModelFactory = GroupAnalyticsViewModelFactory(mode, uid, charts, matomoAnalyticsController)
 }

@@ -22,25 +22,27 @@ class DataElementToGraph(
         selectedOrgUnits: List<String>?,
         isDefault: Boolean = false,
     ): Graph {
-        val coordinates = chartCoordinatesProvider.dataElementCoordinates(
-            stageUid,
-            teiUid,
-            dataElement.uid(),
-            selectedRelativePeriod,
-            selectedOrgUnits,
-            isDefault,
-        )
-
-        val serie = if (coordinates.isNotEmpty()) {
-            listOf(
-                SerieData(
-                    dataElement.displayFormName() ?: dataElement.uid(),
-                    coordinates,
-                ),
+        val coordinates =
+            chartCoordinatesProvider.dataElementCoordinates(
+                stageUid,
+                teiUid,
+                dataElement.uid(),
+                selectedRelativePeriod,
+                selectedOrgUnits,
+                isDefault,
             )
-        } else {
-            emptyList()
-        }
+
+        val serie =
+            if (coordinates.isNotEmpty()) {
+                listOf(
+                    SerieData(
+                        dataElement.displayFormName() ?: dataElement.uid(),
+                        coordinates,
+                    ),
+                )
+            } else {
+                emptyList()
+            }
 
         return Graph(
             title = "${stagePeriod.name}-${dataElement.displayFormName()}",
@@ -49,10 +51,11 @@ class DataElementToGraph(
             eventPeriodType = stagePeriod,
             periodStep = periodStepProvider.periodStep(stagePeriod),
             visualizationUid = "${teiUid}${stageUid}${dataElement.uid()}",
-            graphFilters = GraphFilters.Visualization(
-                periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
-                orgUnitsSelected = selectedOrgUnits ?: emptyList(),
-            ),
+            graphFilters =
+                GraphFilters.Visualization(
+                    periodToDisplaySelected = selectedRelativePeriod?.firstOrNull(),
+                    orgUnitsSelected = selectedOrgUnits ?: emptyList(),
+                ),
         )
     }
 }

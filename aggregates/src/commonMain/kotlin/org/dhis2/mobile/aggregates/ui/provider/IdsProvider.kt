@@ -4,9 +4,13 @@ import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 
 internal object IdsProvider {
-    fun getDataElementUid(rowIds: List<TableId>, columnIds: List<TableId>): String {
-        val dataElementUids = rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
-            columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
+    fun getDataElementUid(
+        rowIds: List<TableId>,
+        columnIds: List<TableId>,
+    ): String {
+        val dataElementUids =
+            rowIds.filter { it.type is TableIdType.DataElement }.map { it.id } +
+                columnIds.filter { it.type is TableIdType.DataElement }.map { it.id }
 
         if (dataElementUids.size != 1) throw IllegalStateException("Only one data element can be provided")
 

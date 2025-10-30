@@ -1,6 +1,6 @@
 package org.dhis2.usescases.development
 
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.rules.models.Rule
 
 data class ProgramRuleValidation(
@@ -17,13 +17,14 @@ data class RuleValidation(
     val actionsError: List<String>? = null,
 ) {
     fun uid() = rule?.uid
+
     fun hasError() = conditionError != null || actionsError != null
-    fun errors(): List<String> {
-        return mutableListOf<String>().apply {
+
+    fun errors(): List<String> =
+        mutableListOf<String>().apply {
             conditionError?.let { add(it) }
             actionsError?.let { addAll(it) }
         }
-    }
 
     fun title() = rule?.name ?: rule?.uid ?: "-"
 }

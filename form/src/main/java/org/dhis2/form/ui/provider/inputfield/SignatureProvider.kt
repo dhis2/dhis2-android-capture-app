@@ -9,8 +9,6 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetInsets
-import org.dhis2.commons.dialogs.bottomsheet.bottomSheetLowerPadding
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
@@ -30,29 +28,28 @@ fun ProvideInputSignature(
 ) {
     val context = LocalContext.current
 
-    val imageBitmap: ImageBitmap? = fieldUiModel.displayName?.let { path ->
-        File(path)
-            .takeIf { it.exists() }
-            ?.let { BitmapFactory.decodeFile(it.absolutePath) }
-            ?.asImageBitmap()
-    }
+    val imageBitmap: ImageBitmap? =
+        fieldUiModel.displayName?.let { path ->
+            File(path)
+                .takeIf { it.exists() }
+                ?.let { BitmapFactory.decodeFile(it.absolutePath) }
+                ?.asImageBitmap()
+        }
 
     InputSignature(
         modifier = modifier,
         title = fieldUiModel.label,
-        bottomSheetLowerPadding = bottomSheetLowerPadding(),
-        windowInsets = { bottomSheetInsets() },
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         isRequired = fieldUiModel.mandatory,
         load = { imageBitmap },
-        painterFor = imageBitmap?.let {
-            {
-                    image ->
-                BitmapPainter(image!!)
-            }
-        },
+        painterFor =
+            imageBitmap?.let {
+                { image ->
+                    BitmapPainter(image!!)
+                }
+            },
         onDownloadButtonClick = {
             fieldUiModel.invokeUiEvent(UiEventType.OPEN_FILE)
         },
@@ -64,10 +61,11 @@ fun ProvideInputSignature(
         },
         onSaveSignature = {
             it.asAndroidBitmap().let {
-                val file = File(
-                    FileResourceDirectoryHelper.getFileResourceDirectory(context),
-                    FormView.TEMP_FILE,
-                )
+                val file =
+                    File(
+                        FileResourceDirectoryHelper.getFileResourceDirectory(context),
+                        FormView.TEMP_FILE,
+                    )
                 file.outputStream().use { out ->
                     it.compress(Bitmap.CompressFormat.PNG, 85, out)
                     out.flush()

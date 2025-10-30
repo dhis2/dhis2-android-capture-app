@@ -11,15 +11,11 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.contrib.NavigationViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.program.HOME_ITEMS
-import org.dhis2.usescases.main.program.HasPrograms
-import org.hamcrest.CoreMatchers.allOf
+import org.dhis2.usescases.main.program.hasPrograms
 
 fun homeRobot(robotBody: MainRobot.() -> Unit) {
     MainRobot().apply {
@@ -30,11 +26,11 @@ fun homeRobot(robotBody: MainRobot.() -> Unit) {
 class MainRobot : BaseRobot() {
 
     fun clickOnNavigationDrawerMenu() = apply {
-        onView(withId(R.id.menu)).perform(click())
+        waitForView(withId(R.id.menu)).perform(click())
     }
 
     fun clickOnSettings() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.sync_manager))
+        waitForView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.sync_manager))
         waitToDebounce(FRAGMENT_TRANSITION)
     }
 
@@ -54,20 +50,16 @@ class MainRobot : BaseRobot() {
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
         composeTestRule.waitUntil() {
             composeTestRule.onNodeWithTag(HOME_ITEMS)
-                .fetchSemanticsNode().config.getOrNull(HasPrograms) == true
+                .fetchSemanticsNode().config.getOrNull(hasPrograms) == true
         }
         composeTestRule.onNodeWithTag(HOME_ITEMS).assert(
-            SemanticsMatcher.expectValue(HasPrograms, true)
+            SemanticsMatcher.expectValue(hasPrograms, true)
         )
-    }
-
-    fun checkLogInIsLaunched() {
-        Intents.intended(allOf(IntentMatchers.hasComponent(LoginActivity::class.java.name)))
     }
 
     @OptIn(ExperimentalTestApi::class)
     fun checkHomeIsDisplayed(composeTestRule: ComposeTestRule) {
-        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(HOME_ITEMS))
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(HOME_ITEMS), TIMEOUT)
         composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
     }
 

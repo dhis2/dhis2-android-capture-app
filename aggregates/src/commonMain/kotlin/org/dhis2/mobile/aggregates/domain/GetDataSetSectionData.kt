@@ -25,11 +25,12 @@ internal class GetDataSetSectionData(
                 sectionUid,
             )
 
-        val data = dataSetInstanceRepository.getDataSetInstanceSectionCells(
-            dataSetInstanceConfiguration.allDataSetElements,
-            datasetUid,
-            sectionUid,
-        )
+        val data =
+            dataSetInstanceRepository.getDataSetInstanceSectionCells(
+                dataSetInstanceConfiguration.allDataSetElements,
+                datasetUid,
+                sectionUid,
+            )
 
         return DataSetInstanceSectionData(
             dataSetInstanceConfiguration = dataSetInstanceConfiguration,

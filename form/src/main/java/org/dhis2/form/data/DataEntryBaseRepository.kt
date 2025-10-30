@@ -27,12 +27,10 @@ abstract class DataEntryBaseRepository(
     private val fieldFactory: FieldViewModelFactory,
     private val metadataIconProvider: MetadataIconProvider,
 ) : DataEntryRepository {
-
     abstract val programUid: String?
     abstract val defaultStyleColor: Color
-    override fun firstSectionToOpen(): String? {
-        return sectionUids().blockingFirst().firstOrNull()
-    }
+
+    override fun firstSectionToOpen(): String? = sectionUids().blockingFirst().firstOrNull()
 
     override fun updateSection(
         sectionToUpdate: FieldUiModel,
@@ -41,15 +39,14 @@ abstract class DataEntryBaseRepository(
         fieldsWithValue: Int,
         errorCount: Int,
         warningCount: Int,
-    ): FieldUiModel {
-        return (sectionToUpdate as SectionUiModelImpl).copy(
+    ): FieldUiModel =
+        (sectionToUpdate as SectionUiModelImpl).copy(
             isOpen = isSectionOpen,
             totalFields = totalFields,
             completedFields = fieldsWithValue,
             errors = errorCount,
             warnings = warningCount,
         )
-    }
 
     override fun updateField(
         fieldUiModel: FieldUiModel,
@@ -57,23 +54,7 @@ abstract class DataEntryBaseRepository(
         optionsToHide: List<String>,
         optionGroupsToHide: List<String>,
         optionGroupsToShow: List<String>,
-    ): FieldUiModel {
-        return warningMessage?.let { fieldUiModel.setError(it) } ?: fieldUiModel
-    }
-
-    private fun optionsFromGroups(optionGroupUids: List<String>): List<String> {
-        if (optionGroupUids.isEmpty()) return emptyList()
-        val optionsFromGroups = arrayListOf<String>()
-        val optionGroups = conf.optionGroups(optionGroupUids)
-        for (optionGroup in optionGroups) {
-            for (option in optionGroup.options()!!) {
-                if (!optionsFromGroups.contains(option.uid())) {
-                    optionsFromGroups.add(option.uid())
-                }
-            }
-        }
-        return optionsFromGroups
-    }
+    ): FieldUiModel = warningMessage?.let { fieldUiModel.setError(it) } ?: fieldUiModel
 
     override fun options(
         optionSetUid: String,
@@ -84,32 +65,31 @@ abstract class DataEntryBaseRepository(
         val searchFlow = MutableStateFlow("")
         return Pair(
             searchFlow,
-            searchFlow.debounce(300)
+            searchFlow
+                .debounce(300)
                 .flatMapLatest { query ->
-                    conf.options(
-                        optionSetUid,
-                        query,
-                        optionsToHide,
-                        optionGroupsToHide,
-                        optionGroupsToShow,
-                    ).map { pagingData ->
-                        pagingData.map { option ->
-                            OptionSetConfiguration.OptionData(
-                                option,
-                                metadataIconProvider(option.style(), defaultStyleColor),
-                            )
+                    conf
+                        .options(
+                            optionSetUid,
+                            query,
+                            optionsToHide,
+                            optionGroupsToHide,
+                            optionGroupsToShow,
+                        ).map { pagingData ->
+                            pagingData.map { option ->
+                                OptionSetConfiguration.OptionData(
+                                    option,
+                                    metadataIconProvider(option.style(), defaultStyleColor),
+                                )
+                            }
                         }
-                    }
-                }
-                .catch {
+                }.catch {
                     Timber.e(it)
                 },
         )
     }
 
-    override fun dateFormatConfiguration(): String? {
-        return conf.dateFormatConfiguration()
-    }
+    override fun dateFormatConfiguration(): String? = conf.dateFormatConfiguration()
 
     internal fun transformSection(
         sectionUid: String,
@@ -118,8 +98,8 @@ abstract class DataEntryBaseRepository(
         isOpen: Boolean = false,
         totalFields: Int = 0,
         completedFields: Int = 0,
-    ): FieldUiModel {
-        return fieldFactory.createSection(
+    ): FieldUiModel =
+        fieldFactory.createSection(
             sectionUid,
             sectionName,
             sectionDescription,
@@ -128,9 +108,11 @@ abstract class DataEntryBaseRepository(
             completedFields,
             SectionRenderingType.LISTING.name,
         )
-    }
 
-    internal fun getError(conflict: TrackerImportConflict?, dataValue: String?) = conflict?.let {
+    internal fun getError(
+        conflict: TrackerImportConflict?,
+        dataValue: String?,
+    ) = conflict?.let {
         if (it.value() == dataValue) {
             it.displayDescription()
         } else {
@@ -138,7 +120,5 @@ abstract class DataEntryBaseRepository(
         }
     }
 
-    override fun disableCollapsableSections(): Boolean? {
-        return programUid?.let { conf.disableCollapsableSectionsInProgram(programUid = it) }
-    }
+    override fun disableCollapsableSections(): Boolean? = programUid?.let { conf.disableCollapsableSectionsInProgram(programUid = it) }
 }

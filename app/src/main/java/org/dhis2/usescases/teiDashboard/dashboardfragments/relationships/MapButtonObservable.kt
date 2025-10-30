@@ -5,6 +5,8 @@ import org.dhis2.tracker.relationships.ui.state.RelationshipTopBarIconState
 
 interface MapButtonObservable {
     fun relationshipMap(): LiveData<Boolean>
+
     fun onRelationshipMapLoaded()
+
     fun updateRelationshipsTopBarIconState(topBarIconState: RelationshipTopBarIconState)
 }

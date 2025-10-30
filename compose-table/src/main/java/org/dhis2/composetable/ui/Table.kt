@@ -52,9 +52,10 @@ fun Table(
     bottomContent: @Composable (() -> Unit)? = null,
 ) {
     Box(
-        modifier = Modifier
-            .background(Color.White)
-            .clip(RoundedCornerShape(8.dp)),
+        modifier =
+            Modifier
+                .background(Color.White)
+                .clip(RoundedCornerShape(8.dp)),
     ) {
         val resizeActions = LocalTableResizeActions.current
         var tableHeight: Int? by remember { mutableStateOf(null) }
@@ -66,8 +67,7 @@ fun Table(
                     .padding(
                         vertical = LocalTableDimensions.current.tableVerticalPadding,
                         horizontal = LocalTableDimensions.current.tableHorizontalPadding,
-                    )
-                    .onSizeChanged {
+                    ).onSizeChanged {
                         resizeActions.onTableWidthChanged(it.width)
                         tableHeight = it.height
                     },
@@ -98,16 +98,16 @@ fun Table(
             }
 
             LazyColumn(
-                modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = TableTheme.dimensions.tableHorizontalPadding,
-                        vertical = TableTheme.dimensions.tableVerticalPadding,
-                    )
-                    .onSizeChanged {
-                        resizeActions.onTableWidthChanged(it.width)
-                    },
+                modifier =
+                    Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = TableTheme.dimensions.tableHorizontalPadding,
+                            vertical = TableTheme.dimensions.tableVerticalPadding,
+                        ).onSizeChanged {
+                            resizeActions.onTableWidthChanged(it.width)
+                        },
                 contentPadding = PaddingValues(bottom = TableTheme.dimensions.tableBottomPadding),
                 state = verticalScrollState,
             ) {
@@ -125,7 +125,9 @@ fun Table(
                         tableItemRow?.invoke(index, tableModel, tableRowModel)
                         LastRowDivider(tableModel.id ?: "", tableRowModel.isLastRow)
                     }
-                    stickyFooter(keyboardState == Keyboard.Closed)
+                    if (index != 0) {
+                        stickyFooter(keyboardState == Keyboard.Closed)
+                    }
                 }
                 bottomContent?.let { item { it.invoke() } }
             }
@@ -135,7 +137,10 @@ fun Table(
 }
 
 @Composable
-private fun LastRowDivider(tableId: String, isLastRow: Boolean) {
+private fun LastRowDivider(
+    tableId: String,
+    isLastRow: Boolean,
+) {
     if (isLastRow) {
         ExtendDivider(
             tableId = tableId,
@@ -144,7 +149,10 @@ private fun LastRowDivider(tableId: String, isLastRow: Boolean) {
     }
 }
 
-private suspend fun LazyListState.animateToIf(index: Int, condition: Boolean) {
+private suspend fun LazyListState.animateToIf(
+    index: Int,
+    condition: Boolean,
+) {
     if (condition) {
         apply {
             if (index >= 0) {
@@ -159,9 +167,10 @@ private fun LazyListScope.stickyFooter(showFooter: Boolean = true) {
     if (showFooter) {
         stickyHeader {
             Spacer(
-                modifier = Modifier
-                    .height(16.dp)
-                    .background(color = Color.White),
+                modifier =
+                    Modifier
+                        .height(16.dp)
+                        .background(color = Color.White),
             )
         }
     }
@@ -170,133 +179,146 @@ private fun LazyListScope.stickyFooter(showFooter: Boolean = true) {
 @Preview(showBackground = true)
 @Composable
 fun TablePreview() {
-    val tableHeaderModel = org.dhis2.composetable.model.TableHeader(
-        rows = listOf(
-            org.dhis2.composetable.model.TableHeaderRow(
-                cells = listOf(
-                    TableHeaderCell("<18"),
-                    TableHeaderCell(">18 <65"),
-                    TableHeaderCell(">65"),
+    val tableHeaderModel =
+        org.dhis2.composetable.model.TableHeader(
+            rows =
+                listOf(
+                    org.dhis2.composetable.model.TableHeaderRow(
+                        cells =
+                            listOf(
+                                TableHeaderCell("<18"),
+                                TableHeaderCell(">18 <65"),
+                                TableHeaderCell(">65"),
+                            ),
+                    ),
+                    org.dhis2.composetable.model.TableHeaderRow(
+                        cells =
+                            listOf(
+                                TableHeaderCell("Male"),
+                                TableHeaderCell("Female"),
+                            ),
+                    ),
+                    org.dhis2.composetable.model.TableHeaderRow(
+                        cells =
+                            listOf(
+                                TableHeaderCell("Fixed"),
+                                TableHeaderCell("Outreach"),
+                            ),
+                    ),
                 ),
-            ),
-            org.dhis2.composetable.model.TableHeaderRow(
-                cells = listOf(
-                    TableHeaderCell("Male"),
-                    TableHeaderCell("Female"),
-                ),
-            ),
-            org.dhis2.composetable.model.TableHeaderRow(
-                cells = listOf(
-                    TableHeaderCell("Fixed"),
-                    TableHeaderCell("Outreach"),
-                ),
-            ),
-        ),
-        hasTotals = true,
-    )
+            hasTotals = true,
+        )
 
-    val tableRows = TableRowModel(
-        rowHeader = RowHeader("uid", "Data Element", 0, true),
-        values = mapOf(
-            Pair(
-                0,
-                org.dhis2.composetable.model.TableCell(
-                    id = "0",
-                    value = "12.123523452341232131312",
-                    mandatory = true,
-                    row = 0,
-                    column = 0,
+    val tableRows =
+        TableRowModel(
+            rowHeader = RowHeader("uid", "Data Element", 0, true),
+            values =
+                mapOf(
+                    Pair(
+                        0,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "0",
+                            value = "12.123523452341232131312",
+                            mandatory = true,
+                            row = 0,
+                            column = 0,
+                        ),
+                    ),
+                    Pair(
+                        1,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "1",
+                            value = "1",
+                            editable = false,
+                            row = 0,
+                            column = 1,
+                        ),
+                    ),
+                    Pair(
+                        2,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "2",
+                            value = "",
+                            mandatory = true,
+                            row = 0,
+                            column = 2,
+                        ),
+                    ),
+                    Pair(
+                        3,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "3",
+                            value = "12",
+                            mandatory = true,
+                            error = "Error",
+                            row = 0,
+                            column = 3,
+                        ),
+                    ),
+                    Pair(
+                        4,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "4",
+                            value = "1",
+                            error = "Error",
+                            row = 0,
+                            column = 4,
+                        ),
+                    ),
+                    Pair(
+                        5,
+                        org.dhis2.composetable.model
+                            .TableCell(id = "5", value = "12", row = 0, column = 5),
+                    ),
+                    Pair(
+                        6,
+                        org.dhis2.composetable.model
+                            .TableCell(id = "6", value = "55", row = 0, column = 6),
+                    ),
+                    Pair(
+                        7,
+                        org.dhis2.composetable.model
+                            .TableCell(id = "7", value = "12", row = 0, column = 7),
+                    ),
+                    Pair(
+                        8,
+                        org.dhis2.composetable.model
+                            .TableCell(id = "8", value = "12", row = 0, column = 8),
+                    ),
+                    Pair(
+                        9,
+                        org.dhis2.composetable.model
+                            .TableCell(id = "9", value = "12", row = 0, column = 9),
+                    ),
+                    Pair(
+                        10,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "10",
+                            value = "12",
+                            row = 0,
+                            column = 10,
+                        ),
+                    ),
+                    Pair(
+                        11,
+                        org.dhis2.composetable.model.TableCell(
+                            id = "11",
+                            value = "12",
+                            row = 0,
+                            column = 11,
+                        ),
+                    ),
                 ),
-            ),
-            Pair(
-                1,
-                org.dhis2.composetable.model.TableCell(
-                    id = "1",
-                    value = "1",
-                    editable = false,
-                    row = 0,
-                    column = 1,
-                ),
-            ),
-            Pair(
-                2,
-                org.dhis2.composetable.model.TableCell(
-                    id = "2",
-                    value = "",
-                    mandatory = true,
-                    row = 0,
-                    column = 2,
-                ),
-            ),
-            Pair(
-                3,
-                org.dhis2.composetable.model.TableCell(
-                    id = "3",
-                    value = "12",
-                    mandatory = true,
-                    error = "Error",
-                    row = 0,
-                    column = 3,
-                ),
-            ),
-            Pair(
-                4,
-                org.dhis2.composetable.model.TableCell(
-                    id = "4",
-                    value = "1",
-                    error = "Error",
-                    row = 0,
-                    column = 4,
-                ),
-            ),
-            Pair(
-                5,
-                org.dhis2.composetable.model.TableCell(id = "5", value = "12", row = 0, column = 5),
-            ),
-            Pair(
-                6,
-                org.dhis2.composetable.model.TableCell(id = "6", value = "55", row = 0, column = 6),
-            ),
-            Pair(
-                7,
-                org.dhis2.composetable.model.TableCell(id = "7", value = "12", row = 0, column = 7),
-            ),
-            Pair(
-                8,
-                org.dhis2.composetable.model.TableCell(id = "8", value = "12", row = 0, column = 8),
-            ),
-            Pair(
-                9,
-                org.dhis2.composetable.model.TableCell(id = "9", value = "12", row = 0, column = 9),
-            ),
-            Pair(
-                10,
-                org.dhis2.composetable.model.TableCell(
-                    id = "10",
-                    value = "12",
-                    row = 0,
-                    column = 10,
-                ),
-            ),
-            Pair(
-                11,
-                org.dhis2.composetable.model.TableCell(
-                    id = "11",
-                    value = "12",
-                    row = 0,
-                    column = 11,
-                ),
-            ),
-        ),
-        maxLines = 1,
-    )
+            maxLines = 1,
+        )
 
-    val tableModel = TableModel(
-        "tableId",
-        "table title",
-        tableHeaderModel,
-        listOf(tableRows),
-    )
+    val tableModel =
+        TableModel(
+            "tableId",
+            "table title",
+            tableHeaderModel,
+            listOf(tableRows),
+        )
     val tableList = listOf(tableModel)
     Table(
         tableList = tableList,

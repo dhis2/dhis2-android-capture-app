@@ -6,6 +6,7 @@ internal data class DataSetInstanceSectionData(
     val tableGroups: List<TableGroup>,
 ) {
     fun hasDecoration() = dataSetInstanceConfiguration.hasDataElementDecoration
+
     fun isEditable(
         dataElementUid: String,
         categoryOptionComboUid: String?,
@@ -16,13 +17,18 @@ internal data class DataSetInstanceSectionData(
         categoryOptionComboUids,
     )
 
-    fun isMandatory(rowId: String, columnId: String) = dataSetInstanceConfiguration.isMandatory(
+    fun isMandatory(
+        rowId: String,
+        columnId: String,
+    ) = dataSetInstanceConfiguration.isMandatory(
         rowId = rowId,
         columnId = columnId,
     )
 
     fun showRowTotals() = dataSetInstanceSectionConfiguration?.showRowTotals ?: false
+
     fun showColumnTotals() = dataSetInstanceSectionConfiguration?.showColumnTotals ?: false
+
     fun pivotedHeaderId() = dataSetInstanceSectionConfiguration?.pivotedHeaderId
 }
 
@@ -38,6 +44,10 @@ internal data class TableGroup(
 
 internal sealed interface PivoteMode {
     data object None : PivoteMode
-    data class CategoryToColumn(val pivotedHeaders: List<CellElement>) : PivoteMode
+
+    data class CategoryToColumn(
+        val pivotedHeaders: List<CellElement>,
+    ) : PivoteMode
+
     data object Transpose : PivoteMode
 }

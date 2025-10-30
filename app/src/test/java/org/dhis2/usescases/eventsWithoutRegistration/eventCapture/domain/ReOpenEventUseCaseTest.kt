@@ -17,27 +17,30 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class ReOpenEventUseCaseTest {
-
     private val eventUid = "eventUid"
 
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.Unconfined
-    }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn Dispatchers.Unconfined
+        }
 
     private val eventRepository: EventObjectRepository = mock()
 
-    val eventModule: EventModule = mock {
-        on { events() } doReturn mock()
-        on { events().uid(eventUid) } doReturn eventRepository
-    }
-    private val d2: D2 = mock {
-        on { eventModule() } doReturn eventModule
-    }
+    val eventModule: EventModule =
+        mock {
+            on { events() } doReturn mock()
+            on { events().uid(eventUid) } doReturn eventRepository
+        }
+    private val d2: D2 =
+        mock {
+            on { eventModule() } doReturn eventModule
+        }
 
-    private val reOpenEventUseCase = ReOpenEventUseCase(
-        dispatcher = dispatcherProvider,
-        d2 = d2,
-    )
+    private val reOpenEventUseCase =
+        ReOpenEventUseCase(
+            dispatcher = dispatcherProvider,
+            d2 = d2,
+        )
 
     @Test
     fun `reopen event should return success`() {
@@ -49,9 +52,12 @@ class ReOpenEventUseCaseTest {
 
     @Test
     fun `reopen event should return failure`() {
-        val error = D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription("Error creating the event").build()
+        val error =
+            D2Error
+                .builder()
+                .errorCode(D2ErrorCode.UNEXPECTED)
+                .errorDescription("Error creating the event")
+                .build()
 
         whenever(
             eventModule.events().uid(eventUid).setStatus(EventStatus.ACTIVE),

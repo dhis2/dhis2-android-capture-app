@@ -32,27 +32,28 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class DataSetInstanceActivity : ActivityGlobalAbstract() {
-
     override var handleEdgeToEdge = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val uiActionHandler = UiActionHandlerImpl(
-            context = this,
-            dataSetUid = intent.getStringExtra(INTENT_EXTRA_DATA_SET_UID) ?: "",
-            fileHandler = FileHandlerImpl(),
-        )
+        val uiActionHandler =
+            UiActionHandlerImpl(
+                context = this,
+                dataSetUid = intent.getStringExtra(INTENT_EXTRA_DATA_SET_UID) ?: "",
+                fileHandler = FileHandlerImpl(),
+            )
 
         setContent {
             DHIS2Theme {
-                val useTwoPane = when (calculateWindowSizeClass(this).widthSizeClass) {
-                    WindowWidthSizeClass.Medium -> false
-                    WindowWidthSizeClass.Compact -> false
-                    WindowWidthSizeClass.Expanded -> true
-                    else -> false
-                }
+                val useTwoPane =
+                    when (calculateWindowSizeClass(this).widthSizeClass) {
+                        WindowWidthSizeClass.Medium -> false
+                        WindowWidthSizeClass.Compact -> false
+                        WindowWidthSizeClass.Expanded -> true
+                        else -> false
+                    }
                 val dataSetParams = intent.toDataSetInstanceParameters()
                 val snackbarHostState = remember { SnackbarHostState() }
                 DataSetInstanceScreen(
@@ -79,7 +80,8 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
         snackbarHostState: SnackbarHostState,
         onUpdateData: () -> Unit,
     ) {
-        SyncStatusDialog.Builder()
+        SyncStatusDialog
+            .Builder()
             .withContext(this)
             .withSyncContext(
                 SyncContext.DataSetInstance(
@@ -88,21 +90,20 @@ class DataSetInstanceActivity : ActivityGlobalAbstract() {
                     dataSetParams.organisationUnitUid,
                     dataSetParams.attributeOptionComboUid,
                 ),
-            )
-            .onDismissListener(object : OnDismissListener {
-                override fun onDismiss(hasChanged: Boolean) {
-                    if (hasChanged) onUpdateData()
-                }
-            })
-            .onNoConnectionListener {
+            ).onDismissListener(
+                object : OnDismissListener {
+                    override fun onDismiss(hasChanged: Boolean) {
+                        if (hasChanged) onUpdateData()
+                    }
+                },
+            ).onNoConnectionListener {
                 lifecycleScope.launch {
                     snackbarHostState.showSnackbar(
                         message = getString(R.string.sync_offline_check_connection),
                         duration = SnackbarDuration.Short,
                     )
                 }
-            }
-            .show(DATA_VALUE_SYNC)
+            }.show(DATA_VALUE_SYNC)
     }
 
     companion object {

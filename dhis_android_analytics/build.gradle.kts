@@ -4,6 +4,7 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
@@ -64,7 +65,7 @@ dependencies {
 
     implementation(libs.bundles.analytics.implementation)
     api(libs.bundles.analytics.api)
-    kapt(libs.bundles.analytics.kapt)
+    ksp(libs.dagger.compiler)
     testImplementation(libs.bundles.analytics.test)
 
     coreLibraryDesugaring(libs.desugar)

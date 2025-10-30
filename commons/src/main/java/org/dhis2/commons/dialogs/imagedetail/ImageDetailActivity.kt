@@ -19,18 +19,19 @@ import java.io.File
 import java.io.IOException
 
 class ImageDetailActivity : AppCompatActivity() {
-
     companion object {
-
         private const val ARG_IMAGE_TITLE = "arg_image_title"
         private const val ARG_IMAGE_PATH = "arg_image_path"
 
-        fun intent(context: Context, title: String?, imagePath: String): Intent {
-            return Intent(context, ImageDetailActivity::class.java).apply {
+        fun intent(
+            context: Context,
+            title: String?,
+            imagePath: String,
+        ): Intent =
+            Intent(context, ImageDetailActivity::class.java).apply {
                 putExtra(ARG_IMAGE_TITLE, title)
                 putExtra(ARG_IMAGE_PATH, imagePath)
             }
-        }
     }
 
     private val fileHandler = FileHandlerImpl()
@@ -41,9 +42,10 @@ class ImageDetailActivity : AppCompatActivity() {
         val imagePath = intent.getStringExtra(ARG_IMAGE_PATH)!!
 
         setContent {
-            val painter = remember(imagePath) {
-                imagePath.toImageBitmap()?.let { BitmapPainter(it) }
-            }
+            val painter =
+                remember(imagePath) {
+                    imagePath.toImageBitmap()?.let { BitmapPainter(it) }
+                }
 
             FullScreenImage(
                 painter = painter!!,
@@ -53,11 +55,12 @@ class ImageDetailActivity : AppCompatActivity() {
                     fileHandler.copyAndOpen(
                         File(imagePath),
                     ) {
-                        Toast.makeText(
-                            this,
-                            getString(R.string.file_downloaded),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        Toast
+                            .makeText(
+                                this,
+                                getString(R.string.file_downloaded),
+                                Toast.LENGTH_SHORT,
+                            ).show()
                     }
                 },
                 onShareButtonClick = { shareImage(imagePath) },
@@ -67,11 +70,12 @@ class ImageDetailActivity : AppCompatActivity() {
 
     private fun shareImage(image: String) {
         with(Intent(Intent.ACTION_SEND)) {
-            val contentUri = FileProvider.getUriForFile(
-                this@ImageDetailActivity,
-                FormFileProvider.fileProviderAuthority,
-                File(image),
-            )
+            val contentUri =
+                FileProvider.getUriForFile(
+                    this@ImageDetailActivity,
+                    FormFileProvider.fileProviderAuthority,
+                    File(image),
+                )
             setDataAndType(contentUri, contentResolver.getType(contentUri))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             putExtra(Intent.EXTRA_STREAM, contentUri)

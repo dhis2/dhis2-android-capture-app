@@ -23,7 +23,9 @@ import org.dhis2.usescases.sync.SyncActivity
 import javax.inject.Inject
 import javax.inject.Named
 
-class SplashActivity : ActivityGlobalAbstract(), SplashView {
+class SplashActivity :
+    ActivityGlobalAbstract(),
+    SplashView {
     companion object {
         const val FLAG = "FLAG"
     }
@@ -76,11 +78,12 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
     }
 
     override fun renderFlag(flagName: String) {
-        val resource = if (!isEmpty(flagName)) {
-            resources.getIdentifier(flagName, "drawable", packageName)
-        } else {
-            -1
-        }
+        val resource =
+            if (!isEmpty(flagName)) {
+                resources.getIdentifier(flagName, "drawable", packageName)
+            } else {
+                -1
+            }
         if (resource != -1) {
             binding.flag.setImageResource(resource)
             binding.logo.visibility = View.GONE
@@ -88,7 +91,10 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         }
     }
 
-    private fun showRootedDialog(title: String, message: String) {
+    private fun showRootedDialog(
+        title: String,
+        message: String,
+    ) {
         alertDialog = MaterialAlertDialogBuilder(activity, R.style.MaterialDialog).create()
         if (!alertDialog.isShowing) {
             // TITLE
@@ -148,19 +154,17 @@ class SplashActivity : ActivityGlobalAbstract(), SplashView {
         }
     }
 
-    private fun isDebuggerEnable(): Boolean {
-        return if (!BuildConfig.DEBUG) {
+    private fun isDebuggerEnable(): Boolean =
+        if (!BuildConfig.DEBUG) {
             context.applicationContext.applicationInfo.flags and FLAG_DEBUGGABLE != 0
         } else {
             false
         }
-    }
 
-    private fun detectDebugger(): Boolean {
-        return if (!BuildConfig.DEBUG) {
+    private fun detectDebugger(): Boolean =
+        if (!BuildConfig.DEBUG) {
             Debug.isDebuggerConnected()
         } else {
             false
         }
-    }
 }

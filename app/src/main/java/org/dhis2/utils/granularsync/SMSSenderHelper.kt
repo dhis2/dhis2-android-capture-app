@@ -33,18 +33,20 @@ class SMSSenderHelper(
     private val mWho = UUID.randomUUID().toString()
     private val mNextLocalRequestCode = AtomicInteger()
 
-    private var smsQueue: Queue<String> = LinkedList<String>().apply {
-        addAll(
-            SmsManager.getDefault().divideMessage(smsMessage),
-        )
-    }
+    private var smsQueue: Queue<String> =
+        LinkedList<String>().apply {
+            addAll(
+                SmsManager.getDefault().divideMessage(smsMessage),
+            )
+        }
 
-    private val launcher = registry.register(
-        generateActivityResultKey(),
-        ActivityResultContracts.StartActivityForResult(),
-    ) {
-        onReturningFromSmsApp()
-    }
+    private val launcher =
+        registry.register(
+            generateActivityResultKey(),
+            ActivityResultContracts.StartActivityForResult(),
+        ) {
+            onReturningFromSmsApp()
+        }
 
     fun pollSms() {
         smsQueue.poll()?.let { msg ->
@@ -60,41 +62,45 @@ class SMSSenderHelper(
 
     private fun onReturningFromSmsApp() {
         onStatusChanged?.invoke(Status.RETURNED_TO_APP)
-        val smsConfirmationDialog = BottomSheetDialog(
-            bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-                title = context.getString(R.string.sms_enabled),
-                subtitle = context.getString(R.string.sms_sync_is_sms_sent),
-                iconResource = R.drawable.ic_help,
-                mainButton = DialogButtonStyle.NeutralButton(R.string.no),
-                secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes),
-            ),
-            onMainButtonClicked = {
-                cancel()
-                onStatusChanged?.invoke(Status.SMS_NOT_MANUALLY_SENT)
-            },
-            onSecondaryButtonClicked = {
-                pollSms()
-            },
-        ).also {
-            it.isCancelable = false
-        }
+        val smsConfirmationDialog =
+            BottomSheetDialog(
+                bottomSheetDialogUiModel =
+                    BottomSheetDialogUiModel(
+                        title = context.getString(R.string.sms_enabled),
+                        subtitle = context.getString(R.string.sms_sync_is_sms_sent),
+                        iconResource = R.drawable.ic_help,
+                        mainButton = DialogButtonStyle.NeutralButton(R.string.no),
+                        secondaryButton = DialogButtonStyle.NeutralButton(R.string.yes),
+                    ),
+                onMainButtonClicked = {
+                    cancel()
+                    onStatusChanged?.invoke(Status.SMS_NOT_MANUALLY_SENT)
+                },
+                onSecondaryButtonClicked = {
+                    pollSms()
+                },
+            ).also {
+                it.isCancelable = false
+            }
         smsConfirmationDialog
             .show(fragmentManager, BottomSheetDialogUiModel::class.java.simpleName)
     }
 
-    private fun createSMSIntent(message: String, smsToNumber: String): Intent {
+    private fun createSMSIntent(
+        message: String,
+        smsToNumber: String,
+    ): Intent {
         val uri = Uri.parse("smsto:$smsToNumber")
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = uri
-            putExtra("sms_body", message)
-        }
+        val intent =
+            Intent(Intent.ACTION_SENDTO).apply {
+                data = uri
+                putExtra("sms_body", message)
+            }
         return Intent.createChooser(
             intent,
             context.getString(R.string.sms_sync_sms_app_chooser_title),
         )
     }
 
-    private fun generateActivityResultKey(): String {
-        return "sms" + mWho + "_rq#" + mNextLocalRequestCode.getAndIncrement()
-    }
+    private fun generateActivityResultKey(): String = "sms" + mWho + "_rq#" + mNextLocalRequestCode.getAndIncrement()
 }

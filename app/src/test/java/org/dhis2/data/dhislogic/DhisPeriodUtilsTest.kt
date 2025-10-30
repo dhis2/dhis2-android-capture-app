@@ -16,7 +16,6 @@ import java.util.GregorianCalendar
 import java.util.Locale
 
 class DhisPeriodUtilsTest {
-
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val periodHelper: PeriodHelper = mock()
     private lateinit var periodUtils: DhisPeriodUtils
@@ -25,12 +24,13 @@ class DhisPeriodUtilsTest {
     @Before
     fun setUp() {
         whenever(d2.periodModule().periodHelper()) doReturn periodHelper
-        periodUtils = DhisPeriodUtils(
-            d2,
-            "%s - %s",
-            "Week %d %s to %s",
-            "%d %s - %d %s",
-        )
+        periodUtils =
+            DhisPeriodUtils(
+                d2,
+                "%s - %s",
+                "Week %d %s to %s",
+                "%d %s - %d %s",
+            )
     }
 
     @Test
@@ -40,11 +40,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.Daily,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId(null)
-            .startDate(testDate)
-            .endDate(testDate)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId(null)
+                .startDate(testDate)
+                .endDate(testDate)
+                .build()
 
         Assert.assertEquals(
             "11/01/2019",
@@ -59,11 +61,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.Daily,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId(null)
-            .startDate(testDate)
-            .endDate(testDate)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId(null)
+                .startDate(testDate)
+                .endDate(testDate)
+                .build()
 
         Assert.assertEquals(
             "11/01/2019",
@@ -82,11 +86,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.Weekly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("2019W2")
-            .startDate(GregorianCalendar(2019, 0, 7).time)
-            .endDate(GregorianCalendar(2019, 0, 13).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019W2")
+                .startDate(GregorianCalendar(2019, 0, 7).time)
+                .endDate(GregorianCalendar(2019, 0, 13).time)
+                .build()
 
         Assert.assertEquals(
             "Week 2 2019-01-07 To 2019-01-13",
@@ -105,11 +111,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.WeeklyWednesday,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("2019WedW2")
-            .startDate(GregorianCalendar(2019, 0, 9).time)
-            .endDate(GregorianCalendar(2019, 0, 15).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019WedW2")
+                .startDate(GregorianCalendar(2019, 0, 9).time)
+                .endDate(GregorianCalendar(2019, 0, 15).time)
+                .build()
 
         Assert.assertEquals(
             "Week 2 2019-01-09 To 2019-01-15",
@@ -128,11 +136,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.WeeklyThursday,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("2019ThuW2")
-            .startDate(GregorianCalendar(2019, 0, 10).time)
-            .endDate(GregorianCalendar(2019, 0, 16).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019ThuW2")
+                .startDate(GregorianCalendar(2019, 0, 10).time)
+                .endDate(GregorianCalendar(2019, 0, 16).time)
+                .build()
 
         Assert.assertEquals(
             "Week 2 2019-01-10 To 2019-01-16",
@@ -151,11 +161,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.WeeklySaturday,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("2019SatW1")
-            .startDate(GregorianCalendar(2019, 0, 5).time)
-            .endDate(GregorianCalendar(2019, 0, 11).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019SatW1")
+                .startDate(GregorianCalendar(2019, 0, 5).time)
+                .endDate(GregorianCalendar(2019, 0, 11).time)
+                .build()
 
         Assert.assertEquals(
             "Week 1 2019-01-05 To 2019-01-11",
@@ -174,11 +186,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.WeeklySunday,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("2019SunW2")
-            .startDate(GregorianCalendar(2019, 0, 6).time)
-            .endDate(GregorianCalendar(2019, 0, 12).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019SunW2")
+                .startDate(GregorianCalendar(2019, 0, 6).time)
+                .endDate(GregorianCalendar(2019, 0, 12).time)
+                .build()
 
         Assert.assertEquals(
             "Week 2 2019-01-06 To 2019-01-12",
@@ -197,33 +211,39 @@ class DhisPeriodUtilsTest {
                 PeriodType.BiWeekly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("2019W2")
-            .startDate(GregorianCalendar(2019, 0, 9).time)
-            .endDate(GregorianCalendar(2019, 0, 15).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019W2")
+                .startDate(GregorianCalendar(2019, 0, 9).time)
+                .endDate(GregorianCalendar(2019, 0, 15).time)
+                .build()
 
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Weekly,
                 GregorianCalendar(2019, 0, 9).time,
             ),
-        )doReturn Period.builder()
-            .periodId("2019W2")
-            .startDate(GregorianCalendar(2019, 0, 9).time)
-            .endDate(GregorianCalendar(2019, 0, 15).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019W2")
+                .startDate(GregorianCalendar(2019, 0, 9).time)
+                .endDate(GregorianCalendar(2019, 0, 15).time)
+                .build()
 
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
                 PeriodType.Weekly,
                 GregorianCalendar(2019, 0, 15).time,
             ),
-        )doReturn Period.builder()
-            .periodId("2019W3")
-            .startDate(GregorianCalendar(2019, 0, 16).time)
-            .endDate(GregorianCalendar(2019, 0, 22).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019W3")
+                .startDate(GregorianCalendar(2019, 0, 16).time)
+                .endDate(GregorianCalendar(2019, 0, 22).time)
+                .build()
 
         Assert.assertEquals(
             "2 2019 - 3 2019",
@@ -242,11 +262,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.Monthly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2019, 0, 1).time)
-            .endDate(GregorianCalendar(2019, 0, 31).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2019, 0, 1).time)
+                .endDate(GregorianCalendar(2019, 0, 31).time)
+                .build()
 
         Assert.assertEquals(
             "Jan 2019",
@@ -265,11 +287,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.BiMonthly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2019, 0, 1).time)
-            .endDate(GregorianCalendar(2019, 1, 28).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2019, 0, 1).time)
+                .endDate(GregorianCalendar(2019, 1, 28).time)
+                .build()
 
         Assert.assertEquals(
             "Jan 2019 - Feb 2019",
@@ -288,11 +312,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.Quarterly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2019, 0, 1).time)
-            .endDate(GregorianCalendar(2019, 2, 31).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2019, 0, 1).time)
+                .endDate(GregorianCalendar(2019, 2, 31).time)
+                .build()
 
         Assert.assertEquals(
             "Jan 2019 - Mar 2019",
@@ -311,11 +337,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.QuarterlyNov,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2019, 8, 1).time)
-            .endDate(GregorianCalendar(2019, 10, 31).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2019, 8, 1).time)
+                .endDate(GregorianCalendar(2019, 10, 31).time)
+                .build()
 
         Assert.assertEquals(
             "Sep 2019 - Dec 2019",
@@ -334,11 +362,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.SixMonthly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2019, 0, 1).time)
-            .endDate(GregorianCalendar(2019, 5, 30).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2019, 0, 1).time)
+                .endDate(GregorianCalendar(2019, 5, 30).time)
+                .build()
 
         Assert.assertEquals(
             "Jan 2019 - Jun 2019",
@@ -357,11 +387,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.SixMonthlyApril,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2018, 9, 1).time)
-            .endDate(GregorianCalendar(2019, 2, 31).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 9, 1).time)
+                .endDate(GregorianCalendar(2019, 2, 31).time)
+                .build()
 
         Assert.assertEquals(
             "Oct 2018 - Mar 2019",
@@ -380,11 +412,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.Yearly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2019, 0, 1).time)
-            .endDate(GregorianCalendar(2019, 11, 31).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2019, 0, 1).time)
+                .endDate(GregorianCalendar(2019, 11, 31).time)
+                .build()
 
         Assert.assertEquals(
             "2019",
@@ -403,11 +437,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.FinancialApril,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2018, 3, 1).time)
-            .endDate(GregorianCalendar(2019, 2, 31).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 3, 1).time)
+                .endDate(GregorianCalendar(2019, 2, 31).time)
+                .build()
 
         Assert.assertEquals(
             "Apr 2018 - Mar 2019",
@@ -426,11 +462,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.FinancialJuly,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2018, 6, 1).time)
-            .endDate(GregorianCalendar(2019, 5, 30).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 6, 1).time)
+                .endDate(GregorianCalendar(2019, 5, 30).time)
+                .build()
 
         Assert.assertEquals(
             "Jul 2018 - Jun 2019",
@@ -449,11 +487,13 @@ class DhisPeriodUtilsTest {
                 PeriodType.FinancialOct,
                 testDate,
             ),
-        ) doReturn Period.builder()
-            .periodId("periodId")
-            .startDate(GregorianCalendar(2018, 9, 1).time)
-            .endDate(GregorianCalendar(2019, 8, 30).time)
-            .build()
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 9, 1).time)
+                .endDate(GregorianCalendar(2019, 8, 30).time)
+                .build()
 
         Assert.assertEquals(
             "Oct 2018 - Sep 2019",

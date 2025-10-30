@@ -51,104 +51,108 @@ fun AdaptiveTabRow(
     var scrollable by remember { mutableStateOf(false) }
     val density = LocalDensity.current
     val indicatorWidth by animateDpAsState(
-        targetValue = with(density) {
-            tabWidths.getOrNull(currentSelectedTab)?.toDp()
-        } ?: 56.dp,
+        targetValue =
+            with(density) {
+                tabWidths.getOrNull(currentSelectedTab)?.toDp()
+            } ?: 56.dp,
         label = "indicator_width",
-
     )
 
     SubcomposeLayout(modifier = modifier) { constraints ->
 
-        val tabPlaceables = subcompose("tabs") {
-            tabLabels.forEachIndexed { index, tabLabel ->
-                AdaptiveTab(
-                    index = index,
-                    tabLabel = tabLabel,
-                    tabWidths = tabWidths,
-                    isSelected = currentSelectedTab == index,
-                    onClick = {},
-                )
+        val tabPlaceables =
+            subcompose("tabs") {
+                tabLabels.forEachIndexed { index, tabLabel ->
+                    AdaptiveTab(
+                        index = index,
+                        tabLabel = tabLabel,
+                        tabWidths = tabWidths,
+                        isSelected = currentSelectedTab == index,
+                        onClick = {},
+                    )
+                }
+            }.map { measurable ->
+                measurable.measure(constraints)
             }
-        }.map { measurable ->
-            measurable.measure(constraints)
-        }
 
         val totalTabWidth = tabPlaceables.sumOf { it.width }
         val screenWidth = constraints.maxWidth
         scrollable = totalTabWidth > screenWidth
 
-        val finalPlaceable = subcompose("finalLayout") {
-            if (scrollable) {
-                ScrollableTabRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .semantics {
-                            testTag = "SCROLLABLE_TAB_ROW"
+        val finalPlaceable =
+            subcompose("finalLayout") {
+                if (scrollable) {
+                    ScrollableTabRow(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .semantics {
+                                    testTag = "SCROLLABLE_TAB_ROW"
+                                },
+                        selectedTabIndex = currentSelectedTab,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        edgePadding = Spacing.Spacing16,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.PrimaryIndicator(
+                                width = indicatorWidth,
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
                         },
-                    selectedTabIndex = currentSelectedTab,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    edgePadding = Spacing.Spacing16,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.PrimaryIndicator(
-                            width = indicatorWidth,
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                        )
-                    },
-                    divider = {},
-                ) {
-                    tabLabels.forEachIndexed { index, tabLabel ->
-                        AdaptiveTab(
-                            modifier = Modifier.testTag("SCROLLABLE_TAB_$index"),
-                            index = index,
-                            tabLabel = tabLabel,
-                            tabWidths = tabWidths,
-                            isSelected = currentSelectedTab == index,
-                            onClick = {
-                                currentSelectedTab = index
-                                onTabClicked(index)
-                            },
-                        )
+                        divider = {},
+                    ) {
+                        tabLabels.forEachIndexed { index, tabLabel ->
+                            AdaptiveTab(
+                                modifier = Modifier.testTag("SCROLLABLE_TAB_$index"),
+                                index = index,
+                                tabLabel = tabLabel,
+                                tabWidths = tabWidths,
+                                isSelected = currentSelectedTab == index,
+                                onClick = {
+                                    currentSelectedTab = index
+                                    onTabClicked(index)
+                                },
+                            )
+                        }
+                    }
+                } else {
+                    TabRow(
+                        modifier =
+                            modifier
+                                .height(48.dp)
+                                .fillMaxWidth()
+                                .semantics {
+                                    testTag = "TAB_ROW"
+                                },
+                        selectedTabIndex = currentSelectedTab,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        indicator = { tabPositions ->
+                            TabRowDefaults.PrimaryIndicator(
+                                width = indicatorWidth,
+                                modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        },
+                        divider = {},
+                    ) {
+                        tabLabels.forEachIndexed { index, tabLabel ->
+                            AdaptiveTab(
+                                modifier = Modifier.testTag("TAB_$index"),
+                                index = index,
+                                tabLabel = tabLabel,
+                                tabWidths = tabWidths,
+                                isSelected = currentSelectedTab == index,
+                                onClick = {
+                                    currentSelectedTab = index
+                                    onTabClicked(index)
+                                },
+                            )
+                        }
                     }
                 }
-            } else {
-                TabRow(
-                    modifier = modifier
-                        .height(48.dp)
-                        .fillMaxWidth()
-                        .semantics {
-                            testTag = "TAB_ROW"
-                        },
-                    selectedTabIndex = currentSelectedTab,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    indicator = { tabPositions ->
-                        TabRowDefaults.PrimaryIndicator(
-                            width = indicatorWidth,
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[currentSelectedTab]),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                        )
-                    },
-                    divider = {},
-                ) {
-                    tabLabels.forEachIndexed { index, tabLabel ->
-                        AdaptiveTab(
-                            modifier = Modifier.testTag("TAB_$index"),
-                            index = index,
-                            tabLabel = tabLabel,
-                            tabWidths = tabWidths,
-                            isSelected = currentSelectedTab == index,
-                            onClick = {
-                                currentSelectedTab = index
-                                onTabClicked(index)
-                            },
-                        )
-                    }
-                }
+            }.map { measurable ->
+                measurable.measure(constraints)
             }
-        }.map { measurable ->
-            measurable.measure(constraints)
-        }
 
         layout(constraints.maxWidth, 48.dp.roundToPx()) {
             finalPlaceable.forEach { placeable ->
@@ -169,22 +173,24 @@ private fun AdaptiveTab(
     onClick: () -> Unit,
 ) {
     Tab(
-        modifier = modifier
-            .height(48.dp)
-            .padding(horizontal = Spacing.Spacing32)
-            .onGloballyPositioned { coordinates ->
-                tabWidths.add(index, coordinates.size.width)
-            },
+        modifier =
+            modifier
+                .height(48.dp)
+                .padding(horizontal = Spacing.Spacing32)
+                .onGloballyPositioned { coordinates ->
+                    tabWidths.add(index, coordinates.size.width)
+                },
         selected = isSelected,
         interactionSource = remember { MutableInteractionSource() },
         onClick = onClick,
     ) {
         Text(
-            text = if (tabLabel.length > maxLength) {
-                tabLabel.take(maxLength) + "…"
-            } else {
-                tabLabel
-            },
+            text =
+                if (tabLabel.length > maxLength) {
+                    tabLabel.take(maxLength) + "…"
+                } else {
+                    tabLabel
+                },
             color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleSmall,
         )

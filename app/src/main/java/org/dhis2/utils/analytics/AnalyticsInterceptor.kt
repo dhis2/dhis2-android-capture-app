@@ -34,8 +34,9 @@ import okhttp3.Response
 import org.dhis2.BuildConfig
 import org.hisp.dhis.android.core.D2Manager
 
-class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interceptor {
-
+class AnalyticsInterceptor(
+    private val analyticHelper: AnalyticsHelper,
+) : Interceptor {
     private val appVersionName = BuildConfig.VERSION_NAME
 
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -48,30 +49,37 @@ class AnalyticsInterceptor(private val analyticHelper: AnalyticsHelper) : Interc
         return response
     }
 
-    private fun trackMatomoEvent(request: Request, response: Response) {
+    private fun trackMatomoEvent(
+        request: Request,
+        response: Response,
+    ) {
         getDhis2Version()
             .subscribeOn(Schedulers.io())
-            .subscribe(object : DisposableSingleObserver<String>() {
-                override fun onSuccess(version: String) {
-                    analyticHelper.trackMatomoEvent(
-                        API_CALL,
-                        "${request.method}_${request.url}",
-                        "${response.code}_${appVersionName}_$version",
-                    )
-                    dispose()
-                }
+            .subscribe(
+                object : DisposableSingleObserver<String>() {
+                    override fun onSuccess(version: String) {
+                        analyticHelper.trackMatomoEvent(
+                            API_CALL,
+                            "${request.method}_${request.url}",
+                            "${response.code}_${appVersionName}_$version",
+                        )
+                        dispose()
+                    }
 
-                override fun onError(e: Throwable) {
-                    dispose()
-                }
-            })
+                    override fun onError(e: Throwable) {
+                        dispose()
+                    }
+                },
+            )
     }
 
-    private fun getDhis2Version(): Single<String> {
-        return D2Manager.getD2().systemInfoModule().systemInfo().get().map { it.version() }
-    }
+    private fun getDhis2Version(): Single<String> =
+        D2Manager
+            .getD2()
+            .systemInfoModule()
+            .systemInfo()
+            .get()
+            .map { it.version() }
 
-    private fun isLogged(): Boolean {
-        return D2Manager.getD2().userModule().blockingIsLogged()
-    }
+    private fun isLogged(): Boolean = D2Manager.getD2().userModule().blockingIsLogged()
 }

@@ -16,22 +16,25 @@ class TeiDownloader(
     private val currentProgram: String?,
     private val resources: ResourceManager,
 ) {
-
     private var downloadRepository: TrackedEntityInstanceDownloader? = null
 
-    fun download(teiUid: String, enrollmentUid: String?, reason: String?): TeiDownloadResult {
-        return if (isReadyForBreakTheGlass(reason)) {
+    fun download(
+        teiUid: String,
+        enrollmentUid: String?,
+        reason: String?,
+    ): TeiDownloadResult =
+        if (isReadyForBreakTheGlass(reason)) {
             breakTheGlass(teiUid, reason!!)
         } else {
             defaultDownload(teiUid, enrollmentUid)
         }
-    }
 
-    private fun isReadyForBreakTheGlass(reason: String?): Boolean {
-        return downloadRepository != null && reason != null
-    }
+    private fun isReadyForBreakTheGlass(reason: String?): Boolean = downloadRepository != null && reason != null
 
-    private fun defaultDownload(teiUid: String, enrollmentUid: String?): TeiDownloadResult {
+    private fun defaultDownload(
+        teiUid: String,
+        enrollmentUid: String?,
+    ): TeiDownloadResult {
         downloadRepository = teiConfiguration.downloader(teiUid, currentProgram)
 
         return try {
@@ -50,18 +53,21 @@ class TeiDownloader(
         d2Error: D2Error?,
         teiUid: String,
         enrollmentUid: String?,
-    ): TeiDownloadResult {
-        return when (d2Error!!.errorCode()) {
-            D2ErrorCode.OWNERSHIP_ACCESS_DENIED -> TeiDownloadResult.BreakTheGlassResult(
-                teiUid,
-                enrollmentUid,
-            )
+    ): TeiDownloadResult =
+        when (d2Error!!.errorCode()) {
+            D2ErrorCode.OWNERSHIP_ACCESS_DENIED ->
+                TeiDownloadResult.BreakTheGlassResult(
+                    teiUid,
+                    enrollmentUid,
+                )
             else -> TeiDownloadResult.ErrorResult(resources.parseD2Error(d2Error) ?: "")
         }
-    }
 
-    private fun breakTheGlass(teiUid: String, reason: String): TeiDownloadResult {
-        return if (downloadRepository != null) {
+    private fun breakTheGlass(
+        teiUid: String,
+        reason: String,
+    ): TeiDownloadResult =
+        if (downloadRepository != null) {
             teiConfiguration.downloadWithReason(
                 downloadRepository!!,
                 teiUid,
@@ -74,19 +80,22 @@ class TeiDownloader(
         } else {
             TeiDownloadResult.TeiNotDownloaded(teiUid)
         }
-    }
 
-    private fun checkDownload(teiUid: String, enrollmentUid: String?): TeiDownloadResult {
-        return if (teiConfiguration.hasBeenDownloaded(teiUid)) {
+    private fun checkDownload(
+        teiUid: String,
+        enrollmentUid: String?,
+    ): TeiDownloadResult =
+        if (teiConfiguration.hasBeenDownloaded(teiUid)) {
             when {
                 hasEnrollmentInCurrentProgram(teiUid) ->
                     TeiDownloadResult.DownloadedResult(
                         teiUid = teiUid,
                         programUid = currentProgram,
-                        enrollmentUid = enrollmentUid ?: teiConfiguration.enrollmentUid(
-                            teiUid,
-                            currentProgram!!,
-                        ),
+                        enrollmentUid =
+                            enrollmentUid ?: teiConfiguration.enrollmentUid(
+                                teiUid,
+                                currentProgram!!,
+                            ),
                     )
                 canEnrollInCurrentProgram() ->
                     TeiDownloadResult.TeiToEnroll(teiUid)
@@ -100,7 +109,6 @@ class TeiDownloader(
         } else {
             TeiDownloadResult.TeiNotDownloaded(teiUid)
         }
-    }
 
     private fun hasEnrollmentInCurrentProgram(teiUid: String): Boolean {
         if (currentProgram == null) return false

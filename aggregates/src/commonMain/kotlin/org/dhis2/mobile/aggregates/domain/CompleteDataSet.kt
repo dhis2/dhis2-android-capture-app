@@ -14,35 +14,36 @@ internal class CompleteDataSet(
     private val attrOptionComboUid: String,
     private val dataSetInstanceRepository: DataSetInstanceRepository,
 ) {
-    suspend operator fun invoke(): DataSetMandatoryFieldsStatus {
-        return if (checkIfHasMissingMandatoryFields()) {
+    suspend operator fun invoke(): DataSetMandatoryFieldsStatus =
+        if (checkIfHasMissingMandatoryFields()) {
             MISSING_MANDATORY_FIELDS
         } else if (checkIfHasMissingMandatoryFieldsCombination()) {
             MISSING_MANDATORY_FIELDS_COMBINATION
         } else {
-            dataSetInstanceRepository.completeDataset(
+            dataSetInstanceRepository
+                .completeDataset(
+                    dataSetUid = dataSetUid,
+                    periodId = periodId,
+                    orgUnitUid = orgUnitUid,
+                    attributeOptionComboUid = attrOptionComboUid,
+                ).fold(
+                    onSuccess = {
+                        SUCCESS
+                    },
+                    onFailure = {
+                        ERROR
+                    },
+                )
+        }
+
+    private suspend fun checkIfHasMissingMandatoryFields(): Boolean {
+        val hasMissingMandatoryFields =
+            dataSetInstanceRepository.checkIfHasMissingMandatoryFields(
                 dataSetUid = dataSetUid,
                 periodId = periodId,
                 orgUnitUid = orgUnitUid,
                 attributeOptionComboUid = attrOptionComboUid,
-            ).fold(
-                onSuccess = {
-                    SUCCESS
-                },
-                onFailure = {
-                    ERROR
-                },
             )
-        }
-    }
-
-    private suspend fun checkIfHasMissingMandatoryFields(): Boolean {
-        val hasMissingMandatoryFields = dataSetInstanceRepository.checkIfHasMissingMandatoryFields(
-            dataSetUid = dataSetUid,
-            periodId = periodId,
-            orgUnitUid = orgUnitUid,
-            attributeOptionComboUid = attrOptionComboUid,
-        )
         return hasMissingMandatoryFields
     }
 

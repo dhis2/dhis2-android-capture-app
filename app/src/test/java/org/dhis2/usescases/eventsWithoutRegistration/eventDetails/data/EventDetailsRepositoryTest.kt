@@ -20,12 +20,12 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class EventDetailsRepositoryTest {
-
     private val date: Date = mock()
-    private val event: Event = mock {
-        on { eventDate() } doReturn date
-        on { dueDate() } doReturn date
-    }
+    private val event: Event =
+        mock {
+            on { eventDate() } doReturn date
+            on { dueDate() } doReturn date
+        }
     private val programStage: ProgramStage = mock()
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
 
@@ -34,58 +34,92 @@ class EventDetailsRepositoryTest {
 
     @Before
     fun setup() {
-        repository = EventDetailsRepository(
-            d2,
-            PROGRAM_UID,
-            EVENT_UID,
-            PROGRAM_STAGE_UID,
-            fieldViewModelFactory,
-            EventCreationType.ADDNEW,
-        ) { d2Error -> "" }
+        repository =
+            EventDetailsRepository(
+                d2,
+                PROGRAM_UID,
+                EVENT_UID,
+                PROGRAM_STAGE_UID,
+                fieldViewModelFactory,
+                EventCreationType.ADDNEW,
+            ) { d2Error -> "" }
 
         whenever(
-            d2.programModule().programStages().uid(PROGRAM_STAGE_UID).blockingGet(),
+            d2
+                .programModule()
+                .programStages()
+                .uid(PROGRAM_STAGE_UID)
+                .blockingGet(),
         ) doReturn programStage
 
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID),
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
                 .byProgramStageUid(),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID),
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
                 .byDeleted(),
         ) doReturn mock()
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse,
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse,
         ) doReturn mock()
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse
                 .orderByEventDate(DESC),
         ) doReturn mock()
 
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse
                 .orderByDueDate(DESC),
         ) doReturn mock()
     }
@@ -114,18 +148,28 @@ class EventDetailsRepositoryTest {
     fun `should getStateLastDate`() {
         // Given a program stage with active events
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse
                 .orderByEventDate(DESC)
                 .blockingGet(),
         ) doReturn listOf(event)
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse
                 .orderByDueDate(DESC)
                 .blockingGet(),
         ) doReturn emptyList()
@@ -139,18 +183,28 @@ class EventDetailsRepositoryTest {
     fun `should getStateLastDate for scheduled event`() {
         // Given a program stage with active events
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse
                 .orderByEventDate(DESC)
                 .blockingGet(),
         ) doReturn emptyList()
         whenever(
-            d2.eventModule().events()
-                .byEnrollmentUid().eq(ENROLLMENT_UID)
-                .byProgramStageUid().eq(PROGRAM_STAGE_UID)
-                .byDeleted().isFalse
+            d2
+                .eventModule()
+                .events()
+                .byEnrollmentUid()
+                .eq(ENROLLMENT_UID)
+                .byProgramStageUid()
+                .eq(PROGRAM_STAGE_UID)
+                .byDeleted()
+                .isFalse
                 .orderByDueDate(DESC)
                 .blockingGet(),
         ) doReturn listOf(event)
@@ -163,42 +217,53 @@ class EventDetailsRepositoryTest {
     @Test
     fun `should use search scope in referral`() {
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byOrganisationUnitScope(any()),
         ) doReturn mock()
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byOrganisationUnitScope(any())
                 .byProgramUids(any()),
         ) doReturn mock()
 
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byProgramUids(any()),
         ) doReturn mock()
 
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byProgramUids(any())
                 .blockingGet(),
         ) doReturn listOf()
 
         whenever(
-            d2.organisationUnitModule().organisationUnits()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
                 .byOrganisationUnitScope(any())
                 .byProgramUids(any())
                 .blockingGet(),
         ) doReturn listOf()
 
         EventCreationType.entries.forEach { eventCreationType ->
-            repository = EventDetailsRepository(
-                d2,
-                PROGRAM_UID,
-                EVENT_UID,
-                PROGRAM_STAGE_UID,
-                fieldViewModelFactory,
-                eventCreationType,
-            ) { d2Error -> "" }
+            repository =
+                EventDetailsRepository(
+                    d2,
+                    PROGRAM_UID,
+                    EVENT_UID,
+                    PROGRAM_STAGE_UID,
+                    fieldViewModelFactory,
+                    eventCreationType,
+                ) { d2Error -> "" }
 
             repository.getOrganisationUnits()
         }

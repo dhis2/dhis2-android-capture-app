@@ -21,8 +21,9 @@ object ObjectStyleUtils {
         }
         val defaultDrawable = AppCompatResources.getDrawable(context, defaultResource)
         return if (resourceName?.isNotEmpty() == true) {
-            val iconResource = ResourceManager(context, colorUtils)
-                .getObjectStyleDrawableResource(resourceName, R.drawable.ic_default_icon)
+            val iconResource =
+                ResourceManager(context, colorUtils)
+                    .getObjectStyleDrawableResource(resourceName, R.drawable.ic_default_icon)
             val drawable = AppCompatResources.getDrawable(context, iconResource)
             drawable?.mutate()
             drawable ?: defaultDrawable
@@ -35,17 +36,17 @@ object ObjectStyleUtils {
         context: Context,
         styleColor: String?,
         @ColorRes defaultColorResource: Int,
-    ): Int {
-        return styleColor?.let {
-            val color: String = when {
-                styleColor.startsWith("#") -> styleColor
-                else -> "#$styleColor"
-            }
+    ): Int =
+        styleColor?.let {
+            val color: String =
+                when {
+                    styleColor.startsWith("#") -> styleColor
+                    else -> "#$styleColor"
+                }
             if (color.length == 4) {
                 ContextCompat.getColor(context, defaultColorResource)
             } else {
                 Color.parseColor(color)
             }
         } ?: ContextCompat.getColor(context, defaultColorResource)
-    }
 }

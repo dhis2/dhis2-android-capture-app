@@ -1,6 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection.Companion.EVENT_UID
@@ -8,17 +7,16 @@ import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.dhis2.uicomponents.map.mocks.GeometryDummy.getGeometryAsPoint
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.common.State
-import org.hisp.dhis.android.core.event.Event
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Point
 
 class MapTeiEventsToFeatureCollectionTest {
-
     private lateinit var mapTeiEventsToFeatureCollection: MapTeiEventsToFeatureCollection
 
     @Before
@@ -48,30 +46,32 @@ class MapTeiEventsToFeatureCollectionTest {
         }
     }
 
-    private fun createEventsList(): List<MapItemModel> {
-        return listOf(
+    private fun createEventsList(): List<MapItemModel> =
+        listOf(
             MapItemModel(
                 uid = EVENTUID,
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    "image",
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        "image",
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
                 geometry = getGeometryAsPoint("[$POINT_LONGITUDE, $POINT_LATITUDE]"),
-                relatedInfo = RelatedInfo(
-                    event = RelatedInfo.Event(
-                        stageUid = "stageUid",
-                        stageDisplayName = "stage",
-                        teiUid = "teiUid",
+                relatedInfo =
+                    RelatedInfo(
+                        event =
+                            RelatedInfo.Event(
+                                stageUid = "stageUid",
+                                stageDisplayName = "stage",
+                                teiUid = "teiUid",
+                            ),
                     ),
-                ),
                 state = State.SYNCED,
             ),
         )
-    }
 
     companion object {
         const val EVENTUID = "eventUid"

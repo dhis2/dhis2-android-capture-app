@@ -4,7 +4,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class NavigationPageConfiguratorTest {
-
     private class DefaultPageConfigurator : NavigationPageConfigurator
 
     @Test

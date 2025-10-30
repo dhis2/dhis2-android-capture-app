@@ -13,8 +13,10 @@ class SearchOptionSetOption(
         optionsToShow: List<String>,
         optionsToHide: List<String>,
     ): List<Option> {
-        var repository = optionRepository
-            .byOptionSetUid().eq(optionSetUid)
+        var repository =
+            optionRepository
+                .byOptionSetUid()
+                .eq(optionSetUid)
 
         if (optionsToShow.isNotEmpty()) {
             repository = repository.byUid().`in`(optionsToShow)

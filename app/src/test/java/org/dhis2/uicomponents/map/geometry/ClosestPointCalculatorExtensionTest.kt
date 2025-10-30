@@ -5,17 +5,17 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ClosestPointCalculatorExtensionTest {
-
     @Test
     fun `Should select closest polygon point to point`() {
-        val testingPolygon = listOf(
+        val testingPolygon =
             listOf(
-                listOf(0.0, 0.0),
-                listOf(0.0, 1.0),
-                listOf(1.0, 1.0),
-                listOf(1.0, 0.0),
-            ),
-        )
+                listOf(
+                    listOf(0.0, 0.0),
+                    listOf(0.0, 1.0),
+                    listOf(1.0, 1.0),
+                    listOf(1.0, 0.0),
+                ),
+            )
 
         val point = listOf(0.25, 0.25)
 
@@ -25,22 +25,24 @@ class ClosestPointCalculatorExtensionTest {
 
     @Test
     fun `Should select closest polygon points`() {
-        val testingPolygonA = listOf(
+        val testingPolygonA =
             listOf(
-                listOf(0.0, 0.0),
-                listOf(0.0, 1.0),
-                listOf(1.0, 1.0),
-                listOf(1.0, 0.0),
-            ),
-        )
+                listOf(
+                    listOf(0.0, 0.0),
+                    listOf(0.0, 1.0),
+                    listOf(1.0, 1.0),
+                    listOf(1.0, 0.0),
+                ),
+            )
 
-        val testingPolygonB = listOf(
+        val testingPolygonB =
             listOf(
-                listOf(2.0, 1.0),
-                listOf(3.0, 1.0),
-                listOf(2.5, 2.0),
-            ),
-        )
+                listOf(
+                    listOf(2.0, 1.0),
+                    listOf(3.0, 1.0),
+                    listOf(2.5, 2.0),
+                ),
+            )
 
         val result = testingPolygonA.closestPointTo(testingPolygonB)
         assertTrue(

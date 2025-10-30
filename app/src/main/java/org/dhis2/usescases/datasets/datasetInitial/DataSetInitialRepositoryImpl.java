@@ -38,7 +38,7 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
                             .uid(dataSet.categoryCombo().uid())
                             .blockingGet();
 
-                    return DataSetInitialModel.create(
+                    return new DataSetInitialModel(
                             dataSet.displayName(),
                             dataSet.description(),
                             dataSet.categoryCombo().uid(),

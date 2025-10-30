@@ -3,7 +3,6 @@ package org.dhis2.maps.utils
 import androidx.test.espresso.idling.CountingIdlingResource
 
 object OnMapReadyIdlingResourceSingleton {
-
     private const val RESOURCE = "MapView"
 
     @JvmField

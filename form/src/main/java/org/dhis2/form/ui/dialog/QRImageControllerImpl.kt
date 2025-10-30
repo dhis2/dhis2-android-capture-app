@@ -15,26 +15,31 @@ class QRImageControllerImpl(
     private val darkColor: Int = Color.BLACK,
     private val lightColor: Int = Color.WHITE,
 ) : QRImageController {
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun getWriterFromRendering(value: String, renderingType: UiRenderType) =
-        when (renderingType) {
-            UiRenderType.GS1_DATAMATRIX ->
-                if (value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element)) {
-                    Pair(DataMatrixWriter(), BarcodeFormat.DATA_MATRIX)
-                } else {
-                    Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
-                }
-            UiRenderType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
-            UiRenderType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
-            else -> throw IllegalArgumentException()
-        }
+    fun getWriterFromRendering(
+        value: String,
+        renderingType: UiRenderType,
+    ) = when (renderingType) {
+        UiRenderType.GS1_DATAMATRIX ->
+            if (value.startsWith(GS1Elements.GS1_d2_IDENTIFIER.element)) {
+                Pair(DataMatrixWriter(), BarcodeFormat.DATA_MATRIX)
+            } else {
+                Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
+            }
+        UiRenderType.QR_CODE -> Pair(QRCodeWriter(), BarcodeFormat.QR_CODE)
+        UiRenderType.BAR_CODE -> Pair(Code128Writer(), BarcodeFormat.CODE_128)
+        else -> throw IllegalArgumentException()
+    }
 
     private fun formattedContent(value: String) =
-        value.removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
+        value
+            .removePrefix(GS1Elements.GS1_d2_IDENTIFIER.element)
             .removePrefix(GS1Elements.GS1_GROUP_SEPARATOR.element)
 
-    override fun writeDataToImage(value: String, renderingType: UiRenderType): Bitmap {
+    override fun writeDataToImage(
+        value: String,
+        renderingType: UiRenderType,
+    ): Bitmap {
         val (writer, format) = getWriterFromRendering(value, renderingType)
 
         val content = formattedContent(value)

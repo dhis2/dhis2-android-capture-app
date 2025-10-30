@@ -12,8 +12,11 @@ import org.hisp.dhis.android.core.common.ValidationStrategy
 
 interface DataEntryRepository {
     fun list(): Flowable<List<FieldUiModel>>
+
     fun firstSectionToOpen(): String?
+
     fun sectionUids(): Flowable<List<String>>
+
     fun updateSection(
         sectionToUpdate: FieldUiModel,
         isSectionOpen: Boolean?,
@@ -33,6 +36,8 @@ interface DataEntryRepository {
 
     fun isEvent(): Boolean
 
+    fun isEventEditable(): Boolean?
+
     fun eventMode(): EventMode?
 
     fun validationStrategy(): ValidationStrategy?
@@ -42,6 +47,7 @@ interface DataEntryRepository {
     fun disableCollapsableSections(): Boolean?
 
     fun getSpecificDataEntryItems(uid: String): List<FieldUiModel>
+
     fun fetchPeriods(): Flow<PagingData<Period>>
 
     fun options(
@@ -50,4 +56,6 @@ interface DataEntryRepository {
         optionGroupsToHide: List<String>,
         optionGroupsToShow: List<String>,
     ): Pair<MutableStateFlow<String>, Flow<PagingData<OptionSetConfiguration.OptionData>>>
+
+    fun evaluateCustomIntentRequestParameters(customIntentUid: String): Map<String, Any?>
 }

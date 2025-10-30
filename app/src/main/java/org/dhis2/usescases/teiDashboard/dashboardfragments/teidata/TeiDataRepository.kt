@@ -1,7 +1,7 @@
 package org.dhis2.usescases.teiDashboard.dashboardfragments.teidata
 
 import io.reactivex.Single
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.data.StageSection
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -12,18 +12,27 @@ interface TeiDataRepository {
     fun getTEIEnrollmentEvents(
         selectedStage: StageSection,
         groupedByStage: Boolean,
-    ): Single<List<EventViewModel>>
+    ): Single<List<EventModel>>
 
     fun getEnrollment(): Single<Enrollment?>
+
     fun getEnrollmentProgram(): Single<Program?>
+
     fun getTrackedEntityInstance(): Single<TrackedEntityInstance?>
-    fun enrollingOrgUnit(): Single<OrganisationUnit>
-    fun eventsWithoutCatCombo(): Single<List<EventViewModel>>
+
+    fun eventsWithoutCatCombo(): Single<List<EventModel>>
+
     fun getOrgUnitName(orgUnitUid: String): String
+
     fun getTeiProfilePath(): String?
+
     fun getTeiHeader(): String?
+
     fun isEventEditable(eventUid: String): Boolean
+
     fun displayOrganisationUnit(programUid: String): Boolean
+
     fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String): Boolean
+
     fun programOrgListInCaptureScope(programUid: String): List<OrganisationUnit>
 }

@@ -7,6 +7,7 @@ object FormCountingIdlingResource {
 
     @JvmField
     val countingIdlingResource = CountingIdlingResource(RESOURCE)
+
     fun increment() {
         countingIdlingResource.increment()
     }

@@ -70,13 +70,14 @@ fun TableCell(
     var cellValue by remember {
         mutableStateOf<String?>(null)
     }
-    cellValue = when {
-        LocalUpdatingCell.current?.id == cell.id -> LocalUpdatingCell.current?.value
-        LocalTableSelection.current.isCellSelected(tableId, cell.column, cell.row ?: -1) ->
-            LocalCurrentCellValue.current()
+    cellValue =
+        when {
+            LocalUpdatingCell.current?.id == cell.id -> LocalUpdatingCell.current?.value
+            LocalTableSelection.current.isCellSelected(tableId, cell.column, cell.row ?: -1) ->
+                LocalCurrentCellValue.current()
 
-        else -> cell.value
-    }
+            else -> cell.value
+        }
 
     val bringIntoViewRequester = remember { BringIntoViewRequester() }
 
@@ -84,11 +85,12 @@ fun TableCell(
     val coroutineScope = rememberCoroutineScope()
     val isSelected =
         TableTheme.tableSelection.isCellSelected(tableId, cell.column, cell.row ?: -1)
-    val isParentSelected = TableTheme.tableSelection.isCellParentSelected(
-        selectedTableId = tableId,
-        columnIndex = cell.column,
-        rowIndex = cell.row ?: -1,
-    )
+    val isParentSelected =
+        TableTheme.tableSelection.isCellParentSelected(
+            selectedTableId = tableId,
+            columnIndex = cell.column,
+            rowIndex = cell.row ?: -1,
+        )
     val colors = TableTheme.colors
 
     val style by remember(cellValue, isSelected, isParentSelected) {
@@ -114,8 +116,7 @@ fun TableCell(
                     .columnWidthWithTableExtra(
                         tableId,
                         cell.column,
-                    )
-                    .plus(headerExtraSize)
+                    ).plus(headerExtraSize)
                     .toDp()
             }
         }
@@ -124,68 +125,71 @@ fun TableCell(
     var currentCellHeight = 0
 
     CellLegendBox(
-        modifier = Modifier
-            .testTag("$tableId$CELL_TEST_TAG${cell.row}${cell.column}")
-            .onSizeChanged { currentCellHeight = it.height }
-            .width(cellWidth)
-            .fillMaxHeight()
-            .defaultMinSize(minHeight = dimensions.defaultCellHeight)
-            .semantics {
-                rowBackground = style.backgroundColor()
-                cellSelected = isSelected
-                hasError = cell.hasErrorOrWarning()
-                isBlocked = style.backgroundColor() == backgroundColor
-            }
-            .cellBorder(
-                borderColor = style.mainColor(),
-                backgroundColor = style.backgroundColor(),
-            )
-            .bringIntoViewRequester(bringIntoViewRequester)
-            .focusable()
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .clickable(cell.editable) {
-                when {
-                    options.isNotEmpty() -> when {
-                        cell.isMultiText -> setShowMultiSelector(true)
-                        else -> setExpanded(true)
+        modifier =
+            Modifier
+                .testTag("$tableId$CELL_TEST_TAG${cell.row}${cell.column}")
+                .onSizeChanged { currentCellHeight = it.height }
+                .width(cellWidth)
+                .fillMaxHeight()
+                .defaultMinSize(minHeight = dimensions.defaultCellHeight)
+                .semantics {
+                    rowBackground = style.backgroundColor()
+                    cellSelected = isSelected
+                    hasError = cell.hasErrorOrWarning()
+                    isBlocked = style.backgroundColor() == backgroundColor
+                }.cellBorder(
+                    borderColor = style.mainColor(),
+                    backgroundColor = style.backgroundColor(),
+                ).bringIntoViewRequester(bringIntoViewRequester)
+                .focusable()
+                .fillMaxWidth()
+                .fillMaxHeight()
+                .clickable(cell.editable) {
+                    when {
+                        options.isNotEmpty() ->
+                            when {
+                                cell.isMultiText -> setShowMultiSelector(true)
+                                else -> setExpanded(true)
+                            }
+                        else -> {
+                            localInteraction.onSelectionChange(
+                                TableSelection.CellSelection(
+                                    tableId = tableId,
+                                    columnIndex = cell.column,
+                                    rowIndex = cell.row ?: -1,
+                                    globalIndex = 0,
+                                ),
+                            )
+                            localInteraction.onClick(cell)
+                        }
                     }
-                    else -> {
-                        localInteraction.onSelectionChange(
-                            TableSelection.CellSelection(
-                                tableId = tableId,
-                                columnIndex = cell.column,
-                                rowIndex = cell.row ?: -1,
-                                globalIndex = 0,
-                            ),
-                        )
-                        localInteraction.onClick(cell)
-                    }
-                }
-            },
+                },
         legendColor = cell.legendColor?.let { Color(it) },
     ) {
         Text(
-            modifier = Modifier
-                .testTag(CELL_VALUE_TEST_TAG)
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .padding(
-                    horizontal = TableTheme.dimensions.cellHorizontalPadding,
-                    vertical = TableTheme.dimensions.cellVerticalPadding,
-                ),
+            modifier =
+                Modifier
+                    .testTag(CELL_VALUE_TEST_TAG)
+                    .align(Alignment.Center)
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = TableTheme.dimensions.cellHorizontalPadding,
+                        vertical = TableTheme.dimensions.cellVerticalPadding,
+                    ),
             text = cellValue ?: "",
             maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
-            style = TextStyle.Default.copy(
-                fontSize = TableTheme.dimensions.defaultCellTextSize,
-                textAlign = if (cellValue.isNumeric()) TextAlign.End else TextAlign.Start,
-                color = LocalTableColors.current.cellTextColor(
-                    hasError = cell.error != null,
-                    hasWarning = cell.warning != null,
-                    isEditable = cell.editable,
+            style =
+                TextStyle.Default.copy(
+                    fontSize = TableTheme.dimensions.defaultCellTextSize,
+                    textAlign = if (cellValue.isNumeric()) TextAlign.End else TextAlign.Start,
+                    color =
+                        LocalTableColors.current.cellTextColor(
+                            hasError = cell.error != null,
+                            hasWarning = cell.warning != null,
+                            isEditable = cell.editable,
+                        ),
                 ),
-            ),
         )
         if (options.isNotEmpty()) {
             DropDownOptions(
@@ -235,43 +239,49 @@ fun TableCell(
             Icon(
                 painter = painterResource(id = R.drawable.ic_mandatory),
                 contentDescription = "mandatory",
-                modifier = Modifier
-                    .testTag(MANDATORY_ICON_TEST_TAG)
-                    .padding(4.dp)
-                    .size(6.dp)
-                    .align(
-                        alignment = mandatoryIconAlignment(
-                            cellValue?.isNotEmpty() == true,
+                modifier =
+                    Modifier
+                        .testTag(MANDATORY_ICON_TEST_TAG)
+                        .padding(4.dp)
+                        .size(6.dp)
+                        .align(
+                            alignment =
+                                mandatoryIconAlignment(
+                                    cellValue?.isNotEmpty() == true,
+                                ),
                         ),
+                tint =
+                    LocalTableColors.current.cellMandatoryIconColor(
+                        cellValue?.isNotEmpty() == true,
                     ),
-                tint = LocalTableColors.current.cellMandatoryIconColor(
-                    cellValue?.isNotEmpty() == true,
-                ),
             )
         }
         if (cell.hasErrorOrWarning()) {
             Divider(
-                modifier = Modifier
-                    .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
-                color = if (cell.error != null) {
-                    TableTheme.colors.errorColor
-                } else {
-                    TableTheme.colors.warningColor
-                },
+                modifier =
+                    Modifier
+                        .testTag(CELL_ERROR_UNDERLINE_TEST_TAG)
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
+                color =
+                    if (cell.error != null) {
+                        TableTheme.colors.errorColor
+                    } else {
+                        TableTheme.colors.warningColor
+                    },
             )
         }
     }
 
     LaunchedEffect(key1 = isSelected) {
         if (isSelected) {
-            val marginCoordinates = Rect(
-                0f,
-                0f,
-                dimensions.defaultCellWidth * 2f,
-                dimensions.textInputHeight.toFloat() + currentCellHeight,
-            )
+            val marginCoordinates =
+                Rect(
+                    0f,
+                    0f,
+                    dimensions.defaultCellWidth * 2f,
+                    dimensions.textInputHeight.toFloat() + currentCellHeight,
+                )
             coroutineScope.launch {
                 bringIntoViewRequester.bringIntoView(marginCoordinates)
             }
@@ -279,7 +289,8 @@ fun TableCell(
     }
 }
 
-private fun mandatoryIconAlignment(hasValue: Boolean) = when (hasValue) {
-    true -> Alignment.TopStart
-    false -> Alignment.CenterEnd
-}
+private fun mandatoryIconAlignment(hasValue: Boolean) =
+    when (hasValue) {
+        true -> Alignment.TopStart
+        false -> Alignment.CenterEnd
+    }

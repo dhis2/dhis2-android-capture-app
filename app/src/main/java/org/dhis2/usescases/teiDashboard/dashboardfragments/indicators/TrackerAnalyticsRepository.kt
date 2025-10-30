@@ -21,12 +21,15 @@ class TrackerAnalyticsRepository(
     val teiUid: String,
     resourceManager: ResourceManager,
 ) : BaseIndicatorRepository(d2, ruleEngineHelper, programUid, resourceManager) {
-
     val enrollmentUid: String
 
     init {
-        var enrollmentRepository = d2.enrollmentModule().enrollments()
-            .byTrackedEntityInstance().eq(teiUid)
+        var enrollmentRepository =
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(teiUid)
         if (!DhisTextUtils.isEmpty(programUid)) {
             enrollmentRepository = enrollmentRepository.byProgram().eq(programUid)
         }
@@ -34,21 +37,23 @@ class TrackerAnalyticsRepository(
         enrollmentUid = enrollmentRepository.one().blockingGet()?.uid() ?: ""
     }
 
-    override fun fetchData(): Flowable<List<AnalyticsModel>> {
-        return Flowable.zip<
+    override fun fetchData(): Flowable<List<AnalyticsModel>> =
+        Flowable.zip<
             List<AnalyticsModel>?,
             List<AnalyticsModel>?,
             List<AnalyticsModel>,
             List<AnalyticsModel>,
-            >(
+        >(
             getIndicators(
                 !DhisTextUtils.isEmpty(enrollmentUid),
             ) { indicatorUid ->
-                d2.programModule()
-                    .programIndicatorEngine().getEnrollmentProgramIndicatorValue(
+                d2
+                    .programModule()
+                    .programIndicatorEngine()
+                    .getEnrollmentProgramIndicatorValue(
                         enrollmentUid,
                         indicatorUid,
-                    )
+                    ) ?: ""
             },
             getRulesIndicators(),
             Flowable.just(
@@ -58,7 +63,6 @@ class TrackerAnalyticsRepository(
                 arrangeSections(indicators, ruleIndicators, charts)
             },
         )
-    }
 
     override fun filterByPeriod(
         chartModel: ChartModel,
@@ -86,7 +90,10 @@ class TrackerAnalyticsRepository(
         }
     }
 
-    override fun filterLineListing(chartModel: ChartModel, value: String?) {
+    override fun filterLineListing(
+        chartModel: ChartModel,
+        value: String?,
+    ) {
         charts?.setLineListingFilter(chartModel.uid, -1, value)
     }
 }

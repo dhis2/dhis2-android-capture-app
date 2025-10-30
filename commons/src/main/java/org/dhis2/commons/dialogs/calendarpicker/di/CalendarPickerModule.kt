@@ -8,9 +8,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 
 @Module
 class CalendarPickerModule {
-
     @Provides
-    fun providesCalendarPickerPresenter(preferences: PreferenceProvider): CalendarPickerRepository {
-        return CalendarPickerRepositoryImpl(preferences)
-    }
+    fun providesCalendarPickerPresenter(preferences: PreferenceProvider): CalendarPickerRepository =
+        CalendarPickerRepositoryImpl(preferences)
 }

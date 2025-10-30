@@ -44,10 +44,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.ui.model.ButtonUiModel
-import org.dhis2.ui.theme.Dhis2Theme
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 const val TAG = "NotificationDialog"
 
@@ -60,7 +60,6 @@ class AlertDialog(
     val dismissButton: ButtonUiModel,
     val confirmButton: ButtonUiModel,
 ) : DialogFragment() {
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window!!.requestFeature(Window.FEATURE_NO_TITLE)
@@ -72,36 +71,37 @@ class AlertDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
             setContent {
-                Dhis2Theme {
+                DHIS2Theme {
                     Dhis2AlertDialogUi(
                         labelText = labelText,
                         descriptionText = descriptionText,
                         iconResource = iconResource,
                         spanText = spanText,
                         animationRes = animationRes,
-                        confirmButton = confirmButton.copy(
-                            onClick = {
-                                confirmButton.onClick()
-                                dismiss()
-                            },
-                        ),
-                        dismissButton = dismissButton.copy(
-                            onClick = {
-                                dismissButton.onClick()
-                                dismiss()
-                            },
-                        ),
+                        confirmButton =
+                            confirmButton.copy(
+                                onClick = {
+                                    confirmButton.onClick()
+                                    dismiss()
+                                },
+                            ),
+                        dismissButton =
+                            dismissButton.copy(
+                                onClick = {
+                                    dismissButton.onClick()
+                                    dismiss()
+                                },
+                            ),
                     )
                 }
             }
         }
-    }
 
     fun show(manager: FragmentManager) {
         super.show(manager, TAG)
@@ -123,46 +123,50 @@ fun Dhis2AlertDialogUi(
     )
 
     var confirmButtonClick = remember { mutableStateOf(false) }
-    Dhis2Theme {
+    DHIS2Theme {
         AlertDialog(
             onDismissRequest = dismissButton.onClick,
             title = { Text(text = labelText, textAlign = TextAlign.Center) },
             text = {
                 Column {
                     Text(
-                        text = buildAnnotatedString {
-                            append(descriptionText)
-                            spanText?.let {
-                                addStyle(
-                                    style = SpanStyle(MaterialTheme.colorScheme.primary),
-                                    start = descriptionText.indexOf(spanText),
-                                    end = descriptionText.indexOf(spanText) + spanText.length,
-                                )
-                            }
-                        },
+                        text =
+                            buildAnnotatedString {
+                                append(descriptionText)
+                                spanText?.let {
+                                    addStyle(
+                                        style = SpanStyle(MaterialTheme.colorScheme.primary),
+                                        start = descriptionText.indexOf(spanText),
+                                        end = descriptionText.indexOf(spanText) + spanText.length,
+                                    )
+                                }
+                            },
                     )
                     animationRes?.let {
                         Spacer(modifier = Modifier.size(16.dp))
                         if (!confirmButtonClick.value) {
                             LottieAnimation(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
                                 composition = composition,
                                 iterations = LottieConstants.IterateForever,
                             )
                         } else {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp),
+                                modifier =
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 ProgressIndicator(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .height(100.dp),
+                                    modifier =
+                                        Modifier
+                                            .width(100.dp)
+                                            .height(100.dp),
                                     type = ProgressIndicatorType.CIRCULAR,
                                 )
                             }

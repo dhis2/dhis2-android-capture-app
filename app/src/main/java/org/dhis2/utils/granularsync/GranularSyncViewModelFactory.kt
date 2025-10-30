@@ -18,8 +18,8 @@ class GranularSyncViewModelFactory(
     private val workManagerController: WorkManagerController,
     private val smsSyncProvider: SMSSyncProvider,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return GranularSyncPresenter(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        GranularSyncPresenter(
             d2,
             view,
             repository,
@@ -29,5 +29,4 @@ class GranularSyncViewModelFactory(
             workManagerController,
             smsSyncProvider,
         ) as T
-    }
 }

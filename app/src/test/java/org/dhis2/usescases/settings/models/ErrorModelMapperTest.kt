@@ -22,15 +22,17 @@ class ErrorModelMapperTest {
     @Test
     fun `Should map d2Error to errorViewModel`() {
         val createDate = Date()
-        val result = mapper.map(
-            D2Error.builder()
-                .httpErrorCode(1)
-                .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
-                .created(createDate)
-                .errorDescription("Description")
-                .errorComponent(D2ErrorComponent.Database)
-                .build(),
-        )
+        val result =
+            mapper.map(
+                D2Error
+                    .builder()
+                    .httpErrorCode(1)
+                    .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
+                    .created(createDate)
+                    .errorDescription("Description")
+                    .errorComponent(D2ErrorComponent.Database)
+                    .build(),
+            )
         result.apply {
             assertTrue(this.errorCode == "1")
             assertTrue(this.creationDate == creationDate)
@@ -42,15 +44,17 @@ class ErrorModelMapperTest {
     @Test
     fun `Should map description to errorViewModel`() {
         val createDate = Date()
-        val result = mapper.map(
-            TrackerImportConflict.builder()
-                .errorCode("1")
-                .created(createDate)
-                .conflict("Conflict")
-                .displayDescription("Description")
-                .status(ImportStatus.ERROR)
-                .build(),
-        )
+        val result =
+            mapper.map(
+                TrackerImportConflict
+                    .builder()
+                    .errorCode("1")
+                    .created(createDate)
+                    .conflict("Conflict")
+                    .displayDescription("Description")
+                    .status(ImportStatus.ERROR)
+                    .build(),
+            )
         result.apply {
             assertTrue(this.errorCode == "1")
             assertTrue(this.creationDate == creationDate)
@@ -62,14 +66,16 @@ class ErrorModelMapperTest {
     @Test
     fun `Should map conflict to errorViewModel`() {
         val createDate = Date()
-        val result = mapper.map(
-            TrackerImportConflict.builder()
-                .errorCode("1")
-                .created(createDate)
-                .conflict("Conflict")
-                .status(ImportStatus.ERROR)
-                .build(),
-        )
+        val result =
+            mapper.map(
+                TrackerImportConflict
+                    .builder()
+                    .errorCode("1")
+                    .created(createDate)
+                    .conflict("Conflict")
+                    .status(ImportStatus.ERROR)
+                    .build(),
+            )
         result.apply {
             assertTrue(this.errorCode == "1")
             assertTrue(this.creationDate == creationDate)
@@ -81,15 +87,17 @@ class ErrorModelMapperTest {
     @Test
     fun `Should map FK to errorViewModel`() {
         val createDate = Date()
-        val result = mapper.map(
-            ForeignKeyViolation.builder()
-                .fromTable("TableA")
-                .toTable("TableB")
-                .notFoundValue("UIDB")
-                .fromObjectUid("UIDA")
-                .created(createDate)
-                .build(),
-        )
+        val result =
+            mapper.map(
+                ForeignKeyViolation
+                    .builder()
+                    .fromTable("TableA")
+                    .toTable("TableB")
+                    .notFoundValue("UIDB")
+                    .fromObjectUid("UIDA")
+                    .created(createDate)
+                    .build(),
+            )
         result.apply {
             assertTrue(this.errorCode == "FK")
             assertTrue(this.creationDate == creationDate)

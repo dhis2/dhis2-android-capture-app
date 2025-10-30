@@ -12,21 +12,26 @@ class DashboardProgramAdapter(
     private val presenter: TEIDataPresenter,
     private val dashboardProgramModel: DashboardTEIModel,
 ) : RecyclerView.Adapter<DashboardProgramViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DashboardProgramViewHolder {
-        val binding = DataBindingUtil.inflate<ItemDashboardProgramBinding>(
-            LayoutInflater.from(parent.context),
-            R.layout.item_dashboard_program,
-            parent,
-            false,
-        )
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): DashboardProgramViewHolder {
+        val binding =
+            DataBindingUtil.inflate<ItemDashboardProgramBinding>(
+                LayoutInflater.from(parent.context),
+                R.layout.item_dashboard_program,
+                parent,
+                false,
+            )
         return DashboardProgramViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: DashboardProgramViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: DashboardProgramViewHolder,
+        position: Int,
+    ) {
         holder.bind(presenter, dashboardProgramModel, position)
     }
 
-    override fun getItemCount(): Int {
-        return dashboardProgramModel.getProgramsWithActiveEnrollment()?.size ?: 0
-    }
+    override fun getItemCount(): Int = dashboardProgramModel.getProgramsWithActiveEnrollment()?.size ?: 0
 }

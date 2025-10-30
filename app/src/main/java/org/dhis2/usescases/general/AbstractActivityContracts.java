@@ -1,7 +1,6 @@
 package org.dhis2.usescases.general;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,10 +10,6 @@ import androidx.core.app.ActivityOptionsCompat;
 import org.dhis2.utils.OnDialogClickListener;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
-
-/**
- * QUADRAM. Created by ppajuelo on 27/09/2017.
- */
 
 public class AbstractActivityContracts {
 
@@ -46,9 +41,6 @@ public class AbstractActivityContracts {
         void showInfoDialog(String title, String message, String possitiveButtonText, String negativeButtonText, OnDialogClickListener clickListener);
 
         void showDescription(String description);
-
-        @Deprecated
-        SharedPreferences getSharedPreferences();
 
         @Deprecated
         void showSyncDialog(SyncStatusDialog dialog);

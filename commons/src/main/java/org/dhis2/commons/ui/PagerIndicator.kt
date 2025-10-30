@@ -39,18 +39,21 @@ fun PagerIndicatorScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val pageCount = 2
-        val pagerState = rememberPagerState(
-            pageCount = { pageCount },
-        )
+        val pagerState =
+            rememberPagerState(
+                pageCount = { pageCount },
+            )
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .weight(1f),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(text = "Page $it")
@@ -73,7 +76,9 @@ fun PagerIndicator(
     LaunchedEffect(key1 = currentPage) {
         val size = indicatorScrollState.layoutInfo.visibleItemsInfo.size
         val lastVisibleIndex =
-            indicatorScrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            indicatorScrollState.layoutInfo.visibleItemsInfo
+                .lastOrNull()
+                ?.index ?: 0
         val firstVisibleItemIndex = indicatorScrollState.firstVisibleItemIndex
 
         if (currentPage > lastVisibleIndex - 1) {
@@ -85,9 +90,11 @@ fun PagerIndicator(
 
     LazyRow(
         state = indicatorScrollState,
-        modifier = Modifier
-            .height(50.dp)
-            .width(((6 + 16) * 2 + 3 * (10 + 16)).dp), // I'm hard computing it to simplify
+        modifier =
+            Modifier
+                .height(50.dp)
+                .width(((6 + 16) * 2 + 3 * (10 + 16)).dp),
+        // I'm hard computing it to simplify
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -96,22 +103,26 @@ fun PagerIndicator(
             item(key = "item$iteration") {
                 val firstVisibleIndex by remember { derivedStateOf { indicatorScrollState.firstVisibleItemIndex } }
                 val lastVisibleIndex =
-                    indicatorScrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    indicatorScrollState.layoutInfo.visibleItemsInfo
+                        .lastOrNull()
+                        ?.index ?: 0
                 val size by animateDpAsState(
-                    targetValue = when (iteration) {
-                        currentPage -> 10.dp
-                        in firstVisibleIndex + 1..<lastVisibleIndex -> 10.dp
-                        else -> 6.dp
-                    },
+                    targetValue =
+                        when (iteration) {
+                            currentPage -> 10.dp
+                            in firstVisibleIndex + 1..<lastVisibleIndex -> 10.dp
+                            else -> 6.dp
+                        },
                     label = "PagerIndicatorDotSizeAnimation",
                 )
                 Box(
-                    modifier = Modifier
-                        .padding(all = 8.dp)
-                        .background(color = color, CircleShape)
-                        .size(
-                            size,
-                        ),
+                    modifier =
+                        Modifier
+                            .padding(all = 8.dp)
+                            .background(color = color, CircleShape)
+                            .size(
+                                size,
+                            ),
                 )
             }
         }

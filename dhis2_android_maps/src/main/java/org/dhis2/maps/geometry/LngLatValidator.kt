@@ -1,6 +1,9 @@
 package org.dhis2.maps.geometry
 
-fun areLngLatCorrect(lon: Double, lat: Double) = isLatitudeValid(lat) && isLongitudeValid(lon)
+fun areLngLatCorrect(
+    lon: Double,
+    lat: Double,
+) = isLatitudeValid(lat) && isLongitudeValid(lon)
 
 fun isLongitudeValid(longitude: Double) = longitude >= -180 && longitude <= 180
 

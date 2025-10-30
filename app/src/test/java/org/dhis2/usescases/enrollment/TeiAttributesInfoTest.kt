@@ -7,11 +7,12 @@ import org.junit.Test
 class TeiAttributesInfoTest {
     @Test
     fun shouldReturnOneAttributeAsMainLabel() {
-        val teiInfo = TeiAttributesInfo(
-            attributes = listOf("attr1"),
-            profileImage = "path",
-            teTypeName = "name",
-        )
+        val teiInfo =
+            TeiAttributesInfo(
+                attributes = listOf("attr1"),
+                profileImage = "path",
+                teTypeName = "name",
+            )
 
         assertTrue(teiInfo.teiMainLabel(null) == "attr1")
         assertTrue(teiInfo.teiSecondaryLabel() == null)
@@ -19,11 +20,12 @@ class TeiAttributesInfoTest {
 
     @Test
     fun shouldReturnTwoAttributesAsMainLabel() {
-        val teiInfo = TeiAttributesInfo(
-            attributes = listOf("attr1", "attr2"),
-            profileImage = "path",
-            teTypeName = "name",
-        )
+        val teiInfo =
+            TeiAttributesInfo(
+                attributes = listOf("attr1", "attr2"),
+                profileImage = "path",
+                teTypeName = "name",
+            )
 
         assertTrue(teiInfo.teiMainLabel(null) == "attr1 attr2")
         assertTrue(teiInfo.teiSecondaryLabel() == null)
@@ -31,11 +33,12 @@ class TeiAttributesInfoTest {
 
     @Test
     fun shouldReturnTwoAttributesAsMainLabelAndOneAttributeAsSecondaryLabel() {
-        val teiInfo = TeiAttributesInfo(
-            attributes = listOf("attr1", "attr2", "attr3", "attr4"),
-            profileImage = "path",
-            teTypeName = "name",
-        )
+        val teiInfo =
+            TeiAttributesInfo(
+                attributes = listOf("attr1", "attr2", "attr3", "attr4"),
+                profileImage = "path",
+                teTypeName = "name",
+            )
 
         assertTrue(teiInfo.teiMainLabel(null) == "attr1 attr2")
         assertTrue(teiInfo.teiSecondaryLabel() == "attr3")
@@ -43,11 +46,12 @@ class TeiAttributesInfoTest {
 
     @Test
     fun shouldReturnTrackedEntityTypeName() {
-        val teiInfo = TeiAttributesInfo(
-            attributes = listOf(),
-            profileImage = "path",
-            teTypeName = "name",
-        )
+        val teiInfo =
+            TeiAttributesInfo(
+                attributes = listOf(),
+                profileImage = "path",
+                teTypeName = "name",
+            )
 
         assertTrue(teiInfo.teiMainLabel(null) == "name")
         assertTrue(teiInfo.teiSecondaryLabel() == null)
@@ -55,11 +59,12 @@ class TeiAttributesInfoTest {
 
     @Test
     fun shouldReturnFormattedTrackedEntityTypeName() {
-        val teiInfo = TeiAttributesInfo(
-            attributes = listOf(),
-            profileImage = "path",
-            teTypeName = "name",
-        )
+        val teiInfo =
+            TeiAttributesInfo(
+                attributes = listOf(),
+                profileImage = "path",
+                teTypeName = "name",
+            )
 
         assertTrue(teiInfo.teiMainLabel("%s details") == "name details")
         assertTrue(teiInfo.teiSecondaryLabel() == null)
@@ -67,11 +72,12 @@ class TeiAttributesInfoTest {
 
     @Test
     fun shouldReturnFormattedLabelIfNoArgumentsAvailable() {
-        val teiInfo = TeiAttributesInfo(
-            attributes = listOf(),
-            profileImage = "path",
-            teTypeName = "name",
-        )
+        val teiInfo =
+            TeiAttributesInfo(
+                attributes = listOf(),
+                profileImage = "path",
+                teTypeName = "name",
+            )
 
         assertTrue(teiInfo.teiMainLabel("details") == "details")
         assertTrue(teiInfo.teiSecondaryLabel() == null)

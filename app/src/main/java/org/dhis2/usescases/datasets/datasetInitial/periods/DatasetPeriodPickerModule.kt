@@ -8,16 +8,17 @@ import org.dhis2.usescases.datasets.datasetInitial.periods.domain.HasDataInputPe
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
-val datasetPeriodPickerModule = module {
-    single<DateUtils> { DateUtils() }
-    single {
-        DatasetPeriodRepository(get(), get())
-    }
-    single { GetDatasetPeriods(get()) }
-    single { GetDatasetPeriodMaxDate(get()) }
-    single { HasDataInputPeriods(get()) }
+val datasetPeriodPickerModule =
+    module {
+        single<DateUtils> { DateUtils() }
+        single {
+            DatasetPeriodRepository(get(), get())
+        }
+        single { GetDatasetPeriods(get()) }
+        single { GetDatasetPeriodMaxDate(get()) }
+        single { HasDataInputPeriods(get()) }
 
-    viewModel {
-        DatasetPeriodViewModel(get(), get(), get())
+        viewModel {
+            DatasetPeriodViewModel(get(), get(), get())
+        }
     }
-}

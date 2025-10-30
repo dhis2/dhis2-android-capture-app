@@ -12,7 +12,6 @@ class SyncConflictAdapter(
     private val conflicts: MutableList<StatusLogItem>,
     private val showErrorLog: () -> Unit,
 ) : RecyclerView.Adapter<SyncConflictHolder>() {
-
     lateinit var recycler: WeakReference<RecyclerView>
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -20,19 +19,26 @@ class SyncConflictAdapter(
         recycler = WeakReference(recyclerView)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SyncConflictHolder {
-        val binding = DataBindingUtil.inflate<ItemSyncConflictBinding>(
-            LayoutInflater.from(parent.context),
-            R.layout.item_sync_conflict,
-            parent,
-            false,
-        )
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): SyncConflictHolder {
+        val binding =
+            DataBindingUtil.inflate<ItemSyncConflictBinding>(
+                LayoutInflater.from(parent.context),
+                R.layout.item_sync_conflict,
+                parent,
+                false,
+            )
         return SyncConflictHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SyncConflictHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: SyncConflictHolder,
+        position: Int,
+    ) {
         holder.bind(conflicts[position])
-        if (conflicts[position].openLogs()) {
+        if (conflicts[position].openLogs) {
             holder.itemView.setOnClickListener {
                 showErrorLog()
             }
@@ -41,9 +47,7 @@ class SyncConflictAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return conflicts.size
-    }
+    override fun getItemCount(): Int = conflicts.size
 
     fun addItems(conflicts: List<StatusLogItem>) {
         this.conflicts.clear()

@@ -2,7 +2,6 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.mapbox.geojson.Feature
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
@@ -26,8 +25,11 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.NEW_RELATIONSHIP
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.maplibre.geojson.Feature
 
 class RelationshipPresenter internal constructor(
     private val view: RelationshipView,
@@ -43,18 +45,20 @@ class RelationshipPresenter internal constructor(
     private val dateLabelProvider: DateLabelProvider,
     dispatcherProvider: DispatcherProvider,
 ) {
-
     private lateinit var layersVisibility: Map<String, MapLayer>
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
     private val teiType: String? =
-        d2.trackedEntityModule().trackedEntityInstances()
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
             .withTrackedEntityAttributeValues()
             .uid(teiUid)
-            .blockingGet()?.trackedEntityType()
+            .blockingGet()
+            ?.trackedEntityType()
     private var updateRelationships: FlowableProcessor<Boolean> = PublishProcessor.create()
 
-    private val _relationshipsModels = MutableLiveData<List<RelationshipModel>>()
+    private val relationshipsModels = MutableLiveData<List<RelationshipModel>>()
     private val _relationshipMapData: MutableLiveData<RelationshipMapData> = MutableLiveData()
     val relationshipMapData: LiveData<RelationshipMapData> = _relationshipMapData
     private val _mapItemClicked = MutableLiveData<String>()
@@ -64,57 +68,77 @@ class RelationshipPresenter internal constructor(
 
     fun init() {
         scope.launch {
-            relationshipsRepository.getRelationships().collect {
-                _relationshipsModels.postValue(it)
+            relationshipsRepository.getRelationships().let {
+                relationshipsModels.postValue(it)
 
-                val mapItems = it.map { relationship ->
-                    val mapItem = MapItemModel(
-                        uid = relationship.ownerUid,
-                        avatarProviderConfiguration = avatarProvider.getAvatar(
-                            style = relationship.ownerStyle,
-                            profilePath = relationship.getPicturePath(),
-                            firstAttributeValue = relationship.firstMainValue(),
-                        ),
-                        title = relationship.displayRelationshipName(),
-                        description = relationship.displayDescription(),
-                        lastUpdated = dateLabelProvider.span(relationship.displayLastUpdated()),
-                        additionalInfoList = relationship.displayAttributes().map {
-                            AdditionalInfoItem(
-                                key = it.first,
-                                value = it.second,
+                val mapItems =
+                    it.map { relationship ->
+                        val mapItem =
+                            MapItemModel(
+                                uid = relationship.ownerUid,
+                                avatarProviderConfiguration =
+                                    avatarProvider.getAvatar(
+                                        icon = relationship.ownerStyleIcon,
+                                        color = relationship.ownerStyleColor,
+                                        profilePath = relationship.getPicturePath(),
+                                        firstAttributeValue = relationship.firstMainValue(),
+                                    ),
+                                title = relationship.displayRelationshipName(),
+                                description = relationship.displayDescription(),
+                                lastUpdated = dateLabelProvider.span(relationship.displayLastUpdated()),
+                                additionalInfoList =
+                                    relationship.displayAttributes().map {
+                                        AdditionalInfoItem(
+                                            key = it.first,
+                                            value = it.second,
+                                        )
+                                    },
+                                isOnline = false,
+                                geometry =
+                                    relationship.displayGeometry()?.let { relationshipGeometry ->
+                                        Geometry
+                                            .builder()
+                                            .type(
+                                                relationshipGeometry.featureType?.let { name ->
+                                                    FeatureType.valueOf(
+                                                        name,
+                                                    )
+                                                },
+                                            ).coordinates(relationshipGeometry.coordinates)
+                                            .build()
+                                    },
+                                relatedInfo =
+                                    relationshipMapsRepository.getRelatedInfo(
+                                        ownerType = relationship.ownerType,
+                                        ownerUid = relationship.ownerUid,
+                                    ),
+                                state = State.valueOf(relationship.relationshipState),
                             )
-                        },
-                        isOnline = false,
-                        geometry = relationship.displayGeometry(),
-                        relatedInfo = relationshipMapsRepository.getRelatedInfo(
-                            ownerType = relationship.ownerType,
-                            ownerUid = relationship.ownerUid,
-                        ),
-                        state = relationship.relationship.syncState() ?: State.SYNCED,
-                    )
-                    relationshipMapsRepository.addRelationshipInfo(
-                        mapItem,
-                        relationship.relationship,
-                    )
-                }
+                        relationshipMapsRepository.addRelationshipInfo(
+                            mapItem,
+                            relationship.relationshipUid,
+                        )
+                    }
 
                 mapItems.let {
                     val featureCollection = mapRelationshipsToFeatureCollection.map(mapItems)
-                    val relationshipMapData = if (::layersVisibility.isInitialized) {
-                        RelationshipMapData(
-                            mapItems = mapItems.filterRelationshipsByLayerVisibility(
-                                layersVisibility,
-                            ),
-                            relationshipFeatures = featureCollection.first,
-                            boundingBox = featureCollection.second,
-                        )
-                    } else {
-                        RelationshipMapData(
-                            mapItems = mapItems,
-                            relationshipFeatures = featureCollection.first,
-                            boundingBox = featureCollection.second,
-                        )
-                    }
+                    val relationshipMapData =
+                        if (::layersVisibility.isInitialized) {
+                            RelationshipMapData(
+                                mapItems =
+                                    mapItems.filterRelationshipsByLayerVisibility(
+                                        layersVisibility,
+                                    ),
+                                relationshipFeatures = featureCollection.first,
+                                boundingBox = featureCollection.second,
+                            )
+                        } else {
+                            RelationshipMapData(
+                                mapItems = mapItems,
+                                relationshipFeatures = featureCollection.first,
+                                boundingBox = featureCollection.second,
+                            )
+                        }
                     _relationshipMapData.postValue(relationshipMapData)
                 }
             }
@@ -141,29 +165,49 @@ class RelationshipPresenter internal constructor(
     }
 
     fun openDashboard(teiUid: String) {
-        if (d2.trackedEntityModule()
-                .trackedEntityInstances().uid(teiUid).blockingGet()?.aggregatedSyncState() !=
+        if (d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(teiUid)
+                .blockingGet()
+                ?.aggregatedSyncState() !=
             State.RELATIONSHIP
         ) {
-            if (d2.enrollmentModule().enrollments()
-                    .byTrackedEntityInstance().eq(teiUid).blockingGet().isNotEmpty()
+            if (d2
+                    .enrollmentModule()
+                    .enrollments()
+                    .byTrackedEntityInstance()
+                    .eq(teiUid)
+                    .blockingGet()
+                    .isNotEmpty()
             ) {
                 view.openDashboardFor(teiUid)
             } else {
                 view.showTeiWithoutEnrollmentError(
-                    d2.trackedEntityModule()
-                        .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: "",
+                    d2
+                        .trackedEntityModule()
+                        .trackedEntityTypes()
+                        .uid(teiType)
+                        .blockingGet()
+                        ?.displayName() ?: "",
                 )
             }
         } else {
             view.showRelationshipNotFoundError(
-                d2.trackedEntityModule()
-                    .trackedEntityTypes().uid(teiType).blockingGet()?.displayName() ?: "",
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityTypes()
+                    .uid(teiType)
+                    .blockingGet()
+                    ?.displayName() ?: "",
             )
         }
     }
 
-    private fun openEvent(eventUid: String, eventProgramUid: String) {
+    private fun openEvent(
+        eventUid: String,
+        eventProgramUid: String,
+    ) {
         view.openEventFor(eventUid, eventProgramUid)
     }
 
@@ -175,20 +219,22 @@ class RelationshipPresenter internal constructor(
         view.displayMessage(message)
     }
 
-    fun onRelationshipClicked(ownerType: RelationshipOwnerType, ownerUid: String) {
+    fun onRelationshipClicked(
+        ownerType: RelationshipOwnerType,
+        ownerUid: String,
+    ) {
         when (ownerType) {
-            RelationshipOwnerType.EVENT -> openEvent(
-                ownerUid,
-                relationshipMapsRepository.getEventProgram(ownerUid),
-            )
+            RelationshipOwnerType.EVENT ->
+                openEvent(
+                    ownerUid,
+                    relationshipMapsRepository.getEventProgram(ownerUid),
+                )
 
             RelationshipOwnerType.TEI -> openDashboard(ownerUid)
         }
     }
 
-    fun fetchMapStyles(): List<BaseMapStyle> {
-        return mapStyleConfig.fetchMapStyles()
-    }
+    fun fetchMapStyles(): List<BaseMapStyle> = mapStyleConfig.fetchMapStyles()
 
     fun onFeatureClicked(feature: Feature) {
         feature.toStringProperty()?.let {
@@ -201,7 +247,7 @@ class RelationshipPresenter internal constructor(
     }
 
     fun onMapRelationshipClicked(uid: String) {
-        val relationship = _relationshipsModels.value?.firstOrNull { uid == it.ownerUid }
+        val relationship = relationshipsModels.value?.firstOrNull { uid == it.ownerUid }
         relationship?.let {
             onRelationshipClicked(
                 ownerType = it.ownerType,

@@ -12,9 +12,7 @@ import org.hisp.dhis.android.core.D2
 class SyncDataWorkerModule {
     @Provides
     @PerService
-    fun syncRepository(d2: D2): SyncRepository {
-        return SyncRepositoryImpl(d2)
-    }
+    fun syncRepository(d2: D2): SyncRepository = SyncRepositoryImpl(d2)
 
     @Provides
     @PerService
@@ -25,8 +23,8 @@ class SyncDataWorkerModule {
         analyticsHelper: AnalyticsHelper,
         syncStatusController: SyncStatusController,
         syncRepository: SyncRepository,
-    ): SyncPresenter {
-        return SyncPresenterImpl(
+    ): SyncPresenter =
+        SyncPresenterImpl(
             d2,
             preferences,
             workManagerController,
@@ -34,5 +32,4 @@ class SyncDataWorkerModule {
             syncStatusController,
             syncRepository,
         )
-    }
 }

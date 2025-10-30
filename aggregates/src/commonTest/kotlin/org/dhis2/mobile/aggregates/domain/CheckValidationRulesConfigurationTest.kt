@@ -11,7 +11,6 @@ import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
 class CheckValidationRulesConfigurationTest {
-
     private val dataSetInstanceRepository: DataSetInstanceRepository = mock()
 
     private val dataSetUid = "dataSetUid"
@@ -24,40 +23,43 @@ class CheckValidationRulesConfigurationTest {
     }
 
     @Test
-    fun `should return NONE when there are no validation rules`() = runTest {
-        // Given dataset has no validation rules
-        whenever(dataSetInstanceRepository.checkIfHasValidationRules(dataSetUid)) doReturn false
+    fun `should return NONE when there are no validation rules`() =
+        runTest {
+            // Given dataset has no validation rules
+            whenever(dataSetInstanceRepository.checkIfHasValidationRules(dataSetUid)) doReturn false
 
-        // When checking validation rules
-        val result = checkValidationRulesConfiguration()
+            // When checking validation rules
+            val result = checkValidationRulesConfiguration()
 
-        // Then return none
-        assertEquals(ValidationRulesConfiguration.NONE, result)
-    }
-
-    @Test
-    fun `should return Mandatory when validation rules are mandatory`() = runTest {
-        // Given dataset has mandatory validation rules
-        whenever(dataSetInstanceRepository.checkIfHasValidationRules(dataSetUid)) doReturn true
-        whenever(dataSetInstanceRepository.areValidationRulesMandatory(dataSetUid)) doReturn true
-
-        // When checking validation rules
-        val result = checkValidationRulesConfiguration()
-
-        // Then return MANDATORY
-        assertEquals(ValidationRulesConfiguration.MANDATORY, result)
-    }
+            // Then return none
+            assertEquals(ValidationRulesConfiguration.NONE, result)
+        }
 
     @Test
-    fun `should return Optional when validation rules are optional`() = runTest {
-        // Given dataset has optional validation rules
-        whenever(dataSetInstanceRepository.checkIfHasValidationRules(dataSetUid)) doReturn true
-        whenever(dataSetInstanceRepository.areValidationRulesMandatory(dataSetUid)) doReturn false
+    fun `should return Mandatory when validation rules are mandatory`() =
+        runTest {
+            // Given dataset has mandatory validation rules
+            whenever(dataSetInstanceRepository.checkIfHasValidationRules(dataSetUid)) doReturn true
+            whenever(dataSetInstanceRepository.areValidationRulesMandatory(dataSetUid)) doReturn true
 
-        // When checking validation rules
-        val result = checkValidationRulesConfiguration()
+            // When checking validation rules
+            val result = checkValidationRulesConfiguration()
 
-        // Then return OPTIONAL
-        assertEquals(ValidationRulesConfiguration.OPTIONAL, result)
-    }
+            // Then return MANDATORY
+            assertEquals(ValidationRulesConfiguration.MANDATORY, result)
+        }
+
+    @Test
+    fun `should return Optional when validation rules are optional`() =
+        runTest {
+            // Given dataset has optional validation rules
+            whenever(dataSetInstanceRepository.checkIfHasValidationRules(dataSetUid)) doReturn true
+            whenever(dataSetInstanceRepository.areValidationRulesMandatory(dataSetUid)) doReturn false
+
+            // When checking validation rules
+            val result = checkValidationRulesConfiguration()
+
+            // Then return OPTIONAL
+            assertEquals(ValidationRulesConfiguration.OPTIONAL, result)
+        }
 }

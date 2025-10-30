@@ -11,10 +11,12 @@ data class StoreResult(
     val valueStoreResultMessage: String? = null,
 ) {
     fun contextDataChanged() =
-        uid in listOf(
-            EVENT_REPORT_DATE_UID,
-            EVENT_ORG_UNIT_UID,
-            EVENT_COORDINATE_UID,
-            EVENT_CATEGORY_COMBO_UID,
-        ) && valueStoreResult == ValueStoreResult.VALUE_CHANGED
+        uid in
+            listOf(
+                EVENT_REPORT_DATE_UID,
+                EVENT_ORG_UNIT_UID,
+                EVENT_COORDINATE_UID,
+                EVENT_CATEGORY_COMBO_UID,
+            ) &&
+            valueStoreResult == ValueStoreResult.VALUE_CHANGED
 }

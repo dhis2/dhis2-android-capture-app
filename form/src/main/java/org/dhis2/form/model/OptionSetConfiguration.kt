@@ -5,7 +5,7 @@ import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.option.Option
 
 data class OptionSetConfiguration(
@@ -17,15 +17,14 @@ data class OptionSetConfiguration(
         fun optionDataFlow(
             flow: Flow<PagingData<Option>>,
             fetchMetadataIconData: (option: Option) -> MetadataIconData,
-        ) =
-            flow.map { pagingData ->
-                pagingData.map { option ->
-                    OptionData(
-                        option = option,
-                        metadataIconData = fetchMetadataIconData(option),
-                    )
-                }
+        ) = flow.map { pagingData ->
+            pagingData.map { option ->
+                OptionData(
+                    option = option,
+                    metadataIconData = fetchMetadataIconData(option),
+                )
             }
+        }
     }
 
     data class OptionData(

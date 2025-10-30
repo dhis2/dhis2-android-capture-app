@@ -3,12 +3,13 @@ package org.dhis2.utils
 import org.hisp.dhis.android.core.common.ValueType
 
 class ValidationUtils {
-
     companion object {
-
         @JvmStatic
-        fun validate(valueType: ValueType, value: String?): String? {
-            return value?.let {
+        fun validate(
+            valueType: ValueType,
+            value: String?,
+        ): String? =
+            value?.let {
                 if (value == "-") {
                     "0"
                 } else {
@@ -30,6 +31,5 @@ class ValidationUtils {
                     }
                 }
             }
-        }
     }
 }

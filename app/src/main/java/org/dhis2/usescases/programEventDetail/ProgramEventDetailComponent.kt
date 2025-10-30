@@ -11,6 +11,8 @@ import org.dhis2.usescases.programEventDetail.eventMap.EventMapModule
 @Subcomponent(modules = [ProgramEventDetailModule::class])
 interface ProgramEventDetailComponent {
     fun inject(activity: ProgramEventDetailActivity)
+
     operator fun plus(eventListModule: EventListModule): EventListComponent
+
     operator fun plus(eventMapModule: EventMapModule): EventMapComponent
 }

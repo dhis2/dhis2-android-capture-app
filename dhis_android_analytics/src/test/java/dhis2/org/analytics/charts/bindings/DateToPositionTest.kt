@@ -11,21 +11,23 @@ class DateToPositionTest {
 
     @Test
     fun `Should return correct position in months`() {
-        val testDates = listOf(
-            GregorianCalendar(2021, 1, 3).time,
-            GregorianCalendar(2021, 2, 5).time,
-            GregorianCalendar(2021, 3, 2).time,
-            GregorianCalendar(2021, 4, 1).time,
-            GregorianCalendar(2022, 4, 8).time,
-        )
+        val testDates =
+            listOf(
+                GregorianCalendar(2021, 1, 3).time,
+                GregorianCalendar(2021, 2, 5).time,
+                GregorianCalendar(2021, 3, 2).time,
+                GregorianCalendar(2021, 4, 1).time,
+                GregorianCalendar(2022, 4, 8).time,
+            )
 
-        val expectedPositions = listOf(
-            0.071428575f,
-            1.1290323f,
-            2.0333333f,
-            3f,
-            15.225806f,
-        )
+        val expectedPositions =
+            listOf(
+                0.071428575f,
+                1.1290323f,
+                2.0333333f,
+                3f,
+                15.225806f,
+            )
 
         listOf(
             PeriodType.Daily,
@@ -64,21 +66,23 @@ class DateToPositionTest {
 
     @Test
     fun `Should return correct position in years`() {
-        val testDates = listOf(
-            GregorianCalendar(2021, 1, 3).time,
-            GregorianCalendar(2022, 2, 5).time,
-            GregorianCalendar(2023, 3, 2).time,
-            GregorianCalendar(2024, 1, 1).time,
-            GregorianCalendar(2025, 4, 8).time,
-        )
+        val testDates =
+            listOf(
+                GregorianCalendar(2021, 1, 3).time,
+                GregorianCalendar(2022, 2, 5).time,
+                GregorianCalendar(2023, 3, 2).time,
+                GregorianCalendar(2024, 1, 1).time,
+                GregorianCalendar(2025, 4, 8).time,
+            )
 
-        val expectedPositions = listOf(
-            0f,
-            1f,
-            2f,
-            3f,
-            4f,
-        )
+        val expectedPositions =
+            listOf(
+                0f,
+                1f,
+                2f,
+                3f,
+                4f,
+            )
 
         listOf(
             PeriodType.Yearly,

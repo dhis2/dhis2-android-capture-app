@@ -8,11 +8,8 @@ import dhis2.org.analytics.charts.ui.SectionTitle
 import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import org.dhis2.commons.data.tuples.Pair
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
 import org.hisp.dhis.android.core.program.ProgramIndicator
@@ -20,7 +17,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
 
-const val default_location = "feedback"
+const val DEFAULT_LOCATION = "feedback"
 
 abstract class BaseIndicatorRepository(
     open val d2: D2,
@@ -28,104 +25,119 @@ abstract class BaseIndicatorRepository(
     open val programUid: String,
     open val resourceManager: ResourceManager,
 ) : IndicatorRepository {
-
     fun getIndicators(
         filter: Boolean = true,
         indicatorValueCalculator: (String) -> String,
-    ): Flowable<List<AnalyticsModel>> {
-        return d2.programModule().programIndicators()
-            .byDisplayInForm().isTrue
-            .byProgramUid().eq(programUid)
+    ): Flowable<List<AnalyticsModel>> =
+        d2
+            .programModule()
+            .programIndicators()
+            .byDisplayInForm()
+            .isTrue
+            .byProgramUid()
+            .eq(programUid)
             .withLegendSets()
             .get()
             .toFlowable()
             .filter { filter }
             .map { indicators ->
-                Observable.fromIterable(indicators)
+                Observable
+                    .fromIterable(indicators)
                     .filter { it.displayInForm() != null && it.displayInForm()!! }
                     .map { indicator ->
-                        val indicatorValue = try {
-                            indicatorValueCalculator(indicator.uid())
-                        } catch (e: Exception) {
-                            Timber.e(e)
-                            null
-                        }
-                        Pair.create(indicator, indicatorValue ?: "")
+                        val indicatorValue =
+                            try {
+                                indicatorValueCalculator(indicator.uid())
+                            } catch (e: Exception) {
+                                Timber.e(e)
+                                null
+                            }
+                        Pair(indicator, indicatorValue ?: "")
                     }.flatMap {
-                        getLegendColorForIndicator(it.val0(), it.val1())
+                        getLegendColorForIndicator(it.first, it.second)
                     }.map {
                         IndicatorModel(
-                            it.val0(),
-                            it.val1(),
-                            it.val2(),
-                            LOCATION_INDICATOR_WIDGET,
-                            resourceManager.defaultIndicatorLabel(),
+                            programIndicator = it.first,
+                            value = it.second,
+                            color = it.third,
+                            location = LOCATION_INDICATOR_WIDGET,
+                            defaultLabel = resourceManager.defaultIndicatorLabel(),
                         )
-                    }
-                    .toList()
+                    }.toList()
             }.flatMap { it.toFlowable() }
-    }
 
     fun getRulesIndicators(): Flowable<List<AnalyticsModel>> =
-        d2.programModule().programRules().byProgramUid().eq(programUid).getUids()
+        d2
+            .programModule()
+            .programRules()
+            .byProgramUid()
+            .eq(programUid)
+            .getUids()
             .flatMap {
-                d2.programModule().programRuleActions()
-                    .byProgramRuleUid().`in`(it)
-                    .byProgramRuleActionType().`in`(
+                d2
+                    .programModule()
+                    .programRuleActions()
+                    .byProgramRuleUid()
+                    .`in`(it)
+                    .byProgramRuleActionType()
+                    .`in`(
                         ProgramRuleActionType.DISPLAYKEYVALUEPAIR,
                         ProgramRuleActionType.DISPLAYTEXT,
-                    )
-                    .get()
-            }
-            .flatMapPublisher { ruleAction ->
+                    ).get()
+            }.flatMapPublisher { ruleAction ->
                 return@flatMapPublisher if (ruleAction.isEmpty()) {
                     Flowable.just<List<AnalyticsModel>>(listOf())
                 } else {
-                    Flowable.fromCallable {
-                        ruleEngineHelper?.refreshContext()
-                        ruleEngineHelper?.evaluate().let { Result.success(it ?: emptyList()) }
-                    }.map { effects ->
-                        // Restart rule engine to take into account value changes
-                        applyRuleEffectForIndicators(effects)
-                    }
+                    Flowable
+                        .fromCallable {
+                            ruleEngineHelper?.refreshContext()
+                            ruleEngineHelper?.evaluate().let { Result.success(it ?: emptyList()) }
+                        }.map { effects ->
+                            // Restart rule engine to take into account value changes
+                            applyRuleEffectForIndicators(effects)
+                        }
                 }
             }
 
-    private fun applyRuleEffectForIndicators(calcResult: Result<RuleEffect>): List<IndicatorModel> {
+    private fun applyRuleEffectForIndicators(calcResult: Result<List<RuleEffect>>): List<IndicatorModel> {
         val indicators = arrayListOf<IndicatorModel>()
 
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             return arrayListOf()
         }
 
-        for (ruleEffect in calcResult.items()) {
+        for (ruleEffect in calcResult.getOrNull() ?: emptyList()) {
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
-                    val indicator = IndicatorModel(
-                        ProgramIndicator.builder()
-                            .uid(UidGeneratorImpl().generate())
-                            .displayName((ruleAction).content())
-                            .build(),
-                        ruleEffect.data,
-                        null,
-                        ruleAction.values["location"] ?: default_location,
-                        resourceManager.defaultIndicatorLabel(),
-                    )
+                    val indicator =
+                        IndicatorModel(
+                            ProgramIndicator
+                                .builder()
+                                .uid(UidGeneratorImpl().generate())
+                                .displayName((ruleAction).content())
+                                .build(),
+                            ruleEffect.data,
+                            null,
+                            ruleAction.values["location"] ?: DEFAULT_LOCATION,
+                            resourceManager.defaultIndicatorLabel(),
+                        )
 
                     indicators.add(indicator)
                 } else if (ruleAction.type == ProgramRuleActionType.DISPLAYTEXT.name) {
-                    val indicator = IndicatorModel(
-                        ProgramIndicator.builder()
-                            .uid(UidGeneratorImpl().generate())
-                            .displayName(resourceManager.defaultIndicatorLabel())
-                            .build(),
-                        "${ruleAction.content() ?: ""}${ruleEffect.data}",
-                        null,
-                        ruleAction.values["location"] ?: default_location,
-                        resourceManager.defaultIndicatorLabel(),
-                    )
+                    val indicator =
+                        IndicatorModel(
+                            ProgramIndicator
+                                .builder()
+                                .uid(UidGeneratorImpl().generate())
+                                .displayName(resourceManager.defaultIndicatorLabel())
+                                .build(),
+                            "${ruleAction.content() ?: ""}${ruleEffect.data}",
+                            null,
+                            ruleAction.values["location"] ?: DEFAULT_LOCATION,
+                            resourceManager.defaultIndicatorLabel(),
+                        )
 
                     indicators.add(indicator)
                 }
@@ -138,36 +150,44 @@ abstract class BaseIndicatorRepository(
     private fun getLegendColorForIndicator(
         indicator: ProgramIndicator,
         value: String?,
-    ): Observable<Trio<ProgramIndicator?, String?, String?>?> {
+    ): Observable<Triple<ProgramIndicator?, String?, String?>?> {
         var color: String?
         try {
-            color = if (value?.toFloat()?.isNaN() == true) {
-                null
-            } else {
-                indicator.legendSets()?.let {
-                    val uid = it.first().uid()
-                    val legendValue = value?.toDouble() ?: 0.0
-                    if (it.isNotEmpty()) {
-                        val legends = d2.legendSetModule().legends()
-                            .byStartValue().smallerThan(legendValue)
-                            .byEndValue().biggerOrEqualTo(legendValue)
-                            .byLegendSet().eq(uid).blockingGet()
-                        if (legends.isNotEmpty()) {
-                            legends.first().color() ?: ""
+            color =
+                if (value?.toFloat()?.isNaN() == true) {
+                    null
+                } else {
+                    indicator.legendSets()?.let {
+                        val uid = it.first().uid()
+                        val legendValue = value?.toDouble() ?: 0.0
+                        if (it.isNotEmpty()) {
+                            val legends =
+                                d2
+                                    .legendSetModule()
+                                    .legends()
+                                    .byStartValue()
+                                    .smallerThan(legendValue)
+                                    .byEndValue()
+                                    .biggerOrEqualTo(legendValue)
+                                    .byLegendSet()
+                                    .eq(uid)
+                                    .blockingGet()
+                            if (legends.isNotEmpty()) {
+                                legends.first().color() ?: ""
+                            } else {
+                                null
+                            }
                         } else {
                             null
                         }
-                    } else {
-                        null
                     }
                 }
-            }
-        } catch (e: java.lang.Exception) {
+        } catch (_: java.lang.Exception) {
             color = null
         }
 
         return Observable.just(
-            Trio.create<ProgramIndicator, String, String>(
+            Triple(
                 indicator,
                 value,
                 color,
@@ -179,23 +199,27 @@ abstract class BaseIndicatorRepository(
         indicators: List<AnalyticsModel>,
         ruleIndicators: List<AnalyticsModel>,
         charts: List<AnalyticsModel> = emptyList(),
-    ): List<AnalyticsModel> {
-        return mutableListOf<AnalyticsModel>().apply {
-            val feedbackList = ruleIndicators.filter {
-                it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
-            }
+    ): List<AnalyticsModel> =
+        mutableListOf<AnalyticsModel>().apply {
+            val feedbackList =
+                ruleIndicators.filter {
+                    it is IndicatorModel && it.location == LOCATION_FEEDBACK_WIDGET
+                }
             if (feedbackList.isNotEmpty()) {
                 add(SectionTitle(resourceManager.sectionFeedback()))
                 addAll(feedbackList)
             }
-            val indicatorList = indicators.toMutableList().apply {
-                addAll(
-                    ruleIndicators.filter {
-                        it is IndicatorModel &&
-                            it.location == LOCATION_INDICATOR_WIDGET
-                    },
-                )
-            }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
+            val indicatorList =
+                indicators
+                    .toMutableList()
+                    .apply {
+                        addAll(
+                            ruleIndicators.filter {
+                                it is IndicatorModel &&
+                                    it.location == LOCATION_INDICATOR_WIDGET
+                            },
+                        )
+                    }.sortedBy { (it as IndicatorModel).programIndicator?.displayName() }
 
             when {
                 indicatorList.isNotEmpty() && charts.isNotEmpty() -> {
@@ -216,5 +240,4 @@ abstract class BaseIndicatorRepository(
                 }
             }
         }
-    }
 }

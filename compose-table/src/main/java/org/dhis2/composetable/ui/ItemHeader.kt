@@ -35,42 +35,43 @@ import org.dhis2.composetable.ui.semantics.tableIdSemantic
 fun ItemHeader(uiState: ItemHeaderUiState) {
     Box {
         Row(
-            modifier = Modifier
-                .defaultMinSize(
-                    minHeight = TableTheme.dimensions.defaultCellHeight,
-                )
-                .width(uiState.width)
-                .fillMaxHeight()
-                .background(uiState.cellStyle.backgroundColor())
-                .semantics {
-                    tableIdSemantic = uiState.tableId
-                    uiState.rowHeader.row?.let { rowIndexSemantic = uiState.rowHeader.row }
-                    infoIconId = if (uiState.rowHeader.showDecoration) INFO_ICON else ""
-                    rowBackground = uiState.cellStyle.backgroundColor()
-                }
-                .testTag("${uiState.tableId}${uiState.rowHeader.row}")
-                .clickable {
-                    uiState.onCellSelected(uiState.rowHeader.row)
-                    if (uiState.rowHeader.showDecoration) {
-                        uiState.onDecorationClick(
-                            TableDialogModel(
-                                uiState.rowHeader.title,
-                                uiState.rowHeader.description ?: "",
-                            ),
-                        )
-                    }
-                },
+            modifier =
+                Modifier
+                    .defaultMinSize(
+                        minHeight = TableTheme.dimensions.defaultCellHeight,
+                    ).width(uiState.width)
+                    .fillMaxHeight()
+                    .background(uiState.cellStyle.backgroundColor())
+                    .semantics {
+                        tableIdSemantic = uiState.tableId
+                        uiState.rowHeader.row?.let { rowIndexSemantic = uiState.rowHeader.row }
+                        infoIconId = if (uiState.rowHeader.showDecoration) INFO_ICON else ""
+                        rowBackground = uiState.cellStyle.backgroundColor()
+                    }.testTag("${uiState.tableId}${uiState.rowHeader.row}")
+                    .clickable {
+                        uiState.onCellSelected(uiState.rowHeader.row)
+                        if (uiState.rowHeader.showDecoration) {
+                            uiState.onDecorationClick(
+                                TableDialogModel(
+                                    uiState.rowHeader.title,
+                                    uiState.rowHeader.description ?: "",
+                                ),
+                            )
+                        }
+                    },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp),
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .padding(4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    modifier = Modifier
-                        .weight(1f),
+                    modifier =
+                        Modifier
+                            .weight(1f),
                     text = uiState.rowHeader.title,
                     color = uiState.cellStyle.mainColor(),
                     fontSize = TableTheme.dimensions.defaultRowHeaderTextSize,
@@ -82,30 +83,34 @@ fun ItemHeader(uiState: ItemHeaderUiState) {
                     Icon(
                         imageVector = Icons.Outlined.Info,
                         contentDescription = "info",
-                        modifier = Modifier
-                            .height(10.dp)
-                            .width(10.dp),
+                        modifier =
+                            Modifier
+                                .height(10.dp)
+                                .width(10.dp),
                         tint = uiState.cellStyle.mainColor(),
                     )
                 }
             }
             Divider(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .width(1.dp),
                 color = TableTheme.colors.primary,
             )
         }
 
-        val isSelected = LocalTableSelection.current !is TableSelection.AllCellSelection &&
-            LocalTableSelection.current.isRowSelected(
-                selectedTableId = uiState.tableId,
-                rowHeaderIndex = uiState.rowHeader.row ?: -1,
-            )
+        val isSelected =
+            LocalTableSelection.current !is TableSelection.AllCellSelection &&
+                LocalTableSelection.current.isRowSelected(
+                    selectedTableId = uiState.tableId,
+                    rowHeaderIndex = uiState.rowHeader.row ?: -1,
+                )
         if (isSelected) {
             VerticalResizingRule(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd),
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterEnd),
                 checkMaxMinCondition = { dimensions, currentOffsetX ->
                     dimensions.canUpdateRowHeaderWidth(
                         tableId = uiState.tableId,

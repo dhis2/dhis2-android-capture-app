@@ -1,8 +1,9 @@
 package org.dhis2.usescases.programEventDetail
 
+import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.common.ObjectStyle
@@ -16,20 +17,21 @@ import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.RETURNS_DEEP_STUBS
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import java.util.Date
 
 class ProgramEventMapperTest {
-
     private lateinit var mapper: ProgramEventMapper
 
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val periodUtil: DhisPeriodUtils = mock()
-    private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
-    }
+    private val metadataIconProvider: MetadataIconProvider =
+        mock {
+            on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
+        }
 
     @Before
     fun setUp() {
@@ -48,7 +50,7 @@ class ProgramEventMapperTest {
 
         assert(!result.isExpired)
         assert(event.uid() == result.uid())
-        assert(result.eventState() == State.TO_UPDATE)
+        assert(result.eventState == State.TO_UPDATE)
     }
 
     @Test
@@ -63,7 +65,7 @@ class ProgramEventMapperTest {
 
         assert(!result.isExpired)
         assert(event.uid() == result.uid())
-        assert(result.eventState() == State.SYNCED)
+        assert(result.eventState == State.SYNCED)
     }
 
     @Test
@@ -74,23 +76,38 @@ class ProgramEventMapperTest {
         mockCategoryOptionCombo()
         mockProgramStage()
         whenever(
-            d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage"),
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage"),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage")
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage")
                 .byDisplayInReports(),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage")
-                .byDisplayInReports().isTrue,
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage")
+                .byDisplayInReports()
+                .isTrue,
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage")
-                .byDisplayInReports().isTrue.blockingGet(),
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage")
+                .byDisplayInReports()
+                .isTrue
+                .blockingGet(),
         ) doReturn emptyList()
 
         val event = eventWithoutValidDate()
@@ -107,10 +124,18 @@ class ProgramEventMapperTest {
             d2.organisationUnitModule().organisationUnits().uid("orgUnitUid"),
         ) doReturn mock()
         whenever(
-            d2.organisationUnitModule().organisationUnits().uid("orgUnitUid").blockingGet(),
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
+                .uid("orgUnitUid")
+                .blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.organisationUnitModule().organisationUnits().uid("orgUnitUid").blockingGet()
+            d2
+                .organisationUnitModule()
+                .organisationUnits()
+                .uid("orgUnitUid")
+                .blockingGet()
                 ?.displayName(),
         ) doReturn "OrgUnitName"
     }
@@ -118,16 +143,27 @@ class ProgramEventMapperTest {
     private fun mockProgramStageDataElements() {
         whenever(d2.programModule().programStageDataElements().byProgramStage()) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements().byProgramStage().eq("programStage"),
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage"),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage")
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage")
                 .orderBySortOrder(any()),
         ) doReturn mock()
         whenever(
-            d2.programModule().programStageDataElements()
-                .byProgramStage().eq("programStage").blockingGet(),
+            d2
+                .programModule()
+                .programStageDataElements()
+                .byProgramStage()
+                .eq("programStage")
+                .blockingGet(),
         ) doReturn emptyList()
     }
 
@@ -135,18 +171,28 @@ class ProgramEventMapperTest {
         whenever(d2.programModule().programStages()) doReturn mock()
         whenever(d2.programModule().programStages().uid("programStage")) doReturn mock()
         whenever(
-            d2.programModule().programStages().uid("programStage").blockingGet(),
-        ) doReturn ProgramStage.builder()
-            .uid("programStage")
-            .style(ObjectStyle.builder().build())
-            .build()
+            d2
+                .programModule()
+                .programStages()
+                .uid("programStage")
+                .blockingGet(),
+        ) doReturn
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .style(ObjectStyle.builder().build())
+                .build()
     }
 
     private fun mockProgram() {
         whenever(d2.programModule().programs()) doReturn mock()
         whenever(d2.programModule().programs().uid("programUid")) doReturn mock()
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet(),
+            d2
+                .programModule()
+                .programs()
+                .uid("programUid")
+                .blockingGet(),
         ) doReturn dummyProgramWithExpiryInfo()
     }
 
@@ -154,35 +200,49 @@ class ProgramEventMapperTest {
         whenever(d2.categoryModule().categoryOptionCombos()) doReturn mock()
         whenever(d2.categoryModule().categoryOptionCombos().uid("attrComboUid")) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos().uid("attrComboUid").blockingGet(),
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .uid("attrComboUid")
+                .blockingGet(),
         ) doReturn dummyCategoryOptionCombo()
     }
 
-    private fun dummyEvent() = Event.builder()
-        .uid("eventUid")
-        .organisationUnit("orgUnitUid")
-        .eventDate(Date())
-        .program("programUid")
-        .programStage("programStage")
-        .attributeOptionCombo("attrComboUid")
-        .status(EventStatus.ACTIVE)
-        .build()
+    private fun dummyEvent() =
+        Event
+            .builder()
+            .uid("eventUid")
+            .organisationUnit("orgUnitUid")
+            .eventDate(Date())
+            .program("programUid")
+            .programStage("programStage")
+            .attributeOptionCombo("attrComboUid")
+            .status(EventStatus.ACTIVE)
+            .build()
 
-    private fun dummyProgramWithExpiryInfo() = Program.builder()
-        .uid("programUid")
-        .completeEventsExpiryDays(0)
-        .expiryDays(0)
-        .build()
+    private fun dummyProgramWithExpiryInfo() =
+        Program
+            .builder()
+            .uid("programUid")
+            .completeEventsExpiryDays(0)
+            .expiryDays(0)
+            .build()
 
     private fun dummyCategoryOptionCombo() =
-        CategoryOptionCombo.builder().uid("attrComboUid").displayName("default").build()
+        CategoryOptionCombo
+            .builder()
+            .uid("attrComboUid")
+            .displayName("default")
+            .build()
 
-    private fun eventWithoutValidDate() = Event.builder()
-        .uid("eventUid")
-        .organisationUnit("orgUnitUid")
-        .program("programUid")
-        .programStage("programStage")
-        .attributeOptionCombo("attrComboUid")
-        .status(EventStatus.ACTIVE)
-        .build()
+    private fun eventWithoutValidDate() =
+        Event
+            .builder()
+            .uid("eventUid")
+            .organisationUnit("orgUnitUid")
+            .program("programUid")
+            .programStage("programStage")
+            .attributeOptionCombo("attrComboUid")
+            .status(EventStatus.ACTIVE)
+            .build()
 }

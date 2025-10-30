@@ -2,50 +2,35 @@ package org.dhis2.usescases.settingsprogram
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import androidx.databinding.DataBindingUtil
-import org.dhis2.R
-import org.dhis2.bindings.app
-import org.dhis2.databinding.ActivitySettingsProgramBinding
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.ExperimentalMaterial3Api
 import org.dhis2.usescases.general.ActivityGlobalAbstract
-import javax.inject.Inject
+import org.dhis2.usescases.settingsprogram.ui.SettingsProgramScreen
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
-class SettingsProgramActivity : ActivityGlobalAbstract(), ProgramSettingsView {
-
-    @Inject
-    lateinit var adapter: SettingsProgramAdapter
-    private lateinit var binding: ActivitySettingsProgramBinding
-
-    @Inject
-    lateinit var presenter: SettingsProgramPresenter
+class SettingsProgramActivity : ActivityGlobalAbstract() {
+    override var handleEdgeToEdge = false
 
     companion object {
-        fun getIntentActivity(context: Context): Intent {
-            return Intent(context, SettingsProgramActivity::class.java)
-        }
+        fun getIntentActivity(context: Context): Intent = Intent(context, SettingsProgramActivity::class.java)
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        app().userComponent()?.plus(SettingsProgramModule(this))?.inject(this)
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(
-            this,
-            R.layout.activity_settings_program,
-        )
-        binding.toolbar.title = getString(R.string.activity_program_settings)
-        binding.programSettingsView.adapter = adapter
-        binding.toolbar.moreOptions.visibility = View.GONE
-        binding.toolbar.menu.setOnClickListener { finish() }
-        presenter.init()
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter.dispose()
-    }
+        enableEdgeToEdge(SystemBarStyle.dark(Color.TRANSPARENT))
 
-    override fun setData(programSettings: List<ProgramSettingsViewModel>) {
-        adapter.submitList(programSettings)
+        setContent {
+            DHIS2Theme {
+                SettingsProgramScreen(
+                    onBack = onBackPressedDispatcher::onBackPressed,
+                )
+            }
+        }
     }
 }

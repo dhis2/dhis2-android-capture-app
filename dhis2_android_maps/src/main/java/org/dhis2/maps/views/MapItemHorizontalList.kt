@@ -15,8 +15,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,16 +33,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.model.MapItemModel
-import org.dhis2.ui.avatar.AvatarProvider
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.hisp.dhis.mobile.ui.designsystem.component.Avatar
+import org.hisp.dhis.mobile.ui.designsystem.component.AvatarStyleData
 import org.hisp.dhis.mobile.ui.designsystem.component.FAB
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+import org.hisp.dhis.mobile.ui.designsystem.files.buildPainterForFile
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -77,9 +79,10 @@ fun MapItemHorizontalPager(
 
     Column(modifier = modifier) {
         AnimatedVisibility(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 4.dp)
-                .align(alignment = Alignment.End),
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .align(alignment = Alignment.End),
             visible = !state.isScrollInProgress && items.isNotEmpty() && currentItem?.geometry != null,
         ) {
             FAB(
@@ -114,17 +117,19 @@ fun MapItemHorizontalListPreview() {
         items.add(
             MapItemModel(
                 uid = UUID.randomUUID().toString(),
-                avatarProviderConfiguration = AvatarProviderConfiguration.MainValueLabel(
-                    "Tem",
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.MainValueLabel(
+                        "Tem",
+                    ),
                 title = "Title",
                 description = null,
                 lastUpdated = "5 min ago",
-                additionalInfoList = buildList {
-                    repeat(8) {
-                        add(AdditionalInfoItem(key = "key:", value = "Hello there"))
-                    }
-                },
+                additionalInfoList =
+                    buildList {
+                        repeat(8) {
+                            add(AdditionalInfoItem(key = "key:", value = "Hello there"))
+                        }
+                    },
                 isOnline = false,
                 geometry = null,
                 relatedInfo = null,
@@ -135,14 +140,16 @@ fun MapItemHorizontalListPreview() {
 
     Scaffold { contentPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(contentPadding),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(contentPadding),
         ) {
             MapItemHorizontalPager(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
                 state = rememberLazyListState(),
                 items = items,
                 onItemScrolled = {},
@@ -151,32 +158,55 @@ fun MapItemHorizontalListPreview() {
 
                 ListCard(
                     modifier = Modifier.fillParentMaxWidth(),
-                    listCardState = rememberListCardState(
-                        title = ListCardTitleModel(text = item.title, allowOverflow = false),
-                        description = item.description?.let {
-                            ListCardDescriptionModel(
-                                text = it,
-                            )
-                        },
-                        lastUpdated = item.lastUpdated,
-                        additionalInfoColumnState = rememberAdditionalInfoColumnState(
-                            additionalInfoList = item.additionalInfoList,
-                            syncProgressItem = AdditionalInfoItem(
-                                key = stringResource(id = R.string.sync),
-                                value = "",
-                            ),
-                            expandLabelText = stringResource(id = R.string.show_more),
-                            shrinkLabelText = stringResource(id = R.string.show_less),
-                            scrollableContent = true,
+                    listCardState =
+                        rememberListCardState(
+                            title = ListCardTitleModel(text = item.title, allowOverflow = false),
+                            description =
+                                item.description?.let {
+                                    ListCardDescriptionModel(
+                                        text = it,
+                                    )
+                                },
+                            lastUpdated = item.lastUpdated,
+                            additionalInfoColumnState =
+                                rememberAdditionalInfoColumnState(
+                                    additionalInfoList = item.additionalInfoList,
+                                    syncProgressItem =
+                                        AdditionalInfoItem(
+                                            key = stringResource(id = R.string.sync),
+                                            value = "",
+                                        ),
+                                    expandLabelText = stringResource(id = R.string.show_more),
+                                    shrinkLabelText = stringResource(id = R.string.show_less),
+                                    scrollableContent = true,
+                                ),
                         ),
-                    ),
                     onCardClick = {
                     },
                     listAvatar = {
-                        AvatarProvider(
-                            avatarProviderConfiguration = item.avatarProviderConfiguration,
-                            onImageClick = {
-                            },
+                        Avatar(
+                            style =
+                                when (
+                                    val config =
+                                        item.avatarProviderConfiguration
+                                ) {
+                                    is AvatarProviderConfiguration.MainValueLabel ->
+                                        AvatarStyleData.Text(
+                                            config.firstMainValue.firstOrNull()?.toString()
+                                                ?: "?",
+                                        )
+
+                                    is AvatarProviderConfiguration.Metadata ->
+                                        AvatarStyleData.Metadata(
+                                            imageCardData = config.metadataIconData.imageCardData,
+                                            avatarSize = config.size,
+                                            tintColor = config.metadataIconData.color,
+                                        )
+
+                                    is AvatarProviderConfiguration.ProfilePic ->
+                                        AvatarStyleData.Image(buildPainterForFile(config.profilePicturePath))
+                                },
+                            onImageClick = {},
                         )
                     },
                 )

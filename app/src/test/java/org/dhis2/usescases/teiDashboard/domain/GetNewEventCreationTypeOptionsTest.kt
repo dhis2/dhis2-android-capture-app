@@ -14,14 +14,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class GetNewEventCreationTypeOptionsTest {
-
     private val programConfigurationSetting: ProgramConfigurationSetting = mock()
 
     private val programUid = "programUid"
 
-    private val programConfigurationRepository: ProgramConfigurationRepository = mock {
-        on { getConfigurationByProgram(programUid) } doReturn programConfigurationSetting
-    }
+    private val programConfigurationRepository: ProgramConfigurationRepository =
+        mock {
+            on { getConfigurationByProgram(programUid) } doReturn programConfigurationSetting
+        }
 
     val programStage: ProgramStage = mock()
 

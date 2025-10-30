@@ -13,7 +13,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class PinPresenterTest {
-
     lateinit var presenter: PinPresenter
     private var pinView: PinView = mock()
     private var preferenceProvider: PreferenceProvider = mock()
@@ -36,12 +35,21 @@ class PinPresenterTest {
         whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
             d2.dataStoreModule().localDataStore().value(Preference.PIN),
-        )doReturn mock()
-        whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value(),
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(Preference.PIN)
+                .blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(Preference.PIN)
+                .blockingGet()
+                ?.value(),
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -52,7 +60,7 @@ class PinPresenterTest {
             onTwoManyAttempts = onTwoManyAttempts,
         )
 
-        verify(preferenceProvider, times(1)).setValue(Preference.SESSION_LOCKED, true)
+        // SESSION_LOCKED stays true (PIN is still configured), no state change
         verify(onPinCorrect).invoke()
     }
 
@@ -65,12 +73,21 @@ class PinPresenterTest {
         whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
             d2.dataStoreModule().localDataStore().value(Preference.PIN),
-        )doReturn mock()
-        whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value(),
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(Preference.PIN)
+                .blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(Preference.PIN)
+                .blockingGet()
+                ?.value(),
         ) doReturn testPin
 
         presenter.unlockSession(
@@ -93,12 +110,21 @@ class PinPresenterTest {
         whenever(d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
             d2.dataStoreModule().localDataStore().value(Preference.PIN),
-        )doReturn mock()
-        whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.dataStoreModule().localDataStore().value(Preference.PIN).blockingGet()?.value(),
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(Preference.PIN)
+                .blockingGet(),
+        ) doReturn mock()
+        whenever(
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(Preference.PIN)
+                .blockingGet()
+                ?.value(),
         ) doReturn testPin
 
         presenter.unlockSession(

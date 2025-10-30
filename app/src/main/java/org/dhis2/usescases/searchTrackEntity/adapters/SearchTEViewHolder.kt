@@ -12,7 +12,6 @@ class SearchTEViewHolder(
     private val colorUtils: ColorUtils,
     private val onTeiClick: (teiUid: String, enrollmentUid: String?, isOnline: Boolean) -> Unit,
 ) : BaseTeiViewHolder(binding, colorUtils) {
-
     override fun itemConfiguration() {
         binding.sortingFieldName.text = teiModel.sortingKey
         binding.sortingFieldValue.text = teiModel.sortingValue
@@ -24,11 +23,12 @@ class SearchTEViewHolder(
                 teiModel.selectedEnrollment != null &&
                 teiModel.selectedEnrollment.deleted()!!
             ) {
-                Toast.makeText(
-                    itemView.context,
-                    itemView.context.getString(R.string.record_marked_for_deletion),
-                    Toast.LENGTH_SHORT,
-                ).show()
+                Toast
+                    .makeText(
+                        itemView.context,
+                        itemView.context.getString(R.string.record_marked_for_deletion),
+                        Toast.LENGTH_SHORT,
+                    ).show()
             } else {
                 onSyncIconClick(teiModel.selectedEnrollment.uid())
             }

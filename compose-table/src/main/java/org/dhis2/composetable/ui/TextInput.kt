@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -67,15 +68,16 @@ fun TextInput(
 ) {
     val tableDimensions = LocalTableDimensions.current
     Column(
-        modifier = Modifier
-            .testTag(INPUT_TEST_TAG)
-            .onSizeChanged { tableDimensions.textInputHeight = it.height }
-            .fillMaxWidth()
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            )
-            .padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp),
+        modifier =
+            Modifier
+                .testTag(INPUT_TEST_TAG)
+                .onSizeChanged { tableDimensions.textInputHeight = it.height }
+                .fillMaxWidth()
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                ).padding(start = 16.dp, end = 4.dp, top = 16.dp, bottom = 4.dp)
+                .imePadding(),
         verticalArrangement = spacedBy(8.dp),
     ) {
         InputTitle(textInputModel.mainLabel, textInputModel.secondaryLabels)
@@ -90,7 +92,8 @@ fun TextInput(
 }
 
 enum class Keyboard {
-    Opened, Closed
+    Opened,
+    Closed,
 }
 
 @Composable
@@ -98,17 +101,19 @@ fun keyboardAsState(): State<Keyboard> {
     val keyboardState = remember { mutableStateOf(Keyboard.Closed) }
     val view = LocalView.current
     DisposableEffect(view) {
-        val onGlobalListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val rect = Rect()
-            view.getWindowVisibleDisplayFrame(rect)
-            val screenHeight = view.rootView.height
-            val keypadHeight = screenHeight - rect.bottom
-            keyboardState.value = if (keypadHeight > screenHeight * 0.15) {
-                Keyboard.Opened
-            } else {
-                Keyboard.Closed
+        val onGlobalListener =
+            ViewTreeObserver.OnGlobalLayoutListener {
+                val rect = Rect()
+                view.getWindowVisibleDisplayFrame(rect)
+                val screenHeight = view.rootView.height
+                val keypadHeight = screenHeight - rect.bottom
+                keyboardState.value =
+                    if (keypadHeight > screenHeight * 0.15) {
+                        Keyboard.Opened
+                    } else {
+                        Keyboard.Closed
+                    }
             }
-        }
         view.viewTreeObserver.addOnGlobalLayoutListener(onGlobalListener)
 
         onDispose {
@@ -120,15 +125,19 @@ fun keyboardAsState(): State<Keyboard> {
 }
 
 @Composable
-private fun InputTitle(mainTitle: String, secondaryTitle: List<String>) {
+private fun InputTitle(
+    mainTitle: String,
+    secondaryTitle: List<String>,
+) {
     Row(
-        modifier = Modifier
-            .padding(end = 12.dp)
-            .fillMaxWidth()
-            .semantics {
-                mainLabel = mainTitle
-                secondaryLabel = secondaryTitle.joinToString(separator = ",")
-            },
+        modifier =
+            Modifier
+                .padding(end = 12.dp)
+                .fillMaxWidth()
+                .semantics {
+                    mainLabel = mainTitle
+                    secondaryLabel = secondaryTitle.joinToString(separator = ",")
+                },
     ) {
         Text(
             text = displayName(mainTitle, secondaryTitle),
@@ -150,11 +159,12 @@ private fun TextInputContent(
 
     var hasFocus by remember { mutableStateOf(false) }
 
-    val dividerColor = dividerColor(
-        hasError = textInputModel.error != null,
-        hasWarning = textInputModel.warning != null,
-        hasFocus = hasFocus,
-    )
+    val dividerColor =
+        dividerColor(
+            hasError = textInputModel.error != null,
+            hasWarning = textInputModel.warning != null,
+            hasFocus = hasFocus,
+        )
 
     val keyboardOptions by remember(textInputModel.keyboardInputType) {
         mutableStateOf(
@@ -166,16 +176,18 @@ private fun TextInputContent(
         )
     }
 
-    val onActionIconClick = remember {
-        {
-            if (textInputModel.actionIconCanBeClicked(hasFocus)) {
-                focusManager.clearFocus(force = true)
-                onSave()
-            } else {
-                focusRequester.requestFocus()
+    val onActionIconClick =
+        remember {
+            {
+                if (textInputModel.actionIconCanBeClicked(hasFocus)) {
+                    focusManager.clearFocus(force = true)
+                    onSave()
+                } else {
+                    focusRequester.requestFocus()
+                }
+                Unit
             }
         }
-    }
 
     var textFieldValueState by remember(textInputModel) {
         mutableStateOf(
@@ -191,36 +203,46 @@ private fun TextInputContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
             ) {
                 BasicTextField(
-                    modifier = Modifier
-                        .testTag(INPUT_TEST_FIELD_TEST_TAG)
-                        .focusRequester(focusRequester)
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .onFocusChanged {
-                            hasFocus = it.isFocused
-                            if (!it.isFocused) {
-                                onSave()
-                            }
-                        },
+                    modifier =
+                        Modifier
+                            .testTag(INPUT_TEST_FIELD_TEST_TAG)
+                            .focusRequester(focusRequester)
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .onFocusChanged {
+                                hasFocus = it.isFocused
+                                if (!it.isFocused) {
+                                    onSave()
+                                }
+                            },
                     value = textFieldValueState,
                     onValueChange = {
-                        textFieldValueState = manageOnValueChanged(textFieldValueState, it, onTextChanged, textInputModel)
+                        textFieldValueState =
+                            manageOnValueChanged(
+                                textFieldValueState,
+                                it,
+                                onTextChanged,
+                                textInputModel,
+                            )
                     },
-                    textStyle = TextStyle.Default.copy(
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.Start,
-                    ),
+                    textStyle =
+                        TextStyle.Default.copy(
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Start,
+                        ),
                     keyboardOptions = keyboardOptions,
-                    keyboardActions = KeyboardActions(
-                        onNext = {
-                            onNextSelected()
-                        },
-                    ),
+                    keyboardActions =
+                        KeyboardActions(
+                            onNext = {
+                                onNextSelected()
+                            },
+                        ),
                 )
                 Spacer(modifier = Modifier.size(3.dp))
                 Divider(
@@ -230,8 +252,9 @@ private fun TextInputContent(
             }
             Spacer(modifier = Modifier.size(8.dp))
             TextInputContentActionIcon(
-                modifier = Modifier
-                    .testTag(INPUT_ICON_TEST_TAG),
+                modifier =
+                    Modifier
+                        .testTag(INPUT_ICON_TEST_TAG),
                 hasFocus = hasFocus,
                 onActionIconClick = onActionIconClick,
             )
@@ -240,32 +263,41 @@ private fun TextInputContent(
             Text(
                 modifier = Modifier.testTag(INPUT_ERROR_MESSAGE_TEST_TAG),
                 text = textInputModel.errorOrWarningMessage()!!,
-                style = TextStyle(
-                    color = LocalTableColors.current.cellTextColor(
-                        textInputModel.error != null,
-                        textInputModel.warning != null,
-                        true,
+                style =
+                    TextStyle(
+                        color =
+                            LocalTableColors.current.cellTextColor(
+                                textInputModel.error != null,
+                                textInputModel.warning != null,
+                                true,
+                            ),
+                        fontSize = 10.sp,
                     ),
-                    fontSize = 10.sp,
-                ),
             )
         }
         if (textInputModel.hasHelperText()) {
             Text(
-                modifier = Modifier
-                    .testTag(INPUT_HELPER_TEXT_TEST_TAG),
+                modifier =
+                    Modifier
+                        .testTag(INPUT_HELPER_TEXT_TEST_TAG),
                 text = textInputModel.helperText!!,
-                style = TextStyle(
-                    color = LocalTableColors.current.headerText,
-                ),
+                style =
+                    TextStyle(
+                        color = LocalTableColors.current.headerText,
+                    ),
                 fontSize = 10.sp,
             )
         }
     }
 }
 
-fun manageOnValueChanged(textFieldValueState: TextFieldValue, newValue: TextFieldValue, onTextChanged: (TextInputModel) -> Unit, textInputModel: TextInputModel): TextFieldValue {
-    return if (textInputModel.regex != null) {
+fun manageOnValueChanged(
+    textFieldValueState: TextFieldValue,
+    newValue: TextFieldValue,
+    onTextChanged: (TextInputModel) -> Unit,
+    textInputModel: TextInputModel,
+): TextFieldValue =
+    if (textInputModel.regex != null) {
         if (textInputModel.regex.matches(newValue.text)) {
             onTextChanged(
                 textInputModel.copy(
@@ -288,10 +320,13 @@ fun manageOnValueChanged(textFieldValueState: TextFieldValue, newValue: TextFiel
         )
         newValue
     }
-}
 
 @Composable
-private fun dividerColor(hasError: Boolean, hasWarning: Boolean, hasFocus: Boolean) = when {
+private fun dividerColor(
+    hasError: Boolean,
+    hasWarning: Boolean,
+    hasFocus: Boolean,
+) = when {
     hasError -> LocalTableColors.current.errorColor
     hasWarning -> LocalTableColors.current.warningColor
     hasFocus -> LocalTableColors.current.primary
@@ -304,21 +339,23 @@ private fun TextInputContentActionIcon(
     hasFocus: Boolean,
     onActionIconClick: () -> Unit,
 ) {
-    val icon = if (hasFocus) {
-        R.drawable.ic_finish_edit_input
-    } else {
-        R.drawable.ic_edit_input
-    }
+    val icon =
+        if (hasFocus) {
+            R.drawable.ic_finish_edit_input
+        } else {
+            R.drawable.ic_edit_input
+        }
 
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
-            modifier = modifier
-                .semantics {
-                    drawableId = icon
-                },
+            modifier =
+                modifier
+                    .semantics {
+                        drawableId = icon
+                    },
             onClick = onActionIconClick,
             icon = {
                 Icon(
@@ -335,45 +372,48 @@ private fun TextInputContentActionIcon(
 fun displayName(
     dataElementName: String,
     categoryOptionComboOptionNames: List<String>,
-): AnnotatedString {
-    return buildAnnotatedString {
+): AnnotatedString =
+    buildAnnotatedString {
         withStyle(
-            style = SpanStyle(
-                color = LocalTableColors.current.headerText,
-            ),
+            style =
+                SpanStyle(
+                    color = LocalTableColors.current.headerText,
+                ),
         ) {
             append(dataElementName)
         }
 
         categoryOptionComboOptionNames.forEach { catOptionName ->
             withStyle(
-                style = SpanStyle(
-                    color = LocalTableColors.current.primary,
-                ),
+                style =
+                    SpanStyle(
+                        color = LocalTableColors.current.primary,
+                    ),
             ) {
                 append(" / ")
             }
             withStyle(
-                style = SpanStyle(
-                    color = LocalTableColors.current.disabledCellText,
-                ),
+                style =
+                    SpanStyle(
+                        color = LocalTableColors.current.disabledCellText,
+                    ),
             ) {
                 append(catOptionName)
             }
         }
     }
-}
 
 @Preview
 @Composable
 fun DefaultTextInputStatusPreview() {
-    val previewTextInput = TextInputModel(
-        id = "",
-        mainLabel = "Row",
-        secondaryLabels = listOf("header 1", "header 2"),
-        helperText = "description",
-        currentValue = "Test",
-    )
+    val previewTextInput =
+        TextInputModel(
+            id = "",
+            mainLabel = "Row",
+            secondaryLabels = listOf("header 1", "header 2"),
+            helperText = "description",
+            currentValue = "Test",
+        )
 
     TextInput(
         textInputModel = previewTextInput,
@@ -385,14 +425,15 @@ fun DefaultTextInputStatusPreview() {
 @Preview
 @Composable
 fun DefaultTextInputErrorStatusPreview() {
-    val previewTextInput = TextInputModel(
-        id = "",
-        mainLabel = "Row",
-        secondaryLabels = listOf("header 1", "header 2"),
-        error = "error message",
-        helperText = "description",
-        currentValue = "Test",
-    )
+    val previewTextInput =
+        TextInputModel(
+            id = "",
+            mainLabel = "Row",
+            secondaryLabels = listOf("header 1", "header 2"),
+            error = "error message",
+            helperText = "description",
+            currentValue = "Test",
+        )
 
     TextInput(
         textInputModel = previewTextInput,

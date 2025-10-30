@@ -1,8 +1,5 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.mapper.addTeiEnrollmentInfo
 import org.dhis2.maps.geometry.mapper.addTeiInfo
@@ -12,6 +9,9 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.model.MapItemModel
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class MapTeisToFeatureCollection(
     private val bounds: BoundsGeometry,
@@ -20,7 +20,6 @@ class MapTeisToFeatureCollection(
     private val mapPolygonPointToFeature: MapPolygonPointToFeature,
     private val mapRelationshipsToFeatureCollection: MapRelationshipsToFeatureCollection,
 ) {
-
     fun map(
         mapItemList: List<MapItemModel>,
         shouldAddRelationships: Boolean,
@@ -98,14 +97,16 @@ class MapTeisToFeatureCollection(
         val polygon = mapPolygonToFeature.map(geometry, bounds)?.first
         polygon?.addTeiInfo(mapItemModel)?.also { featureMap[TEI]?.add(it) }
 
-        mapPolygonPointToFeature.map(geometry)?.apply {
-            addStringProperty(TEI_UID, mapItemModel.uid)
-            if (mapItemModel.isProfilePictureAvailable()) {
-                addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
-            } else if (mapItemModel.isCustomIcon()) {
-                addStringProperty(TEI_IMAGE, mapItemModel.getCustomIconRes())
-            }
-        }?.also { featureMap[TEI]?.add(it) }
+        mapPolygonPointToFeature
+            .map(geometry)
+            ?.apply {
+                addStringProperty(TEI_UID, mapItemModel.uid)
+                if (mapItemModel.isProfilePictureAvailable()) {
+                    addStringProperty(TEI_IMAGE, mapItemModel.profilePicturePath())
+                } else if (mapItemModel.isCustomIcon()) {
+                    addStringProperty(TEI_IMAGE, mapItemModel.getCustomIconRes())
+                }
+            }?.also { featureMap[TEI]?.add(it) }
     }
 
     private fun mapToPointEnrollment(

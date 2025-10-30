@@ -18,8 +18,9 @@ import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
 import javax.inject.Inject
 
-class SyncActivity : ActivityGlobalAbstract(), SyncView {
-
+class SyncActivity :
+    ActivityGlobalAbstract(),
+    SyncView {
     lateinit var binding: ActivitySynchronizationBinding
 
     @Inject
@@ -102,14 +103,17 @@ class SyncActivity : ActivityGlobalAbstract(), SyncView {
     }
 
     override fun setFlag(flagName: String?) {
-        binding.logoFlag.setImageResource(
-            resources.getIdentifier(flagName, "drawable", packageName),
-        )
-        animations.startFlagAnimation { value: Float? ->
-            binding.apply {
-                logoFlag.alpha = value!!
-                dhisLogo.alpha = 0f
+        flagName?.takeIf { it.isNotBlank() }?.let {
+            binding.logoFlag.setImageResource(R.drawable.ic_flag)
+            animations.startFlagAnimation { value ->
+                binding.apply {
+                    logoFlag.alpha = value
+                    dhisLogo.alpha = 0f
+                }
             }
+        } ?: run {
+            // Hide flag if no valid name provided
+            binding.logoFlag.setImageDrawable(null)
         }
     }
 

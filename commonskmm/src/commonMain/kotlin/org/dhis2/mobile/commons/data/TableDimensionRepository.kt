@@ -1,7 +1,12 @@
 package org.dhis2.mobile.commons.data
 
 interface TableDimensionRepository {
-    suspend fun saveWidthForSection(tableId: String, sectionUid: String, widthDpValue: Float)
+    suspend fun saveWidthForSection(
+        tableId: String,
+        sectionUid: String,
+        widthDpValue: Float,
+    )
+
     suspend fun saveColumnWidthForSection(
         tableId: String,
         sectionUid: String,
@@ -9,17 +14,30 @@ interface TableDimensionRepository {
         widthDpValue: Float,
     )
 
-    suspend fun saveTableWidth(tableId: String, sectionUid: String, widthDpValue: Float)
-    suspend fun resetTable(tableId: String, sectionUid: String)
+    suspend fun saveTableWidth(
+        tableId: String,
+        sectionUid: String,
+        widthDpValue: Float,
+    )
+
+    suspend fun resetTable(
+        tableId: String,
+        sectionUid: String,
+    )
+
     suspend fun getTableWidth(sectionUid: String): Map<String, Float>?
+
     suspend fun getWidthForSection(sectionUid: String): Map<String, Float>?
+
     suspend fun getColumnWidthForSection(
         tableList: List<String>,
         sectionUid: String,
     ): Map<String, Map<Int, Float>>?
 
-    fun columnWidthDataStoreKeysForDataSet(dataSetUid: String, sectionUid: String) =
-        "col_width_${dataSetUid}_${sectionUid}_%"
+    fun columnWidthDataStoreKeysForDataSet(
+        dataSetUid: String,
+        sectionUid: String,
+    ) = "col_width_${dataSetUid}_${sectionUid}_%"
 
     fun columnWidthDataStoreKeysForTable(
         dataSetUid: String,
@@ -27,8 +45,10 @@ interface TableDimensionRepository {
         sectionUid: String,
     ) = "col_width_${dataSetUid}_${sectionUid}_${tableId}_%"
 
-    fun rowHeaderWidthDataStoreKeyForDataSet(dataSetUid: String, sectionUid: String) =
-        "row_width_${dataSetUid}_${sectionUid}_%"
+    fun rowHeaderWidthDataStoreKeyForDataSet(
+        dataSetUid: String,
+        sectionUid: String,
+    ) = "row_width_${dataSetUid}_${sectionUid}_%"
 
     fun columnWidthDataStoreKey(
         dataSetUid: String,
@@ -49,6 +69,8 @@ interface TableDimensionRepository {
         tableId: String,
     ) = "table_width_${dataSetUid}_${sectionUid}_$tableId"
 
-    fun tableExtraWidthForDataSet(dataSetUid: String, sectionUid: String) =
-        "table_width_${dataSetUid}_${sectionUid}_%"
+    fun tableExtraWidthForDataSet(
+        dataSetUid: String,
+        sectionUid: String,
+    ) = "table_width_${dataSetUid}_${sectionUid}_%"
 }

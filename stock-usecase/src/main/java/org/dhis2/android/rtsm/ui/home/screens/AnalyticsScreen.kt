@@ -63,7 +63,9 @@ fun AnalyticsScreen(
                     }
                 },
                 update = {
-                    supportFragmentManager.beginTransaction().add(frameId, GroupAnalyticsFragment.forProgram(settingsUiState.programUid))
+                    supportFragmentManager
+                        .beginTransaction()
+                        .add(frameId, GroupAnalyticsFragment.forProgram(settingsUiState.programUid))
                         .commit()
                 },
             )

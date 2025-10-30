@@ -3,7 +3,6 @@ package org.dhis2.form.ui.intent
 import org.hisp.dhis.android.core.common.ValueType
 
 sealed class FormIntent {
-
     data class OnFinish(
         val extraData: String? = null,
     ) : FormIntent()
@@ -25,6 +24,12 @@ sealed class FormIntent {
         val valueType: ValueType?,
         val fieldMask: String? = null,
         val allowFutureDates: Boolean? = false,
+    ) : FormIntent()
+
+    data class OnSaveCustomIntent(
+        val uid: String,
+        val value: String?,
+        val error: Boolean,
     ) : FormIntent()
 
     data class OnQrCodeScanned(
@@ -71,11 +76,11 @@ sealed class FormIntent {
         val sectionUid: String,
     ) : FormIntent()
 
-    data class OnRequestCoordinates(
+    data class OnFieldLoadingData(
         val uid: String,
     ) : FormIntent()
 
-    data class OnCancelRequestCoordinates(
+    data class OnFieldFinishedLoadingData(
         val uid: String,
     ) : FormIntent()
 

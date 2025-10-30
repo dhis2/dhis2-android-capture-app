@@ -25,8 +25,9 @@ fun ItemValues(
     headerLabel: String,
 ) {
     Row(
-        modifier = Modifier
-            .horizontalScroll(state = horizontalScrollState),
+        modifier =
+            Modifier
+                .horizontalScroll(state = horizontalScrollState),
     ) {
         repeat(
             times = cellValues.size,
@@ -43,12 +44,13 @@ fun ItemValues(
                         tableId = tableId,
                         cell = cellValue,
                         maxLines = maxLines,
-                        headerExtraSize = TableTheme.dimensions.extraSize(
-                            tableId,
-                            tableHeaderModel.tableMaxColumns(),
-                            tableHeaderModel.hasTotals,
-                            columnIndex,
-                        ),
+                        headerExtraSize =
+                            TableTheme.dimensions.extraSize(
+                                tableId,
+                                tableHeaderModel.tableMaxColumns(),
+                                tableHeaderModel.hasTotals,
+                                columnIndex,
+                            ),
                         options = options,
                         headerLabel = headerLabel,
                     )

@@ -5,9 +5,5 @@ import org.dhis2.usescases.datasets.datasetInitial.periods.data.DatasetPeriodRep
 class HasDataInputPeriods(
     private val repository: DatasetPeriodRepository,
 ) {
-    operator fun invoke(
-        datasetUid: String,
-    ): Boolean {
-        return repository.hasDataInputPeriods(datasetUid)
-    }
+    operator fun invoke(datasetUid: String): Boolean = repository.hasDataInputPeriods(datasetUid)
 }

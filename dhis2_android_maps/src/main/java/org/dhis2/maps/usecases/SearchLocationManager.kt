@@ -22,7 +22,12 @@ class SearchLocationManager(
     suspend fun getAvailableLocations(query: String? = null): List<LocationItemModel.StoredResult> {
         if (cachedResults.isEmpty()) {
             cachedResults =
-                d2.dataStoreModule().localDataStore().value(STORED_LOCATION).blockingGet()?.value()
+                d2
+                    .dataStoreModule()
+                    .localDataStore()
+                    .value(STORED_LOCATION)
+                    .blockingGet()
+                    ?.value()
                     ?.let { storedValue ->
                         gson.fromJson(
                             storedValue,
@@ -34,14 +39,13 @@ class SearchLocationManager(
         return cachedResults.flexibleFilter(query).reversed()
     }
 
-    private fun List<LocationItemModel.StoredResult>.flexibleFilter(
-        query: String?,
-    ): List<LocationItemModel.StoredResult> = filter { item ->
-        query?.takeIf { it.isNotEmpty() }?.let {
-            (jaroWinklerDistance.apply(item.title, query) >= jaroWinklerThreshold) or
-                (jaroWinklerDistance.apply(item.subtitle, query) >= jaroWinklerThreshold)
-        } ?: true
-    }
+    private fun List<LocationItemModel.StoredResult>.flexibleFilter(query: String?): List<LocationItemModel.StoredResult> =
+        filter { item ->
+            query?.takeIf { it.isNotEmpty() }?.let {
+                (jaroWinklerDistance.apply(item.title, query) >= jaroWinklerThreshold) or
+                    (jaroWinklerDistance.apply(item.subtitle, query) >= jaroWinklerThreshold)
+            } ?: true
+        }
 
     suspend fun storeLocation(location: LocationItemModel) {
         val currentList = getAvailableLocations().toMutableList()

@@ -1,11 +1,10 @@
 package org.dhis2.maps.camera
 
-import com.mapbox.mapboxsdk.geometry.LatLng
+import org.maplibre.android.geometry.LatLng
 
 const val DEFAULT_EASE_CAMERA_ANIM_DURATION = 1200
 
 object CalculateCameraAnimationDuration {
-
     operator fun invoke(
         currentPosition: LatLng,
         targetPosition: LatLng,

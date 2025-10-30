@@ -13,13 +13,13 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.data.dhislogic.DhisTrackedEntityInstanceUtils
 import org.dhis2.data.service.SyncStatusController
 import org.hisp.dhis.android.core.D2
 
 @Module
-class ProgramModule(private val view: ProgramView) {
-
+class ProgramModule(
+    private val view: ProgramView,
+) {
     @Provides
     @PerFragment
     internal fun programViewModelFactory(
@@ -30,8 +30,8 @@ class ProgramModule(private val view: ProgramView) {
         filterManager: FilterManager,
         syncStatusController: SyncStatusController,
         schedulerProvider: SchedulerProvider,
-    ): ProgramViewModelFactory {
-        return ProgramViewModelFactory(
+    ): ProgramViewModelFactory =
+        ProgramViewModelFactory(
             view,
             programRepository,
             featureConfigRepository,
@@ -41,7 +41,6 @@ class ProgramModule(private val view: ProgramView) {
             syncStatusController,
             schedulerProvider,
         )
-    }
 
     @Provides
     @PerFragment
@@ -49,19 +48,16 @@ class ProgramModule(private val view: ProgramView) {
         d2: D2,
         filterPresenter: FilterPresenter,
         dhisProgramUtils: DhisProgramUtils,
-        dhisTrackedEntityInstanceUtils: DhisTrackedEntityInstanceUtils,
         schedulerProvider: SchedulerProvider,
         colorUtils: ColorUtils,
         metadataIconProvider: MetadataIconProvider,
-    ): ProgramRepository {
-        return ProgramRepositoryImpl(
+    ): ProgramRepository =
+        ProgramRepositoryImpl(
             d2,
             filterPresenter,
             dhisProgramUtils,
-            dhisTrackedEntityInstanceUtils,
             ResourceManager(view.context, colorUtils),
             metadataIconProvider,
             schedulerProvider,
         )
-    }
 }

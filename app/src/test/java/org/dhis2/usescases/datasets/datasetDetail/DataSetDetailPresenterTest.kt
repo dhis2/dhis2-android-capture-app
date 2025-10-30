@@ -33,7 +33,6 @@ import io.reactivex.processors.BehaviorProcessor
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.TestScheduler
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.commons.filters.DisableHomeFiltersFromSettingsApp
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -52,7 +51,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class DataSetDetailPresenterTest {
-
     private lateinit var presenter: DataSetDetailPresenter
 
     private val view: DataSetDetailView = mock()
@@ -65,15 +63,16 @@ class DataSetDetailPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = DataSetDetailPresenter(
-            view,
-            repository,
-            scheduler,
-            filterManager,
-            filterRepository,
-            disableHomeFilters,
-            matomoAnalyticsController,
-        )
+        presenter =
+            DataSetDetailPresenter(
+                view,
+                repository,
+                scheduler,
+                filterManager,
+                filterRepository,
+                disableHomeFilters,
+                matomoAnalyticsController,
+            )
     }
 
     @Test
@@ -82,7 +81,7 @@ class DataSetDetailPresenterTest {
         val periodRequest: FlowableProcessor<kotlin.Pair<PeriodRequest, Filters?>> =
             BehaviorProcessor.create()
         val filterManagerFlowable = Flowable.just(filterManager).startWith(filterProcessor)
-        val catOptionComboPair = Pair.create(dummyCategoryCombo(), dummyListCatOptionCombo())
+        val catOptionComboPair = Pair(dummyCategoryCombo(), dummyListCatOptionCombo())
 
         whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
         whenever(filterManager.ouTreeFlowable()) doReturn Flowable.just(true)
@@ -150,7 +149,5 @@ class DataSetDetailPresenterTest {
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
 
-    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> {
-        return listOf(CategoryOptionCombo.builder().uid("uid").build())
-    }
+    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> = listOf(CategoryOptionCombo.builder().uid("uid").build())
 }

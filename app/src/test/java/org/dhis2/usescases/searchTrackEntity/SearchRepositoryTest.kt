@@ -17,12 +17,12 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.ui.ThemeManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
-import org.hisp.dhis.android.core.arch.repositories.filters.internal.EnumFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -34,6 +34,7 @@ import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.event.internal.EventStatusFilterConnector
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnitCollectionRepository
 import org.hisp.dhis.android.core.program.Program
@@ -60,15 +61,16 @@ import java.util.Calendar
 import java.util.Date
 
 class SearchRepositoryTest {
-
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val fieldViewModelFactory: FieldViewModelFactory = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
-    private val dispatchers: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.IO
-    }
+    private val dispatchers: DispatcherProvider =
+        mock {
+            on { io() } doReturn Dispatchers.IO
+        }
     private lateinit var searchRepository: SearchRepositoryImplKt
     private lateinit var searchRepositoryJava: SearchRepository
+    private val customIntentRepository: CustomIntentRepository = mock()
 
     private val trackedEntitySearchItemHelper: TrackedEntitySearchItemHelper = mock()
 
@@ -80,7 +82,7 @@ class SearchRepositoryTest {
     private val programReadOnlyOneObjectRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program> = mock()
 
     private val eventCollectionRepository: EventCollectionRepository = mock()
-    private val enumEventFilterConnector: EnumFilterConnector<EventCollectionRepository, EventStatus> = mock()
+    private val eventStatusFilterConnector: EventStatusFilterConnector = mock()
     private val stringEventFilterConnector: StringFilterConnector<EventCollectionRepository> = mock()
 
     private val orgUnitCollectionRepository: OrganisationUnitCollectionRepository = mock()
@@ -96,15 +98,17 @@ class SearchRepositoryTest {
     private val searchTEIRepository: SearchTEIRepository = mock()
     private val themeManager: ThemeManager = mock()
     private val profilePictureProvider: ProfilePictureProvider = mock()
+    private val dateUtils: DateUtils = DateUtils()
 
     @Before
     fun setUp() {
-        val trackedEntityAttributes = mapOf(
-            "unique-code" to createTrackedEntityAttributeRepository("unique-code", true),
-            "bp-number" to createTrackedEntityAttributeRepository("bp-number", true),
-            "national-id" to createTrackedEntityAttributeRepository("national-id", true),
-            "unique-id" to createTrackedEntityAttributeRepository("unique-id", true),
-        )
+        val trackedEntityAttributes =
+            mapOf(
+                "unique-code" to createTrackedEntityAttributeRepository("unique-code", true),
+                "bp-number" to createTrackedEntityAttributeRepository("bp-number", true),
+                "national-id" to createTrackedEntityAttributeRepository("national-id", true),
+                "unique-id" to createTrackedEntityAttributeRepository("unique-id", true),
+            )
 
         val trackedEntityAttributeCollection = mock<TrackedEntityAttributeCollectionRepository>()
         whenever(d2.trackedEntityModule().trackedEntityAttributes()).thenReturn(trackedEntityAttributeCollection)
@@ -113,32 +117,37 @@ class SearchRepositoryTest {
             trackedEntityAttributes[uid] ?: createTrackedEntityAttributeRepository(uid, false)
         }
 
-        searchRepository = SearchRepositoryImplKt(
-            searchRepositoryJava = mock(),
-            d2 = d2,
-            dispatcher = dispatchers,
-            fieldViewModelFactory = fieldViewModelFactory,
-            metadataIconProvider = metadataIconProvider,
-            trackedEntityInstanceInfoProvider = mock(),
-            eventInfoProvider = mock(),
-        )
+        searchRepository =
+            SearchRepositoryImplKt(
+                searchRepositoryJava = mock(),
+                d2 = d2,
+                dispatcher = dispatchers,
+                fieldViewModelFactory = fieldViewModelFactory,
+                metadataIconProvider = metadataIconProvider,
+                trackedEntityInstanceInfoProvider = mock(),
+                eventInfoProvider = mock(),
+                customIntentRepository = customIntentRepository,
+            )
 
-        searchRepositoryJava = SearchRepositoryImpl(
-            "teiType",
-            null,
-            d2,
-            filterPresenter,
-            resourceManager,
-            sortingValueSetter,
-            dhisPeriodUtils,
-            charts,
-            crashReporterController,
-            networkUtils,
-            searchTEIRepository,
-            themeManager,
-            metadataIconProvider,
-            profilePictureProvider,
-        )
+        searchRepositoryJava =
+            SearchRepositoryImpl(
+                "teiType",
+                null,
+                d2,
+                filterPresenter,
+                resourceManager,
+                sortingValueSetter,
+                dhisPeriodUtils,
+                charts,
+                crashReporterController,
+                networkUtils,
+                searchTEIRepository,
+                themeManager,
+                metadataIconProvider,
+                profilePictureProvider,
+                dateUtils,
+                customIntentRepository,
+            )
     }
 
     @Test
@@ -165,21 +174,56 @@ class SearchRepositoryTest {
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
-        val overdueDate = DateUtils.getInstance().getCalendarByDate(Date())
+        val overdueDate = dateUtils.getCalendarByDate(Date())
         overdueDate.add(Calendar.DATE, -2)
 
-        val enrollmentsInProgram = listOf(
-            createEnrollment("enrollmentUid", "orgUnit", program.uid()),
-            createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
-        )
-        val allEnrollments = listOf(
-            createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
-            createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
-        )
-        val events = listOf(
-            createEvent("eventUid", EventStatus.OVERDUE, overdueDate.time),
-            createEvent("eventUid", EventStatus.SCHEDULE, Date()),
-        )
+        val enrollmentsInProgram =
+            listOf(
+                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
+                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
+            )
+        val allEnrollments =
+            listOf(
+                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
+                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
+            )
+        val events =
+            listOf(
+                createEvent("eventUid", EventStatus.OVERDUE, overdueDate.time),
+                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
+            )
+
+        mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
+
+        val result = searchRepositoryJava.transform(searchItem, program, true, sorting)
+
+        assertTrue(result.isHasOverdue)
+    }
+
+    @Test
+    fun shouldTransformToSearchTeiModelWithOverdueScheduledEvents() {
+        val searchItem = getTrackedEntitySearchItem("header")
+        val program = Program.builder().uid("programUid").build()
+        val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
+        val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
+
+        val overdueDate = dateUtils.getCalendarByDate(Date())
+        overdueDate.add(Calendar.DATE, -2)
+
+        val enrollmentsInProgram =
+            listOf(
+                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
+                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
+            )
+        val allEnrollments =
+            listOf(
+                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
+                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
+            )
+        val events =
+            listOf(
+                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
+            )
 
         mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
 
@@ -195,20 +239,23 @@ class SearchRepositoryTest {
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
-        val overdueDate = DateUtils.getInstance().getCalendarByDate(Date())
-        overdueDate.add(Calendar.DATE, -2)
+        val overdueDate = dateUtils.getCalendarByDate(Date())
+        overdueDate.add(Calendar.DATE, 2)
 
-        val enrollmentsInProgram = listOf(
-            createEnrollment("enrollmentUid", "orgUnit", program.uid()),
-            createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
-        )
-        val allEnrollments = listOf(
-            createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
-            createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
-        )
-        val events = listOf(
-            createEvent("eventUid", EventStatus.SCHEDULE, Date()),
-        )
+        val enrollmentsInProgram =
+            listOf(
+                createEnrollment("enrollmentUid", "orgUnit", program.uid()),
+                createEnrollment("enrollmentUid_2", "orgUnit", program.uid()),
+            )
+        val allEnrollments =
+            listOf(
+                createEnrollment("enrollmentUid_3", "orgUnit", "uid"),
+                createEnrollment("enrollmentUid_4", "orgUnit_2", "uid"),
+            )
+        val events =
+            listOf(
+                createEvent("eventUid", EventStatus.SCHEDULE, overdueDate.time),
+            )
 
         mockedSdkCalls(searchItem, tei, enrollmentsInProgram, allEnrollments, events)
 
@@ -233,11 +280,15 @@ class SearchRepositoryTest {
         if (searchItem.isOnline) {
             whenever(d2.trackedEntityModule().trackedEntityInstances()) doReturn mock()
             whenever(
-                d2.trackedEntityModule().trackedEntityInstances()
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
                     .uid(any()),
             ) doReturn mock()
             whenever(
-                d2.trackedEntityModule().trackedEntityInstances()
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstances()
                     .uid(any())
                     .blockingGet(),
             ) doReturn teiToReturn
@@ -245,12 +296,17 @@ class SearchRepositoryTest {
 
         whenever(d2.enrollmentModule().enrollments()) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
+            d2
+                .enrollmentModule()
+                .enrollments()
                 .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
-            d2.enrollmentModule().enrollments()
-                .byTrackedEntityInstance().eq(any()),
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .byTrackedEntityInstance()
+                .eq(any()),
         ) doReturn enrollmentCollectionRepository
 
         whenever(
@@ -294,7 +350,12 @@ class SearchRepositoryTest {
         ) doReturn programReadOnlyOneObjectRepository
         whenever(
             programReadOnlyOneObjectRepository.blockingGet(),
-        ) doReturn Program.builder().uid(programUid).displayFrontPageList(true).build()
+        ) doReturn
+            Program
+                .builder()
+                .uid(programUid)
+                .displayFrontPageList(true)
+                .build()
 
         // Mock setOverdueEvents
         whenever(d2.eventModule().events()) doReturn eventCollectionRepository
@@ -309,9 +370,9 @@ class SearchRepositoryTest {
         ) doReturn eventCollectionRepository
         whenever(
             eventCollectionRepository.byStatus(),
-        ) doReturn enumEventFilterConnector
+        ) doReturn eventStatusFilterConnector
         whenever(
-            enumEventFilterConnector.eq(EventStatus.OVERDUE),
+            eventStatusFilterConnector.eq(EventStatus.OVERDUE),
         ) doReturn eventCollectionRepository
         whenever(
             eventCollectionRepository.byStatus().eq(EventStatus.OVERDUE),
@@ -328,13 +389,22 @@ class SearchRepositoryTest {
         whenever(
             eventCollectionRepository.blockingGet(),
         ) doReturn eventsToReturn.filter { it.status() == EventStatus.OVERDUE }
-
+        whenever(eventStatusFilterConnector.eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.byStatus().eq(EventStatus.SCHEDULE)).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.byProgramUid().eq(any())).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.orderByDueDate(RepositoryScope.OrderByDirection.DESC)).thenReturn(eventCollectionRepository)
+        whenever(eventCollectionRepository.blockingGet()).thenReturn(eventsToReturn.filter { it.status() == EventStatus.SCHEDULE })
         // mock orgUnitName(orgUnitUid)
         whenever(d2.organisationUnitModule().organisationUnits()) doReturn orgUnitCollectionRepository
         whenever(
             orgUnitCollectionRepository.uid(any()),
         ) doReturn readOnlyOneObjectRepository
-        whenever(readOnlyOneObjectRepository.blockingGet()) doReturn OrganisationUnit.builder().uid("uid").displayName("orgUnitName").build()
+        whenever(readOnlyOneObjectRepository.blockingGet()) doReturn
+            OrganisationUnit
+                .builder()
+                .uid("uid")
+                .displayName("orgUnitName")
+                .build()
 
         whenever(profilePictureProvider.invoke(any(), any())) doReturn profilePathToReturn
 
@@ -352,8 +422,8 @@ class SearchRepositoryTest {
         isOnline: Boolean = false,
         state: State = State.SYNCED,
         attributesValues: List<TrackedEntitySearchItemAttribute> = listOf(),
-    ): TrackedEntitySearchItem {
-        return TrackedEntitySearchItem(
+    ): TrackedEntitySearchItem =
+        TrackedEntitySearchItem(
             uid = "uid",
             created = Date(),
             lastUpdated = Date(),
@@ -369,26 +439,27 @@ class SearchRepositoryTest {
             header = header,
             attributeValues = attributesValues,
         )
-    }
 
     private fun createEnrollment(
         uid: String,
         orgUnitUid: String,
         programUid: String,
         status: EnrollmentStatus = EnrollmentStatus.ACTIVE,
-    ) =
-        Enrollment.builder()
-            .uid(uid)
-            .organisationUnit(orgUnitUid)
-            .program(programUid)
-            .status(status)
-            .build()
+    ) = Enrollment
+        .builder()
+        .uid(uid)
+        .organisationUnit(orgUnitUid)
+        .program(programUid)
+        .status(status)
+        .build()
 
     private fun createEvent(
         uid: String,
         status: EventStatus = EventStatus.ACTIVE,
         dueDate: Date = Date(),
-    ) = Event.builder().uid(uid)
+    ) = Event
+        .builder()
+        .uid(uid)
         .status(status)
         .dueDate(dueDate)
         .build()
@@ -397,17 +468,18 @@ class SearchRepositoryTest {
         uid: String,
         unique: Boolean,
     ): ReadOnlyOneObjectRepositoryFinalImpl<TrackedEntityAttribute> {
-        val attribute = mock<TrackedEntityAttribute> {
-            on { uid() } doReturn uid
-            on { unique() } doReturn unique
-        }
+        val attribute =
+            mock<TrackedEntityAttribute> {
+                on { uid() } doReturn uid
+                on { unique() } doReturn unique
+            }
         return mock {
             on { blockingGet() } doReturn attribute
         }
     }
 
-    private fun createMockData(): List<FieldUiModel> {
-        return listOf(
+    private fun createMockData(): List<FieldUiModel> =
+        listOf(
             FieldUiModelImpl(
                 uid = "first-name",
                 label = "First Name",
@@ -489,5 +561,4 @@ class SearchRepositoryTest {
                 optionSetConfiguration = null,
             ),
         )
-    }
 }

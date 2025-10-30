@@ -111,9 +111,10 @@ private fun provideButtonBlock(
     when (type) {
         COMPLETION -> {
             ButtonBlock(
-                modifier = Modifier.padding(
-                    BottomSheetShellDefaults.buttonBlockPaddings(),
-                ),
+                modifier =
+                    Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,
@@ -127,9 +128,10 @@ private fun provideButtonBlock(
                         Button(
                             style = ButtonStyle.FILLED,
                             text = stringResource(Res.string.complete),
-                            modifier = Modifier
-                                .testTag(COMPLETION_DIALOG_BUTTON_TEST_TAG)
-                                .fillMaxWidth(),
+                            modifier =
+                                Modifier
+                                    .testTag(COMPLETION_DIALOG_BUTTON_TEST_TAG)
+                                    .fillMaxWidth(),
                             onClick = onSecondaryButtonClick,
                         )
                     }
@@ -139,15 +141,18 @@ private fun provideButtonBlock(
 
         MANDATORY_FIELDS -> {
             ButtonBlock(
-                modifier = Modifier.padding(
-                    BottomSheetShellDefaults.buttonBlockPaddings(),
-                ),
+                modifier =
+                    Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.ok),
-                        modifier = Modifier.fillMaxWidth()
-                            .testTag(MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag(MANDATORY_FIELDS_DIALOG_OK_BUTTON_TEST_TAG),
                         onClick = onPrimaryButtonClick,
                     )
                 },
@@ -156,9 +161,10 @@ private fun provideButtonBlock(
 
         VALIDATION_RULES -> {
             ButtonBlock(
-                modifier = Modifier.padding(
-                    BottomSheetShellDefaults.buttonBlockPaddings(),
-                ),
+                modifier =
+                    Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
                 primaryButton = {
                     Button(
                         style = ButtonStyle.OUTLINED,
@@ -169,8 +175,10 @@ private fun provideButtonBlock(
                 },
                 secondaryButton = {
                     Button(
-                        modifier = Modifier.fillMaxWidth()
-                            .testTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag(OPTIONAL_VALIDATION_RULE_DIALOG_ACCEPT_TEST_TAG),
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.yes),
                         onClick = onSecondaryButtonClick,
@@ -181,14 +189,17 @@ private fun provideButtonBlock(
 
         VALIDATION_RULES_ERROR -> {
             ButtonBlock(
-                modifier = Modifier.padding(
-                    BottomSheetShellDefaults.buttonBlockPaddings(),
-                ),
+                modifier =
+                    Modifier.padding(
+                        BottomSheetShellDefaults.buttonBlockPaddings(),
+                    ),
                 primaryButton = {
                     if (!mandatory && canComplete) {
                         Button(
-                            modifier = Modifier.fillMaxWidth()
-                                .testTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .testTag(VALIDATION_DIALOG_COMPLETE_ANYWAY_BUTTON_TEST_TAG),
                             style = ButtonStyle.TEXT,
                             text = stringResource(Res.string.complete_anyway),
                             onClick = onPrimaryButtonClick,
@@ -197,8 +208,10 @@ private fun provideButtonBlock(
                 },
                 secondaryButton = {
                     Button(
-                        modifier = Modifier.fillMaxWidth()
-                            .testTag(VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .testTag(VALIDATION_DIALOG_REVIEW_BUTTON_TEST_TAG),
                         style = ButtonStyle.FILLED,
                         text = stringResource(Res.string.review),
                         onClick = onSecondaryButtonClick,

@@ -15,20 +15,18 @@ class DatasetPeriodViewModel(
     private val hasDataInputPeriods: HasDataInputPeriods,
     private val getDatasetPeriodMaxDate: GetDatasetPeriodMaxDate,
 ) : ViewModel() {
-
     fun fetchPeriods(
         datasetUid: String,
         periodType: PeriodType?,
         selectedDate: Date?,
         openFuturePeriods: Int,
-    ): Flow<PagingData<Period>> {
-        return getDatasetPeriods(
+    ): Flow<PagingData<Period>> =
+        getDatasetPeriods(
             datasetUid = datasetUid,
             periodType = periodType ?: PeriodType.Daily,
             selectedDate = selectedDate,
             openFuturePeriods = openFuturePeriods,
         )
-    }
 
     fun verifyIfHasDataInputPeriods(dataset: String) = hasDataInputPeriods(dataset)
 

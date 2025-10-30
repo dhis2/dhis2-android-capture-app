@@ -42,7 +42,8 @@ class QRImageControllerTest {
     @Test
     fun shouldReturnBarcodeWriter() {
         val testValue = "qrValue"
-        controller.getWriterFromRendering(testValue, UiRenderType.BAR_CODE)
+        controller
+            .getWriterFromRendering(testValue, UiRenderType.BAR_CODE)
             .let { (writer, format) ->
                 assertTrue(writer is Code128Writer)
                 assertTrue(format == BarcodeFormat.CODE_128)

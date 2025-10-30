@@ -60,7 +60,7 @@
                     android:layout_height="24dp"
                     android:layout_marginStart="35dp"
                     android:gravity="bottom"
-                    android:text='@{dataset.namePeriod()}'
+                    android:text='@{dataset.namePeriod}'
                     android:textColor="@color/textPrimary"
                     android:textSize="14sp"
                     android:textStyle="normal"
@@ -77,7 +77,7 @@
                     android:text='@{dataset.nameOrgUnit}'
                     android:textColor="@color/textSecondary"
                     android:textSize="12sp"
-                    android:visibility="@{dataset.displayOrgUnitName() ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{dataset.displayOrgUnitName ? View.VISIBLE : View.GONE}"
                     app:layout_constraintEnd_toStartOf="@id/sync_icon"
                     app:layout_constraintStart_toStartOf="@id/dataSetPeriod"
                     app:layout_constraintTop_toBottomOf="@id/dataSetPeriod"
@@ -92,7 +92,7 @@
                     android:text='@{dataset.nameCatCombo}'
                     android:textColor="@color/textSecondary"
                     android:textSize="12sp"
-                    android:visibility='@{dataset.nameCatCombo().equals("default") ? View.GONE : View.VISIBLE}'
+                    android:visibility='@{dataset.nameCatCombo.equals("default") ? View.GONE : View.VISIBLE}'
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/sync_icon"
                     app:layout_constraintStart_toStartOf="@id/dataSetPeriod"

@@ -38,17 +38,24 @@ class OpenIdSession(
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onCreate() {
         disposable.add(
-            Observable.merge(
-                d2.userModule().openIdHandler().logOutObservable()
-                    .map { LogOutReason.OPEN_ID },
-                d2.userModule().accountManager().accountDeletionObservable()
-                    .filter { it == AccountDeletionReason.ACCOUNT_DISABLED }
-                    .map { LogOutReason.DISABLED_ACCOUNT },
-            ).defaultSubscribe(
-                schedulerProvider,
-                { sessionCallback(it) },
-                { Timber.e(it) },
-            ),
+            Observable
+                .merge(
+                    d2
+                        .userModule()
+                        .openIdHandler()
+                        .logOutObservable()
+                        .map { LogOutReason.OPEN_ID },
+                    d2
+                        .userModule()
+                        .accountManager()
+                        .accountDeletionObservable()
+                        .filter { it == AccountDeletionReason.ACCOUNT_DISABLED }
+                        .map { LogOutReason.DISABLED_ACCOUNT },
+                ).defaultSubscribe(
+                    schedulerProvider,
+                    { sessionCallback(it) },
+                    { Timber.e(it) },
+                ),
         )
     }
 

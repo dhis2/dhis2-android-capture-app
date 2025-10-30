@@ -15,9 +15,8 @@ data class RelationshipUiComponentModel(
     val canBeDeleted: Boolean? = true,
 ) : CarouselItemModel {
     override fun uid(): String = relationshipUid
-    fun shouldShowNavigationButton(): Boolean {
-        return to.geometry?.type() == FeatureType.POINT
-    }
+
+    fun shouldShowNavigationButton(): Boolean = to.geometry?.type() == FeatureType.POINT
 }
 
 data class TeiMap(

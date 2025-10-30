@@ -12,14 +12,13 @@ object DestinationFactory {
     fun create(id: Long): Option {
         val name = faker.address().streetName()
 
-        return Option.builder()
-            .id(id)
+        return Option
+            .builder()
             .uid(uidGenerator.generate())
             .name(name)
-            .displayName(name).build()
+            .displayName(name)
+            .build()
     }
 
-    fun getListOf(num: Int): List<Option> {
-        return (1..num).map { create(it.toLong()) }
-    }
+    fun getListOf(num: Int): List<Option> = (1..num).map { create(it.toLong()) }
 }

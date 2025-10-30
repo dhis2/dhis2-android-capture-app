@@ -3,6 +3,7 @@ package org.dhis2.form.ui.event
 import android.content.Intent
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiEventType
+import org.dhis2.form.model.UiEventType.OPEN_CUSTOM_INTENT
 import org.dhis2.form.model.UiEventType.OPEN_FILE
 import org.dhis2.form.model.UiEventType.REQUEST_LOCATION_BY_MAP
 import org.dhis2.form.model.UiEventType.SHARE_IMAGE
@@ -27,21 +28,30 @@ class UiEventFactoryImpl(
     ): RecyclerViewUiEvents? {
         var uiEvent: RecyclerViewUiEvents? = null
         try {
-            uiEvent = when (uiEventType) {
-                REQUEST_LOCATION_BY_MAP -> RecyclerViewUiEvents.RequestLocationByMap(
-                    uid = uid,
-                    featureType = getFeatureType(renderingType),
-                    value = value,
-                )
-                OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
-                SHARE_IMAGE -> RecyclerViewUiEvents.OpenChooserIntent(
-                    Intent.ACTION_SEND,
-                    fieldUiModel.displayName,
-                    uid,
-                )
+            uiEvent =
+                when (uiEventType) {
+                    REQUEST_LOCATION_BY_MAP ->
+                        RecyclerViewUiEvents.RequestLocationByMap(
+                            uid = uid,
+                            featureType = getFeatureType(renderingType),
+                            value = value,
+                        )
+                    OPEN_FILE -> RecyclerViewUiEvents.OpenFile(fieldUiModel)
+                    SHARE_IMAGE ->
+                        RecyclerViewUiEvents.OpenChooserIntent(
+                            Intent.ACTION_SEND,
+                            fieldUiModel.displayName,
+                            uid,
+                        )
 
-                else -> null
-            }
+                    OPEN_CUSTOM_INTENT ->
+                        RecyclerViewUiEvents.LaunchCustomIntent(
+                            fieldUiModel.customIntent,
+                            uid,
+                        )
+
+                    else -> null
+                }
         } catch (e: Exception) {
             Timber.d("wrong format")
         }
@@ -49,13 +59,12 @@ class UiEventFactoryImpl(
         return uiEvent
     }
 
-    private fun getFeatureType(renderingType: UiRenderType?): FeatureType {
-        return when (renderingType) {
+    private fun getFeatureType(renderingType: UiRenderType?): FeatureType =
+        when (renderingType) {
             UiRenderType.DEFAULT -> FeatureType.NONE
             UiRenderType.POINT -> FeatureType.POINT
             UiRenderType.POLYGON -> FeatureType.POLYGON
             UiRenderType.MULTI_POLYGON -> FeatureType.MULTI_POLYGON
             else -> FeatureType.NONE
         }
-    }
 }

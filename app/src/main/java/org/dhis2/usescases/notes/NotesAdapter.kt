@@ -36,14 +36,13 @@ import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.processors.FlowableProcessor
 import io.reactivex.processors.PublishProcessor
 import org.dhis2.R
-import org.dhis2.commons.data.tuples.Pair
 import org.dhis2.databinding.ItemNoteBinding
 import org.hisp.dhis.android.core.note.Note
 import java.util.ArrayList
 
-class NotesAdapter(private val listener: NoteItemClickListener) :
-    RecyclerView.Adapter<NotesViewHolder>() {
-
+class NotesAdapter(
+    private val listener: NoteItemClickListener,
+) : RecyclerView.Adapter<NotesViewHolder>() {
     private var notes: MutableList<Note> = ArrayList()
     private val processor: FlowableProcessor<Pair<String, Boolean>>
     private var addedNewNote = false
@@ -52,17 +51,24 @@ class NotesAdapter(private val listener: NoteItemClickListener) :
         this.processor = PublishProcessor.create()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
-        val itemNotesBinding = DataBindingUtil.inflate<ItemNoteBinding>(
-            LayoutInflater.from(parent.context),
-            R.layout.item_note,
-            parent,
-            false,
-        )
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int,
+    ): NotesViewHolder {
+        val itemNotesBinding =
+            DataBindingUtil.inflate<ItemNoteBinding>(
+                LayoutInflater.from(parent.context),
+                R.layout.item_note,
+                parent,
+                false,
+            )
         return NotesViewHolder(itemNotesBinding)
     }
 
-    override fun onBindViewHolder(holder: NotesViewHolder, position: Int) {
+    override fun onBindViewHolder(
+        holder: NotesViewHolder,
+        position: Int,
+    ) {
         holder.bind(notes[position], listener)
         if (addedNewNote && position == 0) {
             runEnterAnimation(holder.itemView)

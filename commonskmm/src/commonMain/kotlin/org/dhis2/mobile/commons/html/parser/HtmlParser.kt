@@ -5,12 +5,15 @@ import org.kobjects.ktxml.api.EventType
 import org.kobjects.ktxml.api.XmlPullParser
 import org.kobjects.ktxml.mini.MiniXmlPullParser
 
-class HtmlParser(private val html: CharIterator) {
+class HtmlParser(
+    private val html: CharIterator,
+) {
     fun parse(handler: HtmlHandler) {
-        val parser: XmlPullParser = MiniXmlPullParser(
-            source = html,
-            relaxed = true,
-        )
+        val parser: XmlPullParser =
+            MiniXmlPullParser(
+                source = html,
+                relaxed = true,
+            )
         val attributes = { name: String -> parser.getAttributeValue("", name) }
         val tagStack = mutableListOf<String>()
 

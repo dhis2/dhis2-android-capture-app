@@ -58,7 +58,6 @@ class EventInitialActivity :
     ActivityGlobalAbstract(),
     EventInitialContract.View,
     EventDetailsComponentProvider {
-
     @Inject
     lateinit var presenter: EventInitialPresenter
 
@@ -114,14 +113,16 @@ class EventInitialActivity :
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         initVariables()
-        eventInitialComponent = Objects.requireNonNull((applicationContext as App).userComponent())
-            ?.plus(
-                EventInitialModule(
-                    this,
-                    eventUid,
-                    programStageUid,
-                ),
-            )
+        eventInitialComponent =
+            Objects
+                .requireNonNull((applicationContext as App).userComponent())
+                ?.plus(
+                    EventInitialModule(
+                        this,
+                        eventUid,
+                        programStageUid,
+                    ),
+                )
         eventInitialComponent!!.inject(this)
         super.onCreate(savedInstanceState)
 
@@ -169,10 +170,12 @@ class EventInitialActivity :
         val programStageModelUid = if (programStage == null) "" else programStage!!.uid()
         var geometry: Geometry? = null
         if (eventDetails.coordinates != null) {
-            geometry = Geometry.builder()
-                .coordinates(eventDetails.coordinates)
-                .type(programStage!!.featureType())
-                .build()
+            geometry =
+                Geometry
+                    .builder()
+                    .coordinates(eventDetails.coordinates)
+                    .type(programStage!!.featureType())
+                    .build()
         }
 
         if (eventUid == null) { // This is a new Event
@@ -182,20 +185,18 @@ class EventInitialActivity :
                 presenter.scheduleEvent(
                     enrollmentUid,
                     programStageModelUid,
-                    eventDetails.selectedDate,
-                    eventDetails.selectedOrgUnit,
-                    null,
-                    eventDetails.catOptionComboUid,
+                    requireNotNull(eventDetails.selectedDate),
+                    requireNotNull(eventDetails.selectedOrgUnit),
+                    requireNotNull(eventDetails.catOptionComboUid),
                     geometry,
                 )
             } else {
                 presenter.createEvent(
                     enrollmentUid,
                     programStageModelUid,
-                    eventDetails.selectedDate,
-                    eventDetails.selectedOrgUnit,
-                    null,
-                    eventDetails.catOptionComboUid,
+                    requireNotNull(eventDetails.selectedDate),
+                    requireNotNull(eventDetails.selectedOrgUnit),
+                    requireNotNull(eventDetails.catOptionComboUid),
                     geometry,
                     getTrackedEntityInstance,
                 )
@@ -206,7 +207,7 @@ class EventInitialActivity :
     }
 
     override fun onDestroy() {
-        presenter.onDettach()
+        presenter.onDetach()
         disposable.dispose()
         super.onDestroy()
     }
@@ -226,21 +227,22 @@ class EventInitialActivity :
     }
 
     private fun setUpActivityTitle() {
-        val activityTitle = if (eventCreationType == EventCreationType.REFERAL) {
-            getString(R.string.referral)
-        } else {
-            if (eventUid == null) {
-                eventResourcesProvider.formatWithProgramStageEventLabel(
-                    R.string.new_event_label,
-                    programStageUid,
-                    programUid,
-                    1,
-                    false,
-                )
+        val activityTitle =
+            if (eventCreationType == EventCreationType.REFERAL) {
+                getString(R.string.referral)
             } else {
-                program!!.displayName()!!
+                if (eventUid == null) {
+                    eventResourcesProvider.formatWithProgramStageEventLabel(
+                        R.string.new_event_label,
+                        programStageUid,
+                        programUid,
+                        1,
+                        false,
+                    )
+                } else {
+                    program!!.displayName()!!
+                }
             }
-        }
         binding.name = activityTitle
     }
 
@@ -265,11 +267,15 @@ class EventInitialActivity :
         startFormActivity(eventUid, false)
     }
 
-    private fun startFormActivity(eventUid: String, isNew: Boolean) {
-        val intent = Intent(
-            this,
-            EventCaptureActivity::class.java,
-        )
+    private fun startFormActivity(
+        eventUid: String,
+        isNew: Boolean,
+    ) {
+        val intent =
+            Intent(
+                this,
+                EventCaptureActivity::class.java,
+            )
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
         intent.putExtras(
             getActivityBundle(
@@ -302,10 +308,11 @@ class EventInitialActivity :
     }
 
     override fun showQR() {
-        val intent = Intent(
-            this@EventInitialActivity,
-            QrEventsWORegistrationActivity::class.java,
-        )
+        val intent =
+            Intent(
+                this@EventInitialActivity,
+                QrEventsWORegistrationActivity::class.java,
+            )
         intent.putExtra(Constants.EVENT_UID, eventUid)
         startActivity(intent)
     }
@@ -314,7 +321,8 @@ class EventInitialActivity :
         Handler(Looper.getMainLooper()).postDelayed({
             val stepConditions = SparseBooleanArray()
             stepConditions.put(0, eventUid == null)
-            HelpManager.getInstance()
+            HelpManager
+                .getInstance()
                 .show(activity, HelpManager.TutorialName.EVENT_INITIAL, stepConditions)
         }, 500)
     }
@@ -341,8 +349,8 @@ class EventInitialActivity :
         }
     }
 
-    private fun getMenuItems(): List<MenuItemData<EventInitialMenuItem>> {
-        return buildList {
+    private fun getMenuItems(): List<MenuItemData<EventInitialMenuItem>> =
+        buildList {
             add(
                 MenuItemData(
                     id = EventInitialMenuItem.SHOW_HELP,
@@ -372,7 +380,6 @@ class EventInitialActivity :
                 )
             }
         }
-    }
 
     fun confirmDeleteEvent() {
         CustomDialog(
@@ -432,9 +439,7 @@ class EventInitialActivity :
         )
     }
 
-    override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? {
-        return eventInitialComponent!!.plus(module)
-    }
+    override fun provideEventDetailsComponent(module: EventDetailsModule?): EventDetailsComponent? = eventInitialComponent!!.plus(module)
 
     companion object {
         fun getBundle(

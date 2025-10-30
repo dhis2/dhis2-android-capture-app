@@ -28,6 +28,7 @@
 
 package org.dhis2.usescases.programstageselection
 
+import androidx.compose.ui.graphics.Color
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
@@ -37,15 +38,15 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.EventMode
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.ui.MetadataIconData
 import org.dhis2.usescases.programStageSelection.ProgramStageData
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionPresenter
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionRepository
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionView
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
+import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.android.core.period.PeriodType
@@ -57,6 +58,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -65,66 +67,72 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class ProgramStageSelectionPresenterTest {
-
     private lateinit var presenter: ProgramStageSelectionPresenter
 
     private val view: ProgramStageSelectionView = mock()
     private val repository: ProgramStageSelectionRepository = mock()
     private val rulesUtils: RulesUtilsProvider = mock()
     private val scheduler = TrampolineSchedulerProvider()
-    private val metadataIconProvider: MetadataIconProvider = mock {
-        on { invoke(any(), any()) } doReturn MetadataIconData.defaultIcon()
-    }
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn Dispatchers.Unconfined
-    }
+    private val metadataIconProvider: MetadataIconProvider =
+        mock {
+            on { invoke(style = any<ObjectStyle>(), anyOrNull<Color>()) } doReturn MetadataIconData.defaultIcon()
+        }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn Dispatchers.Unconfined
+        }
     private val createEventUseCase: CreateEventUseCase = mock()
     private val d2ErrorUtils: D2ErrorUtils = mock()
 
     @Before
     fun setUp() {
-        presenter = ProgramStageSelectionPresenter(
-            view,
-            repository,
-            rulesUtils,
-            metadataIconProvider,
-            scheduler,
-            dispatcherProvider,
-            createEventUseCase,
-            d2ErrorUtils,
-        )
+        presenter =
+            ProgramStageSelectionPresenter(
+                view,
+                repository,
+                rulesUtils,
+                metadataIconProvider,
+                scheduler,
+                dispatcherProvider,
+                createEventUseCase,
+                d2ErrorUtils,
+            )
     }
 
     @Test
     fun `Should set programStages`() {
-        val programStages = listOf(
-            ProgramStage.builder().uid("programStage1").build(),
-            ProgramStage.builder().uid("programStage2").build(),
-        )
-        val programStageData = listOf(
-            ProgramStageData(
-                ProgramStage.builder().uid("programStage1").build(),
-                MetadataIconData.defaultIcon(),
-            ),
-            ProgramStageData(
-                ProgramStage.builder().uid("programStage2").build(),
-                MetadataIconData.defaultIcon(),
-            ),
-        )
-        val calcResult = Result.success(
+        val programStages =
             listOf(
-                RuleEffect(
-                    "ruleUid",
-                    RuleAction(
-                        data = null,
-                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                        values = mutableMapOf(
-                            Pair("programStage", "programStage"),
+                ProgramStage.builder().uid("programStage1").build(),
+                ProgramStage.builder().uid("programStage2").build(),
+            )
+        val programStageData =
+            listOf(
+                ProgramStageData(
+                    ProgramStage.builder().uid("programStage1").build(),
+                    MetadataIconData.defaultIcon(),
+                ),
+                ProgramStageData(
+                    ProgramStage.builder().uid("programStage2").build(),
+                    MetadataIconData.defaultIcon(),
+                ),
+            )
+        val calcResult =
+            Result.success(
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            data = null,
+                            type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                            values =
+                                mutableMapOf(
+                                    Pair("programStage", "programStage"),
+                                ),
                         ),
                     ),
                 ),
-            ),
-        )
+            )
 
         whenever(
             repository.enrollmentProgramStages(),
@@ -133,7 +141,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items()),
+                Result.success(calcResult.getOrDefault(emptyList())),
             ),
         ) doAnswer { null }
 
@@ -144,26 +152,31 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should go to programStage when there is only one`() {
-        val programStage = ProgramStage.builder()
-            .uid("programStage")
-            .repeatable(true)
-            .periodType(PeriodType.Daily)
-            .build()
+        val programStage =
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .repeatable(true)
+                .periodType(PeriodType.Daily)
+                .build()
         val programStages = listOf(programStage)
-        val calcResult = Result.success(
-            listOf(
-                RuleEffect(
-                    ruleId = "ruleUid",
-                    ruleAction = RuleAction(
-                        data = null,
-                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                        values = mutableMapOf(
-                            Pair("programStage", "programStage"),
-                        ),
+        val calcResult =
+            Result.success(
+                listOf(
+                    RuleEffect(
+                        ruleId = "ruleUid",
+                        ruleAction =
+                            RuleAction(
+                                data = null,
+                                type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                                values =
+                                    mutableMapOf(
+                                        Pair("programStage", "programStage"),
+                                    ),
+                            ),
                     ),
                 ),
-            ),
-        )
+            )
 
         whenever(
             repository.enrollmentProgramStages(),
@@ -172,7 +185,7 @@ class ProgramStageSelectionPresenterTest {
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items()),
+                kotlin.Result.success(calcResult.getOrDefault(emptyList())),
             ),
         ) doAnswer { null }
 
@@ -189,25 +202,27 @@ class ProgramStageSelectionPresenterTest {
     fun `Should hide programStage when app`() {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
-        val calcResult = Result.success(
-            listOf(
-                RuleEffect(
-                    "ruleUid",
-                    RuleAction(
-                        data = null,
-                        type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
-                        values = mutableMapOf(
-                            Pair("programStage", "programStage"),
+        val calcResult =
+            Result.success(
+                listOf(
+                    RuleEffect(
+                        "ruleUid",
+                        RuleAction(
+                            data = null,
+                            type = ProgramRuleActionType.HIDEPROGRAMSTAGE.name,
+                            values =
+                                mutableMapOf(
+                                    Pair("programStage", "programStage"),
+                                ),
                         ),
                     ),
                 ),
-            ),
-        )
+            )
 
         whenever(
             rulesUtils.applyRuleEffects(
                 programStages.associateBy({ it.uid() }, { it }).toMutableMap(),
-                kotlin.Result.success(calcResult.items()),
+                kotlin.Result.success(calcResult.getOrDefault(emptyList())),
             ),
         ) doAnswer {
             it.getArgument<MutableMap<String, ProgramStage>>(0).remove("programStage")
@@ -221,9 +236,7 @@ class ProgramStageSelectionPresenterTest {
     fun `Should do nothing when rule effect has error`() {
         val programStages: MutableList<ProgramStage> =
             mutableListOf(ProgramStage.builder().uid("programStage").build())
-        val calcResult: Result<RuleEffect> = Result.failure(
-            Exception("error"),
-        ) as Result<RuleEffect>
+        val calcResult: Result<List<RuleEffect>> = Result.failure(Exception("error"))
 
         Assert.assertEquals(
             presenter.applyEffects(programStages, calcResult),
@@ -258,9 +271,13 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should set result when clicking on a ProgramStage`() {
-        val programStage = ProgramStage.builder().uid("programStage").access(
-            Access.builder().data(DataAccess.builder().write(true).build()).build(),
-        ).build()
+        val programStage =
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .access(
+                    Access.builder().data(DataAccess.builder().write(true).build()).build(),
+                ).build()
 
         presenter.onProgramStageClick(programStage)
 
@@ -269,9 +286,13 @@ class ProgramStageSelectionPresenterTest {
 
     @Test
     fun `Should display permission message when clicking on a ProgramStage without access`() {
-        val programStage = ProgramStage.builder().uid("programStage").access(
-            Access.builder().data(DataAccess.builder().write(false).build()).build(),
-        ).build()
+        val programStage =
+            ProgramStage
+                .builder()
+                .uid("programStage")
+                .access(
+                    Access.builder().data(DataAccess.builder().write(false).build()).build(),
+                ).build()
 
         presenter.onProgramStageClick(programStage)
 
@@ -301,64 +322,68 @@ class ProgramStageSelectionPresenterTest {
     }
 
     @Test
-    fun `onOrgUnitForNewEventSelected success`() = runTest {
-        val programUid = "programUid"
-        val orgUnitUid = "orgUnitUid"
-        val programStageUid = "programStageUid"
-        val enrollmentUid = "enrollmentUid"
-        val eventUid = "eventUid"
+    fun `onOrgUnitForNewEventSelected success`() =
+        runTest {
+            val programUid = "programUid"
+            val orgUnitUid = "orgUnitUid"
+            val programStageUid = "programStageUid"
+            val enrollmentUid = "enrollmentUid"
+            val eventUid = "eventUid"
 
-        whenever(
-            createEventUseCase.invoke(
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    orgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn (kotlin.Result.success(eventUid))
+
+            presenter.onOrgUnitForNewEventSelected(
+                programStageUid,
                 programUid,
                 orgUnitUid,
-                programStageUid,
                 enrollmentUid,
-            ),
-        ) doReturn (kotlin.Result.success(eventUid))
+            )
 
-        presenter.onOrgUnitForNewEventSelected(
-            programStageUid,
-            programUid,
-            orgUnitUid,
-            enrollmentUid,
-        )
-
-        verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
-        verifyNoMoreInteractions(view)
-    }
+            verify(view).goToEventDetails(eventUid, EventMode.NEW, programUid)
+            verifyNoMoreInteractions(view)
+        }
 
     @Test
-    fun `onOrgUnitForNewEventSelected failure`() = runTest {
-        val programUid = "programUid"
-        val orgUnitUid = "orgUnitUid"
-        val programStageUid = "programStageUid"
-        val enrollmentUid = "enrollmentUid"
-        val errorMessage = "Error message"
-        val d2Error = D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription(errorMessage)
-            .build()
+    fun `onOrgUnitForNewEventSelected failure`() =
+        runTest {
+            val programUid = "programUid"
+            val orgUnitUid = "orgUnitUid"
+            val programStageUid = "programStageUid"
+            val enrollmentUid = "enrollmentUid"
+            val errorMessage = "Error message"
+            val d2Error =
+                D2Error
+                    .builder()
+                    .errorCode(D2ErrorCode.UNEXPECTED)
+                    .errorDescription(errorMessage)
+                    .build()
 
-        whenever(
-            createEventUseCase.invoke(
+            whenever(
+                createEventUseCase.invoke(
+                    programUid,
+                    orgUnitUid,
+                    programStageUid,
+                    enrollmentUid,
+                ),
+            ) doReturn (kotlin.Result.failure(d2Error))
+
+            whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
+
+            presenter.onOrgUnitForNewEventSelected(
+                programStageUid,
                 programUid,
                 orgUnitUid,
-                programStageUid,
                 enrollmentUid,
-            ),
-        ) doReturn (kotlin.Result.failure(d2Error))
+            )
 
-        whenever(d2ErrorUtils.getErrorMessage(d2Error)) doReturn (errorMessage)
-
-        presenter.onOrgUnitForNewEventSelected(
-            programStageUid,
-            programUid,
-            orgUnitUid,
-            enrollmentUid,
-        )
-
-        verify(view).displayMessage(errorMessage)
-        verifyNoMoreInteractions(view)
-    }
+            verify(view).displayMessage(errorMessage)
+            verifyNoMoreInteractions(view)
+        }
 }

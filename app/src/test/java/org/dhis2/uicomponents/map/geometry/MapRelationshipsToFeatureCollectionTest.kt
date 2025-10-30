@@ -1,9 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
@@ -17,13 +13,16 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.LineString
+import org.maplibre.geojson.Point
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class MapRelationshipsToFeatureCollectionTest {
-
     private val mapLineToFeature: MapLineRelationshipToFeature = mock()
     private val mapPointToFeature: MapPointToFeature = mock()
     private val mapPolygonToFeature: MapPolygonToFeature = mock()
@@ -72,12 +71,13 @@ class MapRelationshipsToFeatureCollectionTest {
         whenever(
             mapPointToFeature.map(secondRelationship.to.geometry!!),
         ) doReturn getPointToFeature(secondRelationship)
-        whenever(bounds.getEnclosingBoundingBox(any())) doReturn BoundingBox.fromLngLats(
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-        )
+        whenever(bounds.getEnclosingBoundingBox(any())) doReturn
+            BoundingBox.fromLngLats(
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            )
 
         val result = mapRelationshipsToFeatureCollection.mapLegacy(relationshipsModel)
         assertThat(result.first.size, `is`(2))

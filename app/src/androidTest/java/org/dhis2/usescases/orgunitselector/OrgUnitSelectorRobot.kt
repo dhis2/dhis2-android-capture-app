@@ -30,5 +30,6 @@ class OrgUnitSelectorRobot(private val composeTestRule: ComposeTestRule) : BaseR
         composeTestRule.onNodeWithText(doneText)
             .assertIsDisplayed()
             .performClick()
+        composeTestRule.waitForIdle()
     }
 }

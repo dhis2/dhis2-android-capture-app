@@ -3,7 +3,6 @@ package org.dhis2.usescases.pin
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.main.homeRobot
 import org.junit.Rule
@@ -15,9 +14,6 @@ class PinTest : BaseTest() {
 
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
-
-    @get:Rule
-    val ruleLoginActivity = ActivityTestRule(LoginActivity::class.java, false, false)
 
     @Test
     fun openPin() {

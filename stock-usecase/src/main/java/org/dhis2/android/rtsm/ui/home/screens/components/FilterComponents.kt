@@ -40,13 +40,15 @@ fun FilterList(
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
-        modifier = Modifier
-            .animateContentSize(
-                animationSpec = tween(
-                    delayMillis = 180,
-                    easing = LinearOutSlowInEasing,
+        modifier =
+            Modifier
+                .animateContentSize(
+                    animationSpec =
+                        tween(
+                            delayMillis = 180,
+                            easing = LinearOutSlowInEasing,
+                        ),
                 ),
-            ),
     ) {
         item {
             DropdownComponentTransactions(
@@ -86,10 +88,9 @@ fun FilterList(
     }
 }
 
-private fun getFacilities(ou: OperationState<List<OrganisationUnit>>?): List<OrganisationUnit> {
-    return if (ou is OperationState.Success<*>) {
+private fun getFacilities(ou: OperationState<List<OrganisationUnit>>?): List<OrganisationUnit> =
+    if (ou is OperationState.Success<*>) {
         ou.result as List<OrganisationUnit>
     } else {
         emptyList()
     }
-}

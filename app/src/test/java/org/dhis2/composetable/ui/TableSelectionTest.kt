@@ -5,14 +5,14 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TableSelectionTest {
-
     private val selectedTableId = "selectedTableId"
     private val selectedRow = 2
     private val selectedColumn = 3
     private val selectedColumnHeaderRow = 2
-    private val childrenOfSelectedHeader = mapOf(
-        selectedColumnHeaderRow to TableSelection.HeaderCellRange(3, 3, 5),
-    )
+    private val childrenOfSelectedHeader =
+        mapOf(
+            selectedColumnHeaderRow to TableSelection.HeaderCellRange(3, 3, 5),
+        )
     private val selectedChildColumn = 9
 
     private val otherTableId = "otherTableId"
@@ -22,22 +22,25 @@ class TableSelectionTest {
 
     val unselected = TableSelection.Unselected()
     val cornerSelection = TableSelection.AllCellSelection(selectedTableId)
-    val rowSelection = TableSelection.RowSelection(
-        selectedTableId,
-        selectedRow,
-    )
-    val columnSelection = TableSelection.ColumnSelection(
-        selectedTableId,
-        selectedColumn,
-        selectedColumnHeaderRow,
-        childrenOfSelectedHeader,
-    )
-    val cellSelection = TableSelection.CellSelection(
-        selectedTableId,
-        selectedColumn,
-        selectedRow,
-        selectedRow,
-    )
+    val rowSelection =
+        TableSelection.RowSelection(
+            selectedTableId,
+            selectedRow,
+        )
+    val columnSelection =
+        TableSelection.ColumnSelection(
+            selectedTableId,
+            selectedColumn,
+            selectedColumnHeaderRow,
+            childrenOfSelectedHeader,
+        )
+    val cellSelection =
+        TableSelection.CellSelection(
+            selectedTableId,
+            selectedColumn,
+            selectedRow,
+            selectedRow,
+        )
 
     @Test
     fun `should return if corner is selected`() {

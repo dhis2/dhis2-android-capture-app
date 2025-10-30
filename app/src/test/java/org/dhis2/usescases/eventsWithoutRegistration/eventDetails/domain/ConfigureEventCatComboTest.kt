@@ -17,21 +17,24 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class ConfigureEventCatComboTest {
-
     private val repository: EventDetailsRepository = mock()
-    private val category: Category = mock {
-        on { uid() } doReturn CATEGORY_UID
-    }
-    private val categoryCombo: CategoryCombo = mock {
-        on { uid() } doReturn CATEGORY_COMBO_UID
-        on { categories() } doReturn listOf(category)
-    }
-    private val categoryOptionCombo: CategoryOptionCombo = mock {
-        on { uid() } doReturn CATEGORY_OPTION_COMBO_UID
-    }
-    private val event: Event = mock {
-        on { attributeOptionCombo() } doReturn CATEGORY_OPTION_COMBO_UID
-    }
+    private val category: Category =
+        mock {
+            on { uid() } doReturn CATEGORY_UID
+        }
+    private val categoryCombo: CategoryCombo =
+        mock {
+            on { uid() } doReturn CATEGORY_COMBO_UID
+            on { categories() } doReturn listOf(category)
+        }
+    private val categoryOptionCombo: CategoryOptionCombo =
+        mock {
+            on { uid() } doReturn CATEGORY_OPTION_COMBO_UID
+        }
+    private val event: Event =
+        mock {
+            on { attributeOptionCombo() } doReturn CATEGORY_OPTION_COMBO_UID
+        }
 
     private lateinit var configureEventCatCombo: ConfigureEventCatCombo
 
@@ -44,58 +47,63 @@ class ConfigureEventCatComboTest {
     }
 
     @Test
-    fun `Should be completed when Category combo is default`() = runBlocking {
-        // Given a default category combo
-        whenever(categoryCombo.isDefault) doReturn true
-        whenever(
-            repository.getCatOptionCombos(CATEGORY_COMBO_UID),
-        ) doReturn listOf(categoryOptionCombo)
+    fun `Should be completed when Category combo is default`() =
+        runBlocking {
+            // Given a default category combo
+            whenever(categoryCombo.isDefault) doReturn true
+            whenever(
+                repository.getCatOptionCombos(CATEGORY_COMBO_UID),
+            ) doReturn listOf(categoryOptionCombo)
 
-        // When catCombo is invoked
-        val eventCatCombo = configureEventCatCombo.invoke().first()
+            // When catCombo is invoked
+            val eventCatCombo = configureEventCatCombo.invoke().first()
 
-        // Then should be completed
-        assertTrue(eventCatCombo.isCompleted)
-    }
+            // Then should be completed
+            assertTrue(eventCatCombo.isCompleted)
+        }
 
     @Test
-    fun `Should be completed when Category combo is not default`() = runBlocking {
-        // Given a non default category combo
-        whenever(categoryCombo.isDefault) doReturn false
-        // And there is a category option selected by one category
-        val categoryOption: CategoryOption = mock {
-            on { uid() } doReturn CATEGORY_OPTION_UID
+    fun `Should be completed when Category combo is not default`() =
+        runBlocking {
+            // Given a non default category combo
+            whenever(categoryCombo.isDefault) doReturn false
+            // And there is a category option selected by one category
+            val categoryOption: CategoryOption =
+                mock {
+                    on { uid() } doReturn CATEGORY_OPTION_UID
+                }
+            val selectedCategoryOption = Pair(CATEGORY_UID, CATEGORY_OPTION_UID)
+            whenever(
+                repository.getCatOption(CATEGORY_OPTION_UID),
+            ) doReturn categoryOption
+
+            // When catCombo is invoked
+            val eventCatCombo = configureEventCatCombo.invoke(selectedCategoryOption).first()
+
+            // Then should be completed
+            assertTrue(eventCatCombo.isCompleted)
         }
-        val selectedCategoryOption = Pair(CATEGORY_UID, CATEGORY_OPTION_UID)
-        whenever(
-            repository.getCatOption(CATEGORY_OPTION_UID),
-        ) doReturn categoryOption
-
-        // When catCombo is invoked
-        val eventCatCombo = configureEventCatCombo.invoke(selectedCategoryOption).first()
-
-        // Then should be completed
-        assertTrue(eventCatCombo.isCompleted)
-    }
 
     @Test
-    fun `Should be not completed when Category combo is not default`() = runBlocking {
-        // Given a non default category combo
-        whenever(categoryCombo.isDefault) doReturn false
-        // And there is a category option selected by one category
-        val categoryOption: CategoryOption = mock {
-            on { uid() } doReturn CATEGORY_OPTION_UID
+    fun `Should be not completed when Category combo is not default`() =
+        runBlocking {
+            // Given a non default category combo
+            whenever(categoryCombo.isDefault) doReturn false
+            // And there is a category option selected by one category
+            val categoryOption: CategoryOption =
+                mock {
+                    on { uid() } doReturn CATEGORY_OPTION_UID
+                }
+            whenever(
+                repository.getCatOption(CATEGORY_OPTION_UID),
+            ) doReturn categoryOption
+
+            // When catCombo is invoked
+            val eventCatCombo = configureEventCatCombo.invoke().first()
+
+            // Then should be completed
+            assertFalse(eventCatCombo.isCompleted)
         }
-        whenever(
-            repository.getCatOption(CATEGORY_OPTION_UID),
-        ) doReturn categoryOption
-
-        // When catCombo is invoked
-        val eventCatCombo = configureEventCatCombo.invoke().first()
-
-        // Then should be completed
-        assertFalse(eventCatCombo.isCompleted)
-    }
 
     companion object {
         const val CATEGORY_OPTION_COMBO_UID = "categoryOptionComboUid"

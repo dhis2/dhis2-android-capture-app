@@ -16,7 +16,6 @@ class NutritionRenderer(
     animator: ChartAnimator,
     viewPortHandler: ViewPortHandler,
 ) : LineChartRenderer(chart, animator, viewPortHandler) {
-
     override fun drawLinearFill(
         c: Canvas,
         dataSet: ILineDataSet,

@@ -1,15 +1,5 @@
 package org.dhis2.maps.layer.types
 
-import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager.Companion.TEI_ICON_ID
@@ -19,6 +9,23 @@ import org.dhis2.maps.layer.withInitialVisibility
 import org.dhis2.maps.layer.withTEIMarkerProperties
 import org.dhis2.maps.managers.TeiMapManager.Companion.TEIS_SOURCE_ID
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
+
+private const val POINT_LAYER_ID: String = "TEI_POINT_LAYER_ID"
+private const val SELECTED_POINT_LAYER_ID: String = "SELECTED_TEI_POINT_LAYER_ID"
+private const val POLYGON_LAYER_ID: String = "TEI_POLYGON_LAYER_ID"
+private const val POLYGON_BORDER_LAYER_ID: String = "TEI_POLYGON_BORDER_LAYER_ID"
+private const val SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE"
+private const val TEI_POINT_LAYER_ID = "TEI_IMAGE_POINT_LAYER_ID"
 
 class TeiMapLayer(
     var style: Style,
@@ -27,17 +34,6 @@ class TeiMapLayer(
     private val enrollmentDarkColor: Int,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-
-    private var POINT_LAYER_ID: String = "TEI_POINT_LAYER_ID"
-    private var SELECTED_POINT_LAYER_ID: String = "SELECTED_TEI_POINT_LAYER_ID"
-
-    private var POLYGON_LAYER_ID: String = "TEI_POLYGON_LAYER_ID"
-    private var POLYGON_BORDER_LAYER_ID: String = "TEI_POLYGON_BORDER_LAYER_ID"
-
-    private var SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE"
-
-    private var TEI_POINT_LAYER_ID = "TEI_IMAGE_POINT_LAYER_ID"
-
     override var visible = false
 
     init {
@@ -45,10 +41,12 @@ class TeiMapLayer(
             FeatureType.POINT -> {
                 style.addLayer(pointLayer)
             }
+
             FeatureType.POLYGON -> {
                 style.addLayer(polygonLayer)
                 style.addLayer(polygonBorderLayer)
             }
+
             else -> Unit
         }
 
@@ -58,52 +56,59 @@ class TeiMapLayer(
     }
 
     private val pointLayer: Layer
-        get() = style.getLayer(POINT_LAYER_ID)
-            ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage(TEI_ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.textAllowOverlap(true),
-                ).withFilter(isPoint())
+        get() =
+            style.getLayer(POINT_LAYER_ID)
+                ?: SymbolLayer(POINT_LAYER_ID, TEIS_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.iconImage(TEI_ICON_ID),
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.textAllowOverlap(true),
+                    ).withFilter(isPoint())
 
     private val teiPointLayer: Layer
-        get() = style.getLayer(TEI_POINT_LAYER_ID)
-            ?: SymbolLayer(TEI_POINT_LAYER_ID, TEIS_SOURCE_ID)
-                .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
-                .withFilter(isPoint())
+        get() =
+            style.getLayer(TEI_POINT_LAYER_ID)
+                ?: SymbolLayer(TEI_POINT_LAYER_ID, TEIS_SOURCE_ID)
+                    .withTEIMarkerProperties()
+                    .withInitialVisibility(Property.NONE)
+                    .withFilter(isPoint())
 
     private val selectedPointLayer: Layer
-        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
-            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
-                .withTEIMarkerProperties()
-                .withInitialVisibility(Property.NONE)
-                .withFilter(isPoint())
+        get() =
+            style.getLayer(SELECTED_POINT_LAYER_ID)
+                ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
+                    .withTEIMarkerProperties()
+                    .withInitialVisibility(Property.NONE)
+                    .withFilter(isPoint())
 
     private val polygonLayer: Layer
-        get() = style.getLayer(POLYGON_LAYER_ID)
-            ?: FillLayer(POLYGON_LAYER_ID, TEIS_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor ?: -1)),
-                ).withFilter(isPolygon())
+        get() =
+            style.getLayer(POLYGON_LAYER_ID)
+                ?: FillLayer(POLYGON_LAYER_ID, TEIS_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.fillColor(colorUtils.withAlpha(enrollmentColor ?: -1)),
+                    ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
-        get() = style.getLayer(POLYGON_BORDER_LAYER_ID)
-            ?: LineLayer(POLYGON_BORDER_LAYER_ID, TEIS_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.lineColor(enrollmentDarkColor ?: -1),
-                    PropertyFactory.lineWidth(2f),
-                ).withFilter(isPolygon())
+        get() =
+            style.getLayer(POLYGON_BORDER_LAYER_ID)
+                ?: LineLayer(POLYGON_BORDER_LAYER_ID, TEIS_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.lineColor(enrollmentDarkColor ?: -1),
+                        PropertyFactory.lineWidth(2f),
+                    ).withFilter(isPolygon())
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
             FeatureType.POINT -> {
                 pointLayer.setProperties(PropertyFactory.visibility(visibility))
             }
+
             FeatureType.POLYGON -> {
                 polygonLayer.setProperties(PropertyFactory.visibility(visibility))
                 polygonBorderLayer.setProperties(PropertyFactory.visibility(visibility))
             }
+
             else -> Unit
         }
         teiPointLayer.setProperties(PropertyFactory.visibility(visibility))
@@ -143,24 +148,22 @@ class TeiMapLayer(
         )
     }
 
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(TEIS_SOURCE_ID)
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? =
+        style
+            .getSourceAs<GeoJsonSource>(TEIS_SOURCE_ID)
             ?.querySourceFeatures(Expression.eq(Expression.get("teiUid"), featureUidProperty))
             ?.firstOrNull()
             .also { setSelectedItem(it) }
-    }
 
-    override fun getId(): String {
-        return if (featureType == FeatureType.POINT) {
+    override fun getId(): String =
+        if (featureType == FeatureType.POINT) {
             POINT_LAYER_ID
         } else {
             POLYGON_LAYER_ID
         }
-    }
 
-    override fun layerIdsToSearch(): Array<String> {
-        return arrayOf(
+    override fun layerIdsToSearch(): Array<String> =
+        arrayOf(
             TEI_POINT_LAYER_ID,
         )
-    }
 }

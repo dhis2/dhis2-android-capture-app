@@ -3,9 +3,11 @@ package org.dhis2.commons.filters.workingLists
 import org.dhis2.commons.filters.FilterResources
 import org.hisp.dhis.android.core.common.RelativePeriod
 
-class RelativePeriodToStringMapper(private val filterResources: FilterResources) {
-    fun map(relativePeriod: RelativePeriod?): String? {
-        return when (relativePeriod) {
+class RelativePeriodToStringMapper(
+    private val filterResources: FilterResources,
+) {
+    fun map(relativePeriod: RelativePeriod?): String? =
+        when (relativePeriod) {
             RelativePeriod.TODAY -> filterResources.todayLabel()
             RelativePeriod.YESTERDAY -> filterResources.yesterdayLabel()
             RelativePeriod.LAST_3_DAYS -> filterResources.lastNDays(3)
@@ -53,9 +55,6 @@ class RelativePeriodToStringMapper(private val filterResources: FilterResources)
             RelativePeriod.LAST_10_FINANCIAL_YEARS -> filterResources.lastNFinancialYears(10)
             null -> null
         }
-    }
 
-    fun span(): String {
-        return filterResources.span()
-    }
+    fun span(): String = filterResources.span()
 }

@@ -5,7 +5,6 @@ import org.dhis2.usescases.general.AbstractActivityContracts
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 
 interface EnrollmentView : AbstractActivityContracts.View {
-
     fun setAccess(access: Boolean?)
 
     fun renderStatus(status: EnrollmentStatus)
@@ -13,12 +12,20 @@ interface EnrollmentView : AbstractActivityContracts.View {
     fun setSaveButtonVisible(visible: Boolean)
 
     fun displayTeiInfo(teiInfo: TeiAttributesInfo)
+
     fun openEvent(eventUid: String)
+
     fun openDashboard(enrollmentUid: String)
+
     fun goBack()
+
     fun setResultAndFinish()
+
     fun requestFocus()
+
     fun performSaveClick()
+
     fun displayTeiPicture(picturePath: String)
+
     fun showDateEditionWarning(message: String?)
 }

@@ -5,7 +5,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FileExtensionsTest {
-
     @Test
     fun `Should return defaults if minimum is not provided`() {
         val (width, height) = resizeToMinimum(null, 200, 300)

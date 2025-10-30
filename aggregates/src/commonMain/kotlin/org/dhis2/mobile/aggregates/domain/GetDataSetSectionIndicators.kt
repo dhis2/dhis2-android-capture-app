@@ -12,11 +12,12 @@ internal class GetDataSetSectionIndicators(
     val attributeOptionComboUid: String,
     val repository: DataSetInstanceRepository,
 ) {
-    suspend operator fun invoke(sectionUid: String): IndicatorMap? = repository.getDataSetIndicator(
-        dataSetUid = dataSetUid,
-        periodId = periodId,
-        orgUnitUid = orgUnitUid,
-        attributeOptionComboUid = attributeOptionComboUid,
-        sectionUid = sectionUid,
-    )
+    suspend operator fun invoke(sectionUid: String): IndicatorMap? =
+        repository.getDataSetIndicator(
+            dataSetUid = dataSetUid,
+            periodId = periodId,
+            orgUnitUid = orgUnitUid,
+            attributeOptionComboUid = attributeOptionComboUid,
+            sectionUid = sectionUid,
+        )
 }

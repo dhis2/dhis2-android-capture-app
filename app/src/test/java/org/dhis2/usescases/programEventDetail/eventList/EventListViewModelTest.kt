@@ -26,7 +26,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class EventListViewModelTest {
-
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -39,43 +38,46 @@ class EventListViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val testingDispatcher = UnconfinedTestDispatcher()
-    private val dispatcherProvider: DispatcherProvider = mock {
-        on { io() } doReturn testingDispatcher
-        on { computation() } doReturn testingDispatcher
-        on { ui() } doReturn testingDispatcher
-    }
+    private val dispatcherProvider: DispatcherProvider =
+        mock {
+            on { io() } doReturn testingDispatcher
+            on { computation() } doReturn testingDispatcher
+            on { ui() } doReturn testingDispatcher
+        }
 
     private val filterProcessor: FlowableProcessor<FilterManager> = PublishProcessor.create()
     private val filterManagerFlowable =
         flow<Int> { Flowable.just(filterManager).startWith(filterProcessor) }
 
     @Test
-    fun `Display Org unit should be false if configured to not show`() = runTest {
-        whenever(repository.filteredProgramEvents()) doReturn mockedList()
-        whenever(filterManager.asFlow(any())) doReturn filterManagerFlowable
-        whenever(repository.displayOrganisationUnit("programuid")) doReturn false
-        whenever(mapper.eventToEventViewModel(any())) doReturn mock()
-        viewModel = EventListViewModel(
-            filterManager,
-            repository,
-            dispatcherProvider,
-            mapper,
-            cardMapper,
-        )
-        launch {
-            viewModel.eventList.collect {
-                assert(viewModel.displayOrgUnitName.value == false)
+    fun `Display Org unit should be false if configured to not show`() =
+        runTest {
+            whenever(repository.filteredProgramEvents()) doReturn mockedList()
+            whenever(filterManager.asFlow(any())) doReturn filterManagerFlowable
+            whenever(repository.displayOrganisationUnit("programuid")) doReturn false
+            whenever(mapper.eventToEventViewModel(any())) doReturn mock()
+            viewModel =
+                EventListViewModel(
+                    filterManager,
+                    repository,
+                    dispatcherProvider,
+                    mapper,
+                    cardMapper,
+                )
+            launch {
+                viewModel.eventList.collect {
+                    assert(viewModel.displayOrgUnitName.value == false)
+                }
             }
         }
-    }
 
-    private fun mockedList(): Flow<PagingData<Event>> {
-        return flow {
-            Event.builder()
+    private fun mockedList(): Flow<PagingData<Event>> =
+        flow {
+            Event
+                .builder()
                 .uid("uid")
                 .program("programuid")
                 .eventDate(Date())
                 .build()
         }
-    }
 }

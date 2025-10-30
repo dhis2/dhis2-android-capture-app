@@ -42,9 +42,10 @@ fun ManageStockTable(
     onResized: (resizeActions: TableResizeActions?) -> Unit,
 ) {
     val screenState by viewModel.screenState.observeAsState(
-        initial = TableScreenState(
-            tables = emptyList(),
-        ),
+        initial =
+            TableScreenState(
+                tables = emptyList(),
+            ),
     )
 
     DHIS2Theme {
@@ -58,77 +59,95 @@ fun ManageStockTable(
                 mutableStateOf(
                     TableDimensions(
                         cellVerticalPadding = 11.dp,
-                        maxRowHeaderWidth = with(localDensity) {
-                            (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
-                                .roundToInt()
-                        },
-                        extraWidths = with(localDensity) {
-                            tableConfState.overwrittenTableWidth?.mapValues { (_, width) ->
-                                width.dp.roundToPx()
-                            }
-                        } ?: emptyMap(),
-                        rowHeaderWidths = with(localDensity) {
-                            tableConfState.overwrittenRowHeaderWidth
-                                ?.mapValues { (_, width) ->
+                        maxRowHeaderWidth =
+                            with(localDensity) {
+                                (conf.screenWidthDp.dp.toPx() - MAX_CELL_WIDTH_SPACE.toPx())
+                                    .roundToInt()
+                            },
+                        extraWidths =
+                            with(localDensity) {
+                                tableConfState.overwrittenTableWidth?.mapValues { (_, width) ->
                                     width.dp.roundToPx()
                                 }
-                        } ?: emptyMap(),
-                        columnWidth = with(localDensity) {
-                            tableConfState.overwrittenColumnWidth?.mapValues { (_, value) ->
-                                value.mapValues { (_, width) ->
-                                    width.dp.roundToPx()
+                            } ?: emptyMap(),
+                        rowHeaderWidths =
+                            with(localDensity) {
+                                tableConfState.overwrittenRowHeaderWidth
+                                    ?.mapValues { (_, width) ->
+                                        width.dp.roundToPx()
+                                    }
+                            } ?: emptyMap(),
+                        columnWidth =
+                            with(localDensity) {
+                                tableConfState.overwrittenColumnWidth?.mapValues { (_, value) ->
+                                    value.mapValues { (_, width) ->
+                                        width.dp.roundToPx()
+                                    }
                                 }
-                            }
-                        } ?: emptyMap(),
+                            } ?: emptyMap(),
                         defaultRowHeaderWidth = with(localDensity) { 200.dp.toPx() }.toInt(),
                         tableBottomPadding = 100.dp,
                     ),
                 )
             }
 
-            val tableResizeActions = object : TableResizeActions {
-                override fun onTableWidthChanged(width: Int) {
-                    dimensions = dimensions.copy(totalWidth = width)
-                }
-
-                override fun onRowHeaderResize(tableId: String, newValue: Float) {
-                    dimensions = dimensions.updateHeaderWidth(tableId, newValue)
-                    val widthDpValue = with(localDensity) {
-                        dimensions.getRowHeaderWidth(tableId).toDp().value
+            val tableResizeActions =
+                object : TableResizeActions {
+                    override fun onTableWidthChanged(width: Int) {
+                        dimensions = dimensions.copy(totalWidth = width)
                     }
-                    viewModel.tableDimensionStore.saveWidthForSection(tableId, widthDpValue)
-                    onResized(this)
-                }
 
-                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
-                    dimensions =
-                        dimensions.updateColumnWidth(tableId, column, newValue)
-                    val widthDpValue = with(localDensity) {
-                        dimensions.getColumnWidth(tableId, column).toDp().value
+                    override fun onRowHeaderResize(
+                        tableId: String,
+                        newValue: Float,
+                    ) {
+                        dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                        val widthDpValue =
+                            with(localDensity) {
+                                dimensions.getRowHeaderWidth(tableId).toDp().value
+                            }
+                        viewModel.tableDimensionStore.saveWidthForSection(tableId, widthDpValue)
+                        onResized(this)
                     }
-                    viewModel.tableDimensionStore.saveColumnWidthForSection(
-                        tableId,
-                        column,
-                        widthDpValue,
-                    )
-                    onResized(this)
-                }
 
-                override fun onTableDimensionResize(tableId: String, newValue: Float) {
-                    dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                    val widthDpValue = with(localDensity) {
-                        dimensions.getExtraWidths(tableId).toDp().value
+                    override fun onColumnHeaderResize(
+                        tableId: String,
+                        column: Int,
+                        newValue: Float,
+                    ) {
+                        dimensions =
+                            dimensions.updateColumnWidth(tableId, column, newValue)
+                        val widthDpValue =
+                            with(localDensity) {
+                                dimensions.getColumnWidth(tableId, column).toDp().value
+                            }
+                        viewModel.tableDimensionStore.saveColumnWidthForSection(
+                            tableId,
+                            column,
+                            widthDpValue,
+                        )
+                        onResized(this)
                     }
-                    viewModel.tableDimensionStore.saveTableWidth(tableId, widthDpValue)
-                    onResized(this)
-                }
 
-                override fun onTableDimensionReset(tableId: String) {
-                    dimensions = dimensions.resetWidth(tableId)
-                    viewModel.tableDimensionStore.resetTable(tableId)
-                    onResized(null)
+                    override fun onTableDimensionResize(
+                        tableId: String,
+                        newValue: Float,
+                    ) {
+                        dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                        val widthDpValue =
+                            with(localDensity) {
+                                dimensions.getExtraWidths(tableId).toDp().value
+                            }
+                        viewModel.tableDimensionStore.saveTableWidth(tableId, widthDpValue)
+                        onResized(this)
+                    }
+
+                    override fun onTableDimensionReset(tableId: String) {
+                        dimensions = dimensions.resetWidth(tableId)
+                        viewModel.tableDimensionStore.resetTable(tableId)
+                        onResized(null)
+                    }
                 }
-            }
 
             LaunchedEffect(key1 = tableConfState) {
                 if (tableConfState.isResized()) {
@@ -139,15 +158,17 @@ fun ManageStockTable(
             }
 
             TableTheme(
-                tableColors = TableColors(
-                    primary = themeColor.value,
-                    primaryLight = themeColor.value.copy(alpha = 0.2f),
-                ),
+                tableColors =
+                    TableColors(
+                        primary = themeColor.value,
+                        primaryLight = themeColor.value.copy(alpha = 0.2f),
+                    ),
                 tableDimensions = dimensions,
-                tableConfiguration = TableConfiguration(
-                    headerActionsEnabled = false,
-                    textInputViewMode = false,
-                ),
+                tableConfiguration =
+                    TableConfiguration(
+                        headerActionsEnabled = false,
+                        textInputViewMode = false,
+                    ),
                 tableValidator = viewModel,
                 tableResizeActions = tableResizeActions,
             ) {
@@ -164,7 +185,9 @@ fun ManageStockTable(
                     },
                     onSaveValue = viewModel::onSaveValueChange,
                     bottomContent = {
-                        if (viewModel.dataEntryUiState.collectAsState().value.step
+                        if (viewModel.dataEntryUiState
+                                .collectAsState()
+                                .value.step
                             == DataEntryStep.REVIEWING
                         ) {
                             Box(

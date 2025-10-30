@@ -9,7 +9,5 @@ import javax.inject.Singleton
 class LocationModule {
     @Provides
     @Singleton
-    fun locationProvider(context: Context): LocationProvider {
-        return LocationProviderImpl(context)
-    }
+    fun locationProvider(context: Context): LocationProvider = LocationProviderImpl(context)
 }

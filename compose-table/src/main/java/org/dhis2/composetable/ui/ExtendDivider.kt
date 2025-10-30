@@ -16,45 +16,50 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ExtendDivider(tableId: String, selected: Boolean) {
+fun ExtendDivider(
+    tableId: String,
+    selected: Boolean,
+) {
     val background = TableTheme.colors.primary
     Row(modifier = Modifier.fillMaxWidth()) {
         Box(
-            modifier = Modifier
-                .width(
-                    with(LocalDensity.current) {
-                        TableTheme.dimensions
-                            .rowHeaderWidth(tableId)
-                            .toDp()
+            modifier =
+                Modifier
+                    .width(
+                        with(LocalDensity.current) {
+                            TableTheme.dimensions
+                                .rowHeaderWidth(tableId)
+                                .toDp()
+                        },
+                    ).height(8.dp)
+                    .background(
+                        color =
+                            if (selected) {
+                                TableTheme.colors.primary
+                            } else {
+                                Color.White
+                            },
+                    ).drawBehind {
+                        drawRect(
+                            color = background,
+                            topLeft = Offset(size.width - 1.dp.toPx(), 0f),
+                            size = Size(1.dp.toPx(), size.height),
+                        )
                     },
-                )
-                .height(8.dp)
-                .background(
-                    color = if (selected) {
-                        TableTheme.colors.primary
-                    } else {
-                        Color.White
-                    },
-                )
-                .drawBehind {
-                    drawRect(
-                        color = background,
-                        topLeft = Offset(size.width - 1.dp.toPx(), 0f),
-                        size = Size(1.dp.toPx(), size.height),
-                    )
-                },
         )
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .height(8.dp)
-                .background(
-                    color = if (selected) {
-                        TableTheme.colors.primaryLight
-                    } else {
-                        Color.White
-                    },
-                ),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .height(8.dp)
+                    .background(
+                        color =
+                            if (selected) {
+                                TableTheme.colors.primaryLight
+                            } else {
+                                Color.White
+                            },
+                    ),
         )
     }
 }

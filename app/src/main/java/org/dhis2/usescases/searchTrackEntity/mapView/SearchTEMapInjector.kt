@@ -11,4 +11,4 @@ interface SearchTEMapComponent {
 }
 
 @Module
-class SearchTEMapModule()
+class SearchTEMapModule

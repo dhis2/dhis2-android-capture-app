@@ -157,8 +157,8 @@ fun Backdrop(
 }
 
 @Composable
-private fun getScrimColor(settingsUiState: SettingsUiState): Color {
-    return if (settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION) {
+private fun getScrimColor(settingsUiState: SettingsUiState): Color =
+    if (settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION) {
         if (settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected()) {
             Color.Unspecified
         } else {
@@ -171,18 +171,16 @@ private fun getScrimColor(settingsUiState: SettingsUiState): Color {
             Color.Unspecified
         }
     }
-}
 
 @Composable
-private fun getBackdropState(settingsUiState: SettingsUiState): Boolean {
-    return if (
+private fun getBackdropState(settingsUiState: SettingsUiState): Boolean =
+    if (
         settingsUiState.selectedTransactionItem.type == TransactionType.DISTRIBUTION
     ) {
         !(settingsUiState.hasFacilitySelected() && settingsUiState.hasDestinationSelected())
     } else {
         !settingsUiState.hasFacilitySelected()
     }
-}
 
 private fun launchBottomSheet(
     title: String,
@@ -192,13 +190,14 @@ private fun launchBottomSheet(
     onKeepEdition: () -> Unit, // Leave it as it was
 ) {
     BottomSheetDialog(
-        bottomSheetDialogUiModel = BottomSheetDialogUiModel(
-            title = title,
-            message = subtitle,
-            iconResource = R.drawable.ic_outline_error_36,
-            mainButton = DialogButtonStyle.MainButton(org.dhis2.commons.R.string.keep_editing),
-            secondaryButton = DialogButtonStyle.DiscardButton(),
-        ),
+        bottomSheetDialogUiModel =
+            BottomSheetDialogUiModel(
+                title = title,
+                message = subtitle,
+                iconResource = R.drawable.ic_outline_error_36,
+                mainButton = DialogButtonStyle.MainButton(org.dhis2.commons.R.string.keep_editing),
+                secondaryButton = DialogButtonStyle.DiscardButton(),
+            ),
         onMainButtonClicked = {
             supportFragmentManager.popBackStack()
             onKeepEdition.invoke()
@@ -212,24 +211,28 @@ private fun launchBottomSheet(
 }
 
 @Composable
-fun DisplaySnackBar(manageStockViewModel: ManageStockViewModel, scaffoldState: ScaffoldState) {
+fun DisplaySnackBar(
+    manageStockViewModel: ManageStockViewModel,
+    scaffoldState: ScaffoldState,
+) {
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         manageStockViewModel.dataEntryUiState.collectLatest {
             if (it.step == DataEntryStep.COMPLETED) {
                 coroutineScope.launch {
-                    val result = scaffoldState.snackbarHostState.showSnackbar(
-                        message = "Snackbar # ",
-                        actionLabel = "Action on ",
-                        duration = SnackbarDuration.Short,
-                    )
+                    val result =
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = "Snackbar # ",
+                            actionLabel = "Action on ",
+                            duration = SnackbarDuration.Short,
+                        )
                     when (result) {
                         SnackbarResult.ActionPerformed -> {
-                            /* action has been performed */
+                            // action has been performed
                         }
                         SnackbarResult.Dismissed -> {
-                            /* dismissed, no action needed */
+                            // dismissed, no action needed
                         }
                     }
                 }

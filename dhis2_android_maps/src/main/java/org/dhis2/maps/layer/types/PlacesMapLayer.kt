@@ -1,22 +1,22 @@
 package org.dhis2.maps.layer.types
 
 import android.graphics.Color
-import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.layer.isLine
 import org.dhis2.maps.layer.isPoint
 import org.dhis2.maps.layer.isPolygon
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.Property.ICON_ANCHOR_BOTTOM
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
 
 private const val SELECTED_PLACE_LAYER_ID = "SELECTED_PLACE_LAYER_ID"
 const val PLACES_LAYER_ID = "PLACES_LAYER_ID"
@@ -34,53 +34,55 @@ private const val BORDER_COLOR = "#007DEB"
 class PlacesMapLayer(
     val style: Style,
 ) : MapLayer {
-
     private var currentFeature: Feature? = null
 
     private val placesLayer: Layer
-        get() = style.getLayer(PLACES_LAYER_ID)
-            ?: SymbolLayer(PLACES_LAYER_ID, PLACES_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage(MapLayerManager.PLACE_ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                    PropertyFactory.iconAnchor(ICON_ANCHOR_BOTTOM),
-                )
-                .withFilter(
-                    Expression.all(
-                        Expression.eq(
-                            Expression.literal(FEATURE_PROPERTY_PLACES),
-                            Expression.literal(true),
+        get() =
+            style.getLayer(PLACES_LAYER_ID)
+                ?: SymbolLayer(PLACES_LAYER_ID, PLACES_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.iconImage(MapLayerManager.PLACE_ICON_ID),
+                        PropertyFactory.iconAllowOverlap(true),
+                        PropertyFactory.iconAnchor(ICON_ANCHOR_BOTTOM),
+                    ).withFilter(
+                        Expression.all(
+                            Expression.eq(
+                                Expression.literal(FEATURE_PROPERTY_PLACES),
+                                Expression.literal(true),
+                            ),
+                            Expression.eq(
+                                Expression.literal(FEATURE_PROPERTY_PLACES_SELECTED),
+                                Expression.literal(false),
+                            ),
+                            isPoint(),
                         ),
-                        Expression.eq(
-                            Expression.literal(FEATURE_PROPERTY_PLACES_SELECTED),
-                            Expression.literal(false),
-                        ),
-                        isPoint(),
-                    ),
-                )
+                    )
 
     private val polygonLayer: Layer
-        get() = style.getLayer(POLYGON_PLACE_LAYER_ID)
-            ?: FillLayer(POLYGON_PLACE_LAYER_ID, PLACES_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.fillColor(Color.parseColor(FILL_COLOR)),
-                ).withFilter(isPolygon())
+        get() =
+            style.getLayer(POLYGON_PLACE_LAYER_ID)
+                ?: FillLayer(POLYGON_PLACE_LAYER_ID, PLACES_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.fillColor(Color.parseColor(FILL_COLOR)),
+                    ).withFilter(isPolygon())
 
     private val polygonBorderLayer: Layer
-        get() = style.getLayer(POLYGON_PLACE_BORDER_LAYER_ID)
-            ?: LineLayer(POLYGON_PLACE_BORDER_LAYER_ID, PLACES_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.lineColor(Color.parseColor(BORDER_COLOR)),
-                    PropertyFactory.lineWidth(2f),
-                ).withFilter(isPolygon())
+        get() =
+            style.getLayer(POLYGON_PLACE_BORDER_LAYER_ID)
+                ?: LineLayer(POLYGON_PLACE_BORDER_LAYER_ID, PLACES_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.lineColor(Color.parseColor(BORDER_COLOR)),
+                        PropertyFactory.lineWidth(2f),
+                    ).withFilter(isPolygon())
 
     private val boundingBoxLayer: Layer
-        get() = style.getLayer("BOUNDING_BOX_LAYER_ID")
-            ?: LineLayer("BOUNDING_BOX_LAYER_ID", PLACES_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.lineColor(Color.RED),
-                    PropertyFactory.lineWidth(4f),
-                ).withFilter(isLine())
+        get() =
+            style.getLayer("BOUNDING_BOX_LAYER_ID")
+                ?: LineLayer("BOUNDING_BOX_LAYER_ID", PLACES_SOURCE_ID)
+                    .withProperties(
+                        PropertyFactory.lineColor(Color.RED),
+                        PropertyFactory.lineWidth(4f),
+                    ).withFilter(isLine())
 
     init {
         style.addLayer(placesLayer)
@@ -116,14 +118,15 @@ class PlacesMapLayer(
         currentFeature = null
     }
 
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(PLACES_SOURCE_ID)
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? =
+        style
+            .getSourceAs<GeoJsonSource>(PLACES_SOURCE_ID)
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(FEATURE_PROPERTY_PLACES_TITLE), featureUidProperty),
             )?.firstOrNull()
             .also { setSelectedItem(it) }
-    }
 
     override var visible = true
+
     override fun getId() = PLACES_LAYER_ID
 }

@@ -18,8 +18,8 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TestSchedulerProvider
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.SyncStatusData
-import org.dhis2.ui.MetadataIconData
-import org.dhis2.ui.toColor
+import org.dhis2.mobile.commons.extensions.toColor
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
@@ -36,7 +36,6 @@ import java.util.Date
 
 @ExperimentalCoroutinesApi
 class ProgramViewModelTest {
-
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
@@ -52,37 +51,33 @@ class ProgramViewModelTest {
     private val schedulerProvider: TestSchedulerProvider = TestSchedulerProvider(TestScheduler())
     private val syncStatusController: SyncStatusController = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
-    private val featureConfigRepository: FeatureConfigRepository = mock {
-        on { isFeatureEnable(any()) } doReturn false
-    }
-    private val dispatcherProvider = object : DispatcherProvider {
-        override fun io(): CoroutineDispatcher {
-            return testingDispatcher
+    private val featureConfigRepository: FeatureConfigRepository =
+        mock {
+            on { isFeatureEnable(any()) } doReturn false
         }
+    private val dispatcherProvider =
+        object : DispatcherProvider {
+            override fun io(): CoroutineDispatcher = testingDispatcher
 
-        override fun computation(): CoroutineDispatcher {
-            return testingDispatcher
-        }
+            override fun computation(): CoroutineDispatcher = testingDispatcher
 
-        override fun ui(): CoroutineDispatcher {
-            return testingDispatcher
+            override fun ui(): CoroutineDispatcher = testingDispatcher
         }
-    }
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        presenter = ProgramViewModel(
-            view,
-            programRepository,
-            featureConfigRepository,
-            dispatcherProvider,
-
-            matomoAnalyticsController,
-            filterManager,
-            syncStatusController,
-            schedulerProvider,
-        )
+        presenter =
+            ProgramViewModel(
+                view,
+                programRepository,
+                featureConfigRepository,
+                dispatcherProvider,
+                matomoAnalyticsController,
+                filterManager,
+                syncStatusController,
+                schedulerProvider,
+            )
     }
 
     @Test
@@ -140,61 +135,61 @@ class ProgramViewModelTest {
         assertTrue(presenter.disposable.size() == 0)
     }
 
-    private fun programViewModel(): ProgramUiModel {
-        return ProgramUiModel(
-            "uid",
-            "displayName",
-            MetadataIconData(
-                imageCardData = ImageCardData.IconCardData(
-                    "",
-                    "",
-                    "ic_home_positive",
-                    "#84FFFF".toColor(),
+    private fun programViewModel(): ProgramUiModel =
+        ProgramUiModel(
+            uid = "uid",
+            title = "displayName",
+            metadataIconData =
+                MetadataIconData(
+                    imageCardData =
+                        ImageCardData.IconCardData(
+                            "",
+                            "",
+                            "ic_home_positive",
+                            "#84FFFF".toColor(),
+                        ),
+                    color = "#84FFFF".toColor(),
                 ),
-                color = "#84FFFF".toColor(),
-            ),
-            1,
-            "type",
-            "typeName",
-            "programType",
-            "description",
+            count = 1,
+            type = "type",
+            typeName = "typeName",
+            programType = "programType",
+            description = "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
             downloadState = ProgramDownloadState.NONE,
             isStockUseCase = false,
             lastUpdated = Date(),
-            hasOverdueEvent = false,
             filtersAreActive = false,
         )
-    }
 
-    private fun dataSetViewModel(): ProgramUiModel {
-        return ProgramUiModel(
-            "uid",
-            "displayName",
-            MetadataIconData(
-                imageCardData = ImageCardData.IconCardData(
-                    "",
-                    "",
-                    "ic_home_positive",
-                    "#84FFFF".toColor(),
+    private fun dataSetViewModel(): ProgramUiModel =
+        ProgramUiModel(
+            uid = "uid",
+            title = "displayName",
+            metadataIconData =
+                MetadataIconData(
+                    imageCardData =
+                        ImageCardData.IconCardData(
+                            "",
+                            "",
+                            "ic_home_positive",
+                            "#84FFFF".toColor(),
+                        ),
+                    color = "#84FFFF".toColor(),
                 ),
-                color = "#84FFFF".toColor(),
-            ),
-            1,
-            "type",
-            "typeName",
-            "",
-            "description",
+            count = 1,
+            type = "type",
+            typeName = "typeName",
+            programType = "",
+            description = "description",
             onlyEnrollOnce = true,
             accessDataWrite = true,
             state = State.SYNCED,
             downloadState = ProgramDownloadState.NONE,
             isStockUseCase = false,
             lastUpdated = Date(),
-            hasOverdueEvent = false,
             filtersAreActive = false,
         )
-    }
 }

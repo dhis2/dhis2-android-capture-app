@@ -9,8 +9,12 @@ import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 
 interface MetadataManager {
     fun stockManagementProgram(programUid: String): Single<Program?>
+
     fun facilities(programUid: String): Single<List<OrganisationUnit>>
+
     fun destinations(distributedTo: String): Single<List<Option>>
+
     fun transactionType(dataSetUid: String): Single<DataElement>
+
     suspend fun loadStockUseCase(programUid: String): StockUseCase?
 }

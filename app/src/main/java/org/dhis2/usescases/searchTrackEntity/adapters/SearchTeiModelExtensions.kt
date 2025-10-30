@@ -24,26 +24,30 @@ fun SearchTeiModel.setTeiImage(
     colorUtils: ColorUtils,
     pictureListener: (String) -> Unit,
 ) {
-    val imageBg = AppCompatResources.getDrawable(
-        context,
-        R.drawable.photo_temp_gray,
-    )
-    imageBg?.colorFilter = PorterDuffColorFilter(
-        colorUtils.getPrimaryColor(
+    val imageBg =
+        AppCompatResources.getDrawable(
             context,
-            ColorType.PRIMARY,
-        ),
-        PorterDuff.Mode.SRC_IN,
-    )
+            R.drawable.photo_temp_gray,
+        )
+    imageBg?.colorFilter =
+        PorterDuffColorFilter(
+            colorUtils.getPrimaryColor(
+                context,
+                ColorType.PRIMARY,
+            ),
+            PorterDuff.Mode.SRC_IN,
+        )
     teiImageView.background = imageBg
     val file = File(profilePicturePath)
-    val placeHolderId = ResourceManager(context, colorUtils)
-        .getObjectStyleDrawableResource(defaultTypeIcon, -1)
+    val placeHolderId =
+        ResourceManager(context, colorUtils)
+            .getObjectStyleDrawableResource(defaultTypeIcon, -1)
     teiImageView.setOnClickListener(null)
     when {
         file.exists() -> {
             teiTextImageView.visibility = View.GONE
-            Glide.with(context)
+            Glide
+                .with(context)
                 .load(file)
                 .error(placeHolderId)
                 .transition(DrawableTransitionOptions.withCrossFade())
@@ -61,7 +65,12 @@ fun SearchTeiModel.setTeiImage(
             if (valueToShow[0]?.value()?.isEmpty() != false) {
                 teiTextImageView.text = "?"
             } else {
-                teiTextImageView.text = valueToShow[0].value()?.first().toString().uppercase()
+                teiTextImageView.text =
+                    valueToShow[0]
+                        .value()
+                        ?.first()
+                        .toString()
+                        .uppercase()
             }
             teiTextImageView.setTextColor(
                 colorUtils.getContrastColor(
@@ -73,7 +82,8 @@ fun SearchTeiModel.setTeiImage(
             )
         }
 
-        isOnline && attributeValues.isNotEmpty() &&
+        isOnline &&
+            attributeValues.isNotEmpty() &&
             ArrayList(attributeValues.values).firstOrNull()?.value()?.isNotEmpty() == true -> {
             teiImageView.setImageDrawable(null)
             teiTextImageView.visibility = View.VISIBLE
@@ -81,7 +91,12 @@ fun SearchTeiModel.setTeiImage(
             if (valueToShow[0] == null) {
                 teiTextImageView.text = "?"
             } else {
-                teiTextImageView.text = valueToShow[0].value()?.first().toString().uppercase()
+                teiTextImageView.text =
+                    valueToShow[0]
+                        .value()
+                        ?.first()
+                        .toString()
+                        .uppercase()
             }
             teiTextImageView.setTextColor(
                 colorUtils.getContrastColor(
@@ -95,19 +110,21 @@ fun SearchTeiModel.setTeiImage(
 
         placeHolderId != -1 -> {
             teiTextImageView.visibility = View.GONE
-            val icon = AppCompatResources.getDrawable(
-                context,
-                placeHolderId,
-            )
-            icon?.colorFilter = PorterDuffColorFilter(
-                colorUtils.getContrastColor(
-                    colorUtils.getPrimaryColor(
-                        context,
-                        ColorType.PRIMARY,
+            val icon =
+                AppCompatResources.getDrawable(
+                    context,
+                    placeHolderId,
+                )
+            icon?.colorFilter =
+                PorterDuffColorFilter(
+                    colorUtils.getContrastColor(
+                        colorUtils.getPrimaryColor(
+                            context,
+                            ColorType.PRIMARY,
+                        ),
                     ),
-                ),
-                PorterDuff.Mode.SRC_IN,
-            )
+                    PorterDuff.Mode.SRC_IN,
+                )
             teiImageView.setImageDrawable(icon)
         }
 

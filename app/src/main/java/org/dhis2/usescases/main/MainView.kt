@@ -32,7 +32,6 @@ import org.dhis2.usescases.general.AbstractActivityContracts
 import java.io.File
 
 interface MainView : AbstractActivityContracts.View {
-
     @UiThread
     fun renderUsername(username: String)
 
@@ -58,7 +57,10 @@ interface MainView : AbstractActivityContracts.View {
 
     fun showGranularSync()
 
-    fun goToLogin(accountsCount: Int, isDeletion: Boolean)
+    fun goToLogin(
+        accountsCount: Int,
+        isDeletion: Boolean,
+    )
 
     fun showProgressDeleteNotification()
 

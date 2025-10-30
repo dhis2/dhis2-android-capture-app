@@ -51,9 +51,10 @@ class FormValueStoreTest {
     private val resourceManager: ResourceManager = mock()
     private val fileController: FileController = mock()
     private val enrollmentRepository: EnrollmentObjectRepository = mock()
-    private val eventRepository: EventObjectRepository = mock {
-        on { setAttributeOptionComboUid(any<String>()) } doReturn mock()
-    }
+    private val eventRepository: EventObjectRepository =
+        mock {
+            on { setAttributeOptionComboUid(any<String>()) } doReturn mock()
+        }
     private val uniqueAttributeController: UniqueAttributeController = mock()
 
     @Before
@@ -132,57 +133,77 @@ class FormValueStoreTest {
 
     @Test
     fun `Should return error updating value if file path is null for data element entry mode`() {
-        val mockedDataElement: DataElement = mock {
-            on { valueType() } doReturn ValueType.IMAGE
-        }
+        val mockedDataElement: DataElement =
+            mock {
+                on { valueType() } doReturn ValueType.IMAGE
+            }
         whenever(
-            d2.dataElementModule().dataElements().uid(any()).blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(any())
+                .blockingGet(),
         ) doReturn mockedDataElement
-        val result = deValueStore.storeFile(
-            uid = "uid",
-            filePath = null,
-        )
+        val result =
+            deValueStore.storeFile(
+                uid = "uid",
+                filePath = null,
+            )
 
         assertTrue(result.valueStoreResult == ValueStoreResult.ERROR_UPDATING_VALUE)
     }
 
     @Test
     fun `Should return error updating value if file path is null for attribute entry mode`() {
-        val mockedAttribute: TrackedEntityAttribute = mock {
-            on { valueType() } doReturn ValueType.IMAGE
-        }
+        val mockedAttribute: TrackedEntityAttribute =
+            mock {
+                on { valueType() } doReturn ValueType.IMAGE
+            }
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(any()).blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(any())
+                .blockingGet(),
         ) doReturn mockedAttribute
-        val result = attrValueStore.storeFile(
-            uid = "uid",
-            filePath = null,
-        )
+        val result =
+            attrValueStore.storeFile(
+                uid = "uid",
+                filePath = null,
+            )
 
         assertTrue(result.valueStoreResult == ValueStoreResult.ERROR_UPDATING_VALUE)
     }
 
     @Test
     fun `Should return error updating value when generating file resource`() {
-        val mockedDataElement: DataElement = mock {
-            on { valueType() } doReturn ValueType.FILE_RESOURCE
-        }
+        val mockedDataElement: DataElement =
+            mock {
+                on { valueType() } doReturn ValueType.FILE_RESOURCE
+            }
         whenever(
-            d2.dataElementModule().dataElements().uid(any()).blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(any())
+                .blockingGet(),
         ) doReturn mockedDataElement
         whenever(
             d2.fileResourceModule().fileResources(),
         ) doReturn mock()
         whenever(
             d2.fileResourceModule().fileResources().blockingAdd(File("filePath")),
-        ) doThrow D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription("error test")
-            .build()
-        val result = deValueStore.storeFile(
-            uid = "uid",
-            filePath = "filePath",
-        )
+        ) doThrow
+            D2Error
+                .builder()
+                .errorCode(D2ErrorCode.UNEXPECTED)
+                .errorDescription("error test")
+                .build()
+        val result =
+            deValueStore.storeFile(
+                uid = "uid",
+                filePath = "filePath",
+            )
 
         assertTrue(result.valueStoreResult == ValueStoreResult.ERROR_UPDATING_VALUE)
     }
@@ -190,11 +211,16 @@ class FormValueStoreTest {
     @Test
     fun `Should return file resource uid result`() {
         val generatedUid = "fileResourceUid"
-        val mockedDataElement: DataElement = mock {
-            on { valueType() } doReturn ValueType.FILE_RESOURCE
-        }
+        val mockedDataElement: DataElement =
+            mock {
+                on { valueType() } doReturn ValueType.FILE_RESOURCE
+            }
         whenever(
-            d2.dataElementModule().dataElements().uid(any()).blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(any())
+                .blockingGet(),
         ) doReturn mockedDataElement
         whenever(
             d2.fileResourceModule().fileResources(),
@@ -202,10 +228,11 @@ class FormValueStoreTest {
         whenever(
             d2.fileResourceModule().fileResources().blockingAdd(File("filePath")),
         ) doReturn generatedUid
-        val result = deValueStore.storeFile(
-            uid = "uid",
-            filePath = "filePath",
-        )
+        val result =
+            deValueStore.storeFile(
+                uid = "uid",
+                filePath = "filePath",
+            )
 
         assertTrue(result.valueStoreResult == ValueStoreResult.FILE_SAVED)
         assertTrue(result.uid == generatedUid)
@@ -214,11 +241,16 @@ class FormValueStoreTest {
     @Test
     fun `Should try to resize image`() {
         val generatedUid = "fileResourceUid"
-        val mockedDataElement: DataElement = mock {
-            on { valueType() } doReturn ValueType.IMAGE
-        }
+        val mockedDataElement: DataElement =
+            mock {
+                on { valueType() } doReturn ValueType.IMAGE
+            }
         whenever(
-            d2.dataElementModule().dataElements().uid(any()).blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(any())
+                .blockingGet(),
         ) doReturn mockedDataElement
         whenever(
             d2.fileResourceModule().fileResources(),
@@ -263,9 +295,10 @@ class FormValueStoreTest {
         whenever(
             d2.trackedEntityModule().trackedEntityInstances().uid(any()),
         ) doReturn mock()
-        val mockedEnrollment: Enrollment = mock {
-            on { trackedEntityInstance() } doReturn "teiUid"
-        }
+        val mockedEnrollment: Enrollment =
+            mock {
+                on { trackedEntityInstance() } doReturn "teiUid"
+            }
         whenever(
             enrollmentRepository.blockingGet(),
         ) doReturn mockedEnrollment
@@ -292,10 +325,12 @@ class FormValueStoreTest {
         val point = "[12.0, 12.0]"
         whenever(
             enrollmentRepository.setGeometry(any()),
-        ) doThrow D2Error.builder()
-            .errorCode(D2ErrorCode.UNEXPECTED)
-            .errorDescription("error test")
-            .build()
+        ) doThrow
+            D2Error
+                .builder()
+                .errorCode(D2ErrorCode.UNEXPECTED)
+                .errorDescription("error test")
+                .build()
         val result = attrValueStore.save(uid, point, FeatureType.POINT.name)
         verify(enrollmentRepository).setGeometry(any())
         verify(crashReportController).trackError(any(), any())
@@ -322,39 +357,67 @@ class FormValueStoreTest {
 
     private fun mockCheckUniqueFilter() {
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedUniqueAttribute()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
                 .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("recordUid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("recordUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("recordUid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("recordUid")
                 .byValue(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("recordUid")
-                .byValue().eq("uniqueValue"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("recordUid")
+                .byValue()
+                .eq("uniqueValue"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("recordUid")
-                .byValue().eq("uniqueValue")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("recordUid")
+                .byValue()
+                .eq("uniqueValue")
                 .blockingGet(),
         ) doReturn mockedAttributeValueList()
     }
@@ -386,17 +449,23 @@ class FormValueStoreTest {
         checkResult: Boolean,
     ) {
         whenever(networkUtils.isOnline()) doReturn true
-        val mockedEnrollment: Enrollment = mock {
-            on { program() } doReturn "programUid"
-        }
+        val mockedEnrollment: Enrollment =
+            mock {
+                on { program() } doReturn "programUid"
+            }
         whenever(enrollmentRepository.blockingGet()) doReturn mockedEnrollment
-        val mockedAttr: TrackedEntityAttribute = mock {
-            on { uid() } doReturn "uid"
-            on { unique() } doReturn unique
-            on { orgUnitScope() } doReturn orgUnitScope
-        }
+        val mockedAttr: TrackedEntityAttribute =
+            mock {
+                on { uid() } doReturn "uid"
+                on { unique() } doReturn unique
+                on { orgUnitScope() } doReturn orgUnitScope
+            }
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedAttr
 
         whenever(
@@ -413,23 +482,45 @@ class FormValueStoreTest {
     @Test
     fun `Trying to save an attribute should return a valid response`() {
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedAttribute()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byValue(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byValue()
+                .eq("uniqueValue"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byValue()
+                .eq("uniqueValue")
+                .blockingGet(),
         ) doReturn mockedAttributeValueList()
 
         val result = attrValueStore.save("uid", "uniqueValue", null)
@@ -438,35 +529,62 @@ class FormValueStoreTest {
 
     @Test
     fun `Should log error when trying to save an attribute`() {
-        val mockedRepository: TrackedEntityAttributeValueObjectRepository = mock {
-            on { blockingExists() } doReturn false
-            on { blockingSet(any()) } doThrow D2Error.builder()
-                .errorCode(D2ErrorCode.UNEXPECTED)
-                .errorDescription("error test")
-                .build()
-        }
+        val mockedRepository: TrackedEntityAttributeValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn false
+                on { blockingSet(any()) } doThrow
+                    D2Error
+                        .builder()
+                        .errorCode(D2ErrorCode.UNEXPECTED)
+                        .errorDescription("error test")
+                        .build()
+            }
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
                 .value("uid", "recordUid"),
         ) doReturn mockedRepository
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedAttribute()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byValue(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byValue()
+                .eq("uniqueValue"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid").byValue().eq("uniqueValue").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byValue()
+                .eq("uniqueValue")
+                .blockingGet(),
         ) doReturn mockedAttributeValueList()
 
         val result = attrValueStore.save("uid", "uniqueValue", null)
@@ -480,7 +598,11 @@ class FormValueStoreTest {
     @Test
     fun `Trying to save a DataElement should return a valid response`() {
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedDataElement()
 
         val result = deValueStore.save("uid", "value", null)
@@ -491,7 +613,11 @@ class FormValueStoreTest {
     @Test
     fun `Null value should remove`() {
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedDataElement()
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value(
@@ -500,16 +626,22 @@ class FormValueStoreTest {
             ),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "recordUid",
-                "uid",
-            ).blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .value(
+                    "recordUid",
+                    "uid",
+                ).blockingExists(),
         ) doReturn true
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "recordUid",
-                "uid",
-            ).blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .value(
+                    "recordUid",
+                    "uid",
+                ).blockingGet(),
         ) doReturn mockedDataElementValue()
 
         val result = deValueStore.save("uid", null, null)
@@ -520,10 +652,18 @@ class FormValueStoreTest {
     @Test
     fun `Uid which is not linked to a DE or an ATTR should end with correct result`() {
         whenever(
-            d2.dataElementModule().dataElements().uid("wrongUid").blockingExists(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("wrongUid")
+                .blockingExists(),
         ) doReturn false
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("wrongUid").blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("wrongUid")
+                .blockingExists(),
         ) doReturn false
 
         val testSubscriber = deValueStore.saveWithTypeCheck("wrongUid", "test").test()
@@ -536,8 +676,15 @@ class FormValueStoreTest {
 
     @Test
     fun `Should not delete data element value if field is option set`() {
-        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
+        whenever(
+            d2
+                .optionModule()
+                .options()
+                .uid("optionUid")
+                .blockingGet(),
+        ) doReturn
+            Option
+                .builder()
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
@@ -549,41 +696,61 @@ class FormValueStoreTest {
             ),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "recordUid",
-                "fieldUid",
-            ).blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .value(
+                    "recordUid",
+                    "fieldUid",
+                ).blockingExists(),
         ) doReturn true
 
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "recordUid",
-                "fieldUid",
-            ).blockingGet(),
-        ) doReturn TrackedEntityDataValue.builder()
-            .dataElement("fieldUid")
-            .event("recordUid")
-            .value("optionCode")
-            .build()
-        whenever(
-            d2.dataElementModule().dataElements()
-                .uid("fieldUid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .value(
+                    "recordUid",
+                    "fieldUid",
+                ).blockingGet(),
         ) doReturn
-            DataElement.builder()
+            TrackedEntityDataValue
+                .builder()
+                .dataElement("fieldUid")
+                .event("recordUid")
+                .value("optionCode")
+                .build()
+        whenever(
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("fieldUid")
+                .blockingGet(),
+        ) doReturn
+            DataElement
+                .builder()
                 .uid("fieldUid")
                 .valueType(ValueType.TEXT)
                 .build()
-        val storeResult = deValueStore.deleteOptionValueIfSelected(
-            "fieldUid",
-            "optionUid",
-        )
+        val storeResult =
+            deValueStore.deleteOptionValueIfSelected(
+                "fieldUid",
+                "optionUid",
+            )
         assert(storeResult.valueStoreResult == VALUE_CHANGED)
     }
 
     @Test
     fun `Should delete data element value if field is option set`() {
-        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
+        whenever(
+            d2
+                .optionModule()
+                .options()
+                .uid("optionUid")
+                .blockingGet(),
+        ) doReturn
+            Option
+                .builder()
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
@@ -595,10 +762,13 @@ class FormValueStoreTest {
             ),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues().value(
-                "recordUid",
-                "fieldUid",
-            ).blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .value(
+                    "recordUid",
+                    "fieldUid",
+                ).blockingExists(),
         ) doReturn false
         val storeResult = deValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
         assert(
@@ -608,8 +778,15 @@ class FormValueStoreTest {
 
     @Test
     fun `Should not delete attribute value if field is option set`() {
-        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
+        whenever(
+            d2
+                .optionModule()
+                .options()
+                .uid("optionUid")
+                .blockingGet(),
+        ) doReturn
+            Option
+                .builder()
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
@@ -621,57 +798,79 @@ class FormValueStoreTest {
             ),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                "fieldUid",
-                "recordUid",
-            ).blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .value(
+                    "fieldUid",
+                    "recordUid",
+                ).blockingExists(),
         ) doReturn true
 
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                "fieldUid",
-                "recordUid",
-            ).blockingGet(),
-        ) doReturn TrackedEntityAttributeValue.builder()
-            .trackedEntityAttribute("fieldUid")
-            .trackedEntityInstance("recordUid")
-            .value("optionCode")
-            .build()
-        whenever(
-            d2.trackedEntityModule().trackedEntityAttributes()
-                .uid("fieldUid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .value(
+                    "fieldUid",
+                    "recordUid",
+                ).blockingGet(),
         ) doReturn
-            TrackedEntityAttribute.builder()
+            TrackedEntityAttributeValue
+                .builder()
+                .trackedEntityAttribute("fieldUid")
+                .trackedEntityInstance("recordUid")
+                .value("optionCode")
+                .build()
+        whenever(
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("fieldUid")
+                .blockingGet(),
+        ) doReturn
+            TrackedEntityAttribute
+                .builder()
                 .uid("fieldUid")
                 .valueType(ValueType.TEXT)
                 .build()
-        val storeResult = attrValueStore.deleteOptionValueIfSelected(
-            "fieldUid",
-            "optionUid",
-        )
+        val storeResult =
+            attrValueStore.deleteOptionValueIfSelected(
+                "fieldUid",
+                "optionUid",
+            )
         assert(storeResult.valueStoreResult == VALUE_CHANGED)
     }
 
     @Test
     fun `Should delete attribute value if field is option set`() {
-        whenever(d2.optionModule().options().uid("optionUid").blockingGet()) doReturn
-            Option.builder()
+        whenever(
+            d2
+                .optionModule()
+                .options()
+                .uid("optionUid")
+                .blockingGet(),
+        ) doReturn
+            Option
+                .builder()
                 .name("optionName")
                 .uid("optionUid")
                 .code("optionCode")
                 .build()
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value(
-
                 "fieldUid",
                 "recordUid",
             ),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues().value(
-                "fieldUid",
-                "recordUid",
-            ).blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .value(
+                    "fieldUid",
+                    "recordUid",
+                ).blockingExists(),
         ) doReturn false
         val storeResult = attrValueStore.deleteOptionValueIfSelected("fieldUid", "optionUid")
         assert(
@@ -690,162 +889,210 @@ class FormValueStoreTest {
     @Test
     fun `Should delete data element value if not in group`() {
         mockOptionsInGroup()
-        val mockedDataValueRepository: TrackedEntityDataValueObjectRepository = mock {
-            on { blockingExists() } doReturn true
-            on { blockingGet() } doReturn TrackedEntityDataValue.builder()
-                .event("recordUid")
-                .dataElement("uid")
-                .value("option_code_1")
-                .build()
-        }
+        val mockedDataValueRepository: TrackedEntityDataValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn true
+                on { blockingGet() } doReturn
+                    TrackedEntityDataValue
+                        .builder()
+                        .event("recordUid")
+                        .dataElement("uid")
+                        .value("option_code_1")
+                        .build()
+            }
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value("recordUid", "uid"),
         ) doReturn mockedDataValueRepository
 
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedDataElement()
 
-        val result = deValueStore.deleteOptionValueIfSelectedInGroup(
-            field = "uid",
-            optionGroupUid = "optionGroupUid",
-            isInGroup = true,
-        )
+        val result =
+            deValueStore.deleteOptionValueIfSelectedInGroup(
+                field = "uid",
+                optionGroupUid = "optionGroupUid",
+                isInGroup = true,
+            )
         assertTrue(result.valueStoreResult == ValueStoreResult.VALUE_CHANGED)
     }
 
     @Test
     fun `Should not delete data element value if does not exist`() {
         mockOptionsInGroup()
-        val mockedDataValueRepository: TrackedEntityDataValueObjectRepository = mock {
-            on { blockingExists() } doReturn false
-            on { blockingGet() } doReturn TrackedEntityDataValue.builder()
-                .event("recordUid")
-                .dataElement("uid")
-                .value("option_code_1")
-                .build()
-        }
+        val mockedDataValueRepository: TrackedEntityDataValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn false
+                on { blockingGet() } doReturn
+                    TrackedEntityDataValue
+                        .builder()
+                        .event("recordUid")
+                        .dataElement("uid")
+                        .value("option_code_1")
+                        .build()
+            }
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value("recordUid", "uid"),
         ) doReturn mockedDataValueRepository
 
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedDataElement()
 
-        val result = deValueStore.deleteOptionValueIfSelectedInGroup(
-            field = "uid",
-            optionGroupUid = "optionGroupUid",
-            isInGroup = true,
-        )
+        val result =
+            deValueStore.deleteOptionValueIfSelectedInGroup(
+                field = "uid",
+                optionGroupUid = "optionGroupUid",
+                isInGroup = true,
+            )
         assertTrue(result.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
     @Test
     fun `Should not delete data element value if not in group`() {
         mockOptionsInGroup()
-        val mockedDataValueRepository: TrackedEntityDataValueObjectRepository = mock {
-            on { blockingExists() } doReturn true
-            on { blockingGet() } doReturn TrackedEntityDataValue.builder()
-                .event("recordUid")
-                .dataElement("uid")
-                .value("option_code_3")
-                .build()
-        }
+        val mockedDataValueRepository: TrackedEntityDataValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn true
+                on { blockingGet() } doReturn
+                    TrackedEntityDataValue
+                        .builder()
+                        .event("recordUid")
+                        .dataElement("uid")
+                        .value("option_code_3")
+                        .build()
+            }
         whenever(
             d2.trackedEntityModule().trackedEntityDataValues().value("recordUid", "uid"),
         ) doReturn mockedDataValueRepository
 
         whenever(
-            d2.dataElementModule().dataElements().uid("uid").blockingGet(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedDataElement()
 
-        val result = deValueStore.deleteOptionValueIfSelectedInGroup(
-            field = "uid",
-            optionGroupUid = "optionGroupUid",
-            isInGroup = true,
-        )
+        val result =
+            deValueStore.deleteOptionValueIfSelectedInGroup(
+                field = "uid",
+                optionGroupUid = "optionGroupUid",
+                isInGroup = true,
+            )
         assertTrue(result.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
     @Test
     fun `Should delete attribute value if not in group`() {
         mockOptionsInGroup()
-        val mockedDataValueRepository: TrackedEntityAttributeValueObjectRepository = mock {
-            on { blockingExists() } doReturn true
-            on { blockingGet() } doReturn TrackedEntityAttributeValue.builder()
-                .trackedEntityInstance("recordUid")
-                .trackedEntityAttribute("uid")
-                .value("option_code_1")
-                .build()
-        }
+        val mockedDataValueRepository: TrackedEntityAttributeValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn true
+                on { blockingGet() } doReturn
+                    TrackedEntityAttributeValue
+                        .builder()
+                        .trackedEntityInstance("recordUid")
+                        .trackedEntityAttribute("uid")
+                        .value("option_code_1")
+                        .build()
+            }
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value("uid", "recordUid"),
         ) doReturn mockedDataValueRepository
 
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedAttribute()
 
-        val result = attrValueStore.deleteOptionValueIfSelectedInGroup(
-            field = "uid",
-            optionGroupUid = "optionGroupUid",
-            isInGroup = true,
-        )
+        val result =
+            attrValueStore.deleteOptionValueIfSelectedInGroup(
+                field = "uid",
+                optionGroupUid = "optionGroupUid",
+                isInGroup = true,
+            )
         assertTrue(result.valueStoreResult == ValueStoreResult.VALUE_CHANGED)
     }
 
     @Test
     fun `Should not delete attribute value if does not exist`() {
         mockOptionsInGroup()
-        val mockedDataValueRepository: TrackedEntityAttributeValueObjectRepository = mock {
-            on { blockingExists() } doReturn false
-            on { blockingGet() } doReturn TrackedEntityAttributeValue.builder()
-                .trackedEntityInstance("recordUid")
-                .trackedEntityAttribute("uid")
-                .value("option_code_1")
-                .build()
-        }
+        val mockedDataValueRepository: TrackedEntityAttributeValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn false
+                on { blockingGet() } doReturn
+                    TrackedEntityAttributeValue
+                        .builder()
+                        .trackedEntityInstance("recordUid")
+                        .trackedEntityAttribute("uid")
+                        .value("option_code_1")
+                        .build()
+            }
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value("uid", "recordUid"),
         ) doReturn mockedDataValueRepository
 
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedAttribute()
 
-        val result = attrValueStore.deleteOptionValueIfSelectedInGroup(
-            field = "uid",
-            optionGroupUid = "optionGroupUid",
-            isInGroup = true,
-        )
+        val result =
+            attrValueStore.deleteOptionValueIfSelectedInGroup(
+                field = "uid",
+                optionGroupUid = "optionGroupUid",
+                isInGroup = true,
+            )
         assertTrue(result.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
     @Test
     fun `Should not delete attribute value if not in group`() {
         mockOptionsInGroup()
-        val mockedDataValueRepository: TrackedEntityAttributeValueObjectRepository = mock {
-            on { blockingExists() } doReturn true
-            on { blockingGet() } doReturn TrackedEntityAttributeValue.builder()
-                .trackedEntityInstance("recordUid")
-                .trackedEntityAttribute("uid")
-                .value("option_code_3")
-                .build()
-        }
+        val mockedDataValueRepository: TrackedEntityAttributeValueObjectRepository =
+            mock {
+                on { blockingExists() } doReturn true
+                on { blockingGet() } doReturn
+                    TrackedEntityAttributeValue
+                        .builder()
+                        .trackedEntityInstance("recordUid")
+                        .trackedEntityAttribute("uid")
+                        .value("option_code_3")
+                        .build()
+            }
         whenever(
             d2.trackedEntityModule().trackedEntityAttributeValues().value("uid", "recordUid"),
         ) doReturn mockedDataValueRepository
 
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid("uid").blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid("uid")
+                .blockingGet(),
         ) doReturn mockedAttribute()
 
-        val result = attrValueStore.deleteOptionValueIfSelectedInGroup(
-            field = "uid",
-            optionGroupUid = "optionGroupUid",
-            isInGroup = true,
-        )
+        val result =
+            attrValueStore.deleteOptionValueIfSelectedInGroup(
+                field = "uid",
+                optionGroupUid = "optionGroupUid",
+                isInGroup = true,
+            )
         assertTrue(result.valueStoreResult == ValueStoreResult.VALUE_HAS_NOT_CHANGED)
     }
 
@@ -860,33 +1107,47 @@ class FormValueStoreTest {
     }
 
     private fun mockOptionsInGroup() {
-        val mockedOption1: Option = mock {
-            on { uid() } doReturn "option_1"
-            on { code() } doReturn "option_code_1"
-        }
-        val mockedOption2: Option = mock {
-            on { uid() } doReturn "option_2"
-            on { code() } doReturn "option_code_2"
-        }
-        val mockedOptionGroup: OptionGroup = mock {
-            on { options() } doReturn listOf(
-                ObjectWithUid.create("option_1"),
-                ObjectWithUid.create("option_2"),
-            )
-        }
+        val mockedOption1: Option =
+            mock {
+                on { uid() } doReturn "option_1"
+                on { code() } doReturn "option_code_1"
+            }
+        val mockedOption2: Option =
+            mock {
+                on { uid() } doReturn "option_2"
+                on { code() } doReturn "option_code_2"
+            }
+        val mockedOptionGroup: OptionGroup =
+            mock {
+                on { options() } doReturn
+                    listOf(
+                        ObjectWithUid.create("option_1"),
+                        ObjectWithUid.create("option_2"),
+                    )
+            }
 
         whenever(
-            d2.optionModule().optionGroups()
+            d2
+                .optionModule()
+                .optionGroups()
                 .withOptions()
                 .uid("optionGroupUid")
                 .blockingGet(),
         ) doReturn mockedOptionGroup
 
         whenever(
-            d2.optionModule().options().uid("option_1").blockingGet(),
+            d2
+                .optionModule()
+                .options()
+                .uid("option_1")
+                .blockingGet(),
         ) doReturn mockedOption1
         whenever(
-            d2.optionModule().options().uid("option_2").blockingGet(),
+            d2
+                .optionModule()
+                .options()
+                .uid("option_2")
+                .blockingGet(),
         ) doReturn mockedOption2
     }
 
@@ -894,24 +1155,39 @@ class FormValueStoreTest {
     fun `Should return error when saving null value for a DE and no previous value exist`() {
         val testingUid = "uid"
         whenever(
-            d2.dataElementModule().dataElements().uid(testingUid).blockingExists(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(testingUid)
+                .blockingExists(),
         ) doReturn true
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues()
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
                 .value("recordUid", testingUid),
         ) doReturn mock()
         whenever(
-            d2.dataElementModule().dataElements().uid(testingUid).blockingGet(),
-        ) doReturn DataElement.builder()
-            .uid(testingUid)
-            .valueType(ValueType.TEXT)
-            .build()
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(testingUid)
+                .blockingGet(),
+        ) doReturn
+            DataElement
+                .builder()
+                .uid(testingUid)
+                .valueType(ValueType.TEXT)
+                .build()
         whenever(
-            d2.trackedEntityModule().trackedEntityDataValues()
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
                 .value("recordUid", testingUid)
                 .blockingExists(),
         ) doReturn false
-        deValueStore.saveWithTypeCheck(testingUid, null)
+        deValueStore
+            .saveWithTypeCheck(testingUid, null)
             .test()
             .assertNoErrors()
             .assertValue { result ->
@@ -923,33 +1199,58 @@ class FormValueStoreTest {
     fun `Should return error when saving null value for an attr and no previous value exist`() {
         val testingUid = "uid"
         whenever(
-            d2.dataElementModule().dataElements().uid(testingUid).blockingExists(),
+            d2
+                .dataElementModule()
+                .dataElements()
+                .uid(testingUid)
+                .blockingExists(),
         ) doReturn false
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingExists(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(testingUid)
+                .blockingExists(),
         ) doReturn true
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet(),
-        ) doReturn TrackedEntityAttribute.builder()
-            .uid(testingUid)
-            .unique(false)
-            .build()
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(testingUid)
+                .blockingGet(),
+        ) doReturn
+            TrackedEntityAttribute
+                .builder()
+                .uid(testingUid)
+                .unique(false)
+                .build()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
                 .value(testingUid, "recordUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributes().uid(testingUid).blockingGet(),
-        ) doReturn TrackedEntityAttribute.builder()
-            .uid(testingUid)
-            .valueType(ValueType.TEXT)
-            .build()
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributes()
+                .uid(testingUid)
+                .blockingGet(),
+        ) doReturn
+            TrackedEntityAttribute
+                .builder()
+                .uid(testingUid)
+                .valueType(ValueType.TEXT)
+                .build()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
                 .value(testingUid, "recordUid")
                 .blockingExists(),
         ) doReturn false
-        deValueStore.saveWithTypeCheck(testingUid, null)
+        deValueStore
+            .saveWithTypeCheck(testingUid, null)
             .test()
             .assertNoErrors()
             .assertValue { result ->
@@ -1021,74 +1322,94 @@ class FormValueStoreTest {
         categoryOptionComboUid: String,
     ) {
         whenever(
-            d2.categoryModule().categoryOptionCombos()
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
                 .byCategoryComboUid(),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryComboUid().eq(categoryComboUid),
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(categoryComboUid),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryComboUid().eq(categoryComboUid)
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(categoryComboUid)
                 .byCategoryOptions(categoryOptionsUids),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryComboUid().eq(categoryComboUid)
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(categoryComboUid)
                 .byCategoryOptions(categoryOptionsUids)
                 .one(),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryComboUid().eq(categoryComboUid)
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(categoryComboUid)
                 .byCategoryOptions(categoryOptionsUids)
-                .one().blockingGet(),
+                .one()
+                .blockingGet(),
         ) doReturn mock()
         whenever(
-            d2.categoryModule().categoryOptionCombos()
-                .byCategoryComboUid().eq(categoryComboUid)
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(categoryComboUid)
                 .byCategoryOptions(categoryOptionsUids)
-                .one().blockingGet()?.uid(),
+                .one()
+                .blockingGet()
+                ?.uid(),
         ) doReturn categoryOptionComboUid
     }
 
-    private fun mockedAttribute(valueType: ValueType = ValueType.TEXT): TrackedEntityAttribute {
-        return TrackedEntityAttribute.builder()
+    private fun mockedAttribute(valueType: ValueType = ValueType.TEXT): TrackedEntityAttribute =
+        TrackedEntityAttribute
+            .builder()
             .uid("uid")
             .valueType(valueType)
             .build()
-    }
 
-    private fun mockedDataElement(): DataElement {
-        return DataElement.builder()
+    private fun mockedDataElement(): DataElement =
+        DataElement
+            .builder()
             .uid("uid")
             .valueType(ValueType.TEXT)
             .build()
-    }
 
-    private fun mockedUniqueAttribute(): TrackedEntityAttribute {
-        return TrackedEntityAttribute.builder()
+    private fun mockedUniqueAttribute(): TrackedEntityAttribute =
+        TrackedEntityAttribute
+            .builder()
             .uid("uid")
             .unique(true)
             .build()
-    }
 
-    private fun mockedDataElementValue(): TrackedEntityDataValue {
-        return TrackedEntityDataValue.builder()
+    private fun mockedDataElementValue(): TrackedEntityDataValue =
+        TrackedEntityDataValue
+            .builder()
             .dataElement("uid")
             .event("recordUid")
             .value("value")
             .build()
-    }
 
-    private fun mockedAttributeValueList(): List<TrackedEntityAttributeValue> {
-        return arrayListOf(
-            TrackedEntityAttributeValue.builder()
+    private fun mockedAttributeValueList(): List<TrackedEntityAttributeValue> =
+        arrayListOf(
+            TrackedEntityAttributeValue
+                .builder()
                 .trackedEntityAttribute("uid")
                 .trackedEntityInstance("tei")
                 .value("uniqueValue")
                 .build(),
         )
-    }
 }

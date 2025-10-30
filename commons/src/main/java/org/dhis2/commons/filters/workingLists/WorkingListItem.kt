@@ -35,11 +35,20 @@ sealed class WorkingListItem(
         isActive = false
     }
 
-    fun isSelected(): Boolean {
-        return FilterManager.getInstance().currentWorkingList()?.uid == uid
-    }
+    fun isSelected(): Boolean = FilterManager.getInstance().currentWorkingList()?.uid == uid
 }
 
-class TrackedEntityInstanceWorkingList(uid: String, label: String) : WorkingListItem(uid, label)
-class ProgramStageWorkingList(uid: String, label: String) : WorkingListItem(uid, label)
-class EventWorkingList(uid: String, label: String) : WorkingListItem(uid, label)
+class TrackedEntityInstanceWorkingList(
+    uid: String,
+    label: String,
+) : WorkingListItem(uid, label)
+
+class ProgramStageWorkingList(
+    uid: String,
+    label: String,
+) : WorkingListItem(uid, label)
+
+class EventWorkingList(
+    uid: String,
+    label: String,
+) : WorkingListItem(uid, label)

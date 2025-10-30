@@ -12,7 +12,7 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.tracker.events.CreateEventUseCaseRepository
+import org.dhis2.tracker.events.CreateEventUseCaseRepositoryImpl
 import org.hisp.dhis.android.core.D2
 
 @PerActivity
@@ -30,9 +30,7 @@ class ProgramStageSelectionModule(
 ) {
     @Provides
     @PerActivity
-    fun providesView(activity: ProgramStageSelectionActivity): ProgramStageSelectionView {
-        return activity
-    }
+    fun providesView(activity: ProgramStageSelectionActivity): ProgramStageSelectionView = activity
 
     @Provides
     @PerActivity
@@ -44,8 +42,8 @@ class ProgramStageSelectionModule(
         dispatcherProvider: DispatcherProvider,
         createEventUseCase: CreateEventUseCase,
         d2ErrorUtils: D2ErrorUtils,
-    ): ProgramStageSelectionPresenter {
-        return ProgramStageSelectionPresenter(
+    ): ProgramStageSelectionPresenter =
+        ProgramStageSelectionPresenter(
             view,
             programStageSelectionRepository,
             ruleUtils,
@@ -55,34 +53,27 @@ class ProgramStageSelectionModule(
             createEventUseCase,
             d2ErrorUtils,
         )
-    }
 
     @Provides
     @PerActivity
-    fun providesProgramStageSelectionRepository(
-        d2: D2,
-    ): ProgramStageSelectionRepository {
-        return ProgramStageSelectionRepositoryImpl(
+    fun providesProgramStageSelectionRepository(d2: D2): ProgramStageSelectionRepository =
+        ProgramStageSelectionRepositoryImpl(
             programUid,
             enrollmentUid,
             eventCreationType,
             d2,
         )
-    }
 
     @Provides
     @PerActivity
-    fun provideCreateEventUseCase(
-        dispatcherProvider: DispatcherProvider,
-        repository: CreateEventUseCaseRepository,
-    ) = CreateEventUseCase(dispatcherProvider, repository)
+    fun provideCreateEventUseCase(repository: CreateEventUseCaseRepositoryImpl) = CreateEventUseCase(repository)
 
     @Provides
     @PerActivity
     fun provideCreateEventUseCaseRepository(
         d2: D2,
         dateUtils: DateUtils,
-    ) = CreateEventUseCaseRepository(d2, dateUtils)
+    ) = CreateEventUseCaseRepositoryImpl(d2, dateUtils)
 
     @Provides
     @PerActivity

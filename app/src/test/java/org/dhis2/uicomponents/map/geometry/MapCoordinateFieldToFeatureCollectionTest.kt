@@ -21,7 +21,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class MapCoordinateFieldToFeatureCollectionTest {
-
     private lateinit var mapper: MapCoordinateFieldToFeatureCollection
     private val attributeToFeatureMapper: MapAttributeToFeature = mock()
     private val dataElementToFeatureMapper: MapDataElementToFeature = mock()
@@ -53,50 +52,131 @@ class MapCoordinateFieldToFeatureCollectionTest {
         assertTrue(result.isEmpty())
     }
 
-    private fun mockedDataElementInfoList(): List<CoordinateDataElementInfo> {
-        return listOf(
+    private fun mockedDataElementInfoList(): List<CoordinateDataElementInfo> =
+        listOf(
             CoordinateDataElementInfo(
-                Event.builder().uid("eventUid").programStage("stageUid").build(),
-                ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
-                DataElement.builder().uid("deUid").displayFormName("deName").build(),
-                Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                Event
+                    .builder()
+                    .uid("eventUid")
+                    .programStage("stageUid")
+                    .build(),
+                ProgramStage
+                    .builder()
+                    .uid("stageUid")
+                    .displayName("stageName")
+                    .build(),
+                DataElement
+                    .builder()
+                    .uid("deUid")
+                    .displayFormName("deName")
+                    .build(),
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .trackedEntityInstance("teiUid")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateDataElementInfo(
-                Event.builder().uid("eventUid").programStage("stageUid").build(),
-                ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
-                DataElement.builder().uid("de2Uid").displayFormName("de2Name").build(),
-                Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                Event
+                    .builder()
+                    .uid("eventUid")
+                    .programStage("stageUid")
+                    .build(),
+                ProgramStage
+                    .builder()
+                    .uid("stageUid")
+                    .displayName("stageName")
+                    .build(),
+                DataElement
+                    .builder()
+                    .uid("de2Uid")
+                    .displayFormName("de2Name")
+                    .build(),
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .trackedEntityInstance("teiUid")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateDataElementInfo(
-                Event.builder().uid("event2Uid").programStage("stageUid").build(),
-                ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
-                DataElement.builder().uid("deUid").displayFormName("deName").build(),
-                Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                Event
+                    .builder()
+                    .uid("event2Uid")
+                    .programStage("stageUid")
+                    .build(),
+                ProgramStage
+                    .builder()
+                    .uid("stageUid")
+                    .displayName("stageName")
+                    .build(),
+                DataElement
+                    .builder()
+                    .uid("deUid")
+                    .displayFormName("deName")
+                    .build(),
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .trackedEntityInstance("teiUid")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
         )
-    }
 
-    private fun mockedAttributeInfoList(): List<CoordinateAttributeInfo> {
-        return listOf(
+    private fun mockedAttributeInfoList(): List<CoordinateAttributeInfo> =
+        listOf(
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
-                TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                TrackedEntityAttribute
+                    .builder()
+                    .uid("attrUid")
+                    .displayFormName("attrName")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("teiUid").build(),
-                TrackedEntityAttribute.builder().uid("attr2Uid")
-                    .displayFormName("attr2Name").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                TrackedEntityAttribute
+                    .builder()
+                    .uid("attr2Uid")
+                    .displayFormName("attr2Name")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateAttributeInfo(
                 TrackedEntityInstance.builder().uid("tei2Uid").build(),
-                TrackedEntityAttribute.builder().uid("attrUid").displayFormName("attrName").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                TrackedEntityAttribute
+                    .builder()
+                    .uid("attrUid")
+                    .displayFormName("attrName")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
         )
-    }
 }

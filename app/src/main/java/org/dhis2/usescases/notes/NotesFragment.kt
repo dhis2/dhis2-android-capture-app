@@ -47,8 +47,10 @@ import org.dhis2.usescases.notes.noteDetail.NoteDetailActivity
 import org.hisp.dhis.android.core.note.Note
 import javax.inject.Inject
 
-class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener {
-
+class NotesFragment :
+    FragmentGlobalAbstract(),
+    NotesView,
+    NoteItemClickListener {
     @Inject
     lateinit var presenter: NotesPresenter
 
@@ -61,7 +63,10 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
 
     companion object {
         @JvmStatic
-        fun newEventInstance(programUid: String, eventUid: String): NotesFragment {
+        fun newEventInstance(
+            programUid: String,
+            eventUid: String,
+        ): NotesFragment {
             val instance = NotesFragment()
             val args = Bundle()
             args.putString(Constants.PROGRAM_UID, programUid)
@@ -72,7 +77,10 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         }
 
         @JvmStatic
-        fun newTrackerInstance(programUid: String, teiUid: String): NotesFragment {
+        fun newTrackerInstance(
+            programUid: String,
+            teiUid: String,
+        ): NotesFragment {
             val instance = NotesFragment()
             val args = Bundle()
             args.putString(Constants.PROGRAM_UID, programUid)
@@ -105,27 +113,33 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
         noteAdapter = NotesAdapter(this)
         binding.notesRecycler.adapter = noteAdapter
         binding.addNoteButton.setOnClickListener {
-            val intent = Intent(activity, NoteDetailActivity::class.java).apply {
-                putExtra(Constants.PROGRAM_UID, programUid)
-                putExtra(Constants.UID, uid)
-                putExtra(Constants.NOTE_TYPE, noteType)
-            }
+            val intent =
+                Intent(activity, NoteDetailActivity::class.java).apply {
+                    putExtra(Constants.PROGRAM_UID, programUid)
+                    putExtra(Constants.UID, uid)
+                    putExtra(Constants.NOTE_TYPE, noteType)
+                }
             startActivity(intent)
         }
         return binding.root
     }
 
-    override fun onNoteClick(view: View, note: Note) {
-        val intent = Intent(activity, NoteDetailActivity::class.java).apply {
-            putExtra(Constants.NOTE_ID, note.uid())
-            putExtra(Constants.PROGRAM_UID, programUid)
-            putExtra(Constants.UID, uid)
-            putExtra(Constants.NOTE_TYPE, noteType)
-        }
-        val pairStoredBy = Pair.create<View, String>(
-            view.findViewById<TextView>(R.id.storeBy),
-            getString(R.string.transitionElement_storeBy),
-        )
+    override fun onNoteClick(
+        view: View,
+        note: Note,
+    ) {
+        val intent =
+            Intent(activity, NoteDetailActivity::class.java).apply {
+                putExtra(Constants.NOTE_ID, note.uid())
+                putExtra(Constants.PROGRAM_UID, programUid)
+                putExtra(Constants.UID, uid)
+                putExtra(Constants.NOTE_TYPE, noteType)
+            }
+        val pairStoredBy =
+            Pair.create<View, String>(
+                view.findViewById<TextView>(R.id.storeBy),
+                getString(R.string.transitionElement_storeBy),
+            )
         val pairNoteText =
             Pair.create<View, String>(
                 view.findViewById<TextView>(R.id.note_text),
@@ -141,18 +155,20 @@ class NotesFragment : FragmentGlobalAbstract(), NotesView, NoteItemClickListener
                 view.findViewById<ImageView>(R.id.userInit),
                 getString(R.string.transitionElement_userInit),
             )
-        val pairDate = Pair.create<View, String>(
-            view.findViewById<ImageView>(R.id.date),
-            getString(R.string.transitionElement_date),
-        )
-        val options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-            abstractActivity,
-            pairNoteText,
-            pairStoredBy,
-            pairUserImage,
-            pairUserInit,
-            pairDate,
-        )
+        val pairDate =
+            Pair.create<View, String>(
+                view.findViewById<ImageView>(R.id.date),
+                getString(R.string.transitionElement_date),
+            )
+        val options =
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                abstractActivity,
+                pairNoteText,
+                pairStoredBy,
+                pairUserImage,
+                pairUserInit,
+                pairDate,
+            )
         startActivity(intent, options.toBundle())
     }
 

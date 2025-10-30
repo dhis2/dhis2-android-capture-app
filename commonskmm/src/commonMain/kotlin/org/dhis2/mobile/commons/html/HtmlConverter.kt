@@ -12,10 +12,12 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 /**
  * Convert HTML to AnnotatedString using the built-in parser.
  */
-private var mainStyle = SpanStyle(
-    color = TextColor.OnSurfaceLight,
-    fontSize = 16.sp,
-)
+private var mainStyle =
+    SpanStyle(
+        color = TextColor.OnSurfaceLight,
+        fontSize = 16.sp,
+    )
+
 fun htmlToAnnotatedString(
     html: String,
     linkStyle: HtmlStyle = HtmlStyle.DEFAULT,

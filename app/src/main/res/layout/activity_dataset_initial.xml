@@ -47,7 +47,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
                 android:gravity="start|center"
-                android:text="@{dataSetModel.displayName()}"
+                android:text="@{dataSetModel.displayName}"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"
                 tools:text="DATA_SET_TITLE" />
@@ -124,7 +124,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:focusable="false"
-                        android:onClick="@{()->presenter.onReportPeriodClick(dataSetModel.periodType())}"
+                        android:onClick="@{()->presenter.onReportPeriodClick(dataSetModel.periodType)}"
                         android:textColor="@color/text_black_333"
                         android:textSize="15sp"
                         tools:text="June 2018" />
@@ -147,7 +147,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:onClick="@{() -> presenter.onActionButtonClick(dataSetModel.periodType())}"
+            android:onClick="@{() -> presenter.onActionButtonClick(dataSetModel.periodType)}"
             android:text="@string/next"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

@@ -1,7 +1,5 @@
 package org.dhis2.uicomponents.map.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.mapper.feature.MapCoordinateFieldToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapDataElementToFeature
 import org.dhis2.maps.utils.CoordinateDataElementInfo
@@ -15,6 +13,8 @@ import org.hisp.dhis.android.core.program.ProgramStage
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
@@ -61,67 +61,128 @@ class MapDataElementToFeatureTest {
         assertTrue(result.isEmpty())
     }
 
-    private fun mockedDataElementInfoList(): List<CoordinateDataElementInfo> {
-        return listOf(
+    private fun mockedDataElementInfoList(): List<CoordinateDataElementInfo> =
+        listOf(
             CoordinateDataElementInfo(
-                Event.builder().uid("eventUid").programStage("stageUid").build(),
-                ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
-                DataElement.builder().uid("deUid").displayFormName("deName").build(),
-                Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                Event
+                    .builder()
+                    .uid("eventUid")
+                    .programStage("stageUid")
+                    .build(),
+                ProgramStage
+                    .builder()
+                    .uid("stageUid")
+                    .displayName("stageName")
+                    .build(),
+                DataElement
+                    .builder()
+                    .uid("deUid")
+                    .displayFormName("deName")
+                    .build(),
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .trackedEntityInstance("teiUid")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateDataElementInfo(
-                Event.builder().uid("eventUid").programStage("stageUid").build(),
-                ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
-                DataElement.builder().uid("de2Uid").displayFormName("de2Name").build(),
-                Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                Event
+                    .builder()
+                    .uid("eventUid")
+                    .programStage("stageUid")
+                    .build(),
+                ProgramStage
+                    .builder()
+                    .uid("stageUid")
+                    .displayName("stageName")
+                    .build(),
+                DataElement
+                    .builder()
+                    .uid("de2Uid")
+                    .displayFormName("de2Name")
+                    .build(),
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .trackedEntityInstance("teiUid")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
             CoordinateDataElementInfo(
-                Event.builder().uid("event2Uid").programStage("stageUid").build(),
-                ProgramStage.builder().uid("stageUid").displayName("stageName").build(),
-                DataElement.builder().uid("deUid").displayFormName("deName").build(),
-                Enrollment.builder().uid("enrollmentUid").trackedEntityInstance("teiUid").build(),
-                Geometry.builder().coordinates("[0, 0]").type(FeatureType.POINT).build(),
+                Event
+                    .builder()
+                    .uid("event2Uid")
+                    .programStage("stageUid")
+                    .build(),
+                ProgramStage
+                    .builder()
+                    .uid("stageUid")
+                    .displayName("stageName")
+                    .build(),
+                DataElement
+                    .builder()
+                    .uid("deUid")
+                    .displayFormName("deName")
+                    .build(),
+                Enrollment
+                    .builder()
+                    .uid("enrollmentUid")
+                    .trackedEntityInstance("teiUid")
+                    .build(),
+                Geometry
+                    .builder()
+                    .coordinates("[0, 0]")
+                    .type(FeatureType.POINT)
+                    .build(),
             ),
         )
-    }
 
-    private fun mockedFeatures(): List<Feature> {
-        return listOf(
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE,
-                ),
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE,
-                )
-            },
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
-                ),
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
-                )
-            },
-            Feature.fromGeometry(
-                Point.fromLngLat(
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
-                    MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
-                ),
-            ).also {
-                it.addStringProperty(
-                    MapEventToFeatureCollectionTest.UID,
-                    MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
-                )
-            },
+    private fun mockedFeatures(): List<Feature> =
+        listOf(
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(
+                        MapEventToFeatureCollectionTest.FIRST_FEATURE_LONGITUDE,
+                        MapEventToFeatureCollectionTest.FIRST_FEATURE_LATITUDE,
+                    ),
+                ).also {
+                    it.addStringProperty(
+                        MapEventToFeatureCollectionTest.UID,
+                        MapEventToFeatureCollectionTest.UID_FIRST_EVENT_VALUE,
+                    )
+                },
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
+                    ),
+                ).also {
+                    it.addStringProperty(
+                        MapEventToFeatureCollectionTest.UID,
+                        MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
+                    )
+                },
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LONGITUDE,
+                        MapEventToFeatureCollectionTest.SECOND_FEATURE_LATITUDE,
+                    ),
+                ).also {
+                    it.addStringProperty(
+                        MapEventToFeatureCollectionTest.UID,
+                        MapEventToFeatureCollectionTest.UID_SECOND_EVENT_VALUE,
+                    )
+                },
         )
-    }
 }

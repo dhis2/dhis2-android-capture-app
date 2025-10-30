@@ -38,6 +38,7 @@ import kotlinx.coroutines.CoroutineScope;
 import kotlinx.coroutines.flow.Flow;
 import kotlinx.coroutines.flow.MutableSharedFlow;
 import kotlinx.coroutines.flow.MutableStateFlow;
+import timber.log.Timber;
 
 public class FilterManager implements Serializable {
 
@@ -528,7 +529,7 @@ public class FilterManager implements Serializable {
             try {
                 enrollmentPeriodFilters.clear();
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
         }
         enrollmentPeriodIdSelected.set(R.id.anytime);

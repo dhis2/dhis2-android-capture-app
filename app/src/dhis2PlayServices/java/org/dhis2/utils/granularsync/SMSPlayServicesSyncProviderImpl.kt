@@ -47,25 +47,28 @@ class SMSPlayServicesSyncProviderImpl(
     override val syncContext: SyncContext,
     override val resourceManager: ResourceManager,
 ) : SMSSyncProvider {
-
     private val confirmationMessage = MutableLiveData<Boolean?>(null)
 
     override fun observeConfirmationNumber(): LiveData<Boolean?> = confirmationMessage
 
-    private val smsReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            if (SmsRetriever.SMS_RETRIEVED_ACTION != intent.action) return
+    private val smsReceiver: BroadcastReceiver =
+        object : BroadcastReceiver() {
+            override fun onReceive(
+                context: Context,
+                intent: Intent,
+            ) {
+                if (SmsRetriever.SMS_RETRIEVED_ACTION != intent.action) return
 
-            val extras = intent.extras
-            val smsRetrieverStatus = extras?.get(SmsRetriever.EXTRA_STATUS) as? Status
-            if (smsRetrieverStatus?.statusCode == CommonStatusCodes.SUCCESS) {
-                val consentIntent: Intent? = extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT)
-                confirmationMessage.postValue(true)
-            } else {
-                confirmationMessage.postValue(false)
+                val extras = intent.extras
+                val smsRetrieverStatus = extras?.get(SmsRetriever.EXTRA_STATUS) as? Status
+                if (smsRetrieverStatus?.statusCode == CommonStatusCodes.SUCCESS) {
+                    val consentIntent: Intent? = extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT)
+                    confirmationMessage.postValue(true)
+                } else {
+                    confirmationMessage.postValue(false)
+                }
             }
         }
-    }
 
     override var smsSender: SmsSubmitCase = d2.smsModule().smsSubmitCase()
 
@@ -102,28 +105,27 @@ class SMSPlayServicesSyncProviderImpl(
         }
     }
 
-    override fun convertSimpleEvent(): Single<ConvertTaskResult> {
-        return smsSender.compressSimpleEvent(syncContext.recordUid())
+    override fun convertSimpleEvent(): Single<ConvertTaskResult> =
+        smsSender
+            .compressSimpleEvent(syncContext.recordUid())
             .map { msg -> ConvertTaskResult.Message(msg) }
-    }
 
-    override fun convertTrackerEvent(): Single<ConvertTaskResult> {
-        return smsSender.compressTrackerEvent(syncContext.recordUid())
+    override fun convertTrackerEvent(): Single<ConvertTaskResult> =
+        smsSender
+            .compressTrackerEvent(syncContext.recordUid())
             .map { msg -> ConvertTaskResult.Message(msg) }
-    }
 
-    override fun convertEnrollment(): Single<ConvertTaskResult> {
-        return smsSender.compressEnrollment(syncContext.recordUid()).map { msg ->
+    override fun convertEnrollment(): Single<ConvertTaskResult> =
+        smsSender.compressEnrollment(syncContext.recordUid()).map { msg ->
             ConvertTaskResult.Message(msg)
         }
-    }
 
-    override fun convertDataSet(): Single<ConvertTaskResult> {
-        return with(syncContext as SyncContext.DataSetInstance) {
-            smsSender.compressDataSet(dataSetUid, orgUnitUid, periodId, attributeOptionComboUid)
+    override fun convertDataSet(): Single<ConvertTaskResult> =
+        with(syncContext as SyncContext.DataSetInstance) {
+            smsSender
+                .compressDataSet(dataSetUid, orgUnitUid, periodId, attributeOptionComboUid)
                 .map { msg -> ConvertTaskResult.Message(msg) }
         }
-    }
 
     override fun onSmsNotAccepted(): SmsSendingService.SendingStatus {
         val submissionId = smsSender.submissionId

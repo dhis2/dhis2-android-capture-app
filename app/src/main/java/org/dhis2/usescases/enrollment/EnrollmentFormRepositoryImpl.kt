@@ -18,7 +18,6 @@ class EnrollmentFormRepositoryImpl(
     teiRepository: TrackedEntityInstanceObjectRepository,
     private val enrollmentService: DhisEnrollmentUtils,
 ) : EnrollmentFormRepository {
-
     private var programUid: String =
         programRepository.blockingGet()?.uid() ?: throw NullPointerException()
     private var enrollmentUid: String =
@@ -26,19 +25,24 @@ class EnrollmentFormRepositoryImpl(
     private val tei: TrackedEntityInstance =
         teiRepository.blockingGet() ?: throw NullPointerException()
 
-    override fun generateEvents(): Single<Pair<String, String?>> {
-        return Single.fromCallable { enrollmentService.generateEnrollmentEvents(enrollmentUid) }
-    }
+    override fun generateEvents(): Single<Pair<String, String?>> =
+        Single.fromCallable {
+            enrollmentService.generateEnrollmentEvents(enrollmentUid, tei.uid())
+        }
 
     override fun getProfilePicture() = tei.profilePicturePath(d2, programUid)
 
     override fun getProgramStageUidFromEvent(eventUi: String) =
-        d2.eventModule().events().uid(eventUi).blockingGet()?.programStage()
+        d2
+            .eventModule()
+            .events()
+            .uid(eventUi)
+            .blockingGet()
+            ?.programStage()
 
-    override fun hasWriteAccess(): Boolean {
-        return d2.enrollmentModule().enrollmentService().blockingGetEnrollmentAccess(
+    override fun hasWriteAccess(): Boolean =
+        d2.enrollmentModule().enrollmentService().blockingGetEnrollmentAccess(
             tei.uid(),
             programUid,
         ) == EnrollmentAccess.WRITE_ACCESS
-    }
 }

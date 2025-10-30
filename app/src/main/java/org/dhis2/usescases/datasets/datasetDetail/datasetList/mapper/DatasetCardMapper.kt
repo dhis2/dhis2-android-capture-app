@@ -2,13 +2,13 @@ package org.dhis2.usescases.datasets.datasetDetail.datasetList.mapper
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R
@@ -28,20 +28,19 @@ class DatasetCardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
 ) {
-
     fun map(
         dataset: DataSetDetailModel,
         editable: Boolean,
         onSyncIconClick: () -> Unit,
         onCardCLick: () -> Unit,
-    ): ListCardUiModel {
-        return ListCardUiModel(
-            title = dataset.namePeriod(),
-            lastUpdated = dataset.lastUpdated().toDateSpan(context),
+    ): ListCardUiModel =
+        ListCardUiModel(
+            title = dataset.namePeriod,
+            lastUpdated = dataset.lastUpdated.toDateSpan(context),
             additionalInfo = getAdditionalInfoList(dataset, editable),
             actionButton = {
                 ProvideSyncButton(
-                    state = dataset.state(),
+                    state = dataset.state,
                     onSyncIconClick = onSyncIconClick,
                 )
             },
@@ -49,7 +48,6 @@ class DatasetCardMapper(
             shrinkLabelText = resourceManager.getString(R.string.show_less),
             onCardCLick = onCardCLick,
         )
-    }
 
     private fun getAdditionalInfoList(
         dataset: DataSetDetailModel,
@@ -74,7 +72,7 @@ class DatasetCardMapper(
 
         checkSyncStatus(
             list = list,
-            state = dataset.state(),
+            state = dataset.state,
         )
 
         checkViewOnly(
@@ -111,11 +109,11 @@ class DatasetCardMapper(
         list: MutableList<AdditionalInfoItem>,
         dataset: DataSetDetailModel,
     ) {
-        if (dataset.nameCategoryOptionCombo() != "default") {
+        if (dataset.nameCategoryOptionCombo != "default") {
             list.add(
                 AdditionalInfoItem(
-                    key = "${dataset.nameCategoryOptionCombo()}:",
-                    value = dataset.nameCatCombo(),
+                    key = "${dataset.nameCategoryOptionCombo}:",
+                    value = dataset.nameCatCombo,
                     isConstantItem = true,
                 ),
             )
@@ -126,75 +124,79 @@ class DatasetCardMapper(
         list: MutableList<AdditionalInfoItem>,
         state: State,
     ) {
-        val item = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = resourceManager.getString(R.string.not_synced),
-                            tint = AdditionalInfoItemColor.DISABLED.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.not_synced),
-                    color = AdditionalInfoItemColor.DISABLED.color,
-                    isConstantItem = true,
-                )
-            }
+        val item =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncDisabled,
+                                contentDescription = resourceManager.getString(R.string.not_synced),
+                                tint = AdditionalInfoItemColor.DISABLED.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.not_synced),
+                        color = AdditionalInfoItemColor.DISABLED.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.UPLOADING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Sync,
-                            contentDescription = "Icon Button",
-                            tint = SurfaceColor.Primary,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.syncing),
-                    color = SurfaceColor.Primary,
-                    isConstantItem = true,
-                )
-            }
+                State.UPLOADING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Sync,
+                                contentDescription = "Icon Button",
+                                tint = SurfaceColor.Primary,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.syncing),
+                        color = SurfaceColor.Primary,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.ERROR -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_error_title),
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_error_title),
-                    color = AdditionalInfoItemColor.ERROR.color,
-                    isConstantItem = true,
-                )
-            }
+                State.ERROR -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_error_title),
+                                tint = AdditionalInfoItemColor.ERROR.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_error_title),
+                        color = AdditionalInfoItemColor.ERROR.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.WARNING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
-                            tint = AdditionalInfoItemColor.WARNING.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_dialog_title_warning),
-                    color = AdditionalInfoItemColor.WARNING.color,
-                    isConstantItem = true,
-                )
-            }
+                State.WARNING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
+                                tint = AdditionalInfoItemColor.WARNING.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_dialog_title_warning),
+                        color = AdditionalInfoItemColor.WARNING.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            else -> null
-        }
+                else -> null
+            }
         item?.let { list.add(it) }
     }
 
-    private fun checkDatasetCompletion(list: MutableList<AdditionalInfoItem>, completed: Boolean) {
+    private fun checkDatasetCompletion(
+        list: MutableList<AdditionalInfoItem>,
+        completed: Boolean,
+    ) {
         if (completed) {
             list.add(
                 AdditionalInfoItem(
@@ -217,11 +219,11 @@ class DatasetCardMapper(
         list: MutableList<AdditionalInfoItem>,
         dataset: DataSetDetailModel,
     ) {
-        if (dataset.displayOrgUnitName()) {
+        if (dataset.displayOrgUnitName) {
             list.add(
                 AdditionalInfoItem(
                     key = resourceManager.getString(R.string.registered_in),
-                    value = dataset.nameOrgUnit(),
+                    value = dataset.nameOrgUnit,
                     isConstantItem = true,
                 ),
             )
@@ -229,22 +231,26 @@ class DatasetCardMapper(
     }
 
     @Composable
-    private fun ProvideSyncButton(state: State?, onSyncIconClick: () -> Unit) {
-        val buttonText = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                resourceManager.getString(R.string.sync)
-            }
+    private fun ProvideSyncButton(
+        state: State?,
+        onSyncIconClick: () -> Unit,
+    ) {
+        val buttonText =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> {
+                    resourceManager.getString(R.string.sync)
+                }
 
-            State.ERROR,
-            State.WARNING,
-            -> {
-                resourceManager.getString(R.string.sync_retry)
-            }
+                State.ERROR,
+                State.WARNING,
+                -> {
+                    resourceManager.getString(R.string.sync_retry)
+                }
 
-            else -> null
-        }
+                else -> null
+            }
         buttonText?.let {
             Button(
                 style = ButtonStyle.TONAL,

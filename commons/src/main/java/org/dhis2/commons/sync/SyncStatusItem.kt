@@ -32,7 +32,10 @@ sealed class SyncStatusType {
         val programUid: String,
     ) : SyncStatusType()
 
-    data class EventProgram(val programUid: String) : SyncStatusType()
+    data class EventProgram(
+        val programUid: String,
+    ) : SyncStatusType()
+
     data class Event(
         val eventUid: String,
         val programUid: String,
@@ -40,7 +43,10 @@ sealed class SyncStatusType {
         val hasNullDataElementConflict: Boolean = false,
     ) : SyncStatusType()
 
-    data class DataSet(val dataSetUid: String) : SyncStatusType()
+    data class DataSet(
+        val dataSetUid: String,
+    ) : SyncStatusType()
+
     data class DataSetInstance(
         val dataSetUid: String,
         val orgUnitUid: String,

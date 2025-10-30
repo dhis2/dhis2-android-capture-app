@@ -20,7 +20,6 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 
 class SyncStateFilterTest {
-
     private val resourceManger: ResourceManager = mock()
 
     @Rule
@@ -38,12 +37,13 @@ class SyncStateFilterTest {
 
         filterManager = FilterManager.initWith(resourceManger)
         filterManager.reset()
-        syncStateFilter = SyncStateFilter(
-            ProgramType.ALL,
-            sortingItem,
-            openFilter,
-            "sync",
-        )
+        syncStateFilter =
+            SyncStateFilter(
+                ProgramType.ALL,
+                sortingItem,
+                openFilter,
+                "sync",
+            )
     }
 
     @After
@@ -82,12 +82,13 @@ class SyncStateFilterTest {
                     State.TO_POST,
                     State.UPLOADING,
                 ),
-            ) && !filterManager.stateFilters.containsAll(
-                listOf(
-                    State.SYNCED_VIA_SMS,
-                    State.SENT_VIA_SMS,
+            ) &&
+                !filterManager.stateFilters.containsAll(
+                    listOf(
+                        State.SYNCED_VIA_SMS,
+                        State.SENT_VIA_SMS,
+                    ),
                 ),
-            ),
         )
     }
 

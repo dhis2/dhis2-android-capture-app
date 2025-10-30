@@ -1,6 +1,6 @@
 package org.dhis2.commons.filters.periods.model
 
-enum class FilterPeriodType() {
+enum class FilterPeriodType {
     NONE,
     DAILY,
     WEEKLY,

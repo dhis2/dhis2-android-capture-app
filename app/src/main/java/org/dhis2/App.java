@@ -43,8 +43,6 @@ import org.dhis2.data.user.UserModule;
 import org.dhis2.di.KoinInitialization;
 import org.dhis2.maps.MapController;
 import org.dhis2.usescases.crash.CrashActivity;
-import org.dhis2.usescases.login.LoginComponent;
-import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
@@ -62,7 +60,6 @@ import java.net.SocketException;
 import javax.inject.Singleton;
 
 import cat.ereza.customactivityoncrash.config.CaocConfig;
-import dagger.hilt.android.HiltAndroidApp;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentModule;
 import io.reactivex.Scheduler;
@@ -74,7 +71,6 @@ import io.sentry.SentryLevel;
 import io.sentry.android.core.SentryAndroid;
 import timber.log.Timber;
 
-@HiltAndroidApp
 public class App extends MultiDexApplication implements Components, LifecycleObserver {
 
     @NonNull
@@ -88,10 +84,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Nullable
     @PerUser
     protected UserComponent userComponent;
-
-    @Nullable
-    @PerActivity
-    LoginComponent loginComponent;
 
     @Nullable
     @PerActivity
@@ -190,7 +182,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     ////////////////////////////////////////////////////////////////////////
     // App component
-    ////////////////////////////////////////////////////////////////////////
+
+    /// /////////////////////////////////////////////////////////////////////
     @NonNull
     protected AppComponent.Builder prepareAppComponent() {
         return DaggerAppComponent.builder()
@@ -202,7 +195,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
                 .workManagerController(new WorkManagerModule())
                 .sessionManagerService(new SessionManagerModule())
                 .coroutineDispatchers(new DispatcherModule())
-                .customDispatcher(new CustomDispatcherModule())
                 .featureConfigModule(new FeatureConfigModule());
     }
 
@@ -213,29 +205,9 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     }
 
     ////////////////////////////////////////////////////////////////////////
-    // Login component
-    ////////////////////////////////////////////////////////////////////////
-
-    @NonNull
-    @Override
-    public LoginComponent createLoginComponent(LoginModule loginModule) {
-        return (loginComponent = appComponent.plus(loginModule));
-    }
-
-    @Nullable
-    @Override
-    public LoginComponent loginComponent() {
-        return loginComponent;
-    }
-
-    @Override
-    public void releaseLoginComponent() {
-        loginComponent = null;
-    }
-
-    ////////////////////////////////////////////////////////////////////////
     // Server component
-    ////////////////////////////////////////////////////////////////////////
+
+    /// /////////////////////////////////////////////////////////////////////
 
     @Override
     public ServerComponent createServerComponent() {
@@ -262,7 +234,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     ////////////////////////////////////////////////////////////////////////
     // User component
-    ////////////////////////////////////////////////////////////////////////
+
+    /// /////////////////////////////////////////////////////////////////////
 
     @Override
     public UserComponent createUserComponent() {
@@ -281,7 +254,8 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     ////////////////////////////////////////////////////////////////////////
     // Dashboard component
-    ////////////////////////////////////////////////////////////////////////
+
+    /// /////////////////////////////////////////////////////////////////////
     @NonNull
     public TeiDashboardComponent createDashboardComponent(@NonNull TeiDashboardModule dashboardModule) {
         if (dashboardComponent != null) {

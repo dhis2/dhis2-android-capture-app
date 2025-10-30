@@ -19,8 +19,8 @@ class ProgramViewModelFactory(
     private val syncStatusController: SyncStatusController,
     private val schedulerProvider: SchedulerProvider,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProgramViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        ProgramViewModel(
             view,
             programRepository,
             featureConfigRepository,
@@ -30,5 +30,4 @@ class ProgramViewModelFactory(
             syncStatusController,
             schedulerProvider,
         ) as T
-    }
 }

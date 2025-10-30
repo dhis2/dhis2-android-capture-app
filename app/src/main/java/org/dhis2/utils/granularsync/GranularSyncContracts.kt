@@ -26,9 +26,12 @@
 package org.dhis2.utils.granularsync
 
 class GranularSyncContracts {
-
     interface View {
         fun checkSmsPermission(): Boolean
-        fun openSmsApp(message: String, smsToNumber: String)
+
+        fun openSmsApp(
+            message: String,
+            smsToNumber: String,
+        )
     }
 }

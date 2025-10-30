@@ -6,7 +6,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ValidationUtilsTest {
-
     @Test
     fun `integer should remove left zeroes`() {
         val result = ValidationUtils.validate(ValueType.INTEGER, "0120")

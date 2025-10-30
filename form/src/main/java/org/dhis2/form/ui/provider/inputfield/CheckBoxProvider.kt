@@ -23,22 +23,23 @@ internal fun ProvideCheckBoxInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val dataMap = buildMap {
-        fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
-            repeat(paging.itemCount) { index ->
-                val optionData = paging[index]
-                put(
-                    optionData?.option?.code() ?: "",
-                    CheckBoxData(
-                        uid = optionData?.option?.uid() ?: "",
-                        checked = fieldUiModel.displayName == optionData?.option?.displayName(),
-                        enabled = true,
-                        textInput = optionData?.option?.displayName() ?: "",
-                    ),
-                )
+    val dataMap =
+        buildMap {
+            fieldUiModel.optionSetConfiguration?.optionFlow?.collectAsLazyPagingItems()?.let { paging ->
+                repeat(paging.itemCount) { index ->
+                    val optionData = paging[index]
+                    put(
+                        optionData?.option?.code() ?: "",
+                        CheckBoxData(
+                            uid = optionData?.option?.uid() ?: "",
+                            checked = fieldUiModel.displayName == optionData?.option?.displayName(),
+                            enabled = true,
+                            textInput = optionData?.option?.displayName() ?: "",
+                        ),
+                    )
+                }
             }
         }
-    }
 
     val (codeList, data) = dataMap.toList().unzip()
 
@@ -78,20 +79,21 @@ internal fun ProvideYesNoCheckBoxInput(
     intentHandler: (FormIntent) -> Unit,
     resources: ResourceManager,
 ) {
-    val data = listOf(
-        CheckBoxData(
-            uid = "true",
-            checked = fieldUiModel.isAffirmativeChecked,
-            enabled = true,
-            textInput = resources.getString(R.string.yes),
-        ),
-        CheckBoxData(
-            uid = "false",
-            checked = fieldUiModel.isNegativeChecked,
-            enabled = true,
-            textInput = resources.getString(R.string.no),
-        ),
-    )
+    val data =
+        listOf(
+            CheckBoxData(
+                uid = "true",
+                checked = fieldUiModel.isAffirmativeChecked,
+                enabled = true,
+                textInput = resources.getString(R.string.yes),
+            ),
+            CheckBoxData(
+                uid = "false",
+                checked = fieldUiModel.isNegativeChecked,
+                enabled = true,
+                textInput = resources.getString(R.string.no),
+            ),
+        )
 
     InputCheckBox(
         modifier = modifier,
@@ -143,12 +145,13 @@ internal fun ProvideYesOnlyCheckBoxInput(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    val cbData = CheckBoxData(
-        uid = "",
-        checked = fieldUiModel.isAffirmativeChecked,
-        enabled = true,
-        textInput = fieldUiModel.label,
-    )
+    val cbData =
+        CheckBoxData(
+            uid = "",
+            checked = fieldUiModel.isAffirmativeChecked,
+            enabled = true,
+            textInput = fieldUiModel.label,
+        )
 
     InputYesOnlyCheckBox(
         modifier = modifier,

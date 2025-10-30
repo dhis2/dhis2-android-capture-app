@@ -8,7 +8,6 @@ class ValidationResultViolationsAdapter(
     fa: FragmentActivity,
     private val violations: List<Violation>,
 ) : FragmentStateAdapter(fa) {
-
     override fun getItemCount() = violations.size
 
     override fun createFragment(position: Int): Fragment {

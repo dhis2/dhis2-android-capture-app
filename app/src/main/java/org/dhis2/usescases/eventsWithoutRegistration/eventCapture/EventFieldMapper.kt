@@ -11,7 +11,6 @@ class EventFieldMapper(
     private val fieldFactory: FieldViewModelFactory,
     private val mandatoryFieldWarning: String,
 ) {
-
     var totalFields: Int = 0
     var unsupportedFields: Int = 0
     private lateinit var visualDataElements: MutableList<String?>
@@ -21,21 +20,21 @@ class EventFieldMapper(
     private lateinit var finalFields: MutableMap<String, Boolean>
 
     fun map(
-        fields: MutableList<FieldUiModel>,
-        sectionList: MutableList<FormSectionViewModel>,
+        fields: List<FieldUiModel>,
+        sectionList: List<FormSectionViewModel>,
         currentSection: String,
-        errors: MutableMap<String, String>,
-        warnings: MutableMap<String, String>,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
+        errors: Map<String, String>,
+        warnings: Map<String, String>,
+        emptyMandatoryFields: Map<String, FieldUiModel>,
         showErrors: Pair<Boolean, Boolean>,
-    ): Pair<MutableList<EventSectionModel>, MutableList<FieldUiModel>> {
+    ): Pair<List<EventSectionModel>, List<FieldUiModel>> {
         clearAll()
         setFieldMap(fields, sectionList, showErrors.first, emptyMandatoryFields)
         sectionList.forEach {
             handleSection(fields, sectionList, it, currentSection)
         }
 
-        if (eventSectionModels.first().sectionName() == "NO_SECTION") {
+        if (eventSectionModels.first().sectionName == "NO_SECTION") {
             finalFieldList.add(fieldFactory.createClosingSection())
         }
 
@@ -46,36 +45,41 @@ class EventFieldMapper(
             var mandatoryCounter = 0
             if (showErrors.first) {
                 repeat(
-                    warnings.filter { warning ->
-                        fields.firstOrNull { field ->
-                            field.uid == warning.key && field.programStageSection == section.uid
-                        } != null
-                    }.size +
+                    warnings
+                        .filter { warning ->
+                            fields.firstOrNull { field ->
+                                field.uid == warning.key && field.programStageSection == section.uid
+                            } != null
+                        }.size +
                         emptyMandatoryFields
-                            .filter { it.value.programStageSection == section.uid }.size,
+                            .filter { it.value.programStageSection == section.uid }
+                            .size,
                 ) { mandatoryCounter++ }
             }
             if (showErrors.second) {
                 repeat(
-                    errors.filter { error ->
-                        fields.firstOrNull { field ->
-                            field.uid == error.key && field.programStageSection == section.uid
-                        } != null
-                    }.size,
+                    errors
+                        .filter { error ->
+                            fields.firstOrNull { field ->
+                                field.uid == error.key && field.programStageSection == section.uid
+                            } != null
+                        }.size,
                 ) { errorCounter++ }
             }
             finalFieldList[finalFieldList.indexOf(section)] =
                 section.apply {
-                    this.errors = if (errorCounter != 0) {
-                        errorCounter
-                    } else {
-                        0
-                    }
-                    this.warnings = if (mandatoryCounter != 0) {
-                        mandatoryCounter
-                    } else {
-                        0
-                    }
+                    this.errors =
+                        if (errorCounter != 0) {
+                            errorCounter
+                        } else {
+                            0
+                        }
+                    this.warnings =
+                        if (mandatoryCounter != 0) {
+                            mandatoryCounter
+                        } else {
+                            0
+                        }
                 }
         }
 
@@ -96,7 +100,7 @@ class EventFieldMapper(
         fields: List<FieldUiModel>,
         sectionList: List<FormSectionViewModel>,
         showMandatoryErrors: Boolean,
-        emptyMandatoryFields: MutableMap<String, FieldUiModel>,
+        emptyMandatoryFields: Map<String, FieldUiModel>,
     ) {
         fields.forEach { field ->
             val fieldSection = getFieldSection(field)
@@ -125,7 +129,10 @@ class EventFieldMapper(
 
     private fun getFieldSection(field: FieldUiModel) = field.programStageSection ?: ""
 
-    private fun updateFieldMap(fieldSection: String, field: FieldUiModel) {
+    private fun updateFieldMap(
+        fieldSection: String,
+        field: FieldUiModel,
+    ) {
         if (!fieldMap.containsKey(fieldSection)) {
             fieldMap[fieldSection] = ArrayList()
         }
@@ -148,22 +155,21 @@ class EventFieldMapper(
     private fun isValidMultiSection(
         sectionList: List<FormSectionViewModel>,
         sectionModel: FormSectionViewModel,
-    ): Boolean {
-        return sectionList.isNotEmpty() && sectionModel.sectionUid()!!.isNotEmpty()
-    }
+    ): Boolean = sectionList.isNotEmpty() && sectionModel.sectionUid!!.isNotEmpty()
 
     private fun isValidSingleSection(
         sectionList: List<FormSectionViewModel>,
         sectionModel: FormSectionViewModel,
-    ): Boolean {
-        return sectionList.size == 1 && sectionModel.sectionUid()?.isEmpty() == true
-    }
+    ): Boolean = sectionList.size == 1 && sectionModel.sectionUid?.isEmpty() == true
 
-    private fun handleMultiSection(sectionModel: FormSectionViewModel, section: String) {
+    private fun handleMultiSection(
+        sectionModel: FormSectionViewModel,
+        section: String,
+    ) {
         val fieldViewModels = mutableListOf<FieldUiModel>()
-        if (fieldMap[sectionModel.sectionUid()] != null) {
+        if (fieldMap[sectionModel.sectionUid] != null) {
             fieldViewModels.addAll(
-                fieldMap[sectionModel.sectionUid()] as Collection<FieldUiModel>,
+                fieldMap[sectionModel.sectionUid] as Collection<FieldUiModel>,
             )
         }
 
@@ -176,29 +182,29 @@ class EventFieldMapper(
         var cont = 0
         for (key in finalFields.keys) if (finalFields[key] == true) cont++
         eventSectionModels.add(
-            EventSectionModel.create(
-                sectionModel.label()!!,
-                sectionModel.sectionUid()!!,
+            EventSectionModel(
+                sectionModel.label!!,
+                sectionModel.sectionUid!!,
                 cont,
                 finalFields.keys.size,
             ),
         )
-        val isOpen = sectionModel.sectionUid() == section
-        if (fieldMap[sectionModel.sectionUid()]?.isNotEmpty() == true) {
+        val isOpen = sectionModel.sectionUid == section
+        if (fieldMap[sectionModel.sectionUid]?.isNotEmpty() == true) {
             finalFieldList.add(
                 fieldFactory.createSection(
-                    sectionModel.sectionUid()!!,
-                    sectionModel.label(),
+                    sectionModel.sectionUid,
+                    sectionModel.label,
                     "",
                     isOpen,
                     finalFields.keys.size,
                     cont,
-                    sectionModel.renderType(),
+                    sectionModel.renderType,
                 ),
             )
         }
-        if (isOpen && fieldMap[sectionModel.sectionUid()] != null) {
-            finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldUiModel>)
+        if (isOpen && fieldMap[sectionModel.sectionUid] != null) {
+            finalFieldList.addAll(fieldMap[sectionModel.sectionUid] as Collection<FieldUiModel>)
         }
     }
 
@@ -213,40 +219,40 @@ class EventFieldMapper(
         var cont = 0
         for (key in finalFields.keys) if (finalFields[key] == true) cont++
         eventSectionModels.add(
-            EventSectionModel.create(
+            EventSectionModel(
                 "NO_SECTION",
                 "no_section",
                 cont,
                 finalFields.keys.size,
             ),
         )
-        finalFieldList.addAll(fieldMap[sectionModel.sectionUid()] as Collection<FieldUiModel>)
+        finalFieldList.addAll(fieldMap[sectionModel.sectionUid] as Collection<FieldUiModel>)
     }
 
-    private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean {
-        return field.optionSet == null || field.renderingType?.isVisualOptionSet() == false
-    }
+    private fun fieldIsNotVisualOptionSet(field: FieldUiModel): Boolean =
+        field.optionSet == null || field.renderingType?.isVisualOptionSet() == false
 
     fun completedFieldsPercentage(): Float {
-        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields() }
+        val completedFields = eventSectionModels.sumOf { it.numberOfCompletedFields }
         return calculateCompletionPercentage(completedFields, totalFields)
     }
 
-    private fun isUnsupported(type: ValueType?): Boolean {
-        return when (type) {
+    private fun isUnsupported(type: ValueType?): Boolean =
+        when (type) {
             ValueType.TRACKER_ASSOCIATE,
             ValueType.USERNAME,
             -> true
 
             else -> false
         }
-    }
 
-    private fun calculateCompletionPercentage(completedFields: Int, totals: Int): Float {
-        return if (totals == 0) {
+    private fun calculateCompletionPercentage(
+        completedFields: Int,
+        totals: Int,
+    ): Float =
+        if (totals == 0) {
             100f
         } else {
             completedFields.toFloat() / totals.toFloat()
         }
-    }
 }

@@ -12,7 +12,6 @@ import org.hisp.dhis.android.core.category.CategoryOption
 class ConfigureEventCatCombo(
     val repository: EventDetailsRepository,
 ) {
-
     private var selectedCategoryOptions = mapOf<String, CategoryOption?>()
 
     operator fun invoke(categoryOption: Pair<String, String?>? = null): Flow<EventCatCombo> {
@@ -30,11 +29,12 @@ class ConfigureEventCatCombo(
                     categories = categories,
                     categoryOptions = categoryOptions,
                     selectedCategoryOptions = selectedCategoryOptions,
-                    isCompleted = isCompleted(
-                        isDefault = this?.isDefault ?: true,
-                        categories = this?.categories(),
-                        selectedCategoryOptions = selectedCategoryOptions,
-                    ),
+                    isCompleted =
+                        isCompleted(
+                            isDefault = this?.isDefault ?: true,
+                            categories = this?.categories(),
+                            selectedCategoryOptions = selectedCategoryOptions,
+                        ),
                     displayName = catComboDisplayName,
                 ),
             )
@@ -45,19 +45,23 @@ class ConfigureEventCatCombo(
         isDefault: Boolean,
         categories: List<Category>?,
         selectedCategoryOptions: Map<String, CategoryOption?>?,
-    ): Boolean {
-        return if (isDefault) {
+    ): Boolean =
+        if (isDefault) {
             true
         } else {
             !categories.isNullOrEmpty() && selectedCategoryOptions?.size == categories.size
         }
-    }
 
-    private fun getCatOptionComboUid(categoryComboUid: String, isDefault: Boolean): String? {
+    private fun getCatOptionComboUid(
+        categoryComboUid: String,
+        isDefault: Boolean,
+    ): String? {
         if (isDefault) {
-            return repository.getCatOptionCombos(
-                categoryComboUid,
-            ).firstOrNull()?.uid()
+            return repository
+                .getCatOptionCombos(
+                    categoryComboUid,
+                ).firstOrNull()
+                ?.uid()
         }
 
         val valuesList = getUidsList(selectedCategoryOptions.values.filterNotNull())
@@ -75,9 +79,7 @@ class ConfigureEventCatCombo(
         return null
     }
 
-    private fun getCatComboDisplayName(categoryComboUid: String): String? {
-        return repository.getCatOptionComboDisplayName(categoryComboUid)
-    }
+    private fun getCatComboDisplayName(categoryComboUid: String): String? = repository.getCatOptionComboDisplayName(categoryComboUid)
 
     private fun updateSelectedOptions(
         categoryOption: Pair<String, String?>?,
@@ -95,9 +97,10 @@ class ConfigureEventCatCombo(
         } else {
             categoryOption.let { pair ->
                 val copy = selectedCategoryOptions.toMutableMap()
-                copy[pair.first] = pair.second?.let { categoryOptionId ->
-                    repository.getCatOption(categoryOptionId)
-                }
+                copy[pair.first] =
+                    pair.second?.let { categoryOptionId ->
+                        repository.getCatOption(categoryOptionId)
+                    }
                 selectedCategoryOptions = copy
             }
         }
@@ -105,8 +108,8 @@ class ConfigureEventCatCombo(
         return selectedCategoryOptions
     }
 
-    private fun getCategories(categories: MutableList<Category>?): List<EventCategory> {
-        return categories?.map { category ->
+    private fun getCategories(categories: MutableList<Category>?): List<EventCategory> =
+        categories?.map { category ->
             EventCategory(
                 uid = category.uid(),
                 name = category.displayName() ?: category.uid(),
@@ -114,9 +117,6 @@ class ConfigureEventCatCombo(
                 options = repository.getCategoryOptions(category.uid()),
             )
         } ?: emptyList()
-    }
 
-    private fun getCategoryOptions(): Map<String, CategoryOption>? {
-        return repository.getOptionsFromCatOptionCombo()
-    }
+    private fun getCategoryOptions(): Map<String, CategoryOption>? = repository.getOptionsFromCatOptionCombo()
 }

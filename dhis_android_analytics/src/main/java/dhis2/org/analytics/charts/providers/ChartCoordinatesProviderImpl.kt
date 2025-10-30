@@ -21,7 +21,6 @@ class ChartCoordinatesProviderImpl(
     val periodStepProvider: PeriodStepProvider,
     val resourceManager: ResourceManager,
 ) : ChartCoordinatesProvider {
-
     override fun dataElementCoordinates(
         stageUid: String,
         teiUid: String,
@@ -31,22 +30,24 @@ class ChartCoordinatesProviderImpl(
         isDefault: Boolean,
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
-        return d2.analyticsModule().eventLineList()
-            .byProgramStage().eq(stageUid)
-            .byTrackedEntityInstance().eq(teiUid)
+        return d2
+            .analyticsModule()
+            .eventLineList()
+            .byProgramStage()
+            .eq(stageUid)
+            .byTrackedEntityInstance()
+            .eq(teiUid)
             .withDataElement(dataElementUid)
             .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
             .run {
                 selectedRelativePeriod?.let { relativePeriods ->
                     this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
                 } ?: this
-            }
-            .run {
+            }.run {
                 selectedOrgUnits?.let {
                     this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
                 } ?: this
-            }
-            .blockingEvaluate()
+            }.blockingEvaluate()
             .sortedBy { it.date }
             .mapNotNull { lineListResponse ->
                 if (initialPeriod == null) initialPeriod = lineListResponse.period
@@ -58,14 +59,16 @@ class ChartCoordinatesProviderImpl(
                 lineListResponseValue.value?.let { value ->
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
-                        position = if (isDefault) {
-                            null
-                        } else {
-                            periodStepProvider.getPeriodDiff(
-                                initialPeriod!!,
-                                lineListResponse.period,
-                            ).toFloat()
-                        },
+                        position =
+                            if (isDefault) {
+                                null
+                            } else {
+                                periodStepProvider
+                                    .getPeriodDiff(
+                                        initialPeriod!!,
+                                        lineListResponse.period,
+                                    ).toFloat()
+                            },
                         fieldValue = GraphFieldValue.Numeric(value.toFloatOrNull() ?: 0f),
                         legendValue = createLegendValue(legend),
                     )
@@ -82,32 +85,37 @@ class ChartCoordinatesProviderImpl(
         isDefault: Boolean,
     ): List<GraphPoint> {
         var initialPeriod: Period? = null
-        return d2.analyticsModule()
+        return d2
+            .analyticsModule()
             .eventLineList()
-            .byProgramStage().eq(stageUid)
-            .byTrackedEntityInstance().eq(teiUid)
+            .byProgramStage()
+            .eq(stageUid)
+            .byTrackedEntityInstance()
+            .eq(teiUid)
             .withProgramIndicator(indicatorUid)
             .withLegendStrategy(AnalyticsLegendStrategy.ByDataItem)
             .run {
                 selectedRelativePeriod?.let { relativePeriods ->
                     this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
                 } ?: this
-            }
-            .run {
+            }.run {
                 selectedOrgUnits?.let {
                     this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
                 } ?: this
-            }
-            .blockingEvaluate()
+            }.blockingEvaluate()
             .sortedBy { it.date }
             .filter {
                 try {
-                    !(it.values.first().value?.toFloat() ?: Float.NaN).isNaN()
+                    !(
+                        it.values
+                            .first()
+                            .value
+                            ?.toFloat() ?: Float.NaN
+                    ).isNaN()
                 } catch (e: java.lang.Exception) {
                     false
                 }
-            }
-            .mapNotNull { lineListResponse ->
+            }.mapNotNull { lineListResponse ->
                 val lineListResponseValue = lineListResponse.values.first()
 
                 lineListResponseValue.value?.let { value ->
@@ -117,14 +125,16 @@ class ChartCoordinatesProviderImpl(
 
                     GraphPoint(
                         eventDate = formattedDate(lineListResponse.date),
-                        position = if (isDefault) {
-                            null
-                        } else {
-                            periodStepProvider.getPeriodDiff(
-                                initialPeriod!!,
-                                lineListResponse.period,
-                            ).toFloat()
-                        },
+                        position =
+                            if (isDefault) {
+                                null
+                            } else {
+                                periodStepProvider
+                                    .getPeriodDiff(
+                                        initialPeriod!!,
+                                        lineListResponse.period,
+                                    ).toFloat()
+                            },
                         fieldValue = GraphFieldValue.Numeric(value.toFloat()),
                         legendValue = createLegendValue(legend),
                     )
@@ -142,39 +152,47 @@ class ChartCoordinatesProviderImpl(
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
     ): List<GraphPoint> {
-        var eventLineListRepository = d2.analyticsModule().eventLineList()
-            .byProgramStage().eq(stageUid)
-            .byTrackedEntityInstance().eq(teiUid)
-        eventLineListRepository = if (zScoreSavedIsDataElement) {
-            eventLineListRepository.withDataElement(zScoreValueContainerUid)
-        } else {
-            eventLineListRepository.withProgramIndicator(zScoreValueContainerUid)
-        }
-        eventLineListRepository = if (ageOrHeightIsDataElement) {
-            eventLineListRepository.withDataElement(ageOrHeightCountainerUid)
-        } else {
-            eventLineListRepository.withProgramIndicator(ageOrHeightCountainerUid)
-        }
+        var eventLineListRepository =
+            d2
+                .analyticsModule()
+                .eventLineList()
+                .byProgramStage()
+                .eq(stageUid)
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+        eventLineListRepository =
+            if (zScoreSavedIsDataElement) {
+                eventLineListRepository.withDataElement(zScoreValueContainerUid)
+            } else {
+                eventLineListRepository.withProgramIndicator(zScoreValueContainerUid)
+            }
+        eventLineListRepository =
+            if (ageOrHeightIsDataElement) {
+                eventLineListRepository.withDataElement(ageOrHeightCountainerUid)
+            } else {
+                eventLineListRepository.withProgramIndicator(ageOrHeightCountainerUid)
+            }
         return eventLineListRepository
             .run {
                 selectedRelativePeriod?.let { relativePeriods ->
                     this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
                 } ?: this
-            }
-            .run {
+            }.run {
                 selectedOrgUnits?.let {
                     this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
                 } ?: this
-            }
-            .blockingEvaluate().mapNotNull { lineListResponse ->
+            }.blockingEvaluate()
+            .mapNotNull { lineListResponse ->
                 val zScoreValue =
-                    lineListResponse.values.firstOrNull {
-                        it.uid == zScoreValueContainerUid
-                    }?.value
+                    lineListResponse.values
+                        .firstOrNull {
+                            it.uid == zScoreValueContainerUid
+                        }?.value
                 val xAxisValue =
-                    lineListResponse.values.firstOrNull {
-                        it.uid == ageOrHeightCountainerUid
-                    }?.value
+                    lineListResponse.values
+                        .firstOrNull {
+                            it.uid == ageOrHeightCountainerUid
+                        }?.value
                 if (zScoreValue == null || xAxisValue == null) {
                     null
                 } else {
@@ -194,23 +212,26 @@ class ChartCoordinatesProviderImpl(
         selectedRelativePeriod: List<RelativePeriod>?,
         selectedOrgUnits: List<String>?,
     ): List<GraphPoint> {
-        val eventList = d2.analyticsModule().eventLineList()
-            .byProgramStage().eq(stageUid)
-            .byTrackedEntityInstance().eq(teiUid)
-            .withDataElement(dataElementUid)
-            .run {
-                selectedRelativePeriod?.let { relativePeriods ->
-                    this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
-                } ?: this
-            }
-            .run {
-                selectedOrgUnits?.let {
-                    this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
-                } ?: this
-            }
-            .blockingEvaluate()
-            .sortedBy { it.date }
-            .filter { it.values.first().value != null }
+        val eventList =
+            d2
+                .analyticsModule()
+                .eventLineList()
+                .byProgramStage()
+                .eq(stageUid)
+                .byTrackedEntityInstance()
+                .eq(teiUid)
+                .withDataElement(dataElementUid)
+                .run {
+                    selectedRelativePeriod?.let { relativePeriods ->
+                        this.byEventDate().inPeriods(*relativePeriods.toTypedArray())
+                    } ?: this
+                }.run {
+                    selectedOrgUnits?.let {
+                        this.byOrganisationUnit().`in`(*selectedOrgUnits.toTypedArray())
+                    } ?: this
+                }.blockingEvaluate()
+                .sortedBy { it.date }
+                .filter { it.values.first().value != null }
         return eventList.groupBy { it.values.first().value }.mapNotNull {
             GraphPoint(
                 eventDate = formattedDate(it.value.first().date),
@@ -224,32 +245,37 @@ class ChartCoordinatesProviderImpl(
         gridResponseValueList: List<GridResponseValue>,
         metadata: Map<String, MetadataItem>,
         categories: List<String>,
-    ): List<GraphPoint> {
-        return gridResponseValueList.filter { it.value != null }
+    ): List<GraphPoint> =
+        gridResponseValueList
+            .filter { it.value != null }
             .mapIndexed { _, gridResponseValue ->
 
-                val periodId = gridResponseValue.rows.joinToString(separator = " - ") {
-                    metadata[it]?.displayName.toString()
-                }
-
-                val position = if (periodId == "") {
-                    0f
-                } else {
-                    periodId.let {
-                        categories.indexOf(periodId)
+                val periodId =
+                    gridResponseValue.rows.joinToString(separator = " - ") {
+                        metadata[it]?.displayName.toString()
                     }
-                }
 
-                val columnLegend = gridResponseValue.columns.firstOrNull()?.let {
-                    when (val metadataItem = metadata[it]) {
-                        is MetadataItem.PeriodItem -> periodStepProvider.periodUIString(
-                            Locale.getDefault(),
-                            metadataItem.item,
-                        )
-
-                        else -> metadata[it]?.displayName
+                val position =
+                    if (periodId == "") {
+                        0f
+                    } else {
+                        periodId.let {
+                            categories.indexOf(periodId)
+                        }
                     }
-                }
+
+                val columnLegend =
+                    gridResponseValue.columns.firstOrNull()?.let {
+                        when (val metadataItem = metadata[it]) {
+                            is MetadataItem.PeriodItem ->
+                                periodStepProvider.periodUIString(
+                                    Locale.getDefault(),
+                                    metadataItem.item,
+                                )
+
+                            else -> metadata[it]?.displayName
+                        }
+                    }
 
                 val legend =
                     metadata[gridResponseValue.legend]?.let { it as MetadataItem.LegendItem }
@@ -262,26 +288,27 @@ class ChartCoordinatesProviderImpl(
                     legendValue = createLegendValue(legend?.item),
                 )
             }
-    }
 
-    private fun formattedDate(date: Date): Date {
-        return try {
+    private fun formattedDate(date: Date): Date =
+        try {
             val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)
             val formattedDate = SimpleDateFormat("yyyy-MM-dd").parse(formattedDateString)
             formattedDate ?: date
         } catch (e: Exception) {
             date
         }
-    }
 
-    private fun getLegend(legendUid: String?): Legend? {
-        return legendUid?.let {
-            d2.legendSetModule().legends().uid(legendUid).blockingGet()
+    private fun getLegend(legendUid: String?): Legend? =
+        legendUid?.let {
+            d2
+                .legendSetModule()
+                .legends()
+                .uid(legendUid)
+                .blockingGet()
         }
-    }
 
-    private fun createLegendValue(legend: Legend?): LegendValue? {
-        return legend?.let {
+    private fun createLegendValue(legend: Legend?): LegendValue? =
+        legend?.let {
             LegendValue(
                 resourceManager.getColorFrom(
                     it.color(),
@@ -289,5 +316,4 @@ class ChartCoordinatesProviderImpl(
                 it.displayName(),
             )
         }
-    }
 }

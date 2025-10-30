@@ -5,16 +5,9 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 class ProgramEventPageConfigurator(
     val repository: ProgramEventDetailRepository,
 ) : NavigationPageConfigurator {
+    override fun displayListView(): Boolean = true
 
-    override fun displayListView(): Boolean {
-        return true
-    }
+    override fun displayMapView(): Boolean = repository.programHasCoordinates()
 
-    override fun displayMapView(): Boolean {
-        return repository.programHasCoordinates()
-    }
-
-    override fun displayAnalytics(): Boolean {
-        return repository.programHasAnalytics()
-    }
+    override fun displayAnalytics(): Boolean = repository.programHasAnalytics()
 }

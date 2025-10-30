@@ -8,19 +8,19 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.period.PeriodType
 import java.util.Date
 
-class FilterPeriodsRepository(private val d2: D2) {
-
-    fun getDefaultPeriodTypes(): List<FilterPeriodType> {
-        return listOf(
+class FilterPeriodsRepository(
+    private val d2: D2,
+) {
+    fun getDefaultPeriodTypes(): List<FilterPeriodType> =
+        listOf(
             FilterPeriodType.DAILY,
             FilterPeriodType.WEEKLY,
             FilterPeriodType.MONTHLY,
             FilterPeriodType.YEARLY,
         )
-    }
 
-    fun getDataSetFilterPeriodTypes(): List<FilterPeriodType> {
-        return listOf(
+    fun getDataSetFilterPeriodTypes(): List<FilterPeriodType> =
+        listOf(
             FilterPeriodType.DAILY,
             FilterPeriodType.WEEKLY,
             FilterPeriodType.WEEKLY_WEDNESDAY,
@@ -41,10 +41,9 @@ class FilterPeriodsRepository(private val d2: D2) {
             FilterPeriodType.FINANCIAL_OCT,
             FilterPeriodType.FINANCIAL_NOV,
         )
-    }
 
-    fun getDTOPeriod(filterPeriodType: FilterPeriodType): PeriodType {
-        return when (filterPeriodType) {
+    fun getDTOPeriod(filterPeriodType: FilterPeriodType): PeriodType =
+        when (filterPeriodType) {
             FilterPeriodType.DAILY -> PeriodType.Daily
             FilterPeriodType.WEEKLY -> PeriodType.Weekly
             FilterPeriodType.WEEKLY_WEDNESDAY -> PeriodType.WeeklyWednesday
@@ -66,15 +65,14 @@ class FilterPeriodsRepository(private val d2: D2) {
             FilterPeriodType.FINANCIAL_NOV -> PeriodType.FinancialNov
             FilterPeriodType.NONE -> PeriodType.Daily
         }
-    }
 
     fun getPeriodSource(
         labelProvider: PeriodLabelProvider,
         filterPeriodType: FilterPeriodType,
         minDate: Date,
         maxDate: Date?,
-    ): PeriodSource {
-        return PeriodSource(
+    ): PeriodSource =
+        PeriodSource(
             d2 = d2,
             periodLabelProvider = labelProvider,
             periodType = getDTOPeriod(filterPeriodType),
@@ -83,5 +81,4 @@ class FilterPeriodsRepository(private val d2: D2) {
             selectedDate = null,
             periodOrder = PeriodOrder.DESC,
         )
-    }
 }

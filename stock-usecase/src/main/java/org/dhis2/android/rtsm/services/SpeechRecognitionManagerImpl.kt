@@ -16,12 +16,13 @@ import java.util.Locale
 
 class SpeechRecognitionManagerImpl(
     private val context: Context,
-) : SpeechRecognitionManager, RecognitionListener {
+) : SpeechRecognitionManager,
+    RecognitionListener {
     private var speechRecognizer: SpeechRecognizer? = null
     private var readyForSpeech = false
     private var allowNegativeNumberInput: Boolean = false
 
-    private val _speechRecognitionStatus: MutableLiveData<SpeechRecognitionState> =
+    private val speechRecognitionStatus: MutableLiveData<SpeechRecognitionState> =
         MutableLiveData(SpeechRecognitionState.NotInitialized)
 
     init {
@@ -37,7 +38,7 @@ class SpeechRecognitionManagerImpl(
         } else {
             Timber.e("Speech recognition is not available")
 
-            _speechRecognitionStatus.postValue(SpeechRecognitionState.NotAvailable)
+            speechRecognitionStatus.postValue(SpeechRecognitionState.NotAvailable)
         }
     }
 
@@ -60,7 +61,7 @@ class SpeechRecognitionManagerImpl(
 
     override fun stop() {
         speechRecognizer?.stopListening()
-        _speechRecognitionStatus.postValue(SpeechRecognitionState.Stopped)
+        speechRecognitionStatus.postValue(SpeechRecognitionState.Stopped)
     }
 
     override fun cleanUp() {
@@ -68,10 +69,11 @@ class SpeechRecognitionManagerImpl(
     }
 
     override fun resetStatus() {
-        _speechRecognitionStatus.value = SpeechRecognitionState.NotInitialized
+        speechRecognitionStatus.value = SpeechRecognitionState.NotInitialized
     }
 
-    override fun getStatus() = _speechRecognitionStatus
+    override fun getStatus() = speechRecognitionStatus
+
     override fun supportNegativeNumberInput(allow: Boolean) {
         allowNegativeNumberInput = allow
     }
@@ -91,7 +93,7 @@ class SpeechRecognitionManagerImpl(
     override fun onReadyForSpeech(params: Bundle?) {
         readyForSpeech = true
 
-        _speechRecognitionStatus.postValue(SpeechRecognitionState.Started)
+        speechRecognitionStatus.postValue(SpeechRecognitionState.Started)
     }
 
     override fun onError(errorCode: Int) {
@@ -100,7 +102,7 @@ class SpeechRecognitionManagerImpl(
             return
         }
 
-        _speechRecognitionStatus.postValue(SpeechRecognitionState.Errored(errorCode))
+        speechRecognitionStatus.postValue(SpeechRecognitionState.Errored(errorCode))
     }
 
     override fun onResults(bundle: Bundle?) {
@@ -108,7 +110,7 @@ class SpeechRecognitionManagerImpl(
         data?.let {
             if (data.size > 0) {
                 val str = data[0]
-                _speechRecognitionStatus.postValue(validateInput(str))
+                speechRecognitionStatus.postValue(validateInput(str))
             }
         }
     }
@@ -146,9 +148,17 @@ class SpeechRecognitionManagerImpl(
     }
 
     override fun onBeginningOfSpeech() {}
+
     override fun onEndOfSpeech() {}
+
     override fun onPartialResults(partialResults: Bundle?) {}
-    override fun onEvent(eventType: Int, params: Bundle?) {}
+
+    override fun onEvent(
+        eventType: Int,
+        params: Bundle?,
+    ) {}
+
     override fun onRmsChanged(rmsdB: Float) {}
+
     override fun onBufferReceived(buffer: ByteArray?) {}
 }

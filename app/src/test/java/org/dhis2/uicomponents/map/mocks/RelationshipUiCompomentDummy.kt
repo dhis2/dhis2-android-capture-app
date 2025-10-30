@@ -5,7 +5,6 @@ import org.dhis2.maps.model.RelationshipUiComponentModel
 import org.dhis2.maps.model.TeiMap
 
 object RelationshipUiCompomentDummy {
-
     fun relationshipUiComponentModelWrongCoordinates(): RelationshipUiComponentModel {
         val geometryFrom = GeometryDummy.getGeometryAsPointWrong()
         val geometryTo = GeometryDummy.getGeometryAsPointWrong()

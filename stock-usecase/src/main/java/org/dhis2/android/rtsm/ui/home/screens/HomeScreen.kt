@@ -53,18 +53,19 @@ fun HomeScreen(
     val dataEntryUiState by manageStockViewModel.dataEntryUiState.collectAsState()
     val scope = rememberCoroutineScope()
     val homeScreenState by viewModel.settingsUiState.collectAsState()
-    val homeItems = listOf(
-        NavigationBarItem(
-            id = BottomNavigation.DATA_ENTRY.id,
-            icon = Icons.AutoMirrored.Outlined.List,
-            label = activity.getString(R.string.navigation_data_entry),
-        ),
-        NavigationBarItem(
-            id = BottomNavigation.ANALYTICS.id,
-            icon = Icons.Outlined.BarChart,
-            label = activity.getString(R.string.section_charts),
-        ),
-    )
+    val homeItems =
+        listOf(
+            NavigationBarItem(
+                id = BottomNavigation.DATA_ENTRY.id,
+                icon = Icons.AutoMirrored.Outlined.List,
+                label = activity.getString(R.string.navigation_data_entry),
+            ),
+            NavigationBarItem(
+                id = BottomNavigation.ANALYTICS.id,
+                icon = Icons.Outlined.BarChart,
+                label = activity.getString(R.string.section_charts),
+            ),
+        )
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
@@ -111,7 +112,7 @@ fun HomeScreen(
         ) { targetIndex ->
             when (targetIndex) {
                 BottomNavigation.ANALYTICS.id -> {
-                    DHIS2Theme() {
+                    DHIS2Theme {
                         AnalyticsScreen(
                             viewModel = viewModel,
                             backAction = { manageStockViewModel.onHandleBackNavigation() },
@@ -142,7 +143,9 @@ fun HomeScreen(
     }
 }
 
-enum class BottomNavigation(val id: Int) {
+enum class BottomNavigation(
+    val id: Int,
+) {
     DATA_ENTRY(0),
     ANALYTICS(1),
 }

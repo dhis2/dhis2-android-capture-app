@@ -7,10 +7,12 @@ import org.junit.Test
 class CategoryOptionComboCategoryDialogItemMapperTest {
     @Test
     fun `Should map category option combo`() {
-        val testCategory = CategoryOptionCombo.builder()
-            .uid("catOptCombUid")
-            .displayName("catOptCombName")
-            .build()
+        val testCategory =
+            CategoryOptionCombo
+                .builder()
+                .uid("catOptCombUid")
+                .displayName("catOptCombName")
+                .build()
         val result = CategoryOptionComboCategoryDialogItemMapper().map(testCategory)
         result.apply {
             assertTrue(this.uid == testCategory.uid())

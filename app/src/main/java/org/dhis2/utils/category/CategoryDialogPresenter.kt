@@ -25,7 +25,6 @@ class CategoryDialogPresenter(
     private val catOptCombMapper: CategoryOptionComboCategoryDialogItemMapper,
     val schedulerProvider: SchedulerProvider,
 ) {
-
     var disposable: CompositeDisposable = CompositeDisposable()
 
     fun init() {
@@ -37,7 +36,11 @@ class CategoryDialogPresenter(
 
     private fun getCategoryOptionCombos() {
         disposable.add(
-            d2.categoryModule().categoryCombos().uid(uid).get()
+            d2
+                .categoryModule()
+                .categoryCombos()
+                .uid(uid)
+                .get()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -47,13 +50,13 @@ class CategoryDialogPresenter(
         )
 
         disposable.add(
-            view.searchSource()
+            view
+                .searchSource()
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
                 .map { it.toString() }
                 .map { textToSearch ->
                     mapCatOptComboToLivePageList(textToSearch)
-                }
-                .subscribeOn(schedulerProvider.io())
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.setLiveData(it) },
@@ -64,20 +67,21 @@ class CategoryDialogPresenter(
 
     private fun createDataSource(
         dataSource: DataSource<CategoryOptionCombo, CategoryDialogItem>,
-    ): LiveData<PagedList<CategoryDialogItem>> {
-        return LivePagedListBuilder(
+    ): LiveData<PagedList<CategoryDialogItem>> =
+        LivePagedListBuilder(
             object : DataSource.Factory<CategoryOptionCombo, CategoryDialogItem>() {
-                override fun create(): DataSource<CategoryOptionCombo, CategoryDialogItem> {
-                    return dataSource
-                }
+                override fun create(): DataSource<CategoryOptionCombo, CategoryDialogItem> = dataSource
             },
             20,
         ).build()
-    }
 
     private fun getOptions() {
         disposable.add(
-            d2.categoryModule().categories().uid(uid).get()
+            d2
+                .categoryModule()
+                .categories()
+                .uid(uid)
+                .get()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -86,12 +90,12 @@ class CategoryDialogPresenter(
                 ),
         )
         disposable.add(
-            view.searchSource()
+            view
+                .searchSource()
                 .debounce(500, TimeUnit.MILLISECONDS, schedulerProvider.io())
                 .map { textToSearch ->
                     mapCategoryOptionToLivePageList(textToSearch)
-                }
-                .subscribeOn(schedulerProvider.io())
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { view.setLiveData(it) },
@@ -100,11 +104,12 @@ class CategoryDialogPresenter(
         )
     }
 
-    private fun mapCategoryOptionToLivePageList(
-        textToSearch: String,
-    ): LiveData<PagedList<CategoryDialogItem>> {
-        var catOptionRepository = d2.categoryModule().categoryOptions()
-            .byCategoryUid(uid)
+    private fun mapCategoryOptionToLivePageList(textToSearch: String): LiveData<PagedList<CategoryDialogItem>> {
+        var catOptionRepository =
+            d2
+                .categoryModule()
+                .categoryOptions()
+                .byCategoryUid(uid)
 
         if (textToSearch.isNotEmpty()) {
             catOptionRepository =
@@ -117,26 +122,27 @@ class CategoryDialogPresenter(
         }
 
         val dataSource =
-            catOptionRepository.orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
+            catOptionRepository
+                .orderByDisplayName(RepositoryScope.OrderByDirection.ASC)
                 .dataSource
                 .mapByPage { options -> filterByDate(options) }
                 .map { catOption -> catOptMapper.map(catOption) }
 
         return LivePagedListBuilder(
-            object : DataSource.Factory<CategoryOption, CategoryDialogItem>() {
-                override fun create(): DataSource<CategoryOption, CategoryDialogItem> {
-                    return dataSource
-                }
+            object : DataSource.Factory<Int, CategoryDialogItem>() {
+                override fun create(): DataSource<Int, CategoryDialogItem> = dataSource
             },
             20,
         ).build()
     }
 
-    private fun mapCatOptComboToLivePageList(
-        textToSearch: String,
-    ): LiveData<PagedList<CategoryDialogItem>> {
-        var catOptComboRepository = d2.categoryModule().categoryOptionCombos()
-            .byCategoryComboUid().eq(uid)
+    private fun mapCatOptComboToLivePageList(textToSearch: String): LiveData<PagedList<CategoryDialogItem>> {
+        var catOptComboRepository =
+            d2
+                .categoryModule()
+                .categoryOptionCombos()
+                .byCategoryComboUid()
+                .eq(uid)
 
         if (textToSearch.isNotEmpty()) {
             catOptComboRepository =
@@ -153,33 +159,32 @@ class CategoryDialogPresenter(
         )
     }
 
-    private fun filterByDate(options: List<CategoryOption>): List<CategoryOption> {
-        return options.filter {
+    private fun filterByDate(options: List<CategoryOption>): List<CategoryOption> =
+        options.filter {
             date == null ||
                 (!isBeforeDate(it) && !isAfterDate(it))
         }
-    }
 
-    private fun isBeforeDate(option: CategoryOption): Boolean {
-        return option.startDate() != null && date!!.before(option.startDate())
-    }
+    private fun isBeforeDate(option: CategoryOption): Boolean = option.startDate() != null && date!!.before(option.startDate())
 
-    private fun isAfterDate(option: CategoryOption): Boolean {
-        return option.endDate() != null && date!!.after(option.endDate())
-    }
+    private fun isAfterDate(option: CategoryOption): Boolean = option.endDate() != null && date!!.after(option.endDate())
 
-    fun getCount(): Int {
-        return when (type) {
+    fun getCount(): Int =
+        when (type) {
             CategoryDialog.Type.CATEGORY_OPTIONS ->
-                d2.categoryModule().categoryOptions()
+                d2
+                    .categoryModule()
+                    .categoryOptions()
                     .byCategoryUid(uid)
                     .blockingCount()
             CategoryDialog.Type.CATEGORY_OPTION_COMBO ->
-                d2.categoryModule().categoryOptionCombos()
-                    .byCategoryComboUid().eq(uid)
+                d2
+                    .categoryModule()
+                    .categoryOptionCombos()
+                    .byCategoryComboUid()
+                    .eq(uid)
                     .blockingCount()
         }
-    }
 
     fun onDetach() {
         disposable.clear()

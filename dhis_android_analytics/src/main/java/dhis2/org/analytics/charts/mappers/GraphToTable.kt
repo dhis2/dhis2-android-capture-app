@@ -4,8 +4,8 @@ import android.content.res.Configuration
 import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -54,27 +54,28 @@ import kotlin.math.roundToInt
 private const val LINE_LISTING_MAX_ROWS = 500
 
 class GraphToTable {
-
     @Composable
     fun mapToCompose(
         graph: Graph,
         resetDimensionButton: View?,
         transpose: Boolean = true,
     ) {
-        val tableModel = if (transpose) {
-            tableModelForAnalytics(graph)
-        } else {
-            tableModelForLineListing(graph)
-        }
+        val tableModel =
+            if (transpose) {
+                tableModelForAnalytics(graph)
+            } else {
+                tableModelForLineListing(graph)
+            }
 
         val localDensity = LocalDensity.current
         val conf = LocalConfiguration.current
 
-        val tableDimensions = if (transpose) {
-            dimensionsForAnalytics(localDensity, conf)
-        } else {
-            dimensionsForLinelisting(localDensity, conf)
-        }
+        val tableDimensions =
+            if (transpose) {
+                dimensionsForAnalytics(localDensity, conf)
+            } else {
+                dimensionsForLinelisting(localDensity, conf)
+            }
 
         return DHIS2Theme {
             var dimensions by remember {
@@ -83,36 +84,48 @@ class GraphToTable {
                 )
             }
 
-            val tableResizeActions = object : TableResizeActions {
-                override fun onTableWidthChanged(width: Int) {
-                    dimensions = dimensions.copy(totalWidth = width)
+            val tableResizeActions =
+                object : TableResizeActions {
+                    override fun onTableWidthChanged(width: Int) {
+                        dimensions = dimensions.copy(totalWidth = width)
+                    }
+
+                    override fun onRowHeaderResize(
+                        tableId: String,
+                        newValue: Float,
+                    ) {
+                        dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+                    }
+
+                    override fun onColumnHeaderResize(
+                        tableId: String,
+                        column: Int,
+                        newValue: Float,
+                    ) {
+                        dimensions =
+                            dimensions.updateColumnWidth(tableId, column, newValue)
+                    }
+
+                    override fun onTableDimensionResize(
+                        tableId: String,
+                        newValue: Float,
+                    ) {
+                        dimensions = dimensions.updateAllWidthBy(tableId, newValue)
+                    }
+
+                    override fun onTableDimensionReset(tableId: String) {
+                        dimensions = dimensions.resetWidth(tableId)
+                    }
                 }
 
-                override fun onRowHeaderResize(tableId: String, newValue: Float) {
-                    dimensions = dimensions.updateHeaderWidth(tableId, newValue)
+            resetDimensionButton?.visibility =
+                if (
+                    dimensions.hasOverriddenWidths(tableModel.id ?: "")
+                ) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
                 }
-
-                override fun onColumnHeaderResize(tableId: String, column: Int, newValue: Float) {
-                    dimensions =
-                        dimensions.updateColumnWidth(tableId, column, newValue)
-                }
-
-                override fun onTableDimensionResize(tableId: String, newValue: Float) {
-                    dimensions = dimensions.updateAllWidthBy(tableId, newValue)
-                }
-
-                override fun onTableDimensionReset(tableId: String) {
-                    dimensions = dimensions.resetWidth(tableId)
-                }
-            }
-
-            resetDimensionButton?.visibility = if (
-                dimensions.hasOverriddenWidths(tableModel.id ?: "")
-            ) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
 
             resetDimensionButton?.setOnClickListener {
                 dimensions = dimensions.resetWidth(tableModel.id ?: "")
@@ -122,16 +135,18 @@ class GraphToTable {
                 shouldDisplayMaxRowText(transpose, tableModel.tableRows)
 
             TableTheme(
-                tableColors = TableColors(
-                    primary = MaterialTheme.colorScheme.primary,
-                    primaryLight = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
-                    disabledCellText = TableTheme.colors.cellText,
-                    disabledCellBackground = TableTheme.colors.tableBackground,
-                ),
-                tableConfiguration = TableConfiguration(
-                    headerActionsEnabled = false,
-                    editable = false,
-                ),
+                tableColors =
+                    TableColors(
+                        primary = MaterialTheme.colorScheme.primary,
+                        primaryLight = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                        disabledCellText = TableTheme.colors.cellText,
+                        disabledCellBackground = TableTheme.colors.tableBackground,
+                    ),
+                tableConfiguration =
+                    TableConfiguration(
+                        headerActionsEnabled = false,
+                        editable = false,
+                    ),
                 tableDimensions = dimensions,
                 tableResizeActions = tableResizeActions,
             ) {
@@ -140,10 +155,11 @@ class GraphToTable {
                     mutableStateOf(
                         object : TableInteractions {
                             override fun onSelectionChange(newTableSelection: TableSelection) {
-                                tableSelection = when {
-                                    tableSelection != newTableSelection -> newTableSelection
-                                    else -> TableSelection.Unselected()
-                                }
+                                tableSelection =
+                                    when {
+                                        tableSelection != newTableSelection -> newTableSelection
+                                        else -> TableSelection.Unselected()
+                                    }
                             }
                         },
                     )
@@ -155,35 +171,39 @@ class GraphToTable {
                 ) {
                     Column {
                         DataTable(
-                            tableList = if (displayLineListingMaxRowText) {
-                                listOf(
-                                    tableModel.copy(
-                                        tableRows = tableModel.tableRows.subList(
-                                            0,
-                                            LINE_LISTING_MAX_ROWS,
+                            tableList =
+                                if (displayLineListingMaxRowText) {
+                                    listOf(
+                                        tableModel.copy(
+                                            tableRows =
+                                                tableModel.tableRows.subList(
+                                                    0,
+                                                    LINE_LISTING_MAX_ROWS,
+                                                ),
                                         ),
-                                    ),
-                                )
-                            } else {
-                                listOf(tableModel)
-                            },
+                                    )
+                                } else {
+                                    listOf(tableModel)
+                                },
                         )
                         if (displayLineListingMaxRowText) {
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(
-                                    R.string.line_listing_max_results,
-                                    LINE_LISTING_MAX_ROWS,
-                                ),
-                                style = TextStyle(
-                                    color = TextColor.OnSurfaceLight,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    fontFamily = FontFamily(Font(org.dhis2.ui.R.font.roboto_regular)),
-                                    lineHeight = 16.sp,
-                                    letterSpacing = (0.4).sp,
-                                    textAlign = TextAlign.End,
-                                ),
+                                text =
+                                    stringResource(
+                                        R.string.line_listing_max_results,
+                                        LINE_LISTING_MAX_ROWS,
+                                    ),
+                                style =
+                                    TextStyle(
+                                        color = TextColor.OnSurfaceLight,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        fontFamily = FontFamily(Font(org.dhis2.ui.R.font.roboto_regular)),
+                                        lineHeight = 16.sp,
+                                        letterSpacing = (0.4).sp,
+                                        textAlign = TextAlign.End,
+                                    ),
                             )
                         }
                     }
@@ -195,87 +215,106 @@ class GraphToTable {
     private fun shouldDisplayMaxRowText(
         transpose: Boolean,
         tableRows: List<TableRowModel>,
-    ): Boolean {
-        return when {
+    ): Boolean =
+        when {
             transpose -> false
             tableRows.size > LINE_LISTING_MAX_ROWS -> true
             else -> false
         }
-    }
 
-    private fun dimensionsForAnalytics(localDensity: Density, conf: Configuration) =
-        TableDimensions(
-            cellVerticalPadding = 11.dp,
-            maxRowHeaderWidth = with(localDensity) {
-                (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
-                    .roundToInt()
+    private fun dimensionsForAnalytics(
+        localDensity: Density,
+        conf: Configuration,
+    ) = TableDimensions(
+        cellVerticalPadding = 11.dp,
+        maxRowHeaderWidth =
+            with(localDensity) {
+                (
+                    conf.screenWidthDp.dp.toPx() -
+                        org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
+                            .toPx()
+                ).roundToInt()
             },
-            tableHorizontalPadding = 0.dp,
-            tableVerticalPadding = 0.dp,
-            extraWidths = emptyMap(),
-            rowHeaderWidths = emptyMap(),
-            columnWidth = emptyMap(),
-        )
+        tableHorizontalPadding = 0.dp,
+        tableVerticalPadding = 0.dp,
+        extraWidths = emptyMap(),
+        rowHeaderWidths = emptyMap(),
+        columnWidth = emptyMap(),
+    )
 
-    private fun dimensionsForLinelisting(localDensity: Density, conf: Configuration) =
-        TableDimensions(
-            defaultRowHeaderWidth = 0,
-            cellVerticalPadding = 11.dp,
-            maxRowHeaderWidth = with(localDensity) {
-                (conf.screenWidthDp.dp.toPx() - org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE.toPx())
-                    .roundToInt()
+    private fun dimensionsForLinelisting(
+        localDensity: Density,
+        conf: Configuration,
+    ) = TableDimensions(
+        defaultRowHeaderWidth = 0,
+        cellVerticalPadding = 11.dp,
+        maxRowHeaderWidth =
+            with(localDensity) {
+                (
+                    conf.screenWidthDp.dp.toPx() -
+                        org.dhis2.composetable.ui.semantics.MAX_CELL_WIDTH_SPACE
+                            .toPx()
+                ).roundToInt()
             },
-            tableHorizontalPadding = 0.dp,
-            tableVerticalPadding = 0.dp,
-            extraWidths = emptyMap(),
-            rowHeaderWidths = emptyMap(),
-            columnWidth = emptyMap(),
-        )
+        tableHorizontalPadding = 0.dp,
+        tableVerticalPadding = 0.dp,
+        extraWidths = emptyMap(),
+        rowHeaderWidths = emptyMap(),
+        columnWidth = emptyMap(),
+    )
 
     private fun tableModelForLineListing(graph: Graph): TableModel {
         val headers = headers(graph, graph.series)
-        val rows = rows(graph.series).let {
-            if (it.size > LINE_LISTING_MAX_ROWS) {
-                it.subList(0, LINE_LISTING_MAX_ROWS)
-            } else {
-                it
+        val rows =
+            rows(graph.series).let {
+                if (it.size > LINE_LISTING_MAX_ROWS) {
+                    it.subList(0, LINE_LISTING_MAX_ROWS)
+                } else {
+                    it
+                }
             }
-        }
         val cells = cells(graph, graph.series, headers)
 
-        val tableHeader = TableHeader(
-            rows = listOf(
-                TableHeaderRow(
-                    cells = headers.map { headerRowCell ->
-                        TableHeaderCell(
-                            value = headerRowCell?.text ?: "",
-                        )
-                    },
-                ),
-            ),
-        )
+        val tableHeader =
+            TableHeader(
+                rows =
+                    listOf(
+                        TableHeaderRow(
+                            cells =
+                                headers.map { headerRowCell ->
+                                    TableHeaderCell(
+                                        value = headerRowCell?.text ?: "",
+                                    )
+                                },
+                        ),
+                    ),
+            )
 
         val tableRows =
             rows.first().mapIndexed { rowIndex, rowHeaderCell ->
                 TableRowModel(
-                    rowHeader = RowHeader(
-                        id = rowHeaderCell.text,
-                        title = rowHeaderCell.text,
-                        row = rowIndex,
-                    ),
-                    values = cells.mapIndexed { columnIndex, cellModels ->
-                        val cellModel = cellModels[rowIndex]
-                        columnIndex to TableCell(
-                            id = "${rowIndex}_$columnIndex",
+                    rowHeader =
+                        RowHeader(
+                            id = rowHeaderCell.text,
+                            title = rowHeaderCell.text,
                             row = rowIndex,
-                            column = columnIndex,
-                            value = cellModel.text,
-                            editable = false,
-                            mandatory = false,
-                            error = null,
-                            legendColor = cellModel.color,
-                        )
-                    }.toMap(),
+                        ),
+                    values =
+                        cells
+                            .mapIndexed { columnIndex, cellModels ->
+                                val cellModel = cellModels[rowIndex]
+                                columnIndex to
+                                    TableCell(
+                                        id = "${rowIndex}_$columnIndex",
+                                        row = rowIndex,
+                                        column = columnIndex,
+                                        value = cellModel.text,
+                                        editable = false,
+                                        mandatory = false,
+                                        error = null,
+                                        legendColor = cellModel.color,
+                                    )
+                            }.toMap(),
                     isLastRow = rows.first().lastIndex == rowIndex,
                     maxLines = 1,
                 )
@@ -292,45 +331,54 @@ class GraphToTable {
         val rows = rows(graph.series)
         val cells = cells(graph, graph.series, headers)
 
-        val tableHeader = TableHeader(
-            rows = rows.map { headerRow ->
-                TableHeaderRow(
-                    cells = headerRow.map { headerRowCell ->
-                        TableHeaderCell(
-                            value = headerRowCell.text,
+        val tableHeader =
+            TableHeader(
+                rows =
+                    rows.map { headerRow ->
+                        TableHeaderRow(
+                            cells =
+                                headerRow.map { headerRowCell ->
+                                    TableHeaderCell(
+                                        value = headerRowCell.text,
+                                    )
+                                },
                         )
                     },
-                )
-            },
-        )
-
-        val tableRows = headers.mapIndexed { rowIndex, rowHeaderCell ->
-            TableRowModel(
-                rowHeader = RowHeader(
-                    id = rowHeaderCell?.text ?: rowIndex.toString(),
-                    title = rowHeaderCell?.text ?: "-",
-                    row = rowIndex,
-                ),
-                values = cells[rowIndex].mapIndexed { columnIndex, cellModel ->
-                    columnIndex to TableCell(
-                        id = "${rowIndex}_$columnIndex",
-                        row = rowIndex,
-                        column = columnIndex,
-                        value = cellModel.text,
-                        editable = false,
-                        mandatory = false,
-                        error = null,
-                        legendColor = cellModel.color,
-                    )
-                }.toMap(),
-                isLastRow = headers.lastIndex == rowIndex,
-                maxLines = if (cells[rowIndex].any { it.text.toDoubleOrNull() != null }) {
-                    1
-                } else {
-                    3
-                },
             )
-        }
+
+        val tableRows =
+            headers.mapIndexed { rowIndex, rowHeaderCell ->
+                TableRowModel(
+                    rowHeader =
+                        RowHeader(
+                            id = rowHeaderCell?.text ?: rowIndex.toString(),
+                            title = rowHeaderCell?.text ?: "-",
+                            row = rowIndex,
+                        ),
+                    values =
+                        cells[rowIndex]
+                            .mapIndexed { columnIndex, cellModel ->
+                                columnIndex to
+                                    TableCell(
+                                        id = "${rowIndex}_$columnIndex",
+                                        row = rowIndex,
+                                        column = columnIndex,
+                                        value = cellModel.text,
+                                        editable = false,
+                                        mandatory = false,
+                                        error = null,
+                                        legendColor = cellModel.color,
+                                    )
+                            }.toMap(),
+                    isLastRow = headers.lastIndex == rowIndex,
+                    maxLines =
+                        if (cells[rowIndex].any { it.text.toDoubleOrNull() != null }) {
+                            1
+                        } else {
+                            3
+                        },
+                )
+            }
 
         return TableModel(
             tableHeaderModel = tableHeader,
@@ -338,9 +386,13 @@ class GraphToTable {
         )
     }
 
-    private fun headers(graph: Graph, series: List<SerieData>): List<CellModel?> {
-        return if (graph.categories.isEmpty()) {
-            series.map { it.coordinates }
+    private fun headers(
+        graph: Graph,
+        series: List<SerieData>,
+    ): List<CellModel?> =
+        if (graph.categories.isEmpty()) {
+            series
+                .map { it.coordinates }
                 .flatten()
                 .distinctBy { it.eventDate }
                 .sortedBy { it.eventDate }
@@ -353,50 +405,49 @@ class GraphToTable {
         } else {
             graph.categories.map { CellModel(it) }
         }
-    }
 
-    private fun rows(series: List<SerieData>): List<List<CellModel>> {
-        return if (series.first().fieldName.contains("_")) {
+    private fun rows(series: List<SerieData>): List<List<CellModel>> =
+        if (series.first().fieldName.contains("_")) {
             val splitted = series.map { it.fieldName.split("_") }
             val combination = splitted.first().size
             val headerList = mutableListOf<List<CellModel>>()
             for (i in 0 until combination) {
                 val values = splitted.map { it[i] }
                 headerList.add(
-                    values.filterIndexed { index, value ->
-                        index == 0 || values[index - 1] != value
-                    }.map { CellModel(it) },
+                    values
+                        .filterIndexed { index, value ->
+                            index == 0 || values[index - 1] != value
+                        }.map { CellModel(it) },
                 )
             }
             headerList
         } else {
             listOf(series.map { CellModel(it.fieldName) })
         }
-    }
 
     private fun cells(
         graph: Graph,
         series: List<SerieData>,
         headers: List<CellModel?>,
-    ): List<List<CellModel>> {
-        return headers.mapIndexed { index, header ->
+    ): List<List<CellModel>> =
+        headers.mapIndexed { index, header ->
             series.map { serie ->
-                val point = serie.coordinates.firstOrNull { point ->
-                    if (graph.categories.isEmpty()) {
-                        when (graph.chartType) {
-                            ChartType.PIE_CHART -> point.legend == header?.text
-                            else ->
-                                DateUtils.SIMPLE_DATE_FORMAT.format(point.eventDate) == header?.text
+                val point =
+                    serie.coordinates.firstOrNull { point ->
+                        if (graph.categories.isEmpty()) {
+                            when (graph.chartType) {
+                                ChartType.PIE_CHART -> point.legend == header?.text
+                                else ->
+                                    DateUtils.SIMPLE_DATE_FORMAT.format(point.eventDate) == header?.text
+                            }
+                        } else {
+                            point.position?.toInt() == index
                         }
-                    } else {
-                        point.position?.toInt() == index
                     }
-                }
                 CellModel(
                     point?.textValue() ?: "",
                     point?.legendValue?.color,
                 )
             }
         }
-    }
 }

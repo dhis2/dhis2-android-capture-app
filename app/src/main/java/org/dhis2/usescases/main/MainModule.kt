@@ -4,7 +4,6 @@ import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerActivity
-import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FiltersAdapter
 import org.dhis2.commons.filters.data.FilterRepository
@@ -18,14 +17,19 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
+import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.D2
 
 @Module
-class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
-
+class MainModule(
+    val view: MainView,
+    private val forceToNotSynced: Boolean,
+) {
     @Provides
     @PerActivity
     fun homePresenter(
@@ -42,8 +46,9 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
         syncStatusController: SyncStatusController,
         versionRepository: VersionRepository,
         dispatcherProvider: DispatcherProvider,
-    ): MainPresenter {
-        return MainPresenter(
+        logoutUser: LogoutUser,
+    ): MainPresenter =
+        MainPresenter(
             view,
             homeRepository,
             schedulerProvider,
@@ -59,38 +64,53 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
             versionRepository,
             dispatcherProvider,
             forceToNotSynced,
+            logoutUser,
         )
-    }
 
     @Provides
     @PerActivity
-    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor {
-        return SyncIsPerformedInteractor(userManager)
-    }
+    fun provideLogoutUser(
+        homeRepository: HomeRepository,
+        workManagerController: WorkManagerController,
+        syncStatusController: SyncStatusController,
+        filterManager: FilterManager,
+        preferences: PreferenceProvider,
+    ): LogoutUser =
+        LogoutUser(
+            homeRepository,
+            workManagerController,
+            syncStatusController,
+            filterManager,
+            preferences,
+        )
+
+    @Provides
+    @PerActivity
+    fun provideSyncIsPerfomedInteractor(userManager: UserManager): SyncIsPerformedInteractor = SyncIsPerformedInteractor(userManager)
 
     @Provides
     @PerActivity
     fun provideHomeRepository(
         d2: D2,
         charts: Charts?,
-        featureConfigRepositoryImpl: FeatureConfigRepository,
-    ): HomeRepository {
-        return HomeRepositoryImpl(d2, charts, featureConfigRepositoryImpl)
-    }
+        preferencesProvider: PreferenceProvider,
+    ): HomeRepository =
+        HomeRepositoryImpl(
+            d2,
+            charts,
+            preferencesProvider,
+            D2ErrorMessageProviderImpl(),
+            Dispatcher(),
+        )
 
     @Provides
     @PerActivity
-    fun provideNewFiltersAdapter(): FiltersAdapter {
-        return FiltersAdapter()
-    }
+    fun provideNewFiltersAdapter(): FiltersAdapter = FiltersAdapter()
 
     @Provides
     @PerActivity
-    fun providePageConfigurator(
-        homeRepository: HomeRepository,
-    ): NavigationPageConfigurator {
-        return HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
-    }
+    fun providePageConfigurator(homeRepository: HomeRepository): NavigationPageConfigurator =
+        HomePageConfigurator(homeRepository, ResourceManager(view.context, ColorUtils()))
 
     @Provides
     @PerActivity
@@ -98,11 +118,10 @@ class MainModule(val view: MainView, private val forceToNotSynced: Boolean) {
         workManagerController: WorkManagerController,
         preferencesProvider: PreferenceProvider,
         filterManager: FilterManager,
-    ): DeleteUserData {
-        return DeleteUserData(
+    ): DeleteUserData =
+        DeleteUserData(
             workManagerController,
             filterManager,
             preferencesProvider,
         )
-    }
 }

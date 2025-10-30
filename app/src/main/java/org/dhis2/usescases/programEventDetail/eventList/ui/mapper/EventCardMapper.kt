@@ -2,7 +2,6 @@ package org.dhis2.usescases.programEventDetail.eventList.ui.mapper
 
 import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Event
@@ -11,10 +10,11 @@ import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.SyncDisabled
 import androidx.compose.material.icons.outlined.SyncProblem
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.R
-import org.dhis2.commons.data.EventViewModel
+import org.dhis2.commons.data.EventModel
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toUiText
 import org.dhis2.commons.resources.ResourceManager
@@ -36,13 +36,13 @@ class EventCardMapper(
     val resourceManager: ResourceManager,
 ) {
     fun map(
-        event: EventViewModel,
+        event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
         onSyncIconClick: () -> Unit,
         onCardClick: () -> Unit,
-    ): ListCardUiModel {
-        return ListCardUiModel(
+    ): ListCardUiModel =
+        ListCardUiModel(
             title = event.displayDate ?: "",
             lastUpdated = event.lastUpdate.toDateSpan(context),
             additionalInfo = getAdditionalInfoList(event, editable, displayOrgUnit),
@@ -58,21 +58,22 @@ class EventCardMapper(
             shrinkLabelText = resourceManager.getString(R.string.show_less),
             onCardCLick = onCardClick,
         )
-    }
 
     private fun getAdditionalInfoList(
-        event: EventViewModel,
+        event: EventModel,
         editable: Boolean,
         displayOrgUnit: Boolean,
     ): List<AdditionalInfoItem> {
-        val list = event.dataElementValues?.filter {
-            !it.second.isNullOrEmpty()
-        }?.map {
-            AdditionalInfoItem(
-                key = it.first,
-                value = it.second ?: "-",
-            )
-        }?.toMutableList() ?: mutableListOf()
+        val list =
+            event.dataElementValues
+                ?.filter {
+                    !it.second.isNullOrEmpty()
+                }?.map {
+                    AdditionalInfoItem(
+                        key = it.first,
+                        value = it.second ?: "-",
+                    )
+                }?.toMutableList() ?: mutableListOf()
 
         if (displayOrgUnit) {
             checkRegisteredIn(
@@ -105,7 +106,10 @@ class EventCardMapper(
         return list
     }
 
-    private fun checkViewOnly(list: MutableList<AdditionalInfoItem>, editable: Boolean) {
+    private fun checkViewOnly(
+        list: MutableList<AdditionalInfoItem>,
+        editable: Boolean,
+    ) {
         if (!editable) {
             list.add(
                 AdditionalInfoItem(
@@ -139,7 +143,7 @@ class EventCardMapper(
 
     private fun checkCategoryCombination(
         list: MutableList<AdditionalInfoItem>,
-        event: EventViewModel,
+        event: EventModel,
     ) {
         if (!event.nameCategoryOptionCombo.isNullOrEmpty() &&
             event.nameCategoryOptionCombo != "default"
@@ -159,77 +163,80 @@ class EventCardMapper(
         status: EventStatus?,
         dueDate: Date?,
     ) {
-        val item = when (status) {
-            EventStatus.COMPLETED -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Check,
-                            contentDescription = resourceManager.getString(R.string.event_completed),
-                            tint = AdditionalInfoItemColor.SUCCESS.color,
+        val item =
+            when (status) {
+                EventStatus.COMPLETED -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = resourceManager.getString(R.string.event_completed),
+                                tint = AdditionalInfoItemColor.SUCCESS.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.event_completed),
+                        isConstantItem = true,
+                        color = AdditionalInfoItemColor.SUCCESS.color,
+                    )
+                }
+
+                EventStatus.SCHEDULE -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Event,
+                                contentDescription =
+                                    resourceManager.getString(
+                                        R.string.scheduled,
+                                        dueDate?.toUiText(context) ?: "",
+                                    ),
+                                tint = AdditionalInfoItemColor.DEFAULT_VALUE.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.scheduled),
+                        isConstantItem = true,
+                        color = AdditionalInfoItemColor.DEFAULT_VALUE.color,
+                    )
+                }
+
+                EventStatus.SKIPPED -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.EventBusy,
+                                contentDescription = resourceManager.getString(R.string.skipped),
+                                tint = AdditionalInfoItemColor.DEFAULT_KEY.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.skipped),
+                        isConstantItem = true,
+                        color = AdditionalInfoItemColor.DEFAULT_KEY.color,
+                    )
+                }
+
+                EventStatus.OVERDUE -> {
+                    val overdueText =
+                        resourceManager.getString(
+                            R.string.overdue,
+                            dueDate?.toUiText(context) ?: "",
                         )
-                    },
-                    value = resourceManager.getString(R.string.event_completed),
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.SUCCESS.color,
-                )
+
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.EventBusy,
+                                contentDescription = overdueText,
+                                tint = AdditionalInfoItemColor.ERROR.color,
+                            )
+                        },
+                        value = overdueText,
+                        isConstantItem = true,
+                        color = AdditionalInfoItemColor.ERROR.color,
+                    )
+                }
+
+                else -> null
             }
-
-            EventStatus.SCHEDULE -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.Event,
-                            contentDescription = resourceManager.getString(
-                                R.string.scheduled,
-                                dueDate?.toUiText(context) ?: "",
-                            ),
-                            tint = AdditionalInfoItemColor.DEFAULT_VALUE.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.scheduled),
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.DEFAULT_VALUE.color,
-                )
-            }
-
-            EventStatus.SKIPPED -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.EventBusy,
-                            contentDescription = resourceManager.getString(R.string.skipped),
-                            tint = AdditionalInfoItemColor.DEFAULT_KEY.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.skipped),
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.DEFAULT_KEY.color,
-                )
-            }
-
-            EventStatus.OVERDUE -> {
-                val overdueText = resourceManager.getString(
-                    R.string.overdue,
-                    dueDate?.toUiText(context) ?: "",
-                )
-
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.EventBusy,
-                            contentDescription = overdueText,
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                    },
-                    value = overdueText,
-                    isConstantItem = true,
-                    color = AdditionalInfoItemColor.ERROR.color,
-                )
-            }
-
-            else -> null
-        }
         item?.let { list.add(it) }
     }
 
@@ -237,67 +244,68 @@ class EventCardMapper(
         list: MutableList<AdditionalInfoItem>,
         state: State?,
     ) {
-        val item = when (state) {
-            State.TO_POST,
-            State.TO_UPDATE,
-            -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncDisabled,
-                            contentDescription = resourceManager.getString(R.string.not_synced),
-                            tint = AdditionalInfoItemColor.DISABLED.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.not_synced),
-                    color = AdditionalInfoItemColor.DISABLED.color,
-                    isConstantItem = true,
-                )
-            }
+        val item =
+            when (state) {
+                State.TO_POST,
+                State.TO_UPDATE,
+                -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncDisabled,
+                                contentDescription = resourceManager.getString(R.string.not_synced),
+                                tint = AdditionalInfoItemColor.DISABLED.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.not_synced),
+                        color = AdditionalInfoItemColor.DISABLED.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.UPLOADING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
-                    },
-                    value = resourceManager.getString(R.string.syncing),
-                    color = SurfaceColor.Primary,
-                    isConstantItem = true,
-                )
-            }
+                State.UPLOADING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
+                        },
+                        value = resourceManager.getString(R.string.syncing),
+                        color = SurfaceColor.Primary,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.ERROR -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_error_title),
-                            tint = AdditionalInfoItemColor.ERROR.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_error_title),
-                    color = AdditionalInfoItemColor.ERROR.color,
-                    isConstantItem = true,
-                )
-            }
+                State.ERROR -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_error_title),
+                                tint = AdditionalInfoItemColor.ERROR.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_error_title),
+                        color = AdditionalInfoItemColor.ERROR.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            State.WARNING -> {
-                AdditionalInfoItem(
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.SyncProblem,
-                            contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
-                            tint = AdditionalInfoItemColor.WARNING.color,
-                        )
-                    },
-                    value = resourceManager.getString(R.string.sync_dialog_title_warning),
-                    color = AdditionalInfoItemColor.WARNING.color,
-                    isConstantItem = true,
-                )
-            }
+                State.WARNING -> {
+                    AdditionalInfoItem(
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.SyncProblem,
+                                contentDescription = resourceManager.getString(R.string.sync_dialog_title_warning),
+                                tint = AdditionalInfoItemColor.WARNING.color,
+                            )
+                        },
+                        value = resourceManager.getString(R.string.sync_dialog_title_warning),
+                        color = AdditionalInfoItemColor.WARNING.color,
+                        isConstantItem = true,
+                    )
+                }
 
-            else -> null
-        }
+                else -> null
+            }
         item?.let { list.add(it) }
     }
 }
@@ -309,21 +317,22 @@ fun ProvideSyncButton(
     state: State?,
     onSyncIconClick: () -> Unit,
 ) {
-    val buttonText = when (state) {
-        State.TO_POST,
-        State.TO_UPDATE,
-        -> {
-            syncButtonLabel
-        }
+    val buttonText =
+        when (state) {
+            State.TO_POST,
+            State.TO_UPDATE,
+            -> {
+                syncButtonLabel
+            }
 
-        State.ERROR,
-        State.WARNING,
-        -> {
-            retryButtonLabel
-        }
+            State.ERROR,
+            State.WARNING,
+            -> {
+                retryButtonLabel
+            }
 
-        else -> null
-    }
+            else -> null
+        }
     buttonText?.let {
         Button(
             style = ButtonStyle.TONAL,

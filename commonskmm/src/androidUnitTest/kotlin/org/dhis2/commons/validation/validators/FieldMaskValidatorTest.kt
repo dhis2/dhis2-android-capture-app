@@ -6,7 +6,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class FieldMaskValidatorTest {
-
     @Test
     fun `should validate text fieldmask`() {
         FieldMaskValidator("\\d\\d-\\d\\d\\d").validateNullSafe("33-676").fold(
@@ -45,31 +44,34 @@ class FieldMaskValidatorTest {
 
     @Test
     fun `should call onPatterError if fieldMask is wrong`() {
-        FieldMaskValidator("\\w\\w\\x\\x").validate(
-            "hello",
-        ).fold(
-            { assertTrue(false) },
-            { assertTrue(it is FieldMaskFailure.InvalidPatternException) },
-        )
+        FieldMaskValidator("\\w\\w\\x\\x")
+            .validate(
+                "hello",
+            ).fold(
+                { assertTrue(false) },
+                { assertTrue(it is FieldMaskFailure.InvalidPatternException) },
+            )
     }
 
     @Test
     fun `should call onSuccess if value matches pattern`() {
-        FieldMaskValidator("\\w\\d").validate(
-            "A1",
-        ).fold(
-            { assertTrue(true) },
-            { assertTrue(false) },
-        )
+        FieldMaskValidator("\\w\\d")
+            .validate(
+                "A1",
+            ).fold(
+                { assertTrue(true) },
+                { assertTrue(false) },
+            )
     }
 
     @Test
     fun `should call onError if value does not matches pattern`() {
-        FieldMaskValidator("\\w\\d").validate(
-            "AA1",
-        ).fold(
-            { assertTrue(false) },
-            { assertTrue(it is FieldMaskFailure.WrongPatternException) },
-        )
+        FieldMaskValidator("\\w\\d")
+            .validate(
+                "AA1",
+            ).fold(
+                { assertTrue(false) },
+                { assertTrue(it is FieldMaskFailure.WrongPatternException) },
+            )
     }
 }

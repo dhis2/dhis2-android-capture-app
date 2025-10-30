@@ -1,7 +1,7 @@
 package org.dhis2.maps.model
 
 import io.ktor.util.reflect.instanceOf
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -18,11 +18,9 @@ data class MapItemModel(
     val relatedInfo: RelatedInfo?,
     val state: State,
 ) {
-    fun isProfilePictureAvailable() =
-        avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.ProfilePic::class)
+    fun isProfilePictureAvailable() = avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.ProfilePic::class)
 
-    fun isCustomIcon() =
-        avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.Metadata::class)
+    fun isCustomIcon() = avatarProviderConfiguration.instanceOf(AvatarProviderConfiguration.Metadata::class)
 
     fun profilePicturePath() =
         avatarProviderConfiguration.takeIf { it is AvatarProviderConfiguration.ProfilePic }?.let {

@@ -13,7 +13,10 @@ class BoundsGeometry(
         westBound = 0.0
     }
 
-    fun update(lat: Double, lon: Double): BoundsGeometry {
+    fun update(
+        lat: Double,
+        lon: Double,
+    ): BoundsGeometry {
         return if (wasNeverUpdated()) {
             setInitialBounds(lat, lon)
         } else {
@@ -26,7 +29,10 @@ class BoundsGeometry(
         }
     }
 
-    private fun setInitialBounds(lat: Double, lon: Double): BoundsGeometry {
+    private fun setInitialBounds(
+        lat: Double,
+        lon: Double,
+    ): BoundsGeometry {
         northBound = lat
         southBound = lat
         eastBound = lon
@@ -35,7 +41,5 @@ class BoundsGeometry(
         return this
     }
 
-    private fun wasNeverUpdated(): Boolean {
-        return northBound == 0.0 && southBound == 0.0 && eastBound == 0.0 && westBound == 0.0
-    }
+    private fun wasNeverUpdated(): Boolean = northBound == 0.0 && southBound == 0.0 && eastBound == 0.0 && westBound == 0.0
 }

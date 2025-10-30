@@ -20,11 +20,14 @@ import androidx.databinding.BindingAdapter
 import org.dhis2.commons.R
 import kotlin.math.pow
 
-inline fun <T> fromCache(cache: MutableMap<String, T>, key: String?, defaultValue: () -> T?): T? {
-    return cache[key] ?: run {
+inline fun <T> fromCache(
+    cache: MutableMap<String, T>,
+    key: String?,
+    defaultValue: () -> T?,
+): T? =
+    cache[key] ?: run {
         defaultValue()?.also { cache[key ?: ""] = it }
     }
-}
 
 @BindingAdapter("scrollingTextView")
 fun TextView.setScrollingTextView(canScroll: Boolean) {
@@ -43,12 +46,17 @@ fun ProgressBar.setProgressColor(color: Int) {
 }
 
 @BindingAdapter("iconResource")
-fun ImageView.setIconResource(@DrawableRes iconResource: Int) {
+fun ImageView.setIconResource(
+    @DrawableRes iconResource: Int,
+) {
     setImageResource(iconResource)
 }
 
 @BindingAdapter("fromResBgColor")
-fun setFromResBgColor(view: View?, color: Int) {
+fun setFromResBgColor(
+    view: View?,
+    color: Int,
+) {
     val tintedColor: String
     val rgb = ArrayList<Double>()
     rgb.add(Color.red(color) / 255.0)
@@ -59,14 +67,21 @@ fun setFromResBgColor(view: View?, color: Int) {
     var b: Double? = null
     for (c in rgb) {
         val color = if (c <= 0.03928) c / 12.92 else ((c + 0.055) / 1.055).pow(2.4)
-        if (r == null) r = color else if (g == null) g = color else b = color
+        if (r == null) {
+            r = color
+        } else if (g == null) {
+            g = color
+        } else {
+            b = color
+        }
     }
-    val L = 0.2126 * r!! + 0.7152 * g!! + 0.0722 * b!!
-    tintedColor = if (L > 0.179) {
-        "#000000" // bright colors - black font
-    } else {
-        "#FFFFFF" // dark colors - white font
-    }
+    val l = 0.2126 * r!! + 0.7152 * g!! + 0.0722 * b!!
+    tintedColor =
+        if (l > 0.179) {
+            "#000000" // bright colors - black font
+        } else {
+            "#FFFFFF" // dark colors - white font
+        }
     if (view is TextView) {
         view.setTextColor(Color.parseColor(tintedColor))
     }
@@ -102,49 +117,62 @@ val Int.px: Int
 
 fun View.clipWithRoundedCorners(curvedRadio: Int = 16.dp) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(
-                    0,
-                    0,
-                    view.width,
-                    view.height + curvedRadio,
-                    curvedRadio.toFloat(),
-                )
+        outlineProvider =
+            object : ViewOutlineProvider() {
+                override fun getOutline(
+                    view: View,
+                    outline: Outline,
+                ) {
+                    outline.setRoundRect(
+                        0,
+                        0,
+                        view.width,
+                        view.height + curvedRadio,
+                        curvedRadio.toFloat(),
+                    )
+                }
             }
-        }
         clipToOutline = true
     }
 }
 
 fun View.clipWithAllRoundedCorners(curvedRadio: Int = 16.dp) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        outlineProvider = object : ViewOutlineProvider() {
-            override fun getOutline(view: View, outline: Outline) {
-                outline.setRoundRect(
-                    0,
-                    0,
-                    view.width,
-                    view.height,
-                    curvedRadio.toFloat(),
-                )
+        outlineProvider =
+            object : ViewOutlineProvider() {
+                override fun getOutline(
+                    view: View,
+                    outline: Outline,
+                ) {
+                    outline.setRoundRect(
+                        0,
+                        0,
+                        view.width,
+                        view.height,
+                        curvedRadio.toFloat(),
+                    )
+                }
             }
-        }
         clipToOutline = true
     }
 }
 
 fun HorizontalScrollView.scrollToPosition(viewTag: String) {
     val view = findViewWithTag<View>(viewTag) ?: return
-    val xScroll = when (context.resources.configuration.layoutDirection) {
-        View.LAYOUT_DIRECTION_RTL -> view.right - view.paddingRight
-        View.LAYOUT_DIRECTION_LTR -> view.left - view.paddingLeft
-        else -> 0
-    }
+    val xScroll =
+        when (context.resources.configuration.layoutDirection) {
+            View.LAYOUT_DIRECTION_RTL -> view.right - view.paddingRight
+            View.LAYOUT_DIRECTION_LTR -> view.left - view.paddingLeft
+            else -> 0
+        }
     smoothScrollTo(xScroll, view.top)
 }
 
-fun <T> MutableList<T>.addIf(ifCondition: Boolean, itemToAdd: T, index: Int? = null) {
+fun <T> MutableList<T>.addIf(
+    ifCondition: Boolean,
+    itemToAdd: T,
+    index: Int? = null,
+) {
     if (ifCondition) {
         index?.let { add(it, itemToAdd) } ?: add(itemToAdd)
     }

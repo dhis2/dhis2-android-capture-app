@@ -15,6 +15,7 @@ class ColorUtils {
     companion object {
         const val ALPHA_20_PERCENT = 51
     }
+
     fun parseColor(hexColor: String): Int {
         var newHexColor = hexColor
         if (hexColor.length == 4) { // Color is formatted as #fff
@@ -26,20 +27,26 @@ class ColorUtils {
         return Color.parseColor(newHexColor)
     }
 
-    fun getPrimaryColorWithAlpha(context: Context, primaryLight: ColorType, alpha: Float): Int {
+    fun getPrimaryColorWithAlpha(
+        context: Context,
+        primaryLight: ColorType,
+        alpha: Float,
+    ): Int {
         val primaryColor = getPrimaryColor(context, primaryLight)
         return ColorUtils.setAlphaComponent(primaryColor, 155)
     }
 
-    fun withAlpha(color: Int): Int {
-        return ColorUtils.setAlphaComponent(color, 155)
-    }
+    fun withAlpha(color: Int): Int = ColorUtils.setAlphaComponent(color, 155)
 
-    fun withAlpha(color: Int, alpha: Int): Int {
-        return ColorUtils.setAlphaComponent(color, alpha)
-    }
+    fun withAlpha(
+        color: Int,
+        alpha: Int,
+    ): Int = ColorUtils.setAlphaComponent(color, alpha)
 
-    fun getColorFrom(hexColor: String?, defaultPrimaryColor: Int): Int {
+    fun getColorFrom(
+        hexColor: String?,
+        defaultPrimaryColor: Int,
+    ): Int {
         var colorToReturn = BLACK
 
         if (!hexColor.isNullOrEmpty()) {
@@ -51,33 +58,37 @@ class ColorUtils {
         return colorToReturn
     }
 
-    fun tintDrawableReosurce(drawableToTint: Drawable, bgResource: Int): Drawable {
+    fun tintDrawableReosurce(
+        drawableToTint: Drawable,
+        bgResource: Int,
+    ): Drawable {
         drawableToTint.setTint(getContrastColor(bgResource))
         drawableToTint.setTintMode(PorterDuff.Mode.SRC_IN)
         return drawableToTint
     }
 
-    fun tintDrawableWithColor(drawableToTint: Drawable, tintColor: Int): Drawable {
+    fun tintDrawableWithColor(
+        drawableToTint: Drawable,
+        tintColor: Int,
+    ): Drawable {
         drawableToTint.setTint(tintColor)
         drawableToTint.setTintMode(PorterDuff.Mode.SRC_IN)
         return drawableToTint
     }
 
-    fun getContrastColor(color: Int): Int {
-        return if (getContrast(color) > 0.179) {
+    fun getContrastColor(color: Int): Int =
+        if (getContrast(color) > 0.179) {
             Color.parseColor("#b3000000")
         } else {
             Color.parseColor("#e6ffffff")
         }
-    }
 
-    fun getAlphaContrastColor(color: Int): Int {
-        return if (getContrast(color) > 0.500) {
+    fun getAlphaContrastColor(color: Int): Int =
+        if (getContrast(color) > 0.500) {
             Color.parseColor("#b3000000")
         } else {
             Color.parseColor("#e6ffffff")
         }
-    }
 
     private fun getContrast(color: Int): Double {
         val rgb = ArrayList<Double>()
@@ -89,13 +100,19 @@ class ColorUtils {
         var blue: Double? = null
         rgb.forEach {
             if (it <= 0.03928) it / 12.92 else Math.pow((it + 0.055) / 1.055, 2.4)
-            if (red == null) red = it else if (green == null) green = it else blue = it
+            if (red == null) {
+                red = it
+            } else if (green == null) {
+                green = it
+            } else {
+                blue = it
+            }
         }
         return 0.2126 * red!! + 0.7152 * green!! + 0.0722 * blue!!
     }
 
-    fun getThemeFromColor(color: String?): Int {
-        return when (color) {
+    fun getThemeFromColor(color: String?): Int =
+        when (color) {
             "#ffcdd2" -> R.style.colorPrimary_Pink
             "#e57373" -> R.style.colorPrimary_e57
             "#d32f2f" -> R.style.colorPrimary_d32
@@ -162,26 +179,29 @@ class ColorUtils {
             "#37474f" -> R.style.colorPrimary_374
             else -> -1
         }
-    }
 
-    /**/
-    fun getPrimaryColor(context: Context, colorType: ColorType): Int {
-        return context.getPrimaryColor(colorType)
-    }
+    //
+    fun getPrimaryColor(
+        context: Context,
+        colorType: ColorType,
+    ): Int = context.getPrimaryColor(colorType)
 }
 
 enum class ColorType {
-    PRIMARY, PRIMARY_LIGHT, PRIMARY_DARK, ACCENT
+    PRIMARY,
+    PRIMARY_LIGHT,
+    PRIMARY_DARK,
+    ACCENT,
 }
 
 fun Context.getPrimaryColor(colorType: ColorType): Int {
-    val id = when (colorType) {
-        ColorType.ACCENT -> R.attr.colorAccent
-        ColorType.PRIMARY_DARK -> R.attr.colorPrimaryDark
-        ColorType.PRIMARY_LIGHT -> R.attr.colorPrimaryLight
-        ColorType.PRIMARY -> R.attr.colorPrimary
-        else -> R.attr.colorPrimary
-    }
+    val id =
+        when (colorType) {
+            ColorType.ACCENT -> R.attr.colorAccent
+            ColorType.PRIMARY_DARK -> R.attr.colorPrimaryDark
+            ColorType.PRIMARY_LIGHT -> R.attr.colorPrimaryLight
+            ColorType.PRIMARY -> R.attr.colorPrimary
+        }
     val typedValue = TypedValue()
     val a = obtainStyledAttributes(typedValue.data, intArrayOf(id))
     val colorToReturn = a.getColor(0, 0)

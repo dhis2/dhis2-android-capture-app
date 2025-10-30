@@ -1,21 +1,21 @@
 package org.dhis2.maps.layer.types
 
 import android.graphics.Color
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
 import org.dhis2.maps.layer.MapLayer
 import org.dhis2.maps.managers.EventMapManager
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.maps.Style
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.Layer
+import org.maplibre.android.style.layers.Property
+import org.maplibre.android.style.layers.PropertyFactory
+import org.maplibre.android.style.layers.SymbolLayer
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class EventMapLayer(
     val style: Style,
@@ -23,13 +23,12 @@ class EventMapLayer(
     val eventColor: Int?,
     private val colorUtils: ColorUtils,
 ) : MapLayer {
-
-    private val POINT_LAYER_ID = "POINT_LAYER"
-    private var SELECTED_POINT_LAYER_ID: String = "SELECTED_TEI_POINT_LAYER_ID"
-    private val POLYGON_LAYER_ID = "POLYGON_LAYER"
-    private var SELECTED_POINT_SOURCE_ID = "SELECTED_POINT_SOURCE"
-    private var SELECTED_POLYGON_LAYER_ID: String = "SELECTED_POLYGON_LAYER_ID"
-    private var SELECTED_POLYGON_SOURCE_ID = "SELECTED_POLYGON_SOURCE_ID"
+    private val pointLayerId = "POINT_LAYER"
+    private var selectedPointLayerId: String = "SELECTED_TEI_POINT_LAYER_ID"
+    private val polygonLayerId = "POLYGON_LAYER"
+    private var selectedPointSourceId = "SELECTED_POINT_SOURCE"
+    private var selectedPolygonLayerId: String = "SELECTED_POLYGON_LAYER_ID"
+    private var selectedPolygonSourceId = "SELECTED_POLYGON_SOURCE_ID"
 
     override var visible = false
 
@@ -37,12 +36,12 @@ class EventMapLayer(
         when (featureType) {
             FeatureType.POINT -> {
                 style.addLayer(pointLayer)
-                style.addSource(GeoJsonSource(SELECTED_POINT_SOURCE_ID))
+                style.addSource(GeoJsonSource(selectedPointSourceId))
                 style.addLayer(selectedPointLayer)
             }
             FeatureType.POLYGON -> {
                 style.addLayer(polygonLayer)
-                style.addSource(GeoJsonSource(SELECTED_POLYGON_SOURCE_ID))
+                style.addSource(GeoJsonSource(selectedPolygonSourceId))
                 style.addLayer(selectedPolygonLayer)
             }
             else -> Unit
@@ -50,34 +49,38 @@ class EventMapLayer(
     }
 
     private val pointLayer: Layer
-        get() = style.getLayer(POINT_LAYER_ID)
-            ?: SymbolLayer(POINT_LAYER_ID, EventMapManager.EVENTS)
-                .withProperties(
-                    PropertyFactory.iconImage(EventMapManager.ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                ).apply { minZoom = 0f }
+        get() =
+            style.getLayer(pointLayerId)
+                ?: SymbolLayer(pointLayerId, EventMapManager.EVENTS)
+                    .withProperties(
+                        PropertyFactory.iconImage(EventMapManager.ICON_ID),
+                        PropertyFactory.iconAllowOverlap(true),
+                    ).apply { minZoom = 0f }
 
     private val selectedPointLayer: Layer
-        get() = style.getLayer(SELECTED_POINT_LAYER_ID)
-            ?: SymbolLayer(SELECTED_POINT_LAYER_ID, SELECTED_POINT_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.iconImage(EventMapManager.ICON_ID),
-                    PropertyFactory.iconAllowOverlap(true),
-                ).apply { minZoom = 0f }
+        get() =
+            style.getLayer(selectedPointLayerId)
+                ?: SymbolLayer(selectedPointLayerId, selectedPointSourceId)
+                    .withProperties(
+                        PropertyFactory.iconImage(EventMapManager.ICON_ID),
+                        PropertyFactory.iconAllowOverlap(true),
+                    ).apply { minZoom = 0f }
 
     private val polygonLayer: Layer
-        get() = style.getLayer(POLYGON_LAYER_ID)
-            ?: FillLayer(POLYGON_LAYER_ID, EventMapManager.EVENTS)
-                .withProperties(
-                    PropertyFactory.fillColor(eventColor ?: -1),
-                )
+        get() =
+            style.getLayer(polygonLayerId)
+                ?: FillLayer(polygonLayerId, EventMapManager.EVENTS)
+                    .withProperties(
+                        PropertyFactory.fillColor(eventColor ?: -1),
+                    )
 
     private val selectedPolygonLayer: Layer
-        get() = style.getLayer(SELECTED_POLYGON_LAYER_ID)
-            ?: FillLayer(SELECTED_POLYGON_LAYER_ID, SELECTED_POLYGON_SOURCE_ID)
-                .withProperties(
-                    PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
-                )
+        get() =
+            style.getLayer(selectedPolygonLayerId)
+                ?: FillLayer(selectedPolygonLayerId, selectedPolygonSourceId)
+                    .withProperties(
+                        PropertyFactory.fillColor(colorUtils.withAlpha(eventColor ?: -1)),
+                    )
 
     private fun setVisibility(visibility: String) {
         when (featureType) {
@@ -115,7 +118,7 @@ class EventMapLayer(
     private fun selectPoint(feature: Feature) {
         deselectCurrentPoint()
 
-        style.getSourceAs<GeoJsonSource>(SELECTED_POINT_SOURCE_ID)?.apply {
+        style.getSourceAs<GeoJsonSource>(selectedPointSourceId)?.apply {
             setGeoJson(
                 FeatureCollection.fromFeatures(
                     arrayListOf(Feature.fromGeometry(feature.geometry())),
@@ -132,7 +135,7 @@ class EventMapLayer(
     private fun selectPolygon(feature: Feature) {
         deselectCurrentPoint()
 
-        style.getSourceAs<GeoJsonSource>(SELECTED_POLYGON_SOURCE_ID)?.apply {
+        style.getSourceAs<GeoJsonSource>(selectedPolygonSourceId)?.apply {
             setGeoJson(
                 FeatureCollection.fromFeatures(
                     arrayListOf(Feature.fromGeometry(feature.geometry())),
@@ -143,7 +146,6 @@ class EventMapLayer(
         selectedPolygonLayer.setProperties(
             PropertyFactory.fillColor(colorUtils.withAlpha(Color.WHITE)),
             PropertyFactory.visibility(Property.VISIBLE),
-
         )
     }
 
@@ -161,23 +163,23 @@ class EventMapLayer(
         }
     }
 
-    override fun findFeatureWithUid(featureUidProperty: String): Feature? {
-        return style.getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
+    override fun findFeatureWithUid(featureUidProperty: String): Feature? =
+        style
+            .getSourceAs<GeoJsonSource>(EventMapManager.EVENTS)
             ?.querySourceFeatures(
                 Expression.eq(Expression.get(MapEventToFeatureCollection.EVENT), featureUidProperty),
-            )?.firstOrNull()?.let {
+            )?.firstOrNull()
+            ?.let {
                 setSelectedItem(it)
                 it
             }
-    }
 
-    override fun getId(): String {
-        return if (featureType == FeatureType.POINT) {
-            POINT_LAYER_ID
+    override fun getId(): String =
+        if (featureType == FeatureType.POINT) {
+            pointLayerId
         } else {
-            POLYGON_LAYER_ID
+            polygonLayerId
         }
-    }
 
-    override fun layerIdsToSearch(): Array<String> = arrayOf(POINT_LAYER_ID)
+    override fun layerIdsToSearch(): Array<String> = arrayOf(pointLayerId)
 }

@@ -11,17 +11,19 @@ import org.dhis2.R
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.commons.orgunitselector.OUTreeFragment
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.databinding.ActivityProgramStageSelectionBinding
 import org.dhis2.form.model.EventMode
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
 import org.dhis2.usescases.eventsWithoutRegistration.eventInitial.EventInitialActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.hisp.dhis.android.core.period.PeriodType
 import javax.inject.Inject
 
-class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSelectionView {
+class ProgramStageSelectionActivity :
+    ActivityGlobalAbstract(),
+    ProgramStageSelectionView {
     private lateinit var binding: ActivityProgramStageSelectionBinding
 
     @Inject
@@ -38,14 +40,16 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         binding = DataBindingUtil.setContentView(this, R.layout.activity_program_stage_selection)
 
         binding.presenter = presenter
-        adapter = ProgramStageSelectionAdapter { programStage ->
-            presenter.onProgramStageClick(programStage)
-        }
+        adapter =
+            ProgramStageSelectionAdapter { programStage ->
+                presenter.onProgramStageClick(programStage)
+            }
         binding.recyclerView.adapter = adapter
-        binding.title.text = eventResourcesProvider.formatWithProgramEventLabel(
-            stringResource = R.string.new_event_label,
-            programUid = intent.getStringExtra(Constants.PROGRAM_UID),
-        )
+        binding.title.text =
+            eventResourcesProvider.formatWithProgramEventLabel(
+                stringResource = R.string.new_event_label,
+                programUid = intent.getStringExtra(Constants.PROGRAM_UID),
+            )
     }
 
     override fun onResume() {
@@ -70,7 +74,11 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         }
     }
 
-    override fun setResult(programStageUid: String, repeatable: Boolean, periodType: PeriodType?) {
+    override fun setResult(
+        programStageUid: String,
+        repeatable: Boolean,
+        periodType: PeriodType?,
+    ) {
         val eventCreationType = intent.getStringExtra(Constants.EVENT_CREATION_TYPE)
         val programUid = intent.getStringExtra(Constants.PROGRAM_UID)
         val enrollmentUid = intent.getStringExtra(Constants.ENROLLMENT_UID)
@@ -104,12 +112,12 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         programStageUid: String,
         enrollmentUid: String?,
     ) {
-        OUTreeFragment.Builder()
+        OUTreeFragment
+            .Builder()
             .singleSelection()
             .orgUnitScope(
                 OrgUnitSelectorScope.ProgramCaptureScope(programUid),
-            )
-            .onSelection { selectedOrgUnits ->
+            ).onSelection { selectedOrgUnits ->
                 if (selectedOrgUnits.isNotEmpty()) {
                     presenter.onOrgUnitForNewEventSelected(
                         programStageUid = programStageUid,
@@ -118,8 +126,7 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
                         enrollmentUid = enrollmentUid,
                     )
                 }
-            }
-            .build()
+            }.build()
             .show(supportFragmentManager, "ORG_UNIT_DIALOG")
     }
 
@@ -128,12 +135,13 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         eventMode: EventMode,
         programUid: String,
     ) {
-        val intent = EventCaptureActivity.intent(
-            context = this,
-            eventUid = eventUid,
-            programUid = programUid,
-            eventMode = eventMode,
-        )
+        val intent =
+            EventCaptureActivity.intent(
+                context = this,
+                eventUid = eventUid,
+                programUid = programUid,
+                eventMode = eventMode,
+            )
         startActivity(intent)
         finish()
     }
@@ -147,37 +155,38 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         enrollmentUid: String?,
     ) {
         val intent = Intent(this, EventInitialActivity::class.java)
-        val bundle = Bundle().apply {
-            putString(
-                Constants.PROGRAM_UID,
-                programUid,
-            )
-            putString(
-                Constants.TRACKED_ENTITY_INSTANCE,
-                getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE),
-            )
-            putString(
-                Constants.ORG_UNIT,
-                getIntent().getStringExtra(
+        val bundle =
+            Bundle().apply {
+                putString(
+                    Constants.PROGRAM_UID,
+                    programUid,
+                )
+                putString(
+                    Constants.TRACKED_ENTITY_INSTANCE,
+                    getIntent().getStringExtra(Constants.TRACKED_ENTITY_INSTANCE),
+                )
+                putString(
                     Constants.ORG_UNIT,
-                ),
-            )
-            putString(
-                Constants.ENROLLMENT_UID,
-                enrollmentUid,
-            )
-            putString(
-                Constants.EVENT_CREATION_TYPE,
-                eventCreationType,
-            )
-            putBoolean(Constants.EVENT_REPEATABLE, repeatable)
-            putSerializable(Constants.EVENT_PERIOD_TYPE, periodType)
-            putString(Constants.PROGRAM_STAGE_UID, programStageUid)
-            putInt(
-                Constants.EVENT_SCHEDULE_INTERVAL,
-                presenter.getStandardInterval(programStageUid),
-            )
-        }
+                    getIntent().getStringExtra(
+                        Constants.ORG_UNIT,
+                    ),
+                )
+                putString(
+                    Constants.ENROLLMENT_UID,
+                    enrollmentUid,
+                )
+                putString(
+                    Constants.EVENT_CREATION_TYPE,
+                    eventCreationType,
+                )
+                putBoolean(Constants.EVENT_REPEATABLE, repeatable)
+                putSerializable(Constants.EVENT_PERIOD_TYPE, periodType)
+                putString(Constants.PROGRAM_STAGE_UID, programStageUid)
+                putInt(
+                    Constants.EVENT_SCHEDULE_INTERVAL,
+                    presenter.getStandardInterval(programStageUid),
+                )
+            }
 
         intent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT)
         intent.putExtras(bundle)
@@ -192,7 +201,8 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
         if (programId == null || enrollmentId == null || eventCreationType == null) {
             finish()
         }
-        (applicationContext as App).userComponent()!!
+        (applicationContext as App)
+            .userComponent()!!
             .plus(
                 ProgramStageSelectionModule(
                     this,
@@ -200,7 +210,6 @@ class ProgramStageSelectionActivity : ActivityGlobalAbstract(), ProgramStageSele
                     enrollmentId!!,
                     eventCreationType!!,
                 ),
-            )
-            .inject(this)
+            ).inject(this)
     }
 }

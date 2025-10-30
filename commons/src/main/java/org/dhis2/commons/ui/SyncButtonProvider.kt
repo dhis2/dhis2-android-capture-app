@@ -1,9 +1,9 @@
 package org.dhis2.commons.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Sync
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,17 +20,18 @@ fun SyncButtonProvider(
     syncRetryActionLabel: String = stringResource(id = R.string.sync_retry),
     onSyncIconClick: () -> Unit,
 ) {
-    val buttonText = when (state) {
-        State.TO_POST,
-        State.TO_UPDATE,
-        -> syncActionLabel
+    val buttonText =
+        when (state) {
+            State.TO_POST,
+            State.TO_UPDATE,
+            -> syncActionLabel
 
-        State.ERROR,
-        State.WARNING,
-        -> syncRetryActionLabel
+            State.ERROR,
+            State.WARNING,
+            -> syncRetryActionLabel
 
-        else -> null
-    }
+            else -> null
+        }
     buttonText?.let {
         Button(
             style = ButtonStyle.TONAL,

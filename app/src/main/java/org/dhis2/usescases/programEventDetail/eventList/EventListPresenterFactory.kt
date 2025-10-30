@@ -15,13 +15,12 @@ class EventListPresenterFactory(
     private val mapper: ProgramEventMapper,
     private val cardMapper: EventCardMapper,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return EventListViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        EventListViewModel(
             filterManager,
             programEventDetailRepository,
             dispatchers,
             mapper,
             cardMapper,
         ) as T
-    }
 }

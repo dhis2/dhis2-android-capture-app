@@ -12,7 +12,6 @@ import org.dhis2.bindings.app
 import org.dhis2.usescases.splash.SplashActivity
 
 class DhisCustomLauncher : AppWidgetProvider() {
-
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -41,7 +40,6 @@ class DhisCustomLauncher : AppWidgetProvider() {
     }
 
     companion object {
-
         internal fun updateAppWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
@@ -49,14 +47,25 @@ class DhisCustomLauncher : AppWidgetProvider() {
         ) {
             var widgetImage = ""
             if (context.app().serverComponent != null) {
-                val d2 = context.app().serverComponent?.userManager()?.d2
+                val d2 =
+                    context
+                        .app()
+                        .serverComponent
+                        ?.userManager()
+                        ?.d2
                 if (d2 != null) {
                     val isLoggedIn = d2.userModule().isLogged().blockingGet()
-                    widgetImage = if (isLoggedIn) {
-                        d2.settingModule()?.systemSetting()?.flag()?.blockingGet()?.value() ?: ""
-                    } else {
-                        ""
-                    }
+                    widgetImage =
+                        if (isLoggedIn) {
+                            d2
+                                .settingModule()
+                                ?.systemSetting()
+                                ?.flag()
+                                ?.blockingGet()
+                                ?.value() ?: ""
+                        } else {
+                            ""
+                        }
                 }
             }
 

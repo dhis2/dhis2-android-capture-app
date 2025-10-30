@@ -39,18 +39,17 @@ fun String.toDate(): Date? {
     return date
 }
 
-fun String.toPercentage(): String {
-    return "$this%"
-}
+fun String.toPercentage(): String = "$this%"
 
-fun String.toFriendlyDate(): String {
-    return if (this.isNotEmpty()) {
+fun String.toFriendlyDate(): String =
+    if (this.isNotEmpty()) {
         var formattedDate = this
-        val date = try {
-            DateUtils.oldUiDateFormat().parse(this)
-        } catch (e: ParseException) {
-            null
-        }
+        val date =
+            try {
+                DateUtils.oldUiDateFormat().parse(this)
+            } catch (e: ParseException) {
+                null
+            }
         date?.let {
             formattedDate = DateUtils.uiDateFormat().format(date)
         }
@@ -58,16 +57,16 @@ fun String.toFriendlyDate(): String {
     } else {
         this
     }
-}
 
-fun String.toFriendlyDateTime(): String {
-    return if (this.isNotEmpty()) {
+fun String.toFriendlyDateTime(): String =
+    if (this.isNotEmpty()) {
         var formattedDate = this
-        val date = try {
-            DateUtils.databaseDateFormatNoSeconds().parse(this)
-        } catch (e: ParseException) {
-            null
-        }
+        val date =
+            try {
+                DateUtils.databaseDateFormatNoSeconds().parse(this)
+            } catch (e: ParseException) {
+                null
+            }
         date?.let {
             formattedDate = DateUtils.uiDateTimeFormat().format(date)
         }
@@ -75,4 +74,3 @@ fun String.toFriendlyDateTime(): String {
     } else {
         this
     }
-}

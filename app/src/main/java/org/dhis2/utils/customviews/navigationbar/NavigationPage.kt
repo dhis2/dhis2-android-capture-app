@@ -3,7 +3,9 @@ package org.dhis2.utils.customviews.navigationbar
 import androidx.annotation.IdRes
 import org.dhis2.R
 
-enum class NavigationPage(@IdRes val id: Int) {
+enum class NavigationPage(
+    @IdRes val id: Int,
+) {
     DETAILS(R.id.navigation_details),
     ANALYTICS(R.id.navigation_analytics),
     RELATIONSHIPS(R.id.navigation_relationships),

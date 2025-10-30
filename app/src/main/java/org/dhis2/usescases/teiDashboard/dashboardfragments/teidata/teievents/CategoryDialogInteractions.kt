@@ -11,12 +11,13 @@ interface CategoryDialogInteractions {
         fragmentManager: FragmentManager,
         onItemSelected: (selectedCatOptComboUid: String) -> Unit,
     ) {
-        val categoryDialog = CategoryDialog(
-            CategoryDialog.Type.CATEGORY_OPTION_COMBO,
-            categoryComboUid,
-            true,
-            dateControl,
-        ) { selectedCatOptComboUid -> onItemSelected(selectedCatOptComboUid) }
+        val categoryDialog =
+            CategoryDialog(
+                CategoryDialog.Type.CATEGORY_OPTION_COMBO,
+                categoryComboUid,
+                true,
+                dateControl,
+            ) { selectedCatOptComboUid -> onItemSelected(selectedCatOptComboUid) }
         categoryDialog.isCancelable = false
         categoryDialog.show(fragmentManager, CategoryDialog.TAG)
     }

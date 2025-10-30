@@ -7,16 +7,31 @@ import org.hisp.dhis.android.core.program.Program
 
 interface ProgramEventDetailView : AbstractActivityContracts.View {
     fun setProgram(programModel: Program)
+
     fun renderError(message: String)
+
     fun showHideFilter()
+
     fun setWritePermission(canWrite: Boolean)
+
     fun updateFilters(totalFilters: Int)
+
     fun openOrgUnitTreeSelector()
+
     fun showPeriodRequest(periodRequest: PeriodRequest)
-    fun selectOrgUnitForNewEvent()
-    fun navigateToEvent(eventId: String, orgUnit: String)
+
+    fun selectOrgUnitForNewEvent(preselectedOrgUnits: List<String>)
+
+    fun navigateToEvent(
+        eventId: String,
+        orgUnit: String,
+    )
+
     fun showSyncDialog(uid: String)
+
     fun showCatOptComboDialog(catComboUid: String)
+
     fun setFilterItems(programFilters: List<FilterItem>)
+
     fun hideFilters()
 }

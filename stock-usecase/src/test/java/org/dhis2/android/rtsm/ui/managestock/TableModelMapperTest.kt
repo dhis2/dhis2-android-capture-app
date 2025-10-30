@@ -10,7 +10,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class TableModelMapperTest {
-
     private val resources: ResourceManager = mock()
     private lateinit var mapper: TableModelMapper
 

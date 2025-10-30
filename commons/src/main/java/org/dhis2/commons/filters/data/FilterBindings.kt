@@ -36,12 +36,18 @@ fun View.setExpanded(expanded: Boolean) {
 @BindingAdapter("request_layout")
 fun View.setRequestLayout(filterItem: FilterItem) {
     if (filterItem is CatOptionComboFilter || filterItem is OrgUnitFilter) {
-        filterItem.observeCount()
-            .addOnPropertyChangedCallback(object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(sender: Observable?, propertyId: Int) {
-                    expand(true) { }
-                }
-            })
+        filterItem
+            .observeCount()
+            .addOnPropertyChangedCallback(
+                object : Observable.OnPropertyChangedCallback() {
+                    override fun onPropertyChanged(
+                        sender: Observable?,
+                        propertyId: Int,
+                    ) {
+                        expand(true) { }
+                    }
+                },
+            )
     }
 }
 
@@ -55,19 +61,29 @@ fun View.setAnimatedVisibility(visible: Boolean) {
 }
 
 @BindingAdapter("clipAllCorners")
-fun setAllClipCorners(view: View, cornerRadiusInDp: Int) {
+fun setAllClipCorners(
+    view: View,
+    cornerRadiusInDp: Int,
+) {
     view.clipWithAllRoundedCorners(cornerRadiusInDp.dp)
 }
 
 @BindingAdapter("withCatComboFilterAdapter")
-fun setWithCatComboFilterAdapter(recyclerView: RecyclerView, setAdapter: Boolean) {
+fun setWithCatComboFilterAdapter(
+    recyclerView: RecyclerView,
+    setAdapter: Boolean,
+) {
     if (setAdapter) {
         recyclerView.adapter = CatOptCombFilterAdapter()
     }
 }
 
 @BindingAdapter(value = ["sortingItem", "filterType"], requireAll = true)
-fun setSortingIcon(sortingIcon: ImageView, sortingItem: SortingItem?, filterType: Filters) {
+fun setSortingIcon(
+    sortingIcon: ImageView,
+    sortingItem: SortingItem?,
+    filterType: Filters,
+) {
     if (sortingItem != null) {
         if (sortingItem.filterSelectedForSorting !== filterType) {
             sortingIcon.setImageDrawable(
@@ -78,47 +94,54 @@ fun setSortingIcon(sortingIcon: ImageView, sortingItem: SortingItem?, filterType
             )
         } else {
             when (sortingItem.sortingStatus) {
-                SortingStatus.ASC -> sortingIcon.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        sortingIcon.context,
-                        R.drawable.ic_sort_ascending,
-                    ),
-                )
-                SortingStatus.DESC -> sortingIcon.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        sortingIcon.context,
-                        R.drawable.ic_sort_descending,
-                    ),
-                )
-                SortingStatus.NONE -> sortingIcon.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        sortingIcon.context,
-                        R.drawable.ic_sort_deactivated,
-                    ),
-                )
-                else -> sortingIcon.setImageDrawable(
-                    AppCompatResources.getDrawable(
-                        sortingIcon.context,
-                        R.drawable.ic_sort_deactivated,
-                    ),
-                )
+                SortingStatus.ASC ->
+                    sortingIcon.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            sortingIcon.context,
+                            R.drawable.ic_sort_ascending,
+                        ),
+                    )
+                SortingStatus.DESC ->
+                    sortingIcon.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            sortingIcon.context,
+                            R.drawable.ic_sort_descending,
+                        ),
+                    )
+                SortingStatus.NONE ->
+                    sortingIcon.setImageDrawable(
+                        AppCompatResources.getDrawable(
+                            sortingIcon.context,
+                            R.drawable.ic_sort_deactivated,
+                        ),
+                    )
             }
         }
     }
 }
 
 @BindingAdapter(value = ["filterArrow", "filterType"])
-fun setFilterArrow(view: View, openFilter: Filters?, filterType: Filters) {
-    view.animate().scaleY(
-        when {
-            openFilter !== filterType -> 1f
-            else -> -1f
-        },
-    ).setDuration(200).start()
+fun setFilterArrow(
+    view: View,
+    openFilter: Filters?,
+    filterType: Filters,
+) {
+    view
+        .animate()
+        .scaleY(
+            when {
+                openFilter !== filterType -> 1f
+                else -> -1f
+            },
+        ).setDuration(200)
+        .start()
 }
 
 @BindingAdapter("fromResource")
-fun setFromResource(imageView: ImageView, @DrawableRes resource: Int) {
+fun setFromResource(
+    imageView: ImageView,
+    @DrawableRes resource: Int,
+) {
     try {
         imageView.setImageDrawable(AppCompatResources.getDrawable(imageView.context, resource))
     } catch (e: Exception) {

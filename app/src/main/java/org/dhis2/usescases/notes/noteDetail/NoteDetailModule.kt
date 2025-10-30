@@ -12,19 +12,14 @@ class NoteDetailModule(
     private val noteId: String? = null,
     private val programUid: String,
 ) {
-
     @Provides
     @PerActivity
-    fun providesRepository(d2: D2): NoteDetailRepository {
-        return NoteDetailRepositoryImpl(d2, programUid)
-    }
+    fun providesRepository(d2: D2): NoteDetailRepository = NoteDetailRepositoryImpl(d2, programUid)
 
     @Provides
     @PerActivity
     fun providesPresenter(
         repository: NoteDetailRepository,
         schedulerProvider: SchedulerProvider,
-    ): NoteDetailPresenter {
-        return NoteDetailPresenter(view, schedulerProvider, noteId, repository)
-    }
+    ): NoteDetailPresenter = NoteDetailPresenter(view, schedulerProvider, noteId, repository)
 }

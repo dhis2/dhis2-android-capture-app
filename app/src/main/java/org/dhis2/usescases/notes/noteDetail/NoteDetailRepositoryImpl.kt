@@ -10,30 +10,43 @@ class NoteDetailRepositoryImpl(
     private val d2: D2,
     private val programUid: String,
 ) : NoteDetailRepository {
+    override fun getNote(noteId: String): Single<Note?> =
+        d2
+            .noteModule()
+            .notes()
+            .uid(noteId)
+            .get()
 
-    override fun getNote(noteId: String): Single<Note?> {
-        return d2.noteModule().notes().uid(noteId).get()
-    }
-
-    override fun saveNote(type: NoteType, uid: String, message: String): Single<String> {
-        return when (type) {
+    override fun saveNote(
+        type: NoteType,
+        uid: String,
+        message: String,
+    ): Single<String> =
+        when (type) {
             NoteType.ENROLLMENT -> {
                 d2.noteModule().notes().add(
-                    NoteCreateProjection.builder()
+                    NoteCreateProjection
+                        .builder()
                         .noteType(Note.NoteType.ENROLLMENT_NOTE)
                         .enrollment(
-                            d2.enrollmentModule().enrollments()
-                                .byProgram().eq(programUid)
-                                .byTrackedEntityInstance().eq(uid)
-                                .one().blockingGet()?.uid(),
-                        )
-                        .value(message)
+                            d2
+                                .enrollmentModule()
+                                .enrollments()
+                                .byProgram()
+                                .eq(programUid)
+                                .byTrackedEntityInstance()
+                                .eq(uid)
+                                .one()
+                                .blockingGet()
+                                ?.uid(),
+                        ).value(message)
                         .build(),
                 )
             }
             NoteType.EVENT -> {
                 d2.noteModule().notes().add(
-                    NoteCreateProjection.builder()
+                    NoteCreateProjection
+                        .builder()
                         .noteType(Note.NoteType.EVENT_NOTE)
                         .event(uid)
                         .value(message)
@@ -41,5 +54,4 @@ class NoteDetailRepositoryImpl(
                 )
             }
         }
-    }
 }
