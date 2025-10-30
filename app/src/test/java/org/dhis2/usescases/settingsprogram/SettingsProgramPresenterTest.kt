@@ -11,14 +11,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class SettingsProgramPresenterTest {
-    private val getProgramSpecificSettings: GetProgramSpecificSettings = mock()
-    private val viewmodel = SettingsProgramViewModel(getProgramSpecificSettings)
-
     @Test
     fun `Should initialize the settings program`() =
         runTest {
+            val getProgramSpecificSettings: GetProgramSpecificSettings = mock()
             val testSettings = listOf(mock<SpecificSettings>())
             whenever(getProgramSpecificSettings()).doReturn(testSettings)
+
+            val viewmodel = SettingsProgramViewModel(getProgramSpecificSettings)
 
             viewmodel.programSettings.test {
                 assertEquals(emptyList<SpecificSettings>(), awaitItem())
