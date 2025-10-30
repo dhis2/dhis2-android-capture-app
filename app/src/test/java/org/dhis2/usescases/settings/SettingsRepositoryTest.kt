@@ -1,6 +1,12 @@
 package org.dhis2.usescases.settings
 
 import io.reactivex.Single
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -19,6 +25,7 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_META
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.settings.DataSyncPeriod
@@ -28,6 +35,8 @@ import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
+import org.junit.After
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
@@ -35,7 +44,9 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SettingsRepositoryTest {
+    private val testDispatcher = StandardTestDispatcher()
     private lateinit var settingsRepository: SettingsRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val userManager: UserManager =
@@ -55,125 +66,110 @@ class SettingsRepositoryTest {
             on { getSmsModuleConfig() } doReturn Single.just(smsConfig)
         }
 
+    private val dispatcher: Dispatcher =
+        mock {
+            on { io } doReturn testDispatcher
+        }
+
     @Before
     fun setUp() {
+        Dispatchers.setMain(testDispatcher)
         settingsRepository =
             SettingsRepository(
                 d2,
                 preferencesProvider,
                 featureConfigRepository,
+                dispatcher,
             )
         configurePreferences()
         configureDataCount()
         configureSMSConfig()
     }
 
-    @Test
-    fun `Should return metadata period from general settings if exist`() {
-        configureGeneralSettings(true)
-        val testObserver = settingsRepository.metaSync().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue { metadataSettings ->
-                metadataSettings.metadataSyncPeriod == SETTINGS_METADATA_PERIOD.toSeconds()
-            }
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
-    fun `Should return metadata period from preferences if general settings does not exist`() {
-        configureGeneralSettings(false)
-        val testObserver = settingsRepository.metaSync().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue { metadataSettings ->
-                metadataSettings.metadataSyncPeriod == SETTINGS_PREF_METADATA_PERIOD
-            }
-    }
+    fun `Should return metadata period from general settings if exist`() =
+        runTest {
+            configureGeneralSettings(true)
+            val metadataResult = settingsRepository.metaSync()
+            assertTrue(metadataResult.metadataSyncPeriod == SETTINGS_METADATA_PERIOD.toSeconds())
+        }
 
     @Test
-    fun `Should return data period from general settings if exist`() {
-        configureGeneralSettings(true)
-        configureDataErrors()
-        val testObserver = settingsRepository.dataSync().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue { dataSettings ->
-                dataSettings.dataSyncPeriod == SETTINGS_DATA_PERIOD.toSeconds()
-            }
-    }
+    fun `Should return metadata period from preferences if general settings does not exist`() =
+        runTest {
+            configureGeneralSettings(false)
+            val metadataResult = settingsRepository.metaSync()
+            assertTrue(metadataResult.metadataSyncPeriod == SETTINGS_PREF_METADATA_PERIOD)
+        }
 
     @Test
-    fun `Should return data period from preferences if general settings does not exist`() {
-        configureGeneralSettings(false)
-        configureDataErrors()
-        val testObserver = settingsRepository.dataSync().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue { dataSettings ->
-                dataSettings.dataSyncPeriod == SETTINGS_PREF_DATA_PERIOD
-            }
-    }
+    fun `Should return data period from general settings if exist`() =
+        runTest {
+            configureGeneralSettings(true)
+            configureDataErrors()
+            val dataResult = settingsRepository.dataSync()
+            assertTrue(dataResult.dataSyncPeriod == SETTINGS_DATA_PERIOD.toSeconds())
+        }
 
     @Test
-    fun `Should return parameters from general settings if exist`() {
-        configureGeneralSettings(true)
-        configureProgramSettings(true)
-        val testObserver = settingsRepository.syncParameters().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                it.numberOfTeiToDownload == SETTINGS_TEI_DOWNLOAD &&
-                    it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
-                    it.limitScope == SETTINGS_LIMIT_SCOPE
-            }
-    }
+    fun `Should return data period from preferences if general settings does not exist`() =
+        runTest {
+            configureGeneralSettings(false)
+            configureDataErrors()
+            val dataResult = settingsRepository.dataSync()
+            assertTrue(dataResult.dataSyncPeriod == SETTINGS_PREF_DATA_PERIOD)
+        }
 
     @Test
-    fun `Should return parameters from preferences if general settings does not exist`() {
-        configureGeneralSettings(false)
-        configureProgramSettings(false)
-        val testObserver = settingsRepository.syncParameters().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                it.numberOfTeiToDownload == SETTINGS_PREF_TEI_DOWNLOAD &&
-                    it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
-                    it.limitScope != SETTINGS_LIMIT_SCOPE
-            }
-    }
+    fun `Should return parameters from general settings if exist`() =
+        runTest {
+            configureGeneralSettings(true)
+            configureProgramSettings(true)
+            val syncParameters = settingsRepository.syncParameters()
+            assertTrue(syncParameters.numberOfTeiToDownload == SETTINGS_TEI_DOWNLOAD)
+            assertTrue(syncParameters.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD)
+            assertTrue(syncParameters.limitScope == SETTINGS_LIMIT_SCOPE)
+        }
 
     @Test
-    fun `Should return reserved values from settings if exist`() {
-        configureGeneralSettings(true)
-        val testObserver = settingsRepository.reservedValues().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                it.numberOfReservedValuesToDownload == SETTINGS_RV
-            }
-    }
+    fun `Should return parameters from preferences if general settings does not exist`() =
+        runTest {
+            configureGeneralSettings(false)
+            configureProgramSettings(false)
+            val syncParameters = settingsRepository.syncParameters()
+            assertTrue(syncParameters.numberOfTeiToDownload == SETTINGS_PREF_TEI_DOWNLOAD)
+            assertTrue(syncParameters.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD)
+            assertTrue(syncParameters.limitScope != SETTINGS_LIMIT_SCOPE)
+        }
 
     @Test
-    fun `Should return reserved values from preferences if settings does not exist`() {
-        configureGeneralSettings(false)
-        val testObserver = settingsRepository.reservedValues().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                it.numberOfReservedValuesToDownload == SETTINGS_PREF_RV
-            }
-    }
+    fun `Should return reserved values from settings if exist`() =
+        runTest {
+            configureGeneralSettings(true)
+            val reservedValues = settingsRepository.reservedValues()
+            assertTrue(reservedValues.numberOfReservedValuesToDownload == SETTINGS_RV)
+        }
 
     @Test
-    fun `Should return editable sms configuration if settings does not exist`() {
-        configureGeneralSettings(false)
-        val testObserver = settingsRepository.sms().test()
-        testObserver
-            .assertNoErrors()
-            .assertValue {
-                it.isGatewayNumberEditable && it.isResponseNumberEditable
-            }
-    }
+    fun `Should return reserved values from preferences if settings does not exist`() =
+        runTest {
+            configureGeneralSettings(false)
+            val reservedValues = settingsRepository.reservedValues()
+            assertTrue(reservedValues.numberOfReservedValuesToDownload == SETTINGS_PREF_RV)
+        }
+
+    @Test
+    fun `Should return editable sms configuration if settings does not exist`() =
+        runTest {
+            configureGeneralSettings(false)
+            val sms = settingsRepository.sms()
+            assertTrue(sms.isGatewayNumberEditable && sms.isResponseNumberEditable)
+        }
 
     private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
         whenever(d2.settingModule().generalSetting().blockingExists()) doReturn

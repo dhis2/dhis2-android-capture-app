@@ -11,6 +11,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
@@ -170,6 +171,7 @@ class SyncManagerModule {
             d2,
             preferenceProvider,
             featureConfigRepository,
+            Dispatcher(),
         )
 
     @Provides

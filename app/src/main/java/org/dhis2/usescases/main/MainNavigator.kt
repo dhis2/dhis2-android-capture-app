@@ -10,9 +10,6 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.about.AboutFragment
@@ -143,34 +140,36 @@ class MainNavigator(
             currentScreen.value = screen
             currentFragment = fragment
 
-            CoroutineScope(dispatcherProvider.ui()).launch {
-                withContext(dispatcherProvider.io()) {
-                    val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-                    transaction
-                        .apply {
-                            if (sharedView == null) {
-                                val (enterAnimation, exitAnimation) = getEnterExitAnimation(useFadeInTransition)
-                                val (enterPopAnimation, exitPopAnimation) = getEnterExitPopAnimation(useFadeInTransition)
-                                setCustomAnimations(
-                                    enterAnimation,
-                                    exitAnimation,
-                                    enterPopAnimation,
-                                    exitPopAnimation,
-                                )
-                            } else {
-                                setReorderingAllowed(true)
-                                addSharedElement(sharedView, "contenttest")
-                            }
-                        }.replace(R.id.fragment_container, fragment, fragment::class.simpleName)
-                        .commitAllowingStateLoss()
-                }
-                onScreenChanged(
-                    screen.title,
-                    isPrograms(),
-                    isHome(),
-                )
-            }
+            val transaction: FragmentTransaction = fragmentManager.beginTransaction()
+            transaction
+                .apply {
+                    if (sharedView == null) {
+                        val (enterAnimation, exitAnimation) =
+                            getEnterExitAnimation(
+                                useFadeInTransition,
+                            )
+                        val (enterPopAnimation, exitPopAnimation) =
+                            getEnterExitPopAnimation(
+                                useFadeInTransition,
+                            )
+                        setCustomAnimations(
+                            enterAnimation,
+                            exitAnimation,
+                            enterPopAnimation,
+                            exitPopAnimation,
+                        )
+                    } else {
+                        setReorderingAllowed(true)
+                        addSharedElement(sharedView, "contenttest")
+                    }
+                }.replace(R.id.fragment_container, fragment, fragment::class.simpleName)
+                .commitAllowingStateLoss()
         }
+        onScreenChanged(
+            screen.title,
+            isPrograms(),
+            isHome(),
+        )
     }
 
     private fun getEnterExitPopAnimation(useFadeInTransition: Boolean): Pair<Int, Int> =

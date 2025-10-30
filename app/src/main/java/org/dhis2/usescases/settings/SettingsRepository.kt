@@ -1,6 +1,6 @@
 package org.dhis2.usescases.settings
 
-import io.reactivex.Single
+import kotlinx.coroutines.withContext
 import org.dhis2.BuildConfig
 import org.dhis2.bindings.toSeconds
 import org.dhis2.commons.Constants
@@ -15,6 +15,7 @@ import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_WEEKLY
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncResult
+import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.usescases.settings.models.DataSettingsViewModel
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.dhis2.usescases.settings.models.ReservedValueSettingsViewModel
@@ -33,6 +34,7 @@ class SettingsRepository(
     val d2: D2,
     val prefs: PreferenceProvider,
     val featureConfigRepository: FeatureConfigRepository,
+    private val dispatcher: Dispatcher,
 ) {
     private val syncSettings: SynchronizationSettings?
         get() =
@@ -63,8 +65,8 @@ class SettingsRepository(
                 .getSmsModuleConfig()
                 .blockingGet()
 
-    fun dataSync(): Single<DataSettingsViewModel> =
-        Single.just(
+    suspend fun dataSync(): DataSettingsViewModel =
+        withContext(dispatcher.io) {
             DataSettingsViewModel(
                 dataSyncPeriod = dataPeriod(),
                 lastDataSync = prefs.getString(Constants.LAST_DATA_SYNC, "-")!!,
@@ -77,22 +79,22 @@ class SettingsRepository(
                         SyncResult.valueOf(it)
                     },
                 syncInProgress = false,
-            ),
-        )
+            )
+        }
 
-    fun metaSync(): Single<MetadataSettingsViewModel> =
-        Single.just(
+    suspend fun metaSync(): MetadataSettingsViewModel =
+        withContext(dispatcher.io) {
             MetadataSettingsViewModel(
                 metadataSyncPeriod = metadataPeriod(),
                 lastMetadataSync = prefs.getString(Constants.LAST_META_SYNC, "-")!!,
                 hasErrors = !prefs.getBoolean(Constants.LAST_META_SYNC_STATUS, true),
                 canEdit = syncSettings?.metadataSync() == null,
                 syncInProgress = false,
-            ),
-        )
+            )
+        }
 
-    fun syncParameters(): Single<SyncParametersViewModel> =
-        Single.just(
+    suspend fun syncParameters(): SyncParametersViewModel =
+        withContext(dispatcher.io) {
             SyncParametersViewModel(
                 teiToDownload(),
                 eventsToDownload(),
@@ -103,22 +105,22 @@ class SettingsRepository(
                 programSettings?.globalSettings()?.eventsDownload() == null,
                 programSettings?.globalSettings()?.settingDownload() == null,
                 programSettings?.specificSettings()?.size ?: 0,
-            ),
-        )
+            )
+        }
 
-    fun reservedValues(): Single<ReservedValueSettingsViewModel> =
-        Single.just(
+    suspend fun reservedValues(): ReservedValueSettingsViewModel =
+        withContext(dispatcher.io) {
             ReservedValueSettingsViewModel(
                 generalSettings?.reservedValues() ?: prefs.getInt(
                     NUMBER_RV,
                     DEFAULT_NUMBER_RV,
                 ),
                 generalSettings?.reservedValues() == null,
-            ),
-        )
+            )
+        }
 
-    fun sms(): Single<SMSSettingsViewModel> =
-        Single.just(
+    suspend fun sms(): SMSSettingsViewModel =
+        withContext(dispatcher.io) {
             SMSSettingsViewModel(
                 isEnabled = smsConfig.isModuleEnabled,
                 gatewayNumber = smsConfig.gateway,
@@ -129,8 +131,8 @@ class SettingsRepository(
                 waitingForResponse = smsConfig.isWaitingForResult,
                 gatewayValidationResult = GatewayValidator.GatewayValidationResult.Valid,
                 resultSenderValidationResult = GatewayValidator.GatewayValidationResult.Valid,
-            ),
-        )
+            )
+        }
 
     private fun dataHasErrors(): Boolean =
         d2
@@ -345,5 +347,8 @@ class SettingsRepository(
 
     fun getVersionName(): String = BuildConfig.VERSION_NAME
 
-    fun isTwoFAConfigured(): Boolean = featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
+    suspend fun isTwoFAConfigured(): Boolean =
+        withContext(dispatcher.io) {
+            featureConfigRepository.isFeatureEnable(Feature.TWO_FACTOR_AUTHENTICATION)
+        }
 }
