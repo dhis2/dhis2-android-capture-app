@@ -72,7 +72,7 @@ jobs:
     - name: Read version name from file
       working-directory: ./gradle
       id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+      run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> $GITHUB_OUTPUT
 
     # Upload DhisRelease APK
     - name: Upload DhisRelease APK
