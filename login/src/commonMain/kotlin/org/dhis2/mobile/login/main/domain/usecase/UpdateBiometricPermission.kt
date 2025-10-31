@@ -1,6 +1,8 @@
 package org.dhis2.mobile.login.main.domain.usecase
 
 import coil3.PlatformContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
@@ -10,6 +12,7 @@ import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.biometrics_permission_already_saved
 import org.dhis2.mobile.login.resources.biometrics_permission_cancelled
 import org.jetbrains.compose.resources.getString
+import kotlin.coroutines.resume
 
 class UpdateBiometricPermission(
     private val loginRepository: LoginRepository,
@@ -28,21 +31,28 @@ class UpdateBiometricPermission(
             if (biometrics.hasBiometric() && cryptographics.isKeyReady().not() && granted) {
                 val cancellationMessage = getString(Res.string.biometrics_permission_cancelled)
                 suspendCancellableCoroutine { continuation ->
+                    val scope = CoroutineScope(continuation.context)
                     cryptographics.getInitializedCipherForEncryption()?.let {
                         biometrics.authenticate(it) { cryptoObjectCipher ->
-                            val ciphertextWrapper =
-                                cryptographics.encryptData(password, cryptoObjectCipher)
-                            preferences.saveUserCredentialsAndCipher(
-                                serverUrl,
-                                username,
-                                ciphertextWrapper,
-                            )
-                            loginRepository.updateBiometricsPermissions(granted)
-                            continuation.resume(Result.success(Unit)) { cause, _, _ -> Unit }
+                            scope.launch {
+                                val ciphertextWrapper =
+                                    cryptographics.encryptData(password, cryptoObjectCipher)
+                                preferences.saveUserCredentialsAndCipher(
+                                    serverUrl,
+                                    username,
+                                    ciphertextWrapper,
+                                )
+                                loginRepository.updateBiometricsPermissions(granted)
+                                if (continuation.isActive) {
+                                    continuation.resume(Result.success(Unit))
+                                }
+                            }
                         }
                     }
                     continuation.invokeOnCancellation {
-                        Result.failure<Unit>(Exception(cancellationMessage))
+                        continuation
+                            .takeIf { it.isActive }
+                            ?.resume(Result.failure(Exception(cancellationMessage)))
                     }
                 }
             } else {
@@ -51,6 +61,7 @@ class UpdateBiometricPermission(
                     username,
                     password,
                 )
+                loginRepository.updateBiometricsPermissions(granted)
                 Result.success(Unit)
             }
         } else {

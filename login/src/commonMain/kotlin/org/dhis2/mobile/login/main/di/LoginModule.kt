@@ -83,12 +83,13 @@ internal val mainLoginModule =
             )
         }
         viewModel { parameters ->
-            val serverName = parameters.get<String?>(0)
-            val serverUrl = parameters.get<String>(1)
-            val userName = parameters.get<String?>(2)
-            val allowRecovery = parameters.get<Boolean>(3)
-            val oidcInfo = parameters.get<OidcInfo>(4)
-            val context = parameters.get<PlatformContext>(5)
+            val serverName = parameters[0] as String?
+            val serverUrl = parameters[1] as String
+            val userName = parameters[2] as String?
+            val allowRecovery = parameters[3] as Boolean
+            val oidcInfo = parameters[4] as OidcInfo
+            val context = parameters[5] as PlatformContext
+            val fromHome = parameters[6] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -108,6 +109,7 @@ internal val mainLoginModule =
                 getIsSessionLockedUseCase = get(),
                 oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
+                fromHome = fromHome,
             )
         }
     }

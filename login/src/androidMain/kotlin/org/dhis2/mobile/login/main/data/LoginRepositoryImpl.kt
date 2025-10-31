@@ -164,7 +164,7 @@ class LoginRepositoryImpl(
                 ?.value() == null
         }
 
-    fun hasEnabledBiometricsPermission(): Boolean =
+    private fun hasEnabledBiometricsPermission(): Boolean =
         try {
             d2
                 .dataStoreModule()
@@ -250,13 +250,14 @@ class LoginRepositoryImpl(
         }
     }
 
-    override fun updateBiometricsPermissions(granted: Boolean) {
-        d2
-            .dataStoreModule()
-            .localDataStore()
-            .value(BIOMETRICS_PERMISSION)
-            .blockingSet(granted.toString())
-    }
+    override suspend fun updateBiometricsPermissions(granted: Boolean) =
+        withContext(dispatcher.io) {
+            d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(BIOMETRICS_PERMISSION)
+                .blockingSet(granted.toString())
+        }
 
     context(context: PlatformContext)
     override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> =
