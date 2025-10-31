@@ -18,6 +18,7 @@ import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
@@ -38,6 +39,7 @@ class CredentialsViewModel(
     private val getBiometricInfo: GetBiometricInfo,
     private val getHasOtherAccounts: GetHasOtherAccounts,
     private val loginUser: LoginUser,
+    private val logOutUser: LogOutUser,
     private val biometricLogin: BiometricLogin,
     private val openIdLogin: OpenIdLogin,
     private val updateTrackingPermission: UpdateTrackingPermission,
@@ -50,6 +52,7 @@ class CredentialsViewModel(
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase,
     private val forgotPinUseCase: ForgotPinUseCase,
     private val oidcInfo: OidcInfo?,
+    private val fromHome: Boolean,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -82,6 +85,7 @@ class CredentialsViewModel(
             afterLoginActions = emptyList(),
             hasOtherAccounts = false,
             isSessionLocked = false,
+            displayBiometricsDialog = false,
         )
 
     private var loginJob: Job? = null
@@ -99,6 +103,8 @@ class CredentialsViewModel(
 
     private fun loadData() {
         launchUseCase {
+            val biometricInfo = getBiometricInfo(serverUrl)
+
             _credentialsScreenState.emit(
                 CredentialsUiState(
                     serverInfo =
@@ -122,6 +128,7 @@ class CredentialsViewModel(
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
                 ),
             )
         }
@@ -245,27 +252,36 @@ class CredentialsViewModel(
 
     fun cancelLogin() {
         loginJob?.cancel()
+        launchUseCase {
+            logOutUser.invoke()
+        }
     }
 
     context(platformContext: PlatformContext)
     fun onBiometricsClicked() {
-        launchUseCase {
-            val result = biometricLogin()
-            when {
-                result.isSuccess -> {
-                    updatePassword(password = result.getOrNull() ?: "")
-                    onLoginClicked()
-                }
+        // Cancel any previous biometric login attempt
+        loginJob?.cancel()
 
-                else -> {
-                    _credentialsScreenState.update {
-                        it.copy(
-                            errorMessage = result.exceptionOrNull()?.message,
-                        )
+        loginJob =
+            launchUseCase {
+                val result = biometricLogin()
+
+                when {
+                    result.isSuccess -> {
+                        updatePassword(password = result.getOrNull() ?: "")
+                        onLoginClicked()
+                    }
+
+                    else -> {
+                        _credentialsScreenState.update {
+                            it.copy(
+                                errorMessage = result.exceptionOrNull()?.message,
+                                displayBiometricsDialog = false,
+                            )
+                        }
                     }
                 }
             }
-        }
     }
 
     fun onManageAccountsClicked() {

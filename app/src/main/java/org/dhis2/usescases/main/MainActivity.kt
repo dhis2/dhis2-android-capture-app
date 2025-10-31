@@ -457,6 +457,7 @@ class MainActivity :
             LoginActivity.bundle(
                 accountsCount = accountsCount,
                 isDeletion = isDeletion,
+                fromMainActivity = true,
             ),
             true,
             true,
