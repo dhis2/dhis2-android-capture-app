@@ -13,4 +13,4 @@ browserstack_singleRunnerInvocation=true
 browserstack_number_of_parallel_executions=1
 browserstack_class="\"org.dhis2.usescases.FlowTestsSuite\",\"org.dhis2.usescases.UseCaseTestsSuite\""
 browserstack_allowDeviceMockServer=true
-browserstack_deviceOrientation="landscape"
+browserstack_deviceOrientation="portrait"
