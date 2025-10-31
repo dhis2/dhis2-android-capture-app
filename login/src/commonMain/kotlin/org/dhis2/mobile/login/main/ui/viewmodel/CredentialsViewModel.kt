@@ -52,6 +52,7 @@ class CredentialsViewModel(
     private val getIsSessionLockedUseCase: GetIsSessionLockedUseCase,
     private val forgotPinUseCase: ForgotPinUseCase,
     private val oidcInfo: OidcInfo?,
+    private val fromHome: Boolean,
 ) : ViewModel() {
     private val isNetworkOnline =
         networkStatusProvider.connectionStatus
@@ -127,7 +128,7 @@ class CredentialsViewModel(
                     afterLoginActions = emptyList(),
                     hasOtherAccounts = getHasOtherAccounts(),
                     isSessionLocked = getIsSessionLockedUseCase(),
-                    displayBiometricsDialog = biometricInfo.canUseBiometrics,
+                    displayBiometricsDialog = biometricInfo.canUseBiometrics && !fromHome,
                 ),
             )
         }

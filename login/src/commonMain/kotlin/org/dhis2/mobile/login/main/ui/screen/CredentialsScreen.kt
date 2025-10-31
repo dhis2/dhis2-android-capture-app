@@ -47,6 +47,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
+import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.resources.getDrawableResource
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
@@ -122,6 +123,7 @@ fun CredentialsScreen(
                 allowRecovery,
                 oidcInfo,
                 context,
+                fromHome,
             )
         }
 
@@ -150,7 +152,7 @@ fun CredentialsScreen(
         }
     }
 
-    LaunchedEffect(screenState.displayBiometricsDialog && !fromHome) {
+    LaunchedEffect(screenState.displayBiometricsDialog) {
         if (screenState.displayBiometricsDialog) {
             with(context) {
                 viewModel.onBiometricsClicked()
@@ -185,13 +187,18 @@ fun CredentialsScreen(
             password = screenState.credentialsInfo.password,
             isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
             isLoggingIn = isLoggingIn,
-            onUserNameChanged = {
-                viewModel.updateUsername(it)
+            onCredentialsUpdate = { credentialsUpdate ->
+                when (credentialsUpdate) {
+                    CredentialsUpdate.Complete ->
+                        viewModel.onLoginClicked()
+
+                    is CredentialsUpdate.Password ->
+                        viewModel.updatePassword(credentialsUpdate.password)
+
+                    is CredentialsUpdate.Username ->
+                        viewModel.updateUsername(credentialsUpdate.username)
+                }
             },
-            onPasswordChanged = {
-                viewModel.updatePassword(it)
-            },
-            onCredentialsCompleted = viewModel::onLoginClicked,
         )
         LoginStatus(
             isLoggingIn = isLoggingIn,
@@ -205,15 +212,9 @@ fun CredentialsScreen(
                 oidcInfo = screenState.oidcInfo,
                 hasBiometrics = screenState.canUseBiometrics,
                 canLogin = screenState.loginState == LoginState.Enabled,
-                onLoginClicked = viewModel::onLoginClicked,
-                onOpenIdLogin = viewModel::onOpenIdLogin,
-                onBiometricsClicked = {
-                    with(context) {
-                        viewModel.onBiometricsClicked()
-                    }
+                onCredentialsAction = { credentialsAction ->
+                    handleCredentialAction(viewModel, context, credentialsAction)
                 },
-                onManageAccounts = viewModel::onManageAccountsClicked,
-                onRecoverAccount = viewModel::onRecoverAccountClicked,
                 hasOtherAccounts = screenState.hasOtherAccounts,
             )
         }
@@ -243,6 +244,31 @@ fun CredentialsScreen(
                 viewModel.onPinDismissed()
             },
         )
+    }
+}
+
+private fun handleCredentialAction(
+    viewModel: CredentialsViewModel,
+    context: PlatformContext,
+    credentialsAction: CredentialsAction,
+) {
+    when (credentialsAction) {
+        CredentialsAction.OnBiometricsClicked ->
+            viewModel.onLoginClicked()
+
+        CredentialsAction.OnLoginClicked ->
+            viewModel.onOpenIdLogin()
+
+        CredentialsAction.OnManageAccounts ->
+            with(context) {
+                viewModel.onBiometricsClicked()
+            }
+
+        CredentialsAction.OnOpenIdLogin ->
+            viewModel.onManageAccountsClicked()
+
+        CredentialsAction.OnRecoverAccount ->
+            viewModel.onRecoverAccountClicked()
     }
 }
 
@@ -312,9 +338,7 @@ private fun CredentialsContainer(
     availableUsernames: List<String>,
     isUsernameEditable: Boolean,
     isLoggingIn: Boolean,
-    onUserNameChanged: (String) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onCredentialsCompleted: () -> Unit,
+    onCredentialsUpdate: (CredentialsUpdate) -> Unit,
 ) {
     var userNameRange by remember {
         mutableStateOf(TextRange(username.length))
@@ -345,23 +369,11 @@ private fun CredentialsContainer(
         mutableStateOf(false)
     }
     val inputShellStateUsername by remember(isLoggingIn, usernameHasFocus) {
-        mutableStateOf(
-            when {
-                isLoggingIn -> InputShellState.DISABLED
-                usernameHasFocus -> InputShellState.FOCUSED
-                else -> InputShellState.UNFOCUSED
-            },
-        )
+        mutableStateOf(getInputState(isLoggingIn, usernameHasFocus))
     }
 
     val inputShellStatePassword by remember(isLoggingIn, passwordHasFocus) {
-        mutableStateOf(
-            when {
-                isLoggingIn -> InputShellState.DISABLED
-                passwordHasFocus -> InputShellState.FOCUSED
-                else -> InputShellState.UNFOCUSED
-            },
-        )
+        mutableStateOf(getInputState(isLoggingIn, passwordHasFocus))
     }
 
     val focusManager = LocalFocusManager.current
@@ -387,7 +399,7 @@ private fun CredentialsContainer(
                         onNextClicked = {
                             if (areCredentialsComplete) {
                                 focusManager.clearFocus()
-                                onCredentialsCompleted()
+                                onCredentialsUpdate(CredentialsUpdate.Complete)
                             } else {
                                 focusManager.moveFocus(FocusDirection.Down)
                             }
@@ -395,7 +407,7 @@ private fun CredentialsContainer(
                         onValueChanged = {
                             usernameTextValue = it ?: TextFieldValue("")
                             userNameRange = it?.selection ?: TextRange(0)
-                            onUserNameChanged(usernameTextValue.text)
+                            onCredentialsUpdate(CredentialsUpdate.Username(usernameTextValue.text))
                         },
                         onFocusChanged = { hasFocus ->
                             usernameHasFocus = hasFocus
@@ -414,14 +426,14 @@ private fun CredentialsContainer(
                     onNextClicked = {
                         if (areCredentialsComplete) {
                             focusManager.clearFocus()
-                            onCredentialsCompleted()
+                            onCredentialsUpdate(CredentialsUpdate.Complete)
                         } else {
                             focusManager.moveFocus(focusDirection = FocusDirection.Previous)
                         }
                     },
                     onValueChanged = {
                         passwordTextValue = it ?: TextFieldValue("")
-                        onPasswordChanged(passwordTextValue.text)
+                        onCredentialsUpdate(CredentialsUpdate.Password(passwordTextValue.text))
                     },
                     onFocusChanged = { hasFocus ->
                         passwordHasFocus = hasFocus
@@ -430,6 +442,27 @@ private fun CredentialsContainer(
                 ),
         )
     }
+}
+
+private fun getInputState(
+    isLoggingIn: Boolean,
+    hasFocus: Boolean,
+) = when {
+    isLoggingIn -> InputShellState.DISABLED
+    hasFocus -> InputShellState.FOCUSED
+    else -> InputShellState.UNFOCUSED
+}
+
+private sealed interface CredentialsUpdate {
+    data class Username(
+        val username: String,
+    ) : CredentialsUpdate
+
+    data class Password(
+        val password: String,
+    ) : CredentialsUpdate
+
+    data object Complete : CredentialsUpdate
 }
 
 @Composable
@@ -473,11 +506,7 @@ private fun CredentialActions(
     oidcInfo: OidcInfo?,
     canLogin: Boolean,
     hasOtherAccounts: Boolean,
-    onLoginClicked: () -> Unit,
-    onOpenIdLogin: () -> Unit,
-    onBiometricsClicked: () -> Unit,
-    onManageAccounts: () -> Unit,
-    onRecoverAccount: () -> Unit,
+    onCredentialsAction: (CredentialsAction) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -488,7 +517,9 @@ private fun CredentialActions(
             enabled = canLogin,
             text = stringResource(Res.string.action_log_in),
             style = ButtonStyle.FILLED,
-            onClick = onLoginClicked,
+            onClick = {
+                onCredentialsAction(CredentialsAction.OnLoginClicked)
+            },
             icon = {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Login,
@@ -501,7 +532,9 @@ private fun CredentialActions(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(Res.string.action_recover_account),
                 style = ButtonStyle.TONAL,
-                onClick = onRecoverAccount,
+                onClick = {
+                    onCredentialsAction(CredentialsAction.OnRecoverAccount)
+                },
             )
         }
         if (hasBiometrics) {
@@ -514,7 +547,9 @@ private fun CredentialActions(
                 val interactionSource = remember { MutableInteractionSource() }
                 FilledTonalIconButton(
                     modifier = Modifier.size(Spacing.Spacing48),
-                    onClick = onBiometricsClicked,
+                    onClick = {
+                        onCredentialsAction(CredentialsAction.OnBiometricsClicked)
+                    },
                     interactionSource = interactionSource,
                     colors =
                         IconButtonColors(
@@ -554,7 +589,9 @@ private fun CredentialActions(
                     )
                 },
                 style = ButtonStyle.OUTLINED,
-                onClick = onOpenIdLogin,
+                onClick = {
+                    onCredentialsAction(CredentialsAction.OnOpenIdLogin)
+                },
             )
         }
         if (hasOtherAccounts) {
@@ -569,11 +606,25 @@ private fun CredentialActions(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(Res.string.action_manage_account),
                     style = ButtonStyle.OUTLINED,
-                    onClick = onManageAccounts,
+                    onClick = {
+                        onCredentialsAction(CredentialsAction.OnManageAccounts)
+                    },
                 )
             }
         }
     }
+}
+
+private sealed interface CredentialsAction {
+    data object OnLoginClicked : CredentialsAction
+
+    data object OnOpenIdLogin : CredentialsAction
+
+    data object OnBiometricsClicked : CredentialsAction
+
+    data object OnManageAccounts : CredentialsAction
+
+    data object OnRecoverAccount : CredentialsAction
 }
 
 @Composable

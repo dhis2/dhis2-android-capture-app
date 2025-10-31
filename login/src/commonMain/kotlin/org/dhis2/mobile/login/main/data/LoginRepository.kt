@@ -40,7 +40,7 @@ interface LoginRepository {
 
     suspend fun updateTrackingPermissions(granted: Boolean)
 
-    fun updateBiometricsPermissions(granted: Boolean)
+    suspend fun updateBiometricsPermissions(granted: Boolean)
 
     context(context: PlatformContext)
     suspend fun loginWithBiometric(): Result<UserPassword>
