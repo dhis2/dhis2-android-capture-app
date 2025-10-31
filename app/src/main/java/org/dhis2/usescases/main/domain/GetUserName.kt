@@ -10,7 +10,9 @@ class GetUserName(
     override suspend operator fun invoke(input: Unit) =
         try {
             val user = homeRepository.user()
-            val userName = "${user?.firstName()} ${user?.surname()}"
+            val firstName = user?.firstName()
+            val surname = user?.surname()
+            val userName = listOfNotNull(firstName, surname).joinToString(" ")
             Result.success(userName)
         } catch (domainError: DomainError) {
             Result.failure(domainError)

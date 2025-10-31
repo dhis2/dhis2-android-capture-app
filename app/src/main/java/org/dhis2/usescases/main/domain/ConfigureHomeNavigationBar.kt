@@ -13,31 +13,32 @@ import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBa
 
 class ConfigureHomeNavigationBar(
     private val homeRepository: HomeRepository,
-    private val resourceManager: ResourceManager,
+    resourceManager: ResourceManager,
 ) : UseCase<Unit, List<NavigationBarItem<NavigationPage>>> {
+
+    private val programItem = NavigationBarItem(
+        id = NavigationPage.PROGRAMS,
+        icon = Icons.Filled.Form,
+        label = resourceManager.getString(R.string.navigation_programs),
+    )
+
+    private val analyticsItem = NavigationBarItem(
+        id = NavigationPage.ANALYTICS,
+        icon = Icons.Filled.BarChart,
+        label = resourceManager.getString(R.string.navigation_charts),
+    )
+
     override suspend operator fun invoke(input: Unit) =
         try {
             val list =
                 buildList {
-                    add(
-                        NavigationBarItem(
-                            id = NavigationPage.PROGRAMS,
-                            icon = Icons.Filled.Form,
-                            label = resourceManager.getString(R.string.navigation_programs),
-                        ),
-                    )
+                    add(programItem)
                     if (homeRepository.hasHomeAnalytics()) {
-                        add(
-                            NavigationBarItem(
-                                id = NavigationPage.ANALYTICS,
-                                icon = Icons.Filled.BarChart,
-                                label = resourceManager.getString(R.string.navigation_charts),
-                            ),
-                        )
+                        add(analyticsItem)
                     }
                 }
             Result.success(list)
-        } catch (e: DomainError) {
-            Result.failure(e)
+        } catch (_: DomainError) {
+            Result.success(listOf(programItem))
         }
 }
