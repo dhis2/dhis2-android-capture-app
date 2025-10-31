@@ -121,6 +121,7 @@ class TeiDashboardTest : BaseTest() {
             clickOnFabAddNewNote()
             typeNote(NOTE_EXISTING_TEXT)
             clickOnSaveButton()
+            clickOnNoteWithPosition(0)
             checkNoteDetails("@$USER", NOTE_EXISTING_TEXT)
         }
     }
@@ -398,13 +399,6 @@ class TeiDashboardTest : BaseTest() {
             checkGraphType(1, ChartType.LINE_CHART)
         }
     }
-
-    private fun createExpectedUpperInformation() =
-        UpperEnrollmentUIModel(
-            "10/1/2024",
-            "10/1/2021",
-            "Ngelehun CHC"
-        )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
