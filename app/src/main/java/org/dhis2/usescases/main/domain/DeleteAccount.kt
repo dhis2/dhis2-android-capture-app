@@ -18,15 +18,13 @@ class DeleteAccount(
     override suspend fun invoke(input: File?): Result<AccountCount> =
         try {
             workManagerController.cancelAllWork()
+            workManagerController.pruneWork()
             syncStatusController.restore()
             filterManager.clearAllFilters()
-            workManagerController.cancelAllWork()
-            workManagerController.pruneWork()
             input?.let { repository.clearCache(it) }
             repository.clearPreferences()
             repository.wipeAll()
             repository.deleteCurrentAccount()
-            deleteCache(input)
             val accountCount = repository.accountsCount()
             Result.success(accountCount)
         } catch (domainError: DomainError) {

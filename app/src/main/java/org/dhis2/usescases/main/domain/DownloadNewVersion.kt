@@ -4,6 +4,7 @@ import android.content.Context
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.domain.UseCase
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.domain.model.DownloadMethod
 import kotlin.coroutines.resume
 
@@ -22,8 +23,11 @@ class DownloadNewVersion(
                         // no-op
                     },
                 )
+                continuation.invokeOnCancellation {
+                    // If needed perform action on cancellation
+                }
             }
-        } catch (e: Exception) {
+        } catch (e: DomainError) {
             Result.failure(e)
         }
 }
