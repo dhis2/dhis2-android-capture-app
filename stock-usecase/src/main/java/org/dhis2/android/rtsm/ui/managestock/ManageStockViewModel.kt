@@ -542,8 +542,8 @@ class ManageStockViewModel(
                     ButtonUiState(
                         text = R.string.review,
                         icon = R.drawable.proceed_icon,
-                        contentColor = _themeColor.value,
-                        containerColor = Color.White,
+                        contentColor = Color.White,
+                        containerColor = _themeColor.value,
                         visible = buttonVisibility,
                     )
                 }
