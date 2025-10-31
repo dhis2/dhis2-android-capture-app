@@ -271,19 +271,16 @@ modulekmm/
 ### Compose Multiplatform
 
 - **Components**: Always check DHIS2 design system first
-
-```
-import org.hisp.dhis.mobile.ui.designsystem.component.*
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
-```
-
+  - Use components from `org.hisp.dhis.mobile.ui.designsystem.component.*`
+  - Use theme from `org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme`
 - **Navigation**: Use Compose Navigation for multiplatform
 - **Resources**: Place in `commonMain/composeResources/`
 - **Theming**: Use DHIS2Theme wrapper
 
 ### Data Operations
 
-- **Never bypass the SDK**: Always use DHIS2 Android SDK for data operations
+- **Never bypass the SDK**: Always use DHIS2 Android SDK for all data operations
+  - Use components from `org.hisp.dhis.android.core.*`
 - **Offline-first**: Design with offline capabilities in mind
 - **Sync handling**: Let the SDK handle synchronization
 - **Error handling**: Handle SDK exceptions appropriately
@@ -294,6 +291,77 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 - **Shared Tests**: Use `commonTest` for platform-agnostic tests
 - **Mocking**: Use MockK for Kotlin-friendly mocking
 - **Repository Tests**: Mock DHIS2 SDK components
+- **UI Tests**: Follow the Robot pattern for instrumented tests (see detailed section below)
+
+### UI Testing Guidelines
+
+- **Location**: Place UI tests in `androidInstrumentedTest`
+- **Pattern**: Use Robot pattern for test actions and assertions
+- **Async handling**: Use `CoroutineTracker` with `launchUseCase` - never use hard-coded delays
+    - Espresso's `IdlingResource` automatically waits for tracked operations to complete
+    - This enables faster, more reliable tests without manual wait mechanisms
+- **Test tags**: Add `Modifier.testTag()` to interactive UI components
+    - Format: `{SCREEN}_{COMPONENT}_TAG` (e.g., `LOGIN_BUTTON_TAG`)
+    - Export constants from screen files for test imports
+- **DHIS2 design system components**: These are composite components
+    - Click the wrapper with your test tag to focus it
+    - Use `"INPUT_TEXT_FIELD"` tag to find inner fields
+    - Use `performTextInput()` (not `performTextReplacement()`)
+- **Mock server**: Use `MockWebServerRobot` for API mocking
+- **Best practices**:
+    1. Use `waitUntilExactlyOneExists()` for element visibility
+    2. Use descriptive robot method names (e.g., `clickLoginButton()`)
+    3. Keep robots focused on actions, not assertions
+    4. Test user flows, not isolated components
+    5. Mock all external dependencies (network, SDK responses)
+    6. Clean up after tests (databases, preferences)
+
+#### Example: Robot Class
+
+```kotlin
+fun exampleRobot(
+    composeTestRule: ComposeTestRule,
+    robotBody: ExampleRobot.() -> Unit
+) {
+    ExampleRobot(composeTestRule).apply { robotBody() }
+}
+
+class ExampleRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
+    fun typeUsername(username: String) {
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(USERNAME_TAG), TIMEOUT)
+        composeTestRule.onNodeWithTag(USERNAME_TAG).performClick()
+        composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD")[0].performTextInput(username)
+    }
+    
+    fun clickSubmitButton() {
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag(SUBMIT_TAG), TIMEOUT)
+        composeTestRule.onNodeWithTag(SUBMIT_TAG).performClick()
+    }
+}
+```
+
+#### Example: Test Structure
+
+```kotlin
+class ExampleTest : BaseTest() {
+    @get:Rule
+    val composeTestRule = createComposeRule()
+    
+    @Test
+    fun shouldPerformSuccessfulAction() {
+        mockWebServerRobot.addResponse(GET, "/api/endpoint", MOCK_RESPONSE, 200)
+        
+        exampleRobot(composeTestRule) {
+            typeUsername("user")
+            clickSubmitButton()
+            // IdlingResource handles async automatically
+            checkSuccessMessageDisplayed()
+        }
+        
+        cleanDatabase()
+    }
+}
+```
 
 ### Code Style
 
@@ -302,41 +370,38 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 - **Imports**: Organize imports, prefer explicit imports
 - **Documentation**: Document public APIs with KDoc
 
-## Migration Guidelines
+## Best Practices & Migration Guidelines
 
-### From Android to KMP
-
-- Move shared logic to `commonMain`
-- Extract platform-specific code to appropriate platform directories
-- Convert View-based UI to Compose
-- Update dependency injection to use Koin multiplatform
-
-### Dependencies
-
-- Prefer multiplatform libraries over platform-specific ones
-- Check compatibility with Compose Multiplatform
-- Use expect/actual for platform-specific dependencies
-
-## Best Practices
+### Core Development Practices
 
 1. **Always use DHIS2 design system components** before falling back to Material components
-2. **Never create direct database or network operations** - use DHIS2 SDK
+2. **Never create direct database or network operations** - use DHIS2 SDK exclusively
 3. **Keep business logic in ViewModels or Use Cases**, not in Composables
 4. **Use sealed classes for state representation**
 5. **Prefer composition over inheritance**
 6. **Write tests for business logic and repositories**
-7. **Use meaningful commit messages and follow Git flow**
-8. **Handle loading and error states appropriately**
-9. **Follow offline-first design principles**
-10. **Keep platform-specific code minimal and well-documented**
+7. **Handle loading and error states appropriately**
+8. **Follow offline-first design principles**
+9. **Keep platform-specific code minimal** - use `expect`/`actual` pattern
+10. **Use meaningful commit messages and follow Git flow**
 
-## Common Gotchas
+### Important Warnings
 
-- Remember to handle coroutine cancellation properly
-- DHIS2 SDK operations might throw exceptions - always handle them
-- Some DHIS2 design system components might not be available yet - check documentation
-- When migrating from RxJava to Coroutines/Flow, ensure proper error handling
-- Platform-specific resources need to be handled differently in multiplatform
+- **Coroutine cancellation**: Remember to handle coroutine cancellation properly
+- **SDK exception handling**: DHIS2 SDK operations might throw exceptions - always handle them
+- **Component availability**: Some DHIS2 design system components might not be available yet - check documentation
+- **RxJava migration**: When migrating from RxJava to Coroutines/Flow, ensure proper error handling
+- **Platform-specific resources**: Handle resources differently in multiplatform (not all platforms support identical APIs)
+
+### Migrating from Android to KMP
+
+- **Code organization**: Move shared logic to `commonMain`; extract platform-specific code to `androidMain`, `desktopMain`, etc.
+- **UI conversion**: Convert View-based UI to Compose Multiplatform
+- **Dependency injection**: Update to use Koin multiplatform
+- **Libraries**: Prefer multiplatform libraries over platform-specific ones
+- **Compatibility**: Check compatibility with Compose Multiplatform before selecting dependencies
+- **Documentation**: Document public APIs with KDoc
+
 
 ## Resources
 
@@ -345,3 +410,5 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 - [Compose Multiplatform Documentation](https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-getting-started.html)
 - [Koin Multiplatform Documentation](https://insert-koin.io/docs/reference/koin-mp/kmp)
 - [Android Architecture Guidelines](https://developer.android.com/topic/architecture)
+- [Compose Testing Documentation](https://developer.android.com/jetpack/compose/testing)
+- [Espresso Idling Resources](https://developer.android.com/training/testing/espresso/idling-resource)
