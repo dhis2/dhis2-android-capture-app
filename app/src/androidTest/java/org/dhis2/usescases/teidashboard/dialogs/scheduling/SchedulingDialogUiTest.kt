@@ -81,6 +81,7 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
+        composeTestRule.waitForIdle()
 
         val eventLabel = programStages.first().displayEventLabel() ?: "event"
         composeTestRule.onNodeWithText("Schedule next $eventLabel?")
@@ -114,6 +115,8 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
+        composeTestRule.waitForIdle()
+
         composeTestRule.onNodeWithText("Schedule next event?").assertExists()
         composeTestRule.onNodeWithText("Program stage").assertExists()
     }
@@ -142,6 +145,8 @@ class SchedulingDialogUiTest {
             }
         }
         composeTestRule.onNodeWithText("No").performClick()
+
+        composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertDoesNotExist()
@@ -175,13 +180,13 @@ class SchedulingDialogUiTest {
         }
 
         composeTestRule.onAllNodesWithTag("INPUT_DROPDOWN").onFirst().performClick()
-        composeTestRule.waitUntilExactlyOneExists(hasTestTag("INPUT_DROPDOWN_MENU_ITEM_1"))
         composeTestRule.waitForIdle()
+        composeTestRule.waitUntilExactlyOneExists(hasTestTag("INPUT_DROPDOWN_MENU_ITEM_1"))
         composeTestRule.onNodeWithTag(
             testTag = "INPUT_DROPDOWN_MENU_ITEM_1",
             useUnmergedTree = true
         ).performClick()
-
+        composeTestRule.waitForIdle()
         verify(viewModel).updateStage(programStages[1])
     }
 
@@ -208,7 +213,7 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
-
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("YES_NO_OPTIONS").assertDoesNotExist()
     }
 }
