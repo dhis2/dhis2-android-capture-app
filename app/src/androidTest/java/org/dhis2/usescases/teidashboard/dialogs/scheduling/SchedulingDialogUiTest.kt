@@ -9,8 +9,10 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.dhis2.common.BaseRobot
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.composetable.test.TestActivity
+import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
@@ -27,7 +29,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class SchedulingDialogUiTest {
+class SchedulingDialogUiTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TestActivity>()
