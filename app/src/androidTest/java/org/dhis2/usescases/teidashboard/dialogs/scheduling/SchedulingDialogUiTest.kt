@@ -40,7 +40,7 @@ class SchedulingDialogUiTest : BaseTest() {
 
 
     @Before
-    fun setUp() {
+    override fun setUp() {
         whenever(viewModel.eventDate).thenReturn(MutableStateFlow(EventDate(label = "Date")))
         whenever(viewModel.eventCatCombo).thenReturn(
             MutableStateFlow(
