@@ -72,25 +72,25 @@ jobs:
     - name: Read version name from file
       working-directory: ./gradle
       id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+      run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> $GITHUB_OUTPUT
 
     # Upload DhisRelease APK
     - name: Upload DhisRelease APK
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: ${{ env.repository_name }} - DhisRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk
 
     # Upload DhisPlayServicesRelease APK
     - name: Upload DhisPlayServicesRelease APK
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: ${{ env.repository_name }} - DhisPlayServicesRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
 
       # Upload Training Release APK
     - name: Upload Training Release APK
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: ${{ env.repository_name }} - Training Release APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
