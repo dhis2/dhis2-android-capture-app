@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import org.mockito.kotlin.willAnswer
 
 class GetUserNameTest {
-
     private val homeRepository: HomeRepository = mock()
     private lateinit var getUserName: GetUserName
 
@@ -26,67 +25,75 @@ class GetUserNameTest {
     }
 
     @Test
-    fun `should return full name if user exists`() = runTest {
-        val user: User = mock {
-            on { firstName() } doReturn "Peter"
-            on { surname() } doReturn "Jones"
-        }
-        whenever(homeRepository.user()) doReturn user
+    fun `should return full name if user exists`() =
+        runTest {
+            val user: User =
+                mock {
+                    on { firstName() } doReturn "Peter"
+                    on { surname() } doReturn "Jones"
+                }
+            whenever(homeRepository.user()) doReturn user
 
-        val result = getUserName()
+            val result = getUserName()
 
-        assertTrue(result.isSuccess)
-        assertEquals("Peter Jones", result.getOrNull())
-    }
-
-    @Test
-    fun `should return surname if first name is null`() = runTest {
-        val user: User = mock {
-            on { firstName() } doReturn null
-            on { surname() } doReturn "Jones"
-        }
-        whenever(homeRepository.user()) doReturn user
-
-        val result = getUserName()
-
-        assertTrue(result.isSuccess)
-        assertEquals("Jones", result.getOrNull())
-    }
-
-    @Test
-    fun `should return first name if surname is null`() = runTest {
-        val user: User = mock {
-            on { firstName() } doReturn "Peter"
-            on { surname() } doReturn null
-        }
-        whenever(homeRepository.user()) doReturn user
-
-        val result = getUserName()
-
-        assertTrue(result.isSuccess)
-        assertEquals("Peter", result.getOrNull())
-    }
-
-    @Test
-    fun `should return empty string if user is null`() = runTest {
-        whenever(homeRepository.user()) doReturn null
-
-        val result = getUserName()
-
-        assertTrue(result.isSuccess)
-        assertEquals("", result.getOrNull())
-    }
-
-    @Test
-    fun `should return failure if repository throws error`() = runTest {
-        val exception = DomainError.DataBaseError("Error")
-        given(homeRepository.user()) willAnswer {
-            throw exception
+            assertTrue(result.isSuccess)
+            assertEquals("Peter Jones", result.getOrNull())
         }
 
-        val result = getUserName()
+    @Test
+    fun `should return surname if first name is null`() =
+        runTest {
+            val user: User =
+                mock {
+                    on { firstName() } doReturn null
+                    on { surname() } doReturn "Jones"
+                }
+            whenever(homeRepository.user()) doReturn user
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
-    }
+            val result = getUserName()
+
+            assertTrue(result.isSuccess)
+            assertEquals("Jones", result.getOrNull())
+        }
+
+    @Test
+    fun `should return first name if surname is null`() =
+        runTest {
+            val user: User =
+                mock {
+                    on { firstName() } doReturn "Peter"
+                    on { surname() } doReturn null
+                }
+            whenever(homeRepository.user()) doReturn user
+
+            val result = getUserName()
+
+            assertTrue(result.isSuccess)
+            assertEquals("Peter", result.getOrNull())
+        }
+
+    @Test
+    fun `should return empty string if user is null`() =
+        runTest {
+            whenever(homeRepository.user()) doReturn null
+
+            val result = getUserName()
+
+            assertTrue(result.isSuccess)
+            assertEquals("", result.getOrNull())
+        }
+
+    @Test
+    fun `should return failure if repository throws error`() =
+        runTest {
+            val exception = DomainError.DataBaseError("Error")
+            given(homeRepository.user()) willAnswer {
+                throw exception
+            }
+
+            val result = getUserName()
+
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
+        }
 }

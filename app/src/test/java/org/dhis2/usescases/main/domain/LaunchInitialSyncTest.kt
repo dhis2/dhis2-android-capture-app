@@ -18,119 +18,130 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
 class LaunchInitialSyncTest {
-
     private val homeRepository: HomeRepository = mock()
     private val versionRepository: VersionRepository = mock()
     private val workManagerController: WorkManagerController = mock()
     private lateinit var launchInitialSync: LaunchInitialSync
 
     @Test
-    fun `should return Skip if skipSync is true`() = runTest {
-        launchInitialSync = LaunchInitialSync(
-            skipSync = true,
-            homeRepository = homeRepository,
-            versionRepository = versionRepository,
-            workManagerController = workManagerController,
-        )
+    fun `should return Skip if skipSync is true`() =
+        runTest {
+            launchInitialSync =
+                LaunchInitialSync(
+                    skipSync = true,
+                    homeRepository = homeRepository,
+                    versionRepository = versionRepository,
+                    workManagerController = workManagerController,
+                )
 
-        val result = launchInitialSync()
+            val result = launchInitialSync()
 
-        assertTrue(result.isSuccess)
-        assertEquals(InitialSyncAction.Skip, result.getOrNull())
-        verifyNoInteractions(homeRepository)
-        verifyNoInteractions(versionRepository)
-        verifyNoInteractions(workManagerController)
-    }
-
-    @Test
-    fun `should return Skip if database is imported`() = runTest {
-        whenever(homeRepository.isImportedDb()) doReturn true
-        launchInitialSync = LaunchInitialSync(
-            skipSync = false,
-            homeRepository = homeRepository,
-            versionRepository = versionRepository,
-            workManagerController = workManagerController,
-        )
-
-        val result = launchInitialSync()
-
-        assertTrue(result.isSuccess)
-        assertEquals(InitialSyncAction.Skip, result.getOrNull())
-    }
-
-    @Test
-    fun `should return Skip if initial sync is done`() = runTest {
-        whenever(homeRepository.isImportedDb()) doReturn false
-        whenever(homeRepository.getInitialSyncDone()) doReturn true
-        launchInitialSync = LaunchInitialSync(
-            skipSync = false,
-            homeRepository = homeRepository,
-            versionRepository = versionRepository,
-            workManagerController = workManagerController,
-        )
-
-        val result = launchInitialSync()
-
-        assertTrue(result.isSuccess)
-        assertEquals(InitialSyncAction.Skip, result.getOrNull())
-    }
-
-    @Test
-    fun `should return Syncing and launch initial sync`() = runTest {
-        whenever(homeRepository.isImportedDb()) doReturn false
-        whenever(homeRepository.getInitialSyncDone()) doReturn false
-        launchInitialSync = LaunchInitialSync(
-            skipSync = false,
-            homeRepository = homeRepository,
-            versionRepository = versionRepository,
-            workManagerController = workManagerController,
-        )
-
-        val result = launchInitialSync()
-
-        assertTrue(result.isSuccess)
-        assertEquals(InitialSyncAction.Syncing, result.getOrNull())
-        verify(versionRepository).checkVersionUpdates()
-        verify(workManagerController).syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
-    }
-
-    @Test
-    fun `should return failure if check version update fails`() = runTest {
-        val exception = DomainError.DataBaseError("Error")
-        whenever(homeRepository.isImportedDb()) doReturn false
-        whenever(homeRepository.getInitialSyncDone()) doReturn false
-        given(versionRepository.checkVersionUpdates()).willAnswer {
-            throw exception
+            assertTrue(result.isSuccess)
+            assertEquals(InitialSyncAction.Skip, result.getOrNull())
+            verifyNoInteractions(homeRepository)
+            verifyNoInteractions(versionRepository)
+            verifyNoInteractions(workManagerController)
         }
-        launchInitialSync = LaunchInitialSync(
-            skipSync = false,
-            homeRepository = homeRepository,
-            versionRepository = versionRepository,
-            workManagerController = workManagerController,
-        )
-
-        val result = launchInitialSync()
-
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
-    }
 
     @Test
-    fun `should return failure if home repository fails`() = runTest {
-        val exception = DomainError.DataBaseError("Error")
-        given(homeRepository.isImportedDb()).willAnswer {
-            throw exception
+    fun `should return Skip if database is imported`() =
+        runTest {
+            whenever(homeRepository.isImportedDb()) doReturn true
+            launchInitialSync =
+                LaunchInitialSync(
+                    skipSync = false,
+                    homeRepository = homeRepository,
+                    versionRepository = versionRepository,
+                    workManagerController = workManagerController,
+                )
+
+            val result = launchInitialSync()
+
+            assertTrue(result.isSuccess)
+            assertEquals(InitialSyncAction.Skip, result.getOrNull())
         }
-        launchInitialSync = LaunchInitialSync(
-            skipSync = false,
-            homeRepository = homeRepository,
-            versionRepository = versionRepository,
-            workManagerController = workManagerController,
-        )
 
-        val result = launchInitialSync()
+    @Test
+    fun `should return Skip if initial sync is done`() =
+        runTest {
+            whenever(homeRepository.isImportedDb()) doReturn false
+            whenever(homeRepository.getInitialSyncDone()) doReturn true
+            launchInitialSync =
+                LaunchInitialSync(
+                    skipSync = false,
+                    homeRepository = homeRepository,
+                    versionRepository = versionRepository,
+                    workManagerController = workManagerController,
+                )
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
-    }
+            val result = launchInitialSync()
+
+            assertTrue(result.isSuccess)
+            assertEquals(InitialSyncAction.Skip, result.getOrNull())
+        }
+
+    @Test
+    fun `should return Syncing and launch initial sync`() =
+        runTest {
+            whenever(homeRepository.isImportedDb()) doReturn false
+            whenever(homeRepository.getInitialSyncDone()) doReturn false
+            launchInitialSync =
+                LaunchInitialSync(
+                    skipSync = false,
+                    homeRepository = homeRepository,
+                    versionRepository = versionRepository,
+                    workManagerController = workManagerController,
+                )
+
+            val result = launchInitialSync()
+
+            assertTrue(result.isSuccess)
+            assertEquals(InitialSyncAction.Syncing, result.getOrNull())
+            verify(versionRepository).checkVersionUpdates()
+            verify(workManagerController).syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
+        }
+
+    @Test
+    fun `should return failure if check version update fails`() =
+        runTest {
+            val exception = DomainError.DataBaseError("Error")
+            whenever(homeRepository.isImportedDb()) doReturn false
+            whenever(homeRepository.getInitialSyncDone()) doReturn false
+            given(versionRepository.checkVersionUpdates()).willAnswer {
+                throw exception
+            }
+            launchInitialSync =
+                LaunchInitialSync(
+                    skipSync = false,
+                    homeRepository = homeRepository,
+                    versionRepository = versionRepository,
+                    workManagerController = workManagerController,
+                )
+
+            val result = launchInitialSync()
+
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
+        }
+
+    @Test
+    fun `should return failure if home repository fails`() =
+        runTest {
+            val exception = DomainError.DataBaseError("Error")
+            given(homeRepository.isImportedDb()).willAnswer {
+                throw exception
+            }
+            launchInitialSync =
+                LaunchInitialSync(
+                    skipSync = false,
+                    homeRepository = homeRepository,
+                    versionRepository = versionRepository,
+                    workManagerController = workManagerController,
+                )
+
+            val result = launchInitialSync()
+
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
+        }
 }

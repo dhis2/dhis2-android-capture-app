@@ -13,7 +13,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class UpdateInitialSyncStatusTest {
-
     private val homeRepository: HomeRepository = mock()
     private lateinit var updateInitialSyncStatus: UpdateInitialSyncStatus
 
@@ -23,23 +22,25 @@ class UpdateInitialSyncStatusTest {
     }
 
     @Test
-    fun `should call set initial sync done`() = runTest {
-        val result = updateInitialSyncStatus()
+    fun `should call set initial sync done`() =
+        runTest {
+            val result = updateInitialSyncStatus()
 
-        assertTrue(result.isSuccess)
-        verify(homeRepository).setInitialSyncDone()
-    }
-
-    @Test
-    fun `should return failure when repository fails`() = runTest {
-        val exception = DomainError.DataBaseError("Error")
-        given(homeRepository.setInitialSyncDone()).willAnswer {
-            throw exception
+            assertTrue(result.isSuccess)
+            verify(homeRepository).setInitialSyncDone()
         }
 
-        val result = updateInitialSyncStatus()
+    @Test
+    fun `should return failure when repository fails`() =
+        runTest {
+            val exception = DomainError.DataBaseError("Error")
+            given(homeRepository.setInitialSyncDone()).willAnswer {
+                throw exception
+            }
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
-    }
+            val result = updateInitialSyncStatus()
+
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
+        }
 }

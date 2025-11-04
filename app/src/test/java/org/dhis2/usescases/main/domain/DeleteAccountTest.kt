@@ -27,49 +27,51 @@ class DeleteAccountTest {
 
     @Before
     fun setUp() {
-        deleteAccount = DeleteAccount(
-            workManagerController = workManagerController,
-            syncStatusController = syncStatusController,
-            filterManager = filterManager,
-            repository = repository
-        )
+        deleteAccount =
+            DeleteAccount(
+                workManagerController = workManagerController,
+                syncStatusController = syncStatusController,
+                filterManager = filterManager,
+                repository = repository,
+            )
     }
 
     @Test
-    fun `should successfully return and clear all data`() = runTest {
-        val cacheFile = createTempFile().toFile()
-        whenever(repository.clearCache(any())) doReturn true
-        whenever(repository.accountsCount()) doReturn 3
-        with(deleteAccount(cacheFile)) {
-            verify(workManagerController).cancelAllWork()
-            verify(workManagerController).pruneWork()
-            verify(syncStatusController).restore()
-            verify(filterManager).clearAllFilters()
-            verify(repository).clearCache(cacheFile)
-            verify(repository).clearPreferences()
-            verify(repository).wipeAll()
-            verify(repository).deleteCurrentAccount()
-            assertTrue(isSuccess)
-            assertTrue(getOrNull() == 3)
+    fun `should successfully return and clear all data`() =
+        runTest {
+            val cacheFile = createTempFile().toFile()
+            whenever(repository.clearCache(any())) doReturn true
+            whenever(repository.accountsCount()) doReturn 3
+            with(deleteAccount(cacheFile)) {
+                verify(workManagerController).cancelAllWork()
+                verify(workManagerController).pruneWork()
+                verify(syncStatusController).restore()
+                verify(filterManager).clearAllFilters()
+                verify(repository).clearCache(cacheFile)
+                verify(repository).clearPreferences()
+                verify(repository).wipeAll()
+                verify(repository).deleteCurrentAccount()
+                assertTrue(isSuccess)
+                assertTrue(getOrNull() == 3)
+            }
         }
-    }
 
     @Test
-    fun `should return failure when domain exception is thrown`() = runTest {
-        val cacheFile = createTempFile().toFile()
-        whenever(repository.clearCache(any())) doReturn true
-        given(repository.deleteCurrentAccount()) willAnswer { throw DomainError.DataBaseError("Test") }
-        with(deleteAccount(cacheFile)) {
-            verify(workManagerController).cancelAllWork()
-            verify(workManagerController).pruneWork()
-            verify(syncStatusController).restore()
-            verify(filterManager).clearAllFilters()
-            verify(repository).clearCache(cacheFile)
-            verify(repository).clearPreferences()
-            verify(repository).wipeAll()
-            verify(repository).deleteCurrentAccount()
-            assertTrue(isFailure)
+    fun `should return failure when domain exception is thrown`() =
+        runTest {
+            val cacheFile = createTempFile().toFile()
+            whenever(repository.clearCache(any())) doReturn true
+            given(repository.deleteCurrentAccount()) willAnswer { throw DomainError.DataBaseError("Test") }
+            with(deleteAccount(cacheFile)) {
+                verify(workManagerController).cancelAllWork()
+                verify(workManagerController).pruneWork()
+                verify(syncStatusController).restore()
+                verify(filterManager).clearAllFilters()
+                verify(repository).clearCache(cacheFile)
+                verify(repository).clearPreferences()
+                verify(repository).wipeAll()
+                verify(repository).deleteCurrentAccount()
+                assertTrue(isFailure)
+            }
         }
-    }
-
 }

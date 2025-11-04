@@ -17,7 +17,6 @@ import org.mockito.kotlin.whenever
 import org.mockito.kotlin.willAnswer
 
 class CheckSingleNavigationTest {
-
     private val homeRepository: HomeRepository = mock()
     private lateinit var checkSingleNavigation: CheckSingleNavigation
 
@@ -30,11 +29,12 @@ class CheckSingleNavigationTest {
     fun `should return HomeDataItem if there is only one program`() =
         runTest {
             whenever(homeRepository.homeItemCount()) doReturn 1
-            whenever(homeRepository.singleHomeItemData()) doReturn HomeItemData.EventProgram(
-                "eventUid",
-                "eventLabel",
-                true,
-            )
+            whenever(homeRepository.singleHomeItemData()) doReturn
+                HomeItemData.EventProgram(
+                    "eventUid",
+                    "eventLabel",
+                    true,
+                )
             assertTrue(checkSingleNavigation().isSuccess)
         }
 

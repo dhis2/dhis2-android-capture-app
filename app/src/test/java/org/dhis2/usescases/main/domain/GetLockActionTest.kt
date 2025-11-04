@@ -24,28 +24,30 @@ class GetLockActionTest {
     }
 
     @Test
-    fun `should return BlockSession action if pin is set`() = runTest {
-        whenever(homeRepository.isPinStored()) doReturn true
-        val result = getLockAction()
-        assertTrue(result.isSuccess)
-        assertTrue(result.getOrNull() is LockAction.BlockSession)
-    }
-
-    @Test
-    fun `should return CreatePin action if pin is set`() = runTest {
-        whenever(homeRepository.isPinStored()) doReturn false
-        val result = getLockAction()
-        assertTrue(result.isSuccess)
-        assertTrue(result.getOrNull() is LockAction.CreatePin)
-    }
-
-    @Test
-    fun `should return failure if an exception is thrown`() = runTest {
-        given(homeRepository.isPinStored()) willAnswer {
-            throw DomainError.DataBaseError("Test")
+    fun `should return BlockSession action if pin is set`() =
+        runTest {
+            whenever(homeRepository.isPinStored()) doReturn true
+            val result = getLockAction()
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrNull() is LockAction.BlockSession)
         }
-        val result = getLockAction()
-        assertTrue(result.isFailure)
-    }
 
+    @Test
+    fun `should return CreatePin action if pin is set`() =
+        runTest {
+            whenever(homeRepository.isPinStored()) doReturn false
+            val result = getLockAction()
+            assertTrue(result.isSuccess)
+            assertTrue(result.getOrNull() is LockAction.CreatePin)
+        }
+
+    @Test
+    fun `should return failure if an exception is thrown`() =
+        runTest {
+            given(homeRepository.isPinStored()) willAnswer {
+                throw DomainError.DataBaseError("Test")
+            }
+            val result = getLockAction()
+            assertTrue(result.isFailure)
+        }
 }

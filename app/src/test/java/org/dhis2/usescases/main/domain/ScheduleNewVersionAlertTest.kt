@@ -15,39 +15,41 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class ScheduleNewVersionAlertTest {
-
     private val workManagerController: WorkManagerController = mock()
     private val versionRepository: VersionRepository = mock()
     private lateinit var scheduleNewVersionAlert: ScheduleNewVersionAlert
 
     @Before
     fun setUp() {
-        scheduleNewVersionAlert = ScheduleNewVersionAlert(
-            workManagerController = workManagerController,
-            versionRepository = versionRepository,
-        )
+        scheduleNewVersionAlert =
+            ScheduleNewVersionAlert(
+                workManagerController = workManagerController,
+                versionRepository = versionRepository,
+            )
     }
 
     @Test
-    fun `should schedule new version alert and remove version info`() = runTest {
-        val result = scheduleNewVersionAlert()
+    fun `should schedule new version alert and remove version info`() =
+        runTest {
+            val result = scheduleNewVersionAlert()
 
-        assertTrue(result.isSuccess)
+            assertTrue(result.isSuccess)
 
-        verify(workManagerController).beginUniqueWork(any())
-        verify(versionRepository).removeVersionInfo()
-    }
-
-    @Test
-    fun `should return failure when remove version info fails`() = runTest {
-        val exception = DomainError.DataBaseError("Error")
-        given(versionRepository.removeVersionInfo()).willAnswer {
-            throw exception
+            verify(workManagerController).beginUniqueWork(any())
+            verify(versionRepository).removeVersionInfo()
         }
 
-        val result = scheduleNewVersionAlert()
+    @Test
+    fun `should return failure when remove version info fails`() =
+        runTest {
+            val exception = DomainError.DataBaseError("Error")
+            given(versionRepository.removeVersionInfo()).willAnswer {
+                throw exception
+            }
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
-    }
+            val result = scheduleNewVersionAlert()
+
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
+        }
 }

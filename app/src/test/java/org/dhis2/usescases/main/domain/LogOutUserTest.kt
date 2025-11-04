@@ -18,7 +18,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class LogOutUserTest {
-
     private val workManagerController: WorkManagerController = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val filterManager: FilterManager = mock()
@@ -27,41 +26,44 @@ class LogOutUserTest {
 
     @Before
     fun setUp() {
-        logOutUser = LogOutUser(
-            workManagerController = workManagerController,
-            syncStatusController = syncStatusController,
-            filterManager = filterManager,
-            repository = homeRepository,
-        )
+        logOutUser =
+            LogOutUser(
+                workManagerController = workManagerController,
+                syncStatusController = syncStatusController,
+                filterManager = filterManager,
+                repository = homeRepository,
+            )
     }
 
     @Test
-    fun `should call all necessary methods on logout`() = runTest {
-        whenever(homeRepository.accountsCount()) doReturn 1
+    fun `should call all necessary methods on logout`() =
+        runTest {
+            whenever(homeRepository.accountsCount()) doReturn 1
 
-        val result = logOutUser()
+            val result = logOutUser()
 
-        assertTrue(result.isSuccess)
-        assertEquals(1, result.getOrNull())
+            assertTrue(result.isSuccess)
+            assertEquals(1, result.getOrNull())
 
-        verify(workManagerController).cancelAllWork()
-        verify(syncStatusController).restore()
-        verify(filterManager).clearAllFilters()
-        verify(homeRepository).clearPin()
-        verify(homeRepository).logOut()
-        verify(homeRepository).accountsCount()
-    }
-
-    @Test
-    fun `should return failure if any method fails`() = runTest {
-        val exception = DomainError.DataBaseError("Error")
-        given(workManagerController.cancelAllWork()).willAnswer {
-            throw exception
+            verify(workManagerController).cancelAllWork()
+            verify(syncStatusController).restore()
+            verify(filterManager).clearAllFilters()
+            verify(homeRepository).clearPin()
+            verify(homeRepository).logOut()
+            verify(homeRepository).accountsCount()
         }
 
-        val result = logOutUser()
+    @Test
+    fun `should return failure if any method fails`() =
+        runTest {
+            val exception = DomainError.DataBaseError("Error")
+            given(workManagerController.cancelAllWork()).willAnswer {
+                throw exception
+            }
 
-        assertTrue(result.isFailure)
-        assertEquals(exception, result.exceptionOrNull())
-    }
+            val result = logOutUser()
+
+            assertTrue(result.isFailure)
+            assertEquals(exception, result.exceptionOrNull())
+        }
 }

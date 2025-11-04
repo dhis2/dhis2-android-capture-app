@@ -14,7 +14,6 @@ import org.mockito.kotlin.whenever
 import org.mockito.kotlin.willAnswer
 
 class GetHomeFiltersTest {
-
     private val filterRepository: FilterRepository = mock()
     private lateinit var getHomeFilters: GetHomeFilters
 
@@ -24,20 +23,22 @@ class GetHomeFiltersTest {
     }
 
     @Test
-    fun `should return a list of home filters`() = runTest {
-        val expectedFilters: List<FilterItem> = mock()
-        whenever(filterRepository.homeFilters()) doReturn expectedFilters
-        val result = getHomeFilters()
-        assert(result.isSuccess)
-        assert(result.getOrNull() == expectedFilters)
-    }
+    fun `should return a list of home filters`() =
+        runTest {
+            val expectedFilters: List<FilterItem> = mock()
+            whenever(filterRepository.homeFilters()) doReturn expectedFilters
+            val result = getHomeFilters()
+            assert(result.isSuccess)
+            assert(result.getOrNull() == expectedFilters)
+        }
 
     @Test
-    fun `should return a failure when an exception is thrown`() = runTest {
-        given(filterRepository.homeFilters()) willAnswer {
-            throw DomainError.DataBaseError("Test")
+    fun `should return a failure when an exception is thrown`() =
+        runTest {
+            given(filterRepository.homeFilters()) willAnswer {
+                throw DomainError.DataBaseError("Test")
+            }
+            val result = getHomeFilters()
+            assert(result.isFailure)
         }
-        val result = getHomeFilters()
-        assert(result.isFailure)
-    }
 }
