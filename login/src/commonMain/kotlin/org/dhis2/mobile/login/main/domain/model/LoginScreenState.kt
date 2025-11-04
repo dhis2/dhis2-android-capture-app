@@ -12,6 +12,7 @@ sealed interface LoginScreenState {
         val availableServers: List<String>,
         val error: String? = null,
         val validationRunning: Boolean = false,
+        val hasAccounts: Boolean,
     ) : LoginScreenState
 
     @Serializable

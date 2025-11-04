@@ -19,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
 import org.dhis2.mobile.login.pin.domain.model.PinState
 import org.dhis2.mobile.login.pin.ui.viewmodel.PinViewModel
@@ -85,6 +87,7 @@ fun PinBottomSheet(
     val viewModel: PinViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     var currentPin by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
 
     // Handle state changes from ViewModel
     LaunchedEffect(uiState) {
@@ -111,6 +114,10 @@ fun PinBottomSheet(
     // Reset attempts when dismissed
     LaunchedEffect(Unit) {
         return@LaunchedEffect
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 
     val (title, subtitle) =
@@ -161,6 +168,7 @@ fun PinBottomSheet(
                 showBottomSectionDivider = false,
                 headerTextAlignment = TextAlign.Center,
                 animateHeaderOnKeyboardAppearance = false,
+                scrollableContainerMinHeight = Spacing.Spacing40,
                 contentPadding =
                     PaddingValues(
                         horizontal = Spacing.Spacing24,
@@ -177,7 +185,10 @@ fun PinBottomSheet(
 
                 // PIN Input using InputSegmentedShell
                 InputSegmentedShell(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
                     segmentCount = pinLength,
                     initialValue = null,
                     supportingTextData =

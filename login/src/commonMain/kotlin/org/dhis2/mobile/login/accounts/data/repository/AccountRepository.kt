@@ -6,4 +6,6 @@ interface AccountRepository {
     suspend fun getLoggedInAccounts(): List<AccountModel>
 
     suspend fun availableServers(): List<String>
+
+    suspend fun getActiveAccount(): AccountModel?
 }

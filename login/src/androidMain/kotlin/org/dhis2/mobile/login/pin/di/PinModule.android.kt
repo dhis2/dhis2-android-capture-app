@@ -14,6 +14,7 @@ internal actual val pinDataModule =
                 d2 = get(),
                 preferenceProvider = get(),
                 domainErrorMapper = get(),
+                dispatcher = get(),
             )
         }
     }

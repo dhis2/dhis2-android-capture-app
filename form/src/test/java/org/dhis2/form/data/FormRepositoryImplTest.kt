@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -611,4 +612,74 @@ class FormRepositoryImplTest {
                 autocompleteList = null,
             ),
         )
+
+    @Test
+    fun `reEvaluateRequestParams should call dataEntryRepository and map results`() {
+        val customIntentUid = "custom-intent-uid"
+        val evaluatedParams =
+            mapOf(
+                "param1" to "value1",
+                "param2" to 123,
+                "param3" to null,
+            )
+
+        whenever(
+            dataEntryRepository.evaluateCustomIntentRequestParameters(customIntentUid),
+        ) doReturn evaluatedParams
+
+        val result = repository.reEvaluateRequestParams(customIntentUid)
+
+        assertEquals(2, result.size)
+        assertEquals("param1", result[0].key)
+        assertEquals("value1", result[0].value)
+        assertEquals("param2", result[1].key)
+        assertEquals(123, result[1].value)
+        verify(dataEntryRepository).evaluateCustomIntentRequestParameters(customIntentUid)
+    }
+
+    @Test
+    fun `reEvaluateRequestParams should filter out null values`() {
+        val customIntentUid = "custom-intent-uid"
+        val evaluatedParams =
+            mapOf(
+                "param1" to null,
+                "param2" to null,
+            )
+
+        whenever(
+            dataEntryRepository.evaluateCustomIntentRequestParameters(customIntentUid),
+        ) doReturn evaluatedParams
+
+        val result = repository.reEvaluateRequestParams(customIntentUid)
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `reEvaluateRequestParams should return empty list when no params`() {
+        val customIntentUid = "custom-intent-uid"
+
+        whenever(
+            dataEntryRepository.evaluateCustomIntentRequestParameters(customIntentUid),
+        ) doReturn emptyMap()
+
+        val result = repository.reEvaluateRequestParams(customIntentUid)
+
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `setFieldLoading should update field with loading state`() {
+        val fieldUid = "field-uid"
+
+        repository.setFieldLoading(fieldUid, true)
+
+        verify(dataEntryRepository, atLeast(1)).updateField(
+            any<FieldUiModel>(),
+            anyOrNull<String>(),
+            any<List<String>>(),
+            any<List<String>>(),
+            any<List<String>>(),
+        )
+    }
 }

@@ -56,6 +56,7 @@ class LoginViewModelTest {
                 LoginScreenState.ServerValidation(
                     currentServer = "https://test.dhis2.org",
                     availableServers = listOf("https://test.dhis2.org"),
+                    hasAccounts = false,
                 )
 
             whenever(getInitialScreen()).thenReturn(initialScreenState)
@@ -86,6 +87,7 @@ class LoginViewModelTest {
                 LoginScreenState.ServerValidation(
                     currentServer = "https://test.dhis2.org",
                     availableServers = listOf("https://test.dhis2.org"),
+                    hasAccounts = false,
                 ),
             )
             whenever(validateServer(serverUrl, true)).thenReturn(
@@ -134,6 +136,7 @@ class LoginViewModelTest {
                 LoginScreenState.ServerValidation(
                     currentServer = "https://test.dhis2.org",
                     availableServers = listOf("https://test.dhis2.org"),
+                    hasAccounts = false,
                 ),
             )
 
@@ -175,6 +178,7 @@ class LoginViewModelTest {
                 LoginScreenState.ServerValidation(
                     currentServer = "https://test.dhis2.org",
                     availableServers = listOf("https://test.dhis2.org"),
+                    hasAccounts = false,
                 ),
             )
 

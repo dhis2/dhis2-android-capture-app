@@ -72,6 +72,7 @@ dependencies {
     implementation(project(":dhis2-mobile-program-rules"))
     implementation(libs.androidx.activity.compose)
     testImplementation(libs.bundles.form.test)
+    testImplementation(libs.test.junit)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestApi(libs.test.mockitoCore)
     androidTestApi(libs.test.mockitoKotlin)

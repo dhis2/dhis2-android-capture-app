@@ -16,19 +16,14 @@ updates:
       prefix: "deps"
     ignore:
       - dependency-name: "com.squareup.okhttp3:*"
-      # Ignore development, snapshot, alpha, beta, and RC versions
-      - dependency-name: "*"
-        versions: [
-          ">=0.0.0-dev",
-          ">=0.0.0-SNAPSHOT",
-          ">=0.0.0-alpha",
-          ">=0.0.0-beta",
-          ">=0.0.0-rc"
-        ]
+      - dependency-name: "org.hisp.dhis.mobile:designsystem"
+      - dependency-name: "org.hisp.dhis:android-core"
     groups:
       gradle-updates:
         patterns:
           - "*"                       # Group all Gradle updates into one PR
+      update types:
+        - "patch"
 
   # GitHub Actions updates (optional)
   - package-ecosystem: "github-actions"
@@ -36,3 +31,4 @@ updates:
     schedule:
       interval: "weekly"
     target-branch: "develop"
+    open-pull-requests-limit: 5

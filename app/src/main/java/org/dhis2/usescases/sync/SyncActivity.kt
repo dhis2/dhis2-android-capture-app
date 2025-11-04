@@ -103,14 +103,17 @@ class SyncActivity :
     }
 
     override fun setFlag(flagName: String?) {
-        binding.logoFlag.setImageResource(
-            resources.getIdentifier(flagName, "drawable", packageName),
-        )
-        animations.startFlagAnimation { value: Float? ->
-            binding.apply {
-                logoFlag.alpha = value!!
-                dhisLogo.alpha = 0f
+        flagName?.takeIf { it.isNotBlank() }?.let {
+            binding.logoFlag.setImageResource(R.drawable.ic_flag)
+            animations.startFlagAnimation { value ->
+                binding.apply {
+                    logoFlag.alpha = value
+                    dhisLogo.alpha = 0f
+                }
             }
+        } ?: run {
+            // Hide flag if no valid name provided
+            binding.logoFlag.setImageDrawable(null)
         }
     }
 

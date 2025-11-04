@@ -17,7 +17,9 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.FormResultDialogProvider
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.hisp.dhis.android.core.common.ValueType
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -137,5 +139,57 @@ class FormViewModelTest {
             on { valueType } doReturn ValueType.DATE
             on { allowFutureDates } doReturn false
             on { value } doReturn futureDate
+        }
+
+    @Test
+    fun `Should call repository to get custom intent request params`() {
+        val customIntentUid = "custom-intent-uid"
+        val expectedParams =
+            listOf(
+                CustomIntentRequestArgumentModel("param1", "value1"),
+                CustomIntentRequestArgumentModel("param2", 123),
+            )
+
+        whenever(repository.reEvaluateRequestParams(customIntentUid)) doReturn expectedParams
+
+        val result = viewModel.getCustomIntentRequestParams(customIntentUid)
+
+        assertEquals(expectedParams, result)
+        verify(repository).reEvaluateRequestParams(customIntentUid)
+    }
+
+    @Test
+    fun `Should handle OnSaveCustomIntent with success`() =
+        runTest {
+            val fieldUid = "field-uid"
+            val value = "custom-value"
+
+            viewModel.submitIntent(FormIntent.OnSaveCustomIntent(fieldUid, value, error = false))
+            advanceUntilIdle()
+
+            verify(repository).save(fieldUid, value, null)
+        }
+
+    @Test
+    fun `Should handle OnSaveCustomIntent with error`() =
+        runTest {
+            val fieldUid = "field-uid"
+            val value = "custom-value"
+
+            viewModel.submitIntent(FormIntent.OnSaveCustomIntent(fieldUid, value, error = true))
+            advanceUntilIdle()
+
+            verify(repository).updateErrorList(any())
+        }
+
+    @Test
+    fun `Should handle OnSaveCustomIntent with null value`() =
+        runTest {
+            val fieldUid = "field-uid"
+
+            viewModel.submitIntent(FormIntent.OnSaveCustomIntent(fieldUid, null, error = false))
+            advanceUntilIdle()
+
+            verify(repository).save(fieldUid, null, null)
         }
 }

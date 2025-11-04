@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.processors.BehaviorProcessor
@@ -11,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.FilterManager.PeriodRequest
@@ -19,9 +19,7 @@ import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference.Companion.DEFAULT_CAT_COMBO
-import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.Preference.Companion.PREF_DEFAULT_CAT_OPTION_COMBO
-import org.dhis2.commons.prefs.Preference.Companion.SESSION_LOCKED
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -31,6 +29,7 @@ import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
+import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -44,6 +43,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
@@ -76,6 +76,8 @@ class MainPresenterTest {
 
     private val forceToNotSynced: Boolean = false
 
+    private val logoutUser: LogoutUser = mock()
+
     @Rule
     @JvmField
     val rule = InstantTaskExecutorRule()
@@ -101,6 +103,7 @@ class MainPresenterTest {
                 versionRepository,
                 dispatcherProvider,
                 forceToNotSynced,
+                logoutUser,
             )
     }
 
@@ -116,33 +119,16 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Should log out`() {
-        whenever(repository.logOut()) doReturn Completable.complete()
+    fun `Should log out`() =
+        runTest {
+            val accountsCount = 1
+            whenever(logoutUser()) doReturn Result.success(accountsCount)
 
-        whenever(repository.accountsCount()) doReturn 1
-        whenever(userManager.d2) doReturn mock()
-        whenever(userManager.d2.dataStoreModule()) doReturn mock()
-        whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
-        whenever(
-            userManager.d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(PIN),
-        ) doReturn mock()
+            presenter.logOut()
 
-        presenter.logOut()
-
-        verify(workManagerController).cancelAllWork()
-        verify(preferences).setValue(SESSION_LOCKED, false)
-        verify(
-            userManager.d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(PIN),
-        ).blockingDeleteIfExist()
-        verify(filterManager).clearAllFilters()
-        verify(view).goToLogin(1, false)
-    }
+            verify(logoutUser, times(1)).invoke()
+            verify(view).goToLogin(accountsCount, false)
+        }
 
     @Test
     fun `Should block session`() {
