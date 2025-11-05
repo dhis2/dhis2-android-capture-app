@@ -22,7 +22,7 @@ updates:
       gradle-updates:
         patterns:
           - "*"                       # Group all Gradle updates into one PR
-    update types:
+    update-types:
       - "patch"
 
   # GitHub Actions updates (optional)
