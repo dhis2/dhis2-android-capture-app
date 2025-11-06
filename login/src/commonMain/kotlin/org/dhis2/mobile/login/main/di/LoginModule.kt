@@ -87,7 +87,7 @@ internal val mainLoginModule =
             val serverUrl = parameters[1] as String
             val userName = parameters[2] as String?
             val allowRecovery = parameters[3] as Boolean
-            val oidcInfo = parameters[4] as OidcInfo
+            val oidcInfo = parameters[4] as OidcInfo?
             val context = parameters[5] as PlatformContext
             val fromHome = parameters[6] as Boolean
             CredentialsViewModel(
