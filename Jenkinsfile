@@ -84,7 +84,7 @@ pipeline {
                 }
             }
         }
-        /*stage('Run Form Tests') {
+        stage('Run Form Tests') {
                 environment {
                     BROWSERSTACK = credentials('android-browserstack')
                     form_apk = sh(returnStdout: true, script: 'find form/build/outputs -iname "*.apk" | sed -n 1p')
@@ -122,11 +122,11 @@ pipeline {
         }*/
         stage('Run UI Tests in Landscape') {
             // This stage is commented out because it was unstable remove after validate.
-            /* when {
+            when {
                 expression {
                     return JOB_NAME.startsWith('android-multibranch-PUSH')
                 }
-            } */
+            }
             environment {
                 BROWSERSTACK = credentials('android-browserstack')
                 app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
