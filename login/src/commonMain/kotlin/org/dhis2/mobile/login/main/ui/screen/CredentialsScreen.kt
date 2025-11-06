@@ -256,19 +256,17 @@ private fun handleCredentialAction(
 ) {
     when (credentialsAction) {
         CredentialsAction.OnBiometricsClicked ->
-            viewModel.onLoginClicked()
-
-        CredentialsAction.OnLoginClicked ->
-            viewModel.onOpenIdLogin()
-
-        CredentialsAction.OnManageAccounts ->
             with(context) {
                 viewModel.onBiometricsClicked()
             }
 
-        CredentialsAction.OnOpenIdLogin ->
+        CredentialsAction.OnLoginClicked ->
+            viewModel.onLoginClicked()
+        CredentialsAction.OnManageAccounts ->
             viewModel.onManageAccountsClicked()
 
+        CredentialsAction.OnOpenIdLogin ->
+            viewModel.onOpenIdLogin()
         CredentialsAction.OnRecoverAccount ->
             viewModel.onRecoverAccountClicked()
     }
