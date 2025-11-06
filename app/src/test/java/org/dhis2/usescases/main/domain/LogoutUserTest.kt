@@ -7,6 +7,7 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.HomeRepository
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
@@ -54,7 +55,7 @@ class LogoutUserTest {
     fun `GIVEN the user logs out WHEN domain error THEN exception is returned`() =
         runTest {
             val testException = DomainError.UnexpectedError("test")
-            whenever(repository.clearSessionLock()).thenAnswer { throw testException }
+            whenever(repository.clearSessionLock()) doReturn Result.failure(testException)
             val result = logoutUser()
             verify(workManagerController).cancelAllWork()
             verify(syncStatusController).restore()
@@ -74,7 +75,7 @@ class LogoutUserTest {
 
             try {
                 logoutUser()
-                assertTrue("Exception should have been thrown", false)
+                fail("Exception should have been thrown")
             } catch (e: RuntimeException) {
                 assertTrue(e == testException)
             }

@@ -32,7 +32,7 @@ class HomeRepositoryImpl(
             try {
                 block()
             } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
+                Result.failure(domainErrorMapper.mapToDomainError(d2Error))
             }
         }
 
