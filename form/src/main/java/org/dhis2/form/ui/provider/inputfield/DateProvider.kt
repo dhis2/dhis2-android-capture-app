@@ -89,17 +89,17 @@ fun ProvideInputDate(
         onValueChanged = {
             value = it ?: TextFieldValue()
             val formIntent =
-                if (value.text.length == 8) {
+                if (checkValueLengthWithTypeIsValid(value.text.length, fieldUiModel.valueType)) {
                     FormIntent.OnSave(
                         uid = fieldUiModel.uid,
-                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
+                        value = value.text,
                         valueType = fieldUiModel.valueType,
                         allowFutureDates = fieldUiModel.allowFutureDates,
                     )
                 } else {
                     FormIntent.OnTextChange(
                         uid = fieldUiModel.uid,
-                        value = formatUIDateToStored(it?.text, fieldUiModel.valueType),
+                        value = value.text,
                         valueType = fieldUiModel.valueType,
                     )
                 }
@@ -108,6 +108,16 @@ fun ProvideInputDate(
         onNextClicked = onNextClicked,
     )
 }
+
+fun checkValueLengthWithTypeIsValid(
+    length: Int,
+    valueType: ValueType?,
+): Boolean =
+    when (valueType) {
+        ValueType.DATETIME -> length == 16
+        ValueType.TIME -> length == 5
+        else -> length == 10
+    }
 
 private fun getSelectableDates(uiModel: FieldUiModel): SelectableDates =
     if (uiModel.selectableDates == null) {
@@ -204,49 +214,6 @@ private fun formatStoredDateToUI(
         }
     }
 }
-
-private fun formatUIDateToStored(
-    inputDateString: String?,
-    valueType: ValueType?,
-): String? =
-    when (valueType) {
-        ValueType.DATETIME -> {
-            if (inputDateString?.length != 12) {
-                inputDateString
-            } else {
-                val minutes = inputDateString.substring(10, 12)
-                val hours = inputDateString.substring(8, 10)
-                val year = inputDateString.substring(4, 8)
-                val month = inputDateString.substring(2, 4)
-                val day = inputDateString.substring(0, 2)
-
-                "$year-$month-$day" + "T$hours:$minutes"
-            }
-        }
-
-        ValueType.TIME -> {
-            if (inputDateString?.length != 4) {
-                inputDateString
-            } else {
-                val minutes = inputDateString.substring(2, 4)
-                val hours = inputDateString.substring(0, 2)
-
-                "$hours:$minutes"
-            }
-        }
-
-        else -> {
-            if (inputDateString?.length != 8) {
-                inputDateString
-            } else {
-                val year = inputDateString.substring(4, 8)
-                val month = inputDateString.substring(2, 4)
-                val day = inputDateString.substring(0, 2)
-
-                "$year-$month-$day"
-            }
-        }
-    }
 
 const val DEFAULT_MIN_DATE = "12111924"
 const val DEFAULT_MAX_DATE = "12112124"
