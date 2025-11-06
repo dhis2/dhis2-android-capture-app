@@ -59,7 +59,7 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.ui.contracts.filePicker
 import org.dhis2.mobile.login.main.ui.navigation.NavigationAction
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
-import org.dhis2.mobile.login.main.ui.states.OidcInfo
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.ic_dhis_logo

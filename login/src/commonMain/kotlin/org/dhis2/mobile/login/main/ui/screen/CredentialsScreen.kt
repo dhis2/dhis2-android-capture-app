@@ -51,9 +51,11 @@ import coil3.PlatformContext
 import coil3.compose.LocalPlatformContext
 import org.dhis2.mobile.commons.resources.getDrawableResource
 import org.dhis2.mobile.login.main.ui.components.TaskExecutorButton
-import org.dhis2.mobile.login.main.ui.states.AfterLoginAction
-import org.dhis2.mobile.login.main.ui.states.LoginState
-import org.dhis2.mobile.login.main.ui.states.OidcInfo
+import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
+import org.dhis2.mobile.login.main.ui.state.CredentialsAction
+import org.dhis2.mobile.login.main.ui.state.CredentialsUpdate
+import org.dhis2.mobile.login.main.ui.state.LoginState
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
 import org.dhis2.mobile.login.pin.ui.components.PinMode
@@ -453,18 +455,6 @@ private fun getInputState(
     else -> InputShellState.UNFOCUSED
 }
 
-private sealed interface CredentialsUpdate {
-    data class Username(
-        val username: String,
-    ) : CredentialsUpdate
-
-    data class Password(
-        val password: String,
-    ) : CredentialsUpdate
-
-    data object Complete : CredentialsUpdate
-}
-
 @Composable
 private fun LoginStatus(
     isLoggingIn: Boolean,
@@ -613,18 +603,6 @@ private fun CredentialActions(
             }
         }
     }
-}
-
-private sealed interface CredentialsAction {
-    data object OnLoginClicked : CredentialsAction
-
-    data object OnOpenIdLogin : CredentialsAction
-
-    data object OnBiometricsClicked : CredentialsAction
-
-    data object OnManageAccounts : CredentialsAction
-
-    data object OnRecoverAccount : CredentialsAction
 }
 
 @Composable

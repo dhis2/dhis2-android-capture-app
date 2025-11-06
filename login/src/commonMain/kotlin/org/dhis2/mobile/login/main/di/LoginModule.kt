@@ -17,7 +17,7 @@ import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
-import org.dhis2.mobile.login.main.ui.states.OidcInfo
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.di.completePinModule

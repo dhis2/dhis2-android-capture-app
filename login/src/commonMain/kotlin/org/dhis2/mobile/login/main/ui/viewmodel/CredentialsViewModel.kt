@@ -24,12 +24,12 @@ import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
-import org.dhis2.mobile.login.main.ui.states.AfterLoginAction
-import org.dhis2.mobile.login.main.ui.states.CredentialsInfo
-import org.dhis2.mobile.login.main.ui.states.CredentialsUiState
-import org.dhis2.mobile.login.main.ui.states.LoginState
-import org.dhis2.mobile.login.main.ui.states.OidcInfo
-import org.dhis2.mobile.login.main.ui.states.ServerInfo
+import org.dhis2.mobile.login.main.ui.state.AfterLoginAction
+import org.dhis2.mobile.login.main.ui.state.CredentialsInfo
+import org.dhis2.mobile.login.main.ui.state.CredentialsUiState
+import org.dhis2.mobile.login.main.ui.state.LoginState
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
+import org.dhis2.mobile.login.main.ui.state.ServerInfo
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 

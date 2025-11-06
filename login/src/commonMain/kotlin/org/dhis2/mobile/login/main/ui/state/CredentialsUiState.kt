@@ -1,4 +1,4 @@
-package org.dhis2.mobile.login.main.ui.states
+package org.dhis2.mobile.login.main.ui.state
 
 import kotlinx.serialization.Serializable
 
