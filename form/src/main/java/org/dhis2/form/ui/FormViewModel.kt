@@ -838,6 +838,7 @@ class FormViewModel(
             when {
                 isEvent && repository.isEventEditable() == false -> FormActions.OnFinish
                 (result is SuccessfulResult) and (result.eventResultDetails.eventStatus == null) -> FormActions.OnFinish
+                result is NotSavedResult -> FormActions.OnFinish
                 else -> showDataEntryResultDialogDeprecated(result)
             }
         action?.let { _actionsChannel.send(it) }
