@@ -303,7 +303,7 @@ class ManageStockViewModel(
         }
 
     private fun commitTransaction() {
-        if (itemsCache.values.isEmpty()) {
+        if (itemsCache.values.isEmpty() || dataEntryUiState.value.loading) {
             return
         }
         _dataEntryUiState.update { currentUiState ->
@@ -343,6 +343,11 @@ class ManageStockViewModel(
                     },
                     {
                         Timber.e(it)
+                        _dataEntryUiState.update { currentUiState ->
+                            currentUiState.copy(
+                                loading = false,
+                            )
+                        }
                     },
                 ),
         )
@@ -542,8 +547,8 @@ class ManageStockViewModel(
                     ButtonUiState(
                         text = R.string.review,
                         icon = R.drawable.proceed_icon,
-                        contentColor = _themeColor.value,
-                        containerColor = Color.White,
+                        contentColor = Color.White,
+                        containerColor = _themeColor.value,
                         visible = buttonVisibility,
                     )
                 }
