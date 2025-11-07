@@ -1,4 +1,4 @@
-package org.dhis2.mobile.login.main.ui.states
+package org.dhis2.mobile.login.main.ui.state
 
 import kotlinx.serialization.Serializable
 
@@ -11,6 +11,7 @@ data class CredentialsUiState(
     val oidcInfo: OidcInfo?,
     val errorMessage: String?,
     val afterLoginActions: List<AfterLoginAction>,
+    val displayBiometricsDialog: Boolean,
     val hasOtherAccounts: Boolean,
     val isSessionLocked: Boolean,
 ) {

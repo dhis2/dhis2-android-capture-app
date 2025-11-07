@@ -8,6 +8,7 @@ import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
@@ -16,7 +17,7 @@ import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.DefaultNavigator
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
-import org.dhis2.mobile.login.main.ui.states.OidcInfo
+import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.di.completePinModule
@@ -50,12 +51,23 @@ internal val mainLoginModule =
             LoginUser(get { parametersOf(params.get()) })
         }
         factory { params ->
+            LogOutUser(get { parametersOf(params.get()) })
+        }
+        factory { params ->
             BiometricLogin(get { parametersOf(params.get()) })
         }
         factory { params ->
             UpdateTrackingPermission(get { parametersOf(params.get()) })
         }
-        factoryOf(::UpdateBiometricPermission)
+
+        factory { params ->
+            UpdateBiometricPermission(
+                get { parametersOf(params.get()) },
+                get { parametersOf(params.get()) },
+                get { parametersOf(params.get()) },
+                get { parametersOf(params.get()) },
+            )
+        }
         factory { params ->
             OpenIdLogin(get { parametersOf(params.get()) })
         }
@@ -71,22 +83,24 @@ internal val mainLoginModule =
             )
         }
         viewModel { parameters ->
-            val serverName = parameters.get<String?>(0)
-            val serverUrl = parameters.get<String>(1)
-            val userName = parameters.get<String?>(2)
-            val allowRecovery = parameters.get<Boolean>(3)
-            val oidcInfo = parameters.get<OidcInfo>(4)
-            val context = parameters.get<PlatformContext>(5)
+            val serverName = parameters[0] as String?
+            val serverUrl = parameters[1] as String
+            val userName = parameters[2] as String?
+            val allowRecovery = parameters[3] as Boolean
+            val oidcInfo = parameters[4] as OidcInfo?
+            val context = parameters[5] as PlatformContext
+            val fromHome = parameters[6] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
                 getBiometricInfo = get { parametersOf(context) },
                 getHasOtherAccounts = get { parametersOf(context) },
                 loginUser = get { parametersOf(context) },
+                logOutUser = get { parametersOf(context) },
                 openIdLogin = get { parametersOf(context) },
                 biometricLogin = get { parametersOf(context) },
                 updateTrackingPermission = get { parametersOf(context) },
-                updateBiometricPermission = get(),
+                updateBiometricPermission = get { parametersOf(context) },
                 networkStatusProvider = get(),
                 serverName = serverName,
                 serverUrl = serverUrl,
@@ -95,6 +109,7 @@ internal val mainLoginModule =
                 getIsSessionLockedUseCase = get(),
                 oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
+                fromHome = fromHome,
             )
         }
     }

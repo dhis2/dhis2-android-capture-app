@@ -250,6 +250,7 @@ class MainPresenter(
     fun onDeleteAccount() {
         view.showProgressDeleteNotification()
         try {
+            repository.checkDeleteBiometricsPermission()
             workManagerController.cancelAllWork()
             syncStatusController.restore()
             deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
