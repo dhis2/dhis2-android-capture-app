@@ -269,23 +269,25 @@ fun SearchParametersScreen(
 
                 if (uiState.clearSearchEnabled) {
                     item {
-                        Button(
-                            modifier =
-                                Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .padding(16.dp, 24.dp, 16.dp, 8.dp),
-                            style = ButtonStyle.TEXT,
-                            text = resourceManager.getString(R.string.clear_search),
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Cancel,
-                                    contentDescription = resourceManager.getString(R.string.clear_search),
-                                    tint = SurfaceColor.Primary,
-                                )
-                            },
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
                         ) {
-                            focusManager.clearFocus()
-                            onClear()
+                            Button(
+                                modifier = Modifier.padding(16.dp, 24.dp, 16.dp, 8.dp),
+                                style = ButtonStyle.TEXT,
+                                text = resourceManager.getString(R.string.clear_search),
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Cancel,
+                                        contentDescription = resourceManager.getString(R.string.clear_search),
+                                        tint = SurfaceColor.Primary,
+                                    )
+                                },
+                            ) {
+                                focusManager.clearFocus()
+                                onClear()
+                            }
                         }
                     }
                 }
