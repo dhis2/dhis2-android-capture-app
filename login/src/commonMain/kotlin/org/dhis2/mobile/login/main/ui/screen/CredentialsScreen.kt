@@ -304,9 +304,13 @@ private fun CredentialsContainer(
     onPasswordChanged: (String) -> Unit,
     onCredentialsCompleted: () -> Unit,
 ) {
+    var userNameRange by remember {
+        mutableStateOf(TextRange(username.length))
+    }
+
     var usernameTextValue by remember(username) {
         mutableStateOf(
-            TextFieldValue(username, TextRange(username.length)),
+            TextFieldValue(username, userNameRange),
         )
     }
 
@@ -378,6 +382,7 @@ private fun CredentialsContainer(
                         },
                         onValueChanged = {
                             usernameTextValue = it ?: TextFieldValue("")
+                            userNameRange = it?.selection ?: TextRange(0)
                             onUserNameChanged(usernameTextValue.text)
                         },
                         onFocusChanged = { hasFocus ->
