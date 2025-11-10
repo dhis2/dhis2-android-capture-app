@@ -19,14 +19,20 @@ import org.dhis2.usescases.searchte.robot.searchTeiRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.RuleChain
 
 class SearchTETest : BaseTest() {
 
-    @get:Rule
-    val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
+    // Create the rules as fields (not annotated) so we can control their order via RuleChain
+    private val rule = lazyActivityScenarioRule<SearchTEActivity>(launchActivity = false)
 
+    private val composeTestRule = createComposeRule()
+
+    // Compose must be inner, so its disposal runs before we close the activity
     @get:Rule
-    val composeTestRule = createComposeRule()
+    val ruleChain: RuleChain = RuleChain
+        .outerRule(rule)
+        .around(composeTestRule)
 
     override fun setUp() {
         super.setUp()
@@ -102,6 +108,7 @@ class SearchTETest : BaseTest() {
             waitUntilActivityVisible<SearchTEActivity>()
             clickOnShowMap()
             checkCarouselTEICardInfo(firstName)
+            composeTestRule.runOnIdle {  }
         }
     }
 

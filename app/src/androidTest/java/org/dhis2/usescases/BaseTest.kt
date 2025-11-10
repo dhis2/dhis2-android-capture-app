@@ -96,13 +96,13 @@ open class BaseTest {
     open fun teardown() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing After Actions for $currentTest")
+        unregisterCountingIdlingResource()
         closeKeyboard()
         disableIntents()
         cleanPreferences()
         cleanLocalDatabase()
         cleanKeystore()
         stopMockServer()
-        unregisterCountingIdlingResource()
     }
 
     private fun injectDependencies() {
