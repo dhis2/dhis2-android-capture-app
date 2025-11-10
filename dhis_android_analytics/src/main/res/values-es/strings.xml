@@ -40,8 +40,8 @@
     <string name="yearly">Anual</string>
     <string name="all">Todos</string>
     <string name="selection">Selección</string>
-    <string name="reset">Reajustar</string>
-    <string name="include_this_period_title">¿Quiéres incluir el periodo actual?</string>
+    <string name="reset">Restablecer</string>
+    <string name="include_this_period_title">¿Quiéres incluir el periodo actual\?</string>
     <string name="include_this_period_body">Se mostrará el periodo actual en el gráfico.</string>
     <string name="no_data_for_selected_filters">Los filtros que has aplicado no devolvieron datos</string>
     <string name="no_data_to_display">No tienes datos para mostrar</string>

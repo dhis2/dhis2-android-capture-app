@@ -9,7 +9,7 @@
     <string name="conf_error_value_to_assign_option_set">Правило программы %s пытается присвоить значение %s, которое не принадлежит набору опций. %s</string>
     <string name="field_is_mandatory">Это поле обязательно для заполнения</string>
     <string name="missing_warning_fields_completed_events">У Вас есть несколько предупреждающих сообщений.</string>
-    <string name="missing_warning_fields_events">У Вас есть несколько предупреждений. Хотите ли Вы отметить эту форму как завершенную?</string>
+    <string name="missing_warning_fields_events">У Вас есть несколько предупреждающих сообщений.\nХотите ли Вы отметить эту форму как завершенную\?</string>
     <string name="required">Обязательный</string>
     <string name="date">Дата</string>
     <string name="hint_year">Годы</string>
@@ -31,29 +31,29 @@
     <string name="enter_percentage">Введите процент</string>
     <string name="enter_unit_interval">Введите число от 0 до 1</string>
     <string name="enter_letter">Введите букву</string>
-    <string name="enter_long_text">Ввод длинного текста</string>
+    <string name="enter_long_text">Введите длинный текст</string>
     <string name="enter_text">Введите текст</string>
     <string name="due_date">Дата выполнения</string>
     <string name="mandatory_field">Обязательное поле</string>
     <string name="not_saved">Не сохранено</string>
-    <string name="review">Просмотр</string>
-    <string name="complete">Завершенный</string>
-    <string name="discard_changes">Сбросить изменения</string>
+    <string name="review">Просмотреть</string>
+    <string name="complete">Завершить</string>
+    <string name="discard_changes">Не сохранять изменения</string>
     <string name="saved">Сохранено!</string>
-    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках. Хотите ли Вы их просмотреть?</string>
-    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. Хотите ли Вы просмотреть форму?</string>
-    <string name="review_message">Некоторые поля требуют Вашего внимания. Не хотите ли Вы просмотреть форму?</string>
+    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках.\nХотите просмотреть их\?</string>
+    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. \nВы хотите просмотреть форму\?</string>
+    <string name="review_message">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму\?</string>
     <string name="not_now">Не сейчас</string>
     <string name="save_anyway">Сохранить в любом случае</string>
-    <string name="keep_editing">Продолжить редактировать</string>
-    <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную?</string>
+    <string name="keep_editing">Продолжить редактирование</string>
+    <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную\?</string>
     <string name="discard_go_back">Если Вы выйдете сейчас, вся информация в форме будет удалена.</string>
-    <string name="field_errors_not_saved_discard">Некоторые поля содержат ошибки, и они не сохраняются.  Если Вы выйдете сейчас, изменения будут отменены.</string>
+    <string name="field_errors_not_saved_discard">Некоторые поля содержат ошибки, и они не сохраняются. \nЕсли Вы выйдете сейчас, изменения будут отменены.</string>
     <string name="field_errors_not_saved">Некоторые поля содержат ошибки, и они не сохранены.</string>
     <string name="fields_mandatory_missing">Некоторые обязательные поля не заполнены, и форму невозможно сохранить.</string>
-    <string name="fields_mandatory_missing_discard">Некоторые обязательные поля не заполнены, и форма не может быть сохранена. Если Вы выйдете сейчас, изменения будут отменены.</string>
+    <string name="fields_mandatory_missing_discard">Некоторые обязательные поля отсутствуют, и форма не может быть сохранена. \nЕсли вы выйдете сейчас, изменения будут отменены.</string>
     <string name="share">Поделиться</string>
-    <string name="camera_permission_denied">Разрешение камеры отклонено. Для использования этой функции необходимо включить ее.</string>
+    <string name="camera_permission_denied">Разрешение камеры запрещено.\nЧтобы использовать эту функцию, ее необходимо разрешить.</string>
     <string name="action_close">Закрыть</string>
     <string name="program_rules_loop_warning_title">Предупреждение о правилах программы</string>
     <string name="program_rules_loop_warning_message">Существует проблема конфигурации, вызывающая зацикливание правил. Обратитесь к администратору.</string>
@@ -82,6 +82,4 @@
     <string name="org_unit">Организационная единица</string>
     <string name="coordinates">Координаты</string>
     <string name="no_options">Нет доступных вариантов</string>
-    <string name="storage_permission_denied">Разрешение на хранение не предоставляется.Для использования этой функции необходимо включить ее.</string>
-
-</resources>
+    </resources>
