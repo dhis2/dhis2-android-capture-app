@@ -35,7 +35,10 @@
     <string name="sync_error_title">Chyba synchronizace</string>
     <string name="sync_error_text">Během synchronizace došlo k chybě. Zkuste to prosím znovu.</string>
     <string name="sync_incomplete_error_text">Synchronizace dokončena, ale neobdrželi jsme potvrzení serveru pro všechny záznamy. Tyto záznamy jsou v aplikaci stále označeny jako „offline“. Doporučujeme synchronizaci zopakovat.</string>
+    <string name="metadata_sync_error">CHYBA: V procesu synchronizace se něco pokazilo. Pokud máte připojení, zkuste to prosím znovu. Pokud chyba přetrvává, obraťte se na správce.</string>
+    <string name="data_sync_warning_v2">Ve vašich datech jsou rozpory. Synchronizujte prosím svou konfiguraci, zkontrolujte svá data a zkuste synchronizaci provést znovu.</string>
     <string name="data_sync_warning_program">UPOZORNĚNÍ: Většina vašich dat je synchronizována, ale některá pole vykazovala konflikty. Synchronizujte svou konfiguraci a zkuste to znovu. Pokud varování přetrvává, zkontrolujte jejich stav synchronizace: programy, TEI a události s konflikty jsou označeny jako @.</string>
+    <string name="data_sync_error_v2">Některá vaše data se nepodařilo synchronizovat.</string>
     <string name="server_sync_error">Došlo k chybě a server neodpovídá. Kontaktujte svého správce.</string>
 
     <string name="search_result_text">Nalezeno %s výsledků</string>
@@ -199,6 +202,7 @@
     <string name="SYNC_META">SYNCHRONIZOVAT Konfiguraci teď</string>
     <string name="SYNC_MANAGER">Nastavení</string>
     <string name="last_data_sync_date">Poslední synchronizace: %s</string>
+    <string name="last_data_sync">Poslední synchronizace v</string>
     <string name="last_metadata_sync_date">Poslední synchronizace: %s</string>
     <string name="refill_reserved_values">Doplňte</string>
     <string name="settings_sms_module_title">SMS modul:</string>
@@ -216,6 +220,7 @@
         <item quantity="many">Je tu %s programů se specifickým nastavením</item>
         <item quantity="other">Jsou tu %s programy se specifickým nastavením</item>
     </plurals>
+    <string name="settings_sync_period_v2">Doba synchronizace</string>
     <string name="settings_limit_scope">Nastavení omezeno</string>
     <string name="settings_limit_globally">Globálně</string>
     <string name="settings_limit_program">podle programu</string>
@@ -241,7 +246,9 @@
     <string name="settingsCheckVersionMessage">Software</string>
     <string name="settingsExportDB">Export databáze</string>
     <string name="settingsExportDBMessage">Export databáze a její sdílení se správcem</string>
+    <string name="settingTwoFA">Dvoufaktorové ověřování</string>
     <string name="settingsTwoFAStatus">Stav</string>
+    <string name="settingTwoFADescr">Ověřování můžete povolit nebo zakázat ve dvou krocích.</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Datum zápisu</string>
@@ -620,6 +627,7 @@
     <string name="filter_event_status_skipped">Přeskočeno</string>
     <string name="event_tei_limits">Události:%smax:%s%saktuální:%s TEI:%smax:%s%saktuální:%s</string>
     <string name="event_tei_limits_v2">Nastavení omezeno %s\nUdálosti: %s/%s TEI: %s/%s</string>
+    <string name="limit_setting">Omezené nastavení %s</string>
     <string name="enrollment_data_hide">Skrýt údaje o zápisu</string>
     <string name="enrollment_data_show">Zobrazit údaje o zápisu</string>
     <string name="sms_enabled">SMS modul povolen</string>
@@ -931,6 +939,8 @@
     <string name="overdue">Zpoždění %s</string>
     <string name="registered_in">Registrováno v</string>
     <string name="view_only">Pouze zobrazení</string>
+    <string name="at_enroll_org_unit">Na %s.</string>
+    <string name="no_access_to_it">Nemáte k tomu přístup.</string>
     <string name="scheduled">Plánováno: %s</string>
     <string name="scheduled_for">Naplánováno na %s</string>
     <string name="skipped">Přeskočeno</string>
@@ -948,6 +958,7 @@
     <string name="remove_enrollment_dialog_message">Data z %s budou smazána. Tuto akci nelze vzít zpět.</string>
     <string name="schedule_next">Další plán</string>
     <string name="schedule">Plán</string>
+    <string name="enter">Vstup</string>
     <string name="refer">Odkazovat</string>
     <string name="scheduled_enter_event">Naplánováno</string>
     <string name="enter_event">Zadat %1$s</string>
@@ -975,5 +986,12 @@
     <string name="biometric_title">Ověřte, že jste to vy</string>
     <string name="use_password">Použití hesla</string>
     <string name="transfer">Převod</string>
+    <string name="transfer_tei_org_sheet_title">Přenos %s</string>
+    <string name="transfer_tei_org_sheet_description">Od %s do...</string>
     <string name="successfully_transferred">Úspěšně přeneseno</string>
-    </resources>
+    <string name="event_cancelled">%1$s zrušeno</string>
+    <string name="due_date_updated">Aktualizované datum vypršení</string>
+    <string name="complete_enrollment_label">Dokončeno %s</string>
+    <string name="deactivate_enrollment_label">Deaktivovat %s</string>
+    <string name="reopen_enrollment_label">Znovu otevřít %s</string>
+</resources>

@@ -40,15 +40,24 @@
     <string name="filters_title_state">Đồng bộ</string>
     <string name="filters_title_assigned">Gán cho tôi</string>
     <string name="filters_title_date">Ngày</string>
+    <string name="filters_title_event_label_date">%s ngày</string>
+    <string name="filters_title_event_label_status">%s trạng thái</string>
+    <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Theo dõi %s</string>
     <string name="select_period">Chọn loại thời điểm</string>
     <string name="daily_period">Hàng Ngày</string>
     <string name="weekly">Hàng Tuần</string>
     <string name="bi_weekly">Định kỳ 2 tuần</string>
+    <string name="weekly_start_wednesday">Hàng tuần bắt đầu từ thứ Tư</string>
+    <string name="weekly_start_thursday">Hàng tuần bắt đầu từ thứ Năm</string>
+    <string name="weekly_start_saturday">Hàng tuần bắt đầu từ thứ Bảy</string>
+    <string name="weekly_start_sunday">Hàng tuần bắt đầu từ Chủ Nhật</string>
     <string name="monthly">Hàng Tháng</string>
     <string name="bi_monthly">Định kỳ 2 tháng</string>
     <string name="quarterly">Hàng Quý</string>
+    <string name="quarterly_nov">Hàng quý tháng 11</string>
     <string name="six_monthly">Định kỳ 6 tháng</string>
+    <string name="six_monthly_april">Định kỳ 6 tháng - Tháng 4</string>
     <string name="yearly">Hàng năm</string>
     <!-- State -->
     <string name="state_synced">Đồng bộ</string>
@@ -236,11 +245,17 @@
 
     <string name="open_with">Mở với</string>
 
+    <string name="file_downloaded">Tệp đã tải xuống thành công</string>
+
+
     <string name="enrollment_data_section_label_V2">Dữ liệu %s</string>
+    <string name="enrollment_date_V2">%s ngày</string>
+    <string name="enrollment_status">%s trạng thái</string>
     <string name="enrollment_cancelled_V2">%s đã hủy</string>
     <string name="new_enrollment">%sMới</string>
     <string name="enrolling_ou">Đã đăng ký vào:</string>
     <string name="new_event_label">%sMới</string>
+    <string name="event_label_date">%s ngày</string>
     <string name="delete_event_label">Xóa %s</string>
     <string name="week_period_span_default_label">Tuần %d %s đến %s</string>
     <string name="enrollment_reopen">mở lại</string>
@@ -253,4 +268,7 @@
     <string name="period_monthly_title">Tháng</string>
     <string name="period_quarter_title">Quý</string>
     <string name="period_yearly_title">Năm</string>
-    </resources>
+    <string name="database_import_failed">Nhập cơ sở dữ liệu không thành công</string>
+    <string name="invalid_file">Tệp không hợp lệ</string>
+    <string name="not_in_totp_2fa_enrollment_mode">Không ở chế độ đăng ký TOTP 2FA</string>
+</resources>

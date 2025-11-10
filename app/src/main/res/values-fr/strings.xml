@@ -718,6 +718,7 @@
     <string name="navigation_charts">Graphiques</string>
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Saisie de données</string>
+    <string name="navigation_form">Formulaire</string>
     <string name="navigation_tei_data">Details</string>
     <string name="show_bar_graph">Afficher comme graphique</string>
     <string name="show_line_graph">Afficher comme une ligne</string>
