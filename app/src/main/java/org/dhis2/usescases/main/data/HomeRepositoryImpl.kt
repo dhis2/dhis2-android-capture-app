@@ -20,6 +20,8 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.program.ProgramType
 import java.io.File
 
+private const val NO_HOME_ITEM = "No home item found"
+
 class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?,
@@ -158,7 +160,7 @@ class HomeRepositoryImpl(
                     )
                 }
 
-                else -> throw IllegalStateException()
+                else -> throw IllegalStateException(NO_HOME_ITEM)
             }
         }
 
