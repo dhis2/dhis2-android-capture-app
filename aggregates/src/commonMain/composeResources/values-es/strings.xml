@@ -61,7 +61,7 @@
     %1$s is the attribute option combo name
     %2$s is the organisation unit name
     -->
-    <string name="attribute_option_combo_not_assigned_to_org_unit">No se puede editar datos para %1$s en %2$s</string>
+    <string name="attribute_option_combo_not_assigned_to_org_unit">No se pueden editar los datos de %1$s en %2$s</string>
     <!--
     %1$s is the period name
     %2$s is the organisation unit name

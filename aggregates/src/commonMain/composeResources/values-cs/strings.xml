@@ -8,11 +8,17 @@
     <string name="input_action_accept">Přijmout</string>
     <string name="input_action_cancel">Zrušit</string>
     <string name="no_results_found">Nenalezeny žádné výsledky</string>
+    <string name="search_to_find_more">Hledat pro nalezení dalších</string>
     <string name="action_done">Hotovo</string>
     <string name="input_coordinate_latitude">Zeměpisná šířka</string>
     <string name="input_coordinate_longitude">Zeměpisná délka</string>
     <string name="input_coordinate_add_location">Přidat umístění</string>
+    <string name="input_date_out_of_range">Mimo rozsah</string>
+    <string name="format_error">Nesprávný formát</string>
     <string name="input_not_supported">Není podporováno</string>
+    <string name="completion_dialog_title">Vše vypadá dobře</string>
+    <string name="completion_dialog_description">Chcete také doplnit datovou sadu\?</string>
+    <string name="validation_success_title">Vše vypadá dobře</string>
     <string name="mark_dataset_complete">Chcete také vyplnit soubor dat\?</string>
     <string name="not_now">Teď ne</string>
     <string name="complete">Dokončit</string>
@@ -21,6 +27,7 @@
     <string name="field_required">Pokud nastavíte hodnotu, celý řádek potřebuje k dokončení datové sady všechny hodnoty.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Uloženo a dokončeno!</string>
+    <string name="error_on_complete_dataset">Při vyplňování datové sady došlo k chybě</string>
     <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat\?</string>
     <string name="no">Ne</string>
     <string name="yes">Ano</string>
@@ -29,10 +36,24 @@
     <string name="complete_anyway">Přesto dokončit</string>
     <string name="review">Posouzení</string>
     <string name="validation_rules_data_to_review">Data ke kontrole</string>
+    <string name="action_can_not_be_performed">Tuto akci nelze provést</string>
     <string name="action_next">Další</string>
     <string name="add_file">Přidat soubor</string>
+    <string name="file_downloaded">Soubor úspěšně stažen</string>
+    <string name="file_download_error">Nelze stáhnout soubor</string>
     <string name="add_image">Přidat obrázek</string>
     <string name="take_photo">Vyfotit</string>
+    <string name="from_gallery">Přidat z galerie</string>
+    <string name="empty_section_message">Tato část je špatně nakonfigurovaná.\nObraťte se na správce.</string>
+    <string name="empty_dataset_message">Tato datová sada je špatně nakonfigurovaná.\nObraťte se na správce.</string>
+
     <string name="indicators_label">Indikátory</string>
     <string name="no_data_write_access">K úpravě těchto údajů nemáte oprávnění</string>
-    </resources>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">Nemáte oprávnění upravovat data pro %1$s</string>
+    <string name="dataset_closed">Tato data nelze upravovat, protože jsou označena jako uzavřená.</string>
+    <string name="dataset_expired">Tato data nelze upravovat, protože vypršela doba jejich editace.</string>
+
+</resources>
