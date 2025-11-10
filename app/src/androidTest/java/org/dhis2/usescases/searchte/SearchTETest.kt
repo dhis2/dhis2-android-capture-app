@@ -53,7 +53,7 @@ class SearchTETest : BaseTest() {
 
         filterRobot(composeTestRule) {
             openFilters()
-//            clickOnFilterBy(enrollmentStatusFilter)
+            clickOnFilterBy(enrollmentStatusFilter)
 //            clickOnFilterCompletedOption()
 //            clickOnSortByField(enrollmentStatusFilter)
 //            checkFilterCounter(totalFilterCount)
