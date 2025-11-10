@@ -108,7 +108,6 @@ class SearchTETest : BaseTest() {
             waitUntilActivityVisible<SearchTEActivity>()
             clickOnShowMap()
             checkCarouselTEICardInfo(firstName)
-            composeTestRule.runOnIdle {  }
         }
     }
 
