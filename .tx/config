@@ -1,6 +1,6 @@
 [main]
 host     = https://www.transifex.com
-lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: uz-rUZ, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: es-rES, ar_IQ: ar-rIQ, hi_IN: hi-rIN, ar-rEG
+lang_map = fa_AF: prs, uz@Cyrl: uz, uz@Latn: uz-rUZ, zh_CN: zh-rCN, pt_BR: pt-rBR, es_419: es-rES, ar_IQ: ar-rIQ, hi_IN: hi-rIN, ar_EG: ar-rEG, ar_SD: ar-rSD, ko_KR: ko-rKR, sw_TZ: sw-rTZ, zh_HK: zh-rHK, en_US: en-rUS, es_US: es-rUS
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:stock-strings-xml]
 file_filter  = stock-usecase/src/main/res/values-<lang>/strings.xml
@@ -59,11 +59,12 @@ type         = ANDROID
 minimum_perc = 0
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:tracker-strings-xml]
-file_filter  = tracker/src/main/res/values-<lang>/strings.xml
-source_file  = tracker/src/main/res/values/strings.xml
+file_filter  = tracker/src/commonMain/composeResources/values-<lang>/strings.xml
+source_file  = tracker/src/commonMain/composeResources/values/strings.xml
 source_lang  = en
 type         = ANDROID
 minimum_perc = 0
+resource_name = Tracker
 
 [o:hisp-uio:p:dhis2-android-capture-app:r:aggregates-strings-xml]
 file_filter  = aggregates/src/commonMain/composeResources/values-<lang>/strings.xml
