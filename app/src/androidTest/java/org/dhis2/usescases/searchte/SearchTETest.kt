@@ -106,6 +106,7 @@ class SearchTETest : BaseTest() {
 
         searchTeiRobot(composeTestRule) {
             waitUntilActivityVisible<SearchTEActivity>()
+            waitToDebounce(5000)
             clickOnShowMap()
             checkCarouselTEICardInfo(firstName)
         }
