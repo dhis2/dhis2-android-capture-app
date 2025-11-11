@@ -9,7 +9,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.dhis2.common.BaseRobot
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.composetable.test.TestActivity
 import org.dhis2.usescases.BaseTest
@@ -41,6 +40,7 @@ class SchedulingDialogUiTest : BaseTest() {
 
     @Before
     override fun setUp() {
+        super.setUp()
         whenever(viewModel.eventDate).thenReturn(MutableStateFlow(EventDate(label = "Date")))
         whenever(viewModel.eventCatCombo).thenReturn(
             MutableStateFlow(
@@ -147,9 +147,7 @@ class SchedulingDialogUiTest : BaseTest() {
             }
         }
         composeTestRule.onNodeWithText("No").performClick()
-
         composeTestRule.waitForIdle()
-
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertDoesNotExist()
         composeTestRule.onNodeWithText("CatCombo *").assertDoesNotExist()
@@ -182,7 +180,6 @@ class SchedulingDialogUiTest : BaseTest() {
         }
 
         composeTestRule.onAllNodesWithTag("INPUT_DROPDOWN").onFirst().performClick()
-        composeTestRule.waitForIdle()
         composeTestRule.waitUntilExactlyOneExists(hasTestTag("INPUT_DROPDOWN_MENU_ITEM_1"))
         composeTestRule.onNodeWithTag(
             testTag = "INPUT_DROPDOWN_MENU_ITEM_1",
