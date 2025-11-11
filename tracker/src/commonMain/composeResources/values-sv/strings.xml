@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="show_more">Visa mer</string>
+    <string name="show_less">Visa mindre</string>
+    <string name="cancel">Avbryt</string>
+    <string name="remove">Ta bort</string>
+    <string name="search">Sök</string>
+    <string name="optional">Frivillig</string>
+
+</resources>

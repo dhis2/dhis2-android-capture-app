@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Det er ingen relasjoner, klikk \"+\" for å legge til en ny.</string>
-    <string name="relationship">Relasjon</string>
+    <string name="no_data">Ingen data</string>
+    <string name="syncing">Synkroniserer...</string>
+    <string name="show_more">Vis mer</string>
+    <string name="show_less">Vis mindre</string>
+    <string name="cancel">Avbryt</string>
+    <string name="remove">Fjern</string>
+    <string name="search">Søk</string>
+    <string name="optional">Valgfri</string>
+
 </resources>

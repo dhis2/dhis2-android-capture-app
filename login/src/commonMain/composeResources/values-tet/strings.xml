@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">Próximu</string>
+    <string name="username_hint">Utilizador nia Naran</string>
+    <string name="password_hint">Seña</string>
+    <string name="action_yes">Sim</string>
+    </resources>

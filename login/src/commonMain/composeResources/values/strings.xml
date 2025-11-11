@@ -2,7 +2,7 @@
 <resources>
     <string name="add_account">Add new account</string>
     <string name="two_fa_screen_title">Two factor authentication</string>
-    <string name="two_fa_no_connection_title">Can't connect to network</string>
+    <string name="two_fa_no_connection_title">Can\'t connect to network</string>
     <string name="two_fa_no_connection_description">You need an internet connection to turn two-factor authentication on or off.</string>
     <string name="two_fa_no_connection_button">Try to reconnect</string>
     <string name="two_fa_checking_status">Checking status...</string>
@@ -14,7 +14,7 @@
     <string name="two_fa_to_enable_step_two_description">Link your authenticator app using this configuration key on the authenticator app.</string>
     <string name="two_fa_to_enable_step_three_number">3. </string>
     <string name="two_fa_to_enable_step_three_description">Enter the code from your authenticator app below.</string>
-    <string name="two_fa_to_enable_google_authenticator">Google Authenticator App</string>"
+    <string name="two_fa_to_enable_google_authenticator">Google Authenticator App</string>
     <string name="two_fa_authentication_code">Authentication code</string>
     <string name="two_fa_failed_to_turn_on">Failed to turn on two-factor authentication</string>
     <string name="two_fa_turn_on_button">Turn on</string>

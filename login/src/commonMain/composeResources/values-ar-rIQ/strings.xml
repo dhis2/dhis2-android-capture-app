@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">التالي</string>
+    <string name="username_hint">اسم المستخدم</string>
+    <string name="action_yes">نعم</string>
+    </resources>
