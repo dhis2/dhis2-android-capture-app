@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">Кейинги</string>
+    <string name="username_hint">Фойдаланувчи исми</string>
+    <string name="password_hint">Parol</string>
+    <string name="openid_or">Yoki</string>
+    <string name="action_yes">Ҳа</string>
+    </resources>

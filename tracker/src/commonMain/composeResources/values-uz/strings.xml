@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Ўзаро алоқалар мавжуд эмас, янгисини қўшиш учун \"+\" тугмасини босинг.</string>
-    <string name="relation_creation_date">Муносабат яратилган сана</string>
-    <string name="relationship">Ўзаро алоқа</string>
+    <string name="no_data">Маълумот йўқ</string>
+    <string name="syncing">Синхронизацияланмоқда...</string>
+    <string name="show_more">Кўпроқ кўрсатиш</string>
+    <string name="show_less">Камроқ кўрсатиш</string>
+    <string name="cancel">Рад этиш</string>
+    <string name="remove">Олиб ташлаш</string>
+    <string name="search">Излаш</string>
+    <string name="optional">Ихтиёрий</string>
+
 </resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">Neste</string>
+    <string name="username_hint">Brukernavn</string>
+    <string name="password_hint">Passord</string>
+    <string name="openid_or">Eller</string>
+    <string name="action_yes">Ja</string>
+    <string name="enter_pin_button">Lås opp</string>
+    </resources>

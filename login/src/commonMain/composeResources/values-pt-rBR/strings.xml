@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">Autenticação de dois fatores</string>
+    <string name="action_next">Próximo</string>
+    <string name="two_fa_is_on">A autenticação de dois fatores está ativada.</string>
+    <string name="username_hint">Nome do usuário</string>
+    <string name="password_hint">Senha</string>
+    <string name="action_yes">Sim</string>
+    <string name="enter_pin_button">Desbloquear</string>
+    </resources>
