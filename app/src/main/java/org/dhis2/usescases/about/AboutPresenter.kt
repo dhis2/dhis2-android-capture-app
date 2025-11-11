@@ -25,7 +25,7 @@ class AboutPresenter(
                         .systemInfo()
                         .get()
                         .toFlowable()
-                        .map { it.contextPath() ?: "" },
+                        .map { it.contextPath() },
                 ) { fields, result -> Pair(fields, result) }
                 .cacheWithInitialCapacity(1)
                 .subscribeOn(provider.io())
