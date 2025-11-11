@@ -47,6 +47,7 @@
     <string name="date_dialog_clear">مسح</string>
     <string name="next">التالي</string>
     <string name="SAVE">حفظ</string>
+    <string name="qr_attributes">السمات</string>
     <string name="qr_relationships">علاقات</string>
     <string name="about">حول</string>
     <string name="share">مشاركة</string>
@@ -98,6 +99,7 @@
     <string name="customactivityoncrash_error_activity_error_details_close">إغلاق</string>
     <string name="section_charts">المخططات البيانية</string>
     <string name="navigation_map_view">الخريطة</string>
+    <string name="navigation_programs">البرامج</string>
     <string name="navigation_charts">المخططات البيانية</string>
     <string name="navigation_tei_data">التفاصيل</string>
     <string name="show_table_graph">عرض كجدول</string>
@@ -116,6 +118,7 @@
     <string name="available">متوفر</string>
     <string name="sync_dialog_title_syncing">تزامن</string>
     <string name="skipped">تم التخطي</string>
+    <string name="programs">البرامج</string>
     <string name="scheduled_enter_event">تمت جدولته</string>
     <string name="show_more">إظهار المزيد</string>
     <string name="show_less">إظهار الأقل</string>

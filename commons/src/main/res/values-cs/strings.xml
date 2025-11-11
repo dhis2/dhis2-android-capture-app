@@ -40,6 +40,8 @@
     <string name="filters_title_state">Synchronizace</string>
     <string name="filters_title_assigned">Přiděleno mně</string>
     <string name="filters_title_date">datum</string>
+    <string name="filters_title_event_label_date">%s datum</string>
+    <string name="filters_title_event_label_status">%s stav</string>
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Navázalo na %s</string>
     <string name="select_period">Vybrat typ období</string>
@@ -53,8 +55,10 @@
     <string name="monthly">Měsíčně</string>
     <string name="bi_monthly">Dva měsíce</string>
     <string name="quarterly">Čtvrtletně</string>
+    <string name="quarterly_nov">Čtvrtletně od listopadu</string>
     <string name="six_monthly">Šestiměsíční</string>
     <string name="six_monthly_april">Od dubna každých šest měsíců</string>
+    <string name="six_monthly_july">Šestiměsíčně od července</string>
     <string name="six_monthly_nov">Počínaje listopadem šest měsíců</string>
     <string name="yearly">Ročně</string>
     <string name="financial_year_april">Finanční rok začínající v dubnu</string>
@@ -238,6 +242,7 @@
     <string name="msg_network_connection_maps">K používání map je nutné připojení k internetu.</string>
 
     <string name="overdue_today">Dnes</string>
+    <string name="overdue_due_today">Vypršení dnes</string>
     <plurals name="overdue_days">
         <item quantity="one">%d den po vypršení</item>
         <item quantity="few">%d dny po vypršení</item>
@@ -257,12 +262,28 @@
         <item quantity="other">%d roků po vypršení</item>
     </plurals>
 
+    <plurals name="schedule_days">
+        <item quantity="one">Na %d den</item>
+        <item quantity="few">Na %d dny</item>
+        <item quantity="many">Na %d dnů</item>
+        <item quantity="other">Na %d dnů</item>
+    </plurals>
     <string name="open_with">Otevřít s</string>
 
+    <string name="file_downloaded">Soubor úspěšně stažen</string>
+
+
     <string name="enrollment_data_section_label_V2">%s data</string>
+    <string name="enrollment_date_V2">%s datum</string>
+    <string name="enrollment_status">%s stav</string>
+    <string name="break_glass_dialog_description_V2">V tomto chráněném programu musíte uvést důvod kontroly na %s. Veškerá činnost bude zaznamenána.</string>
+    <string name="enrollment_completed_V2">%s dokončeno</string>
+    <string name="enrollment_cancelled_V2">%s zrušeno</string>
     <string name="new_enrollment">Nový %s</string>
     <string name="enrolling_ou">Zapsáno v:</string>
+    <string name="event_label_completed">%s dokončeno</string>
     <string name="new_event_label">Nový %s</string>
+    <string name="event_label_date">%s datum</string>
     <string name="delete_event_label">Smazat %s</string>
     <string name="week_period_span_default_label">Týden %d %s až %s</string>
     <string name="enrollment_reopen">znovu otevřít</string>
@@ -276,4 +297,7 @@
     <string name="period_monthly_title">Měsíc</string>
     <string name="period_quarter_title">Čtvrtletí</string>
     <string name="period_yearly_title">Rok</string>
-    </resources>
+    <string name="database_import_failed">Import databáze se nezdařil</string>
+    <string name="invalid_file">Neplatný soubor</string>
+    <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>
+</resources>

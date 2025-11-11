@@ -30,10 +30,12 @@
     <string name="action_close">បិទ</string>
     <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
     <string name="incident_date">ថ្ងៃខែឆ្នាំ ធ្វើរោគវិនិច្ឆ័យ</string>
+    <string name="download">ទាយយក</string>
     <string name="org_unit">អង្គភាព</string>
     <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
     <string name="yes">យល់ព្រម</string>
     <string name="no">មិនព្រម</string>
+    <string name="input_age_or">ឬ</string>
     <string name="input_action_accept">ទទួលយក</string>
     <string name="input_action_cancel">បោះបង់</string>
     <string name="input_coordinate_latitude">រយៈទទឹង</string>
@@ -41,6 +43,7 @@
     <string name="add_file">បញ្ចូលឯកសារ</string>
     <string name="no_results_found">មិនមានលទ្ធផលបង្ហាញ</string>
     <string name="action_done">Done</string>
+    <string name="input_not_supported">មិនគាំទ្រ​ / មិនអាចធ្វើឡើងបានទេ</string>
     <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
     <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
     <!--*******************->

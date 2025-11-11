@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_data">មិនមានទិន្នន័យ</string>
     <string name="clear">លុបចោល</string>
     <string name="action_accept">ទទួលយក</string>
     <string name="next">បន្ទាប់</string>
@@ -39,8 +40,26 @@
     <string name="enrollment_status_active">បើក</string>
     <string name="enrollment_status_completed">បញ្ចប់</string>
     <string name="enrollment_status_cancelled">បានលុបចោល</string>
+    <!-- Periods -->
+    <string name="filter_period_today">ថ្ងៃនេះ</string>
     <string name="filter_period_yesterday">កាលពីម្សិលមិញ</string>
+    <string name="filter_period_this_week">សប្តាហ៍នេះ</string>
+    <string name="filter_period_last_week">សប្តាហ៍មុន</string>
+    <string name="filter_period_this_month">ខែនេះ</string>
+    <string name="filter_period_last_month">ខែមុន</string>
     <string name="filter_period_other">ផ្សេង</string>
+    <string name="filter_period_this_year">ឆ្នាំនេះ</string>
+    <string name="filter_period_this_bimonth">រយៈពេល២ខែនេះ</string>
+    <string name="filter_period_last_bimonth">រយៈពេល២ខែមុន</string>
+    <string name="filter_period_this_quarter">ត្រីមាសនេះ</string>
+    <string name="filter_period_last_quarter">ត្រីមាសចុងក្រោយ</string>
+    <string name="filter_period_weeks_this_year">ជាសប្ដាហ៍ក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_months_this_year">ជាខែក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_bimonths_this_year">ជារយៈពេល២ខែម្តងក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_quarters_this_year">ជាត្រីមាសក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_last_year">ឆ្នាំមុន</string>
+    <string name="filter_period_this_financial_year">ឆ្នាំហិរញ្ញវត្ថុនេះ</string>
+    <string name="filter_period_last_financial_year">ឆ្នាំហិរញ្ញវត្ថុមុន</string>
     <string name="period">កំឡុងពេល</string>
     <string name="DAILY">រាល់​ថ្ងៃ</string>
     <string name="WEEKLY">រាល់​សប្ដាហ៍</string>
@@ -62,6 +81,7 @@
     <string name="default_table_header_label">តម្លៃ</string>
     <string name="discard_changes">លុបការកែប្រែ</string>
     <string name="default_empty_dataset_section_label">Data</string>
+    <string name="overdue_today">ថ្ងៃនេះ</string>
     <string name="enrollment_reopen">បើកឡើងវិញ</string>
 
     <string name="remove">លុបចេញ</string>
