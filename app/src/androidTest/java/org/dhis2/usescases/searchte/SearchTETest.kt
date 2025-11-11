@@ -107,7 +107,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot(composeTestRule) {
             waitUntilActivityVisible<SearchTEActivity>()
             clickOnShowMap()
-            //checkCarouselTEICardInfo(firstName)
+            checkCarouselTEICardInfo(firstName)
         }
     }
 
