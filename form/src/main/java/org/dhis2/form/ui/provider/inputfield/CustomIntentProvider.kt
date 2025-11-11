@@ -87,7 +87,7 @@ fun ProvideCustomIntentInput(
             }
         }
     InputCustomIntent(
-        title = fieldUiModel.label,
+        title = fieldUiModel.formattedLabel,
         buttonText = resources.getString(R.string.custom_intent_launch),
         supportingText = supportingTextList.toList(),
         inputShellState = inputShellState,
