@@ -134,6 +134,8 @@ class HomeRepositoryImpl(
             val program = d2.programs().firstOrNull()
             val dataSetInstance = d2.dataSetInstanceSummaries().firstOrNull()
 
+            require(program != null || dataSetInstance != null) { NO_HOME_ITEM }
+
             when {
                 program?.programType() == ProgramType.WITH_REGISTRATION ->
                     HomeItemData.TrackerProgram(
@@ -151,7 +153,8 @@ class HomeRepositoryImpl(
                         program.access().data().write() == true,
                     )
 
-                dataSetInstance != null -> {
+                else -> {
+                    requireNotNull(dataSetInstance)
                     val dataSet = d2.dataSet(dataSetInstance.dataSetUid())
                     HomeItemData.DataSet(
                         dataSetInstance.dataSetUid(),
@@ -159,8 +162,6 @@ class HomeRepositoryImpl(
                         dataSet?.access()?.data()?.write() == true,
                     )
                 }
-
-                else -> throw IllegalStateException(NO_HOME_ITEM)
             }
         }
 
