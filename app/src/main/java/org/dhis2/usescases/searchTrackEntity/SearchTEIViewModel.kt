@@ -562,18 +562,16 @@ class SearchTEIViewModel(
 
     fun fetchMapResults() {
         viewModelScope.launch {
-            val result =
-                async(context = dispatchers.io()) {
-                    mapDataRepository.getTrackerMapData(
-                        searchRepository.getProgram(initialProgramUid),
-                        queryData,
-                        layersVisibility,
-                    )
-                }
-
             try {
                 CoroutineTracker.increment()
-                val data = result.await()
+                val data =
+                    withContext(dispatchers.io()) {
+                        mapDataRepository.getTrackerMapData(
+                            searchRepository.getProgram(initialProgramUid),
+                            queryData,
+                            layersVisibility,
+                        )
+                    }
                 _mapResults.send(data)
             } catch (e: Exception) {
                 Timber.e(e)
@@ -604,7 +602,6 @@ class SearchTEIViewModel(
                         SearchScreenState.LIST -> {
                             setListScreen()
                             onNewSearch.emit(Unit)
-                            CoroutineTracker.decrement()
                         }
 
                         SearchScreenState.MAP -> {
