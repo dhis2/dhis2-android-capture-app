@@ -561,8 +561,8 @@ class SearchTEIViewModel(
         }
 
     fun fetchMapResults() {
-        CoroutineTracker.increment()
         viewModelScope.launch {
+            CoroutineTracker.increment()
             val result =
                 async(context = dispatchers.io()) {
                     mapDataRepository.getTrackerMapData(
