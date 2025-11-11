@@ -22,7 +22,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
@@ -39,17 +38,12 @@ open class BaseRobot {
         return this
     }
 
-    fun acceptGenericDialog() {
-        onView(withId(android.R.id.button1)).perform(ViewActions.click())
-    }
-
     fun closeKeyboard() {
         try {
             val instrumentation = getInstrumentation()
             instrumentation.runOnMainSync {
                 // Try to find a resumed Activity to obtain a window token
                 val activity = try {
-                    @Suppress("DEPRECATION")
                     ActivityLifecycleMonitorRegistry.getInstance()
                         .getActivitiesInStage(
                             Stage.RESUMED
@@ -194,7 +188,7 @@ open class BaseRobot {
     }
 
     inline fun <reified T : Activity> isVisible(): Boolean {
-        val am = InstrumentationRegistry.getInstrumentation().targetContext.getSystemService(
+        val am = getInstrumentation().targetContext.getSystemService(
             ACTIVITY_SERVICE
         ) as ActivityManager
         val visibleActivityName = am.appTasks[0].taskInfo.baseActivity!!.className
