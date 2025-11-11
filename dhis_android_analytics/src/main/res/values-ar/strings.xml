@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="show_bar_graph">عرض على شكل بيان شريطي</string>
-    <string name="show_line_graph">عرض على شكل بيان خطي</string>
+    <string name="show_bar_graph">عرض كشريط</string>
+    <string name="show_line_graph">مشاهدة على شكل خطي</string>
     <string name="show_table_graph">عرض كجدول</string>
     <string name="show_table_value">عرض كقيمة</string>
     <string name="action_accept">قبول</string>

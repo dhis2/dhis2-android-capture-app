@@ -34,10 +34,10 @@
     <string name="error">Ошибка</string>
     <string name="errors">Ошибки</string>
     <string name="complete_anyway">Завершить все равно</string>
-    <string name="review">Просмотреть</string>
+    <string name="review">Просмотр</string>
     <string name="validation_rules_data_to_review">Данные для просмотра</string>
     <string name="action_can_not_be_performed">Это действие не может быть выполнено</string>
-    <string name="action_next">Далее</string>
+    <string name="action_next">Следующая</string>
     <string name="add_file">Добавить файл</string>
     <string name="file_downloaded">Файл успешно загружен</string>
     <string name="file_download_error">Не удалось загрузить файл</string>

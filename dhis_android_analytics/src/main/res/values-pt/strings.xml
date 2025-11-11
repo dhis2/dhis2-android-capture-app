@@ -2,7 +2,7 @@
 <resources>
     <string name="show_bar_graph">Ver como barra</string>
     <string name="show_line_graph">Ver como linha</string>
-    <string name="show_table_graph">Ver como Tabela</string>
+    <string name="show_table_graph">Ver como tabela</string>
     <string name="show_table_value">Ver como valor</string>
     <string name="show_radar_graph">Mostrar como radar</string>
     <string name="show_pie_value">Ver como gráfico circular</string>
@@ -38,10 +38,10 @@
     <string name="weekly">Semanal</string>
     <string name="monthly">Mensal</string>
     <string name="yearly">Anualmente</string>
-    <string name="all">Todos</string>
+    <string name="all">Tudo</string>
     <string name="selection">Selecção</string>
     <string name="reset">Reiniciar</string>
-    <string name="include_this_period_title">Quer incluir o período actual\?</string>
+    <string name="include_this_period_title">Quer incluir o período actual?</string>
     <string name="include_this_period_body">Inclui o período actual no gráfico</string>
     <string name="no_data_for_selected_filters">Não tem dados associados aos filtros aplicados</string>
     <string name="no_data_to_display">Não existem dados para mostrar</string>
@@ -49,7 +49,7 @@
     <string name="visualization_failure">Algo de errado existe com estas visualizações</string>
     <string name="visualization_groups_failure">Algo de errado existe com a visualização dos grupos</string>
     <string name="pie_chart_no_data">Todos os dados são zero</string>
-    <string name="error_invalid_arguments">A visualização não está bem configurada, contacte o seu admin</string>
+    <string name="error_invalid_arguments">A visualização não está bem configurada, contacte o seu admin.</string>
     <string name="error_invalid_category">Não tem acesso a esta categoria  %s</string>
     <string name="error_invalid_category_option">Não tem acesso a esta opcção de categorias %s</string>
     <string name="error_invalid_data_element">Não tem acesso a este elemento de dados %s</string>

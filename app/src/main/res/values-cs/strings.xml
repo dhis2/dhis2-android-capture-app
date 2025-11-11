@@ -503,7 +503,6 @@
     <string name="action_agree">Souhlasit</string>
     <string name="action_continue">Pokračovat</string>
     <string name="login_server_info_title">URL serveru</string>
-    <string name="login_server_info_message">Zadejte adresu URL serveru DHIS 2 pro vaši organizaci podle pokynů správce systému.\n\nNebo můžete naskenovat QR kód obsahující adresu URL vašeho serveru</string>
     <string name="forgot_your_code">Zapomněli jste kód?</string>
     <string name="event_form_end_options_title">Co byste chtěli udělat pro tuto akci?</string>
     <string name="sectionSelectorEnd">KONEC</string>
@@ -688,9 +687,9 @@
     <string name="dataset_overview">Detaily</string>
     <string name="dataset_comments">Komentáře</string>
     <string name="saved">Uloženo!</string>
-    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
+    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat\?</string>
     <string name="validation_success_title">Všechno vypadá dobře!</string>
-    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
+    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat\?</string>
     <string name="dataset_completed">Označit jak dokončené</string>
     <string name="name">Název</string>
     <string name="formula">Vzorec</string>

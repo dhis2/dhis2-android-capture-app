@@ -14,6 +14,8 @@
     <string name="sign_in">Entrer</string>
     <string name="username">Nom d\'utilisateur</string>
     <string name="password">Mot de passe</string>
+    <string name="forgot_password">Mot de passe oublié\?</string>
+
     <string name="sync_completed">Synchronisation terminée</string>
 
     <!-- FloatingActionButtons -->

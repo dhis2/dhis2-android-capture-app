@@ -26,13 +26,13 @@
     <string name="password">Parol</string>
     <string name="forgot_password">Parolni unutdingizmi?</string>
 
-    <string name="recent_activities_loading_message">Oxirgi harakatlar yuklanmoqda &amp; # 8230;</string>
+    <string name="recent_activities_loading_message">Oxirgi harakatlar yuklanmoqda & # 8230;</string>
     <string name="recent_activities_empty_message">Siz hali hech qanday faoliyatni amalga oshirmayapsiz</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Metadata sinxronlanmoqda &amp; # 8230;</string>
+    <string name="metadata_sync_in_progress">Metadata sinxronlanmoqda & # 8230;</string>
     <string name="metadata_sync_error">Meta-maʼlumotlarni sinxronlash tugallanmadi</string>
-    <string name="data_sync_in_progress">Ma\'lumotlarni sinxronlash &amp; # 8230;</string>
+    <string name="data_sync_in_progress">Ma\'lumotlarni sinxronlash & # 8230;</string>
     <string name="data_sync_error">Maʼlumotlarni sinxronlash tugallanmadi</string>
     <string name="metadata_sync_completed">Metadata sinxronlash tugallandi!</string>
     <string name="sync_completed">Sinxronlash tugallandi!</string>
@@ -42,7 +42,7 @@
     <string name="review">Ko‘rib chiqish</string>
 
     <string name="scan_barcode">Shtrix-kodni skanerlash</string>
-    <string name="scanning">Skanerlash &amp; # 8230;</string>
+    <string name="scanning">Skanerlash & # 8230;</string>
     <string name="search">Elementni qidirish</string>
     <string name="search_placeholder">Излаш...</string>
     <string name="delete">Oʼchirib tashlash</string>
@@ -86,7 +86,6 @@
 Жараён давом этишидан олдин, Транзакция тури танланган бўлиши ва барча катаклар тўлдирилган бўлиши шарт
 </string>
     <string name="mandatory_facility_selection">Davom etishdan oldin tashkilot maydoni to\'ldirilishi kerak</string>
-    <string name="mandatory_distributed_to_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
     <string name="mandatory_transaction_date_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
     <string name="previous_page_lose_data_warning">Oldingi ekranga qaytmoqchimisiz\? 
 Davom etishga qaror qilsangiz, kiritilgan ma\'lumotlarni yo\'qotasiz.</string>

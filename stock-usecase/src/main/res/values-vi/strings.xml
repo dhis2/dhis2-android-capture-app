@@ -30,7 +30,7 @@
     <string name="recent_activities_empty_message">Bạn chưa thực hiện bất kỳ hoạt động nào</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230;</string>
+    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230</string>
     <string name="metadata_sync_error">Không thể hoàn thành đồng bộ siêu dữ liệu</string>
     <string name="data_sync_in_progress">Đang đồng bộ dữ liệu&#3230;</string>
     <string name="data_sync_error">Không thể hoàn thành đồng bộ dữ liệu</string>
@@ -87,9 +87,6 @@
     </string>
     <string name="mandatory_facility_selection">
         Điền đầy đủ các trường dữ liệu cơ sở trước khi bạn có thể tiếp tục
-    </string>
-    <string name="mandatory_distributed_to_selection">
-        Điền đầy đủ Trường \"Phân bổ đến\" trước khi tiếp tục
     </string>
     <string name="mandatory_transaction_date_selection">
         Trường \"Phân bổ đến\" phải được điền đầy đủ trước khi tiếp tục
