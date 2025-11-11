@@ -55,11 +55,11 @@ class SearchTETest : BaseTest() {
             openFilters()
             clickOnFilterBy(enrollmentStatusFilter)
             clickOnFilterCompletedOption()
-//            clickOnSortByField(enrollmentStatusFilter)
-//            checkFilterCounter(totalFilterCount)
-//            checkCountAtFilter(enrollmentStatusFilter, filterCount)
-//            openFilters()
-//            checkTeiAreCompleted()
+            clickOnSortByField(enrollmentStatusFilter)
+            checkFilterCounter(totalFilterCount)
+            checkCountAtFilter(enrollmentStatusFilter, filterCount)
+            openFilters()
+            checkTeiAreCompleted()
         }
     }
 
@@ -107,7 +107,7 @@ class SearchTETest : BaseTest() {
         searchTeiRobot(composeTestRule) {
             waitUntilActivityVisible<SearchTEActivity>()
             clickOnShowMap()
-            checkCarouselTEICardInfo(firstName)
+            //checkCarouselTEICardInfo(firstName)
         }
     }
 

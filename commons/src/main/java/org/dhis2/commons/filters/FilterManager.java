@@ -274,6 +274,8 @@ public class FilterManager implements Serializable {
     }
 
     public void addEnrollmentStatus(boolean remove, EnrollmentStatus enrollmentStatus) {
+        CountingIdlingResourceSingleton.INSTANCE.increment();
+
         boolean changed = true;
         if (remove) {
             enrollmentStatusFilters.remove(enrollmentStatus);
@@ -287,6 +289,8 @@ public class FilterManager implements Serializable {
         enrollmentStatusFiltersApplied.set(enrollmentStatusFilters.size());
         if (!workingListActive() && changed)
             publishData();
+        CountingIdlingResourceSingleton.INSTANCE.decrement();
+
     }
 
     public void addPeriod(List<DatePeriod> datePeriod) {
