@@ -48,7 +48,8 @@ class NoteRobot : BaseRobot() {
     }
 
     fun clickYesOnAlertDialog() {
-        onView(withText(R.string.yes))
+        waitForView(withText(R.string.yes))
+            .check(matches(isDisplayed()))
             .perform(click())
     }
 
@@ -78,7 +79,9 @@ class NoteRobot : BaseRobot() {
     }
 
     fun clickOnClearButton() {
-        onView(withId(R.id.clearButton)).perform(click())
+        waitForView(withText(R.string.clear))
+            .check(matches(allOf(isDisplayed(), isEnabled())))
+            .perform(click())
     }
 
     fun checkNoteDetails(user: String, noteText: String) {

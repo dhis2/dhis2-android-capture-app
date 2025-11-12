@@ -66,7 +66,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
                 R.string.navigation_notes
             )
         ).performClick()
-        Thread.sleep(500)
+        waitToDebounce(500)
     }
 
     fun goToRelationships() {
@@ -368,6 +368,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun checkAllEventsCompleted(totalEvents: Int) {
+        composeTestRule.waitForIdle()
         var event = 0
         while (event < totalEvents) {
             checkEventIsCompleted(event)

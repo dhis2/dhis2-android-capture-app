@@ -244,21 +244,24 @@ class GroupAnalyticsFragment : Fragment() {
             startPostponedEnterTransition()
         }
         groupViewModel.analytics.observe(viewLifecycleOwner) { analytics ->
-            when {
-                analytics.isSuccess ->
-                    adapter.submitList(analytics.getOrDefault(emptyList())) {
-                        binding?.progressLayout?.visibility = View.GONE
-                    }
+            try {
+                when {
+                    analytics.isSuccess ->
+                        adapter.submitList(analytics.getOrDefault(emptyList())) {
+                            binding?.progressLayout?.visibility = View.GONE
+                        }
 
-                analytics.isFailure -> {
-                    binding?.progressLayout?.visibility = View.GONE
-                    binding?.emptyAnalytics?.apply {
-                        visibility = View.VISIBLE
-                        text = getString(R.string.visualization_failure)
+                    analytics.isFailure -> {
+                        binding?.progressLayout?.visibility = View.GONE
+                        binding?.emptyAnalytics?.apply {
+                            visibility = View.VISIBLE
+                            text = getString(R.string.visualization_failure)
+                        }
                     }
                 }
+            } finally {
+                AnalyticsCountingIdlingResource.decrement()
             }
-            AnalyticsCountingIdlingResource.decrement()
         }
     }
 
