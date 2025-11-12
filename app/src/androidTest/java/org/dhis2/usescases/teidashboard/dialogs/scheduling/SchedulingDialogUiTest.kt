@@ -146,7 +146,6 @@ class SchedulingDialogUiTest : BaseTest() {
             }
         }
         composeTestRule.onNodeWithText("No").performClick()
-        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertDoesNotExist()
         composeTestRule.onNodeWithText("CatCombo *").assertDoesNotExist()

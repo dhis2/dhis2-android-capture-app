@@ -112,15 +112,18 @@ class IndicatorsFragment :
     }
 
     override fun swapAnalytics(analytics: List<AnalyticsModel>) {
-        adapter.submitList(analytics)
-        binding.spinner.visibility = View.GONE
+        try {
+            adapter.submitList(analytics)
+            binding.spinner.visibility = View.GONE
 
-        if (analytics.isNotEmpty()) {
-            binding.emptyIndicators.visibility = View.GONE
-        } else {
-            binding.emptyIndicators.visibility = View.VISIBLE
+            if (analytics.isNotEmpty()) {
+                binding.emptyIndicators.visibility = View.GONE
+            } else {
+                binding.emptyIndicators.visibility = View.VISIBLE
+            }
+        } finally {
+            AnalyticsCountingIdlingResource.decrement()
         }
-        AnalyticsCountingIdlingResource.decrement()
     }
 
     private fun showAlertDialogCurrentPeriod(
@@ -160,5 +163,11 @@ class IndicatorsFragment :
                 )
             }.build()
             .show(childFragmentManager, "OUTreeFragment")
+    }
+
+    override fun onDestroyView() {
+        AnalyticsCountingIdlingResource.decrement()
+        presenter.onDettach()
+        super.onDestroyView()
     }
 }

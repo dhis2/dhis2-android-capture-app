@@ -265,6 +265,11 @@ class GroupAnalyticsFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        AnalyticsCountingIdlingResource.decrement()
+        super.onDestroyView()
+    }
+
     private fun addChips(list: List<AnalyticGroup>) {
         var idChip = 0
         list.forEachIndexed { index, analyticGroup ->

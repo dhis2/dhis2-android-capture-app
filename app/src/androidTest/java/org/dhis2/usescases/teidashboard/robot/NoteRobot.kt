@@ -85,7 +85,9 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNoteDetails(user: String, noteText: String) {
-        waitForView(withId(R.id.storeBy)).check(matches(allOf(isDisplayed(), withText(user))))
-        waitForView(withId(R.id.note_text)).check(matches(allOf(isDisplayed(), withText(noteText))))
+        waitForView(allOf(withId(R.id.storeBy), isDisplayed(), withText(user)))
+            .check(matches(isDisplayed()))
+        waitForView(allOf(withId(R.id.note_text), isDisplayed(), withText(noteText)))
+            .check(matches(isDisplayed()))
     }
 }
