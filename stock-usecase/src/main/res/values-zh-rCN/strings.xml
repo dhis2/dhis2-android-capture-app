@@ -29,6 +29,7 @@
     <string name="confirm_transaction_label">确认</string>
     <string name="invalid_quantity">无效</string>
     <string name="speech_network_error">网络错误</string>
+    <string name="unknown_speech_error">出现未知错误。</string>
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">出了些问题。请检查服务器 URL、用户名和密码是否正确，然后重试。</string>
     <string name="login_error_unknown_host">未知服务器</string>

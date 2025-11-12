@@ -66,4 +66,4 @@
     <string name="error_invalid_program">U heeft geen toegang tot het programma %s</string>
     <string name="error_invalid_attribute">U heeft geen toegang tot attribuut %s</string>
     <string name="error_unsupported_aggregation_type">Niet-ondersteund aggregatietype %s</string>
-</resources>
+    </resources>

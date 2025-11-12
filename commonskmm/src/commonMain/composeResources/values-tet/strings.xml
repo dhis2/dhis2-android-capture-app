@@ -10,4 +10,8 @@
     <string name="action_close">Taka</string>
     <string name="download">Hatun</string>
     <string name="input_action_cancel">Kansela</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

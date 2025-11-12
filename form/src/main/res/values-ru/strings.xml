@@ -83,5 +83,4 @@
     <string name="coordinates">Координаты</string>
     <string name="no_options">Нет доступных вариантов</string>
     <string name="storage_permission_denied">Разрешение на хранение не предоставляется.Для использования этой функции необходимо включить ее.</string>
-
-</resources>
+    </resources>

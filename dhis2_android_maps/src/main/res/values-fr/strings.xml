@@ -8,6 +8,10 @@
     <string name="dialog_layer_base_map_bing_dark">Bing Sombre</string>
     <string name="dialog_layer_base_map_bing_aerial">Bing Satellite</string>
     <string name="dialog_layer_base_map_bing_aerial_label">Étiquettes Bing Satellite</string>
+    <string name="dialog_layer_base_map_azure_road">Azure Routes</string>
+    <string name="dialog_layer_base_map_azure_dark">Azure Sombre</string>
+    <string name="dialog_layer_base_map_azure_aerial">Azure Vue Aérienne</string>
+    <string name="dialog_layer_base_map_azure_aerial_label">Azure Vue Aérienne avec Étiquettes</string>
     <string name="action_apply">Appliquer</string>
     <string name="dialog_layer_satellite">Afficher la vue satellite</string>
     <string name="dialog_layer_event">Afficher les événements</string>

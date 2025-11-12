@@ -23,6 +23,7 @@
     <string name="conf_error_value_option_set">Hodnota pole %s nepatří do možnosti nastavené v položce %s</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
+    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
     <string name="required">Vyžadováno</string>
     <string name="date">datum</string>
     <string name="hint_year">Let</string>
@@ -56,14 +57,20 @@
     <string name="complete">Dokončit</string>
     <string name="discard_changes">Zrušit změny</string>
     <string name="saved">Uloženo!</string>
+    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat\?</string>
+    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat\?</string>
+    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="not_now">Teď ne</string>
     <string name="save_anyway">Přesto uložit</string>
     <string name="keep_editing">Pokračovat v úpravách</string>
     <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný\?</string>
     <string name="discard_go_back">Pokud nyní odejdete, všechny informace ve formuláři budou zahozeny.</string>
+    <string name="field_errors_not_saved_discard">Některá pole obsahují chyby a neukládají se. \nPokud je nyní ukončíte, změny budou zrušeny.</string>
     <string name="field_errors_not_saved">Některá pole obsahují chyby a neuloží se.</string>
     <string name="fields_mandatory_missing">Některá povinná pole chybí a formulář nelze uložit.</string>
+    <string name="fields_mandatory_missing_discard">Chybí některá povinná pole a formulář nelze uložit. \nPokud nyní formulář ukončíte, změny budou zrušeny.</string>
     <string name="share">Sdílet</string>
+    <string name="camera_permission_denied">Povolení k použití kamery je zamítnuto.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
     <string name="action_close">Zavřít</string>
     <string name="program_rules_loop_warning_title">Upozornění na pravidla programu</string>
     <string name="program_rules_loop_warning_message">Došlo k problému s konfigurací, který způsobuje smyčku v pravidlech. Kontaktujte svého správce.</string>
@@ -89,6 +96,7 @@
     <string name="error_true_only_one_is_not_true">Neplatný znak 1</string>
     <string name="data_values_save_error">DataValues nelze uložit pomocí těchto argumentů. Použijte ten druhý.</string>
     <string name="leading_zero_error">Čísla s úvodní nulou nejsou povolena</string>
+    <string name="custom_intent_error">Nepodařilo se načíst data</string>
     <string name="enrollment_single_section_label">Atributy - %s</string>
     <string name="tei_coordinates">Souřadnice pro</string>
     <string name="no_reserved_values">Neexistují žádné další rezervované hodnoty. Obraťte se na správce systému</string>
@@ -109,6 +117,7 @@
     <string name="category_combo">Kombinovaná kategorie</string>
     <string name="no_options">K dispozici nejsou žádné možnosti</string>
     <string name="cat_combo">Kombinace kategorií</string>
+    <string name="storage_permission_denied">Povolení ke skladování se neuděluje.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
     <string name="yes">ano</string>
     <string name="no">ne</string>
     <string name="re_open_to_edit">Znovuotevření formuláře pro úpravy</string>
@@ -120,9 +129,13 @@
     <string name="input_coordinate_latitude">Zeměpisná šířka</string>
     <string name="input_coordinate_longitude">Zeměpisná délka</string>
     <string name="input_coordinate_add_location">Přidat umístění</string>
+    <string name="input_date_out_of_range">Mimo rozsah</string>
+    <string name="format_error">Nesprávný formát</string>
     <string name="add_file">Přidat soubor</string>
     <string name="add_image">Přidat obrázek</string>
+    <string name="from_gallery">Přidat z galerie</string>
     <string name="no_results_found">Nenalezeny žádné výsledky</string>
+    <string name="search_to_find_more">Hledat pro nalezení dalších</string>
     <string name="action_done">Hotovo</string>
     <string name="input_not_supported">Není podporováno</string>
     <!--*******************->
@@ -190,6 +203,9 @@
     <string name="error_invalid_characters">V dotazu jsou neplatné znaky. Požádejte správce o ověření konfigurace serveru (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">Server je momentálně nedostupný. Zkuste to později.</string>
     <string name="error_no_internet_connection">Jste offline. Připojte se k internetu a zkuste to znovu.</string>
+    <string name="database_import_failed">Import databáze se nezdařil</string>
+    <string name="invalid_file">Neplatný soubor</string>
+    <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>
     <!--*******************->
        END OF D2 Error Messages
     **********************-->

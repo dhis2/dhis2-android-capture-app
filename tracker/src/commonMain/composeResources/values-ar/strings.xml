@@ -2,4 +2,13 @@
 <resources>
     <string name="empty_relationships">لا توجد علاقات ، انقر فوق \"+\" لإضافة علاقة جديدة.</string>
     <string name="relationship">العلاقة</string>
+    <string name="no_data">لا توجد بيانات</string>
+    <string name="syncing">مزامنة...</string>
+    <string name="show_more">إظهار المزيد</string>
+    <string name="show_less">إظهار أقل</string>
+    <string name="cancel">إلغاء</string>
+    <string name="remove">إزلة</string>
+    <string name="search">بحث</string>
+    <string name="optional">اختياري</string>
+
 </resources>
