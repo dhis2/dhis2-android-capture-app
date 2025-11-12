@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="empty_relationships">No hay relaciones, haga click en \"+\" para crear una nueva.</string>
+    <string name="relation_creation_date">Relación creada el</string>
+    <string name="relationship">Relación</string>
     <string name="no_data">No hay datos</string>
     <string name="syncing">Sincronizando...</string>
     <string name="show_more">Mostrar más</string>

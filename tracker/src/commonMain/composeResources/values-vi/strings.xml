@@ -2,11 +2,6 @@
 <resources>
     <string name="empty_relationships">Không có mối quan hệ, bấm vào \"+\" để thêm một mối quan hệ.</string>
     <string name="relation_creation_date">Mối quan hệ đã được tạo trên</string>
-    <string name="remove_relationship_title">Bỏ %s\?</string>
-    <string name="remove_relationship_desc">%ssẽ bị xóa. Hành động này không thể hoàn lại. </string>
-    <string name="remove_some_relationships_title">Bỏ %d mối quan hệ được chọn\?</string>
-    <string name="remove_some_relationships_desc">%dmối quan hệ được chọn sẽ bị xóa. Hành động này không thể hoàn tác.</string>
-    <string name="show_number_more">Hiển thị thêm %d...</string>
     <string name="relationship">Mối quan hệ</string>
     <string name="no_data">Không có dữ liệu</string>
     <string name="syncing">Đang đồng bộ...</string>
