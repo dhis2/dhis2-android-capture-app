@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment.Companion.forProgram
@@ -598,9 +600,11 @@ class SearchTEActivity :
             }
         }
         lifecycleScope.launch {
-            viewModel.mapResults.collect {
-                if (currentContent == Content.MAP) {
-                    hideToolbarProgressBar()
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.mapResults.collect {
+                    if (currentContent == Content.MAP) {
+                        hideToolbarProgressBar()
+                    }
                 }
             }
         }
