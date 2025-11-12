@@ -89,8 +89,7 @@
         The facility field must be filled before you can proceed
     </string>
     <string name="mandatory_distributed_to_selection">
-        The "Distributed to" field must be filled before you can proceed
-    </string>
+        The \"Distributed to\" field must be filled before you can proceed</string>
     <string name="mandatory_transaction_date_selection">
         The \"Distributed to\" field must be filled before you can proceed
     </string>

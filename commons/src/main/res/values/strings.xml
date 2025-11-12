@@ -323,7 +323,7 @@
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
     <string name="group_event_label_by_stage">Group %s by stage</string>
     <string name="show_event_label_timeline">Show %s timeline</string>
-    <string name="empty_tei_event_label_add">There are no %s registered, click "+" to add a new one.</string>
+    <string name="empty_tei_event_label_add">There are no %s registered, click \"+\" to add a new one.</string>
     <string name="empty_tei_event_label_no_add">There are no %s registered.</string>
     <string name="enrollment_date_edition_warning_event_label">There are planned %s that won\'t be re-scheduled</string>
     <string name="enrollment_reopen">re-open</string>
