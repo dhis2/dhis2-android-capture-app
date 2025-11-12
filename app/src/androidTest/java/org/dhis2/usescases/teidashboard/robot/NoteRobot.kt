@@ -9,13 +9,13 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
-import org.dhis2.usescases.notes.NotesViewHolder
 import org.dhis2.usescases.notes.noteDetail.NoteDetailActivity
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
@@ -36,18 +36,14 @@ class NoteRobot : BaseRobot() {
         Intents.intended(allOf(hasComponent(NoteDetailActivity::class.java.name)))
     }
 
-    fun clickOnNoteWithPosition(position: Int) {
-        onView(withId(R.id.notes_recycler))
-            .perform(actionOnItemAtPosition<NotesViewHolder>(position, click()))
-    }
-
     fun typeNote(text: String) {
         onView(withId(R.id.noteText)).perform(TypeTextAction(text))
         closeKeyboard()
     }
 
     fun clickOnSaveButton() {
-        onView(withId(R.id.saveButton))
+        waitForView(withText(R.string.save))
+            .check(matches(allOf(isDisplayed(), isEnabled())))
             .perform(click())
     }
 
@@ -86,7 +82,7 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNoteDetails(user: String, noteText: String) {
-        onView(withId(R.id.storeBy)).check(matches(withText(user)))
-        onView(withId(R.id.note_text)).check(matches(withText(noteText)))
+        waitForView(withId(R.id.storeBy)).check(matches(allOf(isDisplayed(), withText(user))))
+        waitForView(withId(R.id.note_text)).check(matches(allOf(isDisplayed(), withText(noteText))))
     }
 }
