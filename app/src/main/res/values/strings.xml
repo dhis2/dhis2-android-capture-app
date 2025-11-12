@@ -34,7 +34,7 @@
 
     <string name="sync_error_title">Sync Error</string>
     <string name="sync_error_text">An error has occurred during synchronisation. Please retry.</string>
-    <string name="sync_incomplete_error_text">Sync finished but we did not receive server confirmation for all records. Those record are still marked as "offline" in the App. We recommend to retry the synchronization.</string>
+    <string name="sync_incomplete_error_text">Sync finished but we did not receive server confirmation for all records. Those record are still marked as \"offline\" in the App. We recommend to retry the synchronization.</string>
     <string name="metadata_sync_error">FAIL: Something went wrong in the sync process. If you have connection please try again. If the error persists, contact your administrator.</string>
     <string name="data_sync_warning_v2">There are conflicts in your data. Please sync your configuration, review your data and try syncing again.</string>
     <string name="data_sync_warning_program">WARNING: Most of your data is synced but some fields presented conflicts. Sync your configuration and try again. If warning persists, check their sync status: programs, TEI\'s and events with conflicts are marked as @.</string>
@@ -437,7 +437,7 @@
     <string name="tuto_main_10">Log out to change user or server. You will be able to log in again even if there is no internet connection.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">relationships</string>
-    <string name="empty_tei_add">There are no events registered, click "+" to add a new one.</string>
+    <string name="empty_tei_add">There are no events registered, click \"+\" to add a new one.</string>
     <string name="empty_tei_no_add">There are no events registered.</string>
     <string name="qr_data_values">Data values</string>
     <string name="info">Info</string>
@@ -503,7 +503,7 @@
     <string name="action_agree">Agree</string>
     <string name="action_continue">Continue</string>
     <string name="login_server_info_title">Server url</string>
-    <string name="login_server_info_message">"Enter the DHIS 2 server url for your organisation as provided by your system administrator.\n\nAlternatively, you can scan a QR code containing the URL of your server"</string>
+    <string name="login_server_info_message">Enter the DHIS 2 server url for your organisation as provided by your system administrator.\n\nAlternatively, you can scan a QR code containing the URL of your server</string>
     <string name="forgot_your_code">Forgot your code?</string>
     <string name="event_form_end_options_title">What would you like to do for this event?</string>
     <string name="sectionSelectorEnd">END</string>
@@ -693,10 +693,10 @@
     <string name="dataset_overview">Details</string>
     <string name="dataset_comments">Comments</string>
     <string name="saved">Saved!</string>
-    <string name="run_validation_rules">"Do you want to check data quality?"</string>
-    <string name="validation_success_title">"Everything looks good!"</string>
-    <string name="mark_dataset_complete">"Do you also want to complete the data set?"</string>
-    <string name="dataset_completed">"Mark as completed"</string>
+    <string name="run_validation_rules">Do you want to check data quality?</string>
+    <string name="validation_success_title">Everything looks good!</string>
+    <string name="mark_dataset_complete">Do you also want to complete the data set?</string>
+    <string name="dataset_completed">Mark as completed</string>
     <string name="name">Name</string>
     <string name="formula">Formula</string>
     <string name="complete_anyway">Complete anyway</string>
@@ -926,7 +926,7 @@
         <item quantity="other">%s warnings</item>
     </plurals>
     <string name="new_version_message">App version <b>%s</b> is now available. Do you want to download it?</string>
-    <string name="software_update">"Software update"</string>
+    <string name="software_update">Software update</string>
     <string name="remind_me_later">Later</string>
     <string name="download_now">Download now</string>
     <string name="check_for_updates">Check for updates</string>
@@ -935,7 +935,7 @@
     <string name="unknow_sources_denied">Unknown sources permission is denied.\nYou need to enable it to install version.</string>
     <string name="storage_denied">Storage permission is denied.\nYou need to enable it to install version.</string>
     <string name="app_version">App version</string>
-    <string name="error_applying_rule_effects">"Something went wrong with the program configuration, we cannot load this event. Please contact your system admin."</string>
+    <string name="error_applying_rule_effects">Something went wrong with the program configuration, we cannot load this event. Please contact your system admin.</string>
     <string name="dashboard_menu_delete_person">Delete Person</string>
     <string name="permission_notification_denied">Notification permission is denied.</string>
     <string name="permission_notification_granted">Notification permission granted.</string>

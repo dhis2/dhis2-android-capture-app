@@ -22,4 +22,8 @@
     <string name="input_coordinate_latitude">Тӯл</string>
     <string name="input_coordinate_longitude">Арз</string>
     <string name="action_done">Иҷро шуд</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

@@ -23,6 +23,7 @@
     <string name="conf_error_value_option_set">Giá trị của trường %s không thuộc tùy chọn trong %s</string>
     <string name="field_is_mandatory">Trường dữ liệu này bắt buộc</string>
     <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
     <string name="required">Bắt buộc</string>
     <string name="date">Ngày</string>
     <string name="hint_year">Năm</string>
@@ -56,20 +57,27 @@
     <string name="complete">Hoàn tất</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
     <string name="saved">Đã lưu!</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không\?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không\?</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="save_anyway">Tiếp tục Lưu</string>
     <string name="keep_editing">Tiếp tục chỉnh sửa</string>
     <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
     <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
+    <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.. \nNếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
     <string name="fields_mandatory_missing">Thiếu một số trường dữ liệu bắt buộc và Không thể lưu biểu nhập.</string>
+    <string name="fields_mandatory_missing_discard">hiếu một số trường dữ liệu bắt buộc và không thể lưu biểu nhập.  \nNếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ..</string>
     <string name="share">Chia sẻ</string>
+    <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối..\nBạn cần bật tính năng máy ảnh để sử dụng chức năng này.</string>
     <string name="action_close">Đóng</string>
     <string name="program_rules_loop_warning_title">Cảnh báo quy tắc chương trình</string>
     <string name="program_rules_loop_warning_message">Có một vấn đề cấu hình gây ra một vòng lặp trong các quy tắc chương trình. Hãy liên lạc với quản lý của bạn.</string>
     <string name="copied_text">Đã sao chép</string>
     <string name="empty_description">Không có thông tin cho trường dữ liệu này</string>
     <string name="take_photo">Chụp ảnh</string>
+    <string name="from_gallery_v2">Từ thư viện ảnh</string>
     <string name="warning_error_on_complete_title">Kiểm tra cái này!</string>
     <string name="action_do_not_show_again">Không hiển thị lại</string>
     <string name="validation_error_message">giá trị cung cấp không phù hợp với trường này</string>
@@ -108,6 +116,7 @@
     <string name="category_combo">Tổ hợp phân loại</string>
     <string name="no_options">Không có tùy chọn</string>
     <string name="cat_combo">Tổ hợp Phân Loại</string>
+    <string name="storage_permission_denied">Quyền lưu trữ không được cấp.\nBạn phải cấp quyền để sử dụng tính năng này.</string>
     <string name="yes">có</string>
     <string name="no">không</string>
     <string name="re_open_to_edit">Mở lại form để chỉnh sửa</string>
@@ -119,9 +128,13 @@
     <string name="input_coordinate_latitude">Vĩ độ</string>
     <string name="input_coordinate_longitude">Kinh độ</string>
     <string name="input_coordinate_add_location">Thêm vị trí</string>
+    <string name="input_date_out_of_range">Ngoài phạm vi</string>
+    <string name="format_error">Định dạng không chính xác</string>
     <string name="add_file">Thêm tập tin</string>
     <string name="add_image">Thêm hình ảnh</string>
+    <string name="from_gallery">Thêm từ Thư viện</string>
     <string name="no_results_found">Không tìm thấy kết quả nào</string>
+    <string name="search_to_find_more">Tìm kiếm để tìm thêm</string>
     <string name="action_done">Hoàn thành</string>
     <string name="input_not_supported">Không được hỗ trợ</string>
     <!--*******************->
@@ -189,6 +202,9 @@
     <string name="error_invalid_characters">Có các ký tự không hợp lệ trong yêu cầu. Vui lòng liên hệ quản lý để xác nhận cấu hình máy chủ (relaxQueryChars,...)</string>
     <string name="error_server_unavailable">Không thể truy cập máy chủ. Xin vui lòng thử lại sau.</string>
     <string name="error_no_internet_connection">Bạn đang ngoại tuyến. Vui lòng kết nối mạng và thử lại</string>
+    <string name="database_import_failed">Nhập cơ sở dữ liệu không thành công</string>
+    <string name="invalid_file">Tệp không hợp lệ</string>
+    <string name="not_in_totp_2fa_enrollment_mode">Không ở chế độ đăng ký TOTP 2FA</string>
     <!--*******************->
        END OF D2 Error Messages
     **********************-->

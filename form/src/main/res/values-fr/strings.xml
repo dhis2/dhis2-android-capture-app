@@ -86,5 +86,4 @@
     <string name="no_options">Aucune option disponible</string>
     <string name="cat_combo">Combinaison de catégories</string>
     <string name="storage_permission_denied">L\'autorisation de stockage n\'est pas accordée.\n Vous devez l\'activer pour utiliser cette fonctionnalité.</string>
-
-</resources>
+    </resources>

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="total_header_label">តម្លៃសរុប</string>
+    <string name="input_age_or">ឬ</string>
     <string name="input_action_accept">ទទួលយក</string>
     <string name="input_action_cancel">បោះបង់</string>
     <string name="no_results_found">មិនមានលទ្ធផលបង្ហាញ</string>
     <string name="action_done">Done</string>
     <string name="input_coordinate_latitude">រយៈទទឹង</string>
     <string name="input_coordinate_longitude">រយៈបណ្តោយ</string>
+    <string name="input_not_supported">មិនគាំទ្រ​ / មិនអាចធ្វើឡើងបានទេ</string>
     <string name="complete">បញ្ចប់</string>
     <string name="ok">យល់ព្រម</string>
     <string name="no">ទេ</string>

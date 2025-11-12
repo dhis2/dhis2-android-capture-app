@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">មិនមានទិន្នន័យ</string>
+    <string name="show_more">បង្ហាញច្រើនទៀត</string>
+    <string name="cancel">បោះបង់</string>
+    <string name="remove">លុបចេញ</string>
+    <string name="search">ស្វែងរក</string>
+    <string name="optional">មិនមានក៏បាន</string>
+
+</resources>

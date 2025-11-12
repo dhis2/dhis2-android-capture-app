@@ -8,4 +8,14 @@
     <string name="remove_some_relationships_desc">Os relacionamentos  %1$d selecionadas serão eliminados. Esta acção não pode ser anulada.</string>
     <string name="show_number_more">Mostrar %1$d mais...</string>
     <string name="relationship">Relacionamento</string>
+    <string name="no_data">Sem dados</string>
+    <string name="syncing">Sincronizando...</string>
+    <string name="show_more">Mostre mais</string>
+    <string name="show_less">Mostre menos</string>
+    <string name="cancel">Cancelar</string>
+    <string name="remove">Remover</string>
+    <string name="clear_search">Limpar pesquisa</string>
+    <string name="search">Procurar</string>
+    <string name="optional">Opcional</string>
+
 </resources>

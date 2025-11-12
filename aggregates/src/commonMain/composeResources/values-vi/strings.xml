@@ -8,11 +8,17 @@
     <string name="input_action_accept">Chấp nhận</string>
     <string name="input_action_cancel">Hủy</string>
     <string name="no_results_found">Không tìm thấy kết quả nào</string>
+    <string name="search_to_find_more">Tìm kiếm để có thêm</string>
     <string name="action_done">Hoàn thành</string>
     <string name="input_coordinate_latitude">Vĩ độ</string>
     <string name="input_coordinate_longitude">Kinh độ</string>
     <string name="input_coordinate_add_location">Thêm vị trí</string>
+    <string name="input_date_out_of_range">Ngoài phạm vi</string>
+    <string name="format_error">Định dạng không chính xác</string>
     <string name="input_not_supported">Không được hỗ trợ</string>
+    <string name="completion_dialog_title">Mọi thứ đều ổn</string>
+    <string name="completion_dialog_description">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
+    <string name="validation_success_title">Mọi thứ đều ổn</string>
     <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="complete">Hoàn tất</string>
@@ -21,6 +27,7 @@
     <string name="field_required">Nếu bạn nhập một giá trị, cần nhập tất cả giá trị để hoàn tất Biểu Nhập</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Đã lưu và Hoàn tất!</string>
+    <string name="error_on_complete_dataset">Đã xảy ra lỗi khi hoàn tất sự kiện.</string>
     <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không\?</string>
     <string name="no">Không</string>
     <string name="yes">Có</string>
@@ -29,10 +36,43 @@
     <string name="complete_anyway">Hoàn tất luôn</string>
     <string name="review">Xem lại</string>
     <string name="validation_rules_data_to_review">Dữ liệu để xem xét</string>
+    <string name="action_can_not_be_performed">Hành động này không thể thực hiện được</string>
     <string name="action_next">Tiếp tục</string>
     <string name="add_file">Thêm tập tin</string>
+    <string name="file_downloaded">Tệp đã tải xuống thành công</string>
+    <string name="file_download_error">Không thể tải xuống tệp</string>
     <string name="add_image">Thêm hình ảnh</string>
     <string name="take_photo">Chụp ảnh</string>
+    <string name="from_gallery">Thêm từ Thư viện</string>
+    <string name="empty_section_message">Phần này được cấu hình sai.\nLiên hệ với người quản lý của bạn.</string>
+    <string name="empty_dataset_message">Bộ dữ liệu này được cấu hình sai.\nLiên hệ với người quản lý của bạn.</string>
+
     <string name="indicators_label">Chỉ Số</string>
     <string name="no_data_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
-    </resources>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">Bạn không có quyền chỉnh sửa dữ liệu cho %1$s</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">Bạn không thể chỉnh sửa dữ liệu từ %1$s</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">Bạn không thể chỉnh sửa dữ liệu cho %1$s trong %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">Bạn không thể chỉnh sửa dữ liệu cho %1$s trong %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">Bạn không thể chỉnh sửa dữ liệu trong khoảng thời gian %1$s trong %2$s</string>
+    <string name="dataset_closed">Không thể chỉnh sửa dữ liệu này bởi vì nó đã được đánh dấu đóng</string>
+    <string name="dataset_expired">Không thể chỉnh sửa dữ liệu này vì đã quá hạn</string>
+
+</resources>

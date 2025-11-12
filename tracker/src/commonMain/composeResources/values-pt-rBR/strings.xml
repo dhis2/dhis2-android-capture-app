@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="relationship">Relação</string>
+    <string name="no_data">Não ha dados</string>
+    <string name="cancel">Cancelar</string>
+    <string name="remove">Remover</string>
+    <string name="search">Pesquisar</string>
+    <string name="optional">Opcional</string>
+
 </resources>

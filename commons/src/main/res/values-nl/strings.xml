@@ -218,7 +218,8 @@
     <string name="overdue_today">Vandaag</string>
     <string name="open_with">Openen met</string>
 
-    <string name="enrolling_ou">Ingeschreven in:</string> <string name="delete_event_label">Verwijder %s</string>
+    <string name="enrolling_ou">Ingeschreven in:</string>
+    <string name="delete_event_label">Verwijder %s</string>
     <string name="week_period_span_default_label">Week %d %s tot %s</string>
     <string name="enrollment_reopen">heropenen</string>
 

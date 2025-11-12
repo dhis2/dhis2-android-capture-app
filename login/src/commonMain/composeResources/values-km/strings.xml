@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">បន្ទាប់</string>
+    <string name="username_hint">ឈ្មោះ​គណនី</string>
+    <string name="password_hint">ពាក្យ​សម្ងាត់</string>
+    <string name="action_yes">បាទ/ចាស</string>
+    </resources>

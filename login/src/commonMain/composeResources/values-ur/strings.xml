@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">اگلہ</string>
+    <string name="username_hint">ØµØ§Ø±Ù Ú©Ø§ ÙØ§Ù</string>
+    <string name="password_hint">پاسورڈ</string>
+    <string name="openid_or">یا</string>
+    <string name="action_yes">Ø¬Û ÛØ§Úº</string>
+    <string name="enter_pin_button">کھولیں</string>
+    </resources>

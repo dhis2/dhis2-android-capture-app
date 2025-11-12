@@ -41,6 +41,8 @@
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_label_date">%s дата</string>
     <string name="filters_title_event_label_status">%s статус</string>
+    <string name="filters_title_enrollment_status">Cтатус регистрации</string>
+    <string name="filter_follow_up_label">Отмеченные для последующего наблюдения %s</string>
     <string name="select_period">Выбрать тип периода</string>
     <string name="daily_period">Ежедневно</string>
     <string name="weekly">Еженедельно</string>
@@ -268,6 +270,13 @@
     <string name="file_downloaded">Файл успешно загружен</string>
 
 
+    <!--Enrollment labels-->
+    <plurals name="enrollment">
+        <item quantity="one">зачисление</item>
+        <item quantity="few">зачисления</item>
+        <item quantity="many">зачисления</item>
+        <item quantity="other">регистрации</item>
+    </plurals>
     <string name="enrollment_data_section_label_V2">%s данных</string>
     <string name="enrollment_date_V2">%s дата</string>
     <string name="enrollment_status">%s статус</string>
@@ -286,6 +295,13 @@
     <string name="group_by_stage">Группировать по этапам</string>
 
 
+    <!-- Event -->
+    <plurals name="event_label">
+        <item quantity="one">мероприятие</item>
+        <item quantity="few">события</item>
+        <item quantity="many">события</item>
+        <item quantity="other">событий</item>
+    </plurals>
     <string name="event_label_completed">%s завершено</string>
     <string name="event_label_created">%s создано</string>
     <string name="new_event_label">Новый %s</string>
@@ -316,4 +332,4 @@
     <string name="period_quarter_title">Квартал</string>
     <string name="period_yearly_title">Год</string>
     <string name="no_periods">Нет доступных периодов </string>
-</resources>
+    </resources>

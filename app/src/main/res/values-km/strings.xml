@@ -10,6 +10,7 @@
     <string name="error_unexpected_error">កំហុសបច្ចេកទេសមិនបានរំពឹងទុក</string>
     <string name="error_internal_server_error">ម៉ាស៊ីនមេខាងក្នុងមានបញ្ហាបច្ចេកទេស</string>
     <string name="no_value">មិនមានតំលៃ</string>
+    <string name="something_wrong">មានអ្វីមួយខុសប្រក្រតី</string>
     <!-- SyncService strings: -->
     <string name="sync_now">បញ្ជូនទិន្នន័យឥឡូវនេះ</string>
     <string name="sync_text">កំពុងបញ្ជូនទិន្នន័យទៅកាន់ម៉ាស៊ីនមេ</string>
@@ -116,6 +117,8 @@
     <string name="deactivate">ធ្វើអោយអសកម្ម</string>
     <string name="program_not_allow_events">កម្មវិធីនេះមិនអនុញ្ញាតអោយមានព្រឹត្តិការណ៏ច្រើនទេ</string>
 
+    <!--DONE TASKS-->
+    <string name="events_no_data">មិនមានទិន្នន័យ</string>
     <string name="events">ព្រឹត្តិការណ៏</string>
     <string name="done_task">ផ្ទាំងដើម</string>
     <string name="app_info">ព័ត៌មានកម្មវិធី</string>
@@ -323,7 +326,12 @@
     <string name="filters_title_period">កំឡុងពេល</string>
     <string name="filters_title_status">ស្ថានភាព</string>
     <string name="filters_title_state">បញ្ចូន</string>
+    <string name="filter_period_today">ថ្ងៃនេះ</string>
     <string name="filter_period_yesterday">កាលពីម្សិលមិញ</string>
+    <string name="filter_period_this_week">សប្តាហ៍នេះ</string>
+    <string name="filter_period_last_week">សប្តាហ៍មុន</string>
+    <string name="filter_period_this_month">ខែនេះ</string>
+    <string name="filter_period_last_month">ខែមុន</string>
     <string name="filter_period_other">ផ្សេង</string>
     <string name="filter_event_status_open">បើក</string>
     <string name="filter_event_status_completed">បានបញ្ចប់</string>
@@ -338,6 +346,7 @@
     <string name="enrollment_status_cancelled">បានលុបចោល</string>
     <string name="event_data">Data</string>
     <string name="action_done">Done</string>
+    <string name="are_you_sure">តើអ្នកច្បាស់ទេ?</string>
     <string name="filters_title_date">កាលបរិច្ឆេទ</string>
     <string name="filters_title_event_date">ថ្ងៃខែឆ្នាំរបស់ព្រឹត្តិការណ៏</string>
     <string name="customactivityoncrash_error_activity_restart_app">ត្រលប់ថយ​ក្រោយ</string>
@@ -346,6 +355,19 @@
     <string name="navigation_charts">គំនូសតាង(ក្រាប)</string>
     <string name="navigation_notes">ចំណាំ</string>
     <string name="navigation_tei_data">លម្អិត</string>
+    <string name="show_table_graph">បង្ហាញតារាង</string>
+    <string name="filter_period_this_year">ឆ្នាំនេះ</string>
+    <string name="filter_period_this_bimonth">រយៈពេល២ខែនេះ</string>
+    <string name="filter_period_last_bimonth">រយៈពេល២ខែមុន</string>
+    <string name="filter_period_this_quarter">ត្រីមាសនេះ</string>
+    <string name="filter_period_last_quarter">ត្រីមាសចុងក្រោយ</string>
+    <string name="filter_period_weeks_this_year">ជាសប្ដាហ៍ក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_months_this_year">ជាខែក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_bimonths_this_year">ជារយៈពេល២ខែម្តងក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_quarters_this_year">ជាត្រីមាសក្នុងឆ្នាំនេះ</string>
+    <string name="filter_period_last_year">ឆ្នាំមុន</string>
+    <string name="filter_period_this_financial_year">ឆ្នាំហិរញ្ញវត្ថុនេះ</string>
+    <string name="filter_period_last_financial_year">ឆ្នាំហិរញ្ញវត្ថុមុន</string>
     <string name="section_feedback">មតិ​ឆ្លើយតប</string>
     <string name="section_indicators">Indicators</string>
     <string name="value">តម្លៃ</string>
@@ -355,6 +377,7 @@
     <string name="sync_dialog_action_send">ផ្ញើទៅ</string>
     <string name="sync_error">ការបញ្ចូនទិន្នន័យមានបញ្ហាបច្ចេកទេស</string>
     <string name="optional">មិនមានក៏បាន</string>
+    <string name="show_more">បង្ហាញច្រើនទៀត</string>
     <string name="sync">បញ្ចូន</string>
     <string name="show_description">បង្ហាញការពិពណ៌នា</string>
     <string name="hide_description">លាក់ការពិពណ៌នា</string>

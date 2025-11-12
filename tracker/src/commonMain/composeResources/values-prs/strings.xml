@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="relationship">رابطه/ وابستگی</string>
+    <string name="no_data">معلوماتی وجود ندارد</string>
+    <string name="show_more">نمایش دادن بیشتر</string>
+    <string name="show_less">نمایش دادن کم</string>
+    <string name="cancel">انصراف</string>
+    <string name="remove">حذف</string>
+    <string name="search">جستجو</string>
+    <string name="optional">گزینه ها</string>
+
 </resources>
