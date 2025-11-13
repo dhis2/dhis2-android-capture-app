@@ -93,6 +93,7 @@ fun ProvideCustomIntentInput(
         inputShellState = inputShellState,
         inputStyle = inputStyle,
         modifier = modifier,
+        isRequired = fieldUiModel.mandatory,
         onLaunch = {
             if (reEvaluateRequestParams) {
                 customIntentState = CustomIntentState.LOADING
