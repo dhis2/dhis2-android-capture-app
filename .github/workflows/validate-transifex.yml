@@ -1,0 +1,157 @@
+name: Validate Transifex Configuration
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - master
+      - 'release/**'
+    paths:
+      - '**.xml'
+      - '.tx/config'
+  push:
+    branches:
+      - develop
+    paths:
+      - '**.xml'
+      - '.tx/config'
+
+jobs:
+  validate-transifex:
+    runs-on: ubuntu-latest
+    name: Validate Transifex Configuration
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Check .tx/config exists
+        run: |
+          if [[ ! -f ".tx/config" ]]; then
+            echo "❌ ERROR: .tx/config file not found"
+            exit 1
+          fi
+          echo "✅ .tx/config exists"
+          
+      - name: Verify all source files exist
+        run: |
+          echo "Verifying all source files exist..."
+          
+          SOURCE_FILES=$(grep '^source_file' .tx/config | awk '{print $3}')
+          MISSING_FILES=0
+          
+          for file in $SOURCE_FILES; do
+            if [[ ! -f "$file" ]]; then
+              echo "❌ ERROR: Source file not found: $file"
+              MISSING_FILES=1
+            else
+              echo "✅ $file"
+            fi
+          done
+          
+          if [[ $MISSING_FILES -eq 1 ]]; then
+            exit 1
+          fi
+          
+      - name: Validate XML syntax
+        run: |
+          echo "Validating XML syntax with xmllint..."
+          
+          sudo apt-get update -qq
+          sudo apt-get install -y libxml2-utils
+          
+          SOURCE_FILES=$(grep '^source_file' .tx/config | awk '{print $3}')
+          INVALID_XML=0
+          
+          for file in $SOURCE_FILES; do
+            if [[ "$file" == *".xml" ]]; then
+              if ! xmllint --noout "$file" 2>&1; then
+                echo "❌ ERROR: Invalid XML in $file"
+                INVALID_XML=1
+              else
+                echo "✅ $file"
+              fi
+            fi
+          done
+          
+          if [[ $INVALID_XML -eq 1 ]]; then
+            echo ""
+            echo "❌ XML validation failed"
+            echo "Fix the XML syntax errors above"
+            exit 1
+          fi
+          
+      - name: Check for duplicate string keys
+        run: |
+          echo "Checking for duplicate string keys..."
+          
+          SOURCE_FILES=$(grep '^source_file' .tx/config | awk '{print $3}')
+          DUPLICATES_FOUND=0
+          
+          for file in $SOURCE_FILES; do
+            if [[ "$file" == *"/strings.xml" ]]; then
+              DUPLICATES=$(grep -o 'name="[^"]*"' "$file" | sort | uniq -d)
+              
+              if [[ -n "$DUPLICATES" ]]; then
+                echo "❌ ERROR: Duplicate keys in $file:"
+                echo "$DUPLICATES" | sed 's/^/  /'
+                DUPLICATES_FOUND=1
+              else
+                echo "✅ $file"
+              fi
+            fi
+          done
+          
+          if [[ $DUPLICATES_FOUND -eq 1 ]]; then
+            exit 1
+          fi
+          
+      - name: Setup Transifex CLI
+        run: |
+          curl -o- https://raw.githubusercontent.com/transifex/cli/master/install.sh | bash
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          
+      - name: Validate with Transifex API
+        env:
+          TX_TOKEN: ${{ secrets.TX_TOKEN }}
+        run: |
+          echo "========================================="
+          echo "Validating with Transifex API"
+          echo "This is READ-ONLY, does not push changes"
+          echo "========================================="
+          echo ""
+          
+          # tx status validates against Transifex without pushing
+          if tx status > /dev/null 2>&1; then
+            echo "✅ Transifex configuration valid"
+            echo "   - All resources exist in project"
+            echo "   - Configuration matches Transifex"
+          else
+            echo "❌ ERROR: Transifex validation failed"
+            echo ""
+            echo "Run 'tx status' locally to see details"
+            echo ""
+            echo "Common issues:"
+            echo "  - TX_TOKEN secret not configured"
+            echo "  - Resources not in Transifex project"
+            echo "  - Configuration mismatch"
+            exit 1
+          fi
+          
+      - name: Summary
+        if: always()
+        run: |
+          echo ""
+          echo "========================================="
+          if [[ "${{ job.status }}" == "success" ]]; then
+            echo "✅ All Transifex validations passed!"
+            echo ""
+            echo "  ✓ Config file exists"
+            echo "  ✓ Source files exist"
+            echo "  ✓ XML syntax valid"
+            echo "  ✓ No duplicate keys"
+            echo "  ✓ Transifex API validated"
+          else
+            echo "❌ Validation failed"
+          fi
+          echo "========================================="
