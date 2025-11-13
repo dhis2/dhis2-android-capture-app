@@ -2,6 +2,11 @@
 <resources>
     <string name="empty_relationships">Neexistují žádné vztahy, kliknutím na „+“ přidáte nový.</string>
     <string name="relation_creation_date">Vztah vytvořený na</string>
+    <string name="remove_relationship_title">Odstranit %s\?</string>
+    <string name="remove_relationship_desc">%s bude smazán. Tuto akci nelze vzít zpět.</string>
+    <string name="remove_some_relationships_title">Odebrat %d vybrané vztahy \?</string>
+    <string name="remove_some_relationships_desc">%d vybrané vztahy budou odstraněny. Tuto akci nelze vrátit zpět.</string>
+    <string name="show_number_more">Zobrazit %d více...</string>
     <string name="relationship">Vztah</string>
     <string name="no_data">Nejsou data</string>
     <string name="syncing">Probíhá synchronizace ...</string>
