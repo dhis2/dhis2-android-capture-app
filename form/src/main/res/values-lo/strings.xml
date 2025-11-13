@@ -9,6 +9,7 @@
     <string name="conf_error_value_to_assign_option_set">ກົດ​ລະ​ບຽບ​ຂອງສາຍງານ%s​ກໍາ​ລັງ​ພະ​ຍາ​ຍາມ​ທີ່​ຈະ​ກໍາ​ນົດ​ຄ່າ​ %sທີ່​ບໍ່​ໄດ້​ເປັນ​ຂອງ​ຕົວ​ເລືອກ​ທີ່​ກໍາ​ນົດ​ໄວ້​%s</string>
     <string name="conf_error_value_option_set">ຄ່າຂອງຫ້ອງປ້ອນຂໍ້ມູນ%sບໍ່ໄດ້ຂຶ້ນກັບຕົວເລືອກທີ່ຕັ້ງໄວ້ໃນ%s</string>
     <string name="field_is_mandatory">ຊ່ອງປ້ອນຂໍ້ມູນນີ້ແມ່ນຈໍາເປັນຕ້ອງປ້ອນຂໍ້ມູນໃສ່</string>
+    <string name="missing_warning_fields_events">ທ່ານມີບາງຂໍ້ຄວາມເຕືອນ.\nທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="required">ຕ້ອງການ</string>
     <string name="date">ວັນທີ່</string>
     <string name="hint_year">ປີ</string>
@@ -40,12 +41,15 @@
     <string name="complete">ສຳເລັດແລ້ວ</string>
     <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
     <string name="saved">ບັນທຶກແລ້ວ!</string>
+    <string name="event_error_on_complete">ທ່ານມີຂໍ້ຜິດພາດໃນບາງຂໍ້ຄວາມ.\nທ່ານຕ້ອງການກວດເບິ່ງຄືນບໍ?</string>
+    <string name="review_message">ບາງຊ່ອງຂໍ້ມູນຈຳເປັນຕ້ອງດຳເນີນການຂອງທ່ານ.\n ທ່ານຕ້ອງການກວດສອບແບບຟອມຫຼືບໍ?</string>
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="save_anyway">ບັນທຶກ</string>
     <string name="keep_editing">ສຶບຕໍ່ແກ້ໄຂ</string>
-    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ\?</string>
+    <string name="event_can_be_completed">ທ່ານຕ້ອງການໝາຍແບບຟອມນີ້ວ່າສຳເລັດແລ້ວຫຼືບໍ?</string>
     <string name="discard_go_back">ຖ້າທ່ານອອກດຽວນີ້ ຂໍ້ມູນທັງໝົດໃນແບບຟອມຈະຖືກຍົກເລີກ.</string>
     <string name="share">ເຜີຍແຜ່</string>
+    <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
     <string name="action_close">ປິດ</string>
     <string name="program_rules_loop_warning_title">ຂໍ້ຄວນລະວັງກົດຂອງສາຍງານ</string>
     <string name="program_rules_loop_warning_message">ມີບັນຫາການກຳນົດຄ່າທີ່ເຮັດໃຫ້ເກີດມີຊ່ອງຫວ່າງໃນກົດລະບຽບ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
@@ -60,7 +64,7 @@
     <string name="download">ດາວໂຫຼດ</string>
     <string name="add_location">ເພີ່ມທີ່ຕັ້ງ</string>
     <string name="event_details_section_title">%s ລາຍລະອຽດ</string>
-    <string name="org_unit">ຫົວໜ່ວຍການຈັດຕັ້ງ</string>
-    <string name="coordinates">ປະສານງານ</string>
+    <string name="org_unit">ສະຖານທີ່</string>
+    <string name="coordinates">Coordinates</string>
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     </resources>

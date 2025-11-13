@@ -2,7 +2,7 @@
 <resources>
     <string name="show_bar_graph">Lihat sebagai Bar</string>
     <string name="show_line_graph">Lihat sebagai Garis</string>
-    <string name="show_table_graph">Lihat sebagai Tabel</string>
+    <string name="show_table_graph">Lihat sebagai tabel</string>
     <string name="show_table_value">Lihat sebagai Nilai</string>
     <string name="action_accept">Terima</string>
     <string name="period">Periode</string>

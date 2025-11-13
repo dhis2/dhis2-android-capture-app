@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="empty_relationships">Нет никаких связей, нажмите \"+\", чтобы добавить новую.</string>
+    <string name="relation_creation_date">Связь создана</string>
+    <string name="relationship">Зависимость</string>
     <string name="no_data">Нет данных</string>
     <string name="syncing">Синхронизация...</string>
     <string name="show_more">Показать больше</string>

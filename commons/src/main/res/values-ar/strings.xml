@@ -234,7 +234,8 @@
 
     <string name="break_glass_dialog_description_V2">يجب عليك تقديم سبب للتحقق من %s في هذا البرنامج المحمي. سيتم تسجيل جميع الأنشطة.</string>
     <string name="edition_enrollment_is_no_open_V2">هذه البيانات غير قابلة للتحرير لأن %s اكتملت أو تم إلغاؤها</string>
-    <string name="enrolling_ou">مسجل في:</string> <string name="delete_event_label">حذف %s</string>
+    <string name="enrolling_ou">مسجل في:</string>
+    <string name="delete_event_label">حذف %s</string>
     <string name="week_period_span_default_label">الأسابيع %d %s إلى %s</string>
     <string name="enrollment_reopen">إعادة فتح</string>
 

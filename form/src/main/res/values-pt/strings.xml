@@ -10,8 +10,9 @@
     <string name="conf_error_value_option_set">O valor do campo %s não pertence à opção definida em %s </string>
     <string name="field_is_mandatory">Este campo é obrigatório</string>
     <string name="missing_warning_fields_completed_events">Tem algumas mensagens de aviso.</string>
+    <string name="missing_warning_fields_events">Tem algumas mensagens de aviso.\nDeseja marcar este formulário como completo?</string>
     <string name="required">Obrigatório</string>
-    <string name="date">Encontro</string>
+    <string name="date">Data</string>
     <string name="hint_year">Anos</string>
     <string name="hint_month">Meses</string>
     <string name="hint_day">Dias</string>
@@ -40,17 +41,23 @@
     <string name="form_longitude_prefix">Longitude:</string>
     <string name="not_saved"> Não guardado</string>
     <string name="review">Revisão</string>
-    <string name="complete">Concluir</string>
-    <string name="discard_changes">Descartar alterações</string>
+    <string name="complete">Completo</string>
+    <string name="discard_changes">Descartar mudanças</string>
     <string name="saved">Gravado!</string>
-    <string name="not_now">Agora não</string>
-    <string name="save_anyway">Salve mesmo assim</string>
-    <string name="keep_editing">Continue a editar</string>
-    <string name="event_can_be_completed">Deseja marcar este formulário como completo\?</string>
+    <string name="event_error_on_complete">Tem algumas mensagens de erro. Quer revê-las?</string>
+    <string name="missing_error_fields_events">Alguns campos têm erros e não são guardados. \Deseja rever o formulário?</string>
+    <string name="review_message"> Alguns campos requerem a sua atenção.\nDeseja rever o formulário?</string>
+    <string name="not_now">Não agora</string>
+    <string name="save_anyway">Gravar assim mesmo</string>
+    <string name="keep_editing">Continue editando</string>
+    <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
     <string name="discard_go_back">Se sair agora, todas as informações do formulário serão descartadas.</string>
+    <string name="field_errors_not_saved_discard">Alguns campos têm erros e não são guardados. \Se sair agora, as suas alterações serão descartadas.</string>
     <string name="field_errors_not_saved">Alguns campos apresentam erros e não são guardados.</string>
     <string name="fields_mandatory_missing">Alguns campos obrigatórios estão em falta e o formulário não pode ser guardado.</string>
-    <string name="share">Partilhar</string>
+    <string name="fields_mandatory_missing_discard">Faltam alguns campos obrigatórios e o formulário não pode ser guardado. \Se sair agora, as alterações serão eliminadas.</string>
+    <string name="share">Partilha</string>
+    <string name="camera_permission_denied">A permissão da câmara foi negada. \Necessita de ativá-la para usar este recurso.</string>
     <string name="action_close">Fechar</string>
     <string name="program_rules_loop_warning_title">Aviso de regras do programa</string>
     <string name="program_rules_loop_warning_message">Existe um problema de configuração que está a provocar um ciclo nas regras. Contacte o seu administrador.</string>
@@ -67,7 +74,7 @@
     <string name="location_permission_denied">A permissão de localização é necessária para captar as coordenadas. Por favor, ative-a nas definições do aplicativo</string>
     <string name="open_with">Abrir com</string>
     <string name="no_option_found">Nenhuma opção encontrada</string>
-    <string name="download">Baixar</string>
+    <string name="download">Descarregar</string>
     <string name="scan">Digitalizar</string>
     <string name="qr_code">Código QR</string>
     <string name="bar_code">Código de barras</string>
@@ -80,4 +87,5 @@
     <string name="category_combo">Combinação de categoria</string>
     <string name="no_options">Nenhuma opção disponível</string>
     <string name="cat_combo">Combinação de categoria</string>
+    <string name="storage_permission_denied">A permissão de armazenamento não é concedida.\nPrecisa de a ativar para utilizar esta funcionalidade.</string>
     </resources>

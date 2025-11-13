@@ -8,4 +8,8 @@
     <string name="incident_date">Incident date</string>
     <string name="input_action_cancel">Cancel</string>
     <string name="no_results_found">No results found</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

@@ -86,7 +86,6 @@
 Жараён давом этишидан олдин, Транзакция тури танланган бўлиши ва барча катаклар тўлдирилган бўлиши шарт
 </string>
     <string name="mandatory_facility_selection">Davom etishdan oldin tashkilot maydoni to\'ldirilishi kerak</string>
-    <string name="mandatory_distributed_to_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
     <string name="mandatory_transaction_date_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
     <string name="previous_page_lose_data_warning">Oldingi ekranga qaytmoqchimisiz\? 
 Davom etishga qaror qilsangiz, kiritilgan ma\'lumotlarni yo\'qotasiz.</string>

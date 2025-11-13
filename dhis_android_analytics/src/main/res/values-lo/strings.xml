@@ -8,7 +8,7 @@
     <string name="action_accept">ຍອມຮັບ</string>
     <string name="period">ຊ່ວງເວລາ</string>
     <string name="orgUnit">ຫົວໜ່ວຍອົງກອນ</string>
-    <string name="none">ບໍ່ແມນ</string>
+    <string name="none">ບໍ່ມີ</string>
     <string name="daily">ທຸກໆມື້</string>
     <string name="today">ມື້ນີ້</string>
     <string name="other">ອື່ນໆ</string>
@@ -34,13 +34,13 @@
     <string name="thisyear">ປີນີ້</string>
     <string name="lastyear">ປີຜ່ານມາ</string>
     <string name="last5years">5 ປີຜ່ານມາ</string>
-    <string name="weekly">ລາຍອາທິດ</string>
+    <string name="weekly">ເປັນອາທິດ</string>
     <string name="monthly">ລາຍເດືອນ</string>
     <string name="yearly">ລາຍປີ</string>
     <string name="all">ທັງໝົດ</string>
     <string name="selection">ການຄັດເລືອກ</string>
     <string name="reset">Reset</string>
-    <string name="include_this_period_title">ທ່ານຕ້ອງການລວມຊ່ວງເວລາປະຈຸບັນນີ້ບໍ\?</string>
+    <string name="include_this_period_title">ທ່ານຕ້ອງການລວມຊ່ວງເວລາປະຈຸບັນນີ້ບໍ?</string>
     <string name="include_this_period_body">ມັນຈະສະແດງຊ່ວງເວລາປະຈຸບັນໃນແຜນວາດ</string>
     <string name="no_data_for_selected_filters">ຕົວກອງທີ່ທ່ານໃຊ້ບໍ່ໄດ້ສົ່ງຂໍ້ມູນຄືນໃດໆ</string>
     <string name="no_data_to_display">ທ່ານບໍ່ມີຂໍ້ມູນໃດໆທີ່ຈະສະແດງ</string>

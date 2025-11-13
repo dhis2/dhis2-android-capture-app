@@ -10,6 +10,7 @@
     <string name="conf_error_value_option_set">字段%s的值不属于%s中设置的选项集</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="missing_warning_fields_completed_events">您收到了一些警告信息。</string>
+    <string name="missing_warning_fields_events">您有一些警告消息。\n您想将此表单标记为完成吗？</string>
     <string name="required">必须的</string>
     <string name="date">日期</string>
     <string name="hint_year">年</string>
@@ -17,7 +18,7 @@
     <string name="hint_day">天</string>
     <string name="wrong_date_format">%s 无法解析为日期</string>
     <string name="polygon">多边形</string>
-    <string name="latitude">维度</string>
+    <string name="latitude">纬度</string>
     <string name="longitude">经度</string>
     <string name="coordinates_error">坐标值无效</string>
     <string name="polygon_captured">采集的多边形。</string>
@@ -34,7 +35,7 @@
     <string name="enter_letter">输入字符</string>
     <string name="enter_long_text">输入长文本</string>
     <string name="enter_text">输入文本</string>
-    <string name="due_date">到期日期</string>
+    <string name="due_date">到期日</string>
     <string name="mandatory_field">强制字段</string>
     <string name="form_latitude_prefix">纬度：</string>
     <string name="form_longitude_prefix">经度：</string>
@@ -43,14 +44,20 @@
     <string name="complete">完成</string>
     <string name="discard_changes">忽略修改</string>
     <string name="saved">已经保存！</string>
+    <string name="event_error_on_complete">您有一些错误消息。\n您要查看它们吗？</string>
+    <string name="missing_error_fields_events">一些字段有错误并且它们没有被保存。 \n您要查看表单吗？</string>
+    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
     <string name="not_now">现在不要</string>
     <string name="save_anyway">仍然保存</string>
     <string name="keep_editing">继续编辑</string>
     <string name="event_can_be_completed">您想将此表单标记为已完成吗？</string>
     <string name="discard_go_back">如果您现在退出，表单中的所有信息都将被丢弃。</string>
+    <string name="field_errors_not_saved_discard">一些字段有错误并且它们没有被保存。 \n 如果您现在退出，更改将被丢弃。</string>
     <string name="field_errors_not_saved">一些字段有错误并且它们没有被保存。</string>
     <string name="fields_mandatory_missing">缺少一些必填字段，无法保存表单。</string>
+    <string name="fields_mandatory_missing_discard">缺少一些必填字段，无法保存表单。 \n如果您现在退出，更改将被丢弃。</string>
     <string name="share">分享</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="action_close">关闭</string>
     <string name="program_rules_loop_warning_title">项目规则警告</string>
     <string name="program_rules_loop_warning_message">存在导致规则循环的配置问题。联系您的管理员。</string>
@@ -64,7 +71,7 @@
     <string name="enrollment_single_section_label">属性- %s</string>
     <string name="tei_coordinates">坐标</string>
     <string name="no_reserved_values">没有更多保留值，请联系管理员</string>
-    <string name="incident_date">事件发生日期</string>
+    <string name="incident_date">事件日期</string>
     <string name="location_permission_denied">获取坐标需要位置权限。请在应用程序设置中启用它们</string>
     <string name="open_with">打开用</string>
     <string name="no_option_found">找不到选项</string>
@@ -81,4 +88,5 @@
     <string name="category_combo">分类组合</string>
     <string name="no_options">无可用选项</string>
     <string name="cat_combo">分类选择框</string>
+    <string name="storage_permission_denied">没有授予存储权限。\n 您需要启用它才能使用此功能。</string>
     </resources>

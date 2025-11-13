@@ -2,11 +2,6 @@
 <resources>
     <string name="empty_relationships">还没有现存的关系。点击“+”添加一个新的</string>
     <string name="relation_creation_date">关系创建于</string>
-    <string name="remove_relationship_title">删除%s\?</string>
-    <string name="remove_relationship_desc">%s 将被删除。此操作无法撤销。</string>
-    <string name="remove_some_relationships_title">删除%d 所选关系？</string>
-    <string name="remove_some_relationships_desc">%d 选中的关系将被删除。此操作无法撤销。</string>
-    <string name="show_number_more">显示%d 更多...</string>
     <string name="relationship">关系</string>
     <string name="no_data">无数据</string>
     <string name="syncing">同步</string>

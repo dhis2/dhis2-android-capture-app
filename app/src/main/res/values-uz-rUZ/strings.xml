@@ -439,7 +439,6 @@
     <string name="action_agree">Roziman</string>
     <string name="action_continue">Davom etish</string>
     <string name="login_server_info_title">Server URLi</string>
-    <string name="login_server_info_message">Tashkilotingiz uchun tizim maʼmuri tomonidan taqdim etilgan DHIS2 server URL manzilini kiriting. \n\ Boshqa holda, siz serveringiz URL manzilini oʼz ichiga olgan QR kodini skanerlashingiz mumkin.</string>
     <string name="forgot_your_code">Kodingizni unutdingizmi?</string>
     <string name="event_form_end_options_title">Ushbu hodisa/tadbir uchun nima qilmoqchisiz?</string>
     <string name="sectionSelectorEnd">TАMOM</string>
@@ -618,9 +617,9 @@
     <string name="dataset_overview">Тафсилотлари</string>
     <string name="dataset_comments">Izohlar</string>
     <string name="saved">Saqlandi!</string>
-    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi?</string>
+    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi\?</string>
     <string name="validation_success_title">Koʼrinishidan hammasi yaxshi!</string>
-    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi?</string>
+    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi\?</string>
     <string name="dataset_completed">Tugallangan deb belgilang</string>
     <string name="name">Исми</string>
     <string name="formula">Formula</string>

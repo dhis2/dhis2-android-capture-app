@@ -15,7 +15,7 @@
     <string name="latitude">Кенглик</string>
     <string name="longitude">Узунлик</string>
     <string name="coordinates_error">Координата қийматлари яроқсиз</string>
-    <string name="polygon_captured">Полигон белгиланди</string>
+    <string name="polygon_captured">Кўпбурчак ушланди</string>
     <string name="enter_value">Қийматни танланг</string>
     <string name="enter_url">URL ни танланг</string>
     <string name="enter_email">е-почта манзилини киритинг</string>
@@ -38,7 +38,8 @@
     <string name="save_anyway">Нима бўлганда ҳам сақлаш</string>
     <string name="keep_editing">Таҳрирни давом этинг</string>
     <string name="share">Улашиш</string>
-    <string name="action_close">Ёпмоқ</string>
+    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
+    <string name="action_close">Ёпиш</string>
     <string name="copied_text">Нусха олинди</string>
     <string name="empty_description">Ушбу майдон учун маълумот йўқ</string>
     <string name="take_photo">Суратга олиш</string>

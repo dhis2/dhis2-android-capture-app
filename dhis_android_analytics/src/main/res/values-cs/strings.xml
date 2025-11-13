@@ -41,7 +41,7 @@
     <string name="all">Vše</string>
     <string name="selection">Výběr</string>
     <string name="reset">Reset</string>
-    <string name="include_this_period_title">Chcete zahrnout aktuální období\?</string>
+    <string name="include_this_period_title">Chcete zahrnout aktuální období?</string>
     <string name="include_this_period_body">V grafu se zobrazí aktuální období.</string>
     <string name="no_data_for_selected_filters">Použité filtry nevracejí žádná data</string>
     <string name="no_data_to_display">K zobrazení nemáte žádná data</string>
