@@ -120,13 +120,7 @@ pipeline {
                 }
             }
         }
-        /* stage('Run UI Tests in Landscape') {
-            // This stage is commented out because it was unstable remove after validate.
-            when {
-                expression {
-                    return JOB_NAME.startsWith('android-multibranch-PUSH')
-                }
-            }
+        stage('Run UI Tests in Landscape') {
             environment {
                 BROWSERSTACK = credentials('android-browserstack')
                 app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
@@ -144,7 +138,7 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         stage('JaCoCo report') {
             steps {
                 script {
