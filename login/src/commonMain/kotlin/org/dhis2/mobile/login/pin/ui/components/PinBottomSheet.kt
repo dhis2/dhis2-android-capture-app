@@ -3,6 +3,8 @@ package org.dhis2.mobile.login.pin.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -10,6 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material3.Icon
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.style.TextAlign
+import org.dhis2.mobile.commons.extensions.getWindowSizeClass
 import org.dhis2.mobile.login.pin.domain.model.PinState
 import org.dhis2.mobile.login.pin.ui.viewmodel.PinViewModel
 import org.dhis2.mobile.login.resources.Res
@@ -76,13 +82,16 @@ enum class PinMode {
  * @param onSuccess Callback invoked when PIN operation succeeds.
  * @param onDismiss Callback invoked when the bottom sheet is dismissed.
  * @param modifier Optional modifier for customization.
+ * @param windowSizeClass Window size class for layout adjustments.
  */
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun PinBottomSheet(
     mode: PinMode,
     onSuccess: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    windowSizeClass: WindowSizeClass = getWindowSizeClass(),
 ) {
     val viewModel: PinViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -169,6 +178,7 @@ fun PinBottomSheet(
                 headerTextAlignment = TextAlign.Center,
                 animateHeaderOnKeyboardAppearance = false,
                 scrollableContainerMinHeight = Spacing.Spacing40,
+                scrollableContainerMaxHeight = Spacing.Spacing840,
                 contentPadding =
                     PaddingValues(
                         horizontal = Spacing.Spacing24,
@@ -219,39 +229,80 @@ fun PinBottomSheet(
             )
         },
         buttonBlock = {
-            Column(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(BottomSheetShellDefaults.buttonBlockPaddings()),
-                verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                // Primary Button (Save / Continue)
-                Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = currentPin.replace("-", "").length == pinLength && !isLoading,
-                    style = ButtonStyle.FILLED,
-                    text = primaryButtonText,
-                    onClick = {
-                        viewModel.onPinComplete(
-                            pin = currentPin.replace("-", ""),
-                            mode = mode,
-                        )
-                    },
-                )
-
-                secondaryButtonText?.let { buttonText ->
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = !isLoading,
-                        style = ButtonStyle.OUTLINED,
-                        text = buttonText,
-                        onClick = {
-                            viewModel.onForgotPin()
+            when (windowSizeClass.widthSizeClass) {
+                WindowWidthSizeClass.Compact ->
+                    VerticalButtonBlock(
+                        primaryButton = {
+                            Button(
+                                modifier = Modifier.fillMaxWidth(),
+                                enabled =
+                                    currentPin
+                                        .replace(
+                                            "-",
+                                            "",
+                                        ).length == pinLength && !isLoading,
+                                style = ButtonStyle.FILLED,
+                                text = primaryButtonText,
+                                onClick = {
+                                    viewModel.onPinComplete(
+                                        pin = currentPin.replace("-", ""),
+                                        mode = mode,
+                                    )
+                                },
+                            )
                         },
+                        secondaryButton =
+                            secondaryButtonText?.let { buttonText ->
+                                {
+                                    Button(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        enabled = !isLoading,
+                                        style = ButtonStyle.OUTLINED,
+                                        text = buttonText,
+                                        onClick = {
+                                            viewModel.onForgotPin()
+                                        },
+                                    )
+                                }
+                            },
                     )
-                }
+
+                else ->
+                    HorizontalButtonBlock(
+                        primaryButton = {
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                enabled =
+                                    currentPin
+                                        .replace(
+                                            "-",
+                                            "",
+                                        ).length == pinLength && !isLoading,
+                                style = ButtonStyle.FILLED,
+                                text = primaryButtonText,
+                                onClick = {
+                                    viewModel.onPinComplete(
+                                        pin = currentPin.replace("-", ""),
+                                        mode = mode,
+                                    )
+                                },
+                            )
+                        },
+                        secondaryButton =
+                            secondaryButtonText?.let { buttonText ->
+                                {
+                                    Button(
+                                        modifier = Modifier.weight(1f),
+                                        enabled = !isLoading,
+                                        style = ButtonStyle.OUTLINED,
+                                        text = buttonText,
+                                        onClick = {
+                                            viewModel.onForgotPin()
+                                        },
+                                    )
+                                }
+                            },
+                    )
             }
         },
         onDismiss = {
@@ -260,4 +311,40 @@ fun PinBottomSheet(
             onDismiss()
         },
     )
+}
+
+@Composable
+private fun VerticalButtonBlock(
+    primaryButton: @Composable () -> Unit,
+    secondaryButton: (@Composable () -> Unit)?,
+) {
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+        verticalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        primaryButton()
+        secondaryButton?.invoke()
+    }
+}
+
+@Composable
+private fun HorizontalButtonBlock(
+    primaryButton: @Composable RowScope.() -> Unit,
+    secondaryButton: (@Composable RowScope.() -> Unit)?,
+) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(BottomSheetShellDefaults.buttonBlockPaddings()),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        secondaryButton?.invoke(this)
+        primaryButton()
+    }
 }
