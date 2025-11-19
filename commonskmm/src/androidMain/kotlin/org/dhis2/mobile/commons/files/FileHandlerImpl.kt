@@ -9,9 +9,17 @@ class FileHandlerImpl : FileHandler {
         sourceFile: File,
         fileCallback: () -> Unit,
     ) {
-        val folder = getDownloadDirectory(sourceFile.name)
-        copyFile(sourceFile, folder)
-        fileCallback()
+        // On Android 10+ (API 29), scoped storage prevents direct file creation in Downloads
+        // Keep the file in app-accessible storage; sharing should use FileProvider
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Skip copy on modern Android - file is already accessible in app storage
+            fileCallback()
+        } else {
+            // On older versions, we can still copy to Downloads
+            val folder = getDownloadDirectory(sourceFile.name)
+            copyFile(sourceFile, folder)
+            fileCallback()
+        }
     }
 
     private fun copyFile(
@@ -20,22 +28,14 @@ class FileHandlerImpl : FileHandler {
     ): File = sourceFile.copyTo(destinationDirectory, true)
 
     fun getDownloadDirectory(outputFileName: String): File =
-        if (Build.VERSION.SDK_INT >= 29) {
-            File(
-                Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS,
-                ),
-                "dhis2" + File.separator + outputFileName,
-            )
-        } else {
-            File.createTempFile(
+        File
+            .createTempFile(
                 "copied_",
                 outputFileName,
                 Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS,
                 ),
-            )
-        }.also {
-            if (it.exists()) it.delete()
-        }
+            ).also {
+                if (it.exists()) it.delete()
+            }
 }
