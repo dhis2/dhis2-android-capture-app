@@ -458,7 +458,6 @@
     <string name="action_agree">Enig</string>
     <string name="action_continue">Fortsett</string>
     <string name="login_server_info_title">Server URL</string>
-    <string name="login_server_info_message">Angi DHIS 2 server URL for din organisasjons som er oppgitt av din systemadministrator.\n\nAlternativt, kan du skanne en QR kode som inneholder URL til din server</string>
     <string name="forgot_your_code">Har du glemt koden?</string>
     <string name="event_form_end_options_title">Hva vil du gjøre for denne hendelsen?</string>
     <string name="sectionSelectorEnd">SLUTT</string>
@@ -639,9 +638,9 @@
     <string name="dataset_overview">Detaljer</string>
     <string name="dataset_comments">Kommentarer</string>
     <string name="saved">Lagret!</string>
-    <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
+    <string name="run_validation_rules">Vil du sjekke datakvaliteten\?</string>
     <string name="validation_success_title">Alt ser bra ut</string>
-    <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
+    <string name="mark_dataset_complete">Vil du også fullføre datasettet\?</string>
     <string name="dataset_completed">Merk som fullført</string>
     <string name="name">Navn</string>
     <string name="formula">Formel</string>

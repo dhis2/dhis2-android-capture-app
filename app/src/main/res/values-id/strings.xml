@@ -455,7 +455,6 @@
     <string name="action_agree">Setuju</string>
     <string name="action_continue">Terus</string>
     <string name="login_server_info_title">URL server</string>
-    <string name="login_server_info_message">Masukkan url server DHIS 2 untuk organisasi Anda seperti yang disediakan oleh administrator sistem Anda.\n\nAtau, Anda dapat memindai kode QR yang berisi URL server Anda</string>
     <string name="forgot_your_code">Lupa kode Anda?</string>
     <string name="event_form_end_options_title">Apa yang ingin Anda lakukan untuk even ini?</string>
     <string name="sectionSelectorEnd">AKHIR</string>
@@ -748,9 +747,9 @@
     <string name="dataset_overview">Rincian</string>
     <string name="dataset_comments">Komentar</string>
     <string name="saved">Tersimpan!</string>
-    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data\?</string>
     <string name="validation_success_title">Semuanya terlihat bagus!</string>
-    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set\?</string>
     <string name="dataset_completed">Tandai sebagai selesai</string>
     <string name="name">Nama</string>
     <string name="formula">Formula</string>

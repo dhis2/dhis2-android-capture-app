@@ -1,5 +1,6 @@
 package org.dhis2.mobile.login.pin.domain.usecase
 
+import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.login.pin.data.SessionRepository
 
 /**
@@ -8,12 +9,12 @@ import org.dhis2.mobile.login.pin.data.SessionRepository
  */
 class ForgotPinUseCase(
     private val sessionRepository: SessionRepository,
-) {
+) : UseCase<Unit, Unit> {
     /**
      * Executes the forgot PIN flow by logging out and clearing PIN data.
      * @return Result indicating success or failure.
      */
-    suspend operator fun invoke(): Result<Unit> =
+    override suspend operator fun invoke(input: Unit): Result<Unit> =
         try {
             sessionRepository.deletePin()
             sessionRepository.logout()

@@ -87,9 +87,6 @@
     <string name="mandatory_facility_selection">
         O campo da instalação deve ser preenchido antes de prosseguir
     </string>
-    <string name="mandatory_distributed_to_selection">
-        O campo “Distribuído para” deve ser preenchido antes de prosseguir
-    </string>
     <string name="mandatory_transaction_date_selection">
         The ‘Distributed to’ field must be filled in before proceeding
     </string>

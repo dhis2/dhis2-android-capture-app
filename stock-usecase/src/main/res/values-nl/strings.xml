@@ -80,7 +80,6 @@
     <!-- Messages -->
     <string name="mandatory_transaction_selection">        Er moet een transactietype worden geselecteerd en alle velden moeten zijn ingevuld voordat u verder kunt gaan    </string>
     <string name="mandatory_facility_selection">        Het faciliteitsveld moet worden ingevuld voordat u verder kunt gaan    </string>
-    <string name="mandatory_distributed_to_selection">        Het veld \"Gedistribueerd naar\" moet zijn ingevuld voordat u verder kunt gaan    </string>
     <string name="mandatory_transaction_date_selection">        Het veld \"Gedistribueerd naar\" moet zijn ingevuld voordat u verder kunt gaan    </string>
     <string name="previous_page_lose_data_warning">        Weet u zeker dat u terug wilt naar het vorige scherm\?        U verliest de zojuist ingevoerde gegevens als u besluit door te gaan.    </string>
     <string name="transaction_completed">        De transactie is succesvol afgerond!    </string>

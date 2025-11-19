@@ -497,7 +497,6 @@
     <string name="action_agree">同意</string>
     <string name="action_continue">继续</string>
     <string name="login_server_info_title">服务器URL</string>
-    <string name="login_server_info_message">输入系统管理员提供的贵组织的DHIS 2服务器URL。\n \n 或者，您可以扫描包含服务器URL的QR码。</string>
     <string name="forgot_your_code">忘记你的数字口令</string>
     <string name="event_form_end_options_title">对该事件你想做什么？</string>
     <string name="sectionSelectorEnd">结束</string>

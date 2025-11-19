@@ -13,8 +13,7 @@ internal actual val pinDataModule =
             SessionRepositoryImpl(
                 d2 = get(),
                 preferenceProvider = get(),
-                d2ErrorMessageProvider = get(),
-                networkStatusProvider = get(),
+                domainErrorMapper = get(),
                 dispatcher = get(),
             )
         }

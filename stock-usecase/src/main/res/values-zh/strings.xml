@@ -88,9 +88,6 @@
     <string name="mandatory_facility_selection">
         必须先填写设施字段，然后才能继续
     </string>
-    <string name="mandatory_distributed_to_selection">
-        必须填写“分发给”字段才能继续
-    </string>
     <string name="mandatory_transaction_date_selection">
         必须填写“分发给”字段才能继续
     </string>

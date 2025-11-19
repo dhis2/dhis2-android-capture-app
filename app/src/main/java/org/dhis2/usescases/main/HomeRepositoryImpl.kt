@@ -11,7 +11,7 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.mobile.commons.coroutine.Dispatcher
-import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
+import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -24,8 +24,8 @@ class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?,
     private val preferences: PreferenceProvider,
-    private val d2ErrorMessageProvider: D2ErrorMessageProvider,
     private val dispatcher: Dispatcher,
+    private val domainErrorMapper: DomainErrorMapper,
 ) : HomeRepository {
     companion object {
         const val BIOMETRICS_PERMISSION = "biometrics_permission"
@@ -36,10 +36,7 @@ class HomeRepositoryImpl(
             try {
                 block()
             } catch (d2Error: D2Error) {
-                val parsedError = d2ErrorMessageProvider.getErrorMessage(d2Error, false)
-                Result.failure(Exception(parsedError))
-            } catch (e: Exception) {
-                Result.failure(e)
+                Result.failure(domainErrorMapper.mapToDomainError(d2Error))
             }
         }
 

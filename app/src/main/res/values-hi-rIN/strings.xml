@@ -26,9 +26,11 @@
     <string name="search">सर्च करें / खोजें</string>
     <string name="state_error">त्रुटि</string>
     <string name="update">अपडेट करें</string>
+    <string name="new_event">नया इवेंट</string>
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
     <string name="edit">संपादन करें</string>
+    <string name="events">इवेंट्स</string>
     <string name="wipe_data_ok">स्वीकार करें</string>
     <string name="wipe_data_no">रद्द करें</string>
     <string name="SYNC_MANAGER">सेटिंग्स</string>
@@ -38,12 +40,15 @@
     <string name="add_file">फ़ाइल जोड़ें</string>
     <!--AGE CUSTOM VIEW-->
     <string name="hint_day">दिन</string>
+    <string name="date_dialog_clear">साफ़ करें</string>
     <string name="next">आगे</string>
     <string name="SAVE">सहेजें</string>
     <string name="button_ok">ठीक है</string>
     <string name="share">साझा करें</string>
     <string name="error_on_complete_title">त्रुटि</string>
     <string name="save">सहेजें</string>
+    <string name="dialog_generate_new_event">नया इवेंट जनरेट करें</string>
+    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं\?</string>
     <string name="skip">छोड़ें</string>
     <string name="event_overdue">अतिदेय</string>
     <string name="local_data_accept">स्वीकार करें</string>
@@ -53,6 +58,8 @@
     <string name="data_every_week">साप्ताहिक</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_this_month">इस महीने</string>
+    <string name="filter_period_last_month">पिछला महीना</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
     <string name="go_back">पीछे जाएं</string>
@@ -63,10 +70,16 @@
     <string name="action_done">पूरा हुआ</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
     <string name="customactivityoncrash_error_activity_error_details_close">बंद करें</string>
+    <string name="break_glass_dialog_title">यह प्रोग्राम सुरक्षित है</string>
     <string name="login_error_bad_credentials">गलत लॉगिन जानकारी</string>
     <string name="unknown_date">अज्ञात</string>
     <string name="troubleshooting_language_title">भाषा</string>
+    <string name="search_create_new">नया बनाएँ</string>
     <string name="sync_dialog_title_syncing">सिंक हो रहा है</string>
     <string name="sync_dialog_action_not_now">अभी नहीं</string>
     <string name="sync_error">सिंक की गलती</string>
+    <string name="refer">रेफर करें</string>
+    <string name="event">इवेंट</string>
+    <string name="show_more">और दिखाएँ</string>
+    <string name="show_less">कम दिखाएँ</string>
     </resources>

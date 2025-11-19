@@ -5,8 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.view.View
-import android.widget.EditText
-import androidx.annotation.IdRes
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -16,18 +14,12 @@ import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers.hasFocus
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.util.TreeIterables
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import androidx.test.runner.lifecycle.Stage
-import androidx.test.rule.ActivityTestRule
 import androidx.test.uiautomator.UiDevice
-import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import java.lang.Thread.sleep
 
@@ -76,21 +68,8 @@ open class BaseRobot {
             .assertIsDisplayed()
     }
 
-    fun pressImeActionButton(@IdRes editTextId: Int? = null) {
-        if (editTextId != null) {
-            onView(withId(editTextId)).perform(ViewActions.pressImeActionButton())
-        } else {
-            onView(
-                allOf(
-                    isAssignableFrom(EditText::class.java),
-                    hasFocus()
-                )
-            ).perform(ViewActions.pressImeActionButton())
-        }
-    }
-
     fun waitToDebounce(millis: Long) {
-        Thread.sleep(millis)
+        sleep(millis)
     }
 
     fun getString(stringId: Int): String = getInstrumentation().targetContext.getString(stringId)
@@ -98,7 +77,7 @@ open class BaseRobot {
     inline fun <reified T : Activity> waitUntilActivityVisible() {
         val startTime = System.currentTimeMillis()
         while (!isVisible<T>()) {
-            Thread.sleep(CONDITION_CHECK_INTERVAL)
+            sleep(CONDITION_CHECK_INTERVAL)
             if (System.currentTimeMillis() - startTime >= TIMEOUT) {
                 throw AssertionError(
                     "Activity ${T::class.java.simpleName} " +
@@ -193,10 +172,6 @@ open class BaseRobot {
         ) as ActivityManager
         val visibleActivityName = am.appTasks[0].taskInfo.baseActivity!!.className
         return visibleActivityName == T::class.java.name
-    }
-
-    fun <T : Activity> checkActivityIsFinishing(rule: ActivityTestRule<T>) {
-        assert(rule.activity.isFinishing)
     }
 
     companion object {

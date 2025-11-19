@@ -4,6 +4,8 @@
 
     <string name="username">အသုံးပြုသူအမည်</string>
     <string name="password">လျှို့ဝှက်နံပါတ်</string>
+    <string name="forgot_password">လျှို့ဝှက်နံပါတ်မေ့သွားသည်</string>
+
     <string name="delete">ဖျက်ဆီးသည်</string>
     <string name="ok">လက်ခံသည်</string>
     <string name="cancel">ပယ်ဖျက်သည်</string>

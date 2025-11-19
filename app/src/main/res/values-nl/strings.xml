@@ -472,7 +472,6 @@
     <string name="action_agree">Mee eens zijn</string>
     <string name="action_continue">Doorgaan</string>
     <string name="login_server_info_title">Server-URL</string>
-    <string name="login_server_info_message">Voer de DHIS 2-server-URL voor uw organisatie in zoals verstrekt door uw systeembeheerder.\n\nU kunt ook een QR-code scannen met de URL van uw server</string>
     <string name="forgot_your_code">Ben je je code vergeten?</string>
     <string name="event_form_end_options_title">Wat zou je willen doen voor dit evenement?</string>
     <string name="sectionSelectorEnd">EINDE</string>
@@ -656,9 +655,9 @@
     <string name="dataset_overview">Details</string>
     <string name="dataset_comments">Opmerkingen</string>
     <string name="saved">Opgeslagen!</string>
-    <string name="run_validation_rules">Wilt u de datakwaliteit controleren?</string>
+    <string name="run_validation_rules">Wilt u de datakwaliteit controleren\?</string>
     <string name="validation_success_title">Alles ziet er goed uit!</string>
-    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken?</string>
+    <string name="mark_dataset_complete">Wil je ook de dataset compleet maken\?</string>
     <string name="dataset_completed">Markeer als voltooid</string>
     <string name="name">Naam</string>
     <string name="formula">Formule</string>

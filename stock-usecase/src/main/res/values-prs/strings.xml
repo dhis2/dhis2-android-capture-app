@@ -6,6 +6,8 @@
     <string name="sign_in">ورود به سیستم</string>
     <string name="username">نام کاربر</string>
     <string name="password">کلید رمز</string>
+    <string name="forgot_password">آیا کلید رمز را فراموش نه موده اید؟</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">ادامه دادن</string>
     <string name="delete">حذف</string>

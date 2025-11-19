@@ -6,6 +6,8 @@
     <string name="sign_in">داخلہ</string>
     <string name="username">ØµØ§Ø±Ù Ú©Ø§ ÙØ§Ù</string>
     <string name="password">پاسورڈ</string>
+    <string name="forgot_password">پاسورڈ بھول گے؟</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">آگے بڑھو</string>
     <string name="delete">حذف</string>
