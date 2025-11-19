@@ -759,7 +759,7 @@ class FilterRepository
                 d2
                     .categoryModule()
                     .categoryCombos()
-                    .uid(program.categoryComboUid())
+                    .uid(program.categoryCombo()?.uid())
                     .blockingGet()
             if (categoryCombo?.isDefault == false) {
                 defaultEventFilter[ProgramFilter.CAT_COMBO] =
