@@ -106,7 +106,8 @@ class EnrollmentEventGeneratorRepositoryImpl(
                 .programs()
                 .uid(programUid)
                 .blockingGet()
-                ?.categoryComboUid()
+                ?.categoryCombo()
+                ?.uid()
         val catOptionCombo =
             d2
                 .categoryModule()

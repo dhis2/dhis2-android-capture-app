@@ -77,9 +77,17 @@ class TeiDataRepositoryImpl(
     override fun eventsWithoutCatCombo(): Single<List<EventModel>> {
         return getEnrollmentProgram()
             .flatMap { program ->
-                d2.categoryModule().categoryCombos().uid(program.categoryComboUid()).get().map {
-                    Pair(program, it)
-                }
+                d2
+                    .categoryModule()
+                    .categoryCombos()
+                    .uid(
+                        program
+                            .categoryCombo()
+                            ?.uid(),
+                    ).get()
+                    .map {
+                        Pair(program, it)
+                    }
             }.flatMap { (program, categoryCombo) ->
                 if (categoryCombo.isDefault == true) {
                     Single.just(emptyList())

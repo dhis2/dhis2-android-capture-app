@@ -129,7 +129,7 @@ class EventInfoProvider(
         checkCategoryCombination(
             list = list,
             event = event,
-            programCatComboUid = program?.categoryComboUid(),
+            programCatComboUid = program?.categoryCombo()?.uid(),
         )
 
         checkEventStatus(
