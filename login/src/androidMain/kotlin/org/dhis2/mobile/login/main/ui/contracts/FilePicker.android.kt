@@ -30,16 +30,21 @@ actual fun filePicker(onResult: (String?) -> Unit): FilePicker {
                     val suffix = if (fileType != null && fileType.isNotBlank()) ".$fileType" else null
                     val file = File.createTempFile("importedDb", suffix, context.cacheDir)
 
-                    contentResolver.openInputStream(uri)?.use { inputStream ->
-                        FileOutputStream(file, false).use { outputStream ->
-                            var read: Int
-                            val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
-                            while (inputStream.read(bytes).also { read = it } != -1) {
-                                outputStream.write(bytes, 0, read)
+                    val inputStream = contentResolver.openInputStream(uri)
+                    if (inputStream != null) {
+                        inputStream.use { ins ->
+                            FileOutputStream(file, false).use { outputStream ->
+                                var read: Int
+                                val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
+                                while (ins.read(bytes).also { read = it } != -1) {
+                                    outputStream.write(bytes, 0, read)
+                                }
                             }
                         }
+                        onResult(file.absolutePath)
+                    } else {
+                        onResult(null)
                     }
-                    onResult(file.absolutePath)
                 } catch (e: IOException) {
                     Timber.e("Failed to load file: %s", e.message.toString())
                     onResult(null)
