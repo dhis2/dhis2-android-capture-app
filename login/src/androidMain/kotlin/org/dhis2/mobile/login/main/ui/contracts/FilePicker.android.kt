@@ -27,7 +27,7 @@ actual fun filePicker(onResult: (String?) -> Unit): FilePicker {
                         with(contentResolver) {
                             MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
                         }
-                    val suffix = if (fileType != null && fileType.isNotBlank()) ".$fileType" else null
+                    val suffix = getFileSuffix(fileType)
                     val file = File.createTempFile("importedDb", suffix, context.cacheDir)
 
                     val inputStream = contentResolver.openInputStream(uri)
@@ -56,3 +56,5 @@ actual fun filePicker(onResult: (String?) -> Unit): FilePicker {
         launcher.launch("*/*")
     }
 }
+
+fun getFileSuffix(fileType: String?): String? = if (fileType != null && fileType.isNotBlank()) ".$fileType" else null
