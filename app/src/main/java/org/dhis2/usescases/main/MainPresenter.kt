@@ -97,97 +97,105 @@ class MainPresenter(
     private var singleProgramNavigationDone = AtomicBoolean(false)
 
     fun init() {
-        preferences.removeValue(Preference.CURRENT_ORG_UNIT)
-        disposable.add(
-            repository
-                .user()
-                .map { username(it) }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.renderUsername(it) },
-                    { Timber.e(it) },
-                ),
-        )
+        try {
+            preferences.removeValue(Preference.CURRENT_ORG_UNIT)
+            disposable.add(
+                repository
+                    .user()
+                    .map { username(it) }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { view.renderUsername(it) },
+                        { Timber.e(it) },
+                    ),
+            )
 
-        disposable.add(
-            repository
-                .defaultCatCombo()
-                .subscribeOn(schedulerProvider.io())
-                .subscribe(
-                    { categoryCombo ->
-                        preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo?.uid())
-                    },
-                    { Timber.e(it) },
-                ),
-        )
+            disposable.add(
+                repository
+                    .defaultCatCombo()
+                    .subscribeOn(schedulerProvider.io())
+                    .subscribe(
+                        { categoryCombo ->
+                            preferences.setValue(DEFAULT_CAT_COMBO, categoryCombo?.uid())
+                        },
+                        { Timber.e(it) },
+                    ),
+            )
 
-        disposable.add(
-            repository
-                .defaultCatOptCombo()
-                .subscribeOn(schedulerProvider.io())
-                .subscribe(
-                    { categoryOptionCombo ->
-                        preferences.setValue(
-                            PREF_DEFAULT_CAT_OPTION_COMBO,
-                            categoryOptionCombo?.uid(),
-                        )
-                    },
-                    { Timber.e(it) },
-                ),
-        )
-        trackDhis2Server()
+            disposable.add(
+                repository
+                    .defaultCatOptCombo()
+                    .subscribeOn(schedulerProvider.io())
+                    .subscribe(
+                        { categoryOptionCombo ->
+                            preferences.setValue(
+                                PREF_DEFAULT_CAT_OPTION_COMBO,
+                                categoryOptionCombo?.uid(),
+                            )
+                        },
+                        { Timber.e(it) },
+                    ),
+            )
+            trackDhis2Server()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     fun initFilters() {
-        disposable.add(
-            Flowable
-                .just(filterRepository.homeFilters())
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filters ->
-                        if (filters.isEmpty()) {
-                            view.hideFilters()
-                        } else {
-                            view.setFilters(filters)
-                        }
-                    },
-                    { Timber.e(it) },
-                ),
-        )
+        try {
+            disposable.add(
+                Flowable
+                    .just(filterRepository.homeFilters())
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { filters ->
+                            if (filters.isEmpty()) {
+                                view.hideFilters()
+                            } else {
+                                view.setFilters(filters)
+                            }
+                        },
+                        { Timber.e(it) },
+                    ),
+            )
 
-        disposable.add(
-            filterManager
-                .asFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { filterManager -> view.updateFilters(filterManager.totalFilters) },
-                    { Timber.e(it) },
-                ),
-        )
+            disposable.add(
+                filterManager
+                    .asFlowable()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { filterManager -> view.updateFilters(filterManager.totalFilters) },
+                        { Timber.e(it) },
+                    ),
+            )
 
-        disposable.add(
-            filterManager.periodRequest
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { periodRequest -> view.showPeriodRequest(periodRequest.first) },
-                    { Timber.e(it) },
-                ),
-        )
+            disposable.add(
+                filterManager.periodRequest
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { periodRequest -> view.showPeriodRequest(periodRequest.first) },
+                        { Timber.e(it) },
+                    ),
+            )
 
-        disposable.add(
-            filterManager
-                .ouTreeFlowable()
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
-                .subscribe(
-                    { view.openOrgUnitTreeSelector() },
-                    { Timber.e(it) },
-                ),
-        )
+            disposable.add(
+                filterManager
+                    .ouTreeFlowable()
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe(
+                        { view.openOrgUnitTreeSelector() },
+                        { Timber.e(it) },
+                    ),
+            )
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     fun trackDhis2Server() {
@@ -323,11 +331,15 @@ class MainPresenter(
 
     fun onDataSuccess() {
         launch(dispatcherProvider.io()) {
-            userManager.d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(WAS_INITIAL_SYNC_DONE)
-                .blockingSet(TRUE)
+            try {
+                userManager.d2
+                    .dataStoreModule()
+                    .localDataStore()
+                    .value(WAS_INITIAL_SYNC_DONE)
+                    .blockingSet(TRUE)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
     }
 
