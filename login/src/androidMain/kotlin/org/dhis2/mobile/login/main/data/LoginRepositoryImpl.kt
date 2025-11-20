@@ -95,6 +95,16 @@ class LoginRepositoryImpl(
         isNetworkAvailable: Boolean,
     ) = withContext(dispatcher.io) {
         try {
+            val isSecondAccount =
+                d2
+                    .userModule()
+                    .accountManager()
+                    .getAccounts()
+                    .count() == 1
+            if (isSecondAccount) {
+                deleteCryptographicKey()
+                cryptographyManager.deleteInvalidKey()
+            }
             d2.userModule().blockingLogIn(username, password, serverUrl)
             kotlin.Result.success(Unit)
         } catch (e: Exception) {
@@ -122,6 +132,10 @@ class LoginRepositoryImpl(
                 )
             }
         }
+
+    private fun deleteCryptographicKey() {
+        preferences.removeValue(BIOMETRIC_CREDENTIALS)
+    }
 
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
