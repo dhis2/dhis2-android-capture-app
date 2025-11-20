@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.ui.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextRange
@@ -122,12 +124,10 @@ internal fun ServerValidationContent(
             autoCompleteList = availableServers,
             displayQRCapturedIcon = false,
             autoCompleteItemSelected = { selectedServer ->
-                selectedServer?.let { server = TextFieldValue(it, TextRange(it.length)) }
-                focusManager.clearFocus()
+                focusManager.moveFocus(FocusDirection.Next)
             },
             onValueChanged = {
                 server = it ?: TextFieldValue()
-                inputFocusState = InputShellState.FOCUSED
             },
             imeAction = ImeAction.Done,
             onNextClicked = {
@@ -153,6 +153,7 @@ internal fun ServerValidationContent(
             Button(
                 modifier =
                     Modifier
+                        .focusable()
                         .weight(1f)
                         .testTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG),
                 enabled = enabled,

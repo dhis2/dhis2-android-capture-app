@@ -14,32 +14,41 @@ import java.io.IOException
 @SuppressLint("Recycle")
 @Composable
 actual fun filePicker(onResult: (String?) -> Unit): FilePicker {
-    val contentResolver = LocalContext.current.contentResolver
+    val context = LocalContext.current
+    val contentResolver = context.contentResolver
 
     val launcher =
         rememberLauncherForActivityResult(
             ActivityResultContracts.GetContent(),
         ) { uri ->
             uri?.let {
-                val fileType =
-                    with(contentResolver) {
-                        MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
-                    }
-                val suffix = if (fileType != null && fileType.isNotBlank()) ".$fileType" else null
-                val file = File.createTempFile("importedDb", suffix)
-                val inputStream = contentResolver.openInputStream(uri)!!
                 try {
-                    FileOutputStream(file, false).use { outputStream ->
-                        var read: Int
-                        val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
-                        while (inputStream.read(bytes).also { read = it } != -1) {
-                            outputStream.write(bytes, 0, read)
+                    val fileType =
+                        with(contentResolver) {
+                            MimeTypeMap.getSingleton().getExtensionFromMimeType(getType(uri))
                         }
+                    val suffix = getFileSuffix(fileType)
+                    val file = File.createTempFile("importedDb", suffix, context.cacheDir)
+
+                    val inputStream = contentResolver.openInputStream(uri)
+                    if (inputStream != null) {
+                        inputStream.use { ins ->
+                            FileOutputStream(file, false).use { outputStream ->
+                                var read: Int
+                                val bytes = ByteArray(DEFAULT_BUFFER_SIZE)
+                                while (ins.read(bytes).also { read = it } != -1) {
+                                    outputStream.write(bytes, 0, read)
+                                }
+                            }
+                        }
+                        onResult(file.absolutePath)
+                    } else {
+                        onResult(null)
                     }
                 } catch (e: IOException) {
                     Timber.e("Failed to load file: %s", e.message.toString())
+                    onResult(null)
                 }
-                onResult(file.path)
             } ?: onResult(null)
         }
 
@@ -47,3 +56,5 @@ actual fun filePicker(onResult: (String?) -> Unit): FilePicker {
         launcher.launch("*/*")
     }
 }
+
+fun getFileSuffix(fileType: String?): String? = if (fileType != null && fileType.isNotBlank()) ".$fileType" else null

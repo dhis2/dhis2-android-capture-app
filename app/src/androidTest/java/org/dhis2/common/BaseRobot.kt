@@ -2,8 +2,10 @@ package org.dhis2.common
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.content.Context
 import android.content.Context.ACTIVITY_SERVICE
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithText
@@ -12,10 +14,11 @@ import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.ViewInteraction
-import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.util.TreeIterables
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.UiDevice
 import org.hamcrest.Matcher
 import java.lang.Thread.sleep
@@ -29,7 +32,27 @@ open class BaseRobot {
 
     fun closeKeyboard() {
         try {
-            onView(isRoot()).perform(closeSoftKeyboard())
+            val instrumentation = getInstrumentation()
+            instrumentation.runOnMainSync {
+                // Try to find a resumed Activity to obtain a window token
+                val activity = try {
+                    ActivityLifecycleMonitorRegistry.getInstance()
+                        .getActivitiesInStage(
+                            Stage.RESUMED
+                        )
+                        .firstOrNull()
+                } catch (_: Throwable) {
+                    null
+                }
+
+                val context = activity ?: return@runOnMainSync
+                val view = context.currentFocus ?: context.window?.decorView
+                val imm =
+                    context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                if (view != null && imm != null) {
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+            }
         } catch (_: Exception) {
             // Ignore keyboard close failures during cleanup
             // This can happen if the activity is already finishing or doesn't have focus

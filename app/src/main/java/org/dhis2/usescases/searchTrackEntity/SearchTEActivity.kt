@@ -20,10 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment.Companion.forProgram
 import io.reactivex.functions.Consumer
+import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.clipWithRoundedCorners
@@ -593,6 +597,15 @@ class SearchTEActivity :
         viewModel.refreshData.observe(this) {
             if (currentContent == Content.MAP) {
                 binding.toolbarProgress.show()
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.mapResults.collect {
+                    if (currentContent == Content.MAP) {
+                        hideToolbarProgressBar()
+                    }
+                }
             }
         }
     }

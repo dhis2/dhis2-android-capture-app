@@ -159,13 +159,21 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkCarouselTEICardInfo(firstName: String) {
-        composeTestRule.waitForIdle()
+        // Wait for the carousel to appear
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_CAROUSEL"), TIMEOUT)
         composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
             .assertIsDisplayed()
+        // Wait for at least one MAP_ITEM to be rendered
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_ITEM"), TIMEOUT)
+        // Wait extra time for data to populate in the cards
+        composeTestRule.waitForIdle()
+        // Finally assert that the text is displayed
         composeTestRule.onNode(
             hasAnyAncestor(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                    and hasText(firstName, true), useUnmergedTree = true
+                    and hasText(firstName, ignoreCase = true, substring = true), 
+            useUnmergedTree = true
         ).assertIsDisplayed()
     }
 

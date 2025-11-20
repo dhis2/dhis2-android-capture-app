@@ -22,8 +22,8 @@ updates:
       gradle-updates:
         patterns:
           - "*"                       # Group all Gradle updates into one PR
-      update types:
-        - "patch"
+        update-types:
+          - "patch"
 
   # GitHub Actions updates (optional)
   - package-ecosystem: "github-actions"

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="empty_relationships">ບໍ່ມີຄວາມສຳພັນ, ຄລິກ \"+\" ເພື່ອເພີ່ມໃໝ່</string>
+    <string name="relationship">ຄວາມສໍາພັນ</string>
     <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
     <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
     <string name="show_more">ສະແດງໃຫ້ເຫັນຫຼາຍຂຶ້ນ</string>

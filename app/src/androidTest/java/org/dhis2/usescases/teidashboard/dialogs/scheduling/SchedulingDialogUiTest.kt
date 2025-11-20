@@ -11,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.dhis2.commons.data.EventCreationType
 import org.dhis2.composetable.test.TestActivity
+import org.dhis2.usescases.BaseTest
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCatCombo
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventCategory
 import org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models.EventDate
@@ -27,7 +28,7 @@ import org.mockito.Mockito.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class SchedulingDialogUiTest {
+class SchedulingDialogUiTest : BaseTest() {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<TestActivity>()
@@ -38,7 +39,7 @@ class SchedulingDialogUiTest {
 
 
     @Before
-    fun setUp() {
+    override fun setUp() {
         whenever(viewModel.eventDate).thenReturn(MutableStateFlow(EventDate(label = "Date")))
         whenever(viewModel.eventCatCombo).thenReturn(
             MutableStateFlow(
@@ -81,6 +82,7 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
+        composeTestRule.waitForIdle()
 
         val eventLabel = programStages.first().displayEventLabel() ?: "event"
         composeTestRule.onNodeWithText("Schedule next $eventLabel?")
@@ -114,6 +116,8 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
+        composeTestRule.waitForIdle()
+
         composeTestRule.onNodeWithText("Schedule next event?").assertExists()
         composeTestRule.onNodeWithText("Program stage").assertExists()
     }
@@ -142,7 +146,6 @@ class SchedulingDialogUiTest {
             }
         }
         composeTestRule.onNodeWithText("No").performClick()
-
         composeTestRule.onNodeWithText("Program stage").assertDoesNotExist()
         composeTestRule.onNodeWithText("Date").assertDoesNotExist()
         composeTestRule.onNodeWithText("CatCombo *").assertDoesNotExist()
@@ -176,12 +179,11 @@ class SchedulingDialogUiTest {
 
         composeTestRule.onAllNodesWithTag("INPUT_DROPDOWN").onFirst().performClick()
         composeTestRule.waitUntilExactlyOneExists(hasTestTag("INPUT_DROPDOWN_MENU_ITEM_1"))
-        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag(
             testTag = "INPUT_DROPDOWN_MENU_ITEM_1",
             useUnmergedTree = true
         ).performClick()
-
+        composeTestRule.waitForIdle()
         verify(viewModel).updateStage(programStages[1])
     }
 
@@ -208,7 +210,7 @@ class SchedulingDialogUiTest {
             ) {
             }
         }
-
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("YES_NO_OPTIONS").assertDoesNotExist()
     }
 }

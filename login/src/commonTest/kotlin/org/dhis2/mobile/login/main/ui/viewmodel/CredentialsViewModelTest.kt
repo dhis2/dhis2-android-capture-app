@@ -1,6 +1,7 @@
 package org.dhis2.mobile.login.main.ui.viewmodel
 
 import app.cash.turbine.test
+import coil3.PlatformContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -16,12 +17,13 @@ import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
+import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
-import org.dhis2.mobile.login.main.ui.states.LoginState
+import org.dhis2.mobile.login.main.ui.state.LoginState
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.GetIsSessionLockedUseCase
 import org.junit.After
@@ -31,6 +33,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -47,6 +50,7 @@ class CredentialsViewModelTest {
     private val getBiometricInfo: GetBiometricInfo = mock()
     private val getHasOtherAccounts: GetHasOtherAccounts = mock()
     private val loginUser: LoginUser = mock()
+    private val loginOutUser: LogOutUser = mock()
     private val biometricLogin: BiometricLogin = mock()
     private val openIdLogin: OpenIdLogin = mock()
     private val updateTrackingPermission: UpdateTrackingPermission = mock()
@@ -266,6 +270,82 @@ class CredentialsViewModelTest {
             verify(navigator).navigate(eq(LoginScreenState.Accounts), any())
         }
 
+    @Test
+    fun `GIVEN biometrics login starts WHEN result is success THEN login starts`() =
+        runTest {
+            val platformContext = mock<PlatformContext>()
+            initViewModel(
+                username = "Joe",
+            )
+
+            with(platformContext) {
+                val testPassword = "test_password"
+
+                whenever(getAvailableUsernames()) doReturn emptyList()
+                whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+                whenever(getHasOtherAccounts.invoke()) doReturn false
+                whenever(getIsSessionLockedUseCase()) doReturn false
+
+                whenever(biometricLogin.invoke()) doReturn Result.success(testPassword)
+                whenever(loginUser.invoke(any(), any(), any(), any())) doReturn
+                    LoginResult.Success(
+                        true,
+                        false,
+                    )
+
+                viewModel.credentialsScreenState.test {
+                    awaitItem()
+                    awaitItem()
+                    viewModel.onBiometricsClicked()
+                    testDispatcher.scheduler.advanceUntilIdle()
+                    val updatedPasswordState = awaitItem()
+                    assertEquals(testPassword, updatedPasswordState.credentialsInfo.password)
+                    verify(loginUser).invoke(
+                        serverUrl = "https://test.server.org",
+                        username = "Joe",
+                        password = testPassword,
+                        isNetworkAvailable = true,
+                    )
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
+    @Test
+    fun `GIVEN biometrics login starts WHEN result is failure THEN error is shown`() =
+        runTest {
+            val platformContext = mock<PlatformContext>()
+            initViewModel(
+                username = "Joe",
+            )
+
+            with(platformContext) {
+                whenever(getAvailableUsernames()) doReturn emptyList()
+                whenever(getBiometricInfo(any())) doReturn BiometricsInfo(true, false)
+                whenever(getHasOtherAccounts.invoke()) doReturn false
+                whenever(getIsSessionLockedUseCase()) doReturn false
+                val exceptionMessage = "This is an error"
+                whenever(biometricLogin.invoke()) doReturn Result.failure(Exception(exceptionMessage))
+
+                viewModel.credentialsScreenState.test {
+                    awaitItem()
+                    awaitItem()
+                    viewModel.onBiometricsClicked()
+                    testDispatcher.scheduler.advanceUntilIdle()
+                    val finalState = awaitItem()
+                    assertEquals(exceptionMessage, finalState.errorMessage)
+                    assertFalse(finalState.displayBiometricsDialog)
+                    verify(loginUser, never()).invoke(
+                        serverUrl = any(),
+                        username = any(),
+                        password = any(),
+                        isNetworkAvailable = any(),
+                    )
+                    cancelAndIgnoreRemainingEvents()
+                }
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
@@ -279,6 +359,7 @@ class CredentialsViewModelTest {
                 getBiometricInfo,
                 getHasOtherAccounts,
                 loginUser,
+                loginOutUser,
                 biometricLogin,
                 openIdLogin,
                 updateTrackingPermission,
@@ -291,6 +372,7 @@ class CredentialsViewModelTest {
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
                 oidcInfo = null,
+                false,
             )
     }
 }
