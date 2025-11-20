@@ -17,9 +17,9 @@
     <string name="format_error">Định dạng không chính xác</string>
     <string name="input_not_supported">Không được hỗ trợ</string>
     <string name="completion_dialog_title">Mọi thứ đều ổn</string>
-    <string name="completion_dialog_description">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
+    <string name="completion_dialog_description">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
     <string name="validation_success_title">Mọi thứ đều ổn</string>
-    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
+    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="complete">Hoàn tất</string>
     <string name="saved">Đã lưu!</string>
@@ -28,7 +28,7 @@
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Đã lưu và Hoàn tất!</string>
     <string name="error_on_complete_dataset">Đã xảy ra lỗi khi hoàn tất sự kiện.</string>
-    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không\?</string>
+    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
     <string name="no">Không</string>
     <string name="yes">Có</string>
     <string name="error">Lỗi</string>

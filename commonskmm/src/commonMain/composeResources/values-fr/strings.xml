@@ -57,7 +57,7 @@
     <string name="not_now">Pas maintenant</string>
     <string name="save_anyway">Enregistrer quand même</string>
     <string name="keep_editing">Continuer l’édition</string>
-    <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet\?</string>
+    <string name="event_can_be_completed">Voulez-vous marquer ce formulaire comme complet?</string>
     <string name="discard_go_back">Si vous quittez maintenant, toutes les informations du formulaire seront supprimées.</string>
     <string name="field_errors_not_saved">Certains champs contiennent des erreurs et ils ne sont pas enregistrés.</string>
     <string name="fields_mandatory_missing">Certains champs obligatoires manquent et le formulaire ne peut pas être enregistré.</string>

@@ -7,7 +7,7 @@
     <string name="action_done">Terminado</string>
     <string name="input_coordinate_latitude">Latitud</string>
     <string name="input_coordinate_longitude">Longitud</string>
-    <string name="mark_dataset_complete">¿Quiere completar también el set de datos\?</string>
+    <string name="mark_dataset_complete">¿Quiere completar también el set de datos?</string>
     <string name="not_now">Ahora no</string>
     <string name="complete">Completar</string>
     <string name="saved">¡Guardado!</string>
@@ -15,7 +15,7 @@
     <string name="field_required">Si introduce un valor, tendrá que completar toda la fila para poder marcar como Completado el Data Set.</string>
     <string name="ok">Correcto</string>
     <string name="dataset_saved_completed">¡Guardado y completado!</string>
-    <string name="run_validation_rules">¿Quieree validar la calidad de los datos\?</string>
+    <string name="run_validation_rules">¿Quieree validar la calidad de los datos?</string>
     <string name="no">No</string>
     <string name="yes">Sí</string>
     <string name="error">Error</string>

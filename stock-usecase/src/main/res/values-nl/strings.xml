@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">Alleen voor ICRC-personeelsleden</string>
     <string name="username">Gebruikersnaam</string>
     <string name="password">Wachtwoord</string>
-    <string name="forgot_password">Wachtwoord vergeten\?</string>
+    <string name="forgot_password">Wachtwoord vergeten?</string>
 
     <string name="recent_activities_loading_message">Recente activiteiten laden&#8230;</string>
     <string name="recent_activities_empty_message">U moet nog enige activiteit uitvoeren</string>
@@ -82,15 +82,15 @@
     <string name="mandatory_facility_selection">        Het faciliteitsveld moet worden ingevuld voordat u verder kunt gaan    </string>
     <string name="mandatory_distributed_to_selection">        Het veld \"Gedistribueerd naar\" moet zijn ingevuld voordat u verder kunt gaan    </string>
     <string name="mandatory_transaction_date_selection">        Het veld \"Gedistribueerd naar\" moet zijn ingevuld voordat u verder kunt gaan    </string>
-    <string name="previous_page_lose_data_warning">        Weet u zeker dat u terug wilt naar het vorige scherm\?        U verliest de zojuist ingevoerde gegevens als u besluit door te gaan.    </string>
+    <string name="previous_page_lose_data_warning">        Weet u zeker dat u terug wilt naar het vorige scherm?        U verliest de zojuist ingevoerde gegevens als u besluit door te gaan.    </string>
     <string name="transaction_completed">        De transactie is succesvol afgerond!    </string>
     <string name="transaction_cancelled">        De transactie is succesvol geannuleerd!    </string>
-    <string name="force_sync_confirmation_message">        Weet u zeker dat u synchronisatie wilt forceren\?    </string>
-    <string name="logout_confirmation_message">Weet u zeker dat u wilt uitloggen\?</string>
+    <string name="force_sync_confirmation_message">        Weet u zeker dat u synchronisatie wilt forceren?    </string>
+    <string name="logout_confirmation_message">Weet u zeker dat u wilt uitloggen?</string>
 
-    <string name="remove_correction_item_confirmation_message">        Weet u zeker dat u de invoer voor de correctie van \"%1$s permanent wilt verwijderen\"\?        Deze actie kan niet ongedaan gemaakt worden.    </string>
-    <string name="remove_distribution_item_confirmation_message">        Weet u zeker dat u het item voor de distributie van \"%1$s permanent wilt verwijderen\"\?        Deze actie kan niet ongedaan gemaakt worden.    </string>
-    <string name="remove_discard_item_confirmation_message">        Weet u zeker dat u de invoer voor het weggooien van \"%1$s permanent wilt verwijderen\"\?        Deze actie kan niet ongedaan gemaakt worden.    </string>
+    <string name="remove_correction_item_confirmation_message">        Weet u zeker dat u de invoer voor de correctie van \"%1$s permanent wilt verwijderen\"?        Deze actie kan niet ongedaan gemaakt worden.    </string>
+    <string name="remove_distribution_item_confirmation_message">        Weet u zeker dat u het item voor de distributie van \"%1$s permanent wilt verwijderen\"?        Deze actie kan niet ongedaan gemaakt worden.    </string>
+    <string name="remove_discard_item_confirmation_message">        Weet u zeker dat u de invoer voor het weggooien van \"%1$s permanent wilt verwijderen\"?        Deze actie kan niet ongedaan gemaakt worden.    </string>
 
     <plurals name="items_found">
         <item quantity="one">%d item</item>
@@ -133,7 +133,7 @@
     <string name="select_language">Selecteer uw gewenste taal</string>
 
     <string name="restart_later">Later opnieuw opstarten</string>
-    <string name="confirm_app_restart_message">        De toepassing moet opnieuw worden gestart om de wijzigingen door te voeren, maar        alle niet-opgeslagen wijzigingen gaan verloren.\n\nWilt u doorgaan met de herstart\?    </string>
+    <string name="confirm_app_restart_message">        De toepassing moet opnieuw worden gestart om de wijzigingen door te voeren, maar        alle niet-opgeslagen wijzigingen gaan verloren.\n\nWilt u doorgaan met de herstart?    </string>
     <string name="language_change_dialog_title">Bevestig opnieuw opstarten</string>
     <string name="scan_canceled">Scan geannuleerd!</string>
     <string name="logout_error_message">        Er is een fout opgetreden tijdens het uitloggen. Probeer het later opnieuw.    </string>
