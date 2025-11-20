@@ -8,6 +8,7 @@ import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.SECURE_PASS
 import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
@@ -94,6 +95,16 @@ class LoginRepositoryImpl(
         isNetworkAvailable: Boolean,
     ) = withContext(dispatcher.io) {
         try {
+            val isSecondAccount =
+                d2
+                    .userModule()
+                    .accountManager()
+                    .getAccounts()
+                    .count() == 1
+            if (isSecondAccount) {
+                deleteCryptographicKey()
+                cryptographyManager.deleteInvalidKey()
+            }
             d2.userModule().blockingLogIn(username, password, serverUrl)
             kotlin.Result.success(Unit)
         } catch (e: Exception) {
@@ -121,6 +132,10 @@ class LoginRepositoryImpl(
                 )
             }
         }
+
+    private fun deleteCryptographicKey() {
+        preferences.removeValue(BIOMETRIC_CREDENTIALS)
+    }
 
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
