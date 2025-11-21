@@ -32,7 +32,7 @@ abstract class BaseLogin(
     }
 
     private suspend fun checkDeleteBiometrics() {
-        if (repository.numberOfAccounts() >= 1) {
+        if (repository.numberOfAccounts() >= 2) {
             repository.deleteBiometricCredentials()
         }
     }
