@@ -16,6 +16,7 @@ abstract class BaseLogin(
             if (result.isSuccess) {
                 repository.updateAvailableUsers(username)
                 repository.updateServerUrls(serverUrl)
+                checkDeleteBiometrics()
             }
             LoginResult.Success(
                 displayTrackingMessage = repository.displayTrackingMessage(),
@@ -28,5 +29,11 @@ abstract class BaseLogin(
         }
 
         else -> LoginResult.Error(result.exceptionOrNull()?.message)
+    }
+
+    private suspend fun checkDeleteBiometrics() {
+        if (repository.numberOfAccounts() >= 1) {
+            repository.deleteBiometricCredentials()
+        }
     }
 }

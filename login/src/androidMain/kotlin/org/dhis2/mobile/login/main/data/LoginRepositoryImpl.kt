@@ -95,16 +95,6 @@ class LoginRepositoryImpl(
         isNetworkAvailable: Boolean,
     ) = withContext(dispatcher.io) {
         try {
-            val isSecondAccount =
-                d2
-                    .userModule()
-                    .accountManager()
-                    .getAccounts()
-                    .count() == 1
-            if (isSecondAccount) {
-                deleteCryptographicKey()
-                cryptographyManager.deleteInvalidKey()
-            }
             d2.userModule().blockingLogIn(username, password, serverUrl)
             kotlin.Result.success(Unit)
         } catch (e: Exception) {
@@ -132,10 +122,6 @@ class LoginRepositoryImpl(
                 )
             }
         }
-
-    private fun deleteCryptographicKey() {
-        preferences.removeValue(BIOMETRIC_CREDENTIALS)
-    }
 
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
@@ -236,6 +222,15 @@ class LoginRepositoryImpl(
                 .isNotEmpty()
         }
 
+    override suspend fun numberOfAccounts(): Int =
+        withContext(dispatcher.io) {
+            d2
+                .userModule()
+                .accountManager()
+                .getAccounts()
+                .size
+        }
+
     override suspend fun updateTrackingPermissions(granted: Boolean) {
         withContext(dispatcher.io) {
             d2
@@ -297,6 +292,13 @@ class LoginRepositoryImpl(
                     }
             } ?: kotlin.Result.failure(Exception("No biometrics found"))
         }
+
+    override suspend fun deleteBiometricCredentials() {
+        withContext(dispatcher.io) {
+            preferences.removeValue(BIOMETRIC_CREDENTIALS)
+            cryptographyManager.deleteInvalidKey()
+        }
+    }
 
     override suspend fun loginWithOpenId(
         serverUrl: String,
