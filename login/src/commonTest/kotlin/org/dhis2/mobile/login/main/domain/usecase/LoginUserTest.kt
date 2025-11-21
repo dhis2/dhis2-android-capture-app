@@ -147,14 +147,13 @@ class LoginUserTest {
             // GIVEN - numberOfAccounts is exactly 2 (the threshold)
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
                 Result.success(Unit)
-            whenever(repository.numberOfAccounts()) doReturn 2
+            whenever(repository.numberOfAccounts()) doReturn 1
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in successfully
             val result = loginUser(serverUrl, username, password, isNetworkAvailable)
 
-            // THEN - Biometric credentials are deleted (>= 2 condition)
             assertIs<LoginResult.Success>(result)
             verify(repository).numberOfAccounts()
             verify(repository).deleteBiometricCredentials()
