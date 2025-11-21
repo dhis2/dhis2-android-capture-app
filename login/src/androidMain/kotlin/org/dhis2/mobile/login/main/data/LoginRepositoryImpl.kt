@@ -167,14 +167,7 @@ class LoginRepositoryImpl(
 
     private fun hasEnabledBiometricsPermission(): Boolean =
         try {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(BIOMETRICS_PERMISSION)
-                .blockingGet()
-                ?.value()
-                ?.lowercase()
-                ?.toBooleanStrictOrNull() ?: false
+            preferences.getBoolean(BIOMETRICS_PERMISSION, false)
         } catch (_: Exception) {
             false
         }
@@ -262,11 +255,7 @@ class LoginRepositoryImpl(
 
     override suspend fun updateBiometricsPermissions(granted: Boolean) =
         withContext(dispatcher.io) {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(BIOMETRICS_PERMISSION)
-                .blockingSet(granted.toString())
+            preferences.setValue(BIOMETRICS_PERMISSION, granted)
         }
 
     context(context: PlatformContext)
