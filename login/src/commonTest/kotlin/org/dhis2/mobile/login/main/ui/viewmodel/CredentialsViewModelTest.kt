@@ -346,6 +346,192 @@ class CredentialsViewModelTest {
             }
         }
 
+    @Test
+    fun `GIVEN successful login with no other accounts WHEN user logs in THEN biometric credentials are NOT deleted`() =
+        runTest {
+            // GIVEN - User is logging into their first account (numberOfAccounts = 0)
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn false
+            whenever(getIsSessionLockedUseCase()) doReturn false
+
+            whenever(
+                loginUser.invoke(any(), any(), any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel()
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+                viewModel.updateUsername("user")
+                awaitItem()
+                viewModel.updatePassword("password")
+                awaitItem()
+
+                // WHEN - User logs in successfully
+                viewModel.onLoginClicked()
+
+                // THEN - Login is successful
+                awaitItem() // LoginState.Running
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val finalState = awaitItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+
+                // Verify that the login was successful (which triggers checkDeleteBiometrics)
+                verify(loginUser).invoke(
+                    serverUrl = any(),
+                    username = any(),
+                    password = any(),
+                    isNetworkAvailable = any(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN successful login with one existing account WHEN user logs in to second account THEN biometric credentials are deleted`() =
+        runTest {
+            // GIVEN - User already has one account and is logging into a second one
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn true
+            whenever(getIsSessionLockedUseCase()) doReturn false
+
+            whenever(
+                loginUser.invoke(any(), any(), any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel()
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+                viewModel.updateUsername("secondUser")
+                awaitItem()
+                viewModel.updatePassword("password")
+                awaitItem()
+
+                // WHEN - Second user logs in successfully
+                viewModel.onLoginClicked()
+
+                // THEN - Login is successful
+                awaitItem() // LoginState.Running
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val finalState = awaitItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+
+                // Verify that the login was successful (which triggers checkDeleteBiometrics)
+                verify(loginUser).invoke(
+                    serverUrl = any(),
+                    username = eq("secondUser"),
+                    password = any(),
+                    isNetworkAvailable = any(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN successful login with multiple accounts WHEN user logs in THEN biometric credentials are deleted`() =
+        runTest {
+            // GIVEN - User has multiple accounts
+            whenever(getAvailableUsernames()) doReturn listOf("user1", "user2", "user3")
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn true
+            whenever(getIsSessionLockedUseCase()) doReturn false
+
+            whenever(
+                loginUser.invoke(any(), any(), any(), any()),
+            ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
+
+            initViewModel()
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+                viewModel.updateUsername("user3")
+                awaitItem()
+                viewModel.updatePassword("password")
+                awaitItem()
+
+                // WHEN - User logs in successfully
+                viewModel.onLoginClicked()
+
+                // THEN - Login is successful
+                awaitItem() // LoginState.Running
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                val finalState = awaitItem()
+                assertEquals(LoginState.Enabled, finalState.loginState)
+                assertTrue(finalState.afterLoginActions.isNotEmpty())
+
+                // Verify that the login was successful (which triggers checkDeleteBiometrics)
+                verify(loginUser).invoke(
+                    serverUrl = any(),
+                    username = eq("user3"),
+                    password = any(),
+                    isNetworkAvailable = any(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `GIVEN failed login WHEN user tries to log in THEN biometric credentials are NOT deleted`() =
+        runTest {
+            // GIVEN - User has existing accounts but login will fail
+            val errorMessage = "Invalid credentials"
+
+            whenever(getAvailableUsernames()) doReturn emptyList()
+            whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
+            whenever(getHasOtherAccounts.invoke()) doReturn true
+            whenever(getIsSessionLockedUseCase()) doReturn false
+
+            whenever(
+                loginUser.invoke(any(), any(), any(), any()),
+            ) doReturn LoginResult.Error(errorMessage)
+
+            initViewModel()
+
+            viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
+                awaitItem()
+                awaitItem()
+                viewModel.updateUsername("user")
+                awaitItem()
+                viewModel.updatePassword("wrongPassword")
+                awaitItem()
+
+                // WHEN - User tries to login with wrong credentials
+                viewModel.onLoginClicked()
+
+                // THEN - Login fails
+                awaitItem() // LoginState.Running
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
+
+                val updatedState = awaitItem()
+                assertEquals(errorMessage, updatedState.errorMessage)
+                assertEquals(LoginState.Enabled, updatedState.loginState)
+
+                // Verify login was attempted but failed
+                verify(loginUser).invoke(
+                    serverUrl = any(),
+                    username = any(),
+                    password = any(),
+                    isNetworkAvailable = any(),
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun initViewModel(
         serverName: String? = "Test Server",
         serverUrl: String = "https://test.server.org",
