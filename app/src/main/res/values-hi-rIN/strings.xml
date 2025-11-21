@@ -24,6 +24,7 @@
     <string name="action_share_zero_items">साझा करें</string>
     <!-- Input hints -->
     <string name="search">सर्च करें / खोजें</string>
+    <string name="event_completed">इवेंट कंप्लीटेड</string>
     <string name="state_error">त्रुटि</string>
     <string name="update">अपडेट करें</string>
     <string name="new_event">नया इवेंट</string>
