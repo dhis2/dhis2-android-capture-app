@@ -19,7 +19,6 @@ import org.dhis2.usescases.teiDashboard.ui.model.TimelineEventsHeaderModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AssistChip
 import org.hisp.dhis.mobile.ui.designsystem.component.CardDetail
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 
 @Composable
@@ -46,15 +45,12 @@ fun TeiDetailDashboard(
                             Modifier
                                 .padding(start = 8.dp, end = 8.dp)
                                 .testTag(INFO_BAR_TEST_TAG + infoBar.type.name),
-                        infoBarData =
-                            InfoBarData(
-                                text = infoBar.text,
-                                icon = infoBar.icon,
-                                color = infoBar.textColor,
-                                backgroundColor = infoBar.backgroundColor,
-                                actionText = infoBar.actionText,
-                                onClick = infoBar.onActionClick,
-                            ),
+                        text = infoBar.text,
+                        icon = infoBar.icon,
+                        textColor = infoBar.textColor,
+                        backgroundColor = infoBar.backgroundColor,
+                        actionText = infoBar.actionText ?: "",
+                        onActionClick = infoBar.onActionClick,
                     )
                 }
             }

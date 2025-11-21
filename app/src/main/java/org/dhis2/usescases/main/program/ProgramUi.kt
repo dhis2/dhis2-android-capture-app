@@ -69,7 +69,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ExpandableItemColumn
 import org.hisp.dhis.mobile.ui.designsystem.component.ImageCardData
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
@@ -196,37 +195,34 @@ private fun DownloadMessage(
                 ),
         ) {
             InfoBar(
-                infoBarData =
-                    InfoBarData(
-                        text = downloadInfoText(downLoadState),
-                        icon = {
-                            Icon(
-                                imageVector =
-                                    when {
-                                        downLoadState?.running == false ->
-                                            Icons.Outlined.Celebration
+                text = downloadInfoText(downLoadState),
+                icon = {
+                    Icon(
+                        imageVector =
+                            when {
+                                downLoadState?.running == false ->
+                                    Icons.Outlined.Celebration
 
-                                        else -> Icons.Outlined.Info
-                                    },
-                                contentDescription = "error",
-                                tint =
-                                    when {
-                                        downLoadState?.running == false ->
-                                            SurfaceColor.CustomGreen
-
-                                        else -> TextColor.OnSurfaceLight
-                                    },
-                            )
-                        },
-                        color =
+                                else -> Icons.Outlined.Info
+                            },
+                        contentDescription = "error",
+                        tint =
                             when {
                                 downLoadState?.running == false ->
                                     SurfaceColor.CustomGreen
 
                                 else -> TextColor.OnSurfaceLight
                             },
-                        backgroundColor = SurfaceColor.Surface,
-                    ),
+                    )
+                },
+                textColor =
+                    when {
+                        downLoadState?.running == false ->
+                            SurfaceColor.CustomGreen
+
+                        else -> TextColor.OnSurfaceLight
+                    },
+                backgroundColor = SurfaceColor.Surface,
             )
             if (downLoadState?.running == true) {
                 ProgressIndicator(
@@ -373,19 +369,16 @@ fun DownloadMedia() {
 fun NoAccessMessage() {
     InfoBar(
         modifier = Modifier.padding(Spacing.Spacing16),
-        infoBarData =
-            InfoBarData(
-                text = stringResource(id = R.string.no_data_access),
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.ErrorOutline,
-                        contentDescription = "error",
-                        tint = SurfaceColor.Warning,
-                    )
-                },
-                color = SurfaceColor.Warning,
-                backgroundColor = SurfaceColor.WarningContainer,
-            ),
+        text = stringResource(id = R.string.no_data_access),
+        icon = {
+            Icon(
+                imageVector = Icons.Outlined.ErrorOutline,
+                contentDescription = "error",
+                tint = SurfaceColor.Warning,
+            )
+        },
+        textColor = SurfaceColor.Warning,
+        backgroundColor = SurfaceColor.WarningContainer,
     )
 }
 

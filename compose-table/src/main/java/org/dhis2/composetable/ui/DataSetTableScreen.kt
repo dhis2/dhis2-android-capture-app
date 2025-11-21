@@ -51,7 +51,6 @@ import org.dhis2.composetable.ui.extensions.collapseIfExpanded
 import org.dhis2.composetable.ui.extensions.expandIfCollapsed
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 
@@ -311,22 +310,17 @@ fun DataSetTableScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     InfoBar(
-                        infoBarData =
-                            InfoBarData(
-                                text = emptyTablesText ?: "",
-                                icon = {
-                                    Icon(
-                                        imageVector = Icons.Outlined.ErrorOutline,
-                                        contentDescription = "warning",
-                                        tint = AdditionalInfoItemColor.WARNING.color,
-                                    )
-                                },
-                                color = AdditionalInfoItemColor.WARNING.color,
-                                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                                actionText = null,
-                                onClick = {},
-                            ),
-                        Modifier.testTag(EMPTY_TABLE_TEXT_TAG),
+                        modifier = Modifier.testTag(EMPTY_TABLE_TEXT_TAG),
+                        text = emptyTablesText ?: "",
+                        textColor = AdditionalInfoItemColor.WARNING.color,
+                        backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                        icon = {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "warning",
+                                tint = AdditionalInfoItemColor.WARNING.color,
+                            )
+                        },
                     )
                 }
             } else {
