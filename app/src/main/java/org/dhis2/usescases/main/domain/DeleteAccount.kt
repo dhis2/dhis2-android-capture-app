@@ -6,7 +6,6 @@ import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.data.HomeRepository
-import org.dhis2.usescases.settings.deleteCache
 import java.io.File
 
 class DeleteAccount(

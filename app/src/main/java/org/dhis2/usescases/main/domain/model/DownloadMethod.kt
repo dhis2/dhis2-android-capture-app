@@ -1,13 +1,11 @@
 package org.dhis2.usescases.main.domain.model
 
-import android.net.Uri
-
 sealed interface DownloadMethod {
     data class Url(
-        val uri: Uri,
+        val url: String,
     ) : DownloadMethod
 
     data class File(
-        val uri: Uri,
+        val path: String,
     ) : DownloadMethod
 }

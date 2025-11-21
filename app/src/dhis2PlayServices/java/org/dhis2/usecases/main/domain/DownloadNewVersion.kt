@@ -10,7 +10,7 @@ class DownloadNewVersion(
     override suspend fun invoke(input: Unit): Result<DownloadMethod> =
         try {
             val url = versionRepository.getUrl()
-            url?.toUri()?.let {
+            url?.let {
                 Result.success(DownloadMethod.Url(it))
             } ?: Result.failure(Exception("No url provided"))
         } catch (domainError: DomainError) {
