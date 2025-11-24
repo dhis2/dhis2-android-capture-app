@@ -14,6 +14,7 @@
     <string name="show_less">显示较少</string>
     <string name="cancel">取消</string>
     <string name="remove">移除</string>
+    <string name="empty_search_attributes_message">没有配置可使用的搜索字段。\n请联系您的管理员。</string>
     <string name="clear_search">清除搜索</string>
     <string name="search">搜索</string>
     <string name="optional">可选项描述</string>
