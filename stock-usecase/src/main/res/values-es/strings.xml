@@ -182,7 +182,7 @@
     <string name="restart_later">Reiniciar más tarde</string>
     <string name="confirm_app_restart_message">
         La aplicación necesita reiniciar para que se realicen los cambios, sin embargo,
-        los cambios no guardados se perderán.\n\n¿Quieres continuar con el reinicio??
+        los cambios no guardados se perderán.\n\n¿Quieres continuar con el reinicio?
     </string>
     <string name="language_change_dialog_title">Confirmar reinicio</string>
     <string name="scan_canceled">¡Escaneo cancelado!</string>
