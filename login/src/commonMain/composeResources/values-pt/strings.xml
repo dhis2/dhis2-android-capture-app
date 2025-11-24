@@ -4,11 +4,11 @@
     <string name="action_next">Próximo</string>
     <string name="two_fa_is_on">A autenticação de dois factores está activada.</string>
     <string name="biometrics_login_title">Início de sessão rápido</string>
-    <string name="biometrics_login_text">Gostaria de utilizar a sua impressão digital ou outro método biométrico para iniciar sessão\?</string>
+    <string name="biometrics_login_text">Gostaria de utilizar a sua impressão digital ou outro método biométrico para iniciar sessão?</string>
     <string name="username_hint">Nome de utilizador</string>
     <string name="password_hint">Palavra-passe</string>
     <string name="openid_or">Ou</string>
-    <string name="tracking_title">Quer nos ajudar a melhorar esta aplicação\?</string>
+    <string name="tracking_title">Quer nos ajudar a melhorar esta aplicação?</string>
     <string name="privacy_policy">política de privacidade.</string>
     <string name="action_no_now">Agora não</string>
     <string name="action_yes">sim</string>

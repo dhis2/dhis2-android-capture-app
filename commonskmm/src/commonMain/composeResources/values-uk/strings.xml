@@ -57,7 +57,7 @@
     <string name="saved">Збережено!</string>
     <string name="not_now">Не зараз</string>
     <string name="keep_editing">Продовжити редагування</string>
-    <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену\?</string>
+    <string name="event_can_be_completed">Ви бажаєте позначити цю форму як завершену?</string>
     <string name="discard_go_back">Якщо Ви зараз вийдете, уся інформація у формі буде відхилена.</string>
     <string name="field_errors_not_saved">Деякі поля містять помилки і не були збережені.</string>
     <string name="fields_mandatory_missing">Деякі обов’язкові поля не заповнено, і форму неможливо зберегти.</string>
