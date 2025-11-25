@@ -10,6 +10,7 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
+import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
@@ -54,8 +55,8 @@ class InitialScreenNavigationIntegrationTest {
     private val navigator: Navigator = mock()
     private val accountRepository: AccountRepository = mock()
     private val sessionRepository: SessionRepository = mock()
-    private val importDatabase: ImportDatabase = mock()
-    private val validateServer: ValidateServer = mock()
+
+    private val loginRepository: LoginRepository = mock()
     private val appLinkNavigation: AppLinkNavigation = mock()
     private val networkStatusProvider: NetworkStatusProvider = mock()
 
@@ -65,11 +66,19 @@ class InitialScreenNavigationIntegrationTest {
 
     private lateinit var getInitialScreen: GetInitialScreen
 
+    private lateinit var importDatabase: ImportDatabase
+
+    private lateinit var validateServer: ValidateServer
+
+
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         whenever(appLinkNavigation.appLink).thenReturn(mockAppLinkFlow)
         whenever(networkStatusProvider.connectionStatus).thenReturn(mockNetworkStatusFlow)
+
+        importDatabase = ImportDatabase(repository = loginRepository)
+        validateServer = ValidateServer(repository = loginRepository)
     }
 
     @Test
