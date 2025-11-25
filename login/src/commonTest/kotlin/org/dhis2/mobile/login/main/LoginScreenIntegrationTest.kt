@@ -5,6 +5,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
@@ -19,6 +20,7 @@ import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.data.SessionRepository
+import org.junit.After
 import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
@@ -57,6 +59,11 @@ class LoginScreenIntegrationTest {
         importDatabase = ImportDatabase(repository = loginRepository)
         validateServer = ValidateServer(repository = loginRepository)
         getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     /**
