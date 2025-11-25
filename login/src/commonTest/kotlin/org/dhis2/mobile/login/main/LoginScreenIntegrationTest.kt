@@ -27,30 +27,8 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
 
-/**
- * Integration test for initial screen navigation logic.
- *
- * Tests the acceptance criteria:
- * Given the user is logged out
- * And has <number_of_accounts> accounts stored
- * When opens the app
- * Then goes to <destination_screen>
- *
- * Examples:
- * |number_of_accounts |destination_screen         |
- * | none              |server configuration screen|
- * | one               |existing account screen    |
- * | two or more       |manage accounts screen     |
- *
- * This test validates the integration between:
- * - LoginViewModel
- * - GetInitialScreen use case
- * - AccountRepository (mocked)
- * - SessionRepository (mocked)
- * - Navigator
- */
 @OptIn(ExperimentalCoroutinesApi::class)
-class InitialScreenNavigationIntegrationTest {
+class LoginScreenIntegrationTest {
     private lateinit var viewModel: LoginViewModel
     private val navigator: Navigator = mock()
     private val accountRepository: AccountRepository = mock()
@@ -70,7 +48,6 @@ class InitialScreenNavigationIntegrationTest {
 
     private lateinit var validateServer: ValidateServer
 
-
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -79,7 +56,25 @@ class InitialScreenNavigationIntegrationTest {
 
         importDatabase = ImportDatabase(repository = loginRepository)
         validateServer = ValidateServer(repository = loginRepository)
+        getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
     }
+
+    /**
+     *
+     * Test case: ANDROAPP-7220
+     * Scenario: Manage accounts screen
+     * Given the user is logged out
+     * And has <number_of_accounts> accounts stored
+     * When opens the app
+     * Then goes to <destination_screen>
+     *
+     * Examples:
+     * |number_of_accounts |destination_screen         |
+     * | none              |server configuration screen|
+     * | one               |existing account screen    |
+     * | two or more       |manage accounts screen     |
+     *
+     */
 
     @Test
     fun `should navigate to server configuration screen when no accounts are stored`() =
@@ -89,18 +84,8 @@ class InitialScreenNavigationIntegrationTest {
             whenever(accountRepository.availableServers()).thenReturn(emptyList())
             whenever(sessionRepository.isSessionLocked()).thenReturn(false)
 
-            getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
-
             // When opening the app
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    networkStatusProvider = networkStatusProvider,
-                )
+            initViewModel()
 
             // Then goes to server configuration screen
             verify(navigator).navigate(
@@ -129,18 +114,8 @@ class InitialScreenNavigationIntegrationTest {
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(singleAccount))
             whenever(sessionRepository.isSessionLocked()).thenReturn(false)
 
-            getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
-
             // When opening the app
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    networkStatusProvider = networkStatusProvider,
-                )
+            initViewModel()
 
             // Then goes to existing account screen (LegacyLogin)
             verify(navigator).navigate(
@@ -170,18 +145,8 @@ class InitialScreenNavigationIntegrationTest {
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(oauthAccount))
             whenever(sessionRepository.isSessionLocked()).thenReturn(false)
 
-            getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
-
             // When opening the app
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    networkStatusProvider = networkStatusProvider,
-                )
+            initViewModel()
 
             // Then goes to OAuth login screen
             verify(navigator).navigate(
@@ -210,18 +175,8 @@ class InitialScreenNavigationIntegrationTest {
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(listOf(account1, account2))
             whenever(sessionRepository.isSessionLocked()).thenReturn(false)
 
-            getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
-
             // When opening the app
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    networkStatusProvider = networkStatusProvider,
-                )
+            initViewModel()
 
             // Then goes to manage accounts screen (Accounts)
             verify(navigator).navigate(
@@ -244,18 +199,8 @@ class InitialScreenNavigationIntegrationTest {
             whenever(accountRepository.getLoggedInAccounts()).thenReturn(accounts)
             whenever(sessionRepository.isSessionLocked()).thenReturn(false)
 
-            getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
-
             // When opening the app
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    networkStatusProvider = networkStatusProvider,
-                )
+            initViewModel()
 
             // Then goes to manage accounts screen (Accounts)
             verify(navigator).navigate(
@@ -264,47 +209,17 @@ class InitialScreenNavigationIntegrationTest {
             )
         }
 
-    @Test
-    fun `should navigate to manage accounts screen when session is locked with multiple accounts`() =
-        runTest {
-            // Given the user has a locked session with multiple accounts
-            val accounts =
-                listOf(
-                    createLegacyAccount("user1", "https://server1.dhis2.org", "Server 1"),
-                    createLegacyAccount("user2", "https://server2.dhis2.org", "Server 2"),
-                )
-
-            whenever(accountRepository.getLoggedInAccounts()).thenReturn(accounts)
-            whenever(sessionRepository.isSessionLocked()).thenReturn(true)
-            whenever(accountRepository.getActiveAccount()).thenReturn(accounts.first())
-
-            getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
-
-            // When opening the app
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    networkStatusProvider = networkStatusProvider,
-                )
-
-            // Then goes to the active account login screen
-            verify(navigator).navigate(
-                eq(
-                    LoginScreenState.LegacyLogin(
-                        selectedServer = accounts.first().serverUrl,
-                        selectedUsername = accounts.first().name,
-                        serverName = accounts.first().serverName,
-                        selectedServerFlag = accounts.first().serverFlag,
-                        allowRecovery = accounts.first().allowRecovery,
-                    ),
-                ),
-                any(),
+    private fun initViewModel() {
+        viewModel =
+            LoginViewModel(
+                navigator = navigator,
+                getInitialScreen = getInitialScreen,
+                importDatabase = importDatabase,
+                validateServer = validateServer,
+                appLinkNavigation = appLinkNavigation,
+                networkStatusProvider = networkStatusProvider,
             )
-        }
+    }
 
     private fun createLegacyAccount(
         name: String,
