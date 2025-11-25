@@ -14,7 +14,7 @@ class CheckSingleNavigation(
             if (homeItemCount == 1) {
                 Result.success(homeRepository.singleHomeItemData())
             } else {
-                Result.failure(Exception("No programs"))
+                Result.failure(DomainError.ConfigurationError("Expected exactly one home item"))
             }
         } catch (domainError: DomainError) {
             Result.failure(domainError)

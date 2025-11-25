@@ -9,7 +9,7 @@ import org.dhis2.usescases.main.data.HomeRepository
 
 typealias AccountCount = Int
 
-class LogOutUser(
+class LogoutUser(
     private val workManagerController: WorkManagerController,
     private val syncStatusController: SyncStatusController,
     private val filterManager: FilterManager,
