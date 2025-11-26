@@ -167,6 +167,26 @@ fun PinBottomSheet(
     val pinLength = 4
     val isLoading = uiState is PinState.Loading
 
+    fun onPrimaryClick() {
+        viewModel.onPinComplete(
+            pin = currentPin.replace("-", ""),
+            mode = mode,
+        )
+    }
+
+    fun onSecondaryClick() {
+        viewModel.onForgotPin()
+    }
+
+    val primaryButtonIsEnabled =
+        currentPin
+            .replace(
+                "-",
+                "",
+            ).length == pinLength && !isLoading
+
+    val secondaryButtonIsEnabled = !isLoading
+
     BottomSheetShell(
         uiState =
             BottomSheetShellUIState(
@@ -233,35 +253,21 @@ fun PinBottomSheet(
                 WindowWidthSizeClass.Compact ->
                     VerticalButtonBlock(
                         primaryButton = {
-                            Button(
+                            PinPrimaryButton(
                                 modifier = Modifier.fillMaxWidth(),
-                                enabled =
-                                    currentPin
-                                        .replace(
-                                            "-",
-                                            "",
-                                        ).length == pinLength && !isLoading,
-                                style = ButtonStyle.FILLED,
-                                text = primaryButtonText,
-                                onClick = {
-                                    viewModel.onPinComplete(
-                                        pin = currentPin.replace("-", ""),
-                                        mode = mode,
-                                    )
-                                },
+                                enabled = primaryButtonIsEnabled,
+                                buttonText = primaryButtonText,
+                                onClick = ::onPrimaryClick,
                             )
                         },
                         secondaryButton =
                             secondaryButtonText?.let { buttonText ->
                                 {
-                                    Button(
+                                    PinSecondaryButton(
                                         modifier = Modifier.fillMaxWidth(),
-                                        enabled = !isLoading,
-                                        style = ButtonStyle.OUTLINED,
-                                        text = buttonText,
-                                        onClick = {
-                                            viewModel.onForgotPin()
-                                        },
+                                        enabled = secondaryButtonIsEnabled,
+                                        buttonText = buttonText,
+                                        onClick = ::onSecondaryClick,
                                     )
                                 }
                             },
@@ -270,35 +276,21 @@ fun PinBottomSheet(
                 else ->
                     HorizontalButtonBlock(
                         primaryButton = {
-                            Button(
+                            PinPrimaryButton(
                                 modifier = Modifier.weight(1f),
-                                enabled =
-                                    currentPin
-                                        .replace(
-                                            "-",
-                                            "",
-                                        ).length == pinLength && !isLoading,
-                                style = ButtonStyle.FILLED,
-                                text = primaryButtonText,
-                                onClick = {
-                                    viewModel.onPinComplete(
-                                        pin = currentPin.replace("-", ""),
-                                        mode = mode,
-                                    )
-                                },
+                                enabled = primaryButtonIsEnabled,
+                                buttonText = primaryButtonText,
+                                onClick = ::onPrimaryClick,
                             )
                         },
                         secondaryButton =
                             secondaryButtonText?.let { buttonText ->
                                 {
-                                    Button(
+                                    PinSecondaryButton(
                                         modifier = Modifier.weight(1f),
-                                        enabled = !isLoading,
-                                        style = ButtonStyle.OUTLINED,
-                                        text = buttonText,
-                                        onClick = {
-                                            viewModel.onForgotPin()
-                                        },
+                                        enabled = secondaryButtonIsEnabled,
+                                        buttonText = buttonText,
+                                        onClick = ::onSecondaryClick,
                                     )
                                 }
                             },
@@ -347,4 +339,36 @@ private fun HorizontalButtonBlock(
         secondaryButton?.invoke(this)
         primaryButton()
     }
+}
+
+@Composable
+private fun PinPrimaryButton(
+    modifier: Modifier,
+    enabled: Boolean,
+    buttonText: String,
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = modifier,
+        enabled = enabled,
+        style = ButtonStyle.FILLED,
+        text = buttonText,
+        onClick = onClick,
+    )
+}
+
+@Composable
+private fun PinSecondaryButton(
+    modifier: Modifier,
+    enabled: Boolean,
+    buttonText: String,
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = modifier,
+        enabled = enabled,
+        style = ButtonStyle.OUTLINED,
+        text = buttonText,
+        onClick = onClick,
+    )
 }
