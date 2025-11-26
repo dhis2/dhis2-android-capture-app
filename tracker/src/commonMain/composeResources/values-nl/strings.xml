@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Er zijn geen relaties, klik op \"+\" om een nieuwe toe te voegen.</string>
+    <string name="empty_relationships">Er zijn geen relaties, klik op "+" om een nieuwe toe te voegen.</string>
     <string name="relationship">Relatie</string>
     <string name="no_data">Geen gegevens</string>
     <string name="syncing">Synchroniseren...</string>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="action_next">Далі</string>
-    <string name="username_hint">Ім\'я користувача</string>
+    <string name="username_hint">Ім'я користувача</string>
     <string name="password_hint">Пароль</string>
     <string name="openid_or">Або</string>
     <string name="tracking_title">Ви хочете допомогти нам покращити цю програму?</string>

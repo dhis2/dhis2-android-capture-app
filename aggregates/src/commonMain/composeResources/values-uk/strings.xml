@@ -16,7 +16,7 @@
     <string name="not_now">Не зараз</string>
     <string name="complete">Завершити</string>
     <string name="saved">Збережено!</string>
-    <string name="field_mandatory">Обов\'язкові поля не заповнені. Будь ласка, заповніть їх, щоб завершити набір даних.</string>
+    <string name="field_mandatory">Обов'язкові поля не заповнені. Будь ласка, заповніть їх, щоб завершити набір даних.</string>
     <string name="field_required">Якщо Ви встановлюєте значення, то щодо усього рядка потрібно вказати всі значення, щоб завершити набір даних.</string>
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Збережено та завершено!</string>

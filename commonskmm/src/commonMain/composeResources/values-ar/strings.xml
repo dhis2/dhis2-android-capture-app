@@ -20,7 +20,7 @@
     <string name="choose_ou">إختر وحدة تنظيمية</string>
     <string name="field_is_mandatory">هذا الحقل إلزامي</string>
     <string name="missing_warning_fields_completed_events">لديك بعض الرسائل التحذيرية.</string>
-    <string name="missing_warning_fields_events">لديك بعض الرسائل التحذيرية.\nهل تريد وضع علامة \"مكتمل\" على هذا النموذج؟</string>
+    <string name="missing_warning_fields_events">لديك بعض الرسائل التحذيرية.\nهل تريد وضع علامة "مكتمل" على هذا النموذج؟</string>
     <string name="required">مطلوب</string>
     <string name="date">التاريخ</string>
     <string name="hint_year">السنوات</string>
