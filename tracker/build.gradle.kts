@@ -5,12 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
-repositories {
-    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-    mavenCentral()
-    google()
-}
-
 kotlin {
     androidTarget {
         compilerOptions {

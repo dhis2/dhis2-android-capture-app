@@ -1,9 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    repositories {
-        maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-        google()
-    }
     dependencies {
         classpath(libs.gradlePlugin)
         classpath(libs.kotlinPlugin)
@@ -60,17 +56,6 @@ allprojects {
                     useVersion("0.8.10")
             }
         }
-    }
-
-    repositories {
-        mavenLocal()
-        maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-        google()
-        mavenCentral()
-        maven {
-            url = uri("https://maven.google.com")
-        }
-        maven { url = uri("https://jitpack.io") }
     }
 
     apply(plugin = "org.jlleitschuh.gradle.ktlint")

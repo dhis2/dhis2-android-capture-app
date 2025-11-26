@@ -9,10 +9,6 @@ plugins {
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
-repositories {
-    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-}
-
 base {
     archivesName.set("psm-v" + libs.versions.vName.get())
 }
