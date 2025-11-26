@@ -1,7 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+        maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
         google()
     }
     dependencies {
@@ -64,6 +65,8 @@ allprojects {
 
     repositories {
         mavenLocal()
+        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+        maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
         maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
         google()
         mavenCentral()

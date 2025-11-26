@@ -17,6 +17,8 @@ plugins {
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
 repositories {
+    maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+    maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
     maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
     mavenCentral()
 }
