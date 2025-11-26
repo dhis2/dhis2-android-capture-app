@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Нет никаких связей, нажмите \"+\", чтобы добавить новую.</string>
+    <string name="empty_relationships">Нет никаких связей, нажмите "+", чтобы добавить новую.</string>
     <string name="relation_creation_date">Связь создана</string>
     <string name="remove_relationship_title">Удалить %1$s?</string>
     <string name="remove_relationship_desc">%1$s будет удален. Это действие нельзя отменить.</string>

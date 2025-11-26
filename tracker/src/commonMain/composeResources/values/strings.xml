@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">There are no relationships, click \"+\" to add a new one.</string>
+    <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
     <string name="relation_creation_date">Relation created on</string>
     <string name="remove_relationship_title">Remove %1$s?</string>
     <string name="remove_relationship_desc">The %1$s will be deleted. This action cannot be undone.</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Det er ingen relasjoner, klikk \"+\" for å legge til en ny.</string>
+    <string name="empty_relationships">Det er ingen relasjoner, klikk "+" for å legge til en ny.</string>
     <string name="relationship">Relasjon</string>
     <string name="no_data">Ingen data</string>
     <string name="syncing">Synkroniserer...</string>
