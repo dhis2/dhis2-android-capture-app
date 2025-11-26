@@ -16,7 +16,7 @@
     <string name="sign_in_to_your_account">Войдите в свою учетную запись</string>
     <string name="username">Имя пользователя</string>
     <string name="password">Пароль</string>
-    <string name="forgot_password">Забыли пароль?</string>
+    <string name="forgot_password">Забыли пароль\?</string>
 
     <string name="recent_activities_loading_message">Загрузка последних действий...</string>
     <!-- Sync -->
@@ -55,11 +55,6 @@
 
     <!-- Stock table -->
     <string name="item">Пункт</string>
-    <string name="force_sync_confirmation_message">
-        Вы уверены, что хотите принудительно провести синхронизацию?
-    </string>
-    <string name="logout_confirmation_message">Вы уверены, что хотите выйти из системы?</string>
-
     <string name="prompt_email">адрес электронной почты</string>
     <string name="prompt_password">Пароль</string>
     <string name="action_sign_in">Войдите или зарегистрируйтесь</string>

@@ -24,15 +24,15 @@
     <string name="icrc_staff_members">Faqat ICRC xodimlar uchun</string>
     <string name="username">Фойдаланувчи исми</string>
     <string name="password">Parol</string>
-    <string name="forgot_password">Parolni unutdingizmi?</string>
+    <string name="forgot_password">Parolni unutdingizmi\?</string>
 
-    <string name="recent_activities_loading_message">Oxirgi harakatlar yuklanmoqda &amp; # 8230;</string>
+    <string name="recent_activities_loading_message">Oxirgi harakatlar yuklanmoqda & # 8230;</string>
     <string name="recent_activities_empty_message">Siz hali hech qanday faoliyatni amalga oshirmayapsiz</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Metadata sinxronlanmoqda &amp; # 8230;</string>
+    <string name="metadata_sync_in_progress">Metadata sinxronlanmoqda & # 8230;</string>
     <string name="metadata_sync_error">Meta-maʼlumotlarni sinxronlash tugallanmadi</string>
-    <string name="data_sync_in_progress">Ma\'lumotlarni sinxronlash &amp; # 8230;</string>
+    <string name="data_sync_in_progress">Ma\'lumotlarni sinxronlash & # 8230;</string>
     <string name="data_sync_error">Maʼlumotlarni sinxronlash tugallanmadi</string>
     <string name="metadata_sync_completed">Metadata sinxronlash tugallandi!</string>
     <string name="sync_completed">Sinxronlash tugallandi!</string>
@@ -42,7 +42,7 @@
     <string name="review">Ko‘rib chiqish</string>
 
     <string name="scan_barcode">Shtrix-kodni skanerlash</string>
-    <string name="scanning">Skanerlash &amp; # 8230;</string>
+    <string name="scanning">Skanerlash & # 8230;</string>
     <string name="search">Elementni qidirish</string>
     <string name="search_placeholder">Излаш...</string>
     <string name="delete">Oʼchirib tashlash</string>
@@ -87,23 +87,8 @@
 </string>
     <string name="mandatory_facility_selection">Davom etishdan oldin tashkilot maydoni to\'ldirilishi kerak</string>
     <string name="mandatory_transaction_date_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
-    <string name="previous_page_lose_data_warning">Oldingi ekranga qaytmoqchimisiz\? 
-Davom etishga qaror qilsangiz, kiritilgan ma\'lumotlarni yo\'qotasiz.</string>
     <string name="transaction_completed">Tranzaksiya muvaffaqiyatli yakunlandi!</string>
     <string name="transaction_cancelled">Tranzaksiya muvaffaqiyatli bekor qilindi!</string>
-    <string name="force_sync_confirmation_message">Haqiqatan ham sinxronlashni majbur qilmoqchimisiz\?</string>
-    <string name="logout_confirmation_message">Haqiqatan ham tizimdan chiqmoqchimisiz\?</string>
-
-    <string name="remove_correction_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tuzatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
-Bu amalni ortga qaytarib bo‘lmaydi..
-    </string>
-    <string name="remove_distribution_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tarqatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
-Bu amalni ortga qaytarib bo‘lmaydi..
-    </string>
-    <string name="remove_discard_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tanlangan yozuvni butunlay oʻchirib tashlamoqchimisiz? 
-Bu amalni ortga qaytarib bo‘lmaydi..
-    </string>
-
     <plurals name="items_found">
         <item quantity="other">%d нарсалар</item>
     </plurals>
@@ -148,8 +133,6 @@ Bu amalni ortga qaytarib bo‘lmaydi..
     <string name="select_language">O\'zingiz xohlagan tilni tanlang</string>
 
     <string name="restart_later">Keyinroq qayta ishga tushirish</string>
-    <string name="confirm_app_restart_message">O\'zgarishlar amalga oshirilishi uchun ilovani qayta ishga tushirish kerak, ammo, 
-saqlanmagan oʻzgarishlar yoʻqoladi.\n\n Qayta ishga tushirishni davom ettirmoqchimisiz\?</string>
     <string name="language_change_dialog_title">Qayta ishga tushirishni tasdiqlang</string>
     <string name="scan_canceled">Skanerlash bekor qilindi!</string>
     <string name="logout_error_message">Chiqish paytida xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.</string>

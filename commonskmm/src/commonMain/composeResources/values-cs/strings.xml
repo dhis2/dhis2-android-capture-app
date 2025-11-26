@@ -206,6 +206,7 @@
     <string name="database_import_failed">Import databáze se nezdařil</string>
     <string name="invalid_file">Neplatný soubor</string>
     <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>
+    <string name="openid_login_cancelled">Ověřování zrušeno</string>
     <!--*******************->
        END OF D2 Error Messages
     **********************-->
