@@ -100,7 +100,7 @@ class MainModule(
         preferencesProvider: PreferenceProvider,
         cryptographyManager: CryptographicActions,
         domainErrorMapper: DomainErrorMapper,
-        ): HomeRepository =
+    ): HomeRepository =
         HomeRepositoryImpl(
             d2,
             charts,
