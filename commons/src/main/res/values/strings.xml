@@ -323,7 +323,7 @@
     <string name="biweek_period_span_default_label" translatable="false">%d %s - %d %s</string>
     <string name="group_event_label_by_stage">Group %s by stage</string>
     <string name="show_event_label_timeline">Show %s timeline</string>
-    <string name="empty_tei_event_label_add">There are no %s registered, click "+" to add a new one.</string>
+    <string name="empty_tei_event_label_add">There are no %s registered, click \"+\" to add a new one.</string>
     <string name="empty_tei_event_label_no_add">There are no %s registered.</string>
     <string name="enrollment_date_edition_warning_event_label">There are planned %s that won\'t be re-scheduled</string>
     <string name="enrollment_reopen">re-open</string>
@@ -341,4 +341,7 @@
     <string name="period_yearly_title">Year</string>
     <string name="period_financial_year_title">Financial year</string>
     <string name="no_periods">No periods available\n</string>
+    <string name="database_import_failed">Database import failed</string>
+    <string name="invalid_file">Invalid file</string>
+    <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
 </resources>

@@ -12,7 +12,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class ScheduledEventPresenterImplTest {
-
     lateinit var presenter: ScheduledEventPresenterImpl
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val view: ScheduledEventContract.View = mock()

@@ -9,7 +9,5 @@ import org.hisp.dhis.android.core.D2
 class UserModule {
     @Provides
     @PerUser
-    fun userRepository(d2: D2?): UserRepository {
-        return UserRepositoryImpl(d2!!)
-    }
+    fun userRepository(d2: D2?): UserRepository = UserRepositoryImpl(d2!!)
 }

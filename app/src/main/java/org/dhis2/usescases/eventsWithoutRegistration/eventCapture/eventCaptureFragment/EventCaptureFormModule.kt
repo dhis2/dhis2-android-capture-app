@@ -4,8 +4,6 @@ import dagger.Module
 import dagger.Provides
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.form.ui.provider.FormResultDialogProvider
-import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureContract
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.domain.ReOpenEventUseCase
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.injection.EventDispatchers
@@ -16,7 +14,6 @@ class EventCaptureFormModule(
     val view: EventCaptureFormView,
     val eventUid: String,
 ) {
-
     @Provides
     @PerFragment
     fun providePresenter(
@@ -25,8 +22,8 @@ class EventCaptureFormModule(
         resourceManager: ResourceManager,
         reOpenEventUseCase: ReOpenEventUseCase,
         eventDispatchers: EventDispatchers,
-    ): EventCaptureFormPresenter {
-        return EventCaptureFormPresenter(
+    ): EventCaptureFormPresenter =
+        EventCaptureFormPresenter(
             view,
             activityPresenter,
             d2,
@@ -35,23 +32,6 @@ class EventCaptureFormModule(
             reOpenEventUseCase,
             eventDispatchers,
         )
-    }
-
-    @Provides
-    @PerFragment
-    fun provideResultDialogProvider(
-        resourceProvider: FormResultDialogResourcesProvider,
-    ): FormResultDialogProvider {
-        return FormResultDialogProvider(resourceProvider)
-    }
-
-    @Provides
-    @PerFragment
-    fun provideCompleteEventDialogResourcesProvider(
-        resourceManager: ResourceManager,
-    ): FormResultDialogResourcesProvider {
-        return FormResultDialogResourcesProvider(resourceManager)
-    }
 
     @Provides
     @PerFragment

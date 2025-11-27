@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">还没有现存的关系。点击“+”添加一个新的</string>
+    <string name="relation_creation_date">关系创建于</string>
+    <string name="remove_relationship_title">删除 %1$s?</string>
+    <string name="remove_relationship_desc">%1$s 将被删除。此操作无法撤销。</string>
+    <string name="remove_some_relationships_title">删除 %1$d 所选关系？</string>
+    <string name="remove_some_relationships_desc">%1$d 选中的关系将被删除。此操作无法撤销。</string>
+    <string name="show_number_more">显示 %1$d 更多...</string>
+    <string name="relationship">关系</string>
+    <string name="no_data">无数据</string>
+    <string name="syncing">同步</string>
+    <string name="show_more">显示更多</string>
+    <string name="show_less">显示较少</string>
+    <string name="cancel">取消</string>
+    <string name="remove">移除</string>
+    <string name="clear_search">清除搜索</string>
+    <string name="search">搜索</string>
+    <string name="optional">可选项描述</string>
+
+</resources>

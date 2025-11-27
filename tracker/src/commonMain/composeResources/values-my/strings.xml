@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">အချက်အလက်မရှိပါ။</string>
+    <string name="cancel">ပယ်ဖျက်သည်</string>
+    <string name="remove">ဖယ်ရှားခြင်း</string>
+    <string name="optional">မဖြစ်မနေလုပ်ရန်မလိုပါ။</string>
+
+</resources>

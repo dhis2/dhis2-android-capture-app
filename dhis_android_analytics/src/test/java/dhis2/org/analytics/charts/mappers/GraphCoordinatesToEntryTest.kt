@@ -11,7 +11,6 @@ import java.time.Instant
 import java.util.Date
 
 class GraphCoordinatesToEntryTest {
-
     private val graphToLineData = GraphCoordinatesToEntry()
     private var dailyPeriodPeriod: Long =
         Date.from(Instant.parse("2020-01-02T00:00:00.00Z")).time -
@@ -36,22 +35,20 @@ class GraphCoordinatesToEntryTest {
         assertTrue(result.isEmpty())
     }
 
-    private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
-        return Graph(
+    private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph =
+        Graph(
             "testGraph",
             coordinates.map { SerieData("fieldName", coordinates) },
             null,
             PeriodType.Daily,
             dailyPeriodPeriod,
         )
-    }
 
-    private fun mockedCoordinates(): List<GraphPoint> {
-        return arrayListOf(
+    private fun mockedCoordinates(): List<GraphPoint> =
+        arrayListOf(
             GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), null, GraphFieldValue.Numeric(10f)),
             GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), null, GraphFieldValue.Numeric(20f)),
             GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), null, GraphFieldValue.Numeric(50f)),
             GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), null, GraphFieldValue.Numeric(30f)),
         )
-    }
 }

@@ -18,12 +18,13 @@ class RuleEngineHelper {
         ): RuleEngineContextData {
             debugRuleEngine(rules, ruleVariables, events)
 
-            val ruleEngineContext = RuleEngineContext(
-                rules,
-                ruleVariables,
-                supplementaryData,
-                constants,
-            )
+            val ruleEngineContext =
+                RuleEngineContext(
+                    rules,
+                    ruleVariables,
+                    supplementaryData,
+                    constants,
+                )
 
             return RuleEngineContextData(
                 ruleEngineContext = ruleEngineContext,

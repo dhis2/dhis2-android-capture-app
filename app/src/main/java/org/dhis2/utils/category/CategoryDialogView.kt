@@ -5,7 +5,6 @@ import androidx.paging.PagedList
 import io.reactivex.Observable
 
 interface CategoryDialogView {
-
     fun setTitle(dialogTitle: String)
 
     fun searchSource(): Observable<String>

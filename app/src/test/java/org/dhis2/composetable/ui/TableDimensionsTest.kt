@@ -4,15 +4,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TableDimensionsTest {
-
     @Test
     fun `Should calculate default cell width for different tables`() {
-        val expectedExtraWidth = listOf(
-            100,
-            210 / 2,
-            60 / 3,
-            60 / 4,
-        )
+        val expectedExtraWidth =
+            listOf(
+                100,
+                210 / 2,
+                60 / 3,
+                60 / 4,
+            )
         listOf(
             TestScenario(extraSpacing = 100, totalColumns = 1, hasTotal = false),
             TestScenario(extraSpacing = 210, totalColumns = 1, hasTotal = true),
@@ -21,21 +21,24 @@ class TableDimensionsTest {
         ).forEachIndexed { index, testScenario ->
             val tableDimensions = TableDimensions()
 
-            val tableWidth = tableDimensions.tableWidth(
-                tableId = "tableId",
-                totalColumns = testScenario.totalColumns,
-                hasTotal = testScenario.hasTotal,
-            )
+            val tableWidth =
+                tableDimensions.tableWidth(
+                    tableId = "tableId",
+                    totalColumns = testScenario.totalColumns,
+                    hasTotal = testScenario.hasTotal,
+                )
 
-            val updatedTableDimensions = tableDimensions.copy(
-                totalWidth = tableWidth + testScenario.extraSpacing,
-            )
+            val updatedTableDimensions =
+                tableDimensions.copy(
+                    totalWidth = tableWidth + testScenario.extraSpacing,
+                )
 
-            val cellWidth = updatedTableDimensions.defaultCellWidthWithExtraSize(
-                tableId = "tableId",
-                totalColumns = testScenario.totalColumns,
-                hasExtra = testScenario.hasTotal,
-            )
+            val cellWidth =
+                updatedTableDimensions.defaultCellWidthWithExtraSize(
+                    tableId = "tableId",
+                    totalColumns = testScenario.totalColumns,
+                    hasExtra = testScenario.hasTotal,
+                )
             assertTrue(
                 expectedExtraWidth[index] == cellWidth - updatedTableDimensions.defaultCellWidth,
             )
@@ -128,10 +131,11 @@ class TableDimensionsTest {
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEachIndexed { index, calculatedHeaderCellWidth ->
                 assertTrue(
-                    calculatedHeaderCellWidth == updatedTableDimensions.headerCellWidth(
-                        headerRowColumns[index],
-                        totalColumns,
-                    ),
+                    calculatedHeaderCellWidth ==
+                        updatedTableDimensions.headerCellWidth(
+                            headerRowColumns[index],
+                            totalColumns,
+                        ),
                 )
             }
         }
@@ -163,10 +167,11 @@ class TableDimensionsTest {
             assertTrue(result.rowHeaderCellWidth == updatedTableDimensions.defaultRowHeaderWidth)
             result.headerCellWidth.forEachIndexed { index, calculatedHeaderCellWidth ->
                 assertTrue(
-                    calculatedHeaderCellWidth == updatedTableDimensions.headerCellWidth(
-                        headerRowColumns[index],
-                        totalColumns,
-                    ),
+                    calculatedHeaderCellWidth ==
+                        updatedTableDimensions.headerCellWidth(
+                            headerRowColumns[index],
+                            totalColumns,
+                        ),
                 )
             }
         }
@@ -178,18 +183,20 @@ class TableDimensionsTest {
         hasTotal: Boolean,
         vararg headerRowColumns: Int,
     ): WidthCalculationResult {
-        val cellWidth = tableDimensions.defaultCellWidthWithExtraSize(
-            tableId = "tableId",
-            totalColumns = totalColumns,
-            hasExtra = hasTotal,
-        )
-        val rowHeaderWidth = tableDimensions.defaultRowHeaderWidth
-        val headerCellWidthList = headerRowColumns.map { headerParentRowColumns ->
-            tableDimensions.headerCellWidth(
-                headerRowColumns = headerParentRowColumns,
+        val cellWidth =
+            tableDimensions.defaultCellWidthWithExtraSize(
+                tableId = "tableId",
                 totalColumns = totalColumns,
+                hasExtra = hasTotal,
             )
-        }
+        val rowHeaderWidth = tableDimensions.defaultRowHeaderWidth
+        val headerCellWidthList =
+            headerRowColumns.map { headerParentRowColumns ->
+                tableDimensions.headerCellWidth(
+                    headerRowColumns = headerParentRowColumns,
+                    totalColumns = totalColumns,
+                )
+            }
 
         return WidthCalculationResult(
             cellWidth,

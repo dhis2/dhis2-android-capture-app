@@ -63,6 +63,7 @@
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_MANAGER">Configurações</string>
     <string name="settingTwoFA">Autenticação de dois fatores</string>
+    <string name="settingsTwoFAStatus">Situação</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Data de inscrição</string>

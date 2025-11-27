@@ -9,7 +9,6 @@ import org.junit.Before
 import org.junit.Test
 
 class MapPolygonToFeatureTest {
-
     private lateinit var mapPolygonToFeature: MapPolygonToFeature
     private val boundsGeometry: BoundsGeometry = BoundsGeometry()
 
@@ -25,12 +24,13 @@ class MapPolygonToFeatureTest {
 
     @Test
     fun `Should polygon to feature`() {
-        val coordinates = listOf(
+        val coordinates =
             listOf(
-                listOf(longitude1, latitude1),
-                listOf(longitude2, latitude2),
-            ),
-        )
+                listOf(
+                    listOf(longitude1, latitude1),
+                    listOf(longitude2, latitude2),
+                ),
+            )
 
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
         val result = mapPolygonToFeature.map(geometry, boundsGeometry)

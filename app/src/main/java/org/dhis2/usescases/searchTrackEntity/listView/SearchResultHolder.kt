@@ -12,7 +12,6 @@ class SearchResultHolder(
     val binding: ResultSearchListBinding,
     private val onSearchOutsideProgram: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
-
     init {
         binding.composeView.setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
@@ -20,19 +19,20 @@ class SearchResultHolder(
     }
 
     fun bind(item: SearchResult) {
-        binding.composeView.apply {
-            updateLayoutParams {
-                if (item.shouldDisplayInFullSize()) {
-                    setPadding(0, 160.dp, 0, 0)
+        binding.composeView
+            .apply {
+                updateLayoutParams {
+                    if (item.shouldDisplayInFullSize()) {
+                        setPadding(0, 160.dp, 0, 0)
+                    }
+                }
+            }.setContent {
+                DHIS2Theme {
+                    SearchResultUi(
+                        searchResult = item,
+                        onSearchOutsideClick = onSearchOutsideProgram,
+                    )
                 }
             }
-        }.setContent {
-            DHIS2Theme {
-                SearchResultUi(
-                    searchResult = item,
-                    onSearchOutsideClick = onSearchOutsideProgram,
-                )
-            }
-        }
     }
 }

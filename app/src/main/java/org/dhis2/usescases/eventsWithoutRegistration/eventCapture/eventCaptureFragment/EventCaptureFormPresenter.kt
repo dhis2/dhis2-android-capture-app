@@ -25,10 +25,13 @@ class EventCaptureFormPresenter(
     private val reOpenEventUseCase: ReOpenEventUseCase,
     private val dispatcherProvider: DispatcherProvider,
 ) {
-
     fun showOrHideSaveButton() {
         val isEditable =
-            d2.eventModule().eventService().getEditableStatus(eventUid = eventUid).blockingGet()
+            d2
+                .eventModule()
+                .eventService()
+                .getEditableStatus(eventUid = eventUid)
+                .blockingGet()
 
         when (isEditable) {
             is EventEditableStatus.Editable -> {
@@ -48,20 +51,31 @@ class EventCaptureFormPresenter(
     }
 
     private fun configureNonEditableMessage(eventNonEditableReason: EventNonEditableReason) {
-        val (reason, canBeReOpened) = when (eventNonEditableReason) {
-            EventNonEditableReason.BLOCKED_BY_COMPLETION -> resourceManager.getString(R.string.blocked_by_completion) to canReopen()
-            EventNonEditableReason.EXPIRED -> resourceManager.getString(R.string.edition_expired) to false
-            EventNonEditableReason.NO_DATA_WRITE_ACCESS -> resourceManager.getString(R.string.edition_no_write_access) to false
-            EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE -> resourceManager.getString(R.string.event_date_not_in_orgunit_range) to false
-            EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS -> resourceManager.getString(R.string.edition_no_catcombo_access) to false
-            EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN -> resourceManager.formatWithEnrollmentLabel(
-                d2.eventModule().events().uid(eventUid).blockingGet()?.program(),
-                R.string.edition_enrollment_is_no_open_V2,
-                1,
-            ) to false
+        val (reason, canBeReOpened) =
+            when (eventNonEditableReason) {
+                EventNonEditableReason.BLOCKED_BY_COMPLETION -> resourceManager.getString(R.string.blocked_by_completion) to canReopen()
+                EventNonEditableReason.EXPIRED -> resourceManager.getString(R.string.edition_expired) to false
+                EventNonEditableReason.NO_DATA_WRITE_ACCESS -> resourceManager.getString(R.string.edition_no_write_access) to false
+                EventNonEditableReason.EVENT_DATE_IS_NOT_IN_ORGUNIT_RANGE ->
+                    resourceManager.getString(R.string.event_date_not_in_orgunit_range) to
+                        false
+                EventNonEditableReason.NO_CATEGORY_COMBO_ACCESS -> resourceManager.getString(R.string.edition_no_catcombo_access) to false
+                EventNonEditableReason.ENROLLMENT_IS_NOT_OPEN ->
+                    resourceManager.formatWithEnrollmentLabel(
+                        d2
+                            .eventModule()
+                            .events()
+                            .uid(eventUid)
+                            .blockingGet()
+                            ?.program(),
+                        R.string.edition_enrollment_is_no_open_V2,
+                        1,
+                    ) to false
 
-            EventNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE -> resourceManager.getString(R.string.edition_orgunit_capture_scope) to false
-        }
+                EventNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE ->
+                    resourceManager.getString(R.string.edition_orgunit_capture_scope) to
+                        false
+            }
         view.showNonEditableMessage(reason, canBeReOpened)
     }
 
@@ -83,20 +97,32 @@ class EventCaptureFormPresenter(
         }
     }
 
-    private fun canReopen(): Boolean = getEvent()?.let {
-        it.status() == EventStatus.COMPLETED && hasReopenAuthority()
-    } ?: false
+    private fun canReopen(): Boolean =
+        getEvent()?.let {
+            it.status() == EventStatus.COMPLETED && hasReopenAuthority()
+        } ?: false
 
-    fun getEvent(): Event? {
-        return d2.eventModule().events().uid(eventUid).blockingGet()
-    }
+    fun getEvent(): Event? =
+        d2
+            .eventModule()
+            .events()
+            .uid(eventUid)
+            .blockingGet()
 
-    fun getEventStatus(eventUid: String): EventStatus? {
-        return d2.eventModule().events().uid(eventUid).blockingGet()?.status()
-    }
+    fun getEventStatus(eventUid: String): EventStatus? =
+        d2
+            .eventModule()
+            .events()
+            .uid(eventUid)
+            .blockingGet()
+            ?.status()
 
-    private fun hasReopenAuthority(): Boolean = d2.userModule().authorities()
-        .byName().`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
-        .one()
-        .blockingExists()
+    private fun hasReopenAuthority(): Boolean =
+        d2
+            .userModule()
+            .authorities()
+            .byName()
+            .`in`(AUTH_UNCOMPLETE_EVENT, AUTH_ALL)
+            .one()
+            .blockingExists()
 }

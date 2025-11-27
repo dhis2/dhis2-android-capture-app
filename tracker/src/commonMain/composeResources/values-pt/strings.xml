@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Não há relacionamentos, clique em "+" para adicionar um novo.</string>
+    <string name="relation_creation_date">Relação criada em</string>
+    <string name="remove_relationship_title">Remover %1$s?</string>
+    <string name="remove_relationship_desc">O ficheiro %1$s será eliminado. Esta ação não pode ser anulada.</string>
+    <string name="remove_some_relationships_title">Remover %1$d relacionamentos selecionadas?</string>
+    <string name="remove_some_relationships_desc">Os relacionamentos  %1$d selecionadas serão eliminados. Esta acção não pode ser anulada.</string>
+    <string name="show_number_more">Mostrar %1$d mais...</string>
+    <string name="relationship">Relacionamento</string>
+    <string name="no_data">Sem dados</string>
+    <string name="syncing">Sincronizando...</string>
+    <string name="show_more">Mostre mais</string>
+    <string name="show_less">Mostre menos</string>
+    <string name="cancel">Cancelar</string>
+    <string name="remove">Remover</string>
+    <string name="clear_search">Limpar pesquisa</string>
+    <string name="search">Procurar</string>
+    <string name="optional">Opcional</string>
+
+</resources>

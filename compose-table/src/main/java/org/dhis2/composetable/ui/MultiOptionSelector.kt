@@ -17,25 +17,28 @@ fun MultiOptionSelector(
     onDismiss: () -> Unit,
 ) {
     MultiSelectBottomSheet(
-        items = options.map { option ->
-            CheckBoxData(
-                uid = option.code,
-                checked = cell.value?.split(", ")?.contains(option.name) == true,
-                enabled = cell.editable,
-                textInput = option.name,
-            )
-        },
+        items =
+            options.map { option ->
+                CheckBoxData(
+                    uid = option.code,
+                    checked = cell.value?.split(", ")?.contains(option.name) == true,
+                    enabled = cell.editable,
+                    textInput = option.name,
+                )
+            },
         title = title,
         noResultsFoundString = stringResource(R.string.no_results_found),
         searchToFindMoreString = stringResource(id = R.string.search_to_see_more),
         doneButtonText = stringResource(id = R.string.done),
         onItemsSelected = { checkBoxes ->
-            val checkedCodes = checkBoxes
-                .filter { item -> item.checked }
-                .joinToString(", ") { it.uid }
-            val checkedValues = checkBoxes
-                .filter { item -> item.checked }
-                .joinToString(", ") { it.textInput?.text.orEmpty() }
+            val checkedCodes =
+                checkBoxes
+                    .filter { item -> item.checked }
+                    .joinToString(", ") { it.uid }
+            val checkedValues =
+                checkBoxes
+                    .filter { item -> item.checked }
+                    .joinToString(", ") { it.textInput?.text.orEmpty() }
             onSave(checkedCodes, checkedValues)
         },
         onDismiss = onDismiss,

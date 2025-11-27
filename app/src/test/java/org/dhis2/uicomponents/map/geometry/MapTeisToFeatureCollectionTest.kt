@@ -1,8 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature
@@ -17,7 +14,7 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelatedInfo
 import org.dhis2.maps.model.RelationshipDirection
-import org.dhis2.ui.avatar.AvatarProviderConfiguration
+import org.dhis2.mobile.commons.model.AvatarProviderConfiguration
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
@@ -26,9 +23,11 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.LineString
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 
 class MapTeisToFeatureCollectionTest {
-
     private lateinit var mapTeisToFeatureCollection: MapTeisToFeatureCollection
 
     @Before
@@ -39,12 +38,13 @@ class MapTeisToFeatureCollectionTest {
                 mapPointToFeature = MapPointToFeature(),
                 mapPolygonToFeature = MapPolygonToFeature(),
                 mapPolygonPointToFeature = MapPolygonPointToFeature(),
-                mapRelationshipsToFeatureCollection = MapRelationshipsToFeatureCollection(
-                    mapLineToFeature = MapLineRelationshipToFeature(),
-                    mapPointToFeature = MapPointToFeature(),
-                    mapPolygonToFeature = MapPolygonToFeature(),
-                    bounds = GetBoundingBox(),
-                ),
+                mapRelationshipsToFeatureCollection =
+                    MapRelationshipsToFeatureCollection(
+                        mapLineToFeature = MapLineRelationshipToFeature(),
+                        mapPointToFeature = MapPointToFeature(),
+                        mapPolygonToFeature = MapPolygonToFeature(),
+                        bounds = GetBoundingBox(),
+                    ),
             )
     }
 
@@ -56,8 +56,11 @@ class MapTeisToFeatureCollectionTest {
         val featureCollectionResults = result.first[TEI]
 
         val pointFeatureResult = featureCollectionResults?.features()?.get(0)?.geometry() as Point
-        val uid = featureCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val uid =
+            featureCollectionResults
+                .features()
+                ?.get(0)
+                ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         val image = featureCollectionResults.features()?.get(0)?.getStringProperty(TEI_IMAGE)
         assertThat(pointFeatureResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(pointFeatureResult.latitude(), `is`(POINT_LATITUDE))
@@ -101,14 +104,20 @@ class MapTeisToFeatureCollectionTest {
 
         val teiPointFeatureResult =
             featureTeiCollectionResults?.features()?.get(0)?.geometry() as Point
-        val uid = featureTeiCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val uid =
+            featureTeiCollectionResults
+                .features()
+                ?.get(0)
+                ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(teiPointFeatureResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(teiPointFeatureResult.latitude(), `is`(POINT_LATITUDE))
         assertThat(uid, `is`(TEI_UID))
 
-        val enrollmentUid = featureEnrollmentCollectionResults?.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.ENROLLMENT_UID)
+        val enrollmentUid =
+            featureEnrollmentCollectionResults
+                ?.features()
+                ?.get(0)
+                ?.getStringProperty(MapTeisToFeatureCollection.ENROLLMENT_UID)
         val enrollmentPointFeatureResult =
             featureEnrollmentCollectionResults?.features()?.get(0)?.geometry() as Point
         assertThat(enrollmentPointFeatureResult.longitude(), `is`(POINT_LONGITUDE_ENROLLMENT))
@@ -126,16 +135,22 @@ class MapTeisToFeatureCollectionTest {
 
         val featureTeiResult =
             featureTeiCollectionResults?.features()?.get(0)?.geometry() as Point
-        val uidTeiFeature = featureTeiCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val uidTeiFeature =
+            featureTeiCollectionResults
+                .features()
+                ?.get(0)
+                ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(featureTeiResult.longitude(), `is`(POINT_LONGITUDE))
         assertThat(featureTeiResult.latitude(), `is`(POINT_LATITUDE))
         assertThat(uidTeiFeature, `is`(TEI_UID))
 
         val featureTeiEnrollmentResult =
             featureEnrollmentCollectionResults?.features()?.get(1)?.geometry() as Point
-        val uidTeiEnrollmentFeature = featureEnrollmentCollectionResults.features()?.get(1)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val uidTeiEnrollmentFeature =
+            featureEnrollmentCollectionResults
+                .features()
+                ?.get(1)
+                ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureTeiEnrollmentResult.longitude(),
             `is`(POINT_LONGITUDE_ENROLLMENT),
@@ -148,8 +163,11 @@ class MapTeisToFeatureCollectionTest {
 
         val featureEnrollmentFirstResult =
             featureEnrollmentCollectionResults.features()?.get(0)?.geometry() as Polygon
-        val featureEnrollmentFirstUid = featureEnrollmentCollectionResults.features()?.get(0)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val featureEnrollmentFirstUid =
+            featureEnrollmentCollectionResults
+                .features()
+                ?.get(0)
+                ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureEnrollmentFirstResult.coordinates()[0][0].longitude(),
             `is`(POINT_LONGITUDE_ENROLLMENT),
@@ -162,8 +180,11 @@ class MapTeisToFeatureCollectionTest {
 
         val featureEnrollmentSecondResult =
             featureEnrollmentCollectionResults.features()?.get(1)?.geometry() as Point
-        val featureEnrollmentSecondUid = featureEnrollmentCollectionResults.features()?.get(1)
-            ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
+        val featureEnrollmentSecondUid =
+            featureEnrollmentCollectionResults
+                .features()
+                ?.get(1)
+                ?.getStringProperty(MapTeisToFeatureCollection.TEI_UID)
         assertThat(
             featureEnrollmentSecondResult.longitude(),
             `is`(POINT_LONGITUDE_ENROLLMENT),
@@ -175,159 +196,180 @@ class MapTeisToFeatureCollectionTest {
         assertThat(featureEnrollmentSecondUid, `is`(TEI_UID))
     }
 
-    private fun createSearchTeiModelListWithEnrollmentPolygon(): List<MapItemModel> {
-        return listOf(
+    private fun createSearchTeiModelListWithEnrollmentPolygon(): List<MapItemModel> =
+        listOf(
             MapItemModel(
                 uid = TEI_UID,
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    TEI_UID_IMAGE,
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        TEI_UID_IMAGE,
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
-                geometry = GeometryHelper.createPointGeometry(
-                    listOf(POINT_LONGITUDE, POINT_LATITUDE),
-                ),
-                relatedInfo = RelatedInfo(
-                    enrollment = RelatedInfo.Enrollment(
-                        uid = ENROLLMENT_UID,
-                        geometry = GeometryHelper.createPolygonGeometry(
-                            listOf(
-                                listOf(
-                                    listOf(
-                                        POINT_LONGITUDE_ENROLLMENT,
-                                        POINT_LATITUDE_ENROLLMENT,
-                                    ),
-                                ),
-                                listOf(
-                                    listOf(
-                                        POINT_LONGITUDE_ENROLLMENT,
-                                        POINT_LATITUDE_ENROLLMENT,
-                                    ),
-                                ),
-                                listOf(
-                                    listOf(
-                                        POINT_LONGITUDE_ENROLLMENT,
-                                        POINT_LATITUDE_ENROLLMENT,
-                                    ),
-                                ),
-                            ),
-                        ),
+                geometry =
+                    GeometryHelper.createPointGeometry(
+                        listOf(POINT_LONGITUDE, POINT_LATITUDE),
                     ),
-                ),
+                relatedInfo =
+                    RelatedInfo(
+                        enrollment =
+                            RelatedInfo.Enrollment(
+                                uid = ENROLLMENT_UID,
+                                geometry =
+                                    GeometryHelper.createPolygonGeometry(
+                                        listOf(
+                                            listOf(
+                                                listOf(
+                                                    POINT_LONGITUDE_ENROLLMENT,
+                                                    POINT_LATITUDE_ENROLLMENT,
+                                                ),
+                                            ),
+                                            listOf(
+                                                listOf(
+                                                    POINT_LONGITUDE_ENROLLMENT,
+                                                    POINT_LATITUDE_ENROLLMENT,
+                                                ),
+                                            ),
+                                            listOf(
+                                                listOf(
+                                                    POINT_LONGITUDE_ENROLLMENT,
+                                                    POINT_LATITUDE_ENROLLMENT,
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                            ),
+                    ),
                 state = State.SYNCED,
             ),
         )
-    }
 
-    private fun createSearchTeiModelList(): List<MapItemModel> {
-        return listOf(
+    private fun createSearchTeiModelList(): List<MapItemModel> =
+        listOf(
             MapItemModel(
                 uid = TEI_UID,
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    TEI_UID_IMAGE,
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        TEI_UID_IMAGE,
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
-                geometry = Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates("[$POINT_LONGITUDE, $POINT_LATITUDE]")
-                    .build(),
+                geometry =
+                    Geometry
+                        .builder()
+                        .type(FeatureType.POINT)
+                        .coordinates("[$POINT_LONGITUDE, $POINT_LATITUDE]")
+                        .build(),
                 relatedInfo = null,
                 state = State.SYNCED,
             ),
         )
-    }
 
-    private fun createSearchTeiModelWithEnrollment(): List<MapItemModel> {
-        return listOf(
+    private fun createSearchTeiModelWithEnrollment(): List<MapItemModel> =
+        listOf(
             MapItemModel(
                 uid = TEI_UID,
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    TEI_UID_IMAGE,
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        TEI_UID_IMAGE,
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
-                geometry = Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates("[$POINT_LONGITUDE, $POINT_LATITUDE]")
-                    .build(),
-                relatedInfo = RelatedInfo(
-                    enrollment = RelatedInfo.Enrollment(
-                        uid = ENROLLMENT_UID,
-                        geometry = Geometry.builder()
-                            .type(FeatureType.POINT)
-                            .coordinates("[$POINT_LONGITUDE_ENROLLMENT, $POINT_LATITUDE_ENROLLMENT]")
-                            .build(),
+                geometry =
+                    Geometry
+                        .builder()
+                        .type(FeatureType.POINT)
+                        .coordinates("[$POINT_LONGITUDE, $POINT_LATITUDE]")
+                        .build(),
+                relatedInfo =
+                    RelatedInfo(
+                        enrollment =
+                            RelatedInfo.Enrollment(
+                                uid = ENROLLMENT_UID,
+                                geometry =
+                                    Geometry
+                                        .builder()
+                                        .type(FeatureType.POINT)
+                                        .coordinates("[$POINT_LONGITUDE_ENROLLMENT, $POINT_LATITUDE_ENROLLMENT]")
+                                        .build(),
+                            ),
                     ),
-                ),
                 state = State.SYNCED,
             ),
         )
-    }
 
-    private fun createSearchTeiModelWithRelationships(): List<MapItemModel> {
-        return listOf(
+    private fun createSearchTeiModelWithRelationships(): List<MapItemModel> =
+        listOf(
             MapItemModel(
                 uid = TEI_UID,
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    TEI_UID_IMAGE,
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        TEI_UID_IMAGE,
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
-                geometry = Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates("[$POINT_LONGITUDE, $POINT_LATITUDE]")
-                    .build(),
-                relatedInfo = RelatedInfo(
-                    relationship = RelatedInfo.Relationship(
-                        uid = UID,
-                        displayName = DISPLAY_NAME,
-                        relationshipTypeUid = RELATIONSHIP_TYPE,
-                        relatedUid = UID,
-                        relationshipDirection = RelationshipDirection.FROM,
+                geometry =
+                    Geometry
+                        .builder()
+                        .type(FeatureType.POINT)
+                        .coordinates("[$POINT_LONGITUDE, $POINT_LATITUDE]")
+                        .build(),
+                relatedInfo =
+                    RelatedInfo(
+                        relationship =
+                            RelatedInfo.Relationship(
+                                uid = UID,
+                                displayName = DISPLAY_NAME,
+                                relationshipTypeUid = RELATIONSHIP_TYPE,
+                                relatedUid = UID,
+                                relationshipDirection = RelationshipDirection.FROM,
+                            ),
                     ),
-                ),
                 state = State.SYNCED,
             ),
             MapItemModel(
                 uid = TEI_UID + "_2",
-                avatarProviderConfiguration = AvatarProviderConfiguration.ProfilePic(
-                    TEI_UID_IMAGE + "_2",
-                ),
+                avatarProviderConfiguration =
+                    AvatarProviderConfiguration.ProfilePic(
+                        TEI_UID_IMAGE + "_2",
+                    ),
                 title = "",
                 description = null,
                 lastUpdated = "",
                 additionalInfoList = emptyList(),
                 isOnline = false,
-                geometry = Geometry.builder()
-                    .type(FeatureType.POINT)
-                    .coordinates("[$POINT_LONGITUDE_ENROLLMENT, ${POINT_LATITUDE_ENROLLMENT}]")
-                    .build(),
-                relatedInfo = RelatedInfo(
-                    relationship = RelatedInfo.Relationship(
-                        uid = UID,
-                        displayName = DISPLAY_NAME,
-                        relationshipTypeUid = RELATIONSHIP_TYPE,
-                        relatedUid = UID,
-                        relationshipDirection = RelationshipDirection.TO,
+                geometry =
+                    Geometry
+                        .builder()
+                        .type(FeatureType.POINT)
+                        .coordinates("[$POINT_LONGITUDE_ENROLLMENT, ${POINT_LATITUDE_ENROLLMENT}]")
+                        .build(),
+                relatedInfo =
+                    RelatedInfo(
+                        relationship =
+                            RelatedInfo.Relationship(
+                                uid = UID,
+                                displayName = DISPLAY_NAME,
+                                relationshipTypeUid = RELATIONSHIP_TYPE,
+                                relatedUid = UID,
+                                relationshipDirection = RelationshipDirection.TO,
+                            ),
                     ),
-                ),
                 state = State.SYNCED,
             ),
         )
-    }
 
     companion object {
         const val POINT_LONGITUDE = 43.34532

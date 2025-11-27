@@ -1,8 +1,5 @@
 package org.dhis2.form.ui
 
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -16,9 +13,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -45,7 +42,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Form(
     sections: List<FormSection> = emptyList(),
@@ -56,41 +52,45 @@ fun Form(
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
-    val callback = remember {
-        object : FieldUiModel.Callback {
-            override fun intent(intent: FormIntent) {
-                intentHandler(intent)
-            }
+    val callback =
+        remember {
+            object : FieldUiModel.Callback {
+                override fun intent(intent: FormIntent) {
+                    intentHandler(intent)
+                }
 
-            override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
-                uiEventHandler(uiEvent)
+                override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
+                    uiEventHandler(uiEvent)
+                }
             }
         }
-    }
     LazyColumn(
-        modifier = Modifier
-            .testTag("FORM_VIEW")
-            .fillMaxSize()
-            .background(
-                Color.White,
-                shape = RoundedCornerShape(
-                    topStart = Spacing.Spacing16,
-                    topEnd = Spacing.Spacing16,
-                    bottomStart = Spacing.Spacing0,
-                    bottomEnd = Spacing.Spacing0,
+        modifier =
+            Modifier
+                .testTag("FORM_VIEW")
+                .fillMaxSize()
+                .background(
+                    Color.White,
+                    shape =
+                        RoundedCornerShape(
+                            topStart = Spacing.Spacing16,
+                            topEnd = Spacing.Spacing16,
+                            bottomStart = Spacing.Spacing0,
+                            bottomEnd = Spacing.Spacing0,
+                        ),
+                ).clickable(
+                    interactionSource =
+                        remember {
+                            MutableInteractionSource()
+                        },
+                    indication = null,
+                    onClick = { focusManager.clearFocus() },
                 ),
-            )
-            .clickable(
-                interactionSource = remember {
-                    MutableInteractionSource()
-                },
-                indication = null,
-                onClick = { focusManager.clearFocus() },
+        contentPadding =
+            PaddingValues(
+                horizontal = Spacing.Spacing16,
+                vertical = Spacing.Spacing16,
             ),
-        contentPadding = PaddingValues(
-            horizontal = Spacing.Spacing16,
-            vertical = Spacing.Spacing16,
-        ),
         state = scrollState,
     ) {
         if (sections.isNotEmpty()) {
@@ -128,12 +128,7 @@ fun Form(
                             section.fields.forEachIndexed { index, fieldUiModel ->
                                 fieldUiModel.setCallback(callback)
                                 FieldProvider(
-                                    modifier = Modifier.animateItemPlacement(
-                                        animationSpec = tween(
-                                            durationMillis = 500,
-                                            easing = LinearOutSlowInEasing,
-                                        ),
-                                    ),
+                                    modifier = Modifier,
                                     fieldUiModel = fieldUiModel,
                                     uiEventHandler = uiEventHandler,
                                     intentHandler = intentHandler,
@@ -156,6 +151,7 @@ fun Form(
                                             ),
                                         )
                                     },
+                                    reEvaluateCustomIntentRequestParameters = true,
                                 )
                             }
                         }
@@ -185,44 +181,49 @@ private fun manageOnNextEvent(
     }
 }
 
-fun shouldDisplayNoFieldsWarning(sections: List<FormSection>): Boolean {
-    return if (sections.size == 1) {
+fun shouldDisplayNoFieldsWarning(sections: List<FormSection>): Boolean =
+    if (sections.size == 1) {
         val section = sections.first()
         section.state == SectionState.NO_HEADER && section.fields.isEmpty()
     } else {
         false
     }
-}
 
 @Composable
 fun NoFieldsWarning(resources: ResourceManager) {
     Column(
-        modifier = Modifier
-            .padding(Spacing.Spacing16),
+        modifier =
+            Modifier
+                .padding(Spacing.Spacing16),
     ) {
         InfoBar(
-            infoBarData = InfoBarData(
-                text = resources.getString(R.string.form_without_fields),
-                icon = {
-                    Icon(
-                        imageVector = Icons.Outlined.ErrorOutline,
-                        contentDescription = "no fields",
-                        tint = SurfaceColor.Warning,
-                    )
-                },
-                color = SurfaceColor.Warning,
-                backgroundColor = SurfaceColor.WarningContainer,
-                actionText = null,
-                onClick = null,
-            ),
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(Radius.Full))
-                .background(SurfaceColor.WarningContainer),
+            infoBarData =
+                InfoBarData(
+                    text = resources.getString(R.string.form_without_fields),
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Outlined.ErrorOutline,
+                            contentDescription = "no fields",
+                            tint = SurfaceColor.Warning,
+                        )
+                    },
+                    color = SurfaceColor.Warning,
+                    backgroundColor = SurfaceColor.WarningContainer,
+                    actionText = null,
+                    onClick = null,
+                ),
+            modifier =
+                Modifier
+                    .clip(shape = RoundedCornerShape(Radius.Full))
+                    .background(SurfaceColor.WarningContainer),
         )
     }
 }
 
-private fun getNextSection(section: FormSection, sections: List<FormSection>): FormSection? {
+private fun getNextSection(
+    section: FormSection,
+    sections: List<FormSection>,
+): FormSection? {
     val currentIndex = sections.indexOf(section)
     if (currentIndex != -1 && currentIndex < sections.size - 1) {
         return sections[currentIndex + 1]

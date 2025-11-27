@@ -30,12 +30,22 @@ if ! git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
     fi
 fi
 
-# Print the diff statistics
-echo "Diff statistics between $TARGET_BRANCH and HEAD:"
-git diff --stat "$TARGET_BRANCH"..HEAD
+# Find the merge base (common ancestor) between target branch and HEAD
+MERGE_BASE=$(git merge-base "$TARGET_BRANCH" HEAD)
 
-# Get the total number of lines changed in the PR against the target branch
-CHANGED_LINES=$(git diff --stat "$TARGET_BRANCH"..HEAD | tail -n1 | awk '{print $4 + $6}')
+if [[ -z "$MERGE_BASE" ]]; then
+    echo "ERROR: Could not find merge base between $TARGET_BRANCH and HEAD"
+    exit 1
+fi
+
+echo "Merge base: $MERGE_BASE"
+
+# Print the diff statistics from merge base to HEAD (only your changes)
+echo "Diff statistics from merge base to HEAD (PR changes only):"
+git diff --stat "$MERGE_BASE"..HEAD
+
+# Get the total number of lines changed in the PR from the merge base
+CHANGED_LINES=$(git diff --stat "$MERGE_BASE"..HEAD | tail -n1 | awk '{print $4 + $6}')
 
 # Handle cases where no changes are detected
 if [[ -z "$CHANGED_LINES" ]]; then

@@ -23,13 +23,15 @@ class OUTreeViewModel(
     private val dispatchers: DispatcherProvider,
 ) : ViewModel() {
     private val _treeNodes = MutableStateFlow(emptyList<OrgTreeItem>())
-    val treeNodes: StateFlow<List<OrgTreeItem>> = _treeNodes.map { list ->
-        model.hideOrgUnits?.let { filterUnits ->
-            list.filterNot { orgUnit ->
-                filterUnits.any { filterUnit -> filterUnit.uid() == orgUnit.uid }
-            }
-        } ?: list
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val treeNodes: StateFlow<List<OrgTreeItem>> =
+        _treeNodes
+            .map { list ->
+                model.hideOrgUnits?.let { filterUnits ->
+                    list.filterNot { orgUnit ->
+                        filterUnits.any { filterUnit -> filterUnit.uid() == orgUnit.uid }
+                    }
+                } ?: list
+            }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _finalSelectedOrgUnits = MutableStateFlow(emptyList<OrganisationUnit>())
     val finalSelectedOrgUnits: StateFlow<List<OrganisationUnit>> = _finalSelectedOrgUnits
@@ -56,10 +58,11 @@ class OUTreeViewModel(
                         hasChildren = repository.orgUnitHasChildren(org.uid()),
                         selected = selectedOrgUnits.contains(org.uid()),
                         level = org.level()!!,
-                        selectedChildrenCount = repository.countSelectedChildren(
-                            org.uid(),
-                            selectedOrgUnits,
-                        ),
+                        selectedChildrenCount =
+                            repository.countSelectedChildren(
+                                org.uid(),
+                                selectedOrgUnits,
+                            ),
                         canBeSelected = canBeSelected,
                     ),
                 )
@@ -91,22 +94,24 @@ class OUTreeViewModel(
     ): List<OrgTreeItem> {
         val parentIndex = currentList.indexOfFirst { it.uid == parentOrgUnitUid }
         val orgUnits = repository.childrenOrgUnits(parentOrgUnitUid)
-        val treeNodes = orgUnits.map { org ->
-            val hasChildren = repository.orgUnitHasChildren(org.uid())
-            OrgTreeItem(
-                uid = org.uid(),
-                label = org.displayName()!!,
-                isOpen = hasChildren,
-                hasChildren = hasChildren,
-                selected = selectedOrgUnits.contains(org.uid()),
-                level = org.level()!!,
-                selectedChildrenCount = repository.countSelectedChildren(
-                    org.uid(),
-                    selectedOrgUnits,
-                ),
-                canBeSelected = repository.canBeSelected(org.uid()),
-            )
-        }
+        val treeNodes =
+            orgUnits.map { org ->
+                val hasChildren = repository.orgUnitHasChildren(org.uid())
+                OrgTreeItem(
+                    uid = org.uid(),
+                    label = org.displayName()!!,
+                    isOpen = hasChildren,
+                    hasChildren = hasChildren,
+                    selected = selectedOrgUnits.contains(org.uid()),
+                    level = org.level()!!,
+                    selectedChildrenCount =
+                        repository.countSelectedChildren(
+                            org.uid(),
+                            selectedOrgUnits,
+                        ),
+                    canBeSelected = repository.canBeSelected(org.uid()),
+                )
+            }
         return rebuildOrgUnitList(
             currentList = currentList,
             location = parentIndex,
@@ -114,7 +119,10 @@ class OUTreeViewModel(
         )
     }
 
-    fun onOrgUnitCheckChanged(orgUnitUid: String, isChecked: Boolean) {
+    fun onOrgUnitCheckChanged(
+        orgUnitUid: String,
+        isChecked: Boolean,
+    ) {
         viewModelScope.launch(dispatchers.io()) {
             OrgUnitIdlingResource.increment()
             if (singleSelection) {
@@ -125,15 +133,17 @@ class OUTreeViewModel(
             } else if (!isChecked && selectedOrgUnits.contains(orgUnitUid)) {
                 selectedOrgUnits.remove(orgUnitUid)
             }
-            val treeNodeList = treeNodes.value.map { currentTreeNode ->
-                currentTreeNode.copy(
-                    selected = selectedOrgUnits.contains(currentTreeNode.uid),
-                    selectedChildrenCount = repository.countSelectedChildren(
-                        currentTreeNode.uid,
-                        selectedOrgUnits,
-                    ),
-                )
-            }
+            val treeNodeList =
+                treeNodes.value.map { currentTreeNode ->
+                    currentTreeNode.copy(
+                        selected = selectedOrgUnits.contains(currentTreeNode.uid),
+                        selectedChildrenCount =
+                            repository.countSelectedChildren(
+                                currentTreeNode.uid,
+                                selectedOrgUnits,
+                            ),
+                    )
+                }
             OrgUnitIdlingResource.decrement()
             _treeNodes.update { treeNodeList }
         }
@@ -143,12 +153,13 @@ class OUTreeViewModel(
         viewModelScope.launch(dispatchers.io()) {
             OrgUnitIdlingResource.increment()
             selectedOrgUnits.clear()
-            val treeNodeList = treeNodes.value.map { currentTreeNode ->
-                currentTreeNode.copy(
-                    selected = false,
-                    selectedChildrenCount = 0,
-                )
-            }
+            val treeNodeList =
+                treeNodes.value.map { currentTreeNode ->
+                    currentTreeNode.copy(
+                        selected = false,
+                        selectedChildrenCount = 0,
+                    )
+                }
             OrgUnitIdlingResource.decrement()
             _treeNodes.update { treeNodeList }
         }
@@ -167,10 +178,12 @@ class OUTreeViewModel(
             val deleteList: MutableList<OrgTreeItem> = ArrayList()
             var sameLevel = true
             for (i in location + 1 until nodesCopy.size) {
-                if (sameLevel) if (nodesCopy[i].level > level) {
-                    deleteList.add(nodesCopy[i])
-                } else {
-                    sameLevel = false
+                if (sameLevel) {
+                    if (nodesCopy[i].level > level) {
+                        deleteList.add(nodesCopy[i])
+                    } else {
+                        sameLevel = false
+                    }
                 }
             }
             nodesCopy.removeAll(deleteList.toSet())
@@ -181,9 +194,7 @@ class OUTreeViewModel(
         return nodesCopy
     }
 
-    private fun getOrgUnits(): List<OrganisationUnit> {
-        return selectedOrgUnits.mapNotNull { uid -> repository.orgUnit(uid) }
-    }
+    private fun getOrgUnits(): List<OrganisationUnit> = selectedOrgUnits.mapNotNull { uid -> repository.orgUnit(uid) }
 
     fun confirmSelection() {
         singleEventEnforcer.processEvent {

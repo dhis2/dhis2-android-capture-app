@@ -9,7 +9,7 @@ import org.dhis2.commons.data.EntryMode
 import org.dhis2.commons.di.dagger.PerActivity
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.prefs.PreferenceProviderImpl
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.EventResourcesProvider
 import org.dhis2.commons.resources.MetadataIconProvider
@@ -33,12 +33,12 @@ import org.dhis2.form.ui.FieldViewModelFactoryImpl
 import org.dhis2.form.ui.provider.AutoCompleteProviderImpl
 import org.dhis2.form.ui.provider.DisplayNameProviderImpl
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
-import org.dhis2.form.ui.provider.FormResultDialogProvider
-import org.dhis2.form.ui.provider.FormResultDialogResourcesProvider
 import org.dhis2.form.ui.provider.HintProviderImpl
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl
 import org.dhis2.form.ui.provider.LegendValueProviderImpl
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
+import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.usescases.teiDashboard.TeiAttributesProvider
@@ -58,28 +58,24 @@ class EnrollmentModule(
     private val enrollmentMode: EnrollmentActivity.EnrollmentMode,
     private val activityContext: Context,
 ) {
-
     @Provides
     @PerActivity
-    fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository {
-        return d2.enrollmentModule().enrollments().uid(enrollmentUid)
-    }
+    fun provideEnrollmentRepository(d2: D2): EnrollmentObjectRepository = d2.enrollmentModule().enrollments().uid(enrollmentUid)
 
     @Provides
     @PerActivity
     fun provideTeiRepository(
         d2: D2,
         enrollmentRepository: EnrollmentObjectRepository,
-    ): TrackedEntityInstanceObjectRepository {
-        return d2.trackedEntityModule().trackedEntityInstances()
+    ): TrackedEntityInstanceObjectRepository =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
             .uid(enrollmentRepository.blockingGet()?.trackedEntityInstance())
-    }
 
     @Provides
     @PerActivity
-    fun provideProgramRepository(d2: D2): ReadOnlyOneObjectRepositoryFinalImpl<Program> {
-        return d2.programModule().programs().uid(programUid)
-    }
+    fun provideProgramRepository(d2: D2): ReadOnlyOneObjectRepositoryFinalImpl<Program> = d2.programModule().programs().uid(programUid)
 
     @Provides
     @PerActivity
@@ -95,26 +91,24 @@ class EnrollmentModule(
         enrollmentFormLabelsProvider: EnrollmentFormLabelsProvider,
         enrollmentConfiguration: EnrollmentConfiguration,
         metadataIconProvider: MetadataIconProvider,
-    ): EnrollmentRepository {
-        return EnrollmentRepository(
+        customIntentRepository: CustomIntentRepository,
+    ): EnrollmentRepository =
+        EnrollmentRepository(
             fieldFactory = modelFactory,
             conf = enrollmentConfiguration,
             enrollmentMode = EnrollmentMode.valueOf(enrollmentMode.name),
             enrollmentFormLabelsProvider = enrollmentFormLabelsProvider,
             metadataIconProvider = metadataIconProvider,
+            customIntentRepository = customIntentRepository,
         )
-    }
 
     @Provides
     @PerActivity
-    fun provideEnrollmentFormLabelsProvider(resourceManager: ResourceManager) =
-        EnrollmentFormLabelsProvider(resourceManager)
+    fun provideEnrollmentFormLabelsProvider(resourceManager: ResourceManager) = EnrollmentFormLabelsProvider(resourceManager)
 
     @Provides
     @PerActivity
-    fun provideEventRepository(d2: D2): EventCollectionRepository {
-        return d2.eventModule().events()
-    }
+    fun provideEventRepository(d2: D2): EventCollectionRepository = d2.eventModule().events()
 
     @Provides
     @PerActivity
@@ -123,8 +117,9 @@ class EnrollmentModule(
         d2: D2,
         resourceManager: ResourceManager,
         periodUtils: DhisPeriodUtils,
-    ): FieldViewModelFactory {
-        return FieldViewModelFactoryImpl(
+        preferenceProvider: PreferenceProvider,
+    ): FieldViewModelFactory =
+        FieldViewModelFactoryImpl(
             HintProviderImpl(context),
             DisplayNameProviderImpl(
                 OptionSetConfiguration(d2),
@@ -135,9 +130,8 @@ class EnrollmentModule(
             UiEventTypesProviderImpl(),
             KeyboardActionProviderImpl(),
             LegendValueProviderImpl(d2, resourceManager),
-            AutoCompleteProviderImpl(PreferenceProviderImpl(context)),
+            AutoCompleteProviderImpl(preferenceProvider),
         )
-    }
 
     @Provides
     @PerActivity
@@ -148,6 +142,10 @@ class EnrollmentModule(
         enrollmentConfiguration,
         eventResourcesProvider,
     )
+
+    @Provides
+    @PerActivity
+    fun provideCustomIntentProvider(d2: D2): CustomIntentRepository = CustomIntentRepositoryImpl(d2)
 
     @Provides
     @PerActivity
@@ -163,8 +161,8 @@ class EnrollmentModule(
         eventCollectionRepository: EventCollectionRepository,
         teiAttributesProvider: TeiAttributesProvider,
         dateEditionWarningHandler: DateEditionWarningHandler,
-    ): EnrollmentPresenterImpl {
-        return EnrollmentPresenterImpl(
+    ): EnrollmentPresenterImpl =
+        EnrollmentPresenterImpl(
             enrollmentView,
             d2,
             enrollmentObjectRepository,
@@ -178,13 +176,10 @@ class EnrollmentModule(
             teiAttributesProvider,
             dateEditionWarningHandler,
         )
-    }
 
     @Provides
     @PerActivity
-    fun provideOnRowActionProcessor(): FlowableProcessor<RowAction> {
-        return PublishProcessor.create()
-    }
+    fun provideOnRowActionProcessor(): FlowableProcessor<RowAction> = PublishProcessor.create()
 
     @Provides
     @PerActivity
@@ -212,9 +207,10 @@ class EnrollmentModule(
 
     @Provides
     @PerActivity
-    internal fun searchRepository(d2: D2): SearchTEIRepository {
-        return SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2))
-    }
+    internal fun searchRepository(
+        d2: D2,
+        crashController: CrashReportController,
+    ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashController)
 
     @Provides
     @PerActivity
@@ -224,37 +220,16 @@ class EnrollmentModule(
         programRepository: ReadOnlyOneObjectRepositoryFinalImpl<Program>,
         teiRepository: TrackedEntityInstanceObjectRepository,
         enrollmentService: DhisEnrollmentUtils,
-    ): EnrollmentFormRepository {
-        return EnrollmentFormRepositoryImpl(
+    ): EnrollmentFormRepository =
+        EnrollmentFormRepositoryImpl(
             d2,
             enrollmentRepository,
             programRepository,
             teiRepository,
             enrollmentService,
         )
-    }
 
     @Provides
     @PerActivity
-    fun provideResultDialogProvider(
-        resourceManager: ResourceManager,
-    ): FormResultDialogProvider {
-        return FormResultDialogProvider(
-            FormResultDialogResourcesProvider(resourceManager),
-        )
-    }
-
-    @Provides
-    @PerActivity
-    fun provideDialogResourcesProvider(
-        resourceManager: ResourceManager,
-    ): FormResultDialogResourcesProvider {
-        return FormResultDialogResourcesProvider(resourceManager)
-    }
-
-    @Provides
-    @PerActivity
-    fun providesTeiAttributesProvider(d2: D2): TeiAttributesProvider {
-        return TeiAttributesProvider(d2)
-    }
+    fun providesTeiAttributesProvider(d2: D2): TeiAttributesProvider = TeiAttributesProvider(d2)
 }

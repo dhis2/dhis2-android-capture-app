@@ -7,8 +7,8 @@ import dhis2.org.analytics.charts.data.GraphPoint
 import java.time.YearMonth
 
 class GraphCoordinatesToBarEntry {
-
     private val dateToPosition = DateToPosition()
+
     fun map(
         graph: Graph,
         coordinates: List<GraphPoint>,
@@ -38,12 +38,15 @@ class GraphCoordinatesToBarEntry {
         }
     }
 
-    private fun groupedBarIndex(index: Float, serieIndex: Int, seriesCount: Int): Float {
-        return index +
+    private fun groupedBarIndex(
+        index: Float,
+        serieIndex: Int,
+        seriesCount: Int,
+    ): Float =
+        index +
             (
-                default_bar_group_space * serieIndex.toFloat() / seriesCount.toFloat() -
-                    default_gap / 2f +
-                    default_bar_group_separation
-                )
-    }
+                DEFAULT_BAR_GROUP_SPACE * serieIndex.toFloat() / seriesCount.toFloat() -
+                    DEFAULT_GAP / 2f +
+                    DEFAULT_BAR_GROUP_SEPARATION
+            )
 }

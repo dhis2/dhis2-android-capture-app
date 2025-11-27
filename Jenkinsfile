@@ -71,10 +71,8 @@ pipeline {
             }
             steps {
                 script {
-                    echo 'Running unit tests on app module'
-                    sh './gradlew :app:testDhisDebugUnitTest --stacktrace --no-daemon'
-                    echo 'Running unit tests on all other modules'
-                    sh './gradlew testDebugUnitTest --stacktrace --no-daemon'
+                    echo 'Running unit tests'
+                    sh './gradlew testDebugUnitTest testDhis2DebugUnitTest --stacktrace --no-daemon'
                 }
             }
         }
@@ -122,12 +120,7 @@ pipeline {
                 }
             }
         }
-        /* stage('Run UI Tests in Landscape') {
-            when {
-                expression {
-                    return JOB_NAME.startsWith('android-multibranch-PUSH')
-                }
-            }
+        stage('Run UI Tests in Landscape') {
             environment {
                 BROWSERSTACK = credentials('android-browserstack')
                 app_apk = sh(returnStdout: true, script: 'find app/build/outputs/apk/dhis2/debug -iname "*.apk"')
@@ -145,7 +138,7 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         stage('JaCoCo report') {
             steps {
                 script {

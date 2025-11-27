@@ -13,31 +13,35 @@ import kotlin.math.log10
 class GraphToRadarData {
     private val serieColors = SerieColors.getColors()
 
-    fun map(graph: Graph, serieToHighlight: String? = null): RadarData {
-        return RadarData().apply {
+    fun map(
+        graph: Graph,
+        serieToHighlight: String? = null,
+    ): RadarData =
+        RadarData().apply {
             if (graph.series.isEmpty()) {
                 setEmptyData()
             }
             val highlightSeriesMax = getHighlightedSeriesMaximum(graph.series, serieToHighlight)
             graph.series.forEachIndexed { index: Int, serie: SerieData ->
 
-                val radarEntry = if (shouldSetData(serieToHighlight, serie, highlightSeriesMax)) {
-                    setEntries(serie.fieldName, graph.categories, serie.coordinates)
-                } else {
-                    setEmptyEntries(serie.fieldName, graph.categories)
-                }
+                val radarEntry =
+                    if (shouldSetData(serieToHighlight, serie, highlightSeriesMax)) {
+                        setEntries(serie.fieldName, graph.categories, serie.coordinates)
+                    } else {
+                        setEmptyEntries(serie.fieldName, graph.categories)
+                    }
 
-                val dataSet = getDataSet(
-                    radarEntry,
-                    serie.fieldName,
-                    serieToHighlight,
-                    graph.series.size == 1,
-                    index,
-                )
+                val dataSet =
+                    getDataSet(
+                        radarEntry,
+                        serie.fieldName,
+                        serieToHighlight,
+                        graph.series.size == 1,
+                        index,
+                    )
                 addDataSet(dataSet)
             }
         }
-    }
 
     private fun RadarData.setEmptyData() {
         val radarEntries = ArrayList<RadarEntry>()
@@ -49,17 +53,16 @@ class GraphToRadarData {
     private fun getHighlightedSeriesMaximum(
         series: List<SerieData>,
         serieToHighlight: String?,
-    ): Float? {
-        return series.find {
-            it.fieldName == serieToHighlight
-        }?.coordinates?.maxByOrNull {
-            it.numericValue()
-        }?.numericValue()
-    }
+    ): Float? =
+        series
+            .find {
+                it.fieldName == serieToHighlight
+            }?.coordinates
+            ?.maxByOrNull {
+                it.numericValue()
+            }?.numericValue()
 
-    private fun SerieData.getSerieMaximun(): Float? {
-        return coordinates.maxByOrNull { it.numericValue() }?.numericValue()
-    }
+    private fun SerieData.getSerieMaximun(): Float? = coordinates.maxByOrNull { it.numericValue() }?.numericValue()
 
     private fun shouldSetData(
         serieToHighlight: String?,
@@ -82,10 +85,12 @@ class GraphToRadarData {
         RadarEntry(point?.numericValue() ?: 0f, serieLabel)
     }
 
-    private fun setEmptyEntries(serieLabel: String, categories: List<String>) =
-        categories.mapIndexed { _, _ ->
-            RadarEntry(0f, serieLabel)
-        }
+    private fun setEmptyEntries(
+        serieLabel: String,
+        categories: List<String>,
+    ) = categories.mapIndexed { _, _ ->
+        RadarEntry(0f, serieLabel)
+    }
 
     private fun getDataSet(
         radarEntry: List<RadarEntry>,
@@ -94,13 +99,14 @@ class GraphToRadarData {
         onlyOneSerie: Boolean,
         serieIndex: Int,
     ): RadarDataSet {
-        val dataSet = RadarDataSet(radarEntry, serieLabel).apply {
-            if (onlyOneSerie || label == serieToHighlight) {
-                withHighlightStyle()
-            } else {
-                withGlobalStyle()
+        val dataSet =
+            RadarDataSet(radarEntry, serieLabel).apply {
+                if (onlyOneSerie || label == serieToHighlight) {
+                    withHighlightStyle()
+                } else {
+                    withGlobalStyle()
+                }
             }
-        }
 
         val colorIndex = serieIndex % serieColors.size
         val isHighlighted =
@@ -114,7 +120,10 @@ class GraphToRadarData {
         return dataSet
     }
 
-    private fun sameMagnitude(valueA: Float?, valueB: Float?): Boolean {
+    private fun sameMagnitude(
+        valueA: Float?,
+        valueB: Float?,
+    ): Boolean {
         val magnitudeA = floor(log10(valueA ?: 0f))
         val magnitudeB = floor(log10(valueB ?: 0f))
         return magnitudeA >= magnitudeB

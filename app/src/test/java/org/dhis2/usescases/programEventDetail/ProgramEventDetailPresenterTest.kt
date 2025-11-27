@@ -10,6 +10,8 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.filters.data.FilterRepository
 import org.dhis2.commons.filters.workingLists.EventFilterToWorkingListItemMapper
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
@@ -39,21 +41,24 @@ class ProgramEventDetailPresenterTest {
     private val workingListMapper: EventFilterToWorkingListItemMapper = mock()
     private val disableHomeFilters: DisableHomeFiltersFromSettingsApp = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
+    private val preferences: PreferenceProvider = mock()
 
     @Before
     fun setUp() {
         RxAndroidPlugins.setInitMainThreadSchedulerHandler { Schedulers.trampoline() }
 
-        presenter = ProgramEventDetailPresenter(
-            view,
-            repository,
-            scheduler,
-            filterManager,
-            workingListMapper,
-            filterRepository,
-            disableHomeFilters,
-            matomoAnalyticsController,
-        )
+        presenter =
+            ProgramEventDetailPresenter(
+                view,
+                repository,
+                scheduler,
+                filterManager,
+                workingListMapper,
+                filterRepository,
+                disableHomeFilters,
+                matomoAnalyticsController,
+                preferences,
+            )
     }
 
     @After
@@ -83,9 +88,11 @@ class ProgramEventDetailPresenterTest {
 
     @Test
     fun `Should start new event`() {
+        whenever(preferences.getString(CURRENT_ORG_UNIT, null)) doReturn "orgUnit"
+
         presenter.addEvent()
 
-        verify(view).selectOrgUnitForNewEvent()
+        verify(view).selectOrgUnitForNewEvent(listOf("orgUnit"))
     }
 
     @Test
@@ -138,6 +145,5 @@ class ProgramEventDetailPresenterTest {
 
     private fun dummyCategoryCombo() = CategoryCombo.builder().uid("uid").build()
 
-    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> =
-        listOf(CategoryOptionCombo.builder().uid("uid").build())
+    private fun dummyListCatOptionCombo(): List<CategoryOptionCombo> = listOf(CategoryOptionCombo.builder().uid("uid").build())
 }

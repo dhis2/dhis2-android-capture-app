@@ -17,7 +17,6 @@ import org.hisp.dhis.android.core.settings.ProgramFilter
 import org.junit.Test
 
 class GetFiltersApplyingWebAppConfigTest {
-
     private val getFiltersApplyingWebAppConfig: GetFiltersApplyingWebAppConfig =
         GetFiltersApplyingWebAppConfig()
     private val observableSortingInject = ObservableField<SortingItem>()
@@ -25,10 +24,11 @@ class GetFiltersApplyingWebAppConfigTest {
 
     @Test
     fun `Should get filters applying webapp config deleting last item`() {
-        val result = getFiltersApplyingWebAppConfig.execute(
-            getDefaultTrackerFilters(),
-            getWebAppFiltersFirstConfig(),
-        )
+        val result =
+            getFiltersApplyingWebAppConfig.execute(
+                getDefaultTrackerFilters(),
+                getWebAppFiltersFirstConfig(),
+            )
         assert(result[0].filterLabel == EVENT_DATE)
         assert(result[1].filterLabel == ENROLLMENT_DATE)
         assert(result[2].filterLabel == ORG_UNIT)
@@ -38,10 +38,11 @@ class GetFiltersApplyingWebAppConfigTest {
 
     @Test
     fun `Should get filters applying webapp config deleting random items`() {
-        val result = getFiltersApplyingWebAppConfig.execute(
-            getDefaultTrackerFilters(),
-            getWebAppFiltersSecondConfig(),
-        )
+        val result =
+            getFiltersApplyingWebAppConfig.execute(
+                getDefaultTrackerFilters(),
+                getWebAppFiltersSecondConfig(),
+            )
         assert(result[0].filterLabel == EVENT_DATE)
         assert(result[1].filterLabel == ENROLLMENT_DATE)
         assert(result[2].filterLabel == SYNC_STATUS)
@@ -50,89 +51,104 @@ class GetFiltersApplyingWebAppConfigTest {
 
     @Test
     fun `Should get empty filters applying webapp config with all of them false`() {
-        val result = getFiltersApplyingWebAppConfig.execute(
-            getDefaultTrackerFilters(),
-            getWebAppFitersNoFiltersToShow(),
-        )
+        val result =
+            getFiltersApplyingWebAppConfig.execute(
+                getDefaultTrackerFilters(),
+                getWebAppFitersNoFiltersToShow(),
+            )
         assert(result.isEmpty())
     }
 
-    fun getDefaultTrackerFilters() = linkedMapOf(
-        ProgramFilter.EVENT_DATE to PeriodFilter(
-            ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            EVENT_DATE,
-        ),
-        ProgramFilter.ENROLLMENT_DATE to EnrollmentDateFilter(
-            ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            ENROLLMENT_DATE,
-        ),
-        ProgramFilter.ORG_UNIT to OrgUnitFilter(
-            FilterManager.getInstance().observeOrgUnitFilters(),
-            ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            ORG_UNIT,
-        ),
-        ProgramFilter.SYNC_STATUS to SyncStateFilter(
-            ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            SYNC_STATUS,
-        ),
-        ProgramFilter.ENROLLMENT_STATUS to EnrollmentStatusFilter(
-            ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            ENROLLMENT_STATUS,
-        ),
-        ProgramFilter.EVENT_STATUS to EventStatusFilter(
-            ProgramType.TRACKER,
-            observableSortingInject,
-            observableOpenFilter,
-            EVENT_STATUS,
-        ),
-    )
+    fun getDefaultTrackerFilters() =
+        linkedMapOf(
+            ProgramFilter.EVENT_DATE to
+                PeriodFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    EVENT_DATE,
+                ),
+            ProgramFilter.ENROLLMENT_DATE to
+                EnrollmentDateFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    ENROLLMENT_DATE,
+                ),
+            ProgramFilter.ORG_UNIT to
+                OrgUnitFilter(
+                    FilterManager.getInstance().observeOrgUnitFilters(),
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    ORG_UNIT,
+                ),
+            ProgramFilter.SYNC_STATUS to
+                SyncStateFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    SYNC_STATUS,
+                ),
+            ProgramFilter.ENROLLMENT_STATUS to
+                EnrollmentStatusFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    ENROLLMENT_STATUS,
+                ),
+            ProgramFilter.EVENT_STATUS to
+                EventStatusFilter(
+                    ProgramType.TRACKER,
+                    observableSortingInject,
+                    observableOpenFilter,
+                    EVENT_STATUS,
+                ),
+        )
 
-    fun getWebAppFiltersFirstConfig() = mapOf(
-        ProgramFilter.EVENT_DATE to createFilterSetting(true),
-        ProgramFilter.SYNC_STATUS to createFilterSetting(true),
-        ProgramFilter.EVENT_STATUS to createFilterSetting(false),
-        ProgramFilter.ASSIGNED_TO_ME to createFilterSetting(true),
-        ProgramFilter.ENROLLMENT_DATE to createFilterSetting(true),
-        ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(true),
-        ProgramFilter.ORG_UNIT to createFilterSetting(true),
-        ProgramFilter.CAT_COMBO to createFilterSetting(false),
-    )
+    fun getWebAppFiltersFirstConfig() =
+        mapOf(
+            ProgramFilter.EVENT_DATE to createFilterSetting(true),
+            ProgramFilter.SYNC_STATUS to createFilterSetting(true),
+            ProgramFilter.EVENT_STATUS to createFilterSetting(false),
+            ProgramFilter.ASSIGNED_TO_ME to createFilterSetting(true),
+            ProgramFilter.ENROLLMENT_DATE to createFilterSetting(true),
+            ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(true),
+            ProgramFilter.ORG_UNIT to createFilterSetting(true),
+            ProgramFilter.CAT_COMBO to createFilterSetting(false),
+        )
 
-    fun getWebAppFiltersSecondConfig() = mapOf(
-        ProgramFilter.EVENT_DATE to createFilterSetting(true),
-        ProgramFilter.SYNC_STATUS to createFilterSetting(true),
-        ProgramFilter.EVENT_STATUS to createFilterSetting(true),
-        ProgramFilter.ASSIGNED_TO_ME to createFilterSetting(true),
-        ProgramFilter.ENROLLMENT_DATE to createFilterSetting(true),
-        ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(false),
-        ProgramFilter.ORG_UNIT to createFilterSetting(false),
-        ProgramFilter.CAT_COMBO to createFilterSetting(false),
-    )
+    fun getWebAppFiltersSecondConfig() =
+        mapOf(
+            ProgramFilter.EVENT_DATE to createFilterSetting(true),
+            ProgramFilter.SYNC_STATUS to createFilterSetting(true),
+            ProgramFilter.EVENT_STATUS to createFilterSetting(true),
+            ProgramFilter.ASSIGNED_TO_ME to createFilterSetting(true),
+            ProgramFilter.ENROLLMENT_DATE to createFilterSetting(true),
+            ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(false),
+            ProgramFilter.ORG_UNIT to createFilterSetting(false),
+            ProgramFilter.CAT_COMBO to createFilterSetting(false),
+        )
 
-    fun getWebAppFitersNoFiltersToShow() = mapOf(
-        ProgramFilter.EVENT_DATE to createFilterSetting(false),
-        ProgramFilter.SYNC_STATUS to createFilterSetting(false),
-        ProgramFilter.EVENT_STATUS to createFilterSetting(false),
-        ProgramFilter.ASSIGNED_TO_ME to createFilterSetting(false),
-        ProgramFilter.ENROLLMENT_DATE to createFilterSetting(false),
-        ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(false),
-        ProgramFilter.ORG_UNIT to createFilterSetting(false),
-        ProgramFilter.CAT_COMBO to createFilterSetting(false),
-    )
+    fun getWebAppFitersNoFiltersToShow() =
+        mapOf(
+            ProgramFilter.EVENT_DATE to createFilterSetting(false),
+            ProgramFilter.SYNC_STATUS to createFilterSetting(false),
+            ProgramFilter.EVENT_STATUS to createFilterSetting(false),
+            ProgramFilter.ASSIGNED_TO_ME to createFilterSetting(false),
+            ProgramFilter.ENROLLMENT_DATE to createFilterSetting(false),
+            ProgramFilter.ENROLLMENT_STATUS to createFilterSetting(false),
+            ProgramFilter.ORG_UNIT to createFilterSetting(false),
+            ProgramFilter.CAT_COMBO to createFilterSetting(false),
+        )
 
-    fun createFilterSetting(hasToShowFilter: Boolean): FilterSetting {
-        return FilterSetting.builder().filter(hasToShowFilter).sort(hasToShowFilter).build()
-    }
+    fun createFilterSetting(hasToShowFilter: Boolean): FilterSetting =
+        FilterSetting
+            .builder()
+            .filter(hasToShowFilter)
+            .sort(hasToShowFilter)
+            .uid("random")
+            .build()
 
     companion object {
         const val EVENT_DATE = "date"

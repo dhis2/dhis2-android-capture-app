@@ -9,7 +9,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 
 class DeleteUserDataTest {
-
     private lateinit var deleteUserData: DeleteUserData
 
     private val workManagerController: WorkManagerController = mock()

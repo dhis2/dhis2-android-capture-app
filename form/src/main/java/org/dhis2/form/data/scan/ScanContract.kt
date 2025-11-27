@@ -7,11 +7,13 @@ import com.journeyapps.barcodescanner.ScanOptions
 import com.journeyapps.barcodescanner.ScanContract as DefaultScanContract
 
 class ScanContract : DefaultScanContract() {
-
     private lateinit var fieldUid: String
     private var optionSetUid: String? = null
 
-    override fun createIntent(context: Context, input: ScanOptions?): Intent {
+    override fun createIntent(
+        context: Context,
+        input: ScanOptions?,
+    ): Intent {
         input?.let {
             this.fieldUid = it.moreExtras?.get(UID) as String
             it.moreExtras?.getOrDefault(OPTION_SET, null)?.let { uid ->
@@ -21,7 +23,10 @@ class ScanContract : DefaultScanContract() {
         return context.scanCaptureActivityIntent(input)
     }
 
-    override fun parseResult(resultCode: Int, intent: Intent?): ScanIntentResult {
+    override fun parseResult(
+        resultCode: Int,
+        intent: Intent?,
+    ): ScanIntentResult {
         intent?.apply {
             putExtra(UID, fieldUid)
             putExtra(OPTION_SET, optionSetUid)

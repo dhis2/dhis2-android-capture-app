@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_data">Ягон иттилоот нест</string>
+    <string name="cancel">Бекор кардан</string>
+    <string name="remove">Тоза кардан</string>
+    <string name="search">Ҷустуҷӯ</string>
+    <string name="optional">Ихтиёрӣ</string>
+
+</resources>

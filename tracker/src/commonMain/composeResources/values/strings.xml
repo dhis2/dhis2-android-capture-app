@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">There are no relationships, click "+" to add a new one.</string>
+    <string name="relation_creation_date">Relation created on</string>
+    <string name="remove_relationship_title">Remove %1$s?</string>
+    <string name="remove_relationship_desc">The %1$s will be deleted. This action cannot be undone.</string>
+    <string name="remove_some_relationships_title">Remove %1$d selected relationships?</string>
+    <string name="remove_some_relationships_desc">The %1$d selected relationships will be deleted. This action cannot be undone.</string>
+    <string name="show_number_more">Show %1$d more...</string>
+    <string name="relationship">Relationship</string>
+    <string name="no_data">No data</string>
+    <string name="syncing">Synchronizing...</string>
+    <string name="show_more">Show more</string>
+    <string name="show_less">Show less</string>
+    <string name="cancel">Cancel</string>
+    <string name="remove">Remove</string>
+    <string name="empty_search_attributes_message">There are no search fields configured to use.\nPlease contact your admin.</string>
+    <string name="clear_search">Clear search</string>
+    <string name="search">Search</string>
+    <string name="optional">Optional</string>
+
+</resources>

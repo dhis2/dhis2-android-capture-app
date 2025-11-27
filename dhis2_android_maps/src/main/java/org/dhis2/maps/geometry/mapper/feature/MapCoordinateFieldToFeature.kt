@@ -1,6 +1,5 @@
 package org.dhis2.maps.geometry.mapper.feature
 
-import com.mapbox.geojson.Feature
 import org.dhis2.maps.extensions.FeatureSource
 import org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
@@ -10,11 +9,13 @@ import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeat
 import org.dhis2.maps.geometry.mapper.featurecollection.MapCoordinateFieldToFeatureCollection.Companion.TEI
 import org.dhis2.maps.utils.CoordinateAttributeInfo
 import org.dhis2.maps.utils.CoordinateDataElementInfo
+import org.maplibre.geojson.Feature
 
-class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryToFeature) {
-
-    fun map(coordinateDataElementInfo: CoordinateDataElementInfo): Feature? {
-        return mapGeometryToFeature.map(
+class MapCoordinateFieldToFeature(
+    private val mapGeometryToFeature: MapGeometryToFeature,
+) {
+    fun map(coordinateDataElementInfo: CoordinateDataElementInfo): Feature? =
+        mapGeometryToFeature.map(
             coordinateDataElementInfo.geometry,
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
@@ -30,10 +31,9 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
                 }
             },
         )
-    }
 
-    fun map(coordinateAttributeInfo: CoordinateAttributeInfo): Feature? {
-        return mapGeometryToFeature.map(
+    fun map(coordinateAttributeInfo: CoordinateAttributeInfo): Feature? =
+        mapGeometryToFeature.map(
             coordinateAttributeInfo.geometry,
             hashMapOf(
                 PROPERTY_FEATURE_SOURCE to FeatureSource.FIELD.name,
@@ -41,5 +41,4 @@ class MapCoordinateFieldToFeature(private val mapGeometryToFeature: MapGeometryT
                 TEI to coordinateAttributeInfo.tei.uid()!!,
             ),
         )
-    }
 }

@@ -8,7 +8,6 @@ import org.dhis2.commons.sync.SyncComponentProvider
 import org.dhis2.commons.sync.SyncContext
 
 class SyncStatusDialogProvider : SyncComponentProvider {
-
     override fun showSyncStatusDialog(
         activity: FragmentActivity,
         syncContext: SyncContext,
@@ -16,9 +15,11 @@ class SyncStatusDialogProvider : SyncComponentProvider {
         onSyncNavigationListener: OnSyncNavigationListener?,
         onNoConnectionListener: OnNoConnectionListener?,
     ) {
-        val syncBuilder = SyncStatusDialog.Builder()
-            .withContext(activity, onSyncNavigationListener)
-            .withSyncContext(syncContext)
+        val syncBuilder =
+            SyncStatusDialog
+                .Builder()
+                .withContext(activity, onSyncNavigationListener)
+                .withSyncContext(syncContext)
 
         with(syncBuilder) {
             dismissListener?.let { onDismissListener(it) }

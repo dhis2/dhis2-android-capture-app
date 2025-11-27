@@ -10,4 +10,5 @@ data class DataSettingsViewModel(
     val dataHasWarnings: Boolean,
     val canEdit: Boolean,
     val syncResult: SyncResult? = null,
+    val syncInProgress: Boolean,
 )

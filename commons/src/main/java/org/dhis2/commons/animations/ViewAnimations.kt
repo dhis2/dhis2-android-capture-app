@@ -7,38 +7,45 @@ import android.view.animation.Transformation
 
 fun View.collapse(callback: () -> Unit) {
     val initialHeight = measuredHeight
-    val a: Animation = object : Animation() {
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            if (interpolatedTime == 1f) {
-                visibility = View.GONE
-                callback.invoke()
-            } else {
-                layoutParams.height =
-                    initialHeight - (initialHeight * interpolatedTime).toInt()
-                requestLayout()
+    val a: Animation =
+        object : Animation() {
+            override fun applyTransformation(
+                interpolatedTime: Float,
+                t: Transformation?,
+            ) {
+                if (interpolatedTime == 1f) {
+                    visibility = View.GONE
+                    callback.invoke()
+                } else {
+                    layoutParams.height =
+                        initialHeight - (initialHeight * interpolatedTime).toInt()
+                    requestLayout()
+                }
             }
-        }
 
-        override fun willChangeBounds(): Boolean {
-            return true
+            override fun willChangeBounds(): Boolean = true
         }
-    }
     a.duration = 200
     startAnimation(a)
 }
 
-fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
+fun View.expand(
+    fromInitialHeight: Boolean = false,
+    callback: () -> Unit,
+) {
     val initialHeight = if (fromInitialHeight) layoutParams.height else 0
 
     callback.invoke()
-    val matchParentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
-        (parent as View).width,
-        View.MeasureSpec.EXACTLY,
-    )
-    val wrapContentMeasureSpec = View.MeasureSpec.makeMeasureSpec(
-        0,
-        View.MeasureSpec.UNSPECIFIED,
-    )
+    val matchParentMeasureSpec =
+        View.MeasureSpec.makeMeasureSpec(
+            (parent as View).width,
+            View.MeasureSpec.EXACTLY,
+        )
+    val wrapContentMeasureSpec =
+        View.MeasureSpec.makeMeasureSpec(
+            0,
+            View.MeasureSpec.UNSPECIFIED,
+        )
     measure(matchParentMeasureSpec, wrapContentMeasureSpec)
     val targetHeight: Int = measuredHeight
 
@@ -47,28 +54,32 @@ fun View.expand(fromInitialHeight: Boolean = false, callback: () -> Unit) {
         layoutParams.height = 1
     }
     visibility = View.VISIBLE
-    val a: Animation = object : Animation() {
-        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-            layoutParams.height =
-                (initialHeight + (targetHeight - initialHeight) * interpolatedTime).toInt()
-            requestLayout()
-        }
+    val a: Animation =
+        object : Animation() {
+            override fun applyTransformation(
+                interpolatedTime: Float,
+                t: Transformation?,
+            ) {
+                layoutParams.height =
+                    (initialHeight + (targetHeight - initialHeight) * interpolatedTime).toInt()
+                requestLayout()
+            }
 
-        override fun willChangeBounds(): Boolean {
-            return true
+            override fun willChangeBounds(): Boolean = true
         }
-    }
-    a.setAnimationListener(object : Animation.AnimationListener {
-        override fun onAnimationStart(animation: Animation) {
-            /*do nothing*/
-        }
+    a.setAnimationListener(
+        object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation) {
+                // do nothing
+            }
 
-        override fun onAnimationEnd(animation: Animation) {
-            callback.invoke()
-        }
+            override fun onAnimationEnd(animation: Animation) {
+                callback.invoke()
+            }
 
-        override fun onAnimationRepeat(animation: Animation) {}
-    })
+            override fun onAnimationRepeat(animation: Animation) {}
+        },
+    )
     a.duration = 200
     startAnimation(a)
 }
@@ -84,8 +95,7 @@ fun View.show() {
                 scaleX = 0f
                 scaleY = 0f
                 visibility = View.VISIBLE
-            }
-            .start()
+            }.start()
     }
 }
 
@@ -114,8 +124,7 @@ fun View.showWithTranslation(
                 x = if (horizontalTranslation) 500f else 0f
                 y = if (verticalTranslation) -500f else 0f
                 visibility = View.VISIBLE
-            }
-            .start()
+            }.start()
     }
 }
 

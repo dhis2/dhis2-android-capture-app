@@ -28,9 +28,7 @@ class SyncPresenter internal constructor(
             .syncMetaDataForWorker(Constants.META_NOW, Constants.INITIAL_SYNC)
     }
 
-    fun observeSyncProcess(): LiveData<List<WorkInfo>> {
-        return workManagerController.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
-    }
+    fun observeSyncProcess(): LiveData<List<WorkInfo>> = workManagerController.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
 
     fun handleSyncInfo(workInfoList: List<WorkInfo>) {
         workInfoList.forEach { workInfo ->
@@ -40,7 +38,10 @@ class SyncPresenter internal constructor(
         }
     }
 
-    private fun handleMetaState(state: WorkInfo.State, message: String?) {
+    private fun handleMetaState(
+        state: WorkInfo.State,
+        message: String?,
+    ) {
         when (state) {
             WorkInfo.State.RUNNING -> view.setMetadataSyncStarted()
             WorkInfo.State.SUCCEEDED -> view.setMetadataSyncSucceed()
@@ -54,11 +55,11 @@ class SyncPresenter internal constructor(
         preferences.setValue(Preference.INITIAL_METADATA_SYNC_DONE, true)
         userManager?.let { userManager ->
             disposable.add(
-                userManager.theme.doOnSuccess { flagAndTheme ->
-                    preferences.setValue(Preference.FLAG, flagAndTheme.first)
-                    preferences.setValue(Preference.THEME, flagAndTheme.second)
-                }
-                    .subscribeOn(schedulerProvider.io())
+                userManager.theme
+                    .doOnSuccess { flagAndTheme ->
+                        preferences.setValue(Preference.FLAG, flagAndTheme.first)
+                        preferences.setValue(Preference.THEME, flagAndTheme.second)
+                    }.subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(
                         { (first, second) ->
@@ -77,7 +78,8 @@ class SyncPresenter internal constructor(
     fun onLogout() {
         userManager?.let { userManager ->
             disposable.add(
-                userManager.logout()
+                userManager
+                    .logout()
                     .subscribeOn(schedulerProvider.io())
                     .observeOn(schedulerProvider.ui())
                     .subscribe(

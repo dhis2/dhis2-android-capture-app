@@ -15,7 +15,6 @@ class RulesUtilsProviderImpl(
     val d2: D2,
     private val optionsRepository: OptionsRepository,
 ) : RulesUtilsProvider {
-
     var applyForEvent = false
     var canComplete = true
     var messageOnComplete: String? = null
@@ -59,83 +58,98 @@ class RulesUtilsProviderImpl(
             currentRuleUid = it.ruleId
 
             when (ProgramRuleActionType.valueOf(it.ruleAction.type)) {
-                ProgramRuleActionType.SHOWWARNING -> showWarning(
-                    it.ruleAction,
-                    fieldViewModels,
-                    it.data ?: "",
-                )
+                ProgramRuleActionType.SHOWWARNING ->
+                    showWarning(
+                        it.ruleAction,
+                        fieldViewModels,
+                        it.data ?: "",
+                    )
 
-                ProgramRuleActionType.SHOWERROR -> showError(
-                    it.ruleAction,
-                    fieldViewModels,
-                    it.data ?: "",
-                )
+                ProgramRuleActionType.SHOWERROR ->
+                    showError(
+                        it.ruleAction,
+                        fieldViewModels,
+                        it.data ?: "",
+                    )
 
-                ProgramRuleActionType.HIDEFIELD -> hideField(
-                    it.ruleAction,
-                    fieldViewModels,
-                )
+                ProgramRuleActionType.HIDEFIELD ->
+                    hideField(
+                        it.ruleAction,
+                        fieldViewModels,
+                    )
 
-                ProgramRuleActionType.DISPLAYTEXT -> displayText(
-                    it.ruleAction,
-                    it,
-                    fieldViewModels,
-                )
+                ProgramRuleActionType.DISPLAYTEXT ->
+                    displayText(
+                        it.ruleAction,
+                        it,
+                        fieldViewModels,
+                    )
 
-                ProgramRuleActionType.DISPLAYKEYVALUEPAIR -> displayKeyValuePair(
-                    it.ruleAction,
-                    it,
-                    fieldViewModels,
-                )
+                ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
+                    displayKeyValuePair(
+                        it.ruleAction,
+                        it,
+                        fieldViewModels,
+                    )
 
-                ProgramRuleActionType.HIDESECTION -> hideSection(
-                    fieldViewModels,
-                    it.ruleAction,
-                )
+                ProgramRuleActionType.HIDESECTION ->
+                    hideSection(
+                        fieldViewModels,
+                        it.ruleAction,
+                    )
 
-                ProgramRuleActionType.ASSIGN -> assign(
-                    it.ruleAction,
-                    it,
-                    fieldViewModels,
-                )
+                ProgramRuleActionType.ASSIGN ->
+                    assign(
+                        it.ruleAction,
+                        it,
+                        fieldViewModels,
+                    )
 
-                ProgramRuleActionType.CREATEEVENT -> createEvent(
-                    it.ruleAction,
-                    fieldViewModels,
-                )
+                ProgramRuleActionType.CREATEEVENT ->
+                    createEvent(
+                        it.ruleAction,
+                        fieldViewModels,
+                    )
 
-                ProgramRuleActionType.SETMANDATORYFIELD -> setMandatory(
-                    it.ruleAction,
-                    fieldViewModels,
-                )
+                ProgramRuleActionType.SETMANDATORYFIELD ->
+                    setMandatory(
+                        it.ruleAction,
+                        fieldViewModels,
+                    )
 
-                ProgramRuleActionType.WARNINGONCOMPLETE -> warningOnCompletion(
-                    it.ruleAction,
-                    fieldViewModels,
-                    it.data ?: "",
-                )
+                ProgramRuleActionType.WARNINGONCOMPLETE ->
+                    warningOnCompletion(
+                        it.ruleAction,
+                        fieldViewModels,
+                        it.data ?: "",
+                    )
 
-                ProgramRuleActionType.ERRORONCOMPLETE -> errorOnCompletion(
-                    it.ruleAction,
-                    fieldViewModels,
-                    it.data ?: "",
-                )
+                ProgramRuleActionType.ERRORONCOMPLETE ->
+                    errorOnCompletion(
+                        it.ruleAction,
+                        fieldViewModels,
+                        it.data ?: "",
+                    )
 
-                ProgramRuleActionType.HIDEPROGRAMSTAGE -> hideProgramStage(
-                    it.ruleAction,
-                )
+                ProgramRuleActionType.HIDEPROGRAMSTAGE ->
+                    hideProgramStage(
+                        it.ruleAction,
+                    )
 
-                ProgramRuleActionType.HIDEOPTION -> hideOption(
-                    it.ruleAction,
-                )
+                ProgramRuleActionType.HIDEOPTION ->
+                    hideOption(
+                        it.ruleAction,
+                    )
 
-                ProgramRuleActionType.HIDEOPTIONGROUP -> hideOptionGroup(
-                    it.ruleAction,
-                )
+                ProgramRuleActionType.HIDEOPTIONGROUP ->
+                    hideOptionGroup(
+                        it.ruleAction,
+                    )
 
-                ProgramRuleActionType.SHOWOPTIONGROUP -> showOptionGroup(
-                    it.ruleAction,
-                )
+                ProgramRuleActionType.SHOWOPTIONGROUP ->
+                    showOptionGroup(
+                        it.ruleAction,
+                    )
 
                 else -> unsupportedRuleActions.add(it.ruleId)
             }
@@ -168,33 +182,50 @@ class RulesUtilsProviderImpl(
         programStages: MutableMap<String, ProgramStage>,
         calcResult: Result<List<RuleEffect>>,
     ) {
-        calcResult.getOrNull()
+        calcResult
+            .getOrNull()
             ?.filter { it.ruleAction.type == ProgramRuleActionType.HIDEPROGRAMSTAGE.name }
             ?.forEach {
                 hideProgramStage(programStages, it.ruleAction)
             }
     }
 
-    private fun save(uid: String, value: String?): ValueStoreResult {
-        return if (applyForEvent) {
+    private fun save(
+        uid: String,
+        value: String?,
+    ): ValueStoreResult =
+        if (applyForEvent) {
             saveForEvent(uid, value)
         } else {
             saveForEnrollment(uid, value)
         }
-    }
 
-    private fun saveForEvent(uid: String, value: String?): ValueStoreResult {
-        return valueStore?.saveWithTypeCheck(uid, value)?.blockingFirst()?.valueStoreResult
+    private fun saveForEvent(
+        uid: String,
+        value: String?,
+    ): ValueStoreResult =
+        valueStore?.saveWithTypeCheck(uid, value)?.blockingFirst()?.valueStoreResult
             ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED
-    }
 
-    private fun saveForEnrollment(uid: String, value: String?): ValueStoreResult {
+    private fun saveForEnrollment(
+        uid: String,
+        value: String?,
+    ): ValueStoreResult {
         try {
-            if (d2.dataElementModule().dataElements().uid(uid).blockingExists()) {
+            if (d2
+                    .dataElementModule()
+                    .dataElements()
+                    .uid(uid)
+                    .blockingExists()
+            ) {
                 Timber.d("Enrollments rules should not assign values to dataElements")
                 return ValueStoreResult.VALUE_HAS_NOT_CHANGED
             } else if (
-                d2.trackedEntityModule().trackedEntityAttributes().uid(uid).blockingExists()
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityAttributes()
+                    .uid(uid)
+                    .blockingExists()
             ) {
                 return valueStore?.save(uid, value, null)?.valueStoreResult
                     ?: ValueStoreResult.VALUE_HAS_NOT_CHANGED
@@ -270,10 +301,12 @@ class RulesUtilsProviderImpl(
         hideSection: RuleAction,
     ) {
         val programStageSection = hideSection.values["programStageSection"]
-        fieldViewModels.filter {
-            it.value.programStageSection == programStageSection &&
-                !it.value.mandatory
-        }.keys.forEach { fieldViewModels.remove(it) }
+        fieldViewModels
+            .filter {
+                it.value.programStageSection == programStageSection &&
+                    !it.value.mandatory
+            }.keys
+            .forEach { fieldViewModels.remove(it) }
     }
 
     private fun assign(
@@ -285,10 +318,11 @@ class RulesUtilsProviderImpl(
         fieldViewModels[fieldUid]?.let { field ->
             val value =
                 if (field.optionSet != null && field.displayName != null) {
-                    val valueOption = optionsRepository.getOptionByDisplayName(
-                        optionSet = field.optionSet!!,
-                        displayName = field.displayName!!,
-                    )
+                    val valueOption =
+                        optionsRepository.getOptionByDisplayName(
+                            optionSet = field.optionSet!!,
+                            displayName = field.displayName!!,
+                        )
                     if (valueOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -311,10 +345,11 @@ class RulesUtilsProviderImpl(
             }
             val valueToShow =
                 if (field.optionSet != null && ruleEffect.data?.isNotEmpty() == true) {
-                    val effectOption = optionsRepository.getOptionByCode(
-                        optionSet = field.optionSet!!,
-                        code = ruleEffect.data!!,
-                    )
+                    val effectOption =
+                        optionsRepository.getOptionByCode(
+                            optionSet = field.optionSet!!,
+                            code = ruleEffect.data!!,
+                        )
                     if (effectOption == null) {
                         configurationErrors.add(
                             RulesUtilsProviderConfigurationError(
@@ -335,10 +370,11 @@ class RulesUtilsProviderImpl(
                 }
 
             ruleEffect.data?.formatData(field.valueType)?.let { formattedValue ->
-                val updatedField = fieldViewModels[assign.field()]
-                    ?.setValue(formattedValue)
-                    ?.setDisplayName(valueToShow?.formatData(field.valueType))
-                    ?.setEditable(false)
+                val updatedField =
+                    fieldViewModels[assign.field()]
+                        ?.setValue(formattedValue)
+                        ?.setDisplayName(valueToShow?.formatData(field.valueType))
+                        ?.setEditable(false)
 
                 updatedField?.let {
                     fieldViewModels[fieldUid] = it
@@ -367,11 +403,12 @@ class RulesUtilsProviderImpl(
         if (model != null) {
             fieldViewModels[fieldUid] = model.setFieldMandatory()
         } else {
-            fieldViewModels.filterKeys {
-                it.startsWith(fieldUid)
-            }.forEach { (key, value) ->
-                fieldViewModels[key] = value.setFieldMandatory()
-            }
+            fieldViewModels
+                .filterKeys {
+                    it.startsWith(fieldUid)
+                }.forEach { (key, value) ->
+                    fieldViewModels[key] = value.setFieldMandatory()
+                }
         }
     }
 
@@ -434,10 +471,11 @@ class RulesUtilsProviderImpl(
         option?.let {
             optionsToHide[hideOption.field()]?.add(option)
             valueStore?.let {
-                if (it.deleteOptionValueIfSelected(
-                        fieldUid,
-                        option,
-                    ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                if (it
+                        .deleteOptionValueIfSelected(
+                            fieldUid,
+                            option,
+                        ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
                 ) {
                     fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
                 }
@@ -455,11 +493,12 @@ class RulesUtilsProviderImpl(
             optionGroupsToHide[hideOptionGroup.field()]?.add(optionGroup)
 
             valueStore?.let {
-                if (it.deleteOptionValueIfSelectedInGroup(
-                        fieldUid,
-                        optionGroup,
-                        true,
-                    ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
+                if (it
+                        .deleteOptionValueIfSelectedInGroup(
+                            fieldUid,
+                            optionGroup,
+                            true,
+                        ).valueStoreResult == ValueStoreResult.VALUE_CHANGED
                 ) {
                     fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
                 }
@@ -472,7 +511,8 @@ class RulesUtilsProviderImpl(
         val optionGroupUid = showOptionGroup.values["optionGroup"]
 
         if (!optionGroupsToHide.containsKey(fieldUid) ||
-            optionGroupUid != null && optionGroupsToHide[fieldUid]?.contains(optionGroupUid) == false
+            optionGroupUid != null &&
+            optionGroupsToHide[fieldUid]?.contains(optionGroupUid) == false
         ) {
             if (optionGroupsToShow[fieldUid] == null) {
                 optionGroupsToShow[fieldUid] = mutableListOf(optionGroupUid!!)
@@ -480,11 +520,13 @@ class RulesUtilsProviderImpl(
                 optionGroupsToShow[fieldUid]?.add(optionGroupUid!!)
             }
         }
-        if (optionGroupUid != null && valueStore?.deleteOptionValueIfSelectedInGroup(
-                fieldUid,
-                optionGroupUid,
-                false,
-            )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
+        if (optionGroupUid != null &&
+            valueStore
+                ?.deleteOptionValueIfSelectedInGroup(
+                    fieldUid,
+                    optionGroupUid,
+                    false,
+                )?.valueStoreResult == ValueStoreResult.VALUE_CHANGED
         ) {
             fieldsToUpdate.add(FieldWithNewValue(fieldUid, null))
         }

@@ -1,6 +1,6 @@
 package org.dhis2.maps.views
 
-import com.mapbox.mapboxsdk.geometry.LatLng
+import org.maplibre.android.geometry.LatLng
 
 sealed class SelectedLocation(
     val latitude: Double,

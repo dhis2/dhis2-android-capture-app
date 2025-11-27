@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,8 +64,9 @@ fun AccuracyIndicator(
         modifier = modifier,
         content = {
             Box(
-                modifier = Modifier
-                    .size(24.dp),
+                modifier =
+                    Modifier
+                        .size(24.dp),
             ) {
                 if (accuracyIndicatorState.shouldDisplayProgress(accuracyRange)) {
                     ProgressIndicator(
@@ -84,9 +85,10 @@ fun AccuracyIndicator(
             }
 
             Text(
-                modifier = Modifier
-                    .height(24.dp)
-                    .wrapContentHeight(Alignment.CenterVertically),
+                modifier =
+                    Modifier
+                        .height(24.dp)
+                        .wrapContentHeight(Alignment.CenterVertically),
                 text = buildAccuracyText(accuracyRange),
             )
             Tag(
@@ -94,28 +96,31 @@ fun AccuracyIndicator(
                 type = accuracyTagType(accuracyRange),
             )
             Text(
-                text = messageText(
-                    accuracyRange = accuracyRange,
-                    timeLeft = accuracyIndicatorState.timeLeft,
-                    minLocationPrecision = minLocationPrecision,
-                ),
-                style = getTextStyle(style = DHIS2TextStyle.BODY_SMALL).copy(
-                    color = TextColor.OnSurfaceLight,
-                ),
+                text =
+                    messageText(
+                        accuracyRange = accuracyRange,
+                        timeLeft = accuracyIndicatorState.timeLeft,
+                        minLocationPrecision = minLocationPrecision,
+                    ),
+                style =
+                    getTextStyle(style = DHIS2TextStyle.BODY_SMALL).copy(
+                        color = TextColor.OnSurfaceLight,
+                    ),
             )
         },
         measurePolicy = { measurables, constraints ->
 
-            val placeables = measurables.map { measurable ->
-                measurable.measure(constraints)
-            }
+            val placeables =
+                measurables.map { measurable ->
+                    measurable.measure(constraints)
+                }
 
             val totalHeight =
                 placeables[0].height + (
                     placeables.getOrNull(3)?.let { messagePlaceable ->
                         messagePlaceable.height + with(density) { 4.dp.toPx() }.toInt()
                     } ?: 0
-                    )
+                )
 
             layout(constraints.maxWidth, totalHeight) {
                 val noLocation =
@@ -173,44 +178,47 @@ fun AccuracyIndicator(
 }
 
 @Composable
-private fun buildAccuracyText(accuracyRange: AccuracyRange) = buildAnnotatedString {
-    val accuracyRangeLabel = stringResource(id = R.string.accuracy_range) + ": "
-    val accuracyValueLabel = "${accuracyRange.value}m"
+private fun buildAccuracyText(accuracyRange: AccuracyRange) =
+    buildAnnotatedString {
+        val accuracyRangeLabel = stringResource(id = R.string.accuracy_range) + ": "
+        val accuracyValueLabel = "${accuracyRange.value}m"
 
-    addStyle(
-        getTextStyle(style = DHIS2TextStyle.BODY_LARGE).toSpanStyle().copy(
-            color = TextColor.OnSurfaceLight,
-        ),
-        0,
-        accuracyRangeLabel.length,
-    )
-    append(accuracyRangeLabel)
-    addStyle(
-        getTextStyle(style = DHIS2TextStyle.BODY_LARGE).toSpanStyle().copy(
-            color = TextColor.OnSurface,
-        ),
-        accuracyRangeLabel.length,
-        accuracyRangeLabel.length + accuracyValueLabel.length,
-    )
-    append(accuracyValueLabel)
-}
+        addStyle(
+            getTextStyle(style = DHIS2TextStyle.BODY_LARGE).toSpanStyle().copy(
+                color = TextColor.OnSurfaceLight,
+            ),
+            0,
+            accuracyRangeLabel.length,
+        )
+        append(accuracyRangeLabel)
+        addStyle(
+            getTextStyle(style = DHIS2TextStyle.BODY_LARGE).toSpanStyle().copy(
+                color = TextColor.OnSurface,
+            ),
+            accuracyRangeLabel.length,
+            accuracyRangeLabel.length + accuracyValueLabel.length,
+        )
+        append(accuracyValueLabel)
+    }
 
 @Composable
-private fun accuracyRangeLabel(accuracyRange: AccuracyRange) = when (accuracyRange) {
-    is AccuracyRange.None -> ""
-    is AccuracyRange.Good -> stringResource(id = R.string.accuracy_good)
-    is AccuracyRange.Low -> stringResource(id = R.string.accuracy_low)
-    is AccuracyRange.Medium -> stringResource(id = R.string.accuracy_medium)
-    is AccuracyRange.VeryGood -> stringResource(id = R.string.accuracy_verygood)
-}
+private fun accuracyRangeLabel(accuracyRange: AccuracyRange) =
+    when (accuracyRange) {
+        is AccuracyRange.None -> ""
+        is AccuracyRange.Good -> stringResource(id = R.string.accuracy_good)
+        is AccuracyRange.Low -> stringResource(id = R.string.accuracy_low)
+        is AccuracyRange.Medium -> stringResource(id = R.string.accuracy_medium)
+        is AccuracyRange.VeryGood -> stringResource(id = R.string.accuracy_verygood)
+    }
 
-private fun accuracyTagType(accuracyRange: AccuracyRange) = when (accuracyRange) {
-    is AccuracyRange.Good -> TagType.SUCCESS
-    is AccuracyRange.Low -> TagType.ERROR
-    is AccuracyRange.Medium -> TagType.WARNING
-    is AccuracyRange.None -> TagType.DEFAULT
-    is AccuracyRange.VeryGood -> TagType.SUCCESS
-}
+private fun accuracyTagType(accuracyRange: AccuracyRange) =
+    when (accuracyRange) {
+        is AccuracyRange.Good -> TagType.SUCCESS
+        is AccuracyRange.Low -> TagType.ERROR
+        is AccuracyRange.Medium -> TagType.WARNING
+        is AccuracyRange.None -> TagType.DEFAULT
+        is AccuracyRange.VeryGood -> TagType.SUCCESS
+    }
 
 @Composable
 private fun messageText(
@@ -230,7 +238,7 @@ private fun messageText(
                     " ${stringResource(id = R.string.accuracy_minimun_set_not_allow, it)}"
                 }
             } ?: ""
-            )
+        )
 
     else ->
         stringResource(id = R.string.accuracy_please_wait)
@@ -313,9 +321,10 @@ private fun AccuracyIndicatorNoneWithTimeLeftPreview(
 ) {
     AccuracyIndicator(
         accuracyRange = AccuracyRange.None(),
-        accuracyIndicatorState = rememberAccuracyIndicatorState(
-            timeLeft = timeLeft,
-        ),
+        accuracyIndicatorState =
+            rememberAccuracyIndicatorState(
+                timeLeft = timeLeft,
+            ),
     )
 }
 
@@ -326,27 +335,30 @@ private fun AccuracyIndicatorGoodWithTimeLeftPreview(
 ) {
     AccuracyIndicator(
         accuracyRange = AccuracyRange.None(),
-        accuracyIndicatorState = rememberAccuracyIndicatorState(
-            timeLeft = timeLeft,
-        ),
+        accuracyIndicatorState =
+            rememberAccuracyIndicatorState(
+                timeLeft = timeLeft,
+            ),
     )
 }
 
 internal class AccuracyRangeParameterProvider : PreviewParameterProvider<AccuracyRange> {
-    override val values = sequenceOf(
-        AccuracyRange.None(),
-        AccuracyRange.Low(210),
-        AccuracyRange.Medium(35),
-        AccuracyRange.Good(20),
-        AccuracyRange.VeryGood(5),
-    )
+    override val values =
+        sequenceOf(
+            AccuracyRange.None(),
+            AccuracyRange.Low(210),
+            AccuracyRange.Medium(35),
+            AccuracyRange.Good(20),
+            AccuracyRange.VeryGood(5),
+        )
 }
 
 internal class TimeLeftParameterProvider : PreviewParameterProvider<Int> {
-    override val values = sequenceOf(
-        10,
-        0,
-    )
+    override val values =
+        sequenceOf(
+            10,
+            0,
+        )
 }
 
 @Preview(showBackground = true)
@@ -369,22 +381,23 @@ private fun NoneToValuePreview() {
                 )
             }
             Button(text = "Change accuracy") {
-                accuracyRange = when (accuracyRange) {
-                    is AccuracyRange.None ->
-                        AccuracyRange.Low(210)
+                accuracyRange =
+                    when (accuracyRange) {
+                        is AccuracyRange.None ->
+                            AccuracyRange.Low(210)
 
-                    is AccuracyRange.Good ->
-                        AccuracyRange.VeryGood(5)
+                        is AccuracyRange.Good ->
+                            AccuracyRange.VeryGood(5)
 
-                    is AccuracyRange.Low ->
-                        AccuracyRange.Medium(35)
+                        is AccuracyRange.Low ->
+                            AccuracyRange.Medium(35)
 
-                    is AccuracyRange.Medium ->
-                        AccuracyRange.Good(20)
+                        is AccuracyRange.Medium ->
+                            AccuracyRange.Good(20)
 
-                    is AccuracyRange.VeryGood ->
-                        AccuracyRange.None()
-                }
+                        is AccuracyRange.VeryGood ->
+                            AccuracyRange.None()
+                    }
             }
         }
     }

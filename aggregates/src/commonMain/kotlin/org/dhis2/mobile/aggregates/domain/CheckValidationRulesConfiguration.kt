@@ -11,14 +11,16 @@ internal class CheckValidationRulesConfiguration(
     private val dataSetInstanceRepository: DataSetInstanceRepository,
 ) {
     suspend operator fun invoke(): ValidationRulesConfiguration {
-        val hasValidationRules = dataSetInstanceRepository.checkIfHasValidationRules(
-            dataSetUid = dataSetUid,
-        )
-
-        return if (hasValidationRules) {
-            val mandatory = dataSetInstanceRepository.areValidationRulesMandatory(
+        val hasValidationRules =
+            dataSetInstanceRepository.checkIfHasValidationRules(
                 dataSetUid = dataSetUid,
             )
+
+        return if (hasValidationRules) {
+            val mandatory =
+                dataSetInstanceRepository.areValidationRulesMandatory(
+                    dataSetUid = dataSetUid,
+                )
             if (mandatory) {
                 MANDATORY
             } else {

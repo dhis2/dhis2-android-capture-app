@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="show_table_graph">បង្ហាញតារាង</string>
     <string name="action_accept">ទទួលយក</string>
     <string name="period">កំឡុងពេល</string>
     <string name="none">គ្មាន</string>
     <string name="daily">រាល់​ថ្ងៃ</string>
+    <string name="today">ថ្ងៃនេះ</string>
     <string name="other">ផ្សេង</string>
     <string name="yesterday">កាលពីម្សិលមិញ</string>
     <string name="weekly">រាល់​សប្ដាហ៍</string>

@@ -27,12 +27,13 @@ class CategoryDialog(
     private val accessControl: Boolean,
     private val dateControl: Date?,
     val onItemSelected: (String) -> Unit,
-) : DialogFragment(), CategoryDialogView {
-
+) : DialogFragment(),
+    CategoryDialogView {
     private lateinit var binding: DialogOptionSetBinding
 
     enum class Type {
-        CATEGORY_OPTIONS, CATEGORY_OPTION_COMBO
+        CATEGORY_OPTIONS,
+        CATEGORY_OPTION_COMBO,
     }
 
     @Inject
@@ -63,10 +64,11 @@ class CategoryDialog(
 
         presenter.init()
 
-        adapter = CategoryDialogAdapter {
-            onItemSelected(it.uid)
-            this.dismiss()
-        }
+        adapter =
+            CategoryDialogAdapter {
+                onItemSelected(it.uid)
+                this.dismiss()
+            }
 
         binding.recycler.adapter = adapter
 
@@ -110,14 +112,15 @@ class CategoryDialog(
             .inject(this)
     }
 
-    override fun show(manager: FragmentManager, tag: String?) {
+    override fun show(
+        manager: FragmentManager,
+        tag: String?,
+    ) {
         isDialogShown = true
         super.show(manager, tag)
     }
 
-    override fun showDialog(): Boolean {
-        return presenter.getCount() > defaultSize
-    }
+    override fun showDialog(): Boolean = presenter.getCount() > defaultSize
 
     override fun dismiss() {
         presenter.onDetach()
@@ -127,15 +130,14 @@ class CategoryDialog(
         }
     }
 
-    override fun searchSource(): Observable<String> {
-        return RxTextView.textChanges(binding.txtSearch)
+    override fun searchSource(): Observable<String> =
+        RxTextView
+            .textChanges(binding.txtSearch)
             .startWith("")
             .map { it.toString() }
-    }
 
     companion object {
-        @JvmField
-        var DEFAULT_COUNT_LIMIT: Int = 15
+        const val DEFAULT_COUNT_LIMIT: Int = 15
         val TAG: String = this::class.java.name
     }
 }

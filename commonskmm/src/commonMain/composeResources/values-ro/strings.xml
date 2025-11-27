@@ -13,4 +13,8 @@
     <string name="input_action_cancel">Anulare</string>
     <string name="no_results_found">Nu au fost găsite rezultate</string>
     <string name="action_done">Terminat</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

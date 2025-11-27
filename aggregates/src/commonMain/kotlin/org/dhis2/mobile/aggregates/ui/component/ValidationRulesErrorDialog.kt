@@ -53,9 +53,10 @@ internal fun ValidationRulesErrorDialog(violations: List<Violation>) {
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
         val pageCount = violations.size
-        val pagerState = rememberPagerState(
-            pageCount = { pageCount },
-        )
+        val pagerState =
+            rememberPagerState(
+                pageCount = { pageCount },
+            )
 
         if (pageCount > 1) {
             PagerIndicator(
@@ -72,11 +73,12 @@ internal fun ValidationRulesErrorDialog(violations: List<Violation>) {
             val violation = violations[page]
 
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(Shape.Large)
-                    .background(SurfaceColor.PrimaryContainer)
-                    .padding(Spacing.Spacing16),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .clip(Shape.Large)
+                        .background(SurfaceColor.PrimaryContainer)
+                        .padding(Spacing.Spacing16),
             ) {
                 item {
                     Column(
@@ -134,7 +136,9 @@ internal fun PagerIndicator(
     LaunchedEffect(key1 = currentPage) {
         val size = indicatorScrollState.layoutInfo.visibleItemsInfo.size
         val lastVisibleIndex =
-            indicatorScrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            indicatorScrollState.layoutInfo.visibleItemsInfo
+                .lastOrNull()
+                ?.index ?: 0
         val firstVisibleItemIndex = indicatorScrollState.firstVisibleItemIndex
 
         if (currentPage > lastVisibleIndex - 1) {
@@ -146,8 +150,9 @@ internal fun PagerIndicator(
 
     LazyRow(
         state = indicatorScrollState,
-        modifier = Modifier
-            .width(120.dp),
+        modifier =
+            Modifier
+                .width(120.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -157,22 +162,26 @@ internal fun PagerIndicator(
             item(key = "item$iteration") {
                 val firstVisibleIndex by remember { derivedStateOf { indicatorScrollState.firstVisibleItemIndex } }
                 val lastVisibleIndex =
-                    indicatorScrollState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                    indicatorScrollState.layoutInfo.visibleItemsInfo
+                        .lastOrNull()
+                        ?.index ?: 0
                 val size by animateDpAsState(
-                    targetValue = when (iteration) {
-                        currentPage -> Spacing.Spacing14
-                        in firstVisibleIndex + 1..<lastVisibleIndex -> 10.dp
-                        else -> Spacing.Spacing14
-                    },
+                    targetValue =
+                        when (iteration) {
+                            currentPage -> Spacing.Spacing14
+                            in firstVisibleIndex + 1..<lastVisibleIndex -> 10.dp
+                            else -> Spacing.Spacing14
+                        },
                     label = "PagerIndicatorDotSizeAnimation",
                 )
                 Box(
-                    modifier = Modifier
-                        .padding(all = Spacing.Spacing8)
-                        .background(color = color, CircleShape)
-                        .size(
-                            size,
-                        ),
+                    modifier =
+                        Modifier
+                            .padding(all = Spacing.Spacing8)
+                            .background(color = color, CircleShape)
+                            .size(
+                                size,
+                            ),
                 )
             }
         }

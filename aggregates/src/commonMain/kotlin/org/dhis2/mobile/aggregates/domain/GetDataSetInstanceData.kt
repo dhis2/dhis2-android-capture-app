@@ -13,36 +13,41 @@ internal class GetDataSetInstanceData(
     private val dataSetInstanceRepository: DataSetInstanceRepository,
     private val openErrorLocation: Boolean,
 ) {
-    suspend operator fun invoke(scope: CoroutineScope): DataSetInstanceData = with(scope) {
-        val dataSetDetails = async {
-            dataSetInstanceRepository.getDataSetInstance(
-                dataSetUid = datasetUid,
-                periodId = periodId,
-                orgUnitUid = orgUnitUid,
-                attrOptionComboUid = attrOptionComboUid,
-            )
-        }
-        val dataSetRenderingConfig = async {
-            dataSetInstanceRepository.getRenderingConfig(datasetUid)
-        }
-        val dataSetSections = async {
-            dataSetInstanceRepository.getDataSetInstanceSections(datasetUid)
-        }
+    suspend operator fun invoke(scope: CoroutineScope): DataSetInstanceData =
+        with(scope) {
+            val dataSetDetails =
+                async {
+                    dataSetInstanceRepository.getDataSetInstance(
+                        dataSetUid = datasetUid,
+                        periodId = periodId,
+                        orgUnitUid = orgUnitUid,
+                        attrOptionComboUid = attrOptionComboUid,
+                    )
+                }
+            val dataSetRenderingConfig =
+                async {
+                    dataSetInstanceRepository.getRenderingConfig(datasetUid)
+                }
+            val dataSetSections =
+                async {
+                    dataSetInstanceRepository.getDataSetInstanceSections(datasetUid)
+                }
 
-        val initialSectionToLoad = async {
-            dataSetInstanceRepository.getInitialSectionToLoad(
-                openErrorLocation = openErrorLocation,
-                dataSetUid = datasetUid,
-                periodId = periodId,
-                orgUnitUid = orgUnitUid,
-                catOptCombo = attrOptionComboUid,
+            val initialSectionToLoad =
+                async {
+                    dataSetInstanceRepository.getInitialSectionToLoad(
+                        openErrorLocation = openErrorLocation,
+                        dataSetUid = datasetUid,
+                        periodId = periodId,
+                        orgUnitUid = orgUnitUid,
+                        catOptCombo = attrOptionComboUid,
+                    )
+                }
+            DataSetInstanceData(
+                dataSetDetails = dataSetDetails.await(),
+                dataSetRenderingConfig = dataSetRenderingConfig.await(),
+                dataSetSections = dataSetSections.await(),
+                initialSectionToLoad = initialSectionToLoad.await(),
             )
         }
-        DataSetInstanceData(
-            dataSetDetails = dataSetDetails.await(),
-            dataSetRenderingConfig = dataSetRenderingConfig.await(),
-            dataSetSections = dataSetSections.await(),
-            initialSectionToLoad = initialSectionToLoad.await(),
-        )
-    }
 }

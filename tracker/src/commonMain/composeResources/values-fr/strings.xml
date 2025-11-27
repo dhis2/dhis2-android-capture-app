@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Il n'y a pas de relations, cliquez "+" pour en ajouter une nouvelle.</string>
+    <string name="relation_creation_date">Relation créée le</string>
+    <string name="remove_relationship_title">Supprimer %1$s?</string>
+    <string name="remove_relationship_desc">Le fichier %1$s sera supprimé. Cette action est irréversible.</string>
+    <string name="remove_some_relationships_title">Supprimer %1$d les relations sélectionnées ?</string>
+    <string name="show_number_more">Afficher %1$d plus...</string>
+    <string name="relationship">Relation</string>
+    <string name="no_data">Aucune donnée</string>
+    <string name="syncing">Synchronisation...</string>
+    <string name="show_more">Afficher plus</string>
+    <string name="show_less">Afficher moins</string>
+    <string name="cancel">Annuler</string>
+    <string name="remove">Supprimer</string>
+    <string name="search">Rechercher</string>
+    <string name="optional">Optional</string>
+
+</resources>

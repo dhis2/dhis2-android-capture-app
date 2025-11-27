@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">بعدی</string>
+    <string name="username_hint">نام کاربر</string>
+    <string name="password_hint">کلید رمز</string>
+    <string name="openid_or">ویا</string>
+    <string name="action_yes">بلی</string>
+    <string name="enter_pin_button">قفل نیست</string>
+    </resources>

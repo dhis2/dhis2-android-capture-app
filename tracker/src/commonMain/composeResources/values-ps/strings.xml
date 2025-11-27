@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relationship">اړیکه</string>
+    <string name="no_data">د مالوماتو (ډاټا) نشتوالۍ</string>
+    <string name="show_more">ډېر ښکاره کړئ</string>
+    <string name="show_less">لږ ښکاره کړئ</string>
+    <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+    <string name="remove">لرې کول</string>
+    <string name="search">جستجو</string>
+    <string name="optional">اختیاري دی</string>
+
+</resources>

@@ -4,7 +4,6 @@ import org.dhis2.commons.filters.FilterItem
 import org.hisp.dhis.android.core.settings.FilterSetting
 
 class GetFiltersApplyingWebAppConfig {
-
     fun <T> execute(
         defaultFilters: LinkedHashMap<T, FilterItem>,
         webAppFilters: Map<T, FilterSetting>,

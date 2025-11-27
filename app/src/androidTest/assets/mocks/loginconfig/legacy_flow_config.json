@@ -1,0 +1,18 @@
+{
+  "apiVersion": "2.41.3.1",
+  "applicationTitle": "Seychelles Demo",
+  "applicationDescription": "Welcome to the DHIS 2 demo application",
+  "applicationNotification": "Log in with admin / district and feel free to do changes as system is reset every night.",
+  "applicationLeftSideFooter": "Learn more at <a href=\"http://www.dhis2.org\">dhis2.org</a>",
+  "countryFlag": "seychelles",
+  "uiLocale": "en",
+  "loginPopup": "",
+  "loginPageLayout": "DEFAULT",
+  "recaptchaSite": "6LcVwT0UAAAAAAkO_EGPiYOiymIszZUeHfqWIYX5",
+  "emailConfigured": false,
+  "selfRegistrationEnabled": true,
+  "selfRegistrationNoRecaptcha": false,
+  "allowAccountRecovery": true,
+  "useCustomLogoFront": false,
+  "oidcProviders": []
+}

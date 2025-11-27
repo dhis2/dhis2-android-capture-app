@@ -20,23 +20,24 @@ class TeiFilterToWorkingListItemMapperTest {
 
     @Test
     fun `Should map filter to working list item`() {
-        val result = mapper.map(
-            TrackedEntityInstanceFilter.builder()
-                .uid("uid")
-                .displayName("name")
-                .entityQueryCriteria(
-                    EntityQueryCriteria.builder().enrollmentStatus(EnrollmentStatus.ACTIVE).build(),
-                )
-                .eventFilters(
-                    listOf(
-                        TrackedEntityInstanceEventFilter.builder()
-                            .programStage("stage")
-                            .assignedUserMode(AssignedUserMode.CURRENT)
-                            .build(),
-                    ),
-                )
-                .build(),
-        )
+        val result =
+            mapper.map(
+                TrackedEntityInstanceFilter
+                    .builder()
+                    .uid("uid")
+                    .displayName("name")
+                    .entityQueryCriteria(
+                        EntityQueryCriteria.builder().enrollmentStatus(EnrollmentStatus.ACTIVE).build(),
+                    ).eventFilters(
+                        listOf(
+                            TrackedEntityInstanceEventFilter
+                                .builder()
+                                .programStage("stage")
+                                .assignedUserMode(AssignedUserMode.CURRENT)
+                                .build(),
+                        ),
+                    ).build(),
+            )
 
         assertTrue(result.uid == "uid")
         assertTrue(result.label == "name")
@@ -44,11 +45,13 @@ class TeiFilterToWorkingListItemMapperTest {
 
     @Test
     fun `Should set default values`() {
-        val result = mapper.map(
-            TrackedEntityInstanceFilter.builder()
-                .uid("uid")
-                .build(),
-        )
+        val result =
+            mapper.map(
+                TrackedEntityInstanceFilter
+                    .builder()
+                    .uid("uid")
+                    .build(),
+            )
 
         assertTrue(result.uid == "uid")
         assertTrue(result.label == "defaultLabel")

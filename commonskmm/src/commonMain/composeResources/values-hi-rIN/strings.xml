@@ -4,13 +4,26 @@
     <string name="required">आवश्यकता है</string>
     <string name="hint_day">दिन</string>
     <string name="review">रिव्यू</string>
+    <string name="complete">पूरा हुआ</string>
     <string name="not_now">अभी नहीं</string>
     <string name="keep_editing">संपादन करते रहें</string>
     <string name="share">साझा करें</string>
     <string name="action_close">बंद करें</string>
     <string name="download">डाउनलोड</string>
+    <string name="add_location">लोकेशन</string>
     <string name="input_age_date_of_birth">जन्म तिथि</string>
     <string name="input_age">आयु</string>
+    <string name="input_age_or">या</string>
+    <string name="input_action_accept">स्वीकार करें</string>
     <string name="input_action_cancel">रद्द करें</string>
+    <string name="input_coordinate_add_location">लोकेशन</string>
+    <string name="add_file">फ़ाइल जोड़ें</string>
+    <string name="add_image">इमेज जोड़ें</string>
+    <string name="no_results_found">कोई परिणाम नहीं मिला</string>
+    <string name="search_to_find_more">खोजें और अधिक पाएं</string>
     <string name="action_done">पूरा हुआ</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

@@ -48,11 +48,12 @@ internal fun ProvideMatrixInput(
         state = fieldUiModel.inputState(),
         selectedData = matrixSelectedItem,
         onSelectionChanged = { newSelectedItem ->
-            matrixSelectedItem = if (matrixSelectedItem?.uid == newSelectedItem.uid) {
-                null
-            } else {
-                newSelectedItem
-            }
+            matrixSelectedItem =
+                if (matrixSelectedItem?.uid == newSelectedItem.uid) {
+                    null
+                } else {
+                    newSelectedItem
+                }
             fieldUiModel.onItemClick()
             val valueToSave = if (matrixSelectedItem == null) null else matrixSelectedItem?.uid
             intentHandler(
@@ -68,8 +69,9 @@ internal fun ProvideMatrixInput(
         isRequired = fieldUiModel.mandatory,
         modifier = modifier,
         inputStyle = inputStyle,
-        painterFor = inputCardDataList.filterIsInstance<ImageCardData.CustomIconData>().associate {
-            it.uid to BitmapPainter(it.image)
-        },
+        painterFor =
+            inputCardDataList.filterIsInstance<ImageCardData.CustomIconData>().associate {
+                it.uid to BitmapPainter(it.image)
+            },
     )
 }

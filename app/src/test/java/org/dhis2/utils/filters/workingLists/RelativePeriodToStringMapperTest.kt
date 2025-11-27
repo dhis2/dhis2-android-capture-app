@@ -11,7 +11,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 
 class RelativePeriodToStringMapperTest {
-
     private val filterResources: FilterResources = mock()
     private lateinit var mapper: RelativePeriodToStringMapper
 

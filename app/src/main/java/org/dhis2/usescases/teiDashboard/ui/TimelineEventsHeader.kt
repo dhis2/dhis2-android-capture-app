@@ -25,21 +25,23 @@ fun TimelineEventsHeader(
     onOptionSelected: (eventCreationType: EventCreationType) -> Unit,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 16.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 16.dp),
         horizontalArrangement = spacedBy(16.dp),
     ) {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
         ) {
             Title(text = stringResource(id = R.string.timeline))
             Description(
                 text =
-                "${timelineEventsHeaderModel.eventCount} ${timelineEventsHeaderModel.eventLabel}",
+                    "${timelineEventsHeaderModel.eventCount} ${timelineEventsHeaderModel.eventLabel}",
                 textColor = TextColor.OnSurfaceLight,
             )
         }

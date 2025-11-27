@@ -3,8 +3,9 @@ package org.dhis2.utils.customviews.navigationbar
 import android.view.ViewPropertyAnimator
 import android.view.animation.AnticipateOvershootInterpolator
 
-class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
-
+class NavigationBottomBarAnimations(
+    val view: NavigationBottomBar,
+) {
     private val hideAnimationDuration = 200L
     private val selectionInDuration = 200L
     private val selectionOutDuration = 200L
@@ -26,7 +27,8 @@ class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
         barHeight: Int,
         endAction: () -> Unit,
     ) {
-        animate.translationY(barHeight.toFloat())
+        animate
+            .translationY(barHeight.toFloat())
             .withEndAction { endAction() }
             .apply {
                 duration = hideAnimationDuration
@@ -37,7 +39,8 @@ class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
         animate: ViewPropertyAnimator,
         animationEndCallback: () -> Unit,
     ) {
-        animate.translationY(0f)
+        animate
+            .translationY(0f)
             .withEndAction(animationEndCallback)
             .apply {
                 duration = hideAnimationDuration
@@ -45,7 +48,8 @@ class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
     }
 
     fun animateSelectionIn(animate: ViewPropertyAnimator) {
-        animate.scaleY(1f)
+        animate
+            .scaleY(1f)
             .scaleX(1f)
             .alpha(1f)
             .apply {
@@ -53,8 +57,12 @@ class NavigationBottomBarAnimations(val view: NavigationBottomBar) {
             }.start()
     }
 
-    fun animateSelectionOut(animate: ViewPropertyAnimator, endAction: () -> Unit) {
-        animate.scaleY(0f)
+    fun animateSelectionOut(
+        animate: ViewPropertyAnimator,
+        endAction: () -> Unit,
+    ) {
+        animate
+            .scaleY(0f)
             .scaleX(0f)
             .alpha(0f)
             .withEndAction { endAction() }

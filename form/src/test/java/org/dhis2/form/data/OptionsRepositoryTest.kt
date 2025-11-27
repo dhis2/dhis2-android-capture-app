@@ -11,15 +11,16 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class OptionsRepositoryTest {
-
     private lateinit var optionsRepository: OptionsRepository
     private val d2: D2 = mock(defaultAnswer = RETURNS_DEEP_STUBS)
-    private val objectResult = Option.builder()
-        .uid("OptionUid")
-        .code("code")
-        .name("optionName")
-        .displayName("OptionDisplayName")
-        .build()
+    private val objectResult =
+        Option
+            .builder()
+            .uid("OptionUid")
+            .code("code")
+            .name("optionName")
+            .displayName("OptionDisplayName")
+            .build()
 
     @Before
     fun setUp() {
@@ -28,36 +29,58 @@ class OptionsRepositoryTest {
             d2.optionModule().options(),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
+            d2
+                .optionModule()
+                .options()
                 .byOptionSetUid(),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid"),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid"),
         ) doReturn mock()
     }
 
     @Test
     fun shouldReturnOptionByDisplayName() {
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
                 .byDisplayName(),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byDisplayName().eq("displayName"),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byDisplayName()
+                .eq("displayName"),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byDisplayName().eq("displayName").one(),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byDisplayName()
+                .eq("displayName")
+                .one(),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byDisplayName().eq("displayName").one()
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byDisplayName()
+                .eq("displayName")
+                .one()
                 .blockingGet(),
         ) doReturn objectResult
 
@@ -70,24 +93,41 @@ class OptionsRepositoryTest {
     @Test
     fun shouldReturnOptionByCode() {
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
                 .byCode(),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("code"),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("code"),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("code").one(),
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("code")
+                .one(),
         ) doReturn mock()
         whenever(
-            d2.optionModule().options()
-                .byOptionSetUid().eq("optionSetUid")
-                .byCode().eq("code").one()
+            d2
+                .optionModule()
+                .options()
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("code")
+                .one()
                 .blockingGet(),
         ) doReturn objectResult
 

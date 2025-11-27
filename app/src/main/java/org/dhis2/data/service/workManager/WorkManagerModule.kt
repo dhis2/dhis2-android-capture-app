@@ -36,16 +36,11 @@ import javax.inject.Singleton
 
 @Module
 open class WorkManagerModule {
+    @Provides
+    @Singleton
+    fun providesWorkManager(context: Context): WorkManager = WorkManager.getInstance(context)
 
     @Provides
     @Singleton
-    fun providesWorkManager(context: Context): WorkManager {
-        return WorkManager.getInstance(context)
-    }
-
-    @Provides
-    @Singleton
-    open fun providesWorkManagerController(workManager: WorkManager): WorkManagerController {
-        return WorkManagerControllerImpl(workManager)
-    }
+    open fun providesWorkManagerController(workManager: WorkManager): WorkManagerController = WorkManagerControllerImpl(workManager)
 }

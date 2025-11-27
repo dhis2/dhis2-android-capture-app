@@ -29,7 +29,6 @@ const val ARG_MODE = "ARG_MODE"
 const val ARG_UID = "ARG_UID"
 
 class GroupAnalyticsFragment : Fragment() {
-
     private val mode: AnalyticMode by lazy {
         arguments?.getString(ARG_MODE)?.let { AnalyticMode.valueOf(it) } ?: AnalyticMode.HOME
     }
@@ -45,43 +44,40 @@ class GroupAnalyticsFragment : Fragment() {
     private var disableToolbarElevation: (() -> Unit)? = null
 
     companion object {
-        fun forEnrollment(enrollmentUid: String): GroupAnalyticsFragment {
-            return GroupAnalyticsFragment().apply {
+        fun forEnrollment(enrollmentUid: String): GroupAnalyticsFragment =
+            GroupAnalyticsFragment().apply {
                 arguments = bundleArguments(AnalyticMode.ENROLLMENT, enrollmentUid)
             }
-        }
 
-        fun forProgram(programUid: String): GroupAnalyticsFragment {
-            return GroupAnalyticsFragment().apply {
+        fun forProgram(programUid: String): GroupAnalyticsFragment =
+            GroupAnalyticsFragment().apply {
                 arguments = bundleArguments(AnalyticMode.TRACKER_PROGRAM, programUid)
             }
-        }
 
-        fun forTrackerProgram(programUid: String): GroupAnalyticsFragment {
-            return GroupAnalyticsFragment().apply {
+        fun forTrackerProgram(programUid: String): GroupAnalyticsFragment =
+            GroupAnalyticsFragment().apply {
                 arguments = bundleArguments(AnalyticMode.EVENT_PROGRAM, programUid)
             }
-        }
 
-        fun forHome(): GroupAnalyticsFragment {
-            return GroupAnalyticsFragment().apply {
+        fun forHome(): GroupAnalyticsFragment =
+            GroupAnalyticsFragment().apply {
                 arguments = bundleArguments(AnalyticMode.HOME)
             }
-        }
 
-        fun forDataSet(dataSetUid: String): GroupAnalyticsFragment {
-            return GroupAnalyticsFragment().apply {
+        fun forDataSet(dataSetUid: String): GroupAnalyticsFragment =
+            GroupAnalyticsFragment().apply {
                 arguments = bundleArguments(AnalyticMode.DATASET, dataSetUid)
             }
-        }
     }
 
-    private fun bundleArguments(analyticMode: AnalyticMode, uid: String? = null): Bundle {
-        return Bundle().apply {
+    private fun bundleArguments(
+        analyticMode: AnalyticMode,
+        uid: String? = null,
+    ): Bundle =
+        Bundle().apply {
             putString(ARG_MODE, analyticMode.name)
             uid?.let { putString(ARG_UID, uid) }
         }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -98,15 +94,17 @@ class GroupAnalyticsFragment : Fragment() {
     ): View {
         postponeEnterTransition()
 
-        return AnalyticsGroupBinding.inflate(inflater, container, false).apply {
-            ViewCompat.setTransitionName(visualizationContainer, "contenttest")
-            lifecycleOwner = viewLifecycleOwner
-            setUpAdapter()
-            analyticsRecycler.adapter = adapter
-            visualizationContainer.clipWithRoundedCorners()
-        }.also {
-            binding = it
-        }.root
+        return AnalyticsGroupBinding
+            .inflate(inflater, container, false)
+            .apply {
+                ViewCompat.setTransitionName(visualizationContainer, "contenttest")
+                lifecycleOwner = viewLifecycleOwner
+                setUpAdapter()
+                analyticsRecycler.adapter = adapter
+                visualizationContainer.clipWithRoundedCorners()
+            }.also {
+                binding = it
+            }.root
     }
 
     private fun setUpAdapter() {
@@ -136,17 +134,19 @@ class GroupAnalyticsFragment : Fragment() {
                 { chartModel, orgUnitFilterType, lineListingColumnId ->
                     groupViewModel.trackAnalyticsOrgUnitFilter(mode)
                     when (orgUnitFilterType) {
-                        OrgUnitFilterType.SELECTION -> showOUTreeSelector(
-                            chartModel,
-                            lineListingColumnId,
-                        )
+                        OrgUnitFilterType.SELECTION ->
+                            showOUTreeSelector(
+                                chartModel,
+                                lineListingColumnId,
+                            )
 
-                        else -> groupViewModel.filterByOrgUnit(
-                            chartModel,
-                            emptyList(),
-                            orgUnitFilterType,
-                            lineListingColumnId,
-                        )
+                        else ->
+                            groupViewModel.filterByOrgUnit(
+                                chartModel,
+                                emptyList(),
+                                orgUnitFilterType,
+                                lineListingColumnId,
+                            )
                     }
                 }
             onResetFilterCallback = { chartModel, filterType ->
@@ -177,33 +177,36 @@ class GroupAnalyticsFragment : Fragment() {
             .setNegativeButton(getString(R.string.no)) {
                 relativePeriod?.let { periodList.add(relativePeriod) }
                 groupViewModel.filterByPeriod(chartModel, periodList, lineListingColumnId)
-            }
-            .setPositiveButton(getString(R.string.yes)) {
+            }.setPositiveButton(getString(R.string.yes)) {
                 relativePeriod?.let { periodList.add(relativePeriod) }
                 current?.let { periodList.add(current) }
                 groupViewModel.filterByPeriod(chartModel, periodList, lineListingColumnId)
-            }
-            .show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
+            }.show(parentFragmentManager, AlertBottomDialog::class.java.simpleName)
     }
 
-    private fun showOUTreeSelector(chartModel: ChartModel, lineListingColumnId: Int?) {
-        OUTreeFragment.Builder()
+    private fun showOUTreeSelector(
+        chartModel: ChartModel,
+        lineListingColumnId: Int?,
+    ) {
+        OUTreeFragment
+            .Builder()
             .withPreselectedOrgUnits(
                 chartModel.graph.orgUnitsSelected(lineListingColumnId).toMutableList(),
-            )
-            .onSelection { selectedOrgUnits ->
+            ).onSelection { selectedOrgUnits ->
                 groupViewModel.filterByOrgUnit(
                     chartModel,
                     selectedOrgUnits,
                     OrgUnitFilterType.SELECTION,
                     lineListingColumnId,
                 )
-            }
-            .build()
+            }.build()
             .show(childFragmentManager, "OUTreeFragment")
     }
 
-    private fun showValueFilter(chartModel: ChartModel, column: Int) {
+    private fun showValueFilter(
+        chartModel: ChartModel,
+        column: Int,
+    ) {
         SearchColumnDialog(
             chartModel.graph.categories[column],
             onSearch = {
@@ -212,7 +215,10 @@ class GroupAnalyticsFragment : Fragment() {
         ).show(childFragmentManager, SearchColumnDialog.TAG)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         super.onViewCreated(view, savedInstanceState)
         groupViewModel.chipItems.observe(viewLifecycleOwner) { chipResult ->
             when {
@@ -238,45 +244,56 @@ class GroupAnalyticsFragment : Fragment() {
             startPostponedEnterTransition()
         }
         groupViewModel.analytics.observe(viewLifecycleOwner) { analytics ->
-            when {
-                analytics.isSuccess -> adapter.submitList(analytics.getOrDefault(emptyList())) {
-                    binding?.progressLayout?.visibility = View.GONE
-                }
+            try {
+                when {
+                    analytics.isSuccess ->
+                        adapter.submitList(analytics.getOrDefault(emptyList())) {
+                            binding?.progressLayout?.visibility = View.GONE
+                        }
 
-                analytics.isFailure -> {
-                    binding?.progressLayout?.visibility = View.GONE
-                    binding?.emptyAnalytics?.apply {
-                        visibility = View.VISIBLE
-                        text = getString(R.string.visualization_failure)
+                    analytics.isFailure -> {
+                        binding?.progressLayout?.visibility = View.GONE
+                        binding?.emptyAnalytics?.apply {
+                            visibility = View.VISIBLE
+                            text = getString(R.string.visualization_failure)
+                        }
                     }
                 }
+            } finally {
+                AnalyticsCountingIdlingResource.decrement()
             }
-            AnalyticsCountingIdlingResource.decrement()
         }
+    }
+
+    override fun onDestroyView() {
+        AnalyticsCountingIdlingResource.decrement()
+        super.onDestroyView()
     }
 
     private fun addChips(list: List<AnalyticGroup>) {
         var idChip = 0
         list.forEachIndexed { index, analyticGroup ->
             binding?.analyticChipGroup?.addView(
-                AnalyticsItemBinding.inflate(
-                    layoutInflater,
-                    binding?.analyticChipGroup,
-                    false,
-                ).apply {
-                    chip.id = idChip
-                    chip.text = analyticGroup.name
-                    chip.isChecked = index == 0
-                    chip.tag = analyticGroup.uid
-                    chip.setOnCheckedChangeListener { buttonView, isChecked ->
-                        if (isChecked) {
-                            binding?.analyticChipGroupContainer
-                                ?.scrollToPosition(chip.tag as String)
-                            binding?.progressLayout?.visibility = View.VISIBLE
-                            groupViewModel.fetchAnalytics(buttonView.tag as String)
+                AnalyticsItemBinding
+                    .inflate(
+                        layoutInflater,
+                        binding?.analyticChipGroup,
+                        false,
+                    ).apply {
+                        chip.id = idChip
+                        chip.text = analyticGroup.name
+                        chip.isChecked = index == 0
+                        chip.tag = analyticGroup.uid
+                        chip.setOnCheckedChangeListener { buttonView, isChecked ->
+                            if (isChecked) {
+                                binding
+                                    ?.analyticChipGroupContainer
+                                    ?.scrollToPosition(chip.tag as String)
+                                binding?.progressLayout?.visibility = View.VISIBLE
+                                groupViewModel.fetchAnalytics(buttonView.tag as String)
+                            }
                         }
-                    }
-                }.root,
+                    }.root,
             )
             idChip++
         }

@@ -18,4 +18,8 @@
     <string name="input_action_cancel">ပယ်ဖျက်သည်</string>
     <string name="no_results_found">No results found</string>
     <string name="action_done">Done</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

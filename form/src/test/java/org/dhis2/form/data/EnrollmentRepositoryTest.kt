@@ -9,6 +9,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.SectionUiModelImpl.Companion.SINGLE_SECTION_UID
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.form.ui.provider.EnrollmentFormLabelsProvider
+import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.hisp.dhis.android.core.program.ProgramSection
 import org.junit.Before
 import org.junit.Test
@@ -22,6 +23,8 @@ class EnrollmentRepositoryTest {
     private val enrollmentMode: EnrollmentMode = mock()
     private val enrolmentFormLabelsProvider: EnrollmentFormLabelsProvider = mock()
     private val metadataIconProvider: MetadataIconProvider = mock()
+    private val customIntentRepository: CustomIntentRepository = mock()
+
     lateinit var repository: DataEntryRepository
     val programSection: ProgramSection = mock()
 
@@ -38,7 +41,13 @@ class EnrollmentRepositoryTest {
 
         whenever(conf.program()?.access()) doReturn mock()
         whenever(conf.program()?.access()?.data()) doReturn mock()
-        whenever(conf.program()?.access()?.data()?.write()) doReturn true
+        whenever(
+            conf
+                .program()
+                ?.access()
+                ?.data()
+                ?.write(),
+        ) doReturn true
         whenever(conf.trackedEntityType()) doReturn mock()
 
         whenever(conf.trackedEntityType()?.access()) doReturn mock()
@@ -52,14 +61,22 @@ class EnrollmentRepositoryTest {
         whenever(conf.program()?.enrollmentDateLabel()) doReturn "Enrollment Date"
         whenever(enrolmentFormLabelsProvider.provideEnrollmentDateDefaultLabel("Program_UID")) doReturn "Enrollment Date"
 
-        whenever(conf.trackedEntityType()?.access()?.data()?.write()) doReturn true
-        repository = EnrollmentRepository(
-            fieldFactory,
-            conf,
-            enrollmentMode,
-            enrolmentFormLabelsProvider,
-            metadataIconProvider,
-        )
+        whenever(
+            conf
+                .trackedEntityType()
+                ?.access()
+                ?.data()
+                ?.write(),
+        ) doReturn true
+        repository =
+            EnrollmentRepository(
+                fieldFactory = fieldFactory,
+                conf = conf,
+                enrollmentMode = enrollmentMode,
+                enrollmentFormLabelsProvider = enrolmentFormLabelsProvider,
+                metadataIconProvider = metadataIconProvider,
+                customIntentRepository = customIntentRepository,
+            )
     }
 
     @Test
@@ -76,10 +93,11 @@ class EnrollmentRepositoryTest {
     fun `should return enrollment Data section and another single section if program has no sections`() {
         whenever(conf.sections()) doReturn emptyList()
         assertTrue(
-            repository.sectionUids().blockingFirst() == listOf(
-                EnrollmentRepository.ENROLLMENT_DATA_SECTION_UID,
-                SINGLE_SECTION_UID,
-            ),
+            repository.sectionUids().blockingFirst() ==
+                listOf(
+                    EnrollmentRepository.ENROLLMENT_DATA_SECTION_UID,
+                    SINGLE_SECTION_UID,
+                ),
         )
     }
 

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="relationship">تعلقات</string>
+    <string name="no_data">کوئی مواد نہیں</string>
+    <string name="show_more">اور دیکھاو</string>
+    <string name="show_less">کم دکھائیں</string>
+    <string name="cancel">منسوخ</string>
+    <string name="remove">حذف</string>
+    <string name="search">تلاش کریں</string>
+    <string name="optional">اختیاری</string>
+
+</resources>

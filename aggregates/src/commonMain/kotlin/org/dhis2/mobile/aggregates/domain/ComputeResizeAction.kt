@@ -7,8 +7,8 @@ import org.dhis2.mobile.commons.data.TableDimensionRepository
 class ComputeResizeAction(
     private val dimensionRepository: TableDimensionRepository,
 ) {
-    suspend operator fun invoke(resizeAction: ResizeAction): ResizeSaveDimension? {
-        return when (resizeAction) {
+    suspend operator fun invoke(resizeAction: ResizeAction): ResizeSaveDimension? =
+        when (resizeAction) {
             is ResizeAction.ColumnHeaderChanged -> {
                 dimensionRepository.saveColumnWidthForSection(
                     tableId = resizeAction.tableId,
@@ -69,5 +69,4 @@ class ComputeResizeAction(
                     ),
                 )
         }
-    }
 }

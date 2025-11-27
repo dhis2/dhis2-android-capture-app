@@ -29,13 +29,14 @@ fun View.showDialItem(onAnimationEnd: () -> Unit = {}) {
             .scaleX(1f)
             .scaleY(1f)
             .setDuration(100)
-            .setListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    onAnimationEnd()
-                    super.onAnimationEnd(animation)
-                }
-            })
-            .alpha(1f)
+            .setListener(
+                object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        onAnimationEnd()
+                        super.onAnimationEnd(animation)
+                    }
+                },
+            ).alpha(1f)
             .start()
     }
 }
@@ -51,14 +52,15 @@ fun View.hideDialItem(onAnimationEnd: () -> Unit = {}) {
         .scaleX(0.5f)
         .scaleY(0.5f)
         .setDuration(100)
-        .setListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                visibility = View.GONE
-                onAnimationEnd()
-                super.onAnimationEnd(animation)
-            }
-        })
-        .alpha(0f)
+        .setListener(
+            object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    visibility = View.GONE
+                    onAnimationEnd()
+                    super.onAnimationEnd(animation)
+                }
+            },
+        ).alpha(0f)
         .start()
 }
 

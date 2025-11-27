@@ -5,11 +5,9 @@ import org.hisp.dhis.android.core.programstageworkinglist.ProgramStageWorkingLis
 class ProgramStageToWorkingListItemMapper(
     private val defaultWorkingListLabel: String,
 ) {
-
-    fun map(item: ProgramStageWorkingList): WorkingListItem {
-        return ProgramStageWorkingList(
+    fun map(item: ProgramStageWorkingList): WorkingListItem =
+        ProgramStageWorkingList(
             item.uid(),
             item.displayName() ?: defaultWorkingListLabel,
         )
-    }
 }

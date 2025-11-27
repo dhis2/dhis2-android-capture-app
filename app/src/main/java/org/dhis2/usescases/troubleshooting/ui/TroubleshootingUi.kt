@@ -23,14 +23,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -52,13 +53,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.R
-import org.dhis2.ui.MetadataIcon
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.development.ProgramRuleValidation
 import org.dhis2.usescases.development.RuleValidation
 import org.dhis2.usescases.troubleshooting.TroubleshootingViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatar
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataAvatarSize
+import org.hisp.dhis.mobile.ui.designsystem.component.MetadataIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import java.util.Locale
 
 @ExperimentalFoundationApi
@@ -80,9 +84,10 @@ fun TroubleshootingScreen(
     val localesToShow by troubleshootingViewModel.localesToDisplay.observeAsState(emptyList())
 
     Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .padding(top = 8.dp),
+        modifier =
+            Modifier
+                .clip(RoundedCornerShape(16.dp))
+                .padding(top = 8.dp),
     ) {
         ConfigurationItem(
             itemIcon = R.drawable.ic_settings_language,
@@ -92,7 +97,10 @@ fun TroubleshootingScreen(
                 languageSelectorVisible = !languageSelectorVisible
             },
         )
-        Divider(startIndent = 72.dp, thickness = if (languageSelectorVisible) 0.dp else 1.dp)
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 72.dp),
+            thickness = if (languageSelectorVisible) 0.dp else 1.dp,
+        )
         LanguageSelector(
             currentLocale = currentLocale,
             languages = localesToShow,
@@ -110,7 +118,10 @@ fun TroubleshootingScreen(
                 troubleshootingViewModel.fetchRuleValidations()
             },
         )
-        Divider(startIndent = 72.dp, thickness = if (rulesValidationVisible) 0.dp else 1.dp)
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 72.dp),
+            thickness = if (rulesValidationVisible) 0.dp else 1.dp,
+        )
         ProgramRuleConfigurationItemList(
             visible = rulesValidationVisible,
             configurationErrors = ruleValidations,
@@ -129,13 +140,13 @@ fun ConfigurationItem(
     onClick: () -> Unit = {},
 ) {
     Row(
-        modifier = Modifier
-            .clickable { onClick() }
-            .background(color = Color.White)
-            .heightIn(min = 56.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-
+        modifier =
+            Modifier
+                .clickable { onClick() }
+                .background(color = Color.White)
+                .heightIn(min = 56.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Icon(
             modifier = Modifier.size(40.dp),
@@ -143,25 +154,28 @@ fun ConfigurationItem(
             contentDescription = "",
         )
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp),
         ) {
             Text(
                 text = itemTitle,
                 fontSize = 14.sp,
                 color = colorResource(id = R.color.text_black_333).copy(alpha = 0.87f),
-                style = TextStyle.Default.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                ),
+                style =
+                    TextStyle.Default.copy(
+                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                    ),
             )
             Text(
                 text = itemDescription,
                 fontSize = 12.sp,
                 color = colorResource(id = R.color.text_black_333).copy(alpha = 0.87f),
-                style = TextStyle.Default.copy(
-                    fontFamily = FontFamily(Font(R.font.rubik_light)),
-                ),
+                style =
+                    TextStyle.Default.copy(
+                        fontFamily = FontFamily(Font(R.font.rubik_light)),
+                    ),
             )
         }
     }
@@ -185,53 +199,59 @@ fun LanguageSelector(
         exit = shrinkVertically(),
     ) {
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(84.dp)
-                .background(
-                    color = colorResource(id = R.color.form_field_background),
-                    shape = RoundedCornerShape(6.dp),
-                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(84.dp)
+                    .background(
+                        color = colorResource(id = R.color.form_field_background),
+                        shape = RoundedCornerShape(6.dp),
+                    ),
         ) {
             Image(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth(),
                 painter = painterResource(id = R.drawable.inner_shadow_top),
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
             )
             Image(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
                 painter = painterResource(id = R.drawable.inner_shadow_bottom),
                 contentDescription = "",
                 alignment = Alignment.BottomCenter,
                 contentScale = ContentScale.FillWidth,
             )
             Row(
-                modifier = Modifier
-                    .clickable {
-                        expanded = !expanded
-                    }
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .clickable {
+                            expanded = !expanded
+                        }.fillMaxWidth()
+                        .fillMaxHeight()
+                        .padding(horizontal = 16.dp),
             ) {
                 Text(
-                    modifier = Modifier
-                        .weight(weight = 1f)
-                        .align(Alignment.CenterVertically),
+                    modifier =
+                        Modifier
+                            .weight(weight = 1f)
+                            .align(Alignment.CenterVertically),
                     text = currentLocale.displayName.replaceFirstChar { it.uppercase() },
                     maxLines = 1,
-                    style = TextStyle.Default.copy(
-                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
-                    ),
+                    style =
+                        TextStyle.Default.copy(
+                            fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                        ),
                 )
                 Icon(
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically),
+                    modifier =
+                        Modifier
+                            .align(Alignment.CenterVertically),
                     imageVector = Icons.Filled.ArrowDropDown,
                     contentDescription = "",
                 )
@@ -247,9 +267,10 @@ fun LanguageSelector(
                                 expanded = false
                                 onLanguageChanged(locale)
                             },
-                        ) {
-                            Text(text = locale.displayName.replaceFirstChar { it.uppercase() })
-                        }
+                            text = {
+                                Text(text = locale.displayName.replaceFirstChar { it.uppercase() })
+                            },
+                        )
                     }
                 }
             }
@@ -268,26 +289,29 @@ fun ProgramRuleConfigurationItemList(
     onProgramClick: (programUid: String) -> Unit,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = colorResource(id = R.color.form_field_background),
-                shape = RoundedCornerShape(6.dp),
-            ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(id = R.color.form_field_background),
+                    shape = RoundedCornerShape(6.dp),
+                ),
     ) {
         if (visible) {
             Image(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth(),
                 painter = painterResource(id = R.drawable.inner_shadow_top),
                 contentDescription = "",
                 contentScale = ContentScale.FillWidth,
             )
             Image(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(),
                 painter = painterResource(id = R.drawable.inner_shadow_bottom),
                 contentDescription = "",
                 alignment = Alignment.BottomCenter,
@@ -301,9 +325,10 @@ fun ProgramRuleConfigurationItemList(
                 exit = shrinkVertically(),
             ) {
                 LoadingContent(
-                    loadingDescription = stringResource(
-                        R.string.troubleshooting_ongoing_rule_validation,
-                    ),
+                    loadingDescription =
+                        stringResource(
+                            R.string.troubleshooting_ongoing_rule_validation,
+                        ),
                 )
             }
             AnimatedVisibility(
@@ -336,9 +361,10 @@ fun ProgramRuleConfigurationItemList(
 @Composable
 fun LoadingContent(loadingDescription: String) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         ProgressIndicator(type = ProgressIndicatorType.CIRCULAR_SMALL)
@@ -347,10 +373,11 @@ fun LoadingContent(loadingDescription: String) {
             text = loadingDescription,
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.87f),
-            style = LocalTextStyle.current.copy(
-                lineHeight = 10.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular)),
-            ),
+            style =
+                LocalTextStyle.current.copy(
+                    lineHeight = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                ),
         )
     }
 }
@@ -358,9 +385,10 @@ fun LoadingContent(loadingDescription: String) {
 @Composable
 fun ValidationPassMessage() {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
@@ -372,20 +400,22 @@ fun ValidationPassMessage() {
             text = stringResource(R.string.troobleshooting_pass_rule_validation_title),
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.87f),
-            style = LocalTextStyle.current.copy(
-                lineHeight = 10.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular)),
-            ),
+            style =
+                LocalTextStyle.current.copy(
+                    lineHeight = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                ),
         )
         Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = stringResource(R.string.troubleshooting_pass_rule_validation),
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.54f),
-            style = LocalTextStyle.current.copy(
-                lineHeight = 10.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_regular)),
-            ),
+            style =
+                LocalTextStyle.current.copy(
+                    lineHeight = 10.sp,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
+                ),
         )
     }
 }
@@ -436,23 +466,42 @@ fun ProgramRuleConfigurationProgram(
 ) {
     val scaleStatus = animateFloatAsState(if (isSelected) -1f else 1f)
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 16.dp,
-            )
-            .clickable {
-                onProgramClick(programUid)
-            },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 16.dp,
+                ).clickable {
+                    onProgramClick(programUid)
+                },
     ) {
-        MetadataIcon(metadataIconData = metadataIconData)
-
+        MetadataAvatar(
+            modifier =
+                Modifier
+                    .size(56.dp)
+                    .alpha(0.5f),
+            icon = {
+                if (metadataIconData.isFileLoaded()) {
+                    MetadataIcon(
+                        imageCardData = metadataIconData.imageCardData,
+                    )
+                } else {
+                    androidx.compose.material3.Icon(
+                        painter = provideDHIS2Icon("dhis2_image_not_supported"),
+                        contentDescription = "",
+                    )
+                }
+            },
+            iconTint = metadataIconData.color,
+            size = MetadataAvatarSize.M(),
+        )
         Text(
-            modifier = Modifier
-                .weight(weight = 1f)
-                .padding(horizontal = 11.5.dp)
-                .align(Alignment.CenterVertically),
+            modifier =
+                Modifier
+                    .weight(weight = 1f)
+                    .padding(horizontal = 11.5.dp)
+                    .align(Alignment.CenterVertically),
             text = programName,
             fontSize = 14.sp,
             color = Color.Black,
@@ -470,11 +519,12 @@ fun ProgramRuleConfigurationProgram(
 @Composable
 fun ProgramRuleConfigurationTitle(ruleValidation: RuleValidation) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clickable {
-            },
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clickable {
+                },
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_warning),
@@ -482,9 +532,10 @@ fun ProgramRuleConfigurationTitle(ruleValidation: RuleValidation) {
             tint = colorResource(id = R.color.warning_color),
         )
         Text(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .align(Alignment.CenterVertically),
+            modifier =
+                Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterVertically),
             text = ruleValidation.title(),
             fontSize = 14.sp,
             color = Color.Black,
@@ -496,27 +547,29 @@ fun ProgramRuleConfigurationTitle(ruleValidation: RuleValidation) {
 @Composable
 fun ProgramRuleConfigurationMessage(errorMessage: String) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
     ) {
         Icon(
             painter = painterResource(id = R.drawable.ic_circle_indicator),
             contentDescription = "",
         )
         Text(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .align(Alignment.CenterVertically)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.CenterVertically)
+                    .fillMaxWidth(),
             text = errorMessage,
             fontSize = 14.sp,
             color = Color.Black.copy(alpha = 0.54f),
-            style = LocalTextStyle.current.copy(
-                lineHeight = 24.sp,
-                fontFamily = FontFamily(Font(R.font.rubik_light)),
-            ),
+            style =
+                LocalTextStyle.current.copy(
+                    lineHeight = 24.sp,
+                    fontFamily = FontFamily(Font(R.font.rubik_light)),
+                ),
         )
     }
 }

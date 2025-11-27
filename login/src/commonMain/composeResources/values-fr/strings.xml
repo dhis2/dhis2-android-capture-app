@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">Authentification à deux facteurs</string>
+    <string name="two_fa_authentication_code">Code d'authentification</string>
+    <string name="action_next">Suivant</string>
+    <string name="two_fa_is_on">L'authentification à deux facteurs est activée.</string>
+    <string name="two_fa_code">Code d'authentification</string>
+    <string name="biometrics_login_text">Voudriez-vous utiliser l'empreinte digitale ou autre méthode biométrique pour se connecter</string>
+    <string name="username_hint">Nom d'utilisateur</string>
+    <string name="password_hint">Mot de passe</string>
+    <string name="logging_in">En cours de connection...</string>
+    <string name="action_log_in">Se connecter</string>
+    <string name="openid_or">Ou</string>
+    <string name="tracking_title">Voudriez-vous nous aider à améliorer cette application?</string>
+    <string name="privacy_policy">Politique de confidentialité</string>
+    <string name="action_no_now">Pas maintenant</string>
+    <string name="action_yes">Oui</string>
+    <string name="enter_pin_button">Déverrouiller</string>
+    </resources>

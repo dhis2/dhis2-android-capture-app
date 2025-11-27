@@ -20,8 +20,8 @@ internal data class DataToReview(
     val value: String,
     val isFromDefaultCatCombo: Boolean,
 ) {
-    fun formattedDataLabel(): String {
-        return if (isFromDefaultCatCombo) {
+    fun formattedDataLabel(): String =
+        if (isFromDefaultCatCombo) {
             dataElementDisplayName ?: dataElementUid
         } else {
             String.format(
@@ -30,7 +30,6 @@ internal data class DataToReview(
                 categoryOptionComboDisplayName,
             )
         }
-    }
 }
 
 internal enum class ValidationResultStatus {

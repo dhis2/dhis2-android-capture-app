@@ -25,33 +25,38 @@ object Injector {
         uid: String?,
         scope: MapScope,
     ) = object : ViewModelProvider.Factory {
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return MapSelectorViewModel(
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            MapSelectorViewModel(
                 featureType = locationType,
                 initialCoordinates = initialCoordinates,
-                mapStyleConfig = MapStyleConfiguration(
-                    d2 = D2Manager.getD2(),
-                    uid = uid,
-                    scope = scope,
-                    programConfigurationRepository = ProgramConfigurationRepository(D2Manager.getD2()),
-                ),
-                geocoder = GeocoderSearchImpl(
-                    geocoder = Geocoder(context),
-                    geocoderApi = NominatimGeocoderApi(
-                        D2Manager.getD2(),
-                        LocaleSelector(context, D2Manager.getD2()),
+                mapStyleConfig =
+                    MapStyleConfiguration(
+                        d2 = D2Manager.getD2(),
+                        uid = uid,
+                        scope = scope,
+                        programConfigurationRepository = ProgramConfigurationRepository(D2Manager.getD2()),
                     ),
-                    dispatcherProvider = provideDispatcher(),
-                ),
+                geocoder =
+                    GeocoderSearchImpl(
+                        geocoder = Geocoder(context),
+                        geocoderApi =
+                            NominatimGeocoderApi(
+                                D2Manager.getD2(),
+                                LocaleSelector(context, D2Manager.getD2()),
+                            ),
+                        dispatcherProvider = provideDispatcher(),
+                    ),
                 searchLocationManager = SearchLocationManager(D2Manager.getD2()),
                 dispatchers = provideDispatcher(),
             ) as T
-        }
     }
 
-    fun provideDispatcher() = object : DispatcherProvider {
-        override fun io() = Dispatchers.IO
-        override fun computation() = Dispatchers.Unconfined
-        override fun ui() = Dispatchers.Main
-    }
+    fun provideDispatcher() =
+        object : DispatcherProvider {
+            override fun io() = Dispatchers.IO
+
+            override fun computation() = Dispatchers.Unconfined
+
+            override fun ui() = Dispatchers.Main
+        }
 }

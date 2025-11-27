@@ -66,4 +66,4 @@
     <string name="error_invalid_program">Ви не маєте доступу до програми %s</string>
     <string name="error_invalid_attribute">Ви не маєте доступу до атрибуту %s</string>
     <string name="error_unsupported_aggregation_type">%s агрегаційний тип, що не підтримується</string>
-</resources>
+    </resources>

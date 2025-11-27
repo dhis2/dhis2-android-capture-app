@@ -3,8 +3,7 @@ package org.dhis2.usescases.searchTrackEntity;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.dhis2.commons.data.EventViewModel;
-import org.dhis2.commons.data.tuples.Pair;
+import org.dhis2.commons.data.EventModel;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.data.search.SearchParametersModel;
@@ -25,6 +24,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import kotlin.Deprecated;
+import kotlin.Pair;
 
 @Deprecated(message = "Use SearchRepositoryKt instead")
 public interface SearchRepository {
@@ -37,7 +37,7 @@ public interface SearchRepository {
     Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
 
     @NonNull
-    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, String> queryDatam, @Nullable String fromRelationshipUid);
+    Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, List<String>> queryData, @Nullable String fromRelationshipUid);
 
     Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
 
@@ -47,7 +47,7 @@ public interface SearchRepository {
 
     TrackedEntityType getTrackedEntityType();
 
-    List<EventViewModel> getEventsForMap(List<SearchTeiModel> teis);
+    List<EventModel> getEventsForMap(List<SearchTeiModel> teis);
 
     Observable<D2Progress> downloadTei(String teiUid);
 
@@ -75,7 +75,7 @@ public interface SearchRepository {
     @Nullable
     String currentProgram();
 
-    @NotNull Map<String, String> filterQueryForProgram(@NotNull Map<String, String> queryData, @org.jetbrains.annotations.Nullable String programUid);
+    @NotNull Map<String, List<String>> filterQueryForProgram(@NotNull Map<String, List<String>> queryData, @org.jetbrains.annotations.Nullable String programUid);
 
     boolean canCreateInProgramWithoutSearch();
 

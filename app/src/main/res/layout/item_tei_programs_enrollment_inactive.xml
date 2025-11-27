@@ -17,7 +17,7 @@
 
         <variable
             name="metadataIconData"
-            type="org.dhis2.ui.MetadataIconData" />
+            type="org.dhis2.mobile.commons.model.MetadataIconData" />
     </data>
 
     <LinearLayout
@@ -64,7 +64,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="14dp"
                     android:alpha="0.5"
-                    android:text='@{enrollment.programName()}'
+                    android:text='@{enrollment.programName}'
                     android:textColor="@color/black_de0"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -83,7 +83,7 @@
                         android:layout_marginTop="8dp"
                         android:layout_weight="1"
                         android:alpha="0.5"
-                        android:text='@{enrollment.orgUnitName()}'
+                        android:text='@{enrollment.orgUnitName}'
                         android:textColor="@color/gray_9b9"
                         android:textSize="14sp"
                         tools:text="Org unit" />
@@ -101,7 +101,7 @@
                         android:lines="1"
                         android:textColor="@color/black_de0"
                         android:textSize="14sp"
-                        android:text="@{enrollment.enrollmentDate()}"
+                        android:text="@{enrollment.enrollmentDate}"
                         tools:text="DD/MM/YYYY" />
                 </LinearLayout>
             </LinearLayout>
@@ -113,8 +113,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_weight="0.4"
                 android:alpha="0.5"
-                android:contentDescription='@{enrollment.uid()}'
-                android:visibility='@{enrollment.followUp() ? View.VISIBLE : View.INVISIBLE}'
+                android:contentDescription='@{enrollment.uid}'
+                android:visibility='@{enrollment.followUp ? View.VISIBLE : View.INVISIBLE}'
                 app:srcCompat="@drawable/ic_warning" />
 
             <ImageView
@@ -122,7 +122,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.4"
                 android:alpha="0.5"
-                android:contentDescription='@{enrollment.uid()}'
+                android:contentDescription='@{enrollment.uid}'
                 app:tint="@color/colorGreyDefault"
                 app:srcCompat="@drawable/ic_keyboard_arrow_right" />
         </LinearLayout>

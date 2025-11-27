@@ -7,26 +7,31 @@ import org.hisp.dhis.android.core.settings.SystemSetting
 
 class ServerSettingsRepository(
     private val d2: D2,
-    private val systemStyleMapper: SystemStyleMapper,
 ) {
-
-    fun getTheme(): Single<Pair<String?, Int>> {
-        return d2.settingModule().systemSetting().get()
+    fun getTheme(): Single<Pair<String?, Int>> =
+        d2
+            .settingModule()
+            .systemSetting()
+            .get()
             .map { systemSettings ->
                 val style =
-                    systemSettings.firstOrNull {
-                        it.key() == SystemSetting.SystemSettingKey.STYLE
-                    }?.value()
+                    systemSettings
+                        .firstOrNull {
+                            it.key() == SystemSetting.SystemSettingKey.STYLE
+                        }?.value()
                 val flag =
-                    systemSettings.firstOrNull {
-                        it.key() == SystemSetting.SystemSettingKey.FLAG
-                    }?.value()
-                Pair(flag, systemStyleMapper.map(style))
+                    systemSettings
+                        .firstOrNull {
+                            it.key() == SystemSetting.SystemSettingKey.FLAG
+                        }?.value()
+                Pair(flag, SystemStyleMapper(style))
             }
-    }
 
-    fun allowScreenShare(): Boolean {
-        return BuildConfig.DEBUG || d2.settingModule().generalSetting().blockingGet()
-            ?.allowScreenCapture() ?: false
-    }
+    fun allowScreenShare(): Boolean =
+        BuildConfig.DEBUG ||
+            d2
+                .settingModule()
+                .generalSetting()
+                .blockingGet()
+                ?.allowScreenCapture() ?: false
 }

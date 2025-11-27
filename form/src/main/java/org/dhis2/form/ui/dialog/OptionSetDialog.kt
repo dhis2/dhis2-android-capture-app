@@ -24,7 +24,6 @@ class OptionSetDialog(
     private val onClearValue: () -> Unit,
     private val onSaveOptionValue: (optionCode: String?) -> Unit,
 ) : DialogFragment() {
-
     val viewModel by viewModels<OptionSetDialogViewModel> {
         OptionSetDialogViewModelFactory(
             Injector.provideOptionSetDialog(),
@@ -44,8 +43,8 @@ class OptionSetDialog(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return ComposeView(requireContext()).apply {
+    ): View =
+        ComposeView(requireContext()).apply {
             setViewCompositionStrategy(
                 ViewCompositionStrategy.DisposeOnDetachedFromWindow,
             )
@@ -66,7 +65,6 @@ class OptionSetDialog(
                 }
             }
         }
-    }
 
     fun show(manager: FragmentManager) {
         super.show(manager, TAG)

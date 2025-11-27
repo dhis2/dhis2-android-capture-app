@@ -54,6 +54,7 @@
     <string name="done_task">گھر</string>
     <string name="wipe_data_no">منسوخ</string>
     <string name="SYNC_MANAGER">ØªØ±ØªÛØ¨Ø§Øª</string>
+    <string name="settingsTwoFAStatus">حالت</string>
     <!--endregion-->
 
     <string name="enrollmment_date">اندراج کی تاریخ</string>

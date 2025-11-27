@@ -29,80 +29,85 @@ import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SchedulingViewModelTest {
-
     private lateinit var schedulingViewModel: SchedulingViewModel
 
     private val testingDispatcher = UnconfinedTestDispatcher()
 
-    private val enrollment = Enrollment.builder().uid("enrollment-uid").build()
-    private val programStage = ProgramStage.builder().uid("program-stage").build()
+    private val enrollment = Enrollment.builder().uid(ENROLLMENT_UID).build()
+    private val programStage = ProgramStage.builder().uid(STAGE).build()
 
-    private val enrollmentObjectRepository: EnrollmentObjectRepository = mock {
-        on { blockingGet() } doReturn enrollment
-    }
-    private val enrollmentCollectionRepository: EnrollmentCollectionRepository = mock {
-        on { uid("enrollment-uid") } doReturn enrollmentObjectRepository
-    }
-    private val enrollmentModule: EnrollmentModule = mock {
-        on { enrollments() } doReturn enrollmentCollectionRepository
-    }
+    private val enrollmentObjectRepository: EnrollmentObjectRepository =
+        mock {
+            on { blockingGet() } doReturn enrollment
+        }
+    private val enrollmentCollectionRepository: EnrollmentCollectionRepository =
+        mock {
+            on { uid(ENROLLMENT_UID) } doReturn enrollmentObjectRepository
+        }
+    private val enrollmentModule: EnrollmentModule =
+        mock {
+            on { enrollments() } doReturn enrollmentCollectionRepository
+        }
 
-    private val readOnlyOneObjectRepositoryFinalImpl: ReadOnlyOneObjectRepositoryFinalImpl<ProgramStage> = mock {
-        on { blockingGet() } doReturn programStage
-    }
-    private val programStageCollectionRepository: ProgramStageCollectionRepository = mock {
-        on { uid("program-stage") } doReturn readOnlyOneObjectRepositoryFinalImpl
-    }
-    private val programModule: ProgramModule = mock {
-        on { programStages() } doReturn programStageCollectionRepository
-    }
+    private val readOnlyOneObjectRepositoryFinalImpl: ReadOnlyOneObjectRepositoryFinalImpl<ProgramStage> =
+        mock {
+            on { blockingGet() } doReturn programStage
+        }
+    private val programStageCollectionRepository: ProgramStageCollectionRepository =
+        mock {
+            on { uid(STAGE) } doReturn readOnlyOneObjectRepositoryFinalImpl
+        }
+    private val programModule: ProgramModule =
+        mock {
+            on { programStages() } doReturn programStageCollectionRepository
+        }
 
-    private val periodModule: PeriodModule = mock {
-        on { periodHelper() } doReturn mock()
-    }
+    private val periodModule: PeriodModule =
+        mock {
+            on { periodHelper() } doReturn mock()
+        }
 
-    private val d2: D2 = mock {
-        on { enrollmentModule() } doReturn enrollmentModule
-        on { programModule() } doReturn programModule
-        on { periodModule() } doReturn periodModule
-    }
+    private val d2: D2 =
+        mock {
+            on { enrollmentModule() } doReturn enrollmentModule
+            on { programModule() } doReturn programModule
+            on { periodModule() } doReturn periodModule
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
-        schedulingViewModel = SchedulingViewModel(
-            d2 = d2,
-            resourceManager = mock(),
-            eventResourcesProvider = mock(),
-            periodUtils = mock(),
-            dateUtils = mock(),
-            dispatchersProvider = object : DispatcherProvider {
-                override fun io(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+        schedulingViewModel =
+            SchedulingViewModel(
+                d2 = d2,
+                resourceManager = mock(),
+                eventResourcesProvider = mock(),
+                periodUtils = mock(),
+                dateUtils = mock(),
+                dispatchersProvider =
+                    object : DispatcherProvider {
+                        override fun io(): CoroutineDispatcher = testingDispatcher
 
-                override fun computation(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+                        override fun computation(): CoroutineDispatcher = testingDispatcher
 
-                override fun ui(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
-            },
-            launchMode = SchedulingDialog.LaunchMode.NewSchedule(
-                enrollmentUid = "enrollment-uid",
-                programStagesUids = listOf("program-stage"),
-                showYesNoOptions = false,
-                eventCreationType = EventCreationType.SCHEDULE,
-            ),
-            getEventPeriods = mock(),
-        )
+                        override fun ui(): CoroutineDispatcher = testingDispatcher
+                    },
+                launchMode =
+                    SchedulingDialog.LaunchMode.NewSchedule(
+                        enrollmentUid = ENROLLMENT_UID,
+                        programStagesUids = listOf(STAGE),
+                        showYesNoOptions = false,
+                        eventCreationType = EventCreationType.SCHEDULE,
+                        ownerOrgUnitUid = OWNER_ORG_UNIT_UID,
+                    ),
+                getEventPeriods = mock(),
+            )
     }
 
     @Test
     fun shouldSetReportDate() {
-        val date = DateUtils.DATE_FORMAT.parse("2024-04-14T00:00:00.000")
+        val date = DateUtils.DATE_FORMAT.parse(REPORT_DATE)
         val spy = spy(schedulingViewModel)
         spy.onDateSet(2024, 4, 14)
         verify(spy).setUpEventReportDate(date)
@@ -110,9 +115,17 @@ class SchedulingViewModelTest {
 
     @Test
     fun shouldSetReportDateForIncreasedNumberOfMonth() {
-        val date = DateUtils.DATE_FORMAT.parse("2025-01-31T00:00:00.000")
+        val date = DateUtils.DATE_FORMAT.parse(REPORT_DATE_INCREASED_MONTH)
         val spy = spy(schedulingViewModel)
         spy.onDateSet(2024, 13, 31)
         verify(spy).setUpEventReportDate(date)
+    }
+
+    companion object {
+        const val REPORT_DATE = "2024-04-14T00:00:00.000"
+        const val REPORT_DATE_INCREASED_MONTH = "2025-01-31T00:00:00.000"
+        const val STAGE = "program-stage"
+        const val OWNER_ORG_UNIT_UID = "ownerOrgUnitUid"
+        const val ENROLLMENT_UID = "enrollment-uid"
     }
 }

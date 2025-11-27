@@ -31,10 +31,6 @@ import static org.dhis2.data.qr.QRjson.EVENT_JSON;
 import static org.dhis2.data.qr.QRjson.RELATIONSHIP_JSON;
 import static org.dhis2.data.qr.QRjson.TEI_JSON;
 
-/**
- * QUADRAM. Created by ppajuelo on 21/06/2018.
- */
-
 public class QrActivity extends ActivityGlobalAbstract implements QrContracts.View {
 
     @Inject

@@ -15,95 +15,137 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityDataValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import javax.inject.Inject
 
-class DhisMapUtils @Inject constructor(val d2: D2) {
+class DhisMapUtils
+    @Inject
+    constructor(
+        val d2: D2,
+    ) {
+        private val featureCollectionMapper = FeatureCollectionMapper()
 
-    private val featureCollectionMapper = FeatureCollectionMapper()
+        fun getCoordinateDataElementInfo(eventUidList: List<String>): List<CoordinateDataElementInfo> =
+            d2
+                .trackedEntityModule()
+                .trackedEntityDataValues()
+                .byEvent()
+                .`in`(eventUidList)
+                .blockingGet()
+                .filter { trackedEntityDataValue ->
+                    dataElementHasCoordinateValue(trackedEntityDataValue)
+                }.mapNotNull {
+                    val event =
+                        d2
+                            .eventModule()
+                            .events()
+                            .uid(it.event())
+                            .blockingGet()
+                    val stage =
+                        d2
+                            .programModule()
+                            .programStages()
+                            .uid(event?.programStage())
+                            .blockingGet()
+                    val geometry =
+                        Geometry
+                            .builder()
+                            .coordinates(it.value())
+                            .type(FeatureType.POINT)
+                            .build()
+                    val de =
+                        d2
+                            .dataElementModule()
+                            .dataElements()
+                            .uid(it.dataElement())
+                            .blockingGet()
+                    val enrollment =
+                        event?.enrollment()?.let { enrollmentUid ->
+                            d2
+                                .enrollmentModule()
+                                .enrollments()
+                                .uid(enrollmentUid)
+                                .blockingGet()
+                        }
 
-    fun getCoordinateDataElementInfo(eventUidList: List<String>): List<CoordinateDataElementInfo> {
-        return d2.trackedEntityModule().trackedEntityDataValues()
-            .byEvent().`in`(eventUidList)
-            .blockingGet().filter { trackedEntityDataValue ->
-                dataElementHasCoordinateValue(trackedEntityDataValue)
-            }.mapNotNull {
-                val event = d2.eventModule().events().uid(it.event()).blockingGet()
-                val stage = d2.programModule().programStages()
-                    .uid(event?.programStage()).blockingGet()
-                val geometry = Geometry.builder()
-                    .coordinates(it.value())
-                    .type(FeatureType.POINT)
-                    .build()
-                val de = d2.dataElementModule().dataElements()
-                    .uid(it.dataElement()).blockingGet()
-                val enrollment = event?.enrollment()?.let { enrollmentUid ->
-                    d2.enrollmentModule().enrollments().uid(enrollmentUid).blockingGet()
+                    if (event != null && stage != null && de != null) {
+                        CoordinateDataElementInfo(
+                            event,
+                            stage,
+                            de,
+                            enrollment,
+                            geometry,
+                        )
+                    } else {
+                        null
+                    }
                 }
 
-                if (event != null && stage != null && de != null) {
-                    CoordinateDataElementInfo(
-                        event,
-                        stage,
-                        de,
-                        enrollment,
-                        geometry,
-                    )
-                } else {
-                    null
+        private fun dataElementHasCoordinateValue(trackedEntityDataValue: TrackedEntityDataValue): Boolean {
+            val isCoordinateValueType =
+                d2
+                    .dataElementModule()
+                    .dataElements()
+                    .uid(trackedEntityDataValue.dataElement())
+                    .blockingGet()
+                    ?.valueType() == ValueType.COORDINATE
+            val hasValue = trackedEntityDataValue.value() != null
+            return isCoordinateValueType && hasValue
+        }
+
+        fun getCoordinateAttributeInfo(teiUidList: List<String>): List<CoordinateAttributeInfo> =
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityInstance()
+                .`in`(teiUidList)
+                .blockingGet()
+                .filter { trackedEntityAttributeValue ->
+                    attributeHasCoordinateValue(trackedEntityAttributeValue)
+                }.mapNotNull {
+                    val tei =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityInstances()
+                            .uid(it.trackedEntityInstance())
+                            .blockingGet()
+                    val attribute =
+                        d2
+                            .trackedEntityModule()
+                            .trackedEntityAttributes()
+                            .uid(it.trackedEntityAttribute())
+                            .blockingGet()
+                    val geometry =
+                        Geometry
+                            .builder()
+                            .coordinates(it.value())
+                            .type(FeatureType.POINT)
+                            .build()
+                    if (tei != null && attribute != null) {
+                        CoordinateAttributeInfo(
+                            tei,
+                            attribute,
+                            geometry,
+                        )
+                    } else {
+                        null
+                    }
                 }
-            }
+
+        private fun attributeHasCoordinateValue(trackedEntityAttributeValue: TrackedEntityAttributeValue): Boolean {
+            val isCoordinateValueType =
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityAttributes()
+                    .uid(trackedEntityAttributeValue.trackedEntityAttribute())
+                    .blockingGet()
+                    ?.valueType() == ValueType.COORDINATE
+            val hasValue = trackedEntityAttributeValue.value() != null
+            return isCoordinateValueType && hasValue
+        }
+
+        fun eventsToFeatureCollection(events: List<Event>) = featureCollectionMapper.eventToFeatureCollection.map(events)
+
+        fun coordinateFieldsToFeatureCollection(fields: List<CoordinateFieldInfo>) =
+            featureCollectionMapper.coordinateFieldToFeatureCollection.map(fields)
     }
-
-    private fun dataElementHasCoordinateValue(
-        trackedEntityDataValue: TrackedEntityDataValue,
-    ): Boolean {
-        val isCoordinateValueType = d2.dataElementModule().dataElements()
-            .uid(trackedEntityDataValue.dataElement()).blockingGet()
-            ?.valueType() == ValueType.COORDINATE
-        val hasValue = trackedEntityDataValue.value() != null
-        return isCoordinateValueType && hasValue
-    }
-
-    fun getCoordinateAttributeInfo(teiUidList: List<String>): List<CoordinateAttributeInfo> {
-        return d2.trackedEntityModule().trackedEntityAttributeValues()
-            .byTrackedEntityInstance().`in`(teiUidList)
-            .blockingGet().filter { trackedEntityAttributeValue ->
-                attributeHasCoordinateValue(trackedEntityAttributeValue)
-            }.mapNotNull {
-                val tei = d2.trackedEntityModule().trackedEntityInstances()
-                    .uid(it.trackedEntityInstance()).blockingGet()
-                val attribute = d2.trackedEntityModule().trackedEntityAttributes()
-                    .uid(it.trackedEntityAttribute()).blockingGet()
-                val geometry = Geometry.builder()
-                    .coordinates(it.value())
-                    .type(FeatureType.POINT)
-                    .build()
-                if (tei != null && attribute != null) {
-                    CoordinateAttributeInfo(
-                        tei,
-                        attribute,
-                        geometry,
-                    )
-                } else {
-                    null
-                }
-            }
-    }
-
-    private fun attributeHasCoordinateValue(
-        trackedEntityAttributeValue: TrackedEntityAttributeValue,
-    ): Boolean {
-        val isCoordinateValueType = d2.trackedEntityModule().trackedEntityAttributes()
-            .uid(trackedEntityAttributeValue.trackedEntityAttribute()).blockingGet()
-            ?.valueType() == ValueType.COORDINATE
-        val hasValue = trackedEntityAttributeValue.value() != null
-        return isCoordinateValueType && hasValue
-    }
-
-    fun eventsToFeatureCollection(events: List<Event>) =
-        featureCollectionMapper.eventToFeatureCollection.map(events)
-
-    fun coordinateFieldsToFeatureCollection(fields: List<CoordinateFieldInfo>) =
-        featureCollectionMapper.coordinateFieldToFeatureCollection.map(fields)
-}
 
 sealed class CoordinateFieldInfo
 

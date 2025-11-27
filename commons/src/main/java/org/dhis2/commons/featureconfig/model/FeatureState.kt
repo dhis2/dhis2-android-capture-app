@@ -8,5 +8,7 @@ data class FeatureState(
 )
 
 sealed class FeatureOptions {
-    data class ResponsiveHome(val totalItems: Int?) : FeatureOptions()
+    data class ResponsiveHome(
+        val totalItems: Int?,
+    ) : FeatureOptions()
 }

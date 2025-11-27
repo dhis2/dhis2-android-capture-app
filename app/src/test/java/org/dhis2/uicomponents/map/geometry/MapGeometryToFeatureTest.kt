@@ -1,8 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
-import com.mapbox.geojson.Polygon
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection.Companion.EVENT
@@ -15,12 +12,14 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
+import org.maplibre.geojson.Polygon
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class MapGeometryToFeatureTest {
-
     private lateinit var mapGeometryToFeature: MapGeometryToFeature
     private val pointMapper: MapPointToFeature = mock()
     private val polygonMapper: MapPolygonToFeature = mock()
@@ -57,12 +56,13 @@ class MapGeometryToFeatureTest {
 
     @Test
     fun `Should map single polygon to feature`() {
-        val coordinates = listOf(
+        val coordinates =
             listOf(
-                listOf(longitude1Polygon, latitude1Polygon),
-                listOf(longitude2Polygon, latitude2Polygon),
-            ),
-        )
+                listOf(
+                    listOf(longitude1Polygon, latitude1Polygon),
+                    listOf(longitude2Polygon, latitude2Polygon),
+                ),
+            )
 
         val geometry = GeometryHelper.createPolygonGeometry(coordinates)
         val featurePolygon = createFeaturePolygon()
@@ -88,32 +88,37 @@ class MapGeometryToFeatureTest {
         val boundsGeometry = BoundsGeometry()
         val featurePoint = createFeaturePoint(longitudePoint, latitudePoint)
 
-        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn Pair(
-            featurePoint,
-            boundsGeometry,
-        )
+        whenever(pointMapper.map(geometry, boundsGeometry)) doReturn
+            Pair(
+                featurePoint,
+                boundsGeometry,
+            )
 
-        val result = mapGeometryToFeature.map(
-            geometry,
-            mapOf(EVENT to EVENT_UID_VALUE),
-        )
+        val result =
+            mapGeometryToFeature.map(
+                geometry,
+                mapOf(EVENT to EVENT_UID_VALUE),
+            )
 
         assertEquals(result, null)
     }
 
-    private fun createFeaturePoint(longitude: Double, latitude: Double): Feature {
-        return Feature.fromGeometry(Point.fromLngLat(longitude, latitude)).also {
+    private fun createFeaturePoint(
+        longitude: Double,
+        latitude: Double,
+    ): Feature =
+        Feature.fromGeometry(Point.fromLngLat(longitude, latitude)).also {
             it.addStringProperty(EVENT, EVENT_UID_VALUE)
         }
-    }
 
     private fun createFeaturePolygon(): Feature {
-        val coordinates = listOf(
+        val coordinates =
             listOf(
-                Point.fromLngLat(longitude1Polygon, latitude1Polygon),
-                Point.fromLngLat(longitude2Polygon, latitude2Polygon),
-            ),
-        )
+                listOf(
+                    Point.fromLngLat(longitude1Polygon, latitude1Polygon),
+                    Point.fromLngLat(longitude2Polygon, latitude2Polygon),
+                ),
+            )
 
         return Feature.fromGeometry(Polygon.fromLngLats(coordinates))
     }

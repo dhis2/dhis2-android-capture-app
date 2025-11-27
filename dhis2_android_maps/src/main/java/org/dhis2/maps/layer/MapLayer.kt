@@ -1,6 +1,6 @@
 package org.dhis2.maps.layer
 
-import com.mapbox.geojson.Feature
+import org.maplibre.geojson.Feature
 
 const val TYPE = "\$type"
 const val TYPE_POINT = "Point"
@@ -8,7 +8,6 @@ const val TYPE_POLYGON = "Polygon"
 const val TYPE_LINE = "LineString"
 
 interface MapLayer {
-
     fun showLayer()
 
     fun hideLayer()

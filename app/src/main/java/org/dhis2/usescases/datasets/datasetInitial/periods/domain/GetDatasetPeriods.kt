@@ -15,6 +15,5 @@ class GetDatasetPeriods(
         periodType: PeriodType,
         selectedDate: Date?,
         openFuturePeriods: Int,
-    ): Flow<PagingData<Period>> =
-        repository.getPeriods(datasetUid, periodType, selectedDate, openFuturePeriods)
+    ): Flow<PagingData<Period>> = repository.getPeriods(datasetUid, periodType, selectedDate, openFuturePeriods)
 }

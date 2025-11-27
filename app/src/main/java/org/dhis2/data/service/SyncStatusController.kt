@@ -9,7 +9,9 @@ import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
 import org.hisp.dhis.android.core.arch.call.D2ProgressSyncStatus
 import timber.log.Timber
 
-class SyncStatusController(private val dispatcher: DispatcherProvider) {
+class SyncStatusController(
+    private val dispatcher: DispatcherProvider,
+) {
     private var progressStatusMap: Map<String, D2ProgressStatus> = emptyMap()
     private val downloadStatus = MutableStateFlow(SyncStatusData(isInitialSync = true))
 
@@ -34,9 +36,10 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
 
     fun updateDownloadProcess(programDownload: Map<String, D2ProgressStatus>) {
         Timber.tag("SYNC").d("Updating PROGRAM")
-        progressStatusMap = progressStatusMap.toMutableMap().also {
-            it.putAll(programDownload)
-        }
+        progressStatusMap =
+            progressStatusMap.toMutableMap().also {
+                it.putAll(programDownload)
+            }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(programSyncStatusMap = progressStatusMap),
@@ -58,13 +61,14 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
     }
 
     fun onNetworkUnavailable() {
-        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
-            if (entry.value.isComplete) {
-                entry.value
-            } else {
-                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+        progressStatusMap =
+            progressStatusMap.toMutableMap().mapValues { entry ->
+                if (entry.value.isComplete) {
+                    entry.value
+                } else {
+                    entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+                }
             }
-        }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 SyncStatusData(true, programSyncStatusMap = progressStatusMap),
@@ -82,13 +86,14 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
 
     fun finishDownloadingEvents(eventProgramUids: List<String>) {
         Timber.tag("SYNC").d("FINISHED EVENTS")
-        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
-            if (!eventProgramUids.contains(entry.key) || entry.value.isComplete) {
-                entry.value
-            } else {
-                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+        progressStatusMap =
+            progressStatusMap.toMutableMap().mapValues { entry ->
+                if (!eventProgramUids.contains(entry.key) || entry.value.isComplete) {
+                    entry.value
+                } else {
+                    entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+                }
             }
-        }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(
@@ -110,13 +115,14 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
     fun finishDownloadingTracker(trackerProgramUids: List<String>) {
         Timber.tag("SYNC").d("FINISHED TRACKER")
 
-        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
-            if (!trackerProgramUids.contains(entry.key) || entry.value.isComplete) {
-                entry.value
-            } else {
-                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+        progressStatusMap =
+            progressStatusMap.toMutableMap().mapValues { entry ->
+                if (!trackerProgramUids.contains(entry.key) || entry.value.isComplete) {
+                    entry.value
+                } else {
+                    entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+                }
             }
-        }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(
@@ -128,13 +134,14 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
     }
 
     fun updateSingleProgramToSuccess(programUid: String) {
-        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
-            if (programUid != entry.key) {
-                entry.value
-            } else {
-                entry.value.copy(isComplete = true, D2ProgressSyncStatus.SUCCESS)
+        progressStatusMap =
+            progressStatusMap.toMutableMap().mapValues { entry ->
+                if (programUid != entry.key) {
+                    entry.value
+                } else {
+                    entry.value.copy(isComplete = true, D2ProgressSyncStatus.SUCCESS)
+                }
             }
-        }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 SyncStatusData(false, programSyncStatusMap = progressStatusMap),
@@ -166,13 +173,14 @@ class SyncStatusController(private val dispatcher: DispatcherProvider) {
     }
 
     fun finishDownloadingDataSets(dataSetUids: List<String>) {
-        progressStatusMap = progressStatusMap.toMutableMap().mapValues { entry ->
-            if (!dataSetUids.contains(entry.key) || entry.value.isComplete) {
-                entry.value
-            } else {
-                entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+        progressStatusMap =
+            progressStatusMap.toMutableMap().mapValues { entry ->
+                if (!dataSetUids.contains(entry.key) || entry.value.isComplete) {
+                    entry.value
+                } else {
+                    entry.value.copy(isComplete = true, D2ProgressSyncStatus.ERROR)
+                }
             }
-        }
         CoroutineScope(dispatcher.io()).launch {
             downloadStatus.emit(
                 downloadStatus.value.copy(downloadingDataSetValues = false, programSyncStatusMap = progressStatusMap),

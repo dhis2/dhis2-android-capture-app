@@ -89,5 +89,8 @@
     <string name="no_options">K dispozici nejsou žádné možnosti</string>
     <string name="cat_combo">Kombinace kategorií</string>
     <string name="storage_permission_denied">Oprávnění k ukládání není uděleno.\nChcete-li tuto funkci používat, musíte ji povolit.</string>
+    <string name="select_app_intent">Vyberte aplikaci pro spuštění záměru</string>
+    <string name="custom_intent_error">Nepodařilo se načíst data</string>
+    <string name="custom_intent_launch">Spustit</string>
 
 </resources>

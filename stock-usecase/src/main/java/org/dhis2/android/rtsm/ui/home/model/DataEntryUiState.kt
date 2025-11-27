@@ -5,6 +5,7 @@ data class DataEntryUiState(
     val button: ButtonUiState = ButtonUiState(),
     val hasUnsavedData: Boolean = false,
     val snackBarUiState: SnackBarUiState = SnackBarUiState(),
+    val loading: Boolean = false,
 )
 
 enum class DataEntryStep {

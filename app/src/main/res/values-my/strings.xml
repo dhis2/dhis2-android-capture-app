@@ -45,6 +45,7 @@
     <string name="log_out">ထွက်ရန်</string>
     <string name="wipe_data_no">ပယ်ဖျက်သည်</string>
     <string name="SYNC_MANAGER">တည်ဆောက်ထားသည့်အနေအထား</string>
+    <string name="settingsTwoFAStatus">အခြေအနေ</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Дата зачисления</string>

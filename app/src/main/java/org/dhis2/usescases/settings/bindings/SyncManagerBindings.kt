@@ -6,7 +6,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.ComposeView
 import androidx.databinding.BindingAdapter
 import org.dhis2.ui.model.ButtonUiModel
-import org.dhis2.ui.theme.Dhis2Theme
 import org.dhis2.ui.theme.textSecondary
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
@@ -17,7 +16,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 fun ComposeView.addTextButton(model: ButtonUiModel?) {
     model?.let {
         setContent {
-            Dhis2Theme {
+            DHIS2Theme {
                 Button(
                     text = it.text,
                     enabled = it.enabled,

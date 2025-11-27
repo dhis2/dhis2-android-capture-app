@@ -11,7 +11,6 @@ class IdentifiableModel(
     val name: String,
     val displayName: String,
 ) : Parcelable {
-
     constructor(source: Parcel) : this(
         source.readString()!!,
         source.readString()!!,
@@ -20,7 +19,10 @@ class IdentifiableModel(
 
     override fun describeContents() = 0
 
-    override fun writeToParcel(dest: Parcel, flags: Int) {
+    override fun writeToParcel(
+        dest: Parcel,
+        flags: Int,
+    ) {
         dest.writeString(uid)
         dest.writeString(name)
         dest.writeString(displayName)

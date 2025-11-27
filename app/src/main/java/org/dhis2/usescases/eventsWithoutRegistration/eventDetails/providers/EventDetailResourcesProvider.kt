@@ -13,11 +13,12 @@ class EventDetailResourcesProvider(
 ) {
     fun provideDueDate() = resourceManager.getString(R.string.due_date)
 
-    fun provideEventDate() = eventResourcesProvider.formatWithProgramStageEventLabel(
-        R.string.event_label_date,
-        programStage,
-        programUid,
-    )
+    fun provideEventDate() =
+        eventResourcesProvider.formatWithProgramStageEventLabel(
+            R.string.event_label_date,
+            programStage,
+            programUid,
+        )
 
     fun provideNextEventDate(label: String?): String {
         val defaultEventLabel = resourceManager.getString(R.string.event)
@@ -27,8 +28,8 @@ class EventDetailResourcesProvider(
         )
     }
 
-    fun provideEditionStatus(reason: EventNonEditableReason): String {
-        return when (reason) {
+    fun provideEditionStatus(reason: EventNonEditableReason): String =
+        when (reason) {
             EventNonEditableReason.BLOCKED_BY_COMPLETION ->
                 resourceManager.getString(R.string.blocked_by_completion)
             EventNonEditableReason.EXPIRED ->
@@ -48,7 +49,6 @@ class EventDetailResourcesProvider(
             EventNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE ->
                 resourceManager.getString(R.string.edition_orgunit_capture_scope)
         }
-    }
 
     fun provideButtonUpdate() = resourceManager.getString(R.string.update)
 
@@ -56,17 +56,19 @@ class EventDetailResourcesProvider(
 
     fun provideButtonCheck() = resourceManager.getString(R.string.check_event)
 
-    fun provideEventCreatedMessage() = eventResourcesProvider.formatWithProgramStageEventLabel(
-        R.string.event_label_updated,
-        programStage,
-        programUid,
-    )
+    fun provideEventCreatedMessage() =
+        eventResourcesProvider.formatWithProgramStageEventLabel(
+            R.string.event_label_updated,
+            programStage,
+            programUid,
+        )
 
-    fun provideEventCreationError() = eventResourcesProvider.formatWithProgramStageEventLabel(
-        R.string.failed_insert_event_label,
-        programStage,
-        programUid,
-    )
+    fun provideEventCreationError() =
+        eventResourcesProvider.formatWithProgramStageEventLabel(
+            R.string.failed_insert_event_label,
+            programStage,
+            programUid,
+        )
 
     fun provideReOpened() = resourceManager.getString(R.string.re_opened)
 }

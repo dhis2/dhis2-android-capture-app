@@ -14,15 +14,12 @@ class DataSetListViewModelFactory(
     val filterManager: FilterManager,
     val matomoAnalyticsController: MatomoAnalyticsController,
     private val dispatchers: DispatcherProvider,
-
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return DataSetListViewModel(
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        DataSetListViewModel(
             dataSetDetailRepository,
             filterManager,
             matomoAnalyticsController,
             dispatchers,
         ) as T
-    }
 }

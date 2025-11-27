@@ -4,4 +4,8 @@
     <string name="error">ভুল</string>
     <string name="date">তারিখ</string>
     <string name="due_date">নির্ধারিত তারিখ</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

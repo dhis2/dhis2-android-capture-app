@@ -14,4 +14,8 @@
     <string name="download">تنزيل</string>
     <string name="input_action_accept">قبول</string>
     <string name="input_action_cancel">إلغاء</string>
-    </resources>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

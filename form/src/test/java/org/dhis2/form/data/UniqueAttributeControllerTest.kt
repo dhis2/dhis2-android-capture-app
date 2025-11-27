@@ -27,18 +27,20 @@ class UniqueAttributeControllerTest {
 
     @Test
     fun `Check unique attribute locally without org unit context`() {
-        val attributeValues: List<TrackedEntityAttributeValue> = listOf(
-            mock {
-                on { trackedEntityInstance() } doReturn "teiUid"
-            },
-        )
+        val attributeValues: List<TrackedEntityAttributeValue> =
+            listOf(
+                mock {
+                    on { trackedEntityInstance() } doReturn "teiUid"
+                },
+            )
         mockTrackedEntityAttributeValues(attributeValues)
-        val result = uniqueAttributeController.checkAttributeLocal(
-            orgUnitScope = false,
-            teiUid = "teiUid",
-            attributeUid = "uid",
-            attributeValue = "value",
-        )
+        val result =
+            uniqueAttributeController.checkAttributeLocal(
+                orgUnitScope = false,
+                teiUid = "teiUid",
+                attributeUid = "uid",
+                attributeValue = "value",
+            )
         assertTrue(!result)
     }
 
@@ -55,18 +57,20 @@ class UniqueAttributeControllerTest {
             ),
         )
 
-        val attributeValues: List<TrackedEntityAttributeValue> = listOf(
-            mock {
-                on { trackedEntityInstance() } doReturn "teiUid2"
-            },
-        )
+        val attributeValues: List<TrackedEntityAttributeValue> =
+            listOf(
+                mock {
+                    on { trackedEntityInstance() } doReturn "teiUid2"
+                },
+            )
         mockTrackedEntityAttributeValues(attributeValues)
-        val result = uniqueAttributeController.checkAttributeLocal(
-            orgUnitScope = true,
-            teiUid = "teiUid",
-            attributeUid = "uid",
-            attributeValue = "value",
-        )
+        val result =
+            uniqueAttributeController.checkAttributeLocal(
+                orgUnitScope = true,
+                teiUid = "teiUid",
+                attributeUid = "uid",
+                attributeValue = "value",
+            )
         assertTrue(result)
     }
 
@@ -79,26 +83,28 @@ class UniqueAttributeControllerTest {
                 },
             ),
         )
-        val result = uniqueAttributeController.checkAttributeOnline(
-            false,
-            "programUid",
-            "teiUid",
-            "attributeUid",
-            "attributeValue",
-        )
+        val result =
+            uniqueAttributeController.checkAttributeOnline(
+                false,
+                "programUid",
+                "teiUid",
+                "attributeUid",
+                "attributeValue",
+            )
         assertTrue(!result)
     }
 
     @Test
     fun `Check unique attribute online with org unit context`() {
         mockContextApiCall(emptyList())
-        val result = uniqueAttributeController.checkAttributeOnline(
-            true,
-            "programUid",
-            "teiUid",
-            "attributeUid",
-            "attributeValue",
-        )
+        val result =
+            uniqueAttributeController.checkAttributeOnline(
+                true,
+                "programUid",
+                "teiUid",
+                "attributeUid",
+                "attributeValue",
+            )
         assertTrue(result)
     }
 
@@ -117,46 +123,76 @@ class UniqueAttributeControllerTest {
 
     private fun mockTeiOrgUnit(teiList: List<TrackedEntityInstance>) {
         whenever(
-            d2.trackedEntityModule().trackedEntityInstances().uid(any()).blockingGet(),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstances()
+                .uid(any())
+                .blockingGet(),
         ) doReturnConsecutively teiList
     }
 
     private fun mockTrackedEntityAttributeValues(result: List<TrackedEntityAttributeValue>) {
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
                 .byTrackedEntityAttribute(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
                 .byTrackedEntityInstance(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("teiUid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("teiUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("teiUid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("teiUid")
                 .byValue(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("teiUid")
-                .byValue().eq("value"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("teiUid")
+                .byValue()
+                .eq("value"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityAttributeValues()
-                .byTrackedEntityAttribute().eq("uid")
-                .byTrackedEntityInstance().neq("teiUid")
-                .byValue().eq("value")
+            d2
+                .trackedEntityModule()
+                .trackedEntityAttributeValues()
+                .byTrackedEntityAttribute()
+                .eq("uid")
+                .byTrackedEntityInstance()
+                .neq("teiUid")
+                .byValue()
+                .eq("value")
                 .blockingGet(),
         ) doReturn result
     }
@@ -166,55 +202,102 @@ class UniqueAttributeControllerTest {
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
                 .allowOnlineCache(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
                 .byOrgUnitMode(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE)
                 .byProgram(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-                .byProgram().eq("programUid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE)
+                .byProgram()
+                .eq("programUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-                .byProgram().eq("programUid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE)
+                .byProgram()
+                .eq("programUid")
                 .byAttribute("attributeUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byOrgUnitMode().eq(OrganisationUnitMode.ACCESSIBLE)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.ACCESSIBLE)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue")
                 .blockingGet(),
         ) doReturn teiList
     }
@@ -234,90 +317,163 @@ class UniqueAttributeControllerTest {
             d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
                 .allowOnlineCache(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
                 .byProgram(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid")
                 .byAttribute("attributeUid"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue"),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue")
                 .byOrgUnitMode(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
-                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue")
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.DESCENDANTS),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
-                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue")
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.DESCENDANTS)
                 .byOrgUnits(),
         ) doReturn mock()
         whenever(
-            d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                .allowOnlineCache().eq(true)
-                .byProgram().eq("programUid")
-                .byAttribute("attributeUid").eq("attributeValue")
-                .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
-                .byOrgUnits().`in`("orgUnit"),
+            d2
+                .trackedEntityModule()
+                .trackedEntityInstanceQuery()
+                .onlineOnly()
+                .allowOnlineCache()
+                .eq(true)
+                .byProgram()
+                .eq("programUid")
+                .byAttribute("attributeUid")
+                .eq("attributeValue")
+                .byOrgUnitMode()
+                .eq(OrganisationUnitMode.DESCENDANTS)
+                .byOrgUnits()
+                .`in`("orgUnit"),
         ) doReturn mock()
         if (shouldThrowException) {
             whenever(
-                d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                    .allowOnlineCache().eq(true)
-                    .byProgram().eq("programUid")
-                    .byAttribute("attributeUid").eq("attributeValue")
-                    .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
-                    .byOrgUnits().`in`("orgUnit")
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstanceQuery()
+                    .onlineOnly()
+                    .allowOnlineCache()
+                    .eq(true)
+                    .byProgram()
+                    .eq("programUid")
+                    .byAttribute("attributeUid")
+                    .eq("attributeValue")
+                    .byOrgUnitMode()
+                    .eq(OrganisationUnitMode.DESCENDANTS)
+                    .byOrgUnits()
+                    .`in`("orgUnit")
                     .blockingGet(),
-            ) doThrow MockitoException(
-                "",
-                D2Error.builder()
-                    .errorComponent(D2ErrorComponent.Server)
-                    .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
-                    .errorDescription("error")
-                    .build(),
-            )
+            ) doThrow
+                MockitoException(
+                    "",
+                    D2Error
+                        .builder()
+                        .errorComponent(D2ErrorComponent.Server)
+                        .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
+                        .errorDescription("error")
+                        .build(),
+                )
         } else {
             whenever(
-                d2.trackedEntityModule().trackedEntityInstanceQuery().onlineOnly()
-                    .allowOnlineCache().eq(true)
-                    .byProgram().eq("programUid")
-                    .byAttribute("attributeUid").eq("attributeValue")
-                    .byOrgUnitMode().eq(OrganisationUnitMode.DESCENDANTS)
-                    .byOrgUnits().`in`("orgUnit")
+                d2
+                    .trackedEntityModule()
+                    .trackedEntityInstanceQuery()
+                    .onlineOnly()
+                    .allowOnlineCache()
+                    .eq(true)
+                    .byProgram()
+                    .eq("programUid")
+                    .byAttribute("attributeUid")
+                    .eq("attributeValue")
+                    .byOrgUnitMode()
+                    .eq(OrganisationUnitMode.DESCENDANTS)
+                    .byOrgUnits()
+                    .`in`("orgUnit")
                     .blockingGet(),
             ) doReturn teiList
         }

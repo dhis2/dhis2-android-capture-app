@@ -8,7 +8,5 @@ import javax.inject.Singleton
 class SchedulersModule {
     @Provides
     @Singleton
-    fun schedulerProvider(): SchedulerProvider {
-        return SchedulersProviderImpl()
-    }
+    fun schedulerProvider(): SchedulerProvider = SchedulersProviderImpl()
 }

@@ -31,10 +31,12 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.hisp.dhis.android.core.D2
 
 @Module
-class PinModule(val view: PinView) {
-
+class PinModule(
+    val view: PinView,
+) {
     @Provides
-    fun providesPresenter(d2: D2, preferenceProvider: PreferenceProvider): PinPresenter {
-        return PinPresenter(view, preferenceProvider, d2)
-    }
+    fun providesPresenter(
+        d2: D2,
+        preferenceProvider: PreferenceProvider,
+    ): PinPresenter = PinPresenter(view, preferenceProvider, d2)
 }

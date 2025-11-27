@@ -26,11 +26,7 @@
 
     <string name="sync_error_title">Sinxronlashda xatolik</string>
     <string name="sync_error_text">Sinxronlash paytida xatolik yuz berdi. Iltimos, qayta urinib koʼring</string>
-    <string name="metadata_sync_error">Sinxronlash paytida xatolik yuz berdi. Аgarda tarmoqqa ulangan boʼlsangiz, iltimos, qayta urinib koʼring. Аgarda xatolik takrorlansa, administratoringizga murojaat qiling.</string>
-    <string name="data_sync_warning">OGOHLАNTIRISh: Maʼlumotlarning aksariyat qismi sinxronlashtirildi. Lekin, baʼzi ziddiyatlar kelib chiqdi. Konfiguratsiyani sinxronlang va qaytadan urinib koʼring. Ularning sinxronlash holatini tekshiring: @ sifatida belgilangan dasturlar, TEIni va hodisa/tadbirlarni.</string>
     <string name="data_sync_warning_program">OGOHLАNTIRISh: Maʼlumotlarning aksariyat qismi sinxronlashtirildi. Lekin, baʼzi ziddiyatlar kelib chiqdi. Konfiguratsiyani sinxronlang va qaytadan urinib koʼring. Аgar ogohlantirish davom etsa, ularning sinxronlash holatini tekshiring: @ sifatida belgilangan dasturlar, TEIni va hodisa/tadbirlarni.</string>
-    <string name="data_sync_error">XАTOLIK: Baʼzi maʼlumotlar sinxronlanmadi. Ularning sinxronlash holatini tekshiring: Dasturlarning @ xatolik deb belgilanganlarini, TEI va hodisa/tadbirlarda $\" deb belgilangan.</string>
-    <string name="data_sync_error_program">XАTOLIK: Baʼzi maʼlumotlar sinxronlanmadi. Ularning sinxronlash holatini tekshiring: TEI va hodisa/tadbirlarda $\" deb belgilangan.</string>
     <string name="search_result_text">1 %s natijalar topildi</string>
     <string name="add_new">Янгисини қўшиш</string>
     <string name="add">Qoʼshish</string>
@@ -180,7 +176,6 @@
     <string name="settings_sms_receiver_number_hint">raqam</string>
     <string name="settings_sms_module_switch">SMS yuborishni yoqish</string>
     <string name="settings_sms_response_wait_switch">SMS natijalar tarqatilishini kutish</string>
-    <string name="settings_sync_period">Sinxronizatsiya davri</string>
     <string name="settings_limit_scope">Sozlamalar cheklangan</string>
     <string name="settings_limit_globally">Global miqyosda</string>
     <string name="settings_limit_program">dastur boʼyicha</string>
@@ -202,6 +197,7 @@
     <string name="settingsReset_descr">Qurilmangizda saqlangan konfiguratsiya va Ilova maʼlumotlari oʼchiriladi. Sizdan qayta tizimga kirish soʼraladi. Server bilan sinxronlanmagan maʼlumotlar yoʼqotiladi.</string>
     <string name="settingsSms">SMS sozlamalari</string>
     <string name="settingsSms_descr">SMS shlyuzi bilan bogʼliq parametrlarni tekshiring va tahrirlang</string>
+    <string name="settingsTwoFAStatus">Status</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Qayd qilingan sana</string>

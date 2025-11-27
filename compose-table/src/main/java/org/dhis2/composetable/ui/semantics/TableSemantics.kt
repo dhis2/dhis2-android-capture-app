@@ -14,7 +14,7 @@ const val CELL_VALUE_TEST_TAG = "CELL_VALUE_TEST_TAG"
 const val CELL_ERROR_UNDERLINE_TEST_TAG = "CELL_ERROR_UNDERLINE_TEST_TAG"
 val MAX_CELL_WIDTH_SPACE = 96.dp
 
-/* Row Header Cell */
+// Row Header Cell
 val InfoIconId = SemanticsPropertyKey<String>("InfoIconId")
 var SemanticsPropertyReceiver.infoIconId by InfoIconId
 val TableId = SemanticsPropertyKey<String>("TableId")
@@ -24,7 +24,7 @@ var SemanticsPropertyReceiver.rowIndexSemantic by RowIndex
 val RowBackground = SemanticsPropertyKey<Color>("RowBackground")
 var SemanticsPropertyReceiver.rowBackground by RowBackground
 
-/* Column Header Cell */
+// Column Header Cell
 val ColumnBackground = SemanticsPropertyKey<Color>("ColumnBackground")
 var SemanticsPropertyReceiver.columnBackground by ColumnBackground
 val ColumnIndexHeader = SemanticsPropertyKey<Int>("ColumnIndexHeader")
@@ -34,7 +34,7 @@ var SemanticsPropertyReceiver.rowIndexHeader by RowIndexHeader
 val TableIdColumnHeader = SemanticsPropertyKey<String>("TableIdColumnHeader")
 var SemanticsPropertyReceiver.tableIdColumnHeader by TableIdColumnHeader
 
-/* Cell */
+// Cell
 val CellSelected = SemanticsPropertyKey<Boolean>("CellSelected")
 var SemanticsPropertyReceiver.cellSelected by CellSelected
 val HasError = SemanticsPropertyKey<Boolean>("HasError")

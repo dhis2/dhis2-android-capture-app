@@ -26,13 +26,12 @@ class EventListModule {
         dispatcher: DispatcherProvider,
         mapper: ProgramEventMapper,
         cardMapper: EventCardMapper,
-    ): EventListPresenterFactory {
-        return EventListPresenterFactory(
+    ): EventListPresenterFactory =
+        EventListPresenterFactory(
             filterManager,
             programEventDetailRepository,
             dispatcher,
             mapper,
             cardMapper,
         )
-    }
 }

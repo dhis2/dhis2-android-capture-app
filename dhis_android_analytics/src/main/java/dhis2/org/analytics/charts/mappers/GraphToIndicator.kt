@@ -17,7 +17,10 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 class GraphToIndicator {
-    fun map(context: Context, graph: Graph): View {
+    fun map(
+        context: Context,
+        graph: Graph,
+    ): View {
         if (graph.series.isEmpty()) {
             return TextView(context).apply {
                 text = context.getString(R.string.no_data)
@@ -26,11 +29,12 @@ class GraphToIndicator {
         return ComposeView(context).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val series = if (graph.chartType == ChartType.NUTRITION) {
-                    listOf(graph.series.last())
-                } else {
-                    graph.series
-                }
+                val series =
+                    if (graph.chartType == ChartType.NUTRITION) {
+                        listOf(graph.series.last())
+                    } else {
+                        graph.series
+                    }
                 DHIS2Theme {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -40,11 +44,12 @@ class GraphToIndicator {
                             Indicator(
                                 title = it.fieldName,
                                 content = it.coordinates.lastOrNull()?.textValue() ?: "",
-                                indicatorColor = if (coordinate?.legendValue?.color != null) {
-                                    Color(coordinate.legendValue.color)
-                                } else {
-                                    SurfaceColor.Container
-                                },
+                                indicatorColor =
+                                    if (coordinate?.legendValue?.color != null) {
+                                        Color(coordinate.legendValue.color)
+                                    } else {
+                                        SurfaceColor.Container
+                                    },
                             )
                         }
                     }

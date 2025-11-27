@@ -4,47 +4,43 @@ import org.hisp.dhis.android.core.imports.TrackerImportConflict
 import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.maintenance.ForeignKeyViolation
 
-class ErrorModelMapper(private val fkMessage: String) {
-
+class ErrorModelMapper(
+    private val fkMessage: String,
+) {
     companion object {
         const val FK = "FK"
     }
 
-    fun mapD2Error(errors: List<D2Error>): List<ErrorViewModel> {
-        return errors.map {
+    fun mapD2Error(errors: List<D2Error>): List<ErrorViewModel> =
+        errors.map {
             map(it)
         }
-    }
 
-    fun map(error: D2Error): ErrorViewModel {
-        return ErrorViewModel(
+    fun map(error: D2Error): ErrorViewModel =
+        ErrorViewModel(
             error.created(),
             error.httpErrorCode().toString(),
             error.errorDescription(),
             error.errorComponent()?.name ?: "",
         )
-    }
 
-    fun mapConflict(conflicts: List<TrackerImportConflict>): List<ErrorViewModel> {
-        return conflicts.map {
+    fun mapConflict(conflicts: List<TrackerImportConflict>): List<ErrorViewModel> =
+        conflicts.map {
             map(it)
         }
-    }
 
-    fun map(conflict: TrackerImportConflict): ErrorViewModel {
-        return ErrorViewModel(
+    fun map(conflict: TrackerImportConflict): ErrorViewModel =
+        ErrorViewModel(
             conflict.created(),
             conflict.errorCode(),
             conflict.displayDescription() ?: conflict.conflict(),
             conflict.status()?.name,
         )
-    }
 
-    fun mapFKViolation(fKViolations: List<ForeignKeyViolation>): List<ErrorViewModel> {
-        return fKViolations.map {
+    fun mapFKViolation(fKViolations: List<ForeignKeyViolation>): List<ErrorViewModel> =
+        fKViolations.map {
             map(it)
         }
-    }
 
     fun map(fKViolation: ForeignKeyViolation): ErrorViewModel {
         val toTable = fKViolation.toTable() ?: ""

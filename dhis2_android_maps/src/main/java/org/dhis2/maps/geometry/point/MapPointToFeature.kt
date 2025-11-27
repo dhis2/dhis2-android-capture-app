@@ -1,17 +1,19 @@
 package org.dhis2.maps.geometry.point
 
 import android.util.Log
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.areLngLatCorrect
 import org.dhis2.maps.geometry.bound.BoundsGeometry
 import org.hisp.dhis.android.core.arch.helpers.GeometryHelper
 import org.hisp.dhis.android.core.common.Geometry
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 
 class MapPointToFeature {
-
     // To remove this with bounds
-    fun map(item: Geometry, bounds: BoundsGeometry): Pair<Feature, BoundsGeometry>? {
+    fun map(
+        item: Geometry,
+        bounds: BoundsGeometry,
+    ): Pair<Feature, BoundsGeometry>? {
         val sdkPoint = GeometryHelper.getPoint(item)
         val lat = sdkPoint[1]
         val lon = sdkPoint[0]

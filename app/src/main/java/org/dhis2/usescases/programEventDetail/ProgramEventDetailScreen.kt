@@ -83,7 +83,8 @@ fun ProgramEventDetailScreen(
                     when (currentScreen) {
                         EventProgramScreen.LIST -> true
                         else -> false
-                    } && writePermission &&
+                    } &&
+                        writePermission &&
                         isBackdropActive.not()
                 }
             }
@@ -162,13 +163,16 @@ fun ProgramEventDetailScreen(
         },
     ) {
         AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(it),
             factory = { context ->
-                ActivityProgramEventDetailBinding.inflate(
-                    LayoutInflater.from(context),
-                ).also(onBindingReady).root
+                ActivityProgramEventDetailBinding
+                    .inflate(
+                        LayoutInflater.from(context),
+                    ).also(onBindingReady)
+                    .root
             },
             update = {
                 onViewReady()

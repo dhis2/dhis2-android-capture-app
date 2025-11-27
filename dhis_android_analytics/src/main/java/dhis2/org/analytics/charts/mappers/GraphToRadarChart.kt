@@ -15,7 +15,10 @@ import dhis2.org.analytics.charts.formatters.CategoryFormatter
 const val DEFAULT_RADAR_CHART_HEIGHT = 1000
 
 class GraphToRadarChart {
-    fun map(context: Context, graph: Graph): RadarChart {
+    fun map(
+        context: Context,
+        graph: Graph,
+    ): RadarChart {
         val radarData = GraphToRadarData().map(graph)
         return SizeRadarChart(context).apply {
             isRotationEnabled = true
@@ -32,21 +35,27 @@ class GraphToRadarChart {
 
             legend.withGlobalStyle()
 
-            setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onValueSelected(e: Entry?, h: Highlight?) {
-                    data = if (e?.data is String) {
-                        GraphToRadarData().map(graph, e.data as String)
-                    } else {
-                        GraphToRadarData().map(graph)
+            setOnChartValueSelectedListener(
+                object : OnChartValueSelectedListener {
+                    override fun onValueSelected(
+                        e: Entry?,
+                        h: Highlight?,
+                    ) {
+                        data =
+                            if (e?.data is String) {
+                                GraphToRadarData().map(graph, e.data as String)
+                            } else {
+                                GraphToRadarData().map(graph)
+                            }
+                        invalidate()
                     }
-                    invalidate()
-                }
 
-                override fun onNothingSelected() {
-                    data = GraphToRadarData().map(graph)
-                    invalidate()
-                }
-            })
+                    override fun onNothingSelected() {
+                        data = GraphToRadarData().map(graph)
+                        invalidate()
+                    }
+                },
+            )
 
             extraTopOffset = 5f
             extraLeftOffset = 5f
@@ -55,10 +64,11 @@ class GraphToRadarChart {
 
             marker = RadarChartMarker(context, yAxis)
 
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                DEFAULT_RADAR_CHART_HEIGHT,
-            )
+            layoutParams =
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    DEFAULT_RADAR_CHART_HEIGHT,
+                )
         }
     }
 }

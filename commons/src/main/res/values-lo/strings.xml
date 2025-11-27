@@ -216,7 +216,8 @@
     <string name="msg_network_connection_maps">ຈຳເປັນຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດເພື່ອໃຊ້ແຜນທີ່.</string>
 
     <string name="overdue_today">ມື້ນີ້</string>
-    <string name="enrolling_ou">ລົງທະບຽນໃນ:</string> <string name="delete_event_label">ລົບ%s</string>
+    <string name="enrolling_ou">ລົງທະບຽນໃນ:</string>
+    <string name="delete_event_label">ລົບ%s</string>
     <string name="week_period_span_default_label">ອາທິດ%d%sຫາ%s</string>
     <string name="enrollment_reopen">ເປີດຄືນໃໝ່</string>
 

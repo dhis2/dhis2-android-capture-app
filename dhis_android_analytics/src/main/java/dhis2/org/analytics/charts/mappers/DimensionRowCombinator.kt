@@ -15,11 +15,12 @@ class DimensionRowCombinator {
             val isFinalRow = nextValueIndex == gridAnalyticsResponse.headers.rows.size - 1
             gridAnalyticsResponse.headers.rows[nextValueIndex].forEach {
                 val newValue = gridAnalyticsResponse.metadata[it.id]?.displayName
-                val nextValue = if (currentValueIndex == -1) {
-                    newValue
-                } else {
-                    "$currentValue - $newValue"
-                }
+                val nextValue =
+                    if (currentValueIndex == -1) {
+                        newValue
+                    } else {
+                        "$currentValue - $newValue"
+                    }
                 combineWithNextItem(
                     gridAnalyticsResponse,
                     currentList,

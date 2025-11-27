@@ -12,12 +12,13 @@ internal class RunValidationRules(
     private val dataSetInstanceRepository: DataSetInstanceRepository,
 ) {
     suspend operator fun invoke(): ValidationRulesResult {
-        val validationResult = dataSetInstanceRepository.runValidationRules(
-            dataSetUid,
-            periodId,
-            orgUnitUid,
-            attrOptionComboUid,
-        )
+        val validationResult =
+            dataSetInstanceRepository.runValidationRules(
+                dataSetUid,
+                periodId,
+                orgUnitUid,
+                attrOptionComboUid,
+            )
         return when (validationResult.validationResultStatus) {
             ValidationResultStatus.OK -> {
                 validationResult

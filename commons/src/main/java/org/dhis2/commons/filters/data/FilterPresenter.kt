@@ -10,77 +10,68 @@ import javax.inject.Inject
 
 const val ORG_UNT_FILTER_MIN_CHAR = 3
 
-class FilterPresenter @Inject constructor(
-    private val filterRepository: FilterRepository,
-    val filterManager: FilterManager,
-) {
+class FilterPresenter
+    @Inject
+    constructor(
+        private val filterRepository: FilterRepository,
+        val filterManager: FilterManager,
+    ) {
+        private val dataSetFilterSearchHelper: DataSetFilterSearchHelper by lazy {
+            DataSetFilterSearchHelper(filterRepository, filterManager)
+        }
+        private val trackerFilterSearchHelper: TrackerFilterSearchHelper by lazy {
+            TrackerFilterSearchHelper(filterRepository, filterManager)
+        }
+        private val eventProgramFilterSearchHelper: EventProgramFilterSearchHelper by lazy {
+            EventProgramFilterSearchHelper(filterRepository, filterManager)
+        }
 
-    private val dataSetFilterSearchHelper: DataSetFilterSearchHelper by lazy {
-        DataSetFilterSearchHelper(filterRepository, filterManager)
-    }
-    private val trackerFilterSearchHelper: TrackerFilterSearchHelper by lazy {
-        TrackerFilterSearchHelper(filterRepository, filterManager)
-    }
-    private val eventProgramFilterSearchHelper: EventProgramFilterSearchHelper by lazy {
-        EventProgramFilterSearchHelper(filterRepository, filterManager)
-    }
+        private var filteredOrgUnitResult: FilteredOrgUnitResult? = null
 
-    private var filteredOrgUnitResult: FilteredOrgUnitResult? = null
+        fun filteredDataSetInstances(): DataSetInstanceSummaryCollectionRepository =
+            dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
 
-    fun filteredDataSetInstances(): DataSetInstanceSummaryCollectionRepository {
-        return dataSetFilterSearchHelper.getFilteredDataSetSearchRepository()
-    }
+        fun filteredEventProgram(program: Program): EventQueryCollectionRepository =
+            eventProgramFilterSearchHelper.getFilteredEventRepository(program)
 
-    fun filteredEventProgram(program: Program): EventQueryCollectionRepository {
-        return eventProgramFilterSearchHelper.getFilteredEventRepository(program)
-    }
+        fun filteredTrackerProgram(program: Program): TrackedEntitySearchCollectionRepository =
+            trackerFilterSearchHelper.getFilteredProgramRepository(program.uid())
 
-    fun filteredTrackerProgram(program: Program): TrackedEntitySearchCollectionRepository {
-        return trackerFilterSearchHelper.getFilteredProgramRepository(program.uid())
-    }
+        fun filteredTrackedEntityTypes(trackedEntityTypeUid: String): TrackedEntitySearchCollectionRepository =
+            trackerFilterSearchHelper
+                .getFilteredTrackedEntityTypeRepository(trackedEntityTypeUid)
 
-    fun filteredTrackedEntityTypes(
-        trackedEntityTypeUid: String,
-    ): TrackedEntitySearchCollectionRepository {
-        return trackerFilterSearchHelper
-            .getFilteredTrackedEntityTypeRepository(trackedEntityTypeUid)
-    }
+        fun filteredTrackedEntityInstances(
+            program: Program?,
+            trackedEntityTypeUid: String,
+        ): TrackedEntitySearchCollectionRepository =
+            program?.let { filteredTrackerProgram(program) }
+                ?: filteredTrackedEntityTypes(trackedEntityTypeUid)
 
-    fun filteredTrackedEntityInstances(
-        program: Program?,
-        trackedEntityTypeUid: String,
-    ): TrackedEntitySearchCollectionRepository {
-        return program?.let { filteredTrackerProgram(program) }
-            ?: filteredTrackedEntityTypes(trackedEntityTypeUid)
-    }
+        fun isAssignedToMeApplied(): Boolean = filterManager.assignedFilter
 
-    fun isAssignedToMeApplied(): Boolean {
-        return filterManager.assignedFilter
-    }
+        fun areFiltersActive(): Boolean = filterManager.totalFilters != 0
 
-    fun areFiltersActive(): Boolean {
-        return filterManager.totalFilters != 0
-    }
+        fun getOrgUnitsByName(name: String): FilteredOrgUnitResult {
+            filteredOrgUnitResult =
+                FilteredOrgUnitResult(
+                    if (name.length > ORG_UNT_FILTER_MIN_CHAR) {
+                        filterRepository.orgUnitsByName(name)
+                    } else {
+                        emptyList()
+                    },
+                )
+            return filteredOrgUnitResult!!
+        }
 
-    fun getOrgUnitsByName(name: String): FilteredOrgUnitResult {
-        filteredOrgUnitResult = FilteredOrgUnitResult(
-            if (name.length > ORG_UNT_FILTER_MIN_CHAR) {
-                filterRepository.orgUnitsByName(name)
-            } else {
-                emptyList()
-            },
-        )
-        return filteredOrgUnitResult!!
-    }
+        fun addOrgUnitToFilter(callback: () -> Unit) {
+            if (filteredOrgUnitResult?.firstResult() != null) {
+                filterManager.addOrgUnit(filteredOrgUnitResult!!.firstResult())
+                callback.invoke()
+            }
+        }
 
-    fun addOrgUnitToFilter(callback: () -> Unit) {
-        if (filteredOrgUnitResult?.firstResult() != null) {
-            filterManager.addOrgUnit(filteredOrgUnitResult!!.firstResult())
-            callback.invoke()
+        fun onOpenOrgUnitTreeSelector() {
+            filterManager.ouTreeProcessor.onNext(true)
         }
     }
-
-    fun onOpenOrgUnitTreeSelector() {
-        filterManager.ouTreeProcessor.onNext(true)
-    }
-}

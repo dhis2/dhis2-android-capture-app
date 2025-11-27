@@ -1,18 +1,16 @@
 package org.dhis2.maps.geometry.mapper.featurecollection
 
-import com.mapbox.geojson.FeatureCollection
 import org.dhis2.maps.utils.CoordinateAttributeInfo
 import org.dhis2.maps.utils.CoordinateDataElementInfo
 import org.dhis2.maps.utils.CoordinateFieldInfo
+import org.maplibre.geojson.FeatureCollection
 
 class MapCoordinateFieldToFeatureCollection(
     private val mapDataElementToFeature: MapDataElementToFeature,
     private val mapAttributeToFeature: MapAttributeToFeature,
-
 ) {
-
-    fun map(coordinateFieldInfos: List<CoordinateFieldInfo>): Map<String, FeatureCollection> {
-        return when {
+    fun map(coordinateFieldInfos: List<CoordinateFieldInfo>): Map<String, FeatureCollection> =
+        when {
             coordinateFieldInfos.any { it is CoordinateDataElementInfo } -> {
                 mapDataElementToFeature.mapDataElement(
                     coordinateFieldInfos as List<CoordinateDataElementInfo>,
@@ -27,7 +25,6 @@ class MapCoordinateFieldToFeatureCollection(
                 emptyMap()
             }
         }
-    }
 
     companion object {
         const val EVENT = "eventUid"

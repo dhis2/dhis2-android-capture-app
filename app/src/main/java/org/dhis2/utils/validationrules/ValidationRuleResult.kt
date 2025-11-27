@@ -21,8 +21,8 @@ data class DataToReview(
     val value: String,
     val isFromDefaultCatCombo: Boolean,
 ) {
-    fun formattedDataLabel(): String {
-        return if (isFromDefaultCatCombo) {
+    fun formattedDataLabel(): String =
+        if (isFromDefaultCatCombo) {
             dataElementDisplayName ?: dataElementUid
         } else {
             String.format(
@@ -31,5 +31,4 @@ data class DataToReview(
                 categoryOptionComboDisplayName,
             )
         }
-    }
 }

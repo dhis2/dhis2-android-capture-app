@@ -8,7 +8,6 @@ import java.io.File
 import java.io.FileOutputStream
 
 class FileHandler {
-
     private val fileHandler = FileHandlerImpl()
     private val destinationResult = MutableLiveData<File>()
 
@@ -23,7 +22,10 @@ class FileHandler {
         destinationResult.value = saveBitmapAndOpen(bitmap, imagesFolder)
     }
 
-    private fun saveBitmapAndOpen(bitmap: Bitmap, destinationFolder: File): File {
+    private fun saveBitmapAndOpen(
+        bitmap: Bitmap,
+        destinationFolder: File,
+    ): File {
         val os = FileOutputStream(destinationFolder)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
         os.close()

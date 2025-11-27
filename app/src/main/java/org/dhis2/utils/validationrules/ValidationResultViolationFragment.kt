@@ -11,15 +11,12 @@ import org.dhis2.databinding.FragmentValidationResultViolationBinding
 import org.dhis2.databinding.ItemDataReviewBinding
 
 class ValidationResultViolationFragment : Fragment() {
-
     private lateinit var binding: FragmentValidationResultViolationBinding
     private lateinit var violation: Violation
 
     companion object {
         @JvmStatic
-        fun create(): ValidationResultViolationFragment {
-            return ValidationResultViolationFragment()
-        }
+        fun create(): ValidationResultViolationFragment = ValidationResultViolationFragment()
     }
 
     fun setViolation(violation: Violation) {
@@ -31,12 +28,13 @@ class ValidationResultViolationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_validation_result_violation,
-            container,
-            false,
-        )
+        binding =
+            DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_validation_result_violation,
+                container,
+                false,
+            )
 
         binding.apply {
             if (!violation.description.isNullOrEmpty()) {
@@ -57,10 +55,12 @@ class ValidationResultViolationFragment : Fragment() {
         binding.dataToReviewContainer.removeAllViews()
         for (data in violation.dataToReview) {
             binding.dataToReviewContainer.addView(
-                ItemDataReviewBinding.inflate(layoutInflater).apply {
-                    dataPosition.text = data.formattedDataLabel()
-                    dataValue.text = data.value
-                }.root,
+                ItemDataReviewBinding
+                    .inflate(layoutInflater)
+                    .apply {
+                        dataPosition.text = data.formattedDataLabel()
+                        dataValue.text = data.value
+                    }.root,
             )
         }
 

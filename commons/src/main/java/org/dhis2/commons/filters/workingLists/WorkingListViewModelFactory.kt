@@ -8,10 +8,9 @@ class WorkingListViewModelFactory(
     private val programUid: String?,
     private val filterRepository: FilterRepository,
 ) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return WorkingListViewModel(
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        WorkingListViewModel(
             programUid,
             filterRepository,
         ) as T
-    }
 }

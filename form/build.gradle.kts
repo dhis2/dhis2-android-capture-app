@@ -4,13 +4,10 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
-
-repositories {
-    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-}
 
 android {
     compileSdk = libs.versions.sdk.get().toInt()
@@ -69,7 +66,9 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":dhis2_android_maps"))
     implementation(project(":dhis2-mobile-program-rules"))
+    implementation(libs.androidx.activity.compose)
     testImplementation(libs.bundles.form.test)
+    testImplementation(libs.test.junit)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestApi(libs.test.mockitoCore)
     androidTestApi(libs.test.mockitoKotlin)

@@ -63,22 +63,25 @@ internal fun ProvideInputFileResource(
     )
 }
 
-private fun fileSizeLabel(fileSize: Long) = run {
-    val kb = fileSize / 1024f
-    val mb = kb / 1024f
-    if (kb < 1024f) {
-        "${DecimalFormat("*0").format(kb)}KB"
-    } else {
-        "${DecimalFormat("*0.##").format(mb)}MB"
+private fun fileSizeLabel(fileSize: Long) =
+    run {
+        val kb = fileSize / 1024f
+        val mb = kb / 1024f
+        if (kb < 1024f) {
+            "${DecimalFormat("*0").format(kb)}KB"
+        } else {
+            "${DecimalFormat("*0.##").format(mb)}MB"
+        }
     }
-}
 
-private fun getFileUploadState(value: String?, isLoading: Boolean): UploadFileState {
-    return if (isLoading && value.isNullOrEmpty()) {
+private fun getFileUploadState(
+    value: String?,
+    isLoading: Boolean,
+): UploadFileState =
+    if (isLoading && value.isNullOrEmpty()) {
         UploadFileState.UPLOADING
     } else if (value.isNullOrEmpty()) {
         UploadFileState.ADD
     } else {
         UploadFileState.LOADED
     }
-}

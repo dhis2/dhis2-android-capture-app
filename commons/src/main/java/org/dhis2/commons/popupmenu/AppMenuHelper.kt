@@ -21,16 +21,16 @@ class AppMenuHelper private constructor(
     private val onMenuItemClicked: (Int) -> Boolean,
     private val onException: ((Exception) -> Unit)? = {},
 ) {
-
     lateinit var popupMenu: PopupMenu
 
     fun show() {
         val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
-        popupMenu = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            PopupMenu(contextWrapper, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
-        } else {
-            PopupMenu(contextWrapper, anchor, Gravity.END)
-        }
+        popupMenu =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                PopupMenu(contextWrapper, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
+            } else {
+                PopupMenu(contextWrapper, anchor, Gravity.END)
+            }
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {
@@ -39,10 +39,11 @@ class AppMenuHelper private constructor(
                     val menuPopupHelper = field[popupMenu]
                     val classPopupHelper =
                         Class.forName(menuPopupHelper.javaClass.name)
-                    val setForceIcons = classPopupHelper.getMethod(
-                        "setForceShowIcon",
-                        Boolean::class.javaPrimitiveType,
-                    )
+                    val setForceIcons =
+                        classPopupHelper.getMethod(
+                            "setForceShowIcon",
+                            Boolean::class.javaPrimitiveType,
+                        )
                     setForceIcons.invoke(menuPopupHelper, true)
                     break
                 }
@@ -57,28 +58,48 @@ class AppMenuHelper private constructor(
         popupMenu.show()
     }
 
-    fun addIconToItem(@IdRes id: Int, @DrawableRes icon: Int) {
+    fun addIconToItem(
+        @IdRes id: Int,
+        @DrawableRes icon: Int,
+    ) {
         popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
     }
 
-    fun addIconToItemInvisible(@IdRes id: Int, @DrawableRes icon: Int) {
+    fun addIconToItemInvisible(
+        @IdRes id: Int,
+        @DrawableRes icon: Int,
+    ) {
         popupMenu.menu.findItem(id)?.icon = ContextCompat.getDrawable(this.context, icon)
-        popupMenu.menu.findItem(id)?.icon?.alpha = 0
+        popupMenu.menu
+            .findItem(id)
+            ?.icon
+            ?.alpha = 0
     }
 
-    fun changeItemText(@IdRes id: Int, text: String) {
+    fun changeItemText(
+        @IdRes id: Int,
+        text: String,
+    ) {
         popupMenu.menu.findItem(id)?.title = text
     }
 
-    fun getItemText(@IdRes id: Int): String {
-        return popupMenu.menu.findItem(id)?.title.toString()
-    }
+    fun getItemText(
+        @IdRes id: Int,
+    ): String =
+        popupMenu.menu
+            .findItem(id)
+            ?.title
+            .toString()
 
-    fun hideItem(@IdRes id: Int) {
+    fun hideItem(
+        @IdRes id: Int,
+    ) {
         popupMenu.menu.findItem(id)?.isVisible = false
     }
 
-    fun showItem(@IdRes id: Int) {
+    fun showItem(
+        @IdRes id: Int,
+    ) {
         popupMenu.menu.findItem(id)?.isVisible = true
     }
 
@@ -89,30 +110,36 @@ class AppMenuHelper private constructor(
         var onMenuInflated: (PopupMenu) -> Unit = {},
         var onMenuItemClicked: (Int) -> Boolean = { true },
     ) {
-
-        fun menu(context: Context, @MenuRes menu: Int) = apply {
+        fun menu(
+            context: Context,
+            @MenuRes menu: Int,
+        ) = apply {
             this.menu = menu
             this.context = context
         }
 
-        fun anchor(view: View) = apply {
-            this.anchor = view
-        }
+        fun anchor(view: View) =
+            apply {
+                this.anchor = view
+            }
 
-        fun onMenuInflated(onMenuInflated: (PopupMenu) -> Unit) = apply {
-            this.onMenuInflated = onMenuInflated
-        }
+        fun onMenuInflated(onMenuInflated: (PopupMenu) -> Unit) =
+            apply {
+                this.onMenuInflated = onMenuInflated
+            }
 
-        fun onMenuItemClicked(onMenuItemClicked: (Int) -> Boolean) = apply {
-            this.onMenuItemClicked = onMenuItemClicked
-        }
+        fun onMenuItemClicked(onMenuItemClicked: (Int) -> Boolean) =
+            apply {
+                this.onMenuItemClicked = onMenuItemClicked
+            }
 
-        fun build() = AppMenuHelper(
-            context!!,
-            menu,
-            anchor!!,
-            onMenuInflated,
-            onMenuItemClicked,
-        )
+        fun build() =
+            AppMenuHelper(
+                context!!,
+                menu,
+                anchor!!,
+                onMenuInflated,
+                onMenuItemClicked,
+            )
     }
 }

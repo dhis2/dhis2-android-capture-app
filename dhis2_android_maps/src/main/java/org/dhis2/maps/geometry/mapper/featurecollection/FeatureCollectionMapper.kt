@@ -7,7 +7,6 @@ import org.dhis2.maps.geometry.point.MapPointToFeature
 import org.dhis2.maps.geometry.polygon.MapPolygonToFeature
 
 class FeatureCollectionMapper {
-
     val eventToFeatureCollection: MapEventToFeatureCollection by lazy {
         MapEventToFeatureCollection(
             mapGeometryToFeature = geometryToFeature,

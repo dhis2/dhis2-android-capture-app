@@ -1,13 +1,14 @@
 package org.dhis2.uicomponents.map.geometry.bound
 
-import com.mapbox.mapboxsdk.geometry.LatLng
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
+import org.maplibre.android.geometry.LatLng
 
 class GetBoundingBoxTest {
-
-    private val getBoundingBox = org.dhis2.maps.geometry.bound.GetBoundingBox()
+    private val getBoundingBox =
+        org.dhis2.maps.geometry.bound
+            .GetBoundingBox()
 
     @Test
     fun `Should get bounding box`() {

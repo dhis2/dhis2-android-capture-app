@@ -68,13 +68,13 @@ class SyncActivityTest : BaseTest() {
 
     private fun mockedMetaWorkInfo(state: WorkInfo.State): WorkInfo {
         return WorkInfo(
-            UUID.randomUUID(),
-            state,
-            Data.EMPTY,
-            arrayListOf(Constants.META_NOW),
-            Data.EMPTY,
-            0,
-            0
+            id = UUID.randomUUID(),
+            state = state,
+            tags = setOf(Constants.META_NOW),
+            outputData = Data.EMPTY,
+            progress = Data.EMPTY,
+            runAttemptCount = 0,
+            generation = 0
         )
     }
 }

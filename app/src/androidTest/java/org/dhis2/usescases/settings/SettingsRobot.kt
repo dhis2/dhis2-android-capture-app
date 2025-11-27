@@ -1,148 +1,118 @@
 package org.dhis2.usescases.settings
 
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
-import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isEnabled
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
 import org.dhis2.common.BaseRobot
-import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
-import org.dhis2.usescases.reservedValue.ReservedValueAdapter
-import org.hamcrest.CoreMatchers.allOf
-import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.CoreMatchers.not
+import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
+import org.dhis2.usescases.reservedValue.ReservedValueActivity
+import org.dhis2.usescases.settings.ui.TEST_TAG_DATA_PERIOD
+import org.dhis2.usescases.settings.ui.TEST_TAG_META_PERIOD
+import org.dhis2.usescases.settings.ui.TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT
+import org.dhis2.usescases.settings.ui.TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE
+import org.dhis2.usescases.settings.ui.TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT
 
-fun settingsRobot(settingsRobot: SettingsRobot.() -> Unit) {
-    SettingsRobot().apply {
+fun settingsRobot(
+    composeTestRule: ComposeTestRule,
+    settingsRobot: SettingsRobot.() -> Unit
+) {
+    SettingsRobot(composeTestRule).apply {
         settingsRobot()
     }
 }
 
-class SettingsRobot : BaseRobot() {
+class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnSyncData() {
-        onView(withId(R.id.settingsItemData)).perform(click())
-    }
-
-    fun clickOnSyncConfiguration() {
-        onView(withId(R.id.settingsItemMeta)).perform(click())
-    }
-
-    fun clickOnSyncParameters() {
-        onView(withId(R.id.settingsItemParams)).perform(click())
-    }
-
-    fun clickOnReservedValues() {
-        onView(withId(R.id.settingsItemValues)).perform(click())
-    }
-
-    fun clickOnOpenSyncErrorLog() {
-        onView(withId(R.id.settingsItemLog)).perform(click())
-    }
-
-    fun clickOnDeleteLocalData() {
-        onView(withId(R.id.settingsItemDeleteData)).perform(click())
-    }
-
-    fun clickOnSMSSettings() {
-        onView(withId(R.id.smsSettings)).perform(click())
+        composeTestRule.onNodeWithTag(SettingItem.DATA_SYNC.name).performClick()
     }
 
     fun checkEditPeriodIsDisableForData() {
-        onView(withId(R.id.dataPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        onView(withId(R.id.dataPeriods)).check(matches(not(isDisplayed())))
+        composeTestRule.onNodeWithTag(SettingItem.DATA_SYNC.name)
+            .assertIsDisplayed()
+        composeTestRule.onNode(
+                    hasText(NOT_EDIT_TEXT)
+        ).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_DATA_PERIOD).assertIsNotDisplayed()
+    }
+
+    fun clickOnSyncConfiguration() {
+        composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name).performClick()
     }
 
     fun checkEditPeriodIsDisableForConfiguration() {
-        onView(withId(R.id.metaPeriodsNoEdition)).check(matches(withText(NOT_EDIT_TEXT)))
-        onView(withId(R.id.metadataPeriods)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.syncMetaDataButton)).check(matches(isDisplayed()))
+        composeTestRule.onNodeWithTag(SettingItem.META_SYNC.name)
+            .assertIsDisplayed()
+        composeTestRule.onNode(
+                    hasText(NOT_EDIT_TEXT)
+        ).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_META_PERIOD).assertIsNotDisplayed()
+    }
+
+    fun clickOnSyncParameters() {
+        composeTestRule.onNodeWithTag(SettingItem.SYNC_PARAMETERS.name).performClick()
     }
 
     fun checkEditPeriodIsDisableForParameters() {
-        onView(withId(R.id.parametersNoEdition)).check(
-            matches(withText("Sync parameters are not editable"))
-        )
-        onView(withId(R.id.downloadLimitScope)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.eventsEditText)).check(matches(not(isDisplayed())))
-        onView(withId(R.id.teiEditText)).check(matches(not(isDisplayed())))
+        composeTestRule.onNodeWithTag(SettingItem.SYNC_PARAMETERS.name)
+            .assertIsDisplayed()
+        composeTestRule.onNode(
+                    hasText(SYNC_PARAMETERS_NOT_EDIT_TEXT)
+        ).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_LIMIT_SCOPE).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_EVENT_MAX_COUNT).assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag(TEST_TAG_SYNC_PARAMETERS_TEI_MAX_COUNT).assertIsNotDisplayed()
     }
 
-    fun checkReservedValuesIsDisable() {
-        onView(withId(R.id.reservedValueEditText)).check(matches(not(isDisplayed())))
+    fun clickOnReservedValues() {
+        composeTestRule.onNodeWithTag(SettingItem.RESERVED_VALUES.name).performClick()
     }
 
     fun clickOnManageReservedValues() {
-        onView(withId(R.id.manageReservedValues)).perform(click())
-        // MANAGE RESERVED VALUES
+        composeTestRule.onNode(
+                    hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
+        ).performClick()
+
+        Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
     }
 
-    fun clickOnRefill(position: Int) {
-        /*onView(withId(R.id.recycler))
-                .check(matches(allOf(atPosition(position, hasDescendant(withId(R.id.refill))))))
-                .perform(click())
-                .perform(actionOnItemAtPosition<ReservedValueViewHolder>(position, click()))*/
-        onView(allOf(withId(R.id.recycler), hasDescendant(withId(R.id.refill))))
-            .perform(
-                actionOnItemAtPosition<ReservedValueAdapter.ReservedValueViewHolder>(
-                    position,
-                    click()
-                )
-            )
-    }
-
-    fun checkReservedValuesWasRefill(position: Int) {
-        onView(withId(R.id.recycler)).check(
-            matches(
-                allOf(
-                    atPosition(position, hasDescendant(withText("100 reserved values left")))
-                )
-            )
-        )
+    fun clickOnOpenSyncErrorLog() {
+        composeTestRule.onNodeWithTag(SettingItem.ERROR_LOG.name).performClick()
     }
 
     fun checkLogViewIsDisplayed() {
-        /*onView(withId(R.id.errorRecycler)).check(matches(allOf(
-                isDisplayed(), not(isNotEmpty())
-        )))*/
-        onView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
+        waitForView(withId(R.id.errorRecycler)).check(matches(isDisplayed()))
     }
 
-    fun clickOnAcceptDelete() {
-        onView(withId(R.id.deleteDataButton)).perform(click())
+    fun checkTwoFAOptionIsDisplayed() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertIsDisplayed()
     }
 
-    fun clickOnAcceptDialog() {
-        onView(withText(R.string.wipe_data_ok)).perform(click())
+    fun clickOnTwoFASettings() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).performClick()
     }
 
-    fun checkSnackBarIsShown() {
-        onView(withId(com.google.android.material.R.id.snackbar_text))
-            .check(matches(withText("Delete local data finished successfully.")))
+    fun checkTwoFAOptionIsNotDisplayed() {
+        composeTestRule.onNodeWithTag(SettingItem.TWO_FACTOR_AUTH.name).assertIsNotDisplayed()
     }
 
-    fun checkGatewayNumberFieldIsNotEnabled() {
-        onView(withId(R.id.settings_sms_receiver))
-            .check(matches(allOf(not(isEnabled()))))
-    }
-
-    fun checkGatewayNumberFieldIs(number: String) {
-        onView(withId(R.id.settings_sms_receiver))
-            .check(matches(withText(containsString(number))))
-    }
-
-    fun checkSMSSubmissionIsEnable() {
-        onView(withId(R.id.settings_sms_response_wait_switch))
-            .check(matches(isEnabled()))
+    fun checkTwoFAScreenIsDisplayed() {
+        Intents.intended(IntentMatchers.hasComponent(TwoFASettingsActivity::class.java.name))
     }
 
     companion object {
         const val NOT_EDIT_TEXT = "Syncing period is not editable"
-        const val SYNC_DATA = "SYNC DATA NOW"
+        const val SYNC_PARAMETERS_NOT_EDIT_TEXT = "Sync parameters are not editable"
     }
 }

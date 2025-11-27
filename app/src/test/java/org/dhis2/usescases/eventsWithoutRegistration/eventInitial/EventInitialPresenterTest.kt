@@ -9,7 +9,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapper
-import org.dhis2.utils.Result
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
@@ -44,16 +43,17 @@ class EventInitialPresenterTest {
 
     @Before
     fun setUp() {
-        presenter = EventInitialPresenter(
-            view,
-            rulesUtilsProvider,
-            eventInitialRepository,
-            schedulers,
-            preferences,
-            analyticsHelper,
-            matomoAnalyticsController,
-            eventFieldMapper,
-        )
+        presenter =
+            EventInitialPresenter(
+                view,
+                rulesUtilsProvider,
+                eventInitialRepository,
+                schedulers,
+                preferences,
+                analyticsHelper,
+                matomoAnalyticsController,
+                eventFieldMapper,
+            )
     }
 
     @Test
@@ -181,7 +181,6 @@ class EventInitialPresenterTest {
                 "stage",
                 date,
                 "orgUnit",
-                "catCombo",
                 "catOption",
                 geometry,
             ),
@@ -193,7 +192,6 @@ class EventInitialPresenterTest {
             "stage",
             date,
             "orgUnit",
-            "catCombo",
             "catOption",
             geometry,
             "tei",
@@ -215,7 +213,6 @@ class EventInitialPresenterTest {
                 "stage",
                 date,
                 "orgUnit",
-                "catCombo",
                 "catOption",
                 geometry,
             ),
@@ -227,7 +224,6 @@ class EventInitialPresenterTest {
             "stage",
             date,
             "orgUnit",
-            "catCombo",
             "catOption",
             geometry,
             "tei",
@@ -249,7 +245,6 @@ class EventInitialPresenterTest {
                 "stage",
                 date,
                 "orgUnit",
-                "catCombo",
                 "catOption",
                 geometry,
             ),
@@ -261,7 +256,6 @@ class EventInitialPresenterTest {
             "stage",
             date,
             "orgUnit",
-            "catCombo",
             "catOption",
             geometry,
         )
@@ -282,7 +276,6 @@ class EventInitialPresenterTest {
                 "stage",
                 date,
                 "orgUnit",
-                "catCombo",
                 "catOption",
                 geometry,
             ),
@@ -294,7 +287,6 @@ class EventInitialPresenterTest {
             "stage",
             date,
             "orgUnit",
-            "catCombo",
             "catOption",
             geometry,
         )
@@ -305,7 +297,7 @@ class EventInitialPresenterTest {
     @Test
     fun `Should clear disposable`() {
         val size = presenter.compositeDisposable.size()
-        presenter.onDettach()
+        presenter.onDetach()
         assert(size == 0)
     }
 
@@ -374,11 +366,23 @@ class EventInitialPresenterTest {
     ) {
         val program = Program.builder().uid(uid).build()
         val orgUnits =
-            mutableListOf(OrganisationUnit.builder().uid("orgUnit").displayName("name").build())
+            mutableListOf(
+                OrganisationUnit
+                    .builder()
+                    .uid("orgUnit")
+                    .displayName("name")
+                    .build(),
+            )
         val programStage = ProgramStage.builder().uid(programStageUid).build()
 
         if (moreOrgUnits) {
-            orgUnits.add(OrganisationUnit.builder().uid("orgUnit2").displayName("name").build())
+            orgUnits.add(
+                OrganisationUnit
+                    .builder()
+                    .uid("orgUnit2")
+                    .displayName("name")
+                    .build(),
+            )
         }
 
         whenever(eventInitialRepository.accessDataWrite(uid)) doReturn Observable.just(true)

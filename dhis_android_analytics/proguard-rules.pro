@@ -14,8 +14,19 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# Keep dhis2.org.analytics.charts.Charts
+-keep class dhis2.org.analytics.charts.Charts { *; }
+
+# Preserve attributes related to DataBinding
+-keepattributes *Annotation*
+
+-dontwarn org.dhis2.commons.bindings.CommonExtensionsKt
+-dontwarn org.dhis2.commons.filters.data.FilterBindingsKt
+-dontwarn org.dhis2.commons.resources.ColorType
+-dontwarn org.dhis2.commons.resources.ColorUtils

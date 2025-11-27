@@ -14,27 +14,50 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 import java.util.Date
 
 class ScheduledEventContract {
-
     interface View : AbstractActivityContracts.View {
         fun setEvent(event: Event)
-        fun setStage(programStage: ProgramStage, event: Event)
+
+        fun setStage(
+            programStage: ProgramStage,
+            event: Event,
+        )
+
         fun setProgram(program: Program)
+
         fun openFormActivity()
     }
 
     interface Presenter {
         fun init()
+
         fun finish()
+
         fun setEventDate(date: Date)
+
         fun formatDateValues(date: InputDateValues): Date
+
         fun setDueDate(date: Date)
+
         fun getDateFormatConfiguration(): String?
+
         fun skipEvent()
-        fun setCatOptionCombo(catComboUid: String, arrayList: ArrayList<CategoryOption>)
+
+        fun setCatOptionCombo(
+            catComboUid: String,
+            arrayList: ArrayList<CategoryOption>,
+        )
+
         fun onBackClick()
+
         fun getEventTei(): String
+
         fun getEnrollment(): Enrollment?
-        fun getSelectableDates(program: Program, isDueDate: Boolean): SelectableDates?
+
+        fun getSelectableDates(
+            program: Program,
+            isDueDate: Boolean,
+        ): SelectableDates?
+
         fun fetchPeriods(scheduling: Boolean): Flow<PagingData<Period>>
     }
 }

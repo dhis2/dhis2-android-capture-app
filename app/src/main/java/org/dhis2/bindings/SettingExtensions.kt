@@ -1,9 +1,6 @@
 package org.dhis2.bindings
 
-import android.content.Context
-import org.dhis2.R
 import org.hisp.dhis.android.core.settings.DataSyncPeriod
-import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 
 const val EVERY_15_MIN = 15 * 60
@@ -15,18 +12,17 @@ const val EVERY_24_HOUR = 24 * 60 * 60
 const val EVERY_7_DAYS = 7 * 24 * 60 * 60
 const val MANUAL = 0
 
-fun MetadataSyncPeriod.toSeconds(): Int {
-    return when (this) {
+fun MetadataSyncPeriod.toSeconds(): Int =
+    when (this) {
         MetadataSyncPeriod.EVERY_HOUR -> EVERY_HOUR
         MetadataSyncPeriod.EVERY_12_HOURS -> EVERY_12_HOUR
         MetadataSyncPeriod.EVERY_24_HOURS -> EVERY_24_HOUR
         MetadataSyncPeriod.EVERY_7_DAYS -> EVERY_7_DAYS
         MetadataSyncPeriod.MANUAL -> MANUAL
     }
-}
 
-fun DataSyncPeriod.toSeconds(): Int {
-    return when (this) {
+fun DataSyncPeriod.toSeconds(): Int =
+    when (this) {
         DataSyncPeriod.EVERY_30_MIN -> EVERY_30_MIN
         DataSyncPeriod.EVERY_HOUR -> EVERY_HOUR
         DataSyncPeriod.EVERY_6_HOURS -> EVERY_6_HOUR
@@ -34,14 +30,3 @@ fun DataSyncPeriod.toSeconds(): Int {
         DataSyncPeriod.EVERY_24_HOURS -> EVERY_24_HOUR
         DataSyncPeriod.MANUAL -> MANUAL
     }
-}
-
-fun LimitScope?.toTrailingText(context: Context): String {
-    return when (this) {
-        LimitScope.ALL_ORG_UNITS -> context.getString(R.string.limit_scope_all_ou_trailing)
-        LimitScope.PER_ORG_UNIT -> context.getString(R.string.limit_scope_ou_trailing)
-        LimitScope.PER_PROGRAM -> context.getString(R.string.limit_scope_program_trailing)
-        LimitScope.PER_OU_AND_PROGRAM -> context.getString(R.string.limit_scope_ou_program_trailing)
-        else -> context.getString(R.string.limit_scope_global_trailing)
-    }
-}

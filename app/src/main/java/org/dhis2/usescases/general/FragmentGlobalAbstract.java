@@ -1,6 +1,5 @@
 package org.dhis2.usescases.general;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +16,6 @@ import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.dhis2.utils.granularsync.SyncStatusDialog;
 
 import javax.inject.Inject;
-
-/**
- * QUADRAM. Created by ppajuelo on 18/10/2017.
- */
 
 public abstract class FragmentGlobalAbstract extends SessionManagerFragment implements AbstractActivityContracts.View {
 
@@ -93,11 +88,6 @@ public abstract class FragmentGlobalAbstract extends SessionManagerFragment impl
     @Override
     public void showDescription(String description) {
         getAbstractActivity().showDescription(description);
-    }
-
-    @Override
-    public SharedPreferences getSharedPreferences() {
-        return getAbstractActivity().getSharedPreferences();
     }
 
     @Override

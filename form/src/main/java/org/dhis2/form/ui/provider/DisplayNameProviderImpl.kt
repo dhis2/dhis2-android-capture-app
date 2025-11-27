@@ -15,7 +15,6 @@ class DisplayNameProviderImpl(
     private val fileResourceConfiguration: FileResourceConfiguration,
     private val periodUtils: DhisPeriodUtils,
 ) : DisplayNameProvider {
-
     override fun provideDisplayName(
         valueType: ValueType?,
         value: String?,
@@ -29,20 +28,23 @@ class DisplayNameProviderImpl(
         }
     }
 
-    private fun getOptionSetValue(value: String, optionSet: String): String {
-        return optionSetConfiguration.optionInDataSetByCode(optionSet, value)?.displayName()
+    private fun getOptionSetValue(
+        value: String,
+        optionSet: String,
+    ): String =
+        optionSetConfiguration.optionInDataSetByCode(optionSet, value)?.displayName()
             ?: optionSetConfiguration.optionInDataSetByName(optionSet, value)?.displayName()
             ?: value
-    }
 
     private fun getValueTypeValue(
         value: String,
         valueType: ValueType?,
         periodType: PeriodType?,
-    ): String {
-        return when (valueType) {
+    ): String =
+        when (valueType) {
             ValueType.ORGANISATION_UNIT ->
-                orgUnitConfiguration.orgUnitByUid(value)
+                orgUnitConfiguration
+                    .orgUnitByUid(value)
                     ?.displayName()
                     ?: value
 
@@ -59,5 +61,4 @@ class DisplayNameProviderImpl(
 
             else -> value
         }
-    }
 }

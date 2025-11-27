@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">For ICRC staff members only</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
-    <string name="forgot_password">Forgot password\?</string>
+    <string name="forgot_password">Forgot password?</string>
 
     <string name="recent_activities_loading_message">Loading recent activities&#8230;</string>
     <string name="recent_activities_empty_message">You are yet to perform any activity</string>
@@ -89,13 +89,12 @@
         The facility field must be filled before you can proceed
     </string>
     <string name="mandatory_distributed_to_selection">
-        The "Distributed to" field must be filled before you can proceed
-    </string>
+        The \"Distributed to\" field must be filled before you can proceed</string>
     <string name="mandatory_transaction_date_selection">
         The \"Distributed to\" field must be filled before you can proceed
     </string>
     <string name="previous_page_lose_data_warning">
-        Are you sure you want to go back to the previous screen\?
+        Are you sure you want to go back to the previous screen?
         You will lose the data just entered if you decide to proceed.
     </string>
     <string name="transaction_completed">
@@ -105,20 +104,20 @@
         The transaction was successfully cancelled!
     </string>
     <string name="force_sync_confirmation_message">
-        Are you sure you want to force synchronization\?
+        Are you sure you want to force synchronization?
     </string>
-    <string name="logout_confirmation_message">Are you sure you want to log out\?</string>
+    <string name="logout_confirmation_message">Are you sure you want to log out?</string>
 
     <string name="remove_correction_item_confirmation_message">
-        Are you sure you want to permanently delete the entry for the correction of \"%1$s\"\?
+        Are you sure you want to permanently delete the entry for the correction of \"%1$s\"?
         This action cannot be undone.
     </string>
     <string name="remove_distribution_item_confirmation_message">
-        Are you sure you want to permanently delete the entry for the distribution of \"%1$s\"\?
+        Are you sure you want to permanently delete the entry for the distribution of \"%1$s\"?
         This action cannot be undone.
     </string>
     <string name="remove_discard_item_confirmation_message">
-        Are you sure you want to permanently delete the entry for the discard of \"%1$s\"\?
+        Are you sure you want to permanently delete the entry for the discard of \"%1$s\"?
         This action cannot be undone.
     </string>
 
@@ -189,7 +188,7 @@
     <string name="restart_later">Restart Later</string>
     <string name="confirm_app_restart_message">
         The application needs to be restarted for the changes to be effected, however,
-        any unsaved changes will be lost.\n\nWill you like to proceed with the restart\?
+        any unsaved changes will be lost.\n\nWill you like to proceed with the restart?
     </string>
     <string name="language_change_dialog_title">Confirm Restart</string>
     <string name="scan_canceled">Scan cancelled!</string>

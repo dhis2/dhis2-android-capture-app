@@ -26,13 +26,13 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
 
     - name: Set Up JDK
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         distribution: 'zulu' # See 'Supported distributions' for available options
         java-version: '17'
@@ -99,4 +99,4 @@ jobs:
         bodyFile: "RELEASE.md"
         name: "Android Capture App for DHIS 2 (v${{ inputs.release_tag_name }})"
         tag: ${{ inputs.release_tag_name }}
-        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk
+        artifacts: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk,${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

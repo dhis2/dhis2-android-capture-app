@@ -18,7 +18,6 @@ import org.mockito.kotlin.whenever
 import java.util.UUID
 
 class AboutPresenterTest {
-
     private lateinit var aboutPresenter: AboutPresenter
     private val d2: D2 = Mockito.mock(D2::class.java, RETURNS_DEEP_STUBS)
     private val userRepository: UserRepository = mock()
@@ -27,24 +26,29 @@ class AboutPresenterTest {
 
     @Before
     fun setup() {
-        aboutPresenter = AboutPresenter(
-            aboutView,
-            d2,
-            providesPresenterFactory,
-            userRepository,
-        )
+        aboutPresenter =
+            AboutPresenter(
+                aboutView,
+                d2,
+                providesPresenterFactory,
+                userRepository,
+            )
     }
 
     @Test
     fun `Should print user credentials in view`() {
-        val user = User.builder()
-            .uid(UUID.randomUUID().toString())
-            .id(6654654)
-            .username("demo@demo.es")
-            .build()
+        val user =
+            User
+                .builder()
+                .uid(UUID.randomUUID().toString())
+                .username("demo@demo.es")
+                .build()
         whenever(userRepository.credentials()) doReturn Flowable.just(user)
-        val userName = SystemInfo.builder()
-            .contextPath("https://url.es").build()
+        val userName =
+            SystemInfo
+                .builder()
+                .contextPath("https://url.es")
+                .build()
         whenever(d2.systemInfoModule().systemInfo().get()) doReturn Single.just(userName)
 
         aboutPresenter.init()

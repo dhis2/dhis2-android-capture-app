@@ -48,6 +48,7 @@ fun <T> MoreOptionsWithDropDownMenuButton(
 }
 
 inline val Double.dw: Dp
-    get() = Resources.getSystem().displayMetrics.let {
-        Dp(value = ((this * it.widthPixels) / it.density).toFloat())
-    }
+    get() =
+        Resources.getSystem().displayMetrics.let {
+            Dp(value = ((this * it.widthPixels) / it.density).toFloat())
+        }

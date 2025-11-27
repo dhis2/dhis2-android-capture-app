@@ -7,7 +7,6 @@ import java.time.Instant
 import java.util.Date
 
 class GraphTest {
-
     private var dailyPeriodPeriod: Long =
         Date.from(Instant.parse("2020-01-02T00:00:00.00Z")).time -
             Date.from(Instant.parse("2020-01-01T00:00:00.00Z")).time
@@ -32,12 +31,13 @@ class GraphTest {
     fun `Should return the correct date from n steps`() {
         val graph = mockedGraph()
         val testSteps = listOf(1L, 3L, 5L, 6L)
-        val expectedResult = listOf(
-            Date.from(Instant.parse("2020-01-02T00:00:00.00Z")),
-            Date.from(Instant.parse("2020-01-04T00:00:00.00Z")),
-            Date.from(Instant.parse("2020-01-06T00:00:00.00Z")),
-            Date.from(Instant.parse("2020-01-07T00:00:00.00Z")),
-        )
+        val expectedResult =
+            listOf(
+                Date.from(Instant.parse("2020-01-02T00:00:00.00Z")),
+                Date.from(Instant.parse("2020-01-04T00:00:00.00Z")),
+                Date.from(Instant.parse("2020-01-06T00:00:00.00Z")),
+                Date.from(Instant.parse("2020-01-07T00:00:00.00Z")),
+            )
         testSteps.forEachIndexed { index, step ->
             assertTrue(graph.dateFromSteps(step) == expectedResult[index])
         }
@@ -85,22 +85,20 @@ class GraphTest {
         graph.localDateFromSteps(3)
     }
 
-    private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph {
-        return Graph(
+    private fun mockedGraph(coordinates: List<GraphPoint> = mockedCoordinates()): Graph =
+        Graph(
             "testGraph",
             coordinates.map { SerieData("fieldName", coordinates) },
             null,
             PeriodType.Daily,
             dailyPeriodPeriod,
         )
-    }
 
-    private fun mockedCoordinates(): List<GraphPoint> {
-        return arrayListOf(
+    private fun mockedCoordinates(): List<GraphPoint> =
+        arrayListOf(
             GraphPoint(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(10f)),
             GraphPoint(Date.from(Instant.parse("2020-01-02T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(20f)),
             GraphPoint(Date.from(Instant.parse("2020-01-04T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(50f)),
             GraphPoint(Date.from(Instant.parse("2020-01-07T00:00:00.00Z")), fieldValue = GraphFieldValue.Numeric(30f)),
         )
-    }
 }

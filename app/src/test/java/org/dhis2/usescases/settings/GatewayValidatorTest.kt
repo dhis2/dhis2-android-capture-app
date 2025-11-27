@@ -5,7 +5,6 @@ import org.junit.Before
 import org.junit.Test
 
 class GatewayValidatorTest {
-
     private lateinit var validator: GatewayValidator
 
     @Before
@@ -15,20 +14,20 @@ class GatewayValidatorTest {
 
     @Test
     fun `Should be considered right gateway numbers`() {
-        Assert.assertTrue(validator.validate("+346709898762"))
-        Assert.assertTrue(validator.validate("+5567098987621"))
-        Assert.assertTrue(validator.validate("+51670989876213"))
-        Assert.assertTrue(validator.validate("+896709898762133"))
-        Assert.assertTrue(validator.validate("+586709"))
+        Assert.assertEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+346709898762"))
+        Assert.assertEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+5567098987621"))
+        Assert.assertEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+51670989876213"))
+        Assert.assertEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+896709898762133"))
+        Assert.assertEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+586709"))
     }
 
     @Test
     fun `Should be considered invalid gateway numbers`() {
-        Assert.assertFalse(validator.validate(""))
-        Assert.assertFalse(validator.validate("+"))
-        Assert.assertFalse(validator.validate("+34"))
-        Assert.assertFalse(validator.validate("00346709898762"))
-        Assert.assertFalse(validator.validate("+341231231231231231"))
-        Assert.assertFalse(validator.validate("+34-11231231231"))
+        Assert.assertNotEquals(GatewayValidator.GatewayValidationResult.Valid, validator(""))
+        Assert.assertNotEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+"))
+        Assert.assertNotEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+34"))
+        Assert.assertNotEquals(GatewayValidator.GatewayValidationResult.Valid, validator("00346709898762"))
+        Assert.assertNotEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+341231231231231231"))
+        Assert.assertNotEquals(GatewayValidator.GatewayValidationResult.Valid, validator("+34-11231231231"))
     }
 }

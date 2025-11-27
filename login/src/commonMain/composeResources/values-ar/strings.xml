@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">التالي</string>
+    <string name="biometrics_login_title">تسجيل الدخول السريع</string>
+    <string name="biometrics_login_text">هل ترغب في استخدام بصمة إصبعك أو طريقة بيومترية أخرى لتسجيل الدخول؟</string>
+    <string name="username_hint">اسم المستخدم</string>
+    <string name="password_hint">كلمة المرور</string>
+    <string name="openid_or">أو</string>
+    <string name="tracking_title">هل تريد مساعدتنا في تحسين هذا التطبيق؟</string>
+    <string name="privacy_policy">سياسة الخصوصية</string>
+    <string name="action_no_now">ليس الان</string>
+    <string name="action_yes">نعم</string>
+    <string name="enter_pin_button">إلغاء القفل</string>
+    </resources>

@@ -23,6 +23,7 @@
     <string name="action_close">បិទ</string>
     <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
     <string name="incident_date">ថ្ងៃខែឆ្នាំ ធ្វើរោគវិនិច្ឆ័យ</string>
+    <string name="download">ទាយយក</string>
     <string name="org_unit">អង្គភាព</string>
     <string name="cat_combo">ប្រភេទបន្សំចូលគ្នា</string>
     </resources>

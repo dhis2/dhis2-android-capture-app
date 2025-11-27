@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">Xác thực hai yếu tố</string>
+    <string name="two_fa_authentication_code">Mã xác thực</string>
+    <string name="action_next">Tiếp tục</string>
+    <string name="two_fa_is_on">Xác thực hai yếu tố đang được bật.</string>
+    <string name="two_fa_code">Mã xác thực</string>
+    <string name="biometrics_login_title">Đăng nhập nhanh</string>
+    <string name="biometrics_login_text">Bạn có muốn sử dụng dấu vân tay của bạn hoặc phương thức sinh học khác để đăng nhập không?</string>
+    <string name="username_hint">Tên đăng nhập</string>
+    <string name="password_hint">Mật khẩu</string>
+    <string name="logging_in">Đang đăng nhập...</string>
+    <string name="action_log_in">Đăng nhập</string>
+    <string name="openid_or">Hoặc</string>
+    <string name="tracking_title">Bạn có muốn giúp chúng tôi cải thiện ứng dụng này không?</string>
+    <string name="privacy_policy">chính sách bảo mật</string>
+    <string name="action_no_now">Không phải bây giờ</string>
+    <string name="action_yes">Có</string>
+    <string name="enter_pin_button">Mở khoá</string>
+    <string name="importing_successful">Nhập thành công</string>
+    </resources>

@@ -12,7 +12,6 @@ import org.mockito.kotlin.whenever
 import java.util.UUID
 
 class OUTreeRepositoryTest {
-
     private val ouRepositoryConfiguration: OURepositoryConfiguration = mock()
 
     @Test
@@ -37,11 +36,12 @@ class OUTreeRepositoryTest {
     @Test
     fun `Should return all children orgUnits`() {
         val parentUid = UUID.randomUUID().toString()
-        val orgUnits = mutableListOf(
-            dummyOrgUnit(parents = listOf(parentUid)),
-            dummyOrgUnit(parents = listOf(parentUid)),
-            dummyOrgUnit(parents = listOf(parentUid)),
-        )
+        val orgUnits =
+            mutableListOf(
+                dummyOrgUnit(parents = listOf(parentUid)),
+                dummyOrgUnit(parents = listOf(parentUid)),
+                dummyOrgUnit(parents = listOf(parentUid)),
+            )
 
         val repository = OUTreeRepository(ouRepositoryConfiguration)
 
@@ -95,11 +95,12 @@ class OUTreeRepositoryTest {
     fun `Should return if organisation unit has children`() {
         val parentUid = UUID.randomUUID().toString()
         val repository = OUTreeRepository(ouRepositoryConfiguration)
-        val orgUnits = mutableListOf(
-            dummyOrgUnit(parents = listOf(parentUid)),
-            dummyOrgUnit(parents = listOf(parentUid)),
-            dummyOrgUnit(parents = listOf(parentUid)),
-        )
+        val orgUnits =
+            mutableListOf(
+                dummyOrgUnit(parents = listOf(parentUid)),
+                dummyOrgUnit(parents = listOf(parentUid)),
+                dummyOrgUnit(parents = listOf(parentUid)),
+            )
         whenever(
             ouRepositoryConfiguration.orgUnitRepository(name = anyOrNull()),
         ) doReturn orgUnits
@@ -137,7 +138,8 @@ class OUTreeRepositoryTest {
         parents: List<String> = emptyList(),
         uid: String = UUID.randomUUID().toString(),
         level: Int = 1,
-    ) = OrganisationUnit.builder()
+    ) = OrganisationUnit
+        .builder()
         .uid(uid)
         .level(level)
         .path((parents + uid).joinToString("/"))
@@ -147,7 +149,8 @@ class OUTreeRepositoryTest {
         parents: List<String> = emptyList(),
         uid: String = UUID.randomUUID().toString(),
         level: Int = 1,
-    ) = OrganisationUnit.builder()
+    ) = OrganisationUnit
+        .builder()
         .uid(uid)
         .level(level)
         .path((parents + uid).joinToString("/"))

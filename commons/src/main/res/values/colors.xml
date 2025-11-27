@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--DEFAULT THEME-->
-    <color name="colorPrimary">#2C98F0</color>
+    <color name="colorPrimary">#FF007DEB</color>
     <color name="colorPrimaryDark">#006BBD</color>
     <color name="colorPrimaryLight">#72C8FF</color>
     <color name="colorAccent">#ffffff</color>

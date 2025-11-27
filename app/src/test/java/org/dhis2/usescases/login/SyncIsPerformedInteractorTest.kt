@@ -13,7 +13,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class SyncIsPerformedInteractorTest {
-
     private lateinit var interactor: SyncIsPerformedInteractor
     private val userManager: UserManager =
         Mockito.mock(UserManager::class.java, Mockito.RETURNS_DEEP_STUBS)
@@ -27,15 +26,24 @@ class SyncIsPerformedInteractorTest {
     fun `Should check if entry exists on datastore module`() {
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE),
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(WAS_INITIAL_SYNC_DONE),
         ) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(WAS_INITIAL_SYNC_DONE)
                 .blockingExists(),
         ) doReturn false
         whenever(
-            userManager.d2.userModule().accountManager().getCurrentAccount(),
-        )doReturn null
+            userManager.d2
+                .userModule()
+                .accountManager()
+                .getCurrentAccount(),
+        ) doReturn null
 
         val result = interactor.execute()
 
@@ -49,38 +57,56 @@ class SyncIsPerformedInteractorTest {
 
         whenever(userManager.d2.dataStoreModule().localDataStore()) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE),
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(WAS_INITIAL_SYNC_DONE),
         ) doReturn mock()
         whenever(
-            userManager.d2.dataStoreModule().localDataStore().value(WAS_INITIAL_SYNC_DONE)
+            userManager.d2
+                .dataStoreModule()
+                .localDataStore()
+                .value(WAS_INITIAL_SYNC_DONE)
                 .blockingExists(),
         ) doReturn false
 
-        val mockedSystemInfo: SystemInfo = mock {
-            on { contextPath() } doReturn serverUrl
-        }
+        val mockedSystemInfo: SystemInfo =
+            mock {
+                on { contextPath() } doReturn serverUrl
+            }
 
-        val mockedUser: User = mock {
-            on { username() } doReturn userName
-        }
-
-        whenever(
-            userManager.d2.userModule().user().blockingGet(),
-        )doReturn mockedUser
+        val mockedUser: User =
+            mock {
+                on { username() } doReturn userName
+            }
 
         whenever(
-            userManager.d2.systemInfoModule().systemInfo().blockingGet(),
-        )doReturn mockedSystemInfo
-
-        val mockedAccount: DatabaseAccount = mock() {
-            on { serverUrl() } doReturn serverUrl
-            on { username() } doReturn userName
-            on { importDB() } doReturn mock()
-        }
+            userManager.d2
+                .userModule()
+                .user()
+                .blockingGet(),
+        ) doReturn mockedUser
 
         whenever(
-            userManager.d2.userModule().accountManager().getCurrentAccount(),
-        )doReturn mockedAccount
+            userManager.d2
+                .systemInfoModule()
+                .systemInfo()
+                .blockingGet(),
+        ) doReturn mockedSystemInfo
+
+        val mockedAccount: DatabaseAccount =
+            mock {
+                on { serverUrl() } doReturn serverUrl
+                on { username() } doReturn userName
+                on { importDB() } doReturn mock()
+            }
+
+        whenever(
+            userManager.d2
+                .userModule()
+                .accountManager()
+                .getCurrentAccount(),
+        ) doReturn mockedAccount
 
         val result = interactor.execute()
 

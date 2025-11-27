@@ -20,9 +20,10 @@ fun ComposeView?.setLandscapeOpenSearchButton(
             val screenState by searchTEIViewModel.screenState.observeAsState()
             val teTypeName by searchTEIViewModel.teTypeName.observeAsState()
 
-            val visible = screenState?.let {
-                (it is SearchList) && it.searchFilters.isOpened
-            } ?: false
+            val visible =
+                screenState?.let {
+                    (it is SearchList) && it.searchFilters.isOpened
+                } ?: false
             val isLandscape =
                 LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
             AnimatedVisibility(visible = isLandscape && visible && !teTypeName.isNullOrBlank()) {

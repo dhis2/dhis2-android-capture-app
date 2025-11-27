@@ -7,7 +7,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.jakewharton.rxrelay2.PublishRelay
-import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,12 +56,11 @@ import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 import org.hisp.dhis.rules.models.RuleEffect
 import org.jetbrains.annotations.NotNull
+import timber.log.Timber
 import java.util.Collections
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
-@HiltViewModel
-class ManageStockViewModel @Inject constructor(
+class ManageStockViewModel(
     private val disposable: CompositeDisposable,
     private val schedulerProvider: BaseSchedulerProvider,
     private val stockManagerRepository: StockManager,
@@ -73,14 +71,16 @@ class ManageStockViewModel @Inject constructor(
     private val dispatcherProvider: DispatcherProvider,
     val tableDimensionStore: StockTableDimensionStore,
     savedState: SavedStateHandle,
-) : Validator, SpeechRecognitionAwareViewModel(
-    schedulerProvider,
-    speechRecognitionManager,
-) {
+) : SpeechRecognitionAwareViewModel(
+        schedulerProvider,
+        speechRecognitionManager,
+    ),
+    Validator {
     private lateinit var config: StockUseCase
 
-    private val program: String = savedState[Constants.PROGRAM_UID]
-        ?: throw InitializationException("Some configuration parameters are missing")
+    private val program: String =
+        savedState[Constants.PROGRAM_UID]
+            ?: throw InitializationException("Some configuration parameters are missing")
 
     private val _transaction = MutableLiveData<Transaction?>()
     val transaction: LiveData<Transaction?> = _transaction
@@ -93,14 +93,15 @@ class ManageStockViewModel @Inject constructor(
     private val _hasData = MutableStateFlow(false)
     val hasData: StateFlow<Boolean> = _hasData
 
-    private val _screenState: MutableLiveData<TableScreenState> = MutableLiveData(
-        TableScreenState(
-            tables = emptyList(),
-        ),
-    )
+    private val _screenState: MutableLiveData<TableScreenState> =
+        MutableLiveData(
+            TableScreenState(
+                tables = emptyList(),
+            ),
+        )
     val screenState: LiveData<TableScreenState> = _screenState
 
-    private val _stockItems: MutableLiveData<List<StockItem>> =
+    private val stockItems: MutableLiveData<List<StockItem>> =
         MutableLiveData<List<StockItem>>()
 
     private val _dataEntryUiState = MutableStateFlow(DataEntryUiState())
@@ -127,6 +128,8 @@ class ManageStockViewModel @Inject constructor(
 
     private var inputHelperText: String? = null
 
+    private var hasErrorOnComplete = false
+
     init {
         loadStockUseCase(program)
         configureRelays()
@@ -141,30 +144,31 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    private fun didTransactionParamsChange(transaction: Transaction): Boolean {
-        return if (_transaction.value != null) {
+    private fun didTransactionParamsChange(transaction: Transaction): Boolean =
+        if (_transaction.value != null) {
             _transaction.value!!.transactionType != transaction.transactionType ||
                 _transaction.value!!.facility != transaction.facility ||
                 _transaction.value!!.distributedTo != transaction.distributedTo
         } else {
             true
         }
-    }
 
     fun refreshData() {
         viewModelScope.launch {
-            val result = stockManagerRepository.search(
-                search.value ?: SearchParametersModel(
-                    null,
-                    null,
-                    transaction.value?.facility?.uid ?: "",
-                ),
-                transaction.value?.facility?.uid,
-                config,
-            ).items
+            val result =
+                stockManagerRepository
+                    .search(
+                        search.value ?: SearchParametersModel(
+                            null,
+                            null,
+                            transaction.value?.facility?.uid ?: "",
+                        ),
+                        transaction.value?.facility?.uid,
+                        config,
+                    ).items
 
-            result.asFlow().collect { stockItems ->
-                _stockItems.value = stockItems
+            result.asFlow().collect {
+                stockItems.value = it
                 populateTable()
             }
         }
@@ -194,13 +198,14 @@ class ManageStockViewModel @Inject constructor(
     }
 
     private fun loadStockItems() {
-        search.value = transaction.value?.facility?.uid?.let {
-            SearchParametersModel(
-                null,
-                null,
-                it,
-            )
-        }
+        search.value =
+            transaction.value?.facility?.uid?.let {
+                SearchParametersModel(
+                    null,
+                    null,
+                    it,
+                )
+            }
     }
 
     private fun configureRelays() {
@@ -222,7 +227,7 @@ class ManageStockViewModel @Inject constructor(
                             }
                         refreshData()
                     },
-                    { it.printStackTrace() },
+                    { Timber.e(it) },
                 ),
         )
 
@@ -233,8 +238,7 @@ class ManageStockViewModel @Inject constructor(
                     t1.entry.item.id == t2.entry.item.id &&
                         t1.position == t2.position &&
                         t1.entry.qty == t2.entry.qty
-                }
-                .subscribeOn(schedulerProvider.io())
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
@@ -249,35 +253,38 @@ class ManageStockViewModel @Inject constructor(
                         )
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
                     },
                 ),
         )
     }
 
     private fun populateTable() {
-        val items = when (dataEntryUiState.value.step) {
-            DataEntryStep.REVIEWING,
-            DataEntryStep.EDITING_REVIEWING,
-            ->
-                _stockItems.value?.filter {
-                    itemsCache[it.id] != null
-                }
+        val items =
+            when (dataEntryUiState.value.step) {
+                DataEntryStep.REVIEWING,
+                DataEntryStep.EDITING_REVIEWING,
+                ->
+                    stockItems.value?.filter {
+                        itemsCache[it.id] != null
+                    }
 
-            else -> _stockItems.value
-        }
+                else -> stockItems.value
+            }
 
-        val entries: List<StockEntry> = items?.map {
-            itemsCache[it.id] ?: StockEntry(item = it)
-        } ?: emptyList()
+        val entries: List<StockEntry> =
+            items?.map {
+                itemsCache[it.id] ?: StockEntry(item = it)
+            } ?: emptyList()
 
         _hasData.value = entries.isNotEmpty()
 
-        val tables = tableModelMapper.map(
-            entries = entries,
-            stockLabel = resources.getString(R.string.stock),
-            qtdLabel = provideQuantityLabel(),
-        )
+        val tables =
+            tableModelMapper.map(
+                entries = entries,
+                stockLabel = resources.getString(R.string.stock),
+                qtdLabel = provideQuantityLabel(),
+            )
 
         _screenState.postValue(
             TableScreenState(
@@ -289,32 +296,45 @@ class ManageStockViewModel @Inject constructor(
         updateReviewButton()
     }
 
-    private fun provideQuantityLabel() = when (transaction.value?.transactionType) {
-        TransactionType.CORRECTION -> resources.getString(R.string.count)
-        else -> resources.getString(R.string.quantity)
-    }
+    private fun provideQuantityLabel() =
+        when (transaction.value?.transactionType) {
+            TransactionType.CORRECTION -> resources.getString(R.string.count)
+            else -> resources.getString(R.string.quantity)
+        }
 
     private fun commitTransaction() {
-        if (itemsCache.values.isEmpty()) {
+        if (itemsCache.values.isEmpty() || dataEntryUiState.value.loading) {
             return
         }
-        disposable.add(
-            stockManagerRepository.saveTransaction(
-                getPopulatedEntries(),
-                transaction.value!!,
-                config,
+        _dataEntryUiState.update { currentUiState ->
+            currentUiState.copy(
+                button =
+                    currentUiState.button.copy(
+                        visible = false,
+                    ),
+                loading = true,
             )
-                .subscribeOn(schedulerProvider.io())
+        }
+        disposable.add(
+            stockManagerRepository
+                .saveTransaction(
+                    getPopulatedEntries(),
+                    transaction.value!!,
+                    config,
+                    hasErrorOnComplete,
+                ).subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     {
                         _dataEntryUiState.update { currentUiState ->
                             currentUiState.copy(
-                                snackBarUiState = SnackBarUiState(
-                                    message = R.string.transaction_completed,
-                                    color = R.color.success_color,
-                                    icon = R.drawable.success_icon,
-                                ),
+                                snackBarUiState =
+                                    SnackBarUiState(
+                                        message = R.string.transaction_completed,
+                                        color = R.color.success_color,
+                                        icon = R.drawable.success_icon,
+                                    ),
+                                loading = false,
                             )
                         }
                         updateStep(DataEntryStep.COMPLETED)
@@ -322,7 +342,12 @@ class ManageStockViewModel @Inject constructor(
                         clearTransaction()
                     },
                     {
-                        it.printStackTrace()
+                        Timber.e(it)
+                        _dataEntryUiState.update { currentUiState ->
+                            currentUiState.copy(
+                                loading = false,
+                            )
+                        }
                     },
                 ),
         )
@@ -331,7 +356,7 @@ class ManageStockViewModel @Inject constructor(
     private fun getStockEntry(cell: TableCell): StockEntry? {
         val cellId = tableCellId(cell)
         return itemsCache.values.find { it.item.id == cellId }
-            ?: _stockItems.value?.find { it.id == cellId }?.let { StockEntry(it) }
+            ?: stockItems.value?.find { it.id == cellId }?.let { StockEntry(it) }
     }
 
     fun onCellClick(cell: TableCell): TextInputModel {
@@ -349,12 +374,11 @@ class ManageStockViewModel @Inject constructor(
         )
     }
 
-    private fun getRegExBasedOnTransactionType(): Regex? {
-        return when (transaction.value?.transactionType) {
+    private fun getRegExBasedOnTransactionType(): Regex? =
+        when (transaction.value?.transactionType) {
             TransactionType.CORRECTION -> null
             else -> RegExValidations.POSITIVE_INTEGER.regex
         }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun onSaveValueChange(cell: TableCell) {
@@ -368,41 +392,46 @@ class ManageStockViewModel @Inject constructor(
 
     private fun tableCellId(cell: TableCell) = cell.id?.split("_")?.get(0)
 
-    private suspend fun saveValue(cell: TableCell) = withContext(dispatcherProvider.io()) {
-        _stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
+    private suspend fun saveValue(cell: TableCell) =
+        withContext(dispatcherProvider.io()) {
+            stockItems.value?.find { it.id == tableCellId(cell) }?.let { stockItem ->
 
-            cell.value?.let { _ ->
-                when (val result = validate(cell)) {
-                    is ValidationResult.Error -> {
-                        addItem(
-                            item = stockItem,
-                            qty = cell.value,
-                            stockOnHand = stockItem.stockOnHand,
-                            errorMessage = result.message,
-                        )
-                        populateTable()
-                    }
+                cell.value?.let { _ ->
+                    when (val result = validate(cell)) {
+                        is ValidationResult.Error -> {
+                            addItem(
+                                item = stockItem,
+                                qty = cell.value,
+                                stockOnHand = stockItem.stockOnHand,
+                                errorMessage = result.message,
+                            )
+                            populateTable()
+                        }
 
-                    is ValidationResult.Success -> {
-                        setQuantity(
-                            stockItem,
-                            0,
-                            cell.value?.ifEmpty { "0" }.toString(),
-                            object : OnQuantityValidated {
-                                override fun validationCompleted(ruleEffects: List<RuleEffect>) {
-                                    // When user taps on done or next. We should apply program rules here
-                                    ruleEffects.forEach { ruleEffect ->
-                                        applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
+                        is ValidationResult.Success -> {
+                            setQuantity(
+                                stockItem,
+                                0,
+                                cell.value?.ifEmpty { "0" }.toString(),
+                                object : OnQuantityValidated {
+                                    override fun validationCompleted(ruleEffects: List<RuleEffect>) {
+                                        // When user taps on done or next. We should apply program rules here
+                                        ruleEffects.forEach { ruleEffect ->
+                                            applyRuleEffectOnItem(ruleEffect, stockItem, cell.value)
+                                        }
+                                        hasErrorOnComplete =
+                                            ruleEffects.any {
+                                                it.ruleAction.type == ProgramRuleActionType.ERRORONCOMPLETE.name
+                                            }
+                                        populateTable()
                                     }
-                                    populateTable()
-                                }
-                            },
-                        )
+                                },
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 
     private fun applyRuleEffectOnItem(
         ruleEffect: RuleEffect,
@@ -445,23 +474,27 @@ class ManageStockViewModel @Inject constructor(
         entryRelay.accept(RowAction(StockEntry(item = item, qty = qty), position, callback))
     }
 
-    fun getItemQuantity(item: StockItem): String? {
-        return itemsCache[item.id]?.qty
-    }
+    fun getItemQuantity(item: StockItem): String? = itemsCache[item.id]?.qty
 
-    fun addItem(item: StockItem, qty: String?, stockOnHand: String?, errorMessage: String?) {
+    fun addItem(
+        item: StockItem,
+        qty: String?,
+        stockOnHand: String?,
+        errorMessage: String?,
+    ) {
         // Remove from cache any item whose quantity has been cleared
         if (qty.isNullOrEmpty()) {
             itemsCache.remove(item.id)
             hasUnsavedData(false)
             return
         }
-        itemsCache[item.id] = StockEntry(
-            item = item,
-            qty = qty,
-            stockOnHand = stockOnHand,
-            errorMessage = errorMessage,
-        )
+        itemsCache[item.id] =
+            StockEntry(
+                item = item,
+                qty = qty,
+                stockOnHand = stockOnHand,
+                errorMessage = errorMessage,
+            )
         hasUnsavedData(true)
     }
 
@@ -476,20 +509,22 @@ class ManageStockViewModel @Inject constructor(
         }
     }
 
-    private fun canReview(): Boolean {
-        return itemsCache.size > 0 && itemsCache.none { it.value.errorMessage != null }
-    }
+    private fun canReview(): Boolean = itemsCache.size > 0 && itemsCache.none { it.value.errorMessage != null }
 
     private fun getPopulatedEntries() = Collections.synchronizedList(itemsCache.values.toList())
 
-    fun onEditingCell(isEditing: Boolean, onEditionStart: () -> Unit) {
-        val step = when (dataEntryUiState.value.step) {
-            DataEntryStep.LISTING -> if (isEditing) DataEntryStep.EDITING_LISTING else null
-            DataEntryStep.EDITING_LISTING -> if (!isEditing) DataEntryStep.LISTING else null
-            DataEntryStep.REVIEWING -> if (isEditing) DataEntryStep.EDITING_REVIEWING else null
-            DataEntryStep.EDITING_REVIEWING -> if (!isEditing) DataEntryStep.REVIEWING else null
-            else -> null
-        }
+    fun onEditingCell(
+        isEditing: Boolean,
+        onEditionStart: () -> Unit,
+    ) {
+        val step =
+            when (dataEntryUiState.value.step) {
+                DataEntryStep.LISTING -> if (isEditing) DataEntryStep.EDITING_LISTING else null
+                DataEntryStep.EDITING_LISTING -> if (!isEditing) DataEntryStep.LISTING else null
+                DataEntryStep.REVIEWING -> if (isEditing) DataEntryStep.EDITING_REVIEWING else null
+                DataEntryStep.EDITING_REVIEWING -> if (!isEditing) DataEntryStep.REVIEWING else null
+                else -> null
+            }
         step?.let { updateStep(it) }
 
         if (isEditing) {
@@ -505,33 +540,34 @@ class ManageStockViewModel @Inject constructor(
     }
 
     private fun updateReviewButton() {
-        val button: ButtonUiState = when (dataEntryUiState.value.step) {
-            DataEntryStep.LISTING -> {
-                val buttonVisibility = hasData.value && canReview()
-                ButtonUiState(
-                    text = R.string.review,
-                    icon = R.drawable.proceed_icon,
-                    contentColor = _themeColor.value,
-                    containerColor = Color.White,
-                    visible = buttonVisibility,
-                )
-            }
+        val button: ButtonUiState =
+            when (dataEntryUiState.value.step) {
+                DataEntryStep.LISTING -> {
+                    val buttonVisibility = hasData.value && canReview()
+                    ButtonUiState(
+                        text = R.string.review,
+                        icon = R.drawable.proceed_icon,
+                        contentColor = Color.White,
+                        containerColor = _themeColor.value,
+                        visible = buttonVisibility,
+                    )
+                }
 
-            DataEntryStep.REVIEWING -> {
-                val buttonVisibility = hasData.value && canReview()
-                ButtonUiState(
-                    text = R.string.confirm_transaction_label,
-                    icon = R.drawable.confirm_review,
-                    contentColor = Color.White,
-                    containerColor = _themeColor.value,
-                    visible = buttonVisibility,
-                )
-            }
+                DataEntryStep.REVIEWING -> {
+                    val buttonVisibility = hasData.value && canReview()
+                    ButtonUiState(
+                        text = R.string.confirm_transaction_label,
+                        icon = R.drawable.confirm_review,
+                        contentColor = Color.White,
+                        containerColor = _themeColor.value,
+                        visible = buttonVisibility,
+                    )
+                }
 
-            else -> {
-                dataEntryUiState.value.button.copy(visible = false)
+                else -> {
+                    dataEntryUiState.value.button.copy(visible = false)
+                }
             }
-        }
 
         _dataEntryUiState.update { currentUiState ->
             currentUiState.copy(button = button)
@@ -599,7 +635,8 @@ class ManageStockViewModel @Inject constructor(
     }
 
     fun backToListing() {
-        if (itemsCache.size == 0 && dataEntryUiState.value.step
+        if (itemsCache.size == 0 &&
+            dataEntryUiState.value.step
             == DataEntryStep.REVIEWING
         ) {
             updateStep(DataEntryStep.LISTING)
@@ -623,9 +660,10 @@ class ManageStockViewModel @Inject constructor(
         inputHelperText = text
     }
 
-    private fun refreshTableConfiguration() = TableConfigurationState(
-        overwrittenTableWidth = tableDimensionStore.getTableWidth(),
-        overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
-        overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null),
-    )
+    private fun refreshTableConfiguration() =
+        TableConfigurationState(
+            overwrittenTableWidth = tableDimensionStore.getTableWidth(),
+            overwrittenRowHeaderWidth = tableDimensionStore.getWidthForSection(),
+            overwrittenColumnWidth = tableDimensionStore.getColumnWidthForSection(null),
+        )
 }

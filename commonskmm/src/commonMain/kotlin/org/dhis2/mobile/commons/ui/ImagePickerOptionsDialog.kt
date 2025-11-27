@@ -29,9 +29,10 @@ fun ImagePickerOptionsDialog(
     onTakePicture: () -> Unit,
     onSelectFromGallery: () -> Unit,
 ) {
-    val state = BottomSheetShellUIState(
-        title = title,
-    )
+    val state =
+        BottomSheetShellUIState(
+            title = title,
+        )
 
     AnimatedVisibility(
         visible = showImageOptions,
@@ -48,38 +49,39 @@ fun ImagePickerOptionsDialog(
             content = null,
             buttonBlock = {
                 ButtonCarousel(
-                    carouselButtonList = listOf(
-                        CarouselButtonData(
-                            onClick = {
-                                onDismiss()
-                                onTakePicture()
-                            },
-                            enabled = true,
-                            text = cameraButtonLabel,
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.CameraAlt,
-                                    contentDescription = null,
-                                    tint = TextColor.OnSurface,
-                                )
-                            },
+                    carouselButtonList =
+                        listOf(
+                            CarouselButtonData(
+                                onClick = {
+                                    onDismiss()
+                                    onTakePicture()
+                                },
+                                enabled = true,
+                                text = cameraButtonLabel,
+                                icon = {
+                                    Icon(
+                                        Icons.Outlined.CameraAlt,
+                                        contentDescription = null,
+                                        tint = TextColor.OnSurface,
+                                    )
+                                },
+                            ),
+                            CarouselButtonData(
+                                onClick = {
+                                    onDismiss()
+                                    onSelectFromGallery()
+                                },
+                                enabled = true,
+                                text = galleryButtonLabel,
+                                icon = {
+                                    Icon(
+                                        Icons.Outlined.Collections,
+                                        contentDescription = null,
+                                        tint = TextColor.OnSurface,
+                                    )
+                                },
+                            ),
                         ),
-                        CarouselButtonData(
-                            onClick = {
-                                onDismiss()
-                                onSelectFromGallery()
-                            },
-                            enabled = true,
-                            text = galleryButtonLabel,
-                            icon = {
-                                Icon(
-                                    Icons.Outlined.Collections,
-                                    contentDescription = null,
-                                    tint = TextColor.OnSurface,
-                                )
-                            },
-                        ),
-                    ),
                 )
             },
         )

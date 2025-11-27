@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Tidak ada hubungan, klik "+" untuk menambahkan yang baru.</string>
+    <string name="relationship">Hubungan</string>
+    <string name="no_data">Tidak ada data</string>
+    <string name="syncing">Sedang sinkronisasi...</string>
+    <string name="show_more">Tampilkan lebih</string>
+    <string name="show_less">Tampilkan kurang</string>
+    <string name="cancel">Batal</string>
+    <string name="remove">Hapus</string>
+    <string name="search">Pencarian</string>
+</resources>

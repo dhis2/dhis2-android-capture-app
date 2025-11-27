@@ -15,7 +15,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class DatasetCardMapperTest {
-
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
 
@@ -36,35 +35,37 @@ class DatasetCardMapperTest {
         val currentDate = Date()
 
         // Given a dataset without attributes
-        val datasetModel = DataSetDetailModel.create(
-            "",
-            "",
-            "",
-            "",
-            "orgUnitName",
-            "nameCatCombo",
-            "Dataset PeriodName",
-            State.SYNCED,
-            "Month",
-            true,
-            true,
-            currentDate,
-            "Category option combo name",
-        )
+        val datasetModel =
+            DataSetDetailModel(
+                "",
+                "",
+                "",
+                "",
+                "orgUnitName",
+                "nameCatCombo",
+                "Dataset PeriodName",
+                State.SYNCED,
+                "Month",
+                true,
+                true,
+                currentDate,
+                "Category option combo name",
+            )
 
         // When dataset is mapped to card item
-        val result = mapper.map(
-            dataset = datasetModel,
-            editable = true,
-            onSyncIconClick = {},
-            onCardCLick = {},
-        )
+        val result =
+            mapper.map(
+                dataset = datasetModel,
+                editable = true,
+                onSyncIconClick = {},
+                onCardCLick = {},
+            )
 
         // Then all the result is displayed correctly
-        assertEquals(result.title, datasetModel.namePeriod())
+        assertEquals(result.title, datasetModel.namePeriod)
         assertEquals(result.lastUpdated, currentDate.toDateSpan(context))
-        assertEquals(result.additionalInfo[0].value, datasetModel.nameOrgUnit())
-        assertEquals(result.additionalInfo[1].value, datasetModel.nameCatCombo())
+        assertEquals(result.additionalInfo[0].value, datasetModel.nameOrgUnit)
+        assertEquals(result.additionalInfo[1].value, datasetModel.nameCatCombo)
         assertEquals(
             result.additionalInfo[2].value,
             resourceManager.getString(org.dhis2.R.string.completed),

@@ -14,7 +14,6 @@ import org.mockito.kotlin.whenever
 import java.util.UUID
 
 class NotesPresenterTest {
-
     private lateinit var presenter: NotesPresenter
     private val view: NotesView = mock()
     private val repository: NotesRepository = mock()
@@ -116,8 +115,10 @@ class NotesPresenterTest {
         verify(view).setWritePermission(false)
     }
 
-    private fun dummyNote(): Note = Note.builder()
-        .uid(UUID.randomUUID().toString())
-        .value("Note")
-        .build()
+    private fun dummyNote(): Note =
+        Note
+            .builder()
+            .uid(UUID.randomUUID().toString())
+            .value("Note")
+            .build()
 }

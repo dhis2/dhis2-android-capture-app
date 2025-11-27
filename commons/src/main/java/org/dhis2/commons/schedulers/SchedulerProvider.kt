@@ -9,7 +9,9 @@ import timber.log.Timber
 
 interface SchedulerProvider {
     fun computation(): Scheduler
+
     fun io(): Scheduler
+
     fun ui(): Scheduler
 }
 
@@ -17,41 +19,38 @@ fun <T> Single<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onSuccess: (T) -> Unit? = {},
     onError: (Throwable) -> Unit? = {},
-): Disposable {
-    return subscribeOn(schedulerProvider.io())
+): Disposable =
+    subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())
         .subscribe(
             { onSuccess(it) },
             { onError(it) },
         )
-}
 
 fun <T> Observable<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onNext: (T) -> Unit? = {},
     onError: (Throwable) -> Unit? = {},
     onComplete: () -> Unit? = {},
-): Disposable {
-    return subscribeOn(schedulerProvider.io())
+): Disposable =
+    subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())
         .subscribe(
             { onNext(it) },
             { onError(it) },
             { onComplete() },
         )
-}
 
 fun <T> Flowable<T>.defaultSubscribe(
     schedulerProvider: SchedulerProvider,
     onNext: (T) -> Unit? = {},
     onError: (Throwable) -> Unit? = { Timber.d(it) },
     onComplete: () -> Unit? = {},
-): Disposable {
-    return subscribeOn(schedulerProvider.io())
+): Disposable =
+    subscribeOn(schedulerProvider.io())
         .observeOn(schedulerProvider.ui())
         .subscribe(
             { onNext(it) },
             { onError(it) },
             { onComplete() },
         )
-}

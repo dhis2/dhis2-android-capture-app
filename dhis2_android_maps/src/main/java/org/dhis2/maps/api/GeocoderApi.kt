@@ -4,7 +4,6 @@ import org.dhis2.maps.utils.AvailableLatLngBounds
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 
 interface GeocoderApi {
-
     suspend fun searchFor(
         query: String,
         visibleRegion: AvailableLatLngBounds?,

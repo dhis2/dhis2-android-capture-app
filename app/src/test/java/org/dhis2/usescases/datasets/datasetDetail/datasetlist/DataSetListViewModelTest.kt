@@ -30,7 +30,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class DataSetListViewModelTest {
-
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
@@ -51,24 +50,19 @@ class DataSetListViewModelTest {
 
         whenever(filterManager.asFlowable()) doReturn filterManagerFlowable
         whenever(repository.canWriteAny()) doReturn Flowable.just(true)
-        viewModel = DataSetListViewModel(
-            repository,
-            filterManager,
-            matomoAnalyticsController,
-            object : DispatcherProvider {
-                override fun io(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+        viewModel =
+            DataSetListViewModel(
+                repository,
+                filterManager,
+                matomoAnalyticsController,
+                object : DispatcherProvider {
+                    override fun io(): CoroutineDispatcher = testingDispatcher
 
-                override fun computation(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+                    override fun computation(): CoroutineDispatcher = testingDispatcher
 
-                override fun ui(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
-            },
-        )
+                    override fun ui(): CoroutineDispatcher = testingDispatcher
+                },
+            )
     }
 
     @Test
@@ -77,24 +71,19 @@ class DataSetListViewModelTest {
         whenever(
             repository.dataSetGroups(any(), any(), any(), any()),
         ) doReturn Flowable.just(dataSets)
-        viewModel = DataSetListViewModel(
-            repository,
-            filterManager,
-            matomoAnalyticsController,
-            object : DispatcherProvider {
-                override fun io(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+        viewModel =
+            DataSetListViewModel(
+                repository,
+                filterManager,
+                matomoAnalyticsController,
+                object : DispatcherProvider {
+                    override fun io(): CoroutineDispatcher = testingDispatcher
 
-                override fun computation(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
+                    override fun computation(): CoroutineDispatcher = testingDispatcher
 
-                override fun ui(): CoroutineDispatcher {
-                    return testingDispatcher
-                }
-            },
-        )
+                    override fun ui(): CoroutineDispatcher = testingDispatcher
+                },
+            )
         testingDispatcher.scheduler.advanceUntilIdle()
         assert(viewModel.datasets.value == dataSets)
     }
@@ -131,19 +120,20 @@ class DataSetListViewModelTest {
         verify(filterManager).publishData()
     }
 
-    private fun dummyDataSet() = DataSetDetailModel.create(
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        State.SYNCED,
-        "",
-        true,
-        false,
-        Date(),
-        "",
-    )
+    private fun dummyDataSet() =
+        DataSetDetailModel(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            State.SYNCED,
+            "",
+            true,
+            false,
+            Date(),
+            "",
+        )
 }

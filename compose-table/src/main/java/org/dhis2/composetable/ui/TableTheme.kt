@@ -16,8 +16,7 @@ fun TableTheme(
     tableConfiguration: TableConfiguration? = LocalTableConfiguration.current,
     tableValidator: Validator? = null,
     tableResizeActions: TableResizeActions? = null,
-    content: @Composable
-    () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
         LocalTableColors provides (tableColors ?: TableColors()),

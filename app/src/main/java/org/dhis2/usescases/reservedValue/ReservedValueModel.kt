@@ -11,13 +11,9 @@ data class ReservedValueModel(
     val leftValuesLabel: String,
     val refillProcessor: FlowableProcessor<String>,
 ) {
-    fun hasOrgUnit(): Boolean {
-        return orgUnitUid != null
-    }
+    fun hasOrgUnit(): Boolean = orgUnitUid != null
 
-    fun valuesLeft(): String {
-        return leftValuesLabel.format(count)
-    }
+    fun valuesLeft(): String = leftValuesLabel.format(count)
 
     fun refill() {
         refillProcessor.onNext(attributeUid)

@@ -31,9 +31,10 @@ class DateEditionWarningHandler(
         }
     }
 
-    private fun buildMessage() = eventResourcesProvider.formatWithProgramEventLabel(
-        R.string.enrollment_date_edition_warning_event_label,
-        conf?.program()?.uid(),
-        2,
-    )
+    private fun buildMessage() =
+        eventResourcesProvider.formatWithProgramEventLabel(
+            R.string.enrollment_date_edition_warning_event_label,
+            conf?.program()?.uid(),
+            2,
+        )
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">Selanjutnya</string>
+    <string name="username_hint">Nama pengguna</string>
+    <string name="password_hint">Sandi</string>
+    <string name="action_yes">Iya</string>
+    </resources>

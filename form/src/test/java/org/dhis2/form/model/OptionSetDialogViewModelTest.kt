@@ -28,26 +28,22 @@ class OptionSetDialogViewModelTest {
 
     private val optionSetUid = "uid"
     private val searchOptionSetOption: SearchOptionSetOption = mock()
-    private val field: FieldUiModel = mock {
-        on { optionSet } doReturn optionSetUid
-    }
+    private val field: FieldUiModel =
+        mock {
+            on { optionSet } doReturn optionSetUid
+        }
     private lateinit var viewModel: OptionSetDialogViewModel
 
     val testingDispatcher = StandardTestDispatcher()
 
-    val dispatchers: DispatcherProvider = object : DispatcherProvider {
-        override fun io(): CoroutineDispatcher {
-            return testingDispatcher
-        }
+    val dispatchers: DispatcherProvider =
+        object : DispatcherProvider {
+            override fun io(): CoroutineDispatcher = testingDispatcher
 
-        override fun computation(): CoroutineDispatcher {
-            return testingDispatcher
-        }
+            override fun computation(): CoroutineDispatcher = testingDispatcher
 
-        override fun ui(): CoroutineDispatcher {
-            return testingDispatcher
+            override fun ui(): CoroutineDispatcher = testingDispatcher
         }
-    }
 
     @Before
     fun setUp() {
@@ -60,11 +56,12 @@ class OptionSetDialogViewModelTest {
                 emptyList(),
             ),
         ) doReturn mockedOptions
-        viewModel = OptionSetDialogViewModel(
-            searchOptionSetOption,
-            field,
-            dispatchers,
-        )
+        viewModel =
+            OptionSetDialogViewModel(
+                searchOptionSetOption,
+                field,
+                dispatchers,
+            )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
 
@@ -91,15 +88,17 @@ class OptionSetDialogViewModelTest {
         )
     }
 
-    private val mockedOptions = mutableListOf<Option>().apply {
-        repeat(times = 5) { index ->
-            add(
-                Option.builder()
-                    .uid("Option$index")
-                    .displayName("name$index")
-                    .code("code$index")
-                    .build(),
-            )
+    private val mockedOptions =
+        mutableListOf<Option>().apply {
+            repeat(times = 5) { index ->
+                add(
+                    Option
+                        .builder()
+                        .uid("Option$index")
+                        .displayName("name$index")
+                        .code("code$index")
+                        .build(),
+                )
+            }
         }
-    }
 }

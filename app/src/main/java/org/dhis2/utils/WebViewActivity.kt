@@ -12,7 +12,6 @@ import org.dhis2.R
 import org.dhis2.databinding.ActivityWebviewBinding
 
 class WebViewActivity : Activity() {
-
     companion object {
         const val WEB_VIEW_URL = "url"
     }
@@ -27,20 +26,20 @@ class WebViewActivity : Activity() {
 
         url?.let {
             // Avoid the WebView to automatically redirect to a browser
-            binding.webView.webViewClient = object : WebViewClient() {
-                override fun shouldOverrideUrlLoading(
-                    view: WebView?,
-                    request: WebResourceRequest,
-                ): Boolean {
-                    return super.shouldOverrideUrlLoading(view, request)
-                }
+            binding.webView.webViewClient =
+                object : WebViewClient() {
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        request: WebResourceRequest,
+                    ): Boolean = super.shouldOverrideUrlLoading(view, request)
 
-                // Compatibility with APIs below 24
-                @Deprecated("Deprecated in Java")
-                override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                    return super.shouldOverrideUrlLoading(view, url)
+                    // Compatibility with APIs below 24
+                    @Deprecated("Deprecated in Java")
+                    override fun shouldOverrideUrlLoading(
+                        view: WebView?,
+                        url: String?,
+                    ): Boolean = super.shouldOverrideUrlLoading(view, url)
                 }
-            }
 
             binding.webView.settings.javaScriptEnabled = true
             binding.webView.loadUrl(it)

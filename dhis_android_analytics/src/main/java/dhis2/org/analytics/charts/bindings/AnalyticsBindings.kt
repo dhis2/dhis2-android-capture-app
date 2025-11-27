@@ -21,40 +21,42 @@ fun ImageView.setFilterVisualization(chartModel: ChartModel) {
         visibility = View.GONE
     } else {
         visibility = View.VISIBLE
-        val badge = BadgeDrawable.create(context).apply {
-            number = currentFilters
-            badgeGravity = BOTTOM_END
-            backgroundColor = ColorUtils().getPrimaryColor(context, ColorType.PRIMARY)
-        }
+        val badge =
+            BadgeDrawable.create(context).apply {
+                number = currentFilters
+                badgeGravity = BOTTOM_END
+                backgroundColor = ColorUtils().getPrimaryColor(context, ColorType.PRIMARY)
+            }
         BadgeUtils.attachBadgeDrawable(badge, this)
     }
 }
 
-fun PeriodType.datePattern(): String = when (this) {
-    PeriodType.Daily,
-    PeriodType.Weekly,
-    PeriodType.WeeklySaturday,
-    PeriodType.WeeklySunday,
-    PeriodType.WeeklyThursday,
-    PeriodType.WeeklyWednesday,
-    PeriodType.BiWeekly,
-    PeriodType.Monthly,
-    PeriodType.BiMonthly,
-    PeriodType.Quarterly,
-    PeriodType.QuarterlyNov,
-    PeriodType.SixMonthly,
-    PeriodType.SixMonthlyApril,
-    PeriodType.SixMonthlyNov,
-    -> {
-        "MMM YYYY"
-    }
+fun PeriodType.datePattern(): String =
+    when (this) {
+        PeriodType.Daily,
+        PeriodType.Weekly,
+        PeriodType.WeeklySaturday,
+        PeriodType.WeeklySunday,
+        PeriodType.WeeklyThursday,
+        PeriodType.WeeklyWednesday,
+        PeriodType.BiWeekly,
+        PeriodType.Monthly,
+        PeriodType.BiMonthly,
+        PeriodType.Quarterly,
+        PeriodType.QuarterlyNov,
+        PeriodType.SixMonthly,
+        PeriodType.SixMonthlyApril,
+        PeriodType.SixMonthlyNov,
+        -> {
+            "MMM YYYY"
+        }
 
-    PeriodType.Yearly,
-    PeriodType.FinancialApril,
-    PeriodType.FinancialJuly,
-    PeriodType.FinancialOct,
-    PeriodType.FinancialNov,
-    -> {
-        "YYYY"
+        PeriodType.Yearly,
+        PeriodType.FinancialApril,
+        PeriodType.FinancialJuly,
+        PeriodType.FinancialOct,
+        PeriodType.FinancialNov,
+        -> {
+            "YYYY"
+        }
     }
-}

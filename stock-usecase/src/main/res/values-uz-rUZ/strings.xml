@@ -88,20 +88,20 @@
     <string name="mandatory_facility_selection">Davom etishdan oldin tashkilot maydoni to\'ldirilishi kerak</string>
     <string name="mandatory_distributed_to_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
     <string name="mandatory_transaction_date_selection">Davom etishdan oldin “Tarqatilgan” maydoni to‘ldirilishi kerak</string>
-    <string name="previous_page_lose_data_warning">Oldingi ekranga qaytmoqchimisiz\? 
+    <string name="previous_page_lose_data_warning">Oldingi ekranga qaytmoqchimisiz? 
 Davom etishga qaror qilsangiz, kiritilgan ma\'lumotlarni yo\'qotasiz.</string>
     <string name="transaction_completed">Tranzaksiya muvaffaqiyatli yakunlandi!</string>
     <string name="transaction_cancelled">Tranzaksiya muvaffaqiyatli bekor qilindi!</string>
-    <string name="force_sync_confirmation_message">Haqiqatan ham sinxronlashni majbur qilmoqchimisiz\?</string>
-    <string name="logout_confirmation_message">Haqiqatan ham tizimdan chiqmoqchimisiz\?</string>
+    <string name="force_sync_confirmation_message">Haqiqatan ham sinxronlashni majbur qilmoqchimisiz?</string>
+    <string name="logout_confirmation_message">Haqiqatan ham tizimdan chiqmoqchimisiz?</string>
 
-    <string name="remove_correction_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tuzatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
+    <string name="remove_correction_item_confirmation_message">Haqiqatan ham \"%1$s\"? tuzatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
 Bu amalni ortga qaytarib bo‘lmaydi..
     </string>
-    <string name="remove_distribution_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tarqatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
+    <string name="remove_distribution_item_confirmation_message">Haqiqatan ham \"%1$s\"? tarqatish uchun yozuvni butunlay oʻchirib tashlamoqchimisiz? 
 Bu amalni ortga qaytarib bo‘lmaydi..
     </string>
-    <string name="remove_discard_item_confirmation_message">Haqiqatan ham \"%1$s\"\? tanlangan yozuvni butunlay oʻchirib tashlamoqchimisiz? 
+    <string name="remove_discard_item_confirmation_message">Haqiqatan ham \"%1$s\"? tanlangan yozuvni butunlay oʻchirib tashlamoqchimisiz? 
 Bu amalni ortga qaytarib bo‘lmaydi..
     </string>
 
@@ -150,7 +150,7 @@ Bu amalni ortga qaytarib bo‘lmaydi..
 
     <string name="restart_later">Keyinroq qayta ishga tushirish</string>
     <string name="confirm_app_restart_message">O\'zgarishlar amalga oshirilishi uchun ilovani qayta ishga tushirish kerak, ammo, 
-saqlanmagan oʻzgarishlar yoʻqoladi.\n\n Qayta ishga tushirishni davom ettirmoqchimisiz\?</string>
+saqlanmagan oʻzgarishlar yoʻqoladi.\n\n Qayta ishga tushirishni davom ettirmoqchimisiz?</string>
     <string name="language_change_dialog_title">Qayta ishga tushirishni tasdiqlang</string>
     <string name="scan_canceled">Skanerlash bekor qilindi!</string>
     <string name="logout_error_message">Chiqish paytida xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.</string>

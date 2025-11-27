@@ -41,15 +41,16 @@ class EventCapturePresenterTest {
 
     @Before
     fun setUp() {
-        presenter = EventCapturePresenterImpl(
-            view,
-            eventUid,
-            eventRepository,
-            schedulers,
-            preferences,
-            pageConfigurator,
-            resourceManager,
-        )
+        presenter =
+            EventCapturePresenterImpl(
+                view,
+                eventUid,
+                eventRepository,
+                schedulers,
+                preferences,
+                pageConfigurator,
+                resourceManager,
+            )
     }
 
     @Test
@@ -99,30 +100,6 @@ class EventCapturePresenterTest {
 
         val result = presenter.isEnrollmentOpen()
         assertTrue(result)
-    }
-
-    @Test
-    fun `Should complete an event and finish data entry`() {
-        whenever(eventRepository.completeEvent()) doReturn Observable.just(true)
-
-        presenter.completeEvent(false)
-        verify(view).finishDataEntry()
-    }
-
-    @Test
-    fun `Should complete an event and restart data entry`() {
-        whenever(eventRepository.completeEvent()) doReturn Observable.just(true)
-
-        presenter.completeEvent(true)
-        verify(view).restartDataEntry()
-    }
-
-    @Test
-    fun `Should not complete an event`() {
-        whenever(eventRepository.completeEvent()) doReturn Observable.just(false)
-
-        presenter.completeEvent(true)
-        verify(view).restartDataEntry()
     }
 
     @Test
@@ -262,7 +239,7 @@ class EventCapturePresenterTest {
 
         presenter.saveAndExit(EventStatus.COMPLETED)
 
-        verify(view).saveAndFinish()
+        verify(view).saveAndFinish(true)
     }
 
     @Test
@@ -300,15 +277,16 @@ class EventCapturePresenterTest {
             eventRepository.isEnrollmentOpen,
         ) doReturn true
         presenter.saveAndExit(EventStatus.COMPLETED)
-        verify(view).saveAndFinish()
+        verify(view).saveAndFinish(true)
     }
 
     @Test
     fun `Should init note counter`() {
-        whenever(eventRepository.noteCount) doReturnConsecutively listOf(
-            0,
-            1,
-        ).map { Single.just(it) }
+        whenever(eventRepository.noteCount) doReturnConsecutively
+            listOf(
+                0,
+                1,
+            ).map { Single.just(it) }
         presenter.initNoteCounter()
         verify(view).updateNoteBadge(0)
         presenter.initNoteCounter()
@@ -316,8 +294,18 @@ class EventCapturePresenterTest {
     }
 
     private fun initializeMocks() {
-        val stage = ProgramStage.builder().uid("stage").displayName("stageName").build()
-        val orgUnit = OrganisationUnit.builder().uid("orgUnit").displayName("OrgUnitName").build()
+        val stage =
+            ProgramStage
+                .builder()
+                .uid("stage")
+                .displayName("stageName")
+                .build()
+        val orgUnit =
+            OrganisationUnit
+                .builder()
+                .uid("orgUnit")
+                .displayName("OrgUnitName")
+                .build()
 
         whenever(eventRepository.programStageName()) doReturn Flowable.just(stage.uid())
         whenever(eventRepository.orgUnit()) doReturn Flowable.just(orgUnit)

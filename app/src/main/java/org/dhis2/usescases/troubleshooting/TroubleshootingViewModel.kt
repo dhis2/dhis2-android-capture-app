@@ -25,33 +25,34 @@ class TroubleshootingViewModel(
     private val _localesToDisplay = MutableLiveData<List<Locale>>()
     val localesToDisplay: LiveData<List<Locale>> = _localesToDisplay
 
-    private val supportedLocales = listOf(
-        Locale("en"),
-        Locale("ar"),
-        Locale("bn"),
-        Locale("ckb"),
-        Locale("cs"),
-        Locale("es"),
-        Locale("fr"),
-        Locale("id"),
-        Locale("km"),
-        Locale("lo"),
-        Locale("nb"),
-        Locale("prs"),
-        Locale("ps"),
-        Locale("pt"),
-        Locale("pt", "BR"),
-        Locale("ru"),
-        Locale("sv"),
-        Locale("tet"),
-        Locale("tg"),
-        Locale("uk"),
-        Locale("ur"),
-        Locale("uz"),
-        Locale("vi"),
-        Locale("zh"),
-        Locale("zh", "rCN"),
-    )
+    private val supportedLocales =
+        listOf(
+            Locale("en"),
+            Locale("ar"),
+            Locale("bn"),
+            Locale("ckb"),
+            Locale("cs"),
+            Locale("es"),
+            Locale("fr"),
+            Locale("id"),
+            Locale("km"),
+            Locale("lo"),
+            Locale("nb"),
+            Locale("prs"),
+            Locale("ps"),
+            Locale("pt"),
+            Locale("pt", "BR"),
+            Locale("ru"),
+            Locale("sv"),
+            Locale("tet"),
+            Locale("tg"),
+            Locale("uk"),
+            Locale("ur"),
+            Locale("uz"),
+            Locale("vi"),
+            Locale("zh"),
+            Locale("zh", "rCN"),
+        )
 
     init {
         val initialLocale =
@@ -69,9 +70,10 @@ class TroubleshootingViewModel(
 
     fun fetchRuleValidations() {
         viewModelScope.launch {
-            val result = async(context = Dispatchers.IO) {
-                repository.validateProgramRules()
-            }
+            val result =
+                async(context = Dispatchers.IO) {
+                    repository.validateProgramRules()
+                }
             try {
                 _ruleValidations.postValue(result.await())
             } catch (e: Exception) {
@@ -81,10 +83,11 @@ class TroubleshootingViewModel(
     }
 
     fun onProgramSelected(selectedProgramUid: String) {
-        _visibleProgram.value = if (_visibleProgram.value == selectedProgramUid) {
-            null
-        } else {
-            selectedProgramUid
-        }
+        _visibleProgram.value =
+            if (_visibleProgram.value == selectedProgramUid) {
+                null
+            } else {
+                selectedProgramUid
+            }
     }
 }

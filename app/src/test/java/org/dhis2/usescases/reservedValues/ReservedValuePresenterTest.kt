@@ -24,7 +24,6 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class ReservedValuePresenterTest {
-
     private lateinit var reservedValuePresenter: ReservedValuePresenter
     private val repository: ReservedValueRepository = mock()
     private val dummyD2Progress = dummyD2Progress()
@@ -83,20 +82,27 @@ class ReservedValuePresenterTest {
         verify(view).onBackClick()
     }
 
-    private fun dummyD2Progress(): Observable<D2Progress> = Observable.just(
-        BaseD2Progress.builder().totalCalls(5).doneCalls(listOf("1"))
-            .isComplete(false).build(),
-    )
+    private fun dummyD2Progress(): Observable<D2Progress> =
+        Observable.just(
+            BaseD2Progress
+                .builder()
+                .totalCalls(5)
+                .doneCalls(listOf("1"))
+                .isComplete(false)
+                .build(),
+        )
 
-    private fun D2Error(): Observable<D2Progress> {
-        return Observable.error(
-            D2Error.builder().httpErrorCode(500)
+    private fun D2Error(): Observable<D2Progress> =
+        Observable.error(
+            D2Error
+                .builder()
+                .httpErrorCode(500)
                 .errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR)
                 .errorComponent(
                     D2ErrorComponent.Database,
-                ).errorDescription("buug").build(),
+                ).errorDescription("buug")
+                .build(),
         )
-    }
 
     private fun mockedReservedValues(): Single<List<ReservedValueModel>> {
         val reservedValue =

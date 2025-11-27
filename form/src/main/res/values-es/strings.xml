@@ -89,5 +89,4 @@
     <string name="no_options">No hay opciones disponibles</string>
     <string name="cat_combo">Cat Combo</string>
     <string name="storage_permission_denied">No se ha concedido el permiso de almacenamiento.\nDebes activarlo para usar esta función.</string>
-
-</resources>
+    </resources>

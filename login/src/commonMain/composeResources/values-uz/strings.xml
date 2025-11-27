@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_authentication_code">Аутентификация коди</string>
+    <string name="action_next">Кейинги</string>
+    <string name="two_fa_code">Аутентификация коди</string>
+    <string name="username_hint">Фойдаланувчи исми</string>
+    <string name="password_hint">Пароль</string>
+    <string name="logging_in">Кириш...</string>
+    <string name="action_log_in">Кириш</string>
+    <string name="openid_or">Ёки</string>
+    <string name="action_no_now">Hozir emas</string>
+    <string name="action_yes">Ҳа</string>
+    <string name="enter_pin_button">Қулфни очиш</string>
+    </resources>

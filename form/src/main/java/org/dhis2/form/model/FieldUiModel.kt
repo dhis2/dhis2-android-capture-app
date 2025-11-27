@@ -1,14 +1,14 @@
 package org.dhis2.form.model
 
-import org.dhis2.commons.orgunitselector.OrgUnitSelectorScope
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.event.UiEventFactory
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SelectableDates
 
 interface FieldUiModel {
-
     val uid: String
 
     val value: String?
@@ -47,7 +47,9 @@ interface FieldUiModel {
 
     val renderingType: UiRenderType?
 
-    var optionSetConfiguration: OptionSetConfiguration?
+    val optionSetConfiguration: OptionSetConfiguration?
+
+    var customIntent: CustomIntentModel?
 
     val keyboardActionType: KeyboardActionType?
 
@@ -105,8 +107,11 @@ interface FieldUiModel {
 
     fun setKeyBoardActionDone(): FieldUiModel
 
+    fun setOptionSetConfiguration(optionSetConfiguration: OptionSetConfiguration): FieldUiModel
+
     interface Callback {
         fun intent(intent: FormIntent)
+
         fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents)
     }
 

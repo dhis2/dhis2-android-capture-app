@@ -31,17 +31,19 @@ fun SyncingIcon() {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        val radius = with(LocalDensity.current) {
-            2.dp.toPx()
-        }
+        val radius =
+            with(LocalDensity.current) {
+                2.dp.toPx()
+            }
 
         val transitionDataA = syncAnimation(radius, 0)
         val transitionDataB = syncAnimation(radius, 250)
         val transitionDataC = syncAnimation(radius, 500)
 
         Box(
-            modifier = Modifier
-                .size(4.dp),
+            modifier =
+                Modifier
+                    .size(4.dp),
         ) {
             Canvas(modifier = Modifier) {
                 drawCircle(
@@ -53,8 +55,9 @@ fun SyncingIcon() {
         }
 
         Box(
-            modifier = Modifier
-                .size(4.dp),
+            modifier =
+                Modifier
+                    .size(4.dp),
         ) {
             Canvas(modifier = Modifier) {
                 drawCircle(
@@ -66,8 +69,9 @@ fun SyncingIcon() {
         }
 
         Box(
-            modifier = Modifier
-                .size(4.dp),
+            modifier =
+                Modifier
+                    .size(4.dp),
         ) {
             Canvas(modifier = Modifier) {
                 drawCircle(
@@ -81,7 +85,10 @@ fun SyncingIcon() {
 }
 
 @Composable
-fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
+fun syncAnimation(
+    radius: Float,
+    delayMillis: Int,
+): TransitionData {
     val startColor = colorPrimary
     val endColor = startColor.copy(alpha = 0.3f)
 
@@ -89,23 +96,28 @@ fun syncAnimation(radius: Float, delayMillis: Int): TransitionData {
     val color by infiniteTransition.animateColor(
         initialValue = startColor,
         targetValue = endColor,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 250, delayMillis = 250),
-            repeatMode = RepeatMode.Reverse,
-            initialStartOffset = StartOffset(delayMillis),
-        ),
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(durationMillis = 250, delayMillis = 250),
+                repeatMode = RepeatMode.Reverse,
+                initialStartOffset = StartOffset(delayMillis),
+            ),
     )
 
     val positionY by infiniteTransition.animateFloat(
         initialValue = radius,
         targetValue = -2 * radius,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 250, delayMillis = 250),
-            repeatMode = RepeatMode.Reverse,
-            initialStartOffset = StartOffset(delayMillis),
-        ),
+        animationSpec =
+            infiniteRepeatable(
+                animation = tween(durationMillis = 250, delayMillis = 250),
+                repeatMode = RepeatMode.Reverse,
+                initialStartOffset = StartOffset(delayMillis),
+            ),
     )
     return TransitionData(color, positionY)
 }
 
-data class TransitionData(val color: Color, val positionY: Float)
+data class TransitionData(
+    val color: Color,
+    val positionY: Float,
+)

@@ -17,7 +17,6 @@ class ThemeManager(
     private val preferenceProvider: PreferenceProvider,
     private val colorUtils: ColorUtils,
 ) {
-
     fun setProgramTheme(programUid: String) {
         val programColor = getProgramColor(programUid)
         setThemeFromColor(programColor)
@@ -37,8 +36,7 @@ class ThemeManager(
         setThemeFromColor(teTypeColor)
     }
 
-    fun getTeTypeColor(teTypeUid: String) =
-        trackedEntityTypeConfiguration.getTrackedEntityTypeColor(teTypeUid)
+    fun getTeTypeColor(teTypeUid: String) = trackedEntityTypeConfiguration.getTrackedEntityTypeColor(teTypeUid)
 
     private fun setThemeFromColor(colorString: String?) {
         val theme = colorUtils.getThemeFromColor(colorString)
@@ -71,17 +69,17 @@ class ThemeManager(
         }
     }
 
-    private fun primaryColorForProgramTheme(programUid: String): Int? {
-        return programConfiguration.getProgramColor(programUid)?.let {
+    private fun primaryColorForProgramTheme(programUid: String): Int? =
+        programConfiguration.getProgramColor(programUid)?.let {
             colorUtils.parseColor(it)
         }
-    }
 
-    private fun primaryColorForAppTheme() = when (getAppTheme()) {
-        R.style.AppTheme -> R.color.colorPrimary
-        R.style.RedTheme -> R.color.colorPrimaryRed
-        R.style.OrangeTheme -> R.color.colorPrimaryOrange
-        R.style.GreenTheme -> R.color.colorPrimaryGreen
-        else -> R.color.colorPrimary
-    }
+    private fun primaryColorForAppTheme() =
+        when (getAppTheme()) {
+            R.style.AppTheme -> R.color.colorPrimary
+            R.style.RedTheme -> R.color.colorPrimaryRed
+            R.style.OrangeTheme -> R.color.colorPrimaryOrange
+            R.style.GreenTheme -> R.color.colorPrimaryGreen
+            else -> R.color.colorPrimary
+        }
 }

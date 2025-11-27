@@ -17,7 +17,11 @@ import androidx.compose.ui.unit.sp
 import org.dhis2.composetable.R
 
 @Composable
-fun TableActions(modifier: Modifier, title: String, actionIcons: @Composable () -> Unit) {
+fun TableActions(
+    modifier: Modifier,
+    title: String,
+    actionIcons: @Composable () -> Unit,
+) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.Absolute.spacedBy(8.dp),
@@ -31,12 +35,13 @@ fun TableActions(modifier: Modifier, title: String, actionIcons: @Composable () 
         Text(
             modifier = Modifier.weight(1f),
             text = title,
-            style = TextStyle(
-                color = Color.Black,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Normal,
-                lineHeight = 10.sp,
-            ),
+            style =
+                TextStyle(
+                    color = Color.Black,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    lineHeight = 10.sp,
+                ),
         )
         actionIcons()
     }

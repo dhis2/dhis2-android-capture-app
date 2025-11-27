@@ -14,6 +14,8 @@ import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.matomo.Labels
 import org.dhis2.commons.matomo.MatomoAnalyticsController
+import org.dhis2.commons.prefs.Preference.Companion.CURRENT_ORG_UNIT
+import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.schedulers.SingleEventEnforcer
 import org.dhis2.commons.schedulers.get
@@ -31,6 +33,7 @@ class ProgramEventDetailPresenter(
     private val filterRepository: FilterRepository,
     private val disableHomFilters: DisableHomeFiltersFromSettingsApp,
     private val matomoAnalyticsController: MatomoAnalyticsController,
+    private val preferences: PreferenceProvider,
 ) {
     val compositeDisposable: CompositeDisposable = CompositeDisposable()
     val program: Program?
@@ -41,12 +44,13 @@ class ProgramEventDetailPresenter(
         get() = eventRepository.programStage().blockingGet()?.uid()
 
     private val singleEventEnforcer = SingleEventEnforcer.get()
+
     fun init() {
         compositeDisposable.add(
-            Observable.fromCallable {
-                program?.uid()?.let { filterRepository.programFilters(it) } ?: emptyList()
-            }
-                .subscribeOn(schedulerProvider.io())
+            Observable
+                .fromCallable {
+                    program?.uid()?.let { filterRepository.programFilters(it) } ?: emptyList()
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
                     { filters ->
@@ -60,7 +64,9 @@ class ProgramEventDetailPresenter(
                 ),
         )
         compositeDisposable.add(
-            FilterManager.getInstance().catComboRequest
+            FilterManager
+                .getInstance()
+                .catComboRequest
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -69,7 +75,8 @@ class ProgramEventDetailPresenter(
                 ),
         )
         compositeDisposable.add(
-            Single.just(eventRepository.getAccessDataWrite())
+            Single
+                .just(eventRepository.getAccessDataWrite())
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -78,7 +85,8 @@ class ProgramEventDetailPresenter(
                 ),
         )
         compositeDisposable.add(
-            eventRepository.program()
+            eventRepository
+                .program()
                 .observeOn(schedulerProvider.ui())
                 .subscribeOn(schedulerProvider.io())
                 .subscribe(
@@ -87,7 +95,8 @@ class ProgramEventDetailPresenter(
                 ),
         )
         compositeDisposable.add(
-            filterManager.ouTreeFlowable()
+            filterManager
+                .ouTreeFlowable()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -96,7 +105,9 @@ class ProgramEventDetailPresenter(
                 ),
         )
         compositeDisposable.add(
-            filterManager.asFlowable().onBackpressureLatest()
+            filterManager
+                .asFlowable()
+                .onBackpressureLatest()
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(
@@ -125,7 +136,13 @@ class ProgramEventDetailPresenter(
     }
 
     fun addEvent() {
-        singleEventEnforcer.processEvent { view.selectOrgUnitForNewEvent() }
+        singleEventEnforcer.processEvent {
+            view.selectOrgUnitForNewEvent(
+                preferences.getString(CURRENT_ORG_UNIT, null)?.let {
+                    listOf(it)
+                } ?: emptyList(),
+            )
+        }
     }
 
     fun onBackClick() {
@@ -149,18 +166,20 @@ class ProgramEventDetailPresenter(
     }
 
     fun filterCatOptCombo(selectedCatOptionCombo: String) {
-        FilterManager.getInstance()
+        FilterManager
+            .getInstance()
             .addCatOptCombo(eventRepository.getCatOptCombo(selectedCatOptionCombo))
     }
 
-    fun workingLists(): List<WorkingListItem> {
-        return eventRepository.workingLists().toFlowable()
+    fun workingLists(): List<WorkingListItem> =
+        eventRepository
+            .workingLists()
+            .toFlowable()
             .flatMapIterable { data -> data }
             .map { eventFilter ->
                 workingListMapper.map(eventFilter)
-            }
-            .toList().blockingGet()
-    }
+            }.toList()
+            .blockingGet()
 
     fun clearOtherFiltersIfWebAppIsConfig() {
         val filters = filterRepository.homeFilters()

@@ -29,7 +29,6 @@ import org.dhis2.mobile.commons.coroutine.AndroidIdlingResource
 import org.dhis2.mobile.commons.coroutine.IdlingResourceProvider
 import org.dhis2.mobile.commons.coroutine.NoOpIdlingResource
 import org.dhis2.usescases.eventsWithoutRegistration.EventIdlingResourceSingleton
-import org.dhis2.usescases.login.LoginIdlingResource
 import org.dhis2.usescases.notes.NotesIdlingResource
 import org.dhis2.usescases.programEventDetail.eventList.EventListIdlingResourceSingleton
 import org.dhis2.usescases.teiDashboard.dashboardfragments.teidata.TeiDataIdlingResourceSingleton
@@ -53,6 +52,7 @@ open class BaseTest {
     lateinit var preferencesRobot: PreferencesRobot
     lateinit var mockWebServerRobot: MockWebServerRobot
     lateinit var featureConfigRobot: FeatureConfigRobot
+    var restoreDataBaseOnBeforeAction = true
 
 
     protected open fun getPermissionsToBeAccepted() = arrayOf<String>()
@@ -64,7 +64,7 @@ open class BaseTest {
     var testName: TestName = TestName()
 
     @get:Rule
-    var permissionRule = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.R) {
+    var permissionRule = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         GrantPermissionRule.grant(
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.CAMERA,
@@ -83,7 +83,9 @@ open class BaseTest {
     open fun setUp() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing Before Actions for $currentTest")
-        (context.applicationContext as AppTest).restoreDB()
+        if(restoreDataBaseOnBeforeAction){
+            (context.applicationContext as AppTest).restoreDB()
+        }
         injectDependencies()
         registerCountingIdlingResource()
         setupCredentials()
@@ -94,13 +96,13 @@ open class BaseTest {
     open fun teardown() {
         val currentTest = testName.methodName
         Timber.tag("RUNNER_LOG").d("Executing After Actions for $currentTest")
+        unregisterCountingIdlingResource()
         closeKeyboard()
         disableIntents()
         cleanPreferences()
         cleanLocalDatabase()
         cleanKeystore()
         stopMockServer()
-        unregisterCountingIdlingResource()
     }
 
     private fun injectDependencies() {
@@ -120,7 +122,6 @@ open class BaseTest {
         OnMapReadyIdlingResourceSingleton.countingIdlingResource,
         AnalyticsCountingIdlingResource.countingIdlingResource,
         NotesIdlingResource.countingIdlingResource,
-        LoginIdlingResource.countingIdlingResource,
         OrgUnitIdlingResource.countingIdlingResource,
         AndroidIdlingResource.getIdlingResource(),
     )
@@ -171,18 +172,24 @@ open class BaseTest {
     }
 
     private fun cleanPreferences() {
-        preferencesRobot.cleanPreferences()
+        if(::preferencesRobot.isInitialized){
+            preferencesRobot.cleanPreferences()
+        }
     }
 
     private fun cleanKeystore() {
-        keyStoreRobot.apply {
-            removeData(KEYSTORE_USERNAME)
-            removeData(KEYSTORE_PASSWORD)
+        if(::keyStoreRobot.isInitialized) {
+            keyStoreRobot.apply {
+                removeData(KEYSTORE_USERNAME)
+                removeData(KEYSTORE_PASSWORD)
+            }
         }
     }
 
     private fun stopMockServer() {
-        mockWebServerRobot.shutdown()
+        if(::mockWebServerRobot.isInitialized) {
+            mockWebServerRobot.shutdown()
+        }
     }
 
     fun cleanLocalDatabase() {

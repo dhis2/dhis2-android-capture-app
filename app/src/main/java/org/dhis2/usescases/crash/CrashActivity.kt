@@ -2,7 +2,6 @@ package org.dhis2.usescases.crash
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -26,8 +25,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,8 +67,11 @@ class CrashActivity : AppCompatActivity() {
                             goBack()
                         }
                     },
-                ) {
+                ) { paddingValues ->
                     CrashScreen(
+                        modifier =
+                            Modifier
+                                .padding(paddingValues),
                         crashReport = loadCrashReport(),
                         onCopy = { copyTextToClipboard(it) },
                     )
@@ -78,29 +80,32 @@ class CrashActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadCrashReport() = CrashReport(
-        buildVersion = BuildConfig.VERSION_NAME,
-        buildDate = BuildConfig.BUILD_DATE,
-        currentDate = SimpleDateFormat(
-            "yyyy-MM-dd HH:mm",
-            Locale.getDefault(),
-        ).format(Date()),
-        device = "%s %s".format(Build.MANUFACTURER, Build.MODEL),
-        osVersion = Build.VERSION.RELEASE,
-        stackTrace = CustomActivityOnCrash.getStackTraceFromIntent(intent) ?: "-",
-    )
+    private fun loadCrashReport() =
+        CrashReport(
+            buildVersion = BuildConfig.VERSION_NAME,
+            buildDate = BuildConfig.BUILD_DATE,
+            currentDate =
+                SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm",
+                    Locale.getDefault(),
+                ).format(Date()),
+            device = "%s %s".format(Build.MANUFACTURER, Build.MODEL),
+            osVersion = Build.VERSION.RELEASE,
+            stackTrace = CustomActivityOnCrash.getStackTraceFromIntent(intent) ?: "-",
+        )
 
     private fun copyTextToClipboard(textToCopy: String) {
         val clipboard =
-            getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
         if (textToCopy.isNotEmpty()) {
             val clip = ClipData.newPlainText("copy", textToCopy)
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(
-                this,
-                getString(R.string.copied_text),
-                Toast.LENGTH_SHORT,
-            ).show()
+            Toast
+                .makeText(
+                    this,
+                    getString(R.string.copied_text),
+                    Toast.LENGTH_SHORT,
+                ).show()
         }
     }
 
@@ -121,8 +126,12 @@ data class CrashReport(
 )
 
 @Composable
-fun CrashScreen(crashReport: CrashReport, onCopy: (textToCopy: String) -> Unit) {
-    Column(modifier = Modifier.fillMaxHeight()) {
+fun CrashScreen(
+    modifier: Modifier = Modifier,
+    crashReport: CrashReport,
+    onCopy: (textToCopy: String) -> Unit,
+) {
+    Column(modifier = modifier.fillMaxHeight()) {
         CrashHeader()
         CrashDeviceInfo(crashReport)
         CrashStackTraceInfo(crashReport.stackTrace) {
@@ -134,9 +143,10 @@ fun CrashScreen(crashReport: CrashReport, onCopy: (textToCopy: String) -> Unit) 
 @Composable
 fun CrashHeader() {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(
@@ -147,9 +157,10 @@ fun CrashHeader() {
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(
-                id = R.string.customactivityoncrash_error_activity_error_occurred_explanation,
-            ),
+            text =
+                stringResource(
+                    id = R.string.customactivityoncrash_error_activity_error_occurred_explanation,
+                ),
             color = colorResource(id = R.color.textPrimary),
         )
     }
@@ -158,56 +169,66 @@ fun CrashHeader() {
 @Composable
 fun CrashDeviceInfo(crashReport: CrashReport) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Text(
             fontSize = 14.sp,
-            text = stringResource(R.string.customactivityoncrash_error_activity_build_version)
-                .format(crashReport.buildVersion),
+            text =
+                stringResource(R.string.customactivityoncrash_error_activity_build_version)
+                    .format(crashReport.buildVersion),
         )
         Text(
             fontSize = 14.sp,
-            text = stringResource(R.string.customactivityoncrash_error_activity_buid_date)
-                .format(crashReport.buildDate),
+            text =
+                stringResource(R.string.customactivityoncrash_error_activity_buid_date)
+                    .format(crashReport.buildDate),
         )
         Text(
             fontSize = 14.sp,
-            text = stringResource(R.string.customactivityoncrash_error_activity_current_date)
-                .format(crashReport.currentDate),
+            text =
+                stringResource(R.string.customactivityoncrash_error_activity_current_date)
+                    .format(crashReport.currentDate),
         )
         Text(
             fontSize = 14.sp,
-            text = stringResource(R.string.customactivityoncrash_error_activity_device)
-                .format(crashReport.device),
+            text =
+                stringResource(R.string.customactivityoncrash_error_activity_device)
+                    .format(crashReport.device),
         )
         Text(
             fontSize = 14.sp,
-            text = stringResource(R.string.customactivityoncrash_error_activity_os_version)
-                .format(crashReport.osVersion),
+            text =
+                stringResource(R.string.customactivityoncrash_error_activity_os_version)
+                    .format(crashReport.osVersion),
         )
     }
 }
 
 @Composable
-fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit) {
+fun CrashStackTraceInfo(
+    stackTrace: String,
+    onCopy: (textToCopy: String) -> Unit,
+) {
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = spacedBy(8.dp),
-
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
-                .padding(8.dp)
-                .verticalScroll(state = scrollState),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    .padding(8.dp)
+                    .verticalScroll(state = scrollState),
         ) {
             Text(
                 modifier = Modifier.fillMaxSize(),
@@ -226,14 +247,16 @@ fun CrashStackTraceInfo(stackTrace: String, onCopy: (textToCopy: String) -> Unit
 @Composable
 fun CrashGoBackButton(onGoBack: () -> Unit) {
     Row(
-        modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier =
+            Modifier
+                .padding(horizontal = 16.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.Center,
     ) {
         Button(
-            text = stringResource(
-                id = R.string.customactivityoncrash_error_activity_restart_app,
-            ),
+            text =
+                stringResource(
+                    id = R.string.customactivityoncrash_error_activity_restart_app,
+                ),
             onClick = { onGoBack() },
             colorStyle = ColorStyle.DEFAULT,
             style = ButtonStyle.FILLED,
@@ -245,13 +268,14 @@ fun CrashGoBackButton(onGoBack: () -> Unit) {
 @Composable
 fun ScreenPreview() {
     CrashScreen(
-        crashReport = CrashReport(
-            buildVersion = BuildConfig.VERSION_NAME,
-            buildDate = "2020-01-01",
-            currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date()),
-            device = "%s %s".format(Build.MANUFACTURER, Build.MODEL),
-            osVersion = Build.VERSION.RELEASE,
-            stackTrace = "Error, Error,Error,\n Error, Error, Error,\nError, Error",
-        ),
+        crashReport =
+            CrashReport(
+                buildVersion = BuildConfig.VERSION_NAME,
+                buildDate = "2020-01-01",
+                currentDate = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date()),
+                device = "%s %s".format(Build.MANUFACTURER, Build.MODEL),
+                osVersion = Build.VERSION.RELEASE,
+                stackTrace = "Error, Error,Error,\n Error, Error, Error,\nError, Error",
+            ),
     ) {}
 }

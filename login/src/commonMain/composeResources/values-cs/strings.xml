@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">Dvoufaktorové ověřování</string>
+    <string name="two_fa_authentication_code">Ověřovací kód</string>
+    <string name="action_next">Další</string>
+    <string name="two_fa_is_on">Je zapnuté dvoufaktorové ověřování.</string>
+    <string name="two_fa_code">Ověřovací kód</string>
+    <string name="biometrics_login_title">Rychlé přihlášení</string>
+    <string name="biometrics_login_text">Chcete se přihlásit pomocí otisku prstu nebo jiné biometrické metody?</string>
+    <string name="username_hint">Uživatelské jméno</string>
+    <string name="password_hint">Heslo</string>
+    <string name="logging_in">Přihlášování...</string>
+    <string name="action_log_in">Přihlášení</string>
+    <string name="openid_or">Nebo</string>
+    <string name="tracking_title">Chcete nám pomoci vylepšit tuto aplikaci?</string>
+    <string name="privacy_policy">Zásady ochrany osobních údajů</string>
+    <string name="action_no_now">Teď ne</string>
+    <string name="action_yes">Ano</string>
+    <string name="enter_pin_button">Odemknout</string>
+    <string name="importing_successful">Import byl úspěšný</string>
+    </resources>

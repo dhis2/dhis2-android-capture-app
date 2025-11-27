@@ -89,5 +89,4 @@
     <string name="no_options">无可用选项</string>
     <string name="cat_combo">分类选择框</string>
     <string name="storage_permission_denied">没有授予存储权限。\n 您需要启用它才能使用此功能。</string>
-
-</resources>
+    </resources>

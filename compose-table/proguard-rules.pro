@@ -14,8 +14,19 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+
+# Keep KeyboardInputType and its nested classes
+-keep class org.dhis2.composetable.model.KeyboardInputType { *; }
+-keep class org.dhis2.composetable.model.KeyboardInputType$* { *; }
+
+# Keep ValidationResult and its nested classes
+-keep class org.dhis2.composetable.model.ValidationResult { *; }
+-keep class org.dhis2.composetable.model.ValidationResult$* { *; }
+
+-dontwarn java.lang.invoke.StringConcatFactory

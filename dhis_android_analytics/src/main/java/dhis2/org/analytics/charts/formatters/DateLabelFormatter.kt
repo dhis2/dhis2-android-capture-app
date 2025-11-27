@@ -17,10 +17,13 @@ class DateLabelFormatter(
     val dateFromValue: (Long) -> Date?,
     val localDateFromValue: ((Long) -> LocalDate)? = null,
 ) : ValueFormatter() {
-
     private val monthFormat = SimpleDateFormat("MMM yyyy", Locale.getDefault())
     private var prevCalendar: Calendar? = null
-    override fun getAxisLabel(value: Float, axis: AxisBase?): String {
+
+    override fun getAxisLabel(
+        value: Float,
+        axis: AxisBase?,
+    ): String {
         return localDateFromValue?.invoke(value.toLong())?.format(
             DateTimeFormatter.ofPattern("dd MMM yyyy"),
         )

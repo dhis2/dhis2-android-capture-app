@@ -5,12 +5,13 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 
 class BoundGeometryTest {
-
     private lateinit var boundsGeometry: org.dhis2.maps.geometry.bound.BoundsGeometry
 
     @Test
     fun `Should init or reset`() {
-        boundsGeometry = org.dhis2.maps.geometry.bound.BoundsGeometry()
+        boundsGeometry =
+            org.dhis2.maps.geometry.bound
+                .BoundsGeometry()
 
         boundsGeometry.initOrReset()
         assertThat(boundsGeometry.eastBound, `is`(0.0))
@@ -23,7 +24,9 @@ class BoundGeometryTest {
     fun `Should update first time`() {
         val latitude = 40.979898
         val longitude = -4.155605
-        boundsGeometry = org.dhis2.maps.geometry.bound.BoundsGeometry()
+        boundsGeometry =
+            org.dhis2.maps.geometry.bound
+                .BoundsGeometry()
 
         boundsGeometry.update(latitude, longitude)
 
@@ -41,12 +44,13 @@ class BoundGeometryTest {
         val newLatitude = 39.979898
         val newLongitude = -3.155605
 
-        boundsGeometry = org.dhis2.maps.geometry.bound.BoundsGeometry(
-            latitude,
-            latitude,
-            longitude,
-            longitude,
-        )
+        boundsGeometry =
+            org.dhis2.maps.geometry.bound.BoundsGeometry(
+                latitude,
+                latitude,
+                longitude,
+                longitude,
+            )
         boundsGeometry.update(newLatitude, newLongitude)
 
         assertThat(boundsGeometry.northBound, `is`(latitude))

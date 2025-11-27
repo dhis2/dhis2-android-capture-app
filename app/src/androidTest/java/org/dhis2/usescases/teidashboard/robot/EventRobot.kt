@@ -56,8 +56,10 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SECONDARY_BUTTON_TAG).assertDoesNotExist()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnReopen() {
-        composeTestRule.onNodeWithTag("REOPEN_BUTTON").performClick()
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("REOPEN_BUTTON"))
+        composeTestRule.onNodeWithTag("REOPEN_BUTTON", useUnmergedTree = true).performClick()
     }
 
     fun acceptUpdateEventDate() {

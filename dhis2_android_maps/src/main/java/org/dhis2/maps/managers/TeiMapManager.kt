@@ -10,14 +10,6 @@ import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.target.CustomTarget
-import com.mapbox.geojson.BoundingBox
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.engine.LocationEngine
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.utils.BitmapUtils
 import org.dhis2.commons.bindings.dp
 import org.dhis2.maps.R
 import org.dhis2.maps.TeiMarkers
@@ -31,12 +23,19 @@ import org.dhis2.maps.layer.LayerType
 import org.dhis2.maps.layer.MapLayerManager
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.location.engine.LocationEngine
+import org.maplibre.android.maps.MapView
+import org.maplibre.android.style.sources.GeoJsonSource
+import org.maplibre.android.utils.BitmapUtils
+import org.maplibre.geojson.BoundingBox
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 
 class TeiMapManager(
     mapView: MapView,
     locationEngine: LocationEngine,
 ) : MapManager(mapView, locationEngine) {
-
     private var fieldFeatureCollections: Map<String, FeatureCollection> = emptyMap()
     private var teiFeatureCollections: HashMap<String, FeatureCollection>? = null
     private var eventsFeatureCollection: Map<String, FeatureCollection>? = null
@@ -137,7 +136,9 @@ class TeiMapManager(
         )
 
         mapView.addOnStyleImageMissingListener { id ->
-            teiFeatureCollections?.get(TEIS_SOURCE_ID)?.features()
+            teiFeatureCollections
+                ?.get(TEIS_SOURCE_ID)
+                ?.features()
                 ?.firstOrNull { id == it.getStringProperty(TEI_UID) }
                 ?.let {
                     teiImages[id]?.let { it1 -> style?.addImage(id, it1) }
@@ -186,8 +187,10 @@ class TeiMapManager(
     }
 
     private fun setTeiImages(featureCollection: FeatureCollection) {
-        val featuresWithImages = featureCollection.features()
-            ?.filter { it.getStringProperty(TEI_IMAGE)?.isNotEmpty() ?: false }
+        val featuresWithImages =
+            featureCollection
+                .features()
+                ?.filter { it.getStringProperty(TEI_IMAGE)?.isNotEmpty() ?: false }
 
         featuresWithImages?.run {
             when {
@@ -200,35 +203,40 @@ class TeiMapManager(
     private fun getImagesAndSetSource(featuresWithImages: List<Feature>) {
         featuresWithImages.forEachIndexed { index, feature ->
             val imageText = feature.getStringProperty(TEI_IMAGE)
-            val image = if (imageText?.startsWith("dhis2_") == true || imageText?.equals("ic_default_icon") == true) {
-                mapView.context.resources.getIdentifier(
-                    imageText,
-                    "drawable",
-                    mapView.context.packageName,
-                )
-            } else {
-                -1
-            }
-            Glide.with(mapView.context)
+            val image =
+                if (imageText?.startsWith("dhis2_") == true || imageText?.equals("ic_default_icon") == true) {
+                    mapView.context.resources.getIdentifier(
+                        imageText,
+                        "drawable",
+                        mapView.context.packageName,
+                    )
+                } else {
+                    -1
+                }
+            Glide
+                .with(mapView.context)
                 .asBitmap()
                 .load(if (image != -1) image else feature.getStringProperty(TEI_IMAGE))
                 .transform(CircleCrop())
-                .into(object : CustomTarget<Bitmap>(30.dp, 30.dp) {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?,
-                    ) {
-                        teiImages[feature.getStringProperty(TEI_UID)] = TeiMarkers.getMarker(
-                            mapView.context,
-                            resource,
-                        )
-                        if (index == featuresWithImages.size - 1) {
-                            setSource()
+                .into(
+                    object : CustomTarget<Bitmap>(30.dp, 30.dp) {
+                        override fun onResourceReady(
+                            resource: Bitmap,
+                            transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?,
+                        ) {
+                            teiImages[feature.getStringProperty(TEI_UID)] =
+                                TeiMarkers.getMarker(
+                                    mapView.context,
+                                    resource,
+                                )
+                            if (index == featuresWithImages.size - 1) {
+                                setSource()
+                            }
                         }
-                    }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {}
-                })
+                        override fun onLoadCleared(placeholder: Drawable?) {}
+                    },
+                )
         }
     }
 
@@ -236,10 +244,13 @@ class TeiMapManager(
         mapLayerManager
             .updateLayers(
                 LayerType.RELATIONSHIP_LAYER,
-                teiFeatureCollections?.keys?.filter {
-                    it != TEIS_SOURCE_ID && it != ENROLLMENT_SOURCE_ID &&
-                        !eventsFeatureCollection?.containsKey(it)!!
-                }?.toList() ?: emptyList(),
+                teiFeatureCollections
+                    ?.keys
+                    ?.filter {
+                        it != TEIS_SOURCE_ID &&
+                            it != ENROLLMENT_SOURCE_ID &&
+                            !eventsFeatureCollection?.containsKey(it)!!
+                    }?.toList() ?: emptyList(),
             ).updateLayers(
                 LayerType.TEI_EVENT_LAYER,
                 eventsFeatureCollection?.keys?.toList() ?: emptyList(),
@@ -256,27 +267,33 @@ class TeiMapManager(
                 getTintedDrawable(it.key),
             )
         }
-        teiFeatureCollections?.entries?.filter {
-            it.key != TEIS_SOURCE_ID && it.key != ENROLLMENT_SOURCE_ID &&
-                !eventsFeatureCollection?.containsKey(it.key)!!
-        }?.forEach {
-            style?.addImage(
-                "${RelationshipMapManager.RELATIONSHIP_ICON}_${it.key}",
-                getTintedDrawable(it.key),
-            )
-        }
+        teiFeatureCollections
+            ?.entries
+            ?.filter {
+                it.key != TEIS_SOURCE_ID &&
+                    it.key != ENROLLMENT_SOURCE_ID &&
+                    !eventsFeatureCollection?.containsKey(it.key)!!
+            }?.forEach {
+                style?.addImage(
+                    "${RelationshipMapManager.RELATIONSHIP_ICON}_${it.key}",
+                    getTintedDrawable(it.key),
+                )
+            }
     }
 
     private fun getTintedDrawable(sourceId: String): Drawable {
-        val (drawable, color) = mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
-            R.drawable.map_marker,
-            Color.parseColor("#E71409"),
-        )
+        val (drawable, color) =
+            mapLayerManager.getNextAvailableDrawable(sourceId) ?: Pair(
+                R.drawable.map_marker,
+                Color.parseColor("#E71409"),
+            )
 
-        val initialDrawable = AppCompatResources.getDrawable(
-            mapView.context,
-            drawable,
-        )?.mutate()
+        val initialDrawable =
+            AppCompatResources
+                .getDrawable(
+                    mapView.context,
+                    drawable,
+                )?.mutate()
         val wrappedDrawable = DrawableCompat.wrap(initialDrawable!!)
         DrawableCompat.setTint(wrappedDrawable, color)
 
@@ -287,25 +304,26 @@ class TeiMapManager(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): Feature? {
-        return teiFeatureCollections?.get(source)?.features()?.firstOrNull {
+    ): Feature? =
+        teiFeatureCollections?.get(source)?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
         } ?: fieldFeatureCollections[source]?.features()?.firstOrNull {
             it.getStringProperty(propertyName) == propertyValue
         }
-    }
 
     override fun findFeature(propertyValue: String): Feature? {
-        val mainProperties = arrayListOf(
-            TEI_UID,
-            RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT,
-        )
+        val mainProperties =
+            arrayListOf(
+                TEI_UID,
+                RELATIONSHIP_UID,
+                MapEventToFeatureCollection.EVENT,
+            )
         var featureToReturn: Feature? = null
         mainLoop@ for (
-        source in teiFeatureCollections?.filterKeys {
-            it != ENROLLMENT_SOURCE_ID
-        }?.keys!!
+        source in teiFeatureCollections
+            ?.filterKeys {
+                it != ENROLLMENT_SOURCE_ID
+            }?.keys!!
         ) {
             sourceLoop@ for (propertyLabel in mainProperties) {
                 val feature = findFeature(source, propertyLabel, propertyValue)
@@ -339,66 +357,79 @@ class TeiMapManager(
         source: String,
         propertyName: String,
         propertyValue: String,
-    ): List<Feature> {
-        return mutableListOf<Feature>().apply {
-            teiFeatureCollections?.filterKeys { it != ENROLLMENT_SOURCE_ID }
+    ): List<Feature> =
+        mutableListOf<Feature>().apply {
+            teiFeatureCollections
+                ?.filterKeys { it != ENROLLMENT_SOURCE_ID }
                 ?.map { (key, collection) ->
-                    collection.features()?.filter {
-                        mapLayerManager.getLayer(key)?.visible == true &&
-                            it.getStringProperty(propertyName) == propertyValue
-                    }?.map {
-                        mapLayerManager.getLayer(key)?.setSelectedItem(it)
-                        it
-                    }?.let {
-                        mapLayerManager.getLayer(key)?.setSelectedItem(it)
-                        addAll(it)
-                    }
+                    collection
+                        .features()
+                        ?.filter {
+                            mapLayerManager.getLayer(key)?.visible == true &&
+                                it.getStringProperty(propertyName) == propertyValue
+                        }?.map {
+                            mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                            it
+                        }?.let {
+                            mapLayerManager.getLayer(key)?.setSelectedItem(it)
+                            addAll(it)
+                        }
                 }
 
-            teiFeatureCollections?.filterKeys {
-                it == ENROLLMENT_SOURCE_ID && mapLayerManager.getLayer(
-                    ENROLLMENT_SOURCE_ID,
-                )?.visible == true
-            }
-                ?.map { (_, collection) ->
-                    collection.features()?.filter {
-                        it.getStringProperty(propertyName) == propertyValue
-                    }?.map {
-                        mapLayerManager.getLayer(ENROLLMENT_SOURCE_ID)?.setSelectedItem(it)
-                        it
-                    }?.let { addAll(it) }
+            teiFeatureCollections
+                ?.filterKeys {
+                    it == ENROLLMENT_SOURCE_ID &&
+                        mapLayerManager
+                            .getLayer(
+                                ENROLLMENT_SOURCE_ID,
+                            )?.visible == true
+                }?.map { (_, collection) ->
+                    collection
+                        .features()
+                        ?.filter {
+                            it.getStringProperty(propertyName) == propertyValue
+                        }?.map {
+                            mapLayerManager.getLayer(ENROLLMENT_SOURCE_ID)?.setSelectedItem(it)
+                            it
+                        }?.let { addAll(it) }
                 }
 
             fieldFeatureCollections.values.map { collection ->
-                collection.features()?.filter {
-                    mapLayerManager.getLayer(
-                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME),
-                    )?.visible == true &&
-                        it.getStringProperty(propertyName) == propertyValue
-                }?.map {
-                    mapLayerManager.getLayer(
-                        it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME),
-                    )?.setSelectedItem(it)
-                    it
-                }?.let { addAll(it) }
+                collection
+                    .features()
+                    ?.filter {
+                        mapLayerManager
+                            .getLayer(
+                                it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME),
+                            )?.visible == true &&
+                            it.getStringProperty(propertyName) == propertyValue
+                    }?.map {
+                        mapLayerManager
+                            .getLayer(
+                                it.getStringProperty(MapCoordinateFieldToFeatureCollection.FIELD_NAME),
+                            )?.setSelectedItem(it)
+                        it
+                    }?.let { addAll(it) }
             }
         }
-    }
 
     override fun findFeatures(propertyValue: String): List<Feature> {
-        val mainProperties = arrayListOf(
-            TEI_UID,
-            RELATIONSHIP_UID,
-            MapEventToFeatureCollection.EVENT,
-        )
+        val mainProperties =
+            arrayListOf(
+                TEI_UID,
+                RELATIONSHIP_UID,
+                MapEventToFeatureCollection.EVENT,
+            )
 
-        return mainProperties.map { property ->
-            findFeatures("", property, propertyValue)
-        }.flatten().distinct()
+        return mainProperties
+            .map { property ->
+                findFeatures("", property, propertyValue)
+            }.flatten()
+            .distinct()
     }
 
-    override fun getLayerName(source: String): String {
-        return if (fieldFeatureCollections.containsKey(source)) {
+    override fun getLayerName(source: String): String =
+        if (fieldFeatureCollections.containsKey(source)) {
             fieldFeatureCollections[source]?.features()?.get(0)?.let {
                 if (it.hasProperty(MapCoordinateFieldToFeatureCollection.STAGE)) {
                     "${
@@ -417,9 +448,11 @@ class TeiMapManager(
         } else {
             super.getLayerName(source)
         }
-    }
 
-    override fun markFeatureAsSelected(point: LatLng, layer: String?): Feature? {
+    override fun markFeatureAsSelected(
+        point: LatLng,
+        layer: String?,
+    ): Feature? {
         val pointf: PointF = map?.projection?.toScreenLocation(point)!!
         val rectF = RectF(pointf.x - 10, pointf.y - 10, pointf.x + 10, pointf.y + 10)
 
@@ -436,15 +469,17 @@ class TeiMapManager(
                     mapLayerManager.selectFeature(null)
                 }
                 if (selectedFeature == null || source.contains(TEIS_SOURCE_ID)) {
-                    selectedFeature = when {
-                        layer.any { it.contains("RELATIONSHIP") } -> findFeature(
-                            source,
-                            RELATIONSHIP_UID,
-                            features.first().getStringProperty(RELATIONSHIP_UID),
-                        )
+                    selectedFeature =
+                        when {
+                            layer.any { it.contains("RELATIONSHIP") } ->
+                                findFeature(
+                                    source,
+                                    RELATIONSHIP_UID,
+                                    features.first().getStringProperty(RELATIONSHIP_UID),
+                                )
 
-                        else -> features.first()
-                    }
+                            else -> features.first()
+                        }
                 }
             }
         }

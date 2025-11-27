@@ -47,7 +47,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 .map(enrollment -> {
                     Program program = d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet();
                     OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).one().blockingGet();
-                    return EnrollmentViewModel.create(
+                    return new EnrollmentViewModel(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
                             metadataIconProvider.invoke(program.style()),
@@ -69,7 +69,7 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                 .map(enrollment -> {
                     Program program = d2.programModule().programs().byUid().eq(enrollment.program()).one().blockingGet();
                     OrganisationUnit orgUnit = d2.organisationUnitModule().organisationUnits().byUid().eq(enrollment.organisationUnit()).one().blockingGet();
-                    return EnrollmentViewModel.create(
+                    return new EnrollmentViewModel(
                             enrollment.uid(),
                             DateUtils.getInstance().formatDate(enrollment.enrollmentDate()),
                             metadataIconProvider.invoke(program.style()),
@@ -107,7 +107,6 @@ public class TeiProgramListRepositoryImpl implements TeiProgramListRepository {
                                 0,
                                 "",
                                 State.SYNCED,
-                                false,
                                 false,
                                 metadataIconProvider.invoke(program.style())
                         )

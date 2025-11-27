@@ -22,8 +22,6 @@ const val EVENT_TO_SHARE_UID = "y0xoVIzBpnL"
 const val TEI_EVENT_TO_DELETE_UID = "foc5zag6gbE"
 const val ENROLLMENT_EVENT_DELETE_UID = "SolDyMgW3oc"
 const val PROGRAM_STAGE_TO_SHARE = "EPEcjy3FWmI"
-const val TEI_TO_UPDATE_UID = "LxMVYhJm3Jp"
-const val ENROLLMENT_TO_UPDATE_UID = "awZ5RHoJin5"
 
 fun prepareEventDetailsIntentAndLaunchActivity(rule: LazyActivityScenarioRule<EventCaptureActivity>) {
     Intent(
@@ -37,17 +35,6 @@ fun prepareEventDetailsIntentAndLaunchActivity(rule: LazyActivityScenarioRule<Ev
     }.also { rule.launch(it) }
 }
 
-fun prepareEventToDeleteIntentAndLaunchActivity(ruleTeiDashboard: LazyActivityScenarioRule<TeiDashboardMobileActivity>) {
-    Intent(
-        ApplicationProvider.getApplicationContext(),
-        TeiDashboardMobileActivity::class.java,
-    ).apply {
-        putExtra(PROGRAM_UID, PROGRAM_TB_UID)
-        putExtra(TEI_UID, TEI_EVENT_TO_DELETE_UID)
-        putExtra(ENROLLMENT_UID, ENROLLMENT_EVENT_DELETE_UID)
-    }.also { ruleTeiDashboard.launch(it) }
-}
-
 fun prepareEventToShareIntentAndLaunchActivity(ruleEventDetail: LazyActivityScenarioRule<EventInitialActivity>) {
     Intent(
         ApplicationProvider.getApplicationContext(),
@@ -57,15 +44,4 @@ fun prepareEventToShareIntentAndLaunchActivity(ruleEventDetail: LazyActivityScen
         putExtra(EVENT_UID, EVENT_TO_SHARE_UID)
         putExtra(PROGRAM_STAGE_UID, PROGRAM_STAGE_TO_SHARE)
     }.also { ruleEventDetail.launch(it) }
-}
-
-fun prepareEventToUpdateIntentAndLaunchActivity(ruleTeiDashboard: LazyActivityScenarioRule<TeiDashboardMobileActivity>) {
-    Intent(
-        ApplicationProvider.getApplicationContext(),
-        TeiDashboardMobileActivity::class.java,
-    ).apply {
-        putExtra(PROGRAM_UID, PROGRAM_TB_UID)
-        putExtra(TEI_UID, TEI_TO_UPDATE_UID)
-        putExtra(ENROLLMENT_UID, ENROLLMENT_TO_UPDATE_UID)
-    }.also { ruleTeiDashboard.launch(it) }
 }

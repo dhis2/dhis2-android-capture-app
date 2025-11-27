@@ -10,17 +10,18 @@ fun imageCardDataWithUidAndLabel(
     imageCardData: ImageCardData,
     optionCode: String,
     label: String,
-): ImageCardData {
-    return when (imageCardData) {
+): ImageCardData =
+    when (imageCardData) {
         is ImageCardData.CustomIconData -> imageCardData.copy(uid = optionCode, label = label)
         is ImageCardData.IconCardData -> imageCardData.copy(uid = optionCode, label = label)
     }
-}
 
 @Composable
-fun rememberSelectedOption(fieldUiModel: FieldUiModel, inputCardDataList: List<ImageCardData>) =
-    remember(inputCardDataList, fieldUiModel.displayName) {
-        mutableStateOf(
-            inputCardDataList.find { it.uid == fieldUiModel.displayName || it.label == fieldUiModel.displayName },
-        )
-    }
+fun rememberSelectedOption(
+    fieldUiModel: FieldUiModel,
+    inputCardDataList: List<ImageCardData>,
+) = remember(inputCardDataList, fieldUiModel.displayName) {
+    mutableStateOf(
+        inputCardDataList.find { it.uid == fieldUiModel.displayName || it.label == fieldUiModel.displayName },
+    )
+}

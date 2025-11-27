@@ -83,7 +83,8 @@ public class EventInitialModule {
             Context context,
             D2 d2,
             ResourceManager resourceManager,
-            DhisPeriodUtils periodUtils
+            DhisPeriodUtils periodUtils,
+            PreferenceProvider preferenceProvider
     ) {
         return new FieldViewModelFactoryImpl(
                 new HintProviderImpl(context),
@@ -96,7 +97,7 @@ public class EventInitialModule {
                 new UiEventTypesProviderImpl(),
                 new KeyboardActionProviderImpl(),
                 new LegendValueProviderImpl(d2, resourceManager),
-                new AutoCompleteProviderImpl(new PreferenceProviderImpl(context))
+                new AutoCompleteProviderImpl(preferenceProvider)
         );
     }
 

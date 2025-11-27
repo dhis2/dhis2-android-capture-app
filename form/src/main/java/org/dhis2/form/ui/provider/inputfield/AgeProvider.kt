@@ -58,10 +58,11 @@ fun ProvideInputAge(
                         (inputType as AgeInputType.Age).unit,
                     )?.let {
                         (inputType as AgeInputType.Age).copy(
-                            value = TextFieldValue(
-                                it,
-                                TextRange(it.length),
-                            ),
+                            value =
+                                TextFieldValue(
+                                    it,
+                                    TextRange(it.length),
+                                ),
                         )
                     } ?: AgeInputType.None
                 }
@@ -70,10 +71,11 @@ fun ProvideInputAge(
                 if (!fieldUiModel.value.isNullOrEmpty()) {
                     formatStoredDateToUI(fieldUiModel.value!!).let {
                         (inputType as AgeInputType.DateOfBirth).copy(
-                            value = TextFieldValue(
-                                it,
-                                TextRange(it.length),
-                            ),
+                            value =
+                                TextFieldValue(
+                                    it,
+                                    TextRange(it.length),
+                                ),
                         )
                     }
                 }
@@ -87,23 +89,25 @@ fun ProvideInputAge(
     }
 
     InputAge(
-        state = rememberInputAgeState(
-            inputAgeData = InputAgeData(
-                title = fieldUiModel.label,
-                inputStyle = inputStyle,
-                isRequired = fieldUiModel.mandatory,
-                dateOfBirthLabel = resources.getString(R.string.date_birth),
-                orLabel = resources.getString(R.string.or),
-                ageLabel = resources.getString(R.string.age),
-                cancelText = resources.getString(R.string.cancel),
-                acceptText = resources.getString(R.string.ok),
-                selectableDates = fieldUiModel.selectableDates,
+        state =
+            rememberInputAgeState(
+                inputAgeData =
+                    InputAgeData(
+                        title = fieldUiModel.label,
+                        inputStyle = inputStyle,
+                        isRequired = fieldUiModel.mandatory,
+                        dateOfBirthLabel = resources.getString(R.string.date_birth),
+                        orLabel = resources.getString(R.string.or),
+                        ageLabel = resources.getString(R.string.age),
+                        cancelText = resources.getString(R.string.cancel),
+                        acceptText = resources.getString(R.string.ok),
+                        selectableDates = fieldUiModel.selectableDates,
+                    ),
+                inputType = inputType,
+                inputState = fieldUiModel.inputState(),
+                legendData = fieldUiModel.legend(),
+                supportingText = fieldUiModel.supportingText(),
             ),
-            inputType = inputType,
-            inputState = fieldUiModel.inputState(),
-            legendData = fieldUiModel.legend(),
-            supportingText = fieldUiModel.supportingText(),
-        ),
         onValueChanged = { ageInputType ->
             if (ageInputType != null) {
                 inputType = ageInputType
@@ -160,22 +164,24 @@ private fun saveValue(
     allowFutureDates: Boolean?,
 ) {
     when (value?.length) {
-        null, 10 -> intentHandler.invoke(
-            FormIntent.OnSave(
-                uid,
-                value,
-                valueType,
-                allowFutureDates = allowFutureDates,
-            ),
-        )
+        null, 10 ->
+            intentHandler.invoke(
+                FormIntent.OnSave(
+                    uid,
+                    value,
+                    valueType,
+                    allowFutureDates = allowFutureDates,
+                ),
+            )
 
-        else -> intentHandler.invoke(
-            FormIntent.OnTextChange(
-                uid,
-                value,
-                valueType,
-            ),
-        )
+        else ->
+            intentHandler.invoke(
+                FormIntent.OnTextChange(
+                    uid,
+                    value,
+                    valueType,
+                ),
+            )
     }
 }
 
@@ -219,8 +225,11 @@ private fun calculateDateFromAge(age: AgeInputType.Age): String? {
     }
 }
 
-private fun calculateAgeFromDate(dateString: String, timeUnit: TimeUnitValues): String? {
-    return try {
+private fun calculateAgeFromDate(
+    dateString: String,
+    timeUnit: TimeUnitValues,
+): String? =
+    try {
         val inputFormat = SimpleDateFormat(DB_FORMAT, Locale.getDefault())
 
         val birthDate = inputFormat.parse(dateString)
@@ -253,22 +262,24 @@ private fun calculateAgeFromDate(dateString: String, timeUnit: TimeUnitValues): 
     } catch (e: Exception) {
         null
     }
-}
 
-fun monthsBetween(startDate: Date?, endDate: Date?): Int {
+fun monthsBetween(
+    startDate: Date?,
+    endDate: Date?,
+): Int {
     require(!(startDate == null || endDate == null)) { "Both startDate and endDate must be provided" }
     val startCalendar = Calendar.getInstance()
     startCalendar.time = startDate
     val startDateTotalMonths = (
         12 * startCalendar[Calendar.YEAR] +
             startCalendar[Calendar.MONTH]
-        )
+    )
     val endCalendar = Calendar.getInstance()
     endCalendar.time = endDate
     val endDateTotalMonths = (
         12 * endCalendar[Calendar.YEAR] +
             endCalendar[Calendar.MONTH]
-        )
+    )
     return endDateTotalMonths - startDateTotalMonths
 }
 

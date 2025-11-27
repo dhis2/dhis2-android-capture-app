@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">ບໍ່ມີຄວາມສຳພັນ, ຄລິກ "+" ເພື່ອເພີ່ມໃໝ່</string>
+    <string name="relationship">ຄວາມສໍາພັນ</string>
+    <string name="no_data">ບໍ່ມີຂໍ້ມູນ</string>
+    <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
+    <string name="show_more">ສະແດງໃຫ້ເຫັນຫຼາຍຂຶ້ນ</string>
+    <string name="show_less">ສະແດງໃຫ້ເຫັນໜ້ອຍລົງ</string>
+    <string name="cancel">ຍົກເລີກ</string>
+    <string name="remove">ລົບອອກ</string>
+    <string name="search">ຄົ້ນຫາ</string>
+    <string name="optional">​ຢ່າງ​ຕ່ຳ ມີ​ ທັງ​ໝົດ 8 ຄຳ ໃນ​ນັ້ນ​ຕ້ອງ​ມີ​ໂຕ​ໃຫ​ຍ່ 1 ໂຕ ແລະ ໂຕ​ເລກ 1 ໂຕ</string>
+
+</resources>

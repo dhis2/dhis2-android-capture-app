@@ -5,4 +5,5 @@ data class MetadataSettingsViewModel(
     val lastMetadataSync: String,
     val hasErrors: Boolean,
     val canEdit: Boolean,
+    val syncInProgress: Boolean,
 )

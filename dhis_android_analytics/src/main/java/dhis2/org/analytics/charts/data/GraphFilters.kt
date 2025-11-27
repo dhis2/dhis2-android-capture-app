@@ -19,13 +19,12 @@ sealed class GraphFilters {
             return count
         }
 
-        override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean {
-            return if (orgUnitsSelected.isNotEmpty() || periodToDisplaySelected != null) {
+        override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean =
+            if (orgUnitsSelected.isNotEmpty() || periodToDisplaySelected != null) {
                 true
             } else {
                 dataIsNotEmpty
             }
-        }
     }
 
     data class LineListing(
@@ -33,19 +32,12 @@ sealed class GraphFilters {
         val orgUnitsSelected: Map<Int, List<String>> = emptyMap(),
         val periodToDisplaySelected: Map<Int, List<RelativePeriod>> = emptyMap(),
     ) : GraphFilters() {
+        fun columnsWithFilters() = (lineListFilters.keys + orgUnitsSelected.keys + periodToDisplaySelected.keys).distinct()
 
-        fun columnsWithFilters() =
-            (lineListFilters.keys + orgUnitsSelected.keys + periodToDisplaySelected.keys).distinct()
+        fun hasFilters() = lineListFilters.isNotEmpty() || orgUnitsSelected.isNotEmpty() || periodToDisplaySelected.isNotEmpty()
 
-        fun hasFilters() =
-            lineListFilters.isNotEmpty() || orgUnitsSelected.isNotEmpty() || periodToDisplaySelected.isNotEmpty()
+        override fun count(): Int = columnsWithFilters().size
 
-        override fun count(): Int {
-            return columnsWithFilters().size
-        }
-
-        override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean {
-            return dataIsNotEmpty
-        }
+        override fun canDisplayChart(dataIsNotEmpty: Boolean): Boolean = dataIsNotEmpty
     }
 }

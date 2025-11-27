@@ -69,9 +69,10 @@ fun DataSetTableScreen(
     onSaveValue: (TableCell) -> Unit,
     bottomContent: @Composable (() -> Unit)? = null,
 ) {
-    val bottomSheetState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed),
-    )
+    val bottomSheetState =
+        rememberBottomSheetScaffoldState(
+            bottomSheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed),
+        )
 
     var currentCell by remember { mutableStateOf<TableCell?>(null) }
     var updatingCell by remember { mutableStateOf<TableCell?>(null) }
@@ -92,6 +93,7 @@ fun DataSetTableScreen(
         focusManager.clearFocus(true)
         tableSelection = TableSelection.Unselected()
         onEdition(false)
+        currentCell = null
     }
 
     fun collapseBottomSheet(finish: Boolean = false) {
@@ -133,10 +135,12 @@ fun DataSetTableScreen(
             }
         }
     }
-    bottomSheetState.bottomSheetState.progress
     BackHandler(
         bottomSheetState.bottomSheetState.isExpanded &&
-            bottomSheetState.bottomSheetState.progress == 1f,
+            bottomSheetState.bottomSheetState.progress(
+                from = bottomSheetState.bottomSheetState.currentValue,
+                to = BottomSheetValue.Expanded,
+            ) == 1f,
     ) {
         collapseBottomSheet(finish = true)
     }
@@ -186,13 +190,19 @@ fun DataSetTableScreen(
                     } ?: collapseBottomSheet()
                 }
 
-                override fun onOptionSelected(cell: TableCell, code: String, label: String) {
-                    currentCell = cell.copy(
-                        value = label,
-                        error = null,
-                    ).also {
-                        onSaveValue(cell.copy(value = code))
-                    }
+                override fun onOptionSelected(
+                    cell: TableCell,
+                    code: String,
+                    label: String,
+                ) {
+                    currentCell =
+                        cell
+                            .copy(
+                                value = label,
+                                error = null,
+                            ).also {
+                                onSaveValue(cell.copy(value = code))
+                            }
                 }
             },
         )
@@ -207,10 +217,11 @@ fun DataSetTableScreen(
                     object : TextInputInteractions {
                         override fun onTextChanged(textInputModel: TextInputModel) {
                             currentInputType = textInputModel
-                            currentCell = currentCell?.copy(
-                                value = textInputModel.currentValue,
-                                error = null,
-                            )
+                            currentCell =
+                                currentCell?.copy(
+                                    value = textInputModel.currentValue,
+                                    error = null,
+                                )
                         }
 
                         override fun onSave() {
@@ -227,28 +238,30 @@ fun DataSetTableScreen(
                                 onSaveValue(tableCell)
                                 (tableSelection as? TableSelection.CellSelection)
                                     ?.let { cellSelected ->
-                                        val currentTable = tableScreenState.tables.first {
-                                            it.id == cellSelected.tableId
-                                        }
-                                        currentTable.getNextCell(
-                                            cellSelection = cellSelected,
-                                            successValidation = result is ValidationResult.Success,
-                                        )?.let { (tableCell, nextCell) ->
-                                            if (nextCell != cellSelected) {
-                                                updatingCell = currentCell
-                                                tableSelection = nextCell
-                                                onCellClick(
-                                                    tableSelection.tableId,
-                                                    tableCell,
-                                                ) { updateCellValue(it) }?.let { inputModel ->
-                                                    currentCell = tableCell
-                                                    currentInputType = inputModel
-                                                    focusRequester.requestFocus()
-                                                } ?: collapseBottomSheet()
-                                            } else {
-                                                updateError(tableCell)
+                                        val currentTable =
+                                            tableScreenState.tables.first {
+                                                it.id == cellSelected.tableId
                                             }
-                                        } ?: collapseBottomSheet(finish = true)
+                                        currentTable
+                                            .getNextCell(
+                                                cellSelection = cellSelected,
+                                                successValidation = result is ValidationResult.Success,
+                                            )?.let { (tableCell, nextCell) ->
+                                                if (nextCell != cellSelected) {
+                                                    updatingCell = currentCell
+                                                    tableSelection = nextCell
+                                                    onCellClick(
+                                                        tableSelection.tableId,
+                                                        tableCell,
+                                                    ) { updateCellValue(it) }?.let { inputModel ->
+                                                        currentCell = tableCell
+                                                        currentInputType = inputModel
+                                                        focusRequester.requestFocus()
+                                                    } ?: collapseBottomSheet()
+                                                } else {
+                                                    updateError(tableCell)
+                                                }
+                                            } ?: collapseBottomSheet(finish = true)
                                     }
                             }
                         }
@@ -262,10 +275,11 @@ fun DataSetTableScreen(
             )
         },
         sheetPeekHeight = 0.dp,
-        sheetShape = RoundedCornerShape(
-            topStart = 16.dp,
-            topEnd = 16.dp,
-        ),
+        sheetShape =
+            RoundedCornerShape(
+                topStart = 16.dp,
+                topEnd = 16.dp,
+            ),
     ) {
         AnimatedVisibility(
             visible = tableScreenState.state == TableState.LOADING,
@@ -273,10 +287,11 @@ fun DataSetTableScreen(
             exit = fadeOut(),
         ) {
             Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth()
-                    .background(Color.White),
+                modifier =
+                    Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth()
+                        .background(Color.White),
                 contentAlignment = Alignment.Center,
             ) {
                 ProgressIndicator(type = ProgressIndicatorType.CIRCULAR)
@@ -290,25 +305,28 @@ fun DataSetTableScreen(
         ) {
             if (tableScreenState.state == TableState.SUCCESS && tableScreenState.tables.isEmpty()) {
                 Column(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     InfoBar(
-                        infoBarData = InfoBarData(
-                            text = emptyTablesText ?: "",
-                            icon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.ErrorOutline,
-                                    contentDescription = "warning",
-                                    tint = AdditionalInfoItemColor.WARNING.color,
-                                )
-                            },
-                            color = AdditionalInfoItemColor.WARNING.color,
-                            backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                            actionText = null,
-                            onClick = {},
-                        ),
+                        infoBarData =
+                            InfoBarData(
+                                text = emptyTablesText ?: "",
+                                icon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ErrorOutline,
+                                        contentDescription = "warning",
+                                        tint = AdditionalInfoItemColor.WARNING.color,
+                                    )
+                                },
+                                color = AdditionalInfoItemColor.WARNING.color,
+                                backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
+                                actionText = null,
+                                onClick = {},
+                            ),
                         Modifier.testTag(EMPTY_TABLE_TEXT_TAG),
                     )
                 }

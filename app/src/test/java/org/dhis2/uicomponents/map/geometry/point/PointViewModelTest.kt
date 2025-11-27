@@ -1,16 +1,17 @@
 package org.dhis2.uicomponents.map.geometry.point
 
-import com.mapbox.geojson.Point
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Point
 
 class PointViewModelTest {
-
     private lateinit var pointViewModel: org.dhis2.maps.geometry.point.PointViewModel
 
     @Before
     fun setup() {
-        pointViewModel = org.dhis2.maps.geometry.point.PointViewModel()
+        pointViewModel =
+            org.dhis2.maps.geometry.point
+                .PointViewModel()
     }
 
     @Test

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">ရှေ့သို့</string>
+    <string name="username_hint">အသုံးပြုသူအမည်</string>
+    <string name="password_hint">လျှို့ဝှက်နံပါတ်</string>
+    <string name="action_yes">မှန်</string>
+    </resources>

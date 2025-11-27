@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Oʼzaro aloqalar mavjud emas, yangisini qoʼshish uchun "+" tugmasini bosing.</string>
+    <string name="relationship">Oʼzaro aloqa</string>
+    <string name="no_data">Maʼlumot yoʼq</string>
+    <string name="syncing">Sinxronizatsiyalanmoqda...</string>
+    <string name="show_more">Koʼproq koʼrsatish</string>
+    <string name="show_less">Kamroq koʼrsatish</string>
+    <string name="cancel">Бекор қилиш</string>
+    <string name="remove">Олиб ташлаш</string>
+    <string name="search">Izlash</string>
+    <string name="optional">Ixtiyoriy</string>
+
+</resources>

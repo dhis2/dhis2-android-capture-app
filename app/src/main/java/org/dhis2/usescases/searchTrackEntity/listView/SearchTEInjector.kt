@@ -11,4 +11,4 @@ interface SearchTEListComponent {
 }
 
 @Module
-class SearchTEListModule()
+class SearchTEListModule

@@ -15,42 +15,31 @@ import org.dhis2.commons.resources.ResourceManager
 class FilterModule {
     @Provides
     @PerServer
-    fun filterManager(resourceManager: ResourceManager): FilterManager {
-        return FilterManager.initWith(resourceManager)
-    }
+    fun filterManager(resourceManager: ResourceManager): FilterManager = FilterManager.initWith(resourceManager)
 
     @Provides
     @PerServer
-    fun eventWorkingListMapper(
-        resourceManager: FilterResources,
-    ): EventFilterToWorkingListItemMapper {
-        return EventFilterToWorkingListItemMapper(
+    fun eventWorkingListMapper(resourceManager: FilterResources): EventFilterToWorkingListItemMapper =
+        EventFilterToWorkingListItemMapper(
             resourceManager.defaultWorkingListLabel(),
         )
-    }
 
     @Provides
     @PerServer
-    fun teiWorkingListMapper(resourceManager: FilterResources): TeiFilterToWorkingListItemMapper {
-        return TeiFilterToWorkingListItemMapper(
+    fun teiWorkingListMapper(resourceManager: FilterResources): TeiFilterToWorkingListItemMapper =
+        TeiFilterToWorkingListItemMapper(
             resourceManager.defaultWorkingListLabel(),
         )
-    }
 
     @Provides
     @PerServer
     fun provideFilterResources(
         resourceManager: ResourceManager,
         eventResourcesProvider: EventResourcesProvider,
-    ): FilterResources {
-        return FilterResources(resourceManager, eventResourcesProvider)
-    }
+    ): FilterResources = FilterResources(resourceManager, eventResourcesProvider)
 
     @Provides
     @PerServer
-    fun provideProgramStageToWorkingListItemMapper(
-        resourceManager: FilterResources,
-    ): ProgramStageToWorkingListItemMapper {
-        return ProgramStageToWorkingListItemMapper(resourceManager.defaultWorkingListLabel())
-    }
+    fun provideProgramStageToWorkingListItemMapper(resourceManager: FilterResources): ProgramStageToWorkingListItemMapper =
+        ProgramStageToWorkingListItemMapper(resourceManager.defaultWorkingListLabel())
 }

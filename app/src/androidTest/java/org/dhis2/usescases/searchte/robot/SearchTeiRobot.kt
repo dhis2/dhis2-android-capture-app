@@ -2,8 +2,7 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.hasAnyDescendant
-import androidx.compose.ui.test.hasAnySibling
+import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -18,7 +17,6 @@ import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -96,10 +94,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.waitUntilAtLeastOneExists(hasText(title))
         composeTestRule.onNodeWithText(title).assertIsDisplayed()
         attributes.forEach { item ->
-            item.key?.let { composeTestRule.onNodeWithText("$it:",true).assertIsDisplayed() }
+            item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value,true), useUnmergedTree = true
+                        and hasText(item.value, true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
@@ -150,22 +148,32 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             item.key?.let { composeTestRule.onNodeWithText("$it:", true).assertIsDisplayed() }
             composeTestRule.onNode(
                 hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                        and hasText(item.value,true), useUnmergedTree = true
+                        and hasText(item.value, true), useUnmergedTree = true
             ).assertIsDisplayed()
         }
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnShowMap() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("NAVIGATION_BAR_ITEM_Map"),TIMEOUT)
         composeTestRule.onNodeWithTag("NAVIGATION_BAR_ITEM_Map").performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun checkCarouselTEICardInfo(firstName: String) {
-        composeTestRule.waitForIdle()
+        // Wait for the carousel to appear
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_CAROUSEL"), TIMEOUT)
         composeTestRule.onNodeWithTag("MAP_CAROUSEL", true)
             .assertIsDisplayed()
+        // Wait for at least one MAP_ITEM to be rendered
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("MAP_ITEM"), TIMEOUT)
+        // Wait extra time for data to populate in the cards
+        composeTestRule.waitForIdle()
+        // Finally assert that the text is displayed
         composeTestRule.onNode(
-            hasParent(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
-                    and hasText(firstName, true), useUnmergedTree = true
+            hasAnyAncestor(hasTestTag("LIST_CARD_ADDITIONAL_INFO_COLUMN"))
+                    and hasText(firstName, ignoreCase = true, substring = true), 
+            useUnmergedTree = true
         ).assertIsDisplayed()
     }
 

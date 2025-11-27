@@ -1,7 +1,6 @@
 package org.dhis2.usescases.notes.noteDetail
 
 import io.reactivex.Single
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.note.Note
@@ -16,7 +15,6 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 
 class NoteDetailPresenterTest {
-
     private lateinit var presenter: NoteDetailPresenter
     private val scheduler = TrampolineSchedulerProvider()
     private val repository: NoteDetailRepository = mock()
@@ -40,7 +38,7 @@ class NoteDetailPresenterTest {
 
     @Test
     fun `Should get message from form and save the note`() {
-        val data = Trio.create(NoteType.ENROLLMENT, "enrollmentUid", "Note Message")
+        val data = Triple(NoteType.ENROLLMENT, "enrollmentUid", "Note Message")
 
         whenever(view.getNewNote()) doReturn data
         whenever(repository.saveNote(any(), any(), any())) doReturn Single.just("uid")

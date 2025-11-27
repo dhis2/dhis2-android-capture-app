@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Нет никаких связей, нажмите "+", чтобы добавить новую.</string>
+    <string name="relation_creation_date">Связь создана</string>
+    <string name="remove_relationship_title">Удалить %1$s?</string>
+    <string name="remove_relationship_desc">%1$s будет удален. Это действие нельзя отменить.</string>
+    <string name="remove_some_relationships_title">Удалить %1$d выбранных связей?</string>
+    <string name="remove_some_relationships_desc">Выбранные связи %1$d будут удалены. Это действие нельзя отменить.</string>
+    <string name="show_number_more">Показать %1$d подробнее...</string>
+    <string name="relationship">Зависимость</string>
+    <string name="no_data">Нет данных</string>
+    <string name="syncing">Синхронизация...</string>
+    <string name="show_more">Показать больше</string>
+    <string name="show_less">Показать меньше </string>
+    <string name="cancel">Отменить</string>
+    <string name="remove">Убрать</string>
+    <string name="clear_search">Очистить поиск</string>
+    <string name="search">Поиск</string>
+    <string name="optional">Опционно</string>
+
+</resources>

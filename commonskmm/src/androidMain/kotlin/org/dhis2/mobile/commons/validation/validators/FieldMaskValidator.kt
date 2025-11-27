@@ -5,16 +5,15 @@ import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.valuetype.validation.validators.ValueTypeValidator
 import java.util.regex.Pattern
 
-class FieldMaskValidator(fieldMask: String) : ValueTypeValidator<FieldMaskFailure> {
-
+class FieldMaskValidator(
+    fieldMask: String,
+) : ValueTypeValidator<FieldMaskFailure> {
     private val formattedFieldMask = fieldMask.removeSurrounding("\'")
 
-    fun validateNullSafe(value: String?): Result<String?, FieldMaskFailure> {
-        return value?.let { validate(value) } ?: Result.Success(value)
-    }
+    fun validateNullSafe(value: String?): Result<String?, FieldMaskFailure> = value?.let { validate(value) } ?: Result.Success(value)
 
-    override fun validate(value: String): Result<String, FieldMaskFailure> {
-        return if (formattedFieldMask.isEmpty() || value.isEmpty()) {
+    override fun validate(value: String): Result<String, FieldMaskFailure> =
+        if (formattedFieldMask.isEmpty() || value.isEmpty()) {
             Result.Success(value)
         } else if (fieldMaskIsCorrect()) {
             if (value.matches(formattedFieldMask.toRegex())) {
@@ -25,14 +24,12 @@ class FieldMaskValidator(fieldMask: String) : ValueTypeValidator<FieldMaskFailur
         } else {
             Result.Failure(FieldMaskFailure.InvalidPatternException)
         }
-    }
 
-    private fun fieldMaskIsCorrect(): Boolean {
-        return try {
+    private fun fieldMaskIsCorrect(): Boolean =
+        try {
             Pattern.compile(formattedFieldMask)
             true
         } catch (e: Exception) {
             false
         }
-    }
 }

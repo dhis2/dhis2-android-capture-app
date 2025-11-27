@@ -24,35 +24,41 @@ class GetEventPeriods(
         programStage: ProgramStage,
         isScheduling: Boolean,
         eventEnrollmentUid: String?,
-    ): Flow<PagingData<Period>> = Pager(
-        config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
-        pagingSourceFactory = {
-            eventPeriodRepository.getPeriodSource(
-                periodLabelProvider = periodLabelProvider,
-                periodType = periodType,
-                initialDate = eventPeriodRepository.getEventPeriodMinDate(
-                    programStage,
-                    isScheduling,
-                    eventEnrollmentUid,
-                ),
-                maxDate = eventPeriodRepository.getEventPeriodMaxDate(
-                    programStage,
-                    isScheduling,
-                    eventEnrollmentUid,
-                ),
-                selectedDate = selectedDate,
-            )
-        },
-    ).flow
-        .map { paging ->
-            paging.map { period ->
-                period.copy(
-                    enabled = eventPeriodRepository.getEventUnavailableDates(
-                        programStageUid = programStage.uid(),
-                        enrollmentUid = eventEnrollmentUid,
-                        currentEventUid = eventUid,
-                    ).contains(period.startDate).not(),
+    ): Flow<PagingData<Period>> =
+        Pager(
+            config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
+            pagingSourceFactory = {
+                eventPeriodRepository.getPeriodSource(
+                    periodLabelProvider = periodLabelProvider,
+                    periodType = periodType,
+                    initialDate =
+                        eventPeriodRepository.getEventPeriodMinDate(
+                            programStage,
+                            isScheduling,
+                            eventEnrollmentUid,
+                        ),
+                    maxDate =
+                        eventPeriodRepository.getEventPeriodMaxDate(
+                            programStage,
+                            isScheduling,
+                            eventEnrollmentUid,
+                        ),
+                    selectedDate = selectedDate,
                 )
+            },
+        ).flow
+            .map { paging ->
+                paging.map { period ->
+                    period.copy(
+                        enabled =
+                            eventPeriodRepository
+                                .getEventUnavailableDates(
+                                    programStageUid = programStage.uid(),
+                                    enrollmentUid = eventEnrollmentUid,
+                                    currentEventUid = eventUid,
+                                ).contains(period.startDate)
+                                .not(),
+                    )
+                }
             }
-        }
 }

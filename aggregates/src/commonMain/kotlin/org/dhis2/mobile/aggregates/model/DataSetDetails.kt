@@ -24,11 +24,17 @@ data class DataSetEdition(
 
 sealed class NonEditableReason {
     data object None : NonEditableReason()
-    data object NoDataWriteAccess : NonEditableReason()
-    data class NoAttributeOptionComboAccess(val attributeOptionComboLabel: String) :
-        NonEditableReason()
 
-    data class OrgUnitNotInCaptureScope(val orgUnitLabel: String) : NonEditableReason()
+    data object NoDataWriteAccess : NonEditableReason()
+
+    data class NoAttributeOptionComboAccess(
+        val attributeOptionComboLabel: String,
+    ) : NonEditableReason()
+
+    data class OrgUnitNotInCaptureScope(
+        val orgUnitLabel: String,
+    ) : NonEditableReason()
+
     data class AttributeOptionComboNotAssignedToOrgUnit(
         val attributeOptionComboLabel: String,
         val orgUnitLabel: String,
@@ -37,8 +43,7 @@ sealed class NonEditableReason {
     data class PeriodIsNotInOrgUnitRange(
         val periodLabel: String,
         val orgUnitLabel: String,
-    ) :
-        NonEditableReason()
+    ) : NonEditableReason()
 
     data class PeriodIsNotInAttributeOptionComboRange(
         val periodLabel: String,
@@ -46,9 +51,12 @@ sealed class NonEditableReason {
     ) : NonEditableReason()
 
     data object Closed : NonEditableReason()
+
     data object Expired : NonEditableReason()
 }
 
 enum class TextAlignment {
-    LEFT, CENTER, RIGHT
+    LEFT,
+    CENTER,
+    RIGHT,
 }

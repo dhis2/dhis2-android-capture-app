@@ -9,7 +9,6 @@ import org.hisp.dhis.android.core.program.Program
 class DashboardProgramViewHolder(
     private val binding: ItemDashboardProgramBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-
     fun bind(
         presenter: TEIDataPresenter,
         dashboardProgramModel: DashboardTEIModel,

@@ -28,6 +28,7 @@
     <string name="delete">Delete</string>
     <string name="wipe_data_no">Cancel</string>
     <string name="SYNC_MANAGER">Settings</string>
+    <string name="settingsTwoFAStatus">Status</string>
     <!--endregion-->
 
     <string name="enrollmment_date">Enrollment date</string>

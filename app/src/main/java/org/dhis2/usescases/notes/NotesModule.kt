@@ -40,25 +40,21 @@ class NotesModule(
     private val uid: String,
     private val noteType: NoteType,
 ) {
-
     @Provides
     @PerFragment
     internal fun providesPresenter(
         notesRepository: NotesRepository,
         schedulerProvider: SchedulerProvider,
-    ): NotesPresenter {
-        return NotesPresenter(
+    ): NotesPresenter =
+        NotesPresenter(
             view,
             notesRepository,
             uid,
             noteType,
             schedulerProvider,
         )
-    }
 
     @Provides
     @PerFragment
-    internal fun providesNotesRepository(d2: D2): NotesRepository {
-        return NotesRepository(d2, programUid)
-    }
+    internal fun providesNotesRepository(d2: D2): NotesRepository = NotesRepository(d2, programUid)
 }

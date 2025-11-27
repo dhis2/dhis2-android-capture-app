@@ -4,15 +4,13 @@ plugins {
     id("com.android.library")
     kotlin("android")
     kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
-
-repositories {
-    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-}
 
 android {
     compileSdk = libs.versions.sdk.get().toInt()
@@ -49,6 +47,7 @@ android {
     buildFeatures {
         compose = true
         dataBinding = true
+        viewBinding = true
     }
 
     configurations.all {
@@ -68,9 +67,6 @@ dependencies {
     implementation(project(":commonskmm"))
 
     api(libs.dhis2.android.sdk) {
-        exclude("org.hisp.dhis", "core-rules")
-        exclude("com.facebook.flipper")
-        exclude("com.facebook.soloader")
         this.isChanging = true
     }
 
@@ -79,35 +75,31 @@ dependencies {
     }
 
     api(libs.dhis2.expressionparser)
-
-    api(libs.google.autoValue)
-    kapt(libs.google.autoValue)
     api(libs.androidx.coreKtx)
     api(libs.androidx.appcompat)
     api(libs.androidx.fragmentKtx)
     api(libs.androidx.viewModelKtx)
     api(libs.androidx.recyclerView)
     debugApi(libs.androidx.compose.uitooling)
-    api(libs.androidx.compose)
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.livedata)
     api(libs.androidx.compose.paging)
     api(libs.koin.core)
-    implementation(libs.koin.compose)
-    implementation(libs.koin.composeVM)
+    api(libs.koin.compose)
+    api(libs.koin.composeVM)
     api(libs.google.material)
     api(libs.androidx.material3)
     api(libs.androidx.material3.window)
     api(libs.androidx.material3.adaptative.android)
     api(libs.google.gson)
     api(libs.dagger)
-    kapt(libs.dagger.compiler)
+    ksp(libs.dagger.compiler)
     api(libs.barcodeScanner.zxing)
     api(libs.rx.java)
     api(libs.rx.android)
     api(libs.analytics.timber)
     api(libs.github.glide)
-    kapt(libs.github.glide.compiler)
+    ksp(libs.github.glide.compiler)
     api(libs.barcodeScanner.scanner) {
         exclude("com.google.zxing", "core")
     }
@@ -116,6 +108,9 @@ dependencies {
     }
     api(libs.rx.binding.compat)
     testApi(libs.test.junit)
+    testApi(libs.test.mockitoCore)
+    testApi(libs.test.mockitoKotlin)
+    testApi(libs.test.mockitoInline)
     androidTestApi(libs.test.mockitoCore)
     androidTestApi(libs.test.mockitoKotlin)
     androidTestApi(libs.test.dexmaker.mockitoInline)
@@ -126,9 +121,10 @@ dependencies {
     api(libs.test.espresso.idlingconcurrent)
     api(libs.analytics.sentry)
     api(libs.analytics.sentry.compose)
-    implementation(libs.github.treeView)
     api(libs.dhis2.mobile.designsystem) {
         isChanging = true
     }
+    api(libs.dates.jodatime)
+    api(libs.commons.text)
     coreLibraryDesugaring(libs.desugar)
 }

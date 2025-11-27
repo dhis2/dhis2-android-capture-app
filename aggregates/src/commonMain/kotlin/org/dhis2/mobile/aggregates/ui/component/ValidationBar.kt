@@ -26,30 +26,30 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
-internal fun ValidationBar(
-    uiState: ValidationBarUiState,
-) {
+internal fun ValidationBar(uiState: ValidationBarUiState) {
     BottomAppBar(
         containerColor = SurfaceColor.ErrorContainer,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing8),
-            modifier = Modifier
-                .testTag(VALIDATION_BAR_TEST_TAG)
-                .fillMaxWidth()
-                .background(color = SurfaceColor.ErrorContainer)
-                .padding(
-                    start = Spacing.Spacing16,
-                    end = Spacing.Spacing4,
-                ),
-        ) {
-            Badge(
-                modifier = Modifier
+            modifier =
+                Modifier
+                    .testTag(VALIDATION_BAR_TEST_TAG)
+                    .fillMaxWidth()
+                    .background(color = SurfaceColor.ErrorContainer)
                     .padding(
-                        start = Spacing.Spacing4,
+                        start = Spacing.Spacing16,
                         end = Spacing.Spacing4,
                     ),
+        ) {
+            Badge(
+                modifier =
+                    Modifier
+                        .padding(
+                            start = Spacing.Spacing4,
+                            end = Spacing.Spacing4,
+                        ),
                 text = uiState.quantity.toString(),
                 color = SurfaceColor.Error,
                 textColor = TextColor.OnPrimary,

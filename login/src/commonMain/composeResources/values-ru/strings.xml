@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="action_next">Далее</string>
+    <string name="biometrics_login_title">Быстрый вход в систему</string>
+    <string name="biometrics_login_text">Хотите использовать отпечаток пальца или другой биометрический метод для входа в систему?</string>
+    <string name="username_hint">Имя пользователя</string>
+    <string name="password_hint">Пароль</string>
+    <string name="openid_or">Или</string>
+    <string name="tracking_title">Хотите помочь нам улучшить это приложение?</string>
+    <string name="privacy_policy">политика конфиденциальности</string>
+    <string name="action_no_now">Не сейчас</string>
+    <string name="action_yes">Да</string>
+    <string name="enter_pin_button">Разблокировано</string>
+    <string name="importing_successful">Импорт прошел успешно</string>
+    </resources>

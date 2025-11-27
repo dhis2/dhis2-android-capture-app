@@ -15,14 +15,13 @@ class DatasetPeriodRepository(
     private val d2: D2,
     private val dateUtils: DateUtils,
 ) {
-
     fun getPeriods(
         dataSetUid: String,
         periodType: PeriodType,
         selectedDate: Date?,
         openFuturePeriods: Int,
-    ): Flow<PagingData<Period>> {
-        return Pager(
+    ): Flow<PagingData<Period>> =
+        Pager(
             config = PagingConfig(pageSize = 20, maxSize = 100, initialLoadSize = 20),
             pagingSourceFactory = {
                 DatasetPeriodSource(
@@ -34,11 +33,15 @@ class DatasetPeriodRepository(
                 )
             },
         ).flow
-    }
 
     fun hasDataInputPeriods(dataSetUid: String): Boolean {
-        val dataset = d2.dataSetModule()
-            .dataSets().withDataInputPeriods().uid(dataSetUid).blockingGet()
+        val dataset =
+            d2
+                .dataSetModule()
+                .dataSets()
+                .withDataInputPeriods()
+                .uid(dataSetUid)
+                .blockingGet()
         return if (dataset == null) {
             false
         } else {
@@ -47,22 +50,30 @@ class DatasetPeriodRepository(
     }
 
     fun getDataInputPeriods(dataSetUid: String): List<DateRangeInputPeriod> {
-        val dataset = d2.dataSetModule()
-            .dataSets().withDataInputPeriods().uid(dataSetUid).blockingGet()
+        val dataset =
+            d2
+                .dataSetModule()
+                .dataSets()
+                .withDataInputPeriods()
+                .uid(dataSetUid)
+                .blockingGet()
         if (dataset == null) return emptyList()
 
         val today = DateUtils.getInstance().today
 
-        return dataset.dataInputPeriods()
+        return dataset
+            .dataInputPeriods()
             ?.asSequence()
             ?.filter {
                 (it.openingDate() == null || today.after(it.openingDate())) &&
                     (it.closingDate() == null || today.before(it.closingDate()))
-            }
-            ?.map {
-                val period = d2.periodModule().periodHelper()
-                    .getPeriodForPeriodId(it.period().uid())
-                    .blockingGet()
+            }?.map {
+                val period =
+                    d2
+                        .periodModule()
+                        .periodHelper()
+                        .getPeriodForPeriodId(it.period().uid())
+                        .blockingGet()
 
                 DateRangeInputPeriod(
                     dataSetUid,

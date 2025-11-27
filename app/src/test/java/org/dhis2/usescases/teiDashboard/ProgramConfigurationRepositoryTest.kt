@@ -12,7 +12,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class ProgramConfigurationRepositoryTest {
-
     private val d2: D2 = mock()
     private lateinit var programConfigurationRepository: ProgramConfigurationRepository
 

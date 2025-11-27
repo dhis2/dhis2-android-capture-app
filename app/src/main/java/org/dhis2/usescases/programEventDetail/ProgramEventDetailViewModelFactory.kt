@@ -15,10 +15,9 @@ class ProgramEventDetailViewModelFactory(
     private val createEventUseCase: CreateEventUseCase,
     private val pageConfigurator: NavigationPageConfigurator,
     private val resourceManager: ResourceManager,
-) :
-    ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return ProgramEventDetailViewModel(
+) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T =
+        ProgramEventDetailViewModel(
             mapStyleConfiguration,
             eventRepository,
             dispatcher,
@@ -26,5 +25,4 @@ class ProgramEventDetailViewModelFactory(
             pageConfigurator,
             resourceManager,
         ) as T
-    }
 }

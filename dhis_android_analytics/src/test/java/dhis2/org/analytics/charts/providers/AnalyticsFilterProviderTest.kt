@@ -15,7 +15,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class AnalyticsFilterProviderTest {
-
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val analyticsFilterProvider = AnalyticsFilterProvider(d2)
 
@@ -66,7 +65,15 @@ class AnalyticsFilterProviderTest {
 
     @Test
     fun `Should return visualization periods if saved`() {
-        val repo = mockValueSaved(true, KeyValuePair.builder().key("key").value("[TODAY]").build())
+        val repo =
+            mockValueSaved(
+                true,
+                KeyValuePair
+                    .builder()
+                    .key("key")
+                    .value("[TODAY]")
+                    .build(),
+            )
         analyticsFilterProvider.visualizationPeriod("any")
         verify(repo).blockingGet()
     }
@@ -80,7 +87,15 @@ class AnalyticsFilterProviderTest {
 
     @Test
     fun `Should return visualization org unit type`() {
-        val repo = mockValueSaved(true, KeyValuePair.builder().key("key").value("ALL").build())
+        val repo =
+            mockValueSaved(
+                true,
+                KeyValuePair
+                    .builder()
+                    .key("key")
+                    .value("ALL")
+                    .build(),
+            )
         analyticsFilterProvider.visualizationOrgUnitsType("any")
         verify(repo).blockingGet()
     }
@@ -95,7 +110,15 @@ class AnalyticsFilterProviderTest {
 
     @Test
     fun `Should return visualization org units`() {
-        val repo = mockValueSaved(true, KeyValuePair.builder().key("key").value("['uid']").build())
+        val repo =
+            mockValueSaved(
+                true,
+                KeyValuePair
+                    .builder()
+                    .key("key")
+                    .value("['uid']")
+                    .build(),
+            )
         analyticsFilterProvider.visualizationOrgUnits("any")
         verify(repo).blockingGet()
     }

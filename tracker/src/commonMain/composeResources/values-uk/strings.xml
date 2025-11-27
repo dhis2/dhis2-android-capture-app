@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Немає зв’язків, натисніть «+», щоб додати новий.</string>
+    <string name="relationship">Зв'язок</string>
+    <string name="no_data">Немає даних</string>
+    <string name="syncing">Синхронізація...</string>
+    <string name="show_more">Показати більше</string>
+    <string name="show_less">Показати менше</string>
+    <string name="cancel">Скасувати</string>
+    <string name="remove">Видалити</string>
+    <string name="clear_search">Очистити пошук</string>
+    <string name="search">Пошук</string>
+    <string name="optional">Необов'язково</string>
+
+</resources>

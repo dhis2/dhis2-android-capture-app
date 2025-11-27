@@ -13,15 +13,16 @@ import org.dhis2.bindings.initials
 import org.dhis2.bindings.placeHolder
 import org.dhis2.bindings.toDateSpan
 import org.dhis2.commons.Constants
-import org.dhis2.commons.data.tuples.Trio
 import org.dhis2.databinding.ActivityNoteDetailBinding
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.notes.NoteType
 import org.hisp.dhis.android.core.note.Note
 import javax.inject.Inject
 
-class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher {
-
+class NoteDetailActivity :
+    ActivityGlobalAbstract(),
+    NoteDetailView,
+    TextWatcher {
     private lateinit var binding: ActivityNoteDetailBinding
 
     @Inject
@@ -62,12 +63,12 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
     }
 
     override fun showDiscardDialog() {
-        val dialog = MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
-            .setMessage(R.string.discard_note)
-            .setPositiveButton(R.string.yes) { _, _ ->
-                finish()
-            }
-            .setNegativeButton(R.string.no, null)
+        val dialog =
+            MaterialAlertDialogBuilder(this, R.style.DhisMaterialDialog)
+                .setMessage(R.string.discard_note)
+                .setPositiveButton(R.string.yes) { _, _ ->
+                    finish()
+                }.setNegativeButton(R.string.no, null)
         dialog.show()
     }
 
@@ -82,9 +83,7 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         binding.executePendingBindings()
     }
 
-    override fun getNewNote(): Trio<NoteType, String, String> {
-        return Trio.create(noteType, uid, binding.noteText.text.toString())
-    }
+    override fun getNewNote(): Triple<NoteType, String, String> = Triple(noteType, uid, binding.noteText.text.toString())
 
     override fun noteSaved() {
         showToast(getString(R.string.note_saved))
@@ -92,7 +91,11 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
     }
 
     override fun back() {
-        if (isNewNote.get() && binding.noteText.text.toString().isNotEmpty()) {
+        if (isNewNote.get() &&
+            binding.noteText.text
+                .toString()
+                .isNotEmpty()
+        ) {
             showDiscardDialog()
         } else {
             supportFinishAfterTransition()
@@ -112,7 +115,17 @@ class NoteDetailActivity : ActivityGlobalAbstract(), NoteDetailView, TextWatcher
         }
     }
 
-    override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {}
+    override fun onTextChanged(
+        text: CharSequence?,
+        start: Int,
+        before: Int,
+        count: Int,
+    ) {}
 
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+    override fun beforeTextChanged(
+        s: CharSequence?,
+        start: Int,
+        count: Int,
+        after: Int,
+    ) {}
 }

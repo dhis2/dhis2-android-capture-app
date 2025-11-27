@@ -14,8 +14,16 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
+
+# Keep ResourceManager
+-keep class org.dhis2.commons.resources.ResourceManager { *; }
+
+# Keep DispatcherProvider
+-keep class org.dhis2.commons.viewmodel.DispatcherProvider { *; }
+
+-dontwarn java.lang.invoke.StringConcatFactory

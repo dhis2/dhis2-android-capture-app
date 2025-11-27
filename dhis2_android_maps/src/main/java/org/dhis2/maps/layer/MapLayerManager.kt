@@ -2,9 +2,6 @@ package org.dhis2.maps.layer
 
 import android.graphics.Color
 import androidx.annotation.ColorRes
-import com.mapbox.geojson.Feature
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.Style
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.maps.R
 import org.dhis2.maps.attribution.AttributionManager
@@ -18,9 +15,12 @@ import org.dhis2.maps.layer.types.TeiEventMapLayer
 import org.dhis2.maps.layer.types.TeiMapLayer
 import org.dhis2.maps.model.MapStyle
 import org.hisp.dhis.android.core.common.FeatureType
+import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.Style
+import org.maplibre.geojson.Feature
 
 class MapLayerManager(
-    val mapBoxMap: MapboxMap,
+    val maplibreMap: MapLibreMap,
     val baseMapManager: BaseMapManager,
     val colorUtils: ColorUtils,
 ) {
@@ -43,13 +43,14 @@ class MapLayerManager(
             Color.parseColor("#2C2C2C"),
             Color.parseColor("#A85621"),
         )
-    private val drawableResources = mutableListOf(
-        R.drawable.ic_map_item_1,
-        R.drawable.ic_map_item_2,
-        R.drawable.ic_map_item_3,
-        R.drawable.ic_map_item_4,
-        R.drawable.ic_map_item_5,
-    )
+    private val drawableResources =
+        mutableListOf(
+            R.drawable.ic_map_item_1,
+            R.drawable.ic_map_item_2,
+            R.drawable.ic_map_item_3,
+            R.drawable.ic_map_item_4,
+            R.drawable.ic_map_item_5,
+        )
 
     val relationshipUsedColors =
         mutableMapOf<String, Int>()
@@ -65,67 +66,79 @@ class MapLayerManager(
         const val SELECTED_PLACE_ICON_ID = "SELECTED_PLACE_ICON_ID"
     }
 
-    fun withMapStyle(mapStyle: MapStyle?) = apply {
-        this.mapStyle = mapStyle
-    }
-
-    fun addLayer(layerType: LayerType, featureType: FeatureType? = null, sourceId: String? = null) =
+    fun withMapStyle(mapStyle: MapStyle?) =
         apply {
-            val style = mapBoxMap.style!!
-            mapLayers[sourceId ?: layerType.name] = when (layerType) {
-                LayerType.TEI_LAYER -> TeiMapLayer(
-                    style,
-                    featureType ?: FeatureType.POINT,
-                    mapStyle?.teiColor!!,
-                    mapStyle?.programDarkColor!!,
-                    colorUtils,
-                )
-
-                LayerType.ENROLLMENT_LAYER -> EnrollmentMapLayer(
-                    style,
-                    featureType ?: FeatureType.POINT,
-                    mapStyle?.enrollmentColor!!,
-                    mapStyle?.programDarkColor!!,
-                    colorUtils,
-                )
-
-                LayerType.HEATMAP_LAYER -> HeatmapMapLayer(
-                    style,
-                )
-
-                LayerType.RELATIONSHIP_LAYER -> RelationshipMapLayer(
-                    style,
-                    featureType ?: FeatureType.POINT,
-                    sourceId!!,
-                    getNextAvailableDrawable(sourceId)?.second,
-                    colorUtils,
-                )
-
-                LayerType.EVENT_LAYER -> EventMapLayer(
-                    style,
-                    featureType ?: FeatureType.POINT,
-                    relationShipColors.firstOrNull(),
-                    colorUtils,
-                )
-
-                LayerType.TEI_EVENT_LAYER -> TeiEventMapLayer(
-                    style,
-                    featureType ?: FeatureType.POINT,
-                    sourceId!!,
-                    mapStyle?.programDarkColor!!,
-                    colorUtils,
-                )
-
-                LayerType.FIELD_COORDINATE_LAYER -> FieldMapLayer(
-                    style,
-                    sourceId!!,
-                )
-            }
-
-            if (mapLayers.size == 1) {
-                handleLayer(sourceId ?: layerType.toString(), true)
-            }
+            this.mapStyle = mapStyle
         }
+
+    fun addLayer(
+        layerType: LayerType,
+        featureType: FeatureType? = null,
+        sourceId: String? = null,
+    ) = apply {
+        val style = maplibreMap.style!!
+        mapLayers[sourceId ?: layerType.name] =
+            when (layerType) {
+                LayerType.TEI_LAYER ->
+                    TeiMapLayer(
+                        style,
+                        featureType ?: FeatureType.POINT,
+                        mapStyle?.teiColor!!,
+                        mapStyle?.programDarkColor!!,
+                        colorUtils,
+                    )
+
+                LayerType.ENROLLMENT_LAYER ->
+                    EnrollmentMapLayer(
+                        style,
+                        featureType ?: FeatureType.POINT,
+                        mapStyle?.enrollmentColor!!,
+                        mapStyle?.programDarkColor!!,
+                        colorUtils,
+                    )
+
+                LayerType.HEATMAP_LAYER ->
+                    HeatmapMapLayer(
+                        style,
+                    )
+
+                LayerType.RELATIONSHIP_LAYER ->
+                    RelationshipMapLayer(
+                        style,
+                        featureType ?: FeatureType.POINT,
+                        sourceId!!,
+                        getNextAvailableDrawable(sourceId)?.second,
+                        colorUtils,
+                    )
+
+                LayerType.EVENT_LAYER ->
+                    EventMapLayer(
+                        style,
+                        featureType ?: FeatureType.POINT,
+                        relationShipColors.firstOrNull(),
+                        colorUtils,
+                    )
+
+                LayerType.TEI_EVENT_LAYER ->
+                    TeiEventMapLayer(
+                        style,
+                        featureType ?: FeatureType.POINT,
+                        sourceId!!,
+                        mapStyle?.programDarkColor!!,
+                        colorUtils,
+                    )
+
+                LayerType.FIELD_COORDINATE_LAYER ->
+                    FieldMapLayer(
+                        style,
+                        sourceId!!,
+                    )
+            }
+
+        if (mapLayers.size == 1) {
+            handleLayer(sourceId ?: layerType.toString(), true)
+        }
+    }
 
     fun addStartLayer(
         layerType: LayerType,
@@ -136,28 +149,37 @@ class MapLayerManager(
         handleLayer(sourceId ?: layerType.toString(), true)
     }
 
-    fun addLayers(layerType: LayerType, sourceIds: List<String>, visible: Boolean) = apply {
+    fun addLayers(
+        layerType: LayerType,
+        sourceIds: List<String>,
+        visible: Boolean,
+    ) = apply {
         sourceIds.forEach {
             addLayer(layerType, sourceId = it)
             handleLayer(it, visible)
         }
     }
 
-    fun handleLayer(sourceId: String, check: Boolean) {
+    fun handleLayer(
+        sourceId: String,
+        check: Boolean,
+    ) {
         when {
             check -> mapLayers[sourceId]?.showLayer()
             else -> mapLayers[sourceId]?.hideLayer()
         }
     }
 
-    fun getLayer(sourceId: String, shouldSaveLayer: Boolean? = false): MapLayer? {
-        return mapLayers[sourceId].let {
+    fun getLayer(
+        sourceId: String,
+        shouldSaveLayer: Boolean? = false,
+    ): MapLayer? =
+        mapLayers[sourceId].let {
             if (shouldSaveLayer == true) {
                 this.currentLayerSelection = it
             }
             it
         }
-    }
 
     fun selectFeature(feature: Feature?) {
         mapLayers.entries.forEach {
@@ -167,20 +189,22 @@ class MapLayerManager(
         }
     }
 
-    fun getLayers(): Collection<MapLayer> {
-        return mapLayers.values
-    }
+    fun getLayers(): Collection<MapLayer> = mapLayers.values
 
-    fun updateLayers(layerType: LayerType, sourceIds: List<String>) = apply {
-        val filterLayers = when (layerType) {
-            LayerType.TEI_LAYER -> mapLayers.filterValues { it is TeiMapLayer }
-            LayerType.ENROLLMENT_LAYER -> mapLayers.filterValues { it is EnrollmentMapLayer }
-            LayerType.HEATMAP_LAYER -> mapLayers.filterValues { it is HeatmapMapLayer }
-            LayerType.RELATIONSHIP_LAYER -> mapLayers.filterValues { it is RelationshipMapLayer }
-            LayerType.EVENT_LAYER -> mapLayers.filterValues { it is EventMapLayer }
-            LayerType.TEI_EVENT_LAYER -> mapLayers.filterValues { it is TeiEventMapLayer }
-            LayerType.FIELD_COORDINATE_LAYER -> mapLayers.filterValues { it is FieldMapLayer }
-        }
+    fun updateLayers(
+        layerType: LayerType,
+        sourceIds: List<String>,
+    ) = apply {
+        val filterLayers =
+            when (layerType) {
+                LayerType.TEI_LAYER -> mapLayers.filterValues { it is TeiMapLayer }
+                LayerType.ENROLLMENT_LAYER -> mapLayers.filterValues { it is EnrollmentMapLayer }
+                LayerType.HEATMAP_LAYER -> mapLayers.filterValues { it is HeatmapMapLayer }
+                LayerType.RELATIONSHIP_LAYER -> mapLayers.filterValues { it is RelationshipMapLayer }
+                LayerType.EVENT_LAYER -> mapLayers.filterValues { it is EventMapLayer }
+                LayerType.TEI_EVENT_LAYER -> mapLayers.filterValues { it is TeiEventMapLayer }
+                LayerType.FIELD_COORDINATE_LAYER -> mapLayers.filterValues { it is FieldMapLayer }
+            }
         filterLayers.keys.forEach {
             if (!sourceIds.contains(it)) {
                 mapLayers[it]?.hideLayer()
@@ -200,16 +224,16 @@ class MapLayerManager(
     fun changeStyle(basemapPosition: Int) {
         currentStylePosition = basemapPosition
         val newStyle = baseMapManager.baseMapStyles[basemapPosition]
-        (mapBoxMap.uiSettings.attributionDialogManager as AttributionManager)
+        (maplibreMap.uiSettings.attributionDialogManager as AttributionManager)
             .updateCurrentBaseMap(newStyle)
-        mapBoxMap.setStyle(baseMapManager.styleJson(newStyle)) {
+        maplibreMap.setStyle(baseMapManager.styleJson(newStyle)) {
             styleChangeCallback?.invoke(it)
         }
     }
 
     @ColorRes
-    fun getNextAvailableColor(sourceId: String): Int? {
-        return if (relationshipUsedColors.containsKey(sourceId)) {
+    fun getNextAvailableColor(sourceId: String): Int? =
+        if (relationshipUsedColors.containsKey(sourceId)) {
             relationshipUsedColors[sourceId]
         } else {
             relationShipColors.firstOrNull()?.also {
@@ -217,10 +241,9 @@ class MapLayerManager(
                 relationShipColors.removeAt(0)
             }
         }
-    }
 
-    fun getNextAvailableDrawable(sourceId: String): Pair<Int, Int>? {
-        return if (drawableCombinationsUsed.containsKey(sourceId)) {
+    fun getNextAvailableDrawable(sourceId: String): Pair<Int, Int>? =
+        if (drawableCombinationsUsed.containsKey(sourceId)) {
             drawableCombinationsUsed[sourceId]
         } else {
             drawableCombinations.firstOrNull()?.also {
@@ -228,7 +251,6 @@ class MapLayerManager(
                 drawableCombinations.removeAt(0)
             }
         }
-    }
 
     private fun drawableColorCombinations(): MutableList<Pair<Int, Int>> {
         val combinations = mutableListOf<Pair<Int, Int>>()
@@ -243,8 +265,10 @@ class MapLayerManager(
         return combinations
     }
 
-    fun sourcesAndLayersForSearch() = mapLayers.filter { (_, mapLayer) -> mapLayer.visible }
-        .map { (sourceId, mapLayer) ->
-            sourceId to mapLayer.layerIdsToSearch()
-        }.toMap()
+    fun sourcesAndLayersForSearch() =
+        mapLayers
+            .filter { (_, mapLayer) -> mapLayer.visible }
+            .map { (sourceId, mapLayer) ->
+                sourceId to mapLayer.layerIdsToSearch()
+            }.toMap()
 }

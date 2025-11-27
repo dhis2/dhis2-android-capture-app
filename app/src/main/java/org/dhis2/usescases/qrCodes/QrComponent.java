@@ -4,10 +4,6 @@ import org.dhis2.commons.di.dagger.PerActivity;
 
 import dagger.Subcomponent;
 
-/**
- * Created by ppajuelo on 30/11/2017.
- *
- */
 @PerActivity
 @Subcomponent(modules = QrModule.class)
 public interface QrComponent {

@@ -1,7 +1,5 @@
 package org.dhis2.uicomponents.map.geometry
 
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.Point
 import org.dhis2.maps.geometry.bound.GetBoundingBox
 import org.dhis2.maps.geometry.mapper.MapGeometryToFeature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapEventToFeatureCollection
@@ -12,13 +10,14 @@ import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event
 import org.junit.Before
 import org.junit.Test
+import org.maplibre.geojson.Feature
+import org.maplibre.geojson.Point
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class MapEventToFeatureCollectionTest {
-
     private val mapGeometryToFeature: MapGeometryToFeature = mock()
     private val bounds: GetBoundingBox = mock()
     private lateinit var mapEventToFeatureCollection: MapEventToFeatureCollection
@@ -35,14 +34,16 @@ class MapEventToFeatureCollectionTest {
     @Test
     fun `Should map events to feature collection`() {
         val (firstFeature, secondFeature) = createFeatures()
-        val firstEvent = createEvent(
-            "[$FIRST_FEATURE_LONGITUDE, $FIRST_FEATURE_LATITUDE]",
-            UID_FIRST_EVENT_VALUE,
-        )
-        val secondEvent = createEvent(
-            " [$SECOND_FEATURE_LONGITUDE, $SECOND_FEATURE_LATITUDE]",
-            UID_SECOND_EVENT_VALUE,
-        )
+        val firstEvent =
+            createEvent(
+                "[$FIRST_FEATURE_LONGITUDE, $FIRST_FEATURE_LATITUDE]",
+                UID_FIRST_EVENT_VALUE,
+            )
+        val secondEvent =
+            createEvent(
+                " [$SECOND_FEATURE_LONGITUDE, $SECOND_FEATURE_LATITUDE]",
+                UID_SECOND_EVENT_VALUE,
+            )
 
         whenever(
             mapGeometryToFeature.map(any(), any()),
@@ -65,23 +66,34 @@ class MapEventToFeatureCollectionTest {
         assertThat(secondCoordinates.latitude(), `is`(SECOND_FEATURE_LATITUDE))
     }
 
-    private fun createFeatures(): Pair<Feature, Feature> {
-        return Pair(
-            Feature.fromGeometry(
-                Point.fromLngLat(FIRST_FEATURE_LONGITUDE, FIRST_FEATURE_LATITUDE),
-            ).also { it.addStringProperty(UID, UID_FIRST_EVENT_VALUE) },
-            Feature.fromGeometry(
-                Point.fromLngLat(SECOND_FEATURE_LONGITUDE, SECOND_FEATURE_LATITUDE),
-            ).also { it.addStringProperty(UID, UID_SECOND_EVENT_VALUE) },
+    private fun createFeatures(): Pair<Feature, Feature> =
+        Pair(
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(FIRST_FEATURE_LONGITUDE, FIRST_FEATURE_LATITUDE),
+                ).also { it.addStringProperty(UID, UID_FIRST_EVENT_VALUE) },
+            Feature
+                .fromGeometry(
+                    Point.fromLngLat(SECOND_FEATURE_LONGITUDE, SECOND_FEATURE_LATITUDE),
+                ).also { it.addStringProperty(UID, UID_SECOND_EVENT_VALUE) },
         )
-    }
 
-    private fun createEvent(coordinates: String, uid: String): Event {
-        val geometry = Geometry.builder()
-            .coordinates(coordinates)
-            .type(FeatureType.POINT).build()
+    private fun createEvent(
+        coordinates: String,
+        uid: String,
+    ): Event {
+        val geometry =
+            Geometry
+                .builder()
+                .coordinates(coordinates)
+                .type(FeatureType.POINT)
+                .build()
 
-        return Event.builder().geometry(geometry).uid(uid).build()
+        return Event
+            .builder()
+            .geometry(geometry)
+            .uid(uid)
+            .build()
     }
 
     companion object {

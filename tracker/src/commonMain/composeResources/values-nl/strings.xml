@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Er zijn geen relaties, klik op "+" om een nieuwe toe te voegen.</string>
+    <string name="relationship">Relatie</string>
+    <string name="no_data">Geen gegevens</string>
+    <string name="syncing">Synchroniseren...</string>
+    <string name="show_more">Laat meer zien</string>
+    <string name="show_less">Toon minder</string>
+    <string name="cancel">Annuleren</string>
+    <string name="remove">Verwijderen</string>
+    <string name="search">Zoek</string>
+</resources>

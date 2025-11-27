@@ -26,8 +26,8 @@ class Chart private constructor(
     private val graphToRadarMapper: GraphToRadarChart by lazy { GraphToRadarChart() }
     private val graphToPieChartMapper: GraphToPieChart by lazy { GraphToPieChart() }
 
-    fun getChartView(context: Context): View {
-        return when (chartType) {
+    fun getChartView(context: Context): View =
+        when (chartType) {
             ChartType.LINE_CHART -> graphToLineChartMapper.map(context, graphData)
             ChartType.NUTRITION -> graphToNutritionChartMapper.map(context, graphData)
             ChartType.BAR_CHART -> graphToBarChartMapper.map(context, graphData)
@@ -36,21 +36,20 @@ class Chart private constructor(
             ChartType.PIE_CHART -> graphToPieChartMapper.map(context, graphData)
             else -> graphToLineChartMapper.map(context, graphData)
         }
-    }
 
     @Composable
-    fun getComposeChart() {
-        return when (chartType) {
-            ChartType.LINE_LISTING -> graphToTableMapper.mapToCompose(
-                graphData,
-                resetDimensionButton,
-                false,
-            )
+    fun getComposeChart() =
+        when (chartType) {
+            ChartType.LINE_LISTING ->
+                graphToTableMapper.mapToCompose(
+                    graphData,
+                    resetDimensionButton,
+                    false,
+                )
 
             ChartType.TABLE -> graphToTableMapper.mapToCompose(graphData, resetDimensionButton)
             else -> throw IllegalArgumentException("Not supported")
         }
-    }
 
     class ChartBuilder {
         private var chartType: ChartType? = null
@@ -72,8 +71,6 @@ class Chart private constructor(
             return this
         }
 
-        fun build(): Chart {
-            return Chart(chartType!!, graphData!!, resetDimensionButton)
-        }
+        fun build(): Chart = Chart(chartType!!, graphData!!, resetDimensionButton)
     }
 }

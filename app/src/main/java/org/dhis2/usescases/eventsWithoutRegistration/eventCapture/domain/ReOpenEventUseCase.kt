@@ -10,14 +10,17 @@ class ReOpenEventUseCase(
     private val dispatcher: DispatcherProvider,
     private val d2: D2,
 ) {
-    suspend operator fun invoke(
-        eventUid: String,
-    ): Result<Unit> = withContext(dispatcher.io()) {
-        try {
-            d2.eventModule().events().uid(eventUid).setStatus(EventStatus.ACTIVE)
-            Result.success(Unit)
-        } catch (error: D2Error) {
-            Result.failure(error)
+    suspend operator fun invoke(eventUid: String): Result<Unit> =
+        withContext(dispatcher.io()) {
+            try {
+                d2
+                    .eventModule()
+                    .events()
+                    .uid(eventUid)
+                    .setStatus(EventStatus.ACTIVE)
+                Result.success(Unit)
+            } catch (error: D2Error) {
+                Result.failure(error)
+            }
         }
-    }
 }

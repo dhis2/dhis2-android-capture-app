@@ -53,6 +53,7 @@
     <string name="wipe_data_ok">پذیرش</string>
     <string name="wipe_data_no">انصراف</string>
     <string name="SYNC_MANAGER">تنظیمات</string>
+    <string name="settingsTwoFAStatus">وضعیت</string>
     <!--endregion-->
 
     <string name="enrollmment_date">تاریخ شمولیت</string>

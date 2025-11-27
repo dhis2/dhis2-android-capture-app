@@ -5,13 +5,13 @@ import org.hisp.dhis.android.core.analytics.trackerlinelist.TrackerLineListItem
 import org.junit.Test
 
 class LineListingExtensionsTest {
-
     @Test
     fun `should add a filter to a Category LineListingItem`() {
-        val item = TrackerLineListItem.Category(
-            uid = "uid1",
-            filters = listOf(),
-        )
+        val item =
+            TrackerLineListItem.Category(
+                uid = "uid1",
+                filters = listOf(),
+            )
 
         assert(item.filters.isEmpty())
 

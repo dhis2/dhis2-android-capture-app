@@ -1,8 +1,6 @@
 package org.dhis2.form.data
 
 import androidx.paging.PagingData
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
 import org.dhis2.commons.dialogs.bottomsheet.IssueType
@@ -18,6 +16,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
+import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.common.ValidationStrategy
@@ -26,7 +25,7 @@ import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.rules.models.RuleEffect
 
-private const val loopThreshold = 5
+private const val LOOP_THRESHOLD = 5
 
 class FormRepositoryImpl(
     private val formValueStore: FormValueStore,
@@ -39,7 +38,6 @@ class FormRepositoryImpl(
     private val useCompose: Boolean,
     private val preferenceProvider: PreferenceProvider,
 ) : FormRepository {
-
     private var completionPercentage: Float = 0f
     private val itemsWithError: MutableList<RowAction> = mutableListOf()
     private val mandatoryItemsWithoutValue: MutableMap<String, String> = mutableMapOf()
@@ -63,17 +61,18 @@ class FormRepositoryImpl(
         return composeList()
     }
 
-    private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) = when {
-        disableCollapsableSections == true ->
-            null
+    private fun getInitialOpenedSection(shouldOpenErrorLocation: Boolean) =
+        when {
+            disableCollapsableSections == true ->
+                null
 
-        shouldOpenErrorLocation ->
-            itemList.firstOrNull { it.error != null || it.warning != null }?.programStageSection
-                ?: dataEntryRepository.firstSectionToOpen()
+            shouldOpenErrorLocation ->
+                itemList.firstOrNull { it.error != null || it.warning != null }?.programStageSection
+                    ?: dataEntryRepository.firstSectionToOpen()
 
-        else ->
-            dataEntryRepository.firstSectionToOpen()
-    }
+            else ->
+                dataEntryRepository.firstSectionToOpen()
+        }
 
     override suspend fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
         calculationLoop = 0
@@ -82,8 +81,7 @@ class FormRepositoryImpl(
             .mergeListWithErrorFields(itemsWithError)
             .also {
                 calculateCompletionPercentage(it)
-            }
-            .setOpenedSection()
+            }.setOpenedSection()
             .setFocusedItem()
             .setLastItem()
     }
@@ -97,9 +95,7 @@ class FormRepositoryImpl(
         formValueStore.activateEvent()
     }
 
-    override fun fetchPeriods(): Flow<PagingData<Period>> {
-        return dataEntryRepository.fetchPeriods()
-    }
+    override fun fetchPeriods(): Flow<PagingData<Period>> = dataEntryRepository.fetchPeriods()
 
     private fun List<FieldUiModel>.setLastItem(): List<FieldUiModel> {
         if (isEmpty()) {
@@ -117,60 +113,61 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun usesKeyboard(valueType: ValueType?): Boolean {
-        return valueType?.let {
+    private fun usesKeyboard(valueType: ValueType?): Boolean =
+        valueType?.let {
             it.isText || it.isNumeric || it.isInteger
         } ?: false
-    }
 
-    private fun getLastSectionItem(list: List<FieldUiModel>): FieldUiModel {
-        return if (list.all { it is SectionUiModelImpl }) {
+    private fun getLastSectionItem(list: List<FieldUiModel>): FieldUiModel =
+        if (list.all { it is SectionUiModelImpl }) {
             list.asReversed().first()
         } else {
             list.asReversed().first { it.valueType != null }
         }
-    }
 
-    private fun ruleEffects() = try {
-        ruleEngineRepository?.evaluate() ?: emptyList()
-    } catch (e: Exception) {
-        emptyList()
-    }
+    private fun ruleEffects() =
+        try {
+            ruleEngineRepository?.evaluate() ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
 
     private fun calculateCompletionPercentage(list: List<FieldUiModel>) {
-        val unsupportedValueTypes = listOf(
-            ValueType.TRACKER_ASSOCIATE,
-            ValueType.USERNAME,
-        )
-        val fields = list.filter {
-            it.valueType != null &&
-                !unsupportedValueTypes.contains(it.valueType)
-        }
+        val unsupportedValueTypes =
+            listOf(
+                ValueType.TRACKER_ASSOCIATE,
+                ValueType.USERNAME,
+            )
+        val fields =
+            list.filter {
+                it.valueType != null &&
+                    !unsupportedValueTypes.contains(it.valueType)
+            }
         val totalFields = fields.size
         val fieldsWithValue = fields.filter { !it.value.isNullOrEmpty() }.size
-        completionPercentage = if (totalFields == 0) {
-            0f
-        } else {
-            fieldsWithValue.toFloat().div(totalFields.toFloat())
-        }
+        completionPercentage =
+            if (totalFields == 0) {
+                0f
+            } else {
+                fieldsWithValue.toFloat().div(totalFields.toFloat())
+            }
     }
 
-    override fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>? {
-        return ruleEffectsResult?.configurationErrors
-    }
+    override fun getConfigurationErrors(): List<RulesUtilsProviderConfigurationError>? = ruleEffectsResult?.configurationErrors
 
     override suspend fun runDataIntegrityCheck(backPressed: Boolean): DataIntegrityCheckResult {
         runDataIntegrity = true
         val itemsWithErrors = getFieldsWithError()
         val isEvent = dataEntryRepository.isEvent()
-        val itemsWithWarning = ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
-            FieldWithIssue(
-                fieldUid = warningField.fieldUid,
-                fieldName = itemList.find { it.uid == warningField.fieldUid }?.label ?: "",
-                IssueType.WARNING,
-                warningField.errorMessage,
-            )
-        } ?: emptyList()
+        val itemsWithWarning =
+            ruleEffectsResult?.fieldsWithWarnings?.map { warningField ->
+                FieldWithIssue(
+                    fieldUid = warningField.fieldUid,
+                    fieldName = itemList.find { it.uid == warningField.fieldUid }?.label ?: "",
+                    IssueType.WARNING,
+                    warningField.errorMessage,
+                )
+            } ?: emptyList()
 
         return if (isEvent) {
             getEventResult(itemsWithErrors, itemsWithWarning, backPressed)
@@ -184,50 +181,50 @@ class FormRepositoryImpl(
         itemsWithWarning: List<FieldWithIssue>,
         allowDiscard: Boolean,
     ): DataIntegrityCheckResult {
-        val result = when {
-            itemsWithErrors.isNotEmpty() || ruleEffectsResult?.canComplete == false -> {
-                FieldsWithErrorResult(
-                    mandatoryFields = mandatoryItemsWithoutValue,
-                    fieldUidErrorList = itemsWithErrors,
-                    warningFields = itemsWithWarning,
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = allowDiscard,
-                    eventResultDetails = EventResultDetails(null, null, null),
-                )
-            }
+        val result =
+            when {
+                itemsWithErrors.isNotEmpty() || ruleEffectsResult?.canComplete == false -> {
+                    FieldsWithErrorResult(
+                        mandatoryFields = mandatoryItemsWithoutValue,
+                        fieldUidErrorList = itemsWithErrors,
+                        warningFields = itemsWithWarning,
+                        canComplete = ruleEffectsResult?.canComplete ?: true,
+                        onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                        allowDiscard = allowDiscard,
+                        eventResultDetails = EventResultDetails(null, null, null),
+                    )
+                }
 
-            mandatoryItemsWithoutValue.isNotEmpty() -> {
-                MissingMandatoryResult(
-                    mandatoryFields = mandatoryItemsWithoutValue,
-                    errorFields = itemsWithErrors,
-                    warningFields = itemsWithWarning,
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    allowDiscard = allowDiscard,
-                    eventResultDetails = EventResultDetails(null, null, null),
+                mandatoryItemsWithoutValue.isNotEmpty() -> {
+                    MissingMandatoryResult(
+                        mandatoryFields = mandatoryItemsWithoutValue,
+                        errorFields = itemsWithErrors,
+                        warningFields = itemsWithWarning,
+                        canComplete = ruleEffectsResult?.canComplete ?: true,
+                        onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                        allowDiscard = allowDiscard,
+                        eventResultDetails = EventResultDetails(null, null, null),
+                    )
+                }
 
-                )
-            }
+                itemsWithWarning.isNotEmpty() -> {
+                    FieldsWithWarningResult(
+                        fieldUidWarningList = itemsWithWarning,
+                        canComplete = ruleEffectsResult?.canComplete ?: true,
+                        onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                        eventResultDetails = EventResultDetails(null, null, null),
+                    )
+                }
 
-            itemsWithWarning.isNotEmpty() -> {
-                FieldsWithWarningResult(
-                    fieldUidWarningList = itemsWithWarning,
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(null, null, null),
-                )
+                backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
+                else -> {
+                    SuccessfulResult(
+                        canComplete = ruleEffectsResult?.canComplete ?: true,
+                        onCompleteMessage = ruleEffectsResult?.messageOnComplete,
+                        eventResultDetails = EventResultDetails(null, null, null),
+                    )
+                }
             }
-
-            backupOfChangedItems().isNotEmpty() && allowDiscard -> NotSavedResult
-            else -> {
-                SuccessfulResult(
-                    canComplete = ruleEffectsResult?.canComplete ?: true,
-                    onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(null, null, null),
-                )
-            }
-        }
         return result
     }
 
@@ -274,18 +271,19 @@ class FormRepositoryImpl(
         eventStatus: EventStatus?,
         itemsWithWarning: List<FieldWithIssue>,
         validationStrategy: ValidationStrategy?,
-    ): FieldsWithWarningResult {
-        return when (eventStatus) {
+    ): FieldsWithWarningResult =
+        when (eventStatus) {
             EventStatus.ACTIVE -> {
                 FieldsWithWarningResult(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            validationStrategy,
+                        ),
                 )
             }
 
@@ -294,11 +292,12 @@ class FormRepositoryImpl(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        null,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            null,
+                        ),
                 )
             }
 
@@ -307,15 +306,15 @@ class FormRepositoryImpl(
                     fieldUidWarningList = itemsWithWarning,
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            validationStrategy,
+                        ),
                 )
             }
         }
-    }
 
     private fun getMissingMandatoryResult(
         eventStatus: EventStatus?,
@@ -323,8 +322,8 @@ class FormRepositoryImpl(
         itemsWithWarning: List<FieldWithIssue>,
         validationStrategy: ValidationStrategy?,
         backPressed: Boolean,
-    ): DataIntegrityCheckResult {
-        return when (eventStatus) {
+    ): DataIntegrityCheckResult =
+        when (eventStatus) {
             EventStatus.ACTIVE -> {
                 MissingMandatoryResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -333,12 +332,12 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy,
-                    ),
-
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            validationStrategy,
+                        ),
                 )
             }
 
@@ -350,11 +349,12 @@ class FormRepositoryImpl(
                     canComplete = false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        null,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            null,
+                        ),
                 )
             }
 
@@ -366,15 +366,15 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            validationStrategy,
+                        ),
                 )
             }
         }
-    }
 
     private fun getFieldWithErrorResult(
         eventStatus: EventStatus?,
@@ -382,8 +382,8 @@ class FormRepositoryImpl(
         itemsWithWarning: List<FieldWithIssue>,
         validationStrategy: ValidationStrategy?,
         backPressed: Boolean,
-    ): FieldsWithErrorResult {
-        return when (eventStatus) {
+    ): FieldsWithErrorResult =
+        when (eventStatus) {
             EventStatus.ACTIVE -> {
                 FieldsWithErrorResult(
                     mandatoryFields = mandatoryItemsWithoutValue,
@@ -392,11 +392,12 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: true,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            validationStrategy,
+                        ),
                 )
             }
 
@@ -408,11 +409,12 @@ class FormRepositoryImpl(
                     canComplete = false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        dataEntryRepository.validationStrategy(),
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            dataEntryRepository.validationStrategy(),
+                        ),
                 )
             }
 
@@ -424,79 +426,81 @@ class FormRepositoryImpl(
                     canComplete = ruleEffectsResult?.canComplete ?: false,
                     onCompleteMessage = ruleEffectsResult?.messageOnComplete,
                     allowDiscard = backPressed,
-                    eventResultDetails = EventResultDetails(
-                        formValueStore.eventState(),
-                        dataEntryRepository.eventMode(),
-                        validationStrategy,
-                    ),
+                    eventResultDetails =
+                        EventResultDetails(
+                            formValueStore.eventState(),
+                            dataEntryRepository.eventMode(),
+                            validationStrategy,
+                        ),
                 )
             }
         }
-    }
 
-    private fun getSuccessfulResult(): SuccessfulResult {
-        return SuccessfulResult(
+    private fun getSuccessfulResult(): SuccessfulResult =
+        SuccessfulResult(
             canComplete = ruleEffectsResult?.canComplete ?: true,
             onCompleteMessage = ruleEffectsResult?.messageOnComplete,
-            eventResultDetails = EventResultDetails(
-                formValueStore.eventState(),
-                dataEntryRepository.eventMode(),
-                dataEntryRepository.validationStrategy(),
-            ),
+            eventResultDetails =
+                EventResultDetails(
+                    formValueStore.eventState(),
+                    dataEntryRepository.eventMode(),
+                    dataEntryRepository.validationStrategy(),
+                ),
         )
-    }
 
-    override fun completedFieldsPercentage(value: List<FieldUiModel>): Float {
-        return completionPercentage
-    }
+    override fun completedFieldsPercentage(value: List<FieldUiModel>): Float = completionPercentage
 
-    override fun calculationLoopOverLimit(): Boolean {
-        return calculationLoop == loopThreshold
-    }
+    override fun calculationLoopOverLimit(): Boolean = calculationLoop == LOOP_THRESHOLD
 
     override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
-    private suspend fun getFieldsWithError() = itemsWithError.mapNotNull { errorItem ->
-        itemList.find { item ->
-            item.uid == errorItem.id
-        }?.let { item ->
-            FieldWithIssue(
-                fieldUid = item.uid,
-                fieldName = item.label,
-                issueType = IssueType.ERROR,
-                message = errorItem.error?.let {
-                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
-                } ?: "",
+    private suspend fun getFieldsWithError() =
+        itemsWithError
+            .mapNotNull { errorItem ->
+                itemList
+                    .find { item ->
+                        item.uid == errorItem.id
+                    }?.let { item ->
+                        FieldWithIssue(
+                            fieldUid = item.uid,
+                            fieldName = item.label,
+                            issueType = IssueType.ERROR,
+                            message =
+                                errorItem.error?.let {
+                                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                                } ?: "",
+                        )
+                    }
+            }.plus(
+                ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
+                    FieldWithIssue(
+                        fieldUid = errorField.fieldUid,
+                        fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
+                        issueType = IssueType.ERROR,
+                        message = errorField.errorMessage,
+                    )
+                } ?: emptyList(),
             )
-        }
-    }.plus(
-        ruleEffectsResult?.fieldsWithErrors?.map { errorField ->
-            FieldWithIssue(
-                fieldUid = errorField.fieldUid,
-                fieldName = itemList.find { it.uid == errorField.fieldUid }?.label ?: "",
-                issueType = IssueType.ERROR,
-                message = errorField.errorMessage,
-            )
-        } ?: emptyList(),
-    )
 
     @Synchronized
-    private fun List<FieldUiModel>.applyRuleEffects(
-        skipProgramRules: Boolean = false,
-    ): List<FieldUiModel> {
-        ruleEffects = if (skipProgramRules) {
-            ruleEffects
-        } else {
-            ruleEffects()
-        }
+    private fun List<FieldUiModel>.applyRuleEffects(skipProgramRules: Boolean = false): List<FieldUiModel> {
+        ruleEffects =
+            if (skipProgramRules) {
+                ruleEffects
+            } else {
+                ruleEffects()
+            }
         val fieldMap = this.associateBy { it.uid }.toMutableMap()
-        ruleEffectsResult = rulesUtilsProvider.applyRuleEffects(
-            applyForEvent = dataEntryRepository.isEvent(),
-            fieldViewModels = fieldMap,
-            ruleEffects,
-            valueStore = formValueStore,
-        )
-        ruleEffectsResult?.fieldsToUpdate?.takeIf { it.isNotEmpty() }
+        ruleEffectsResult =
+            rulesUtilsProvider.applyRuleEffects(
+                applyForEvent = dataEntryRepository.isEvent(),
+                fieldViewModels = fieldMap,
+                ruleEffects,
+                valueStore = formValueStore,
+            )
+        ruleEffectsResult
+            ?.fieldsToUpdate
+            ?.takeIf { it.isNotEmpty() }
             ?.forEach { fieldWithNewValue ->
                 itemList.find { it.uid == fieldWithNewValue.fieldUid }?.let { field ->
                     updateValueOnList(field.uid, fieldWithNewValue.newValue, field.valueType)
@@ -506,6 +510,7 @@ class FormRepositoryImpl(
         fieldsWithOptionEffects.forEach { field ->
             field.optionSet?.let { optionSetUid ->
                 fetchOptions(field.uid, optionSetUid)
+                fieldMap[field.uid] = itemList.first { it.uid == field.uid }
             }
         }
 
@@ -517,13 +522,14 @@ class FormRepositoryImpl(
             item?.let { field ->
                 field.optionSet?.let { optionSetUid ->
                     fetchOptions(field.uid, optionSetUid)
+                    fieldMap[field.uid] = itemList.first { it.uid == field.uid }
                 }
                 fieldsWithOptionEffects.add(field)
             }
         }
 
         return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true &&
-            calculationLoop < loopThreshold
+            calculationLoop < LOOP_THRESHOLD
         ) {
             calculationLoop += 1
             ArrayList(fieldMap.values).applyRuleEffects(skipProgramRules)
@@ -532,35 +538,33 @@ class FormRepositoryImpl(
         }
     }
 
-    private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> {
-        return focusedItemId?.let { uid ->
+    private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> =
+        focusedItemId?.let { uid ->
             find { item ->
                 item.uid == uid
             }?.let { item ->
                 updated(indexOf(item), item.setFocus())
             } ?: this
         } ?: this
-    }
 
-    private suspend fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> {
-        return map { field ->
+    private suspend fun List<FieldUiModel>.setOpenedSection(): List<FieldUiModel> =
+        map { field ->
             if (field.isSection()) {
                 updateSection(field, this)
             } else {
                 updateField(field)
             }
-        }
-            .filter { field ->
-                when (field) {
-                    is SectionUiModelImpl ->
-                        field.isSectionWithFields()
+        }.filter { field ->
+            when (field) {
+                is SectionUiModelImpl ->
+                    field.isSectionWithFields()
 
-                    else ->
-                        useCompose || disableCollapsableSections == true ||
-                            field.programStageSection == openedSectionUid
-                }
+                else ->
+                    useCompose ||
+                        disableCollapsableSections == true ||
+                        field.programStageSection == openedSectionUid
             }
-    }
+        }
 
     private fun updateSection(
         sectionFieldUiModel: FieldUiModel,
@@ -568,38 +572,49 @@ class FormRepositoryImpl(
     ): FieldUiModel {
         var total = 0
         var values = 0
-        val isOpen = (sectionFieldUiModel.uid == openedSectionUid)
-            .takeIf { disableCollapsableSections != true }
-        fields.filter {
-            it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
-        }.forEach {
-            total++
-            if (!it.value.isNullOrEmpty()) {
-                values++
+        val isOpen =
+            (sectionFieldUiModel.uid == openedSectionUid)
+                .takeIf { disableCollapsableSections != true }
+        fields
+            .filter {
+                it.programStageSection.equals(sectionFieldUiModel.uid) && it.valueType != null
+            }.forEach {
+                total++
+                if (!it.value.isNullOrEmpty()) {
+                    values++
+                }
             }
-        }
 
-        val warningCount = ruleEffectsResult?.warningMap()?.filter { warning ->
-            fields.any { field ->
-                field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
+        val warningCount =
+            ruleEffectsResult
+                ?.warningMap()
+                ?.filter { warning ->
+                    fields.any { field ->
+                        field.uid == warning.key && field.programStageSection == sectionFieldUiModel.uid
+                    }
+                }?.size ?: 0
+
+        val mandatoryCount =
+            mandatoryItemsWithoutValue
+                .takeIf {
+                    runDataIntegrity
+                }?.filter { mandatory ->
+                    mandatory.value == sectionFieldUiModel.uid
+                }?.size ?: 0
+
+        val errorCount =
+            ruleEffectsResult
+                ?.errorMap()
+                ?.filter { error ->
+                    fields.any { field ->
+                        field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
+                    }
+                }?.size ?: 0
+
+        val errorFields =
+            fields.count {
+                it.programStageSection == sectionFieldUiModel.uid && it.error != null
             }
-        }?.size ?: 0
-
-        val mandatoryCount = mandatoryItemsWithoutValue.takeIf {
-            runDataIntegrity
-        }?.filter { mandatory ->
-            mandatory.value == sectionFieldUiModel.uid
-        }?.size ?: 0
-
-        val errorCount = ruleEffectsResult?.errorMap()?.filter { error ->
-            fields.any { field ->
-                field.uid == error.key && field.programStageSection == sectionFieldUiModel.uid
-            }
-        }?.size ?: 0
-
-        val errorFields = fields.count {
-            it.programStageSection == sectionFieldUiModel.uid && it.error != null
-        }
 
         return dataEntryRepository.updateSection(
             sectionFieldUiModel,
@@ -628,19 +643,18 @@ class FormRepositoryImpl(
         )
     }
 
-    private fun hasMandatoryWarnings(fieldUiModel: FieldUiModel): Boolean {
-        return if (fieldUiModel.uid.contains(EventRepository.EVENT_CATEGORY_COMBO_UID)) {
+    private fun hasMandatoryWarnings(fieldUiModel: FieldUiModel): Boolean =
+        if (fieldUiModel.uid.contains(EventRepository.EVENT_CATEGORY_COMBO_UID)) {
             fieldUiModel.mandatory &&
                 (
                     fieldUiModel.value.isNullOrEmpty() ||
                         fieldUiModel.value?.split(",")?.size !=
                         fieldUiModel.eventCategories?.size
-                    )
+                )
         } else {
             fieldUiModel.mandatory &&
                 fieldUiModel.value.isNullOrEmpty()
         }
-    }
 
     private fun getNextItem(currentItemUid: String): String? {
         itemList.let { fields ->
@@ -653,107 +667,127 @@ class FormRepositoryImpl(
         return null
     }
 
-    override fun updateValueOnList(uid: String, value: String?, valueType: ValueType?) {
+    override fun updateValueOnList(
+        uid: String,
+        value: String?,
+        valueType: ValueType?,
+    ) {
         val updatedEnrollmentDataList = dataEntryRepository.getSpecificDataEntryItems(uid)
         if (updatedEnrollmentDataList.isNotEmpty()) updateEnrollmentDate(updatedEnrollmentDataList)
         itemList.let { list ->
 
-            list.find { item ->
-                item.uid == uid
-            }?.let { item ->
-                itemList = list.updated(
-                    list.indexOf(item),
-                    item.setValue(value)
-                        .setDisplayName(
-                            displayNameProvider.provideDisplayName(
-                                valueType,
-                                value,
-                                item.optionSet,
-                                item.periodSelector?.type,
-                            ),
+            list
+                .find { item ->
+                    item.uid == uid
+                }?.let { item ->
+                    itemList =
+                        list.updated(
+                            list.indexOf(item),
+                            item
+                                .setValue(value)
+                                .setDisplayName(
+                                    displayNameProvider.provideDisplayName(
+                                        valueType,
+                                        value,
+                                        item.optionSet,
+                                        item.periodSelector?.type,
+                                    ),
+                                ).setLegend(
+                                    legendValueProvider.provideLegendValue(
+                                        item.uid,
+                                        value,
+                                    ),
+                                ),
                         )
-                        .setLegend(
-                            legendValueProvider.provideLegendValue(
-                                item.uid,
-                                value,
-                            ),
-                        ),
-                )
-            }
+                }
         }
     }
 
     private fun updateEnrollmentDate(fieldUiModelList: List<FieldUiModel>) {
         for (element in fieldUiModelList) {
             itemList.let { list ->
-                list.find { item ->
-                    item.uid == ENROLLMENT_DATE_UID
-                }?.let { item ->
-                    itemList = list.updated(
-                        list.indexOf(item),
-                        item.setSelectableDates(element.selectableDates),
-
-                    )
-                }
+                list
+                    .find { item ->
+                        item.uid == ENROLLMENT_DATE_UID
+                    }?.let { item ->
+                        itemList =
+                            list.updated(
+                                list.indexOf(item),
+                                item.setSelectableDates(element.selectableDates),
+                            )
+                    }
             }
         }
     }
 
     override fun removeAllValues() {
-        itemList = itemList.map { fieldUiModel ->
-            fieldUiModel.setValue(null).setDisplayName(null)
-        }
+        itemList =
+            itemList.map { fieldUiModel ->
+                fieldUiModel.setValue(null).setDisplayName(null)
+            }
     }
 
-    override fun setFieldRequestingCoordinates(uid: String, requestInProcess: Boolean) {
+    override fun setFieldLoading(
+        uid: String,
+        requestInProcess: Boolean,
+    ) {
         itemList.let { list ->
-            list.find { item ->
-                item.uid == uid
-            }?.let { item ->
-                itemList = list.updated(
-                    list.indexOf(item),
-                    item.setIsLoadingData(requestInProcess),
-                )
-            }
-        }
-    }
-
-    override fun setFieldAddingImage(uid: String, requestInProcess: Boolean) {
-        itemList.let { list ->
-            list.find { item ->
-                item.uid == uid
-            }?.let { item ->
-                itemList = list.updated(
-                    list.indexOf(item),
-                    item.setIsLoadingData(requestInProcess),
-                )
-            }
-        }
-    }
-
-    private suspend fun List<FieldUiModel>.mergeListWithErrorFields(
-        fieldsWithError: List<RowAction>,
-    ): List<FieldUiModel> {
-        mandatoryItemsWithoutValue.clear()
-        val mergedList = this.map { item ->
-            if (hasMandatoryWarnings(item)) {
-                mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
-            }
-            fieldsWithError.find { it.id == item.uid }?.let { action ->
-                val error = action.error?.let {
-                    fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+            list
+                .find { item ->
+                    item.uid == uid
+                }?.let { item ->
+                    itemList =
+                        list.updated(
+                            list.indexOf(item),
+                            item.setIsLoadingData(requestInProcess),
+                        )
                 }
-                item.setValue(action.value).setError(error)
-                    .setDisplayName(
-                        displayNameProvider.provideDisplayName(
-                            action.valueType,
-                            action.value,
-                            item.optionSet,
-                            item.periodSelector?.type,
-                        ),
-                    )
-            } ?: item
         }
+    }
+
+    override fun setFieldAddingImage(
+        uid: String,
+        requestInProcess: Boolean,
+    ) {
+        itemList.let { list ->
+            list
+                .find { item ->
+                    item.uid == uid
+                }?.let { item ->
+                    itemList =
+                        list.updated(
+                            list.indexOf(item),
+                            item.setIsLoadingData(requestInProcess),
+                        )
+                }
+        }
+    }
+
+    private suspend fun List<FieldUiModel>.mergeListWithErrorFields(fieldsWithError: List<RowAction>): List<FieldUiModel> {
+        mandatoryItemsWithoutValue.clear()
+        val mergedList =
+            this.map { item ->
+                if (hasMandatoryWarnings(item)) {
+                    mandatoryItemsWithoutValue[item.label] = item.programStageSection ?: ""
+                }
+                fieldsWithError.find { it.id == item.uid }?.let { action ->
+                    val error =
+                        action.error?.let {
+                            fieldErrorMessageProvider.getFriendlyErrorMessage(it)
+                        }
+                    item
+                        .setValue(action.value)
+                        .setError(error)
+                        .setDisplayName(
+                            displayNameProvider.provideDisplayName(
+                                action.valueType,
+                                action.value,
+                                item.optionSet,
+                                item.periodSelector?.type,
+                            ),
+                        )
+                } ?: item
+            }
         return mergedList
     }
 
@@ -769,67 +803,88 @@ class FormRepositoryImpl(
         }
     }
 
-    override fun save(id: String, value: String?, extraData: String?): StoreResult {
+    override fun save(
+        id: String,
+        value: String?,
+        extraData: String?,
+    ): StoreResult {
         val result = formValueStore.save(id, value, extraData)
         if (result.contextDataChanged()) ruleEngineRepository?.refreshContext()
         return result
     }
 
-    override fun storeFile(id: String, filePath: String?): StoreResult {
-        return formValueStore.storeFile(id, filePath)
-    }
+    override fun storeFile(
+        id: String,
+        filePath: String?,
+    ): StoreResult = formValueStore.storeFile(id, filePath)
 
-    override fun areSectionCollapsable(): Boolean {
-        return disableCollapsableSections ?: false
-    }
+    override fun areSectionCollapsable(): Boolean = disableCollapsableSections ?: false
 
-    override fun hasLegendSet(dataElementUid: String): Boolean =
-        legendValueProvider.hasLegendSet(dataElementUid)
+    override fun hasLegendSet(dataElementUid: String): Boolean = legendValueProvider.hasLegendSet(dataElementUid)
 
     override fun setFocusedItem(action: RowAction) {
-        focusedItemId = when (action.type) {
-            ActionType.ON_NEXT -> getNextItem(action.id)
-            ActionType.ON_FINISH -> null
-            else -> action.id
+        focusedItemId =
+            when (action.type) {
+                ActionType.ON_NEXT -> getNextItem(action.id)
+                ActionType.ON_FINISH -> null
+                else -> action.id
+            }
+    }
+
+    override fun fetchOptions(
+        uid: String,
+        optionSetUid: String,
+    ) {
+        val (searchEmitter, flow) =
+            dataEntryRepository.options(
+                optionSetUid = optionSetUid,
+                optionsToHide = ruleEffectsResult?.optionsToHide(uid) ?: emptyList(),
+                optionGroupsToHide = ruleEffectsResult?.optionGroupsToHide(uid) ?: emptyList(),
+                optionGroupsToShow = ruleEffectsResult?.optionGroupsToShow(uid) ?: emptyList(),
+            )
+
+        val newConf =
+            OptionSetConfiguration(
+                searchEmitter = searchEmitter,
+                onSearch = { query ->
+                    searchEmitter.value = query
+                },
+                optionFlow = flow,
+            )
+
+        itemList.let { list ->
+            list
+                .find { item ->
+                    item.uid == uid
+                }?.let { item ->
+                    itemList =
+                        list.updated(
+                            list.indexOf(item),
+                            item.setOptionSetConfiguration(newConf),
+                        )
+                }
         }
     }
 
-    override fun fetchOptions(uid: String, optionSetUid: String) {
-        val (searchEmitter, flow) = dataEntryRepository.options(
-            optionSetUid = optionSetUid,
-            optionsToHide = ruleEffectsResult?.optionsToHide(uid) ?: emptyList(),
-            optionGroupsToHide = ruleEffectsResult?.optionGroupsToHide(uid) ?: emptyList(),
-            optionGroupsToShow = ruleEffectsResult?.optionGroupsToShow(uid) ?: emptyList(),
-        )
-
-        val newConf = OptionSetConfiguration(
-            searchEmitter = searchEmitter,
-            onSearch = { query ->
-                searchEmitter.value = query
-            },
-            optionFlow = flow,
-        )
-
-        itemList.let { list ->
-            list.find { item ->
-                item.uid == uid
-            }?.let { item ->
-                item.optionSetConfiguration = newConf
-                itemList = list.updated(
-                    list.indexOf(item),
-                    item,
-                )
+    override fun reEvaluateRequestParams(customIntentUid: String): List<CustomIntentRequestArgumentModel> {
+        val requestParams = dataEntryRepository.evaluateCustomIntentRequestParameters(customIntentUid)
+        val customIntentRequestsModel =
+            requestParams.mapNotNull { param ->
+                param.value?.let { value ->
+                    CustomIntentRequestArgumentModel(
+                        key = param.key,
+                        value = value,
+                    )
+                }
             }
-        }
+        return customIntentRequestsModel
     }
 
     override fun clearFocusItem() {
         focusedItemId = null
     }
 
-    override fun currentFocusedItem(): FieldUiModel? {
-        return itemList.find { focusedItemId == it.uid }
-    }
+    override fun currentFocusedItem(): FieldUiModel? = itemList.find { focusedItemId == it.uid }
 
     override fun updateSectionOpened(action: RowAction) {
         if (disableCollapsableSections != true) {
@@ -837,23 +892,23 @@ class FormRepositoryImpl(
         }
     }
 
-    override fun getDateFormatConfiguration(): String {
-        return dataEntryRepository.dateFormatConfiguration() ?: "ddMMyyyy"
+    override fun getDateFormatConfiguration(): String = dataEntryRepository.dateFormatConfiguration() ?: "ddMMyyyy"
+
+    fun <E> Iterable<E>.updated(
+        index: Int,
+        elem: E,
+    ): List<E> = mapIndexed { i, existing -> if (i == index) elem else existing }
+
+    override fun getListFromPreferences(uid: String): List<String> = preferenceProvider.getList(uid, emptyList())
+
+    override fun saveListToPreferences(
+        uid: String,
+        list: List<String>,
+    ) {
+        preferenceProvider.saveAsJson(uid, list)
     }
 
-    fun <E> Iterable<E>.updated(index: Int, elem: E): List<E> =
-        mapIndexed { i, existing -> if (i == index) elem else existing }
+    override fun isEvent(): Boolean = dataEntryRepository.isEvent()
 
-    override fun getListFromPreferences(uid: String): MutableList<String> {
-        val gson = Gson()
-        val json = preferenceProvider.sharedPreferences().getString(uid, "[]")
-        val type = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(json, type)
-    }
-
-    override fun saveListToPreferences(uid: String, list: List<String>) {
-        val gson = Gson()
-        val json = gson.toJson(list)
-        preferenceProvider.sharedPreferences().edit().putString(uid, json).apply()
-    }
+    override fun isEventEditable(): Boolean? = dataEntryRepository.isEventEditable()
 }

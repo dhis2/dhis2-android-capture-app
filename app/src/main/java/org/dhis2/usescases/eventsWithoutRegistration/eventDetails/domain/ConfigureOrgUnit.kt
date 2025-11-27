@@ -21,12 +21,11 @@ class ConfigureOrgUnit(
     private val programUid: String,
     private val initialOrgUnitUid: String?,
 ) {
-
     operator fun invoke(
         selectedDate: Date? = null,
         selectedOrgUnit: String? = null,
-    ): Flow<EventOrgUnit> {
-        return flowOf(
+    ): Flow<EventOrgUnit> =
+        flowOf(
             EventOrgUnit(
                 visible = isVisible(),
                 enable = isEnable(),
@@ -36,7 +35,6 @@ class ConfigureOrgUnit(
                 programUid = programUid,
             ),
         )
-    }
 
     private fun isEnable(): Boolean {
         if (repository.getEvent() != null) {
@@ -52,21 +50,18 @@ class ConfigureOrgUnit(
         return true
     }
 
-    private fun isVisible(): Boolean {
-        return creationType != SCHEDULE
-    }
+    private fun isVisible(): Boolean = creationType != SCHEDULE
 
-    private fun isFixed(): Boolean {
-        return creationType == SCHEDULE || repository.getEvent() != null
-    }
+    private fun isFixed(): Boolean = creationType == SCHEDULE || repository.getEvent() != null
 
     private fun getSelectedOrgUnit(
         selectedDate: Date?,
         selectedOrgUnit: String?,
     ): OrganisationUnit? {
-        val orgUnit: OrganisationUnit? = selectedDate?.let { date ->
-            getOrgUnitBySelectedDate(date) ?: getStoredOrgUnit(selectedOrgUnit)
-        } ?: getStoredOrgUnit(selectedOrgUnit) ?: getOrgUnitIfOnlyOne()
+        val orgUnit: OrganisationUnit? =
+            selectedDate?.let { date ->
+                getOrgUnitBySelectedDate(date) ?: getStoredOrgUnit(selectedOrgUnit)
+            } ?: getStoredOrgUnit(selectedOrgUnit) ?: getOrgUnitIfOnlyOne()
 
         orgUnit?.let {
             setCurrentOrgUnit(it.uid())
@@ -100,7 +95,8 @@ class ConfigureOrgUnit(
 
         repository.getEvent()?.let { event ->
             if (event.organisationUnit() != null) {
-                repository.getOrganisationUnit(event.organisationUnit()!!)
+                repository
+                    .getOrganisationUnit(event.organisationUnit()!!)
                     .let { orgUnit ->
                         return orgUnit
                     }
@@ -113,21 +109,19 @@ class ConfigureOrgUnit(
         }
     }
 
-    private fun getOrgUnitsByProgramId(): List<OrganisationUnit> {
-        return repository.getOrganisationUnits()
-    }
+    private fun getOrgUnitsByProgramId(): List<OrganisationUnit> = repository.getOrganisationUnits()
 
-    private fun getOrgUnitIfOnlyOne() =
-        getOrgUnitsByProgramId().takeIf { it.size == 1 }?.firstOrNull()
+    private fun getOrgUnitIfOnlyOne() = getOrgUnitsByProgramId().takeIf { it.size == 1 }?.firstOrNull()
 
-    private fun getCurrentOrgUnit() = if (preferencesProvider.contains(CURRENT_ORG_UNIT)) {
-        preferencesProvider.getString(
-            CURRENT_ORG_UNIT,
-            null,
-        )
-    } else {
-        null
-    }
+    private fun getCurrentOrgUnit() =
+        if (preferencesProvider.contains(CURRENT_ORG_UNIT)) {
+            preferencesProvider.getString(
+                CURRENT_ORG_UNIT,
+                null,
+            )
+        } else {
+            null
+        }
 
     private fun setCurrentOrgUnit(organisationUnitUid: String) {
         preferencesProvider.setValue(CURRENT_ORG_UNIT, organisationUnitUid)

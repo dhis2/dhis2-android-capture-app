@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">ກວດສອບຄວາມຖືກຕ້ອງແບບ 2 ຂັ້ນ</string>
+    <string name="action_next">ຕໍ່ໄປ</string>
+    <string name="two_fa_is_on">ກວດສອບຄວາມຖືກຕ້ອງແບບ 2 ຂັ້ນເປີດຢູ່</string>
+    <string name="username_hint">ຊື່ຜູ້ໃຊ້</string>
+    <string name="password_hint">ລະຫັດຜ່ານ</string>
+    <string name="openid_or">ຫຼື</string>
+    <string name="tracking_title">ທ່ານຕ້ອງການຊ່ວຍພວກເຮົາປັບປຸງແອັບນີ້ບໍ?</string>
+    <string name="action_no_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
+    <string name="action_yes">ແມ່ນ</string>
+    <string name="enter_pin_button">Unlock</string>
+    </resources>

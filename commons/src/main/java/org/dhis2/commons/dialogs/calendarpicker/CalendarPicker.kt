@@ -19,7 +19,6 @@ import javax.inject.Inject
 class CalendarPicker(
     context: Context,
 ) : Dialog(context) {
-
     @Inject
     lateinit var repository: CalendarPickerRepository
 
@@ -41,7 +40,8 @@ class CalendarPicker(
 
     init {
         (context.applicationContext as CalendarPickerComponentProvider)
-            .provideCalendarPickerComponent()?.inject(this)
+            .provideCalendarPickerComponent()
+            ?.inject(this)
     }
 
     fun setInitialDate(date: Date?) {
@@ -176,7 +176,10 @@ class CalendarPicker(
 }
 
 @BindingAdapter("versionCustomVisibility")
-fun setCustomVisibility(linearLayout: LinearLayout, check: Boolean) {
+fun setCustomVisibility(
+    linearLayout: LinearLayout,
+    check: Boolean,
+) {
     if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
         linearLayout.visibility = View.GONE
     }

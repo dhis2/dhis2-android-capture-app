@@ -19,7 +19,6 @@ import org.mockito.kotlin.whenever
 import java.util.Date
 
 class TeiProgramListRepositoryImplTest {
-
     private lateinit var teiProgramRepository: TeiProgramListRepository
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val programViewModelMapper: ProgramViewModelMapper = mock()
@@ -33,11 +32,13 @@ class TeiProgramListRepositoryImplTest {
 
     @Test
     fun `Should set incident date if program needs it`() {
-        val testEnrollment = EnrollmentCreateProjection.builder()
-            .organisationUnit("orgUnitUid")
-            .program("programUid")
-            .trackedEntityInstance("teiUid")
-            .build()
+        val testEnrollment =
+            EnrollmentCreateProjection
+                .builder()
+                .organisationUnit("orgUnitUid")
+                .program("programUid")
+                .trackedEntityInstance("teiUid")
+                .build()
 
         whenever(
             d2.enrollmentModule().enrollments().add(
@@ -50,24 +51,38 @@ class TeiProgramListRepositoryImplTest {
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet(),
-        ) doReturn Program.builder()
-            .uid("programUid")
-            .displayIncidentDate(true)
-            .build()
+            d2
+                .programModule()
+                .programs()
+                .uid("programUid")
+                .blockingGet(),
+        ) doReturn
+            Program
+                .builder()
+                .uid("programUid")
+                .displayIncidentDate(true)
+                .build()
 
         whenever(
-            d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet(),
-        ) doReturn Enrollment.builder()
-            .uid("enrollmentUid")
-            .build()
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid("enrollmentUid")
+                .blockingGet(),
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid("enrollmentUid")
+                .build()
 
-        val testObservable = teiProgramRepository.saveToEnroll(
-            "orgUnitUid",
-            "programUid",
-            "teiUid",
-            Date(),
-        ).test()
+        val testObservable =
+            teiProgramRepository
+                .saveToEnroll(
+                    "orgUnitUid",
+                    "programUid",
+                    "teiUid",
+                    Date(),
+                ).test()
 
         testObservable
             .assertNoErrors()
@@ -81,11 +96,13 @@ class TeiProgramListRepositoryImplTest {
 
     @Test
     fun `Should not set incident date if program doesn't need it`() {
-        val testEnrollment = EnrollmentCreateProjection.builder()
-            .organisationUnit("orgUnitUid")
-            .program("programUid")
-            .trackedEntityInstance("teiUid")
-            .build()
+        val testEnrollment =
+            EnrollmentCreateProjection
+                .builder()
+                .organisationUnit("orgUnitUid")
+                .program("programUid")
+                .trackedEntityInstance("teiUid")
+                .build()
 
         whenever(
             d2.enrollmentModule().enrollments().add(
@@ -98,24 +115,38 @@ class TeiProgramListRepositoryImplTest {
         ) doReturn mock()
 
         whenever(
-            d2.programModule().programs().uid("programUid").blockingGet(),
-        ) doReturn Program.builder()
-            .uid("programUid")
-            .displayIncidentDate(false)
-            .build()
+            d2
+                .programModule()
+                .programs()
+                .uid("programUid")
+                .blockingGet(),
+        ) doReturn
+            Program
+                .builder()
+                .uid("programUid")
+                .displayIncidentDate(false)
+                .build()
 
         whenever(
-            d2.enrollmentModule().enrollments().uid("enrollmentUid").blockingGet(),
-        ) doReturn Enrollment.builder()
-            .uid("enrollmentUid")
-            .build()
+            d2
+                .enrollmentModule()
+                .enrollments()
+                .uid("enrollmentUid")
+                .blockingGet(),
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid("enrollmentUid")
+                .build()
 
-        val testObservable = teiProgramRepository.saveToEnroll(
-            "orgUnitUid",
-            "programUid",
-            "teiUid",
-            Date(),
-        ).test()
+        val testObservable =
+            teiProgramRepository
+                .saveToEnroll(
+                    "orgUnitUid",
+                    "programUid",
+                    "teiUid",
+                    Date(),
+                ).test()
 
         testObservable
             .assertNoErrors()

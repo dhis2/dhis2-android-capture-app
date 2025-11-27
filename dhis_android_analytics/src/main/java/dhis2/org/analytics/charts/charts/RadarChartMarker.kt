@@ -20,25 +20,32 @@ class RadarChartMarker(
     forceTopMarkerPlacement: Boolean = false,
 ) : MarkerView(context, layoutRes) {
     private enum class MarkerPlacement {
-        TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT
+        TOP_RIGHT,
+        TOP_LEFT,
+        BOTTOM_RIGHT,
+        BOTTOM_LEFT,
     }
 
     private val contentY = findViewById<TextView>(R.id.chart_marker_content_y)
     private var markerPlacement: MarkerPlacement? = null
-    private val markerVerticalPadding = if (forceTopMarkerPlacement) {
-        0.dp
-    } else {
-        8.dp
-    }
+    private val markerVerticalPadding =
+        if (forceTopMarkerPlacement) {
+            0.dp
+        } else {
+            8.dp
+        }
 
-    override fun refreshContent(e: Entry?, highlight: Highlight?) {
+    override fun refreshContent(
+        e: Entry?,
+        highlight: Highlight?,
+    ) {
         val formattedYValue = yAxis.valueFormatter.getAxisLabel(e?.y ?: 0f, yAxis)
         contentY.text = formattedYValue
         super.refreshContent(e, highlight)
     }
 
-    override fun getOffset(): MPPointF {
-        return when (markerPlacement) {
+    override fun getOffset(): MPPointF =
+        when (markerPlacement) {
             MarkerPlacement.TOP_RIGHT ->
                 MPPointF(-width.toFloat() / 2f, -height.toFloat() - markerVerticalPadding)
             MarkerPlacement.TOP_LEFT ->
@@ -49,5 +56,4 @@ class RadarChartMarker(
                 MPPointF(-width.toFloat() / 2f, markerVerticalPadding.toFloat())
             null -> MPPointF((-(width / 2)).toFloat(), (-height).toFloat())
         }
-    }
 }

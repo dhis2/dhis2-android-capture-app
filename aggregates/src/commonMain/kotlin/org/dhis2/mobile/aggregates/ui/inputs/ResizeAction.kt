@@ -25,7 +25,15 @@ sealed class ResizeAction {
         val sectionId: String,
     ) : ResizeAction()
 
-    data class GetTableSavedWidth(val sectionId: String) : ResizeAction()
-    data class GetRowHeaderSavedWidth(val sectionId: String) : ResizeAction()
-    data class GetColumSavedWidth(val sectionId: String) : ResizeAction()
+    data class GetTableSavedWidth(
+        val sectionId: String,
+    ) : ResizeAction()
+
+    data class GetRowHeaderSavedWidth(
+        val sectionId: String,
+    ) : ResizeAction()
+
+    data class GetColumSavedWidth(
+        val sectionId: String,
+    ) : ResizeAction()
 }

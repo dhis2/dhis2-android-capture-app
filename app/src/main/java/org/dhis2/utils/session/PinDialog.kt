@@ -23,15 +23,16 @@ class PinDialog(
     private val canBeClosed: Boolean,
     private val unlockCallback: () -> Unit,
     private val forgotPinCallback: () -> Unit,
-) : DialogFragment(), PinView {
-
+) : DialogFragment(),
+    PinView {
     private lateinit var binding: DialogPinBinding
 
     @Inject
     lateinit var presenter: PinPresenter
 
     enum class Mode {
-        SET, ASK
+        SET,
+        ASK,
     }
 
     private var pinAttempts = 0
@@ -92,11 +93,12 @@ class PinDialog(
                         onPinCorrect = unlockCallback,
                         onError = {
                             pinAttempts += 1
-                            Toast.makeText(
-                                context,
-                                getString(R.string.wrong_pin),
-                                Toast.LENGTH_LONG,
-                            ).show()
+                            Toast
+                                .makeText(
+                                    context,
+                                    getString(R.string.wrong_pin),
+                                    Toast.LENGTH_LONG,
+                                ).show()
                             binding.pinLockView.resetPinLockView()
                         },
                         onTwoManyAttempts = { recoverPin() },
@@ -129,7 +131,10 @@ class PinDialog(
         dismissAllowingStateLoss()
     }
 
-    override fun show(manager: FragmentManager, tag: String?) {
+    override fun show(
+        manager: FragmentManager,
+        tag: String?,
+    ) {
         if (manager.findFragmentByTag(tag) == null) {
             manager.beginTransaction().add(this, tag).commitAllowingStateLoss()
         }

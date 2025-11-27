@@ -256,8 +256,10 @@
     <string name="open_with">Abrir com</string>
 
     <string name="enrollment_data_section_label_V2">%s dados</string>
+    <string name="enrollment_cancelled_V2">%s cancelado</string>
     <string name="new_enrollment">Novo %s</string>
-    <string name="enrolling_ou">Inscrito em:</string> <string name="new_event_label">Novo %s</string>
+    <string name="enrolling_ou">Inscrito em:</string>
+    <string name="new_event_label">Novo %s</string>
     <string name="delete_event_label">Apagar%s</string>
     <string name="week_period_span_default_label">Semana %d %s a%s</string>
     <string name="enrollment_reopen">reabrir</string>

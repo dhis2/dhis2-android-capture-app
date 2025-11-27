@@ -21,7 +21,6 @@ import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.files.FileController
 import org.dhis2.mobile.commons.reporting.CrashReportController
-import org.dhis2.mobile.commons.reporting.CrashReportControllerImpl
 import org.dhis2.mobileProgramRules.EvaluationType
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.mobileProgramRules.RulesRepository
@@ -43,8 +42,8 @@ class EventCaptureModule(
         preferences: PreferenceProvider,
         pageConfigurator: NavigationPageConfigurator,
         resourceManager: ResourceManager,
-    ): EventCaptureContract.Presenter {
-        return EventCapturePresenterImpl(
+    ): EventCaptureContract.Presenter =
+        EventCapturePresenterImpl(
             view,
             eventUid,
             eventCaptureRepository,
@@ -53,31 +52,25 @@ class EventCaptureModule(
             pageConfigurator,
             resourceManager,
         )
-    }
 
     @Provides
     @PerActivity
     fun provideFieldMapper(
         context: Context,
         fieldFactory: FieldViewModelFactory,
-    ): EventFieldMapper {
-        return EventFieldMapper(fieldFactory, context.getString(R.string.field_is_mandatory))
-    }
+    ): EventFieldMapper = EventFieldMapper(fieldFactory, context.getString(R.string.field_is_mandatory))
 
     @Provides
     @PerActivity
-    fun provideRepository(d2: D2?): EventCaptureRepository {
-        return EventCaptureRepositoryImpl(eventUid, d2)
-    }
+    fun provideRepository(d2: D2?): EventCaptureRepository = EventCaptureRepositoryImpl(eventUid, d2)
 
     @Provides
     @PerActivity
-    fun ruleEngineRepository(d2: D2): RuleEngineHelper {
-        return RuleEngineHelper(
+    fun ruleEngineRepository(d2: D2): RuleEngineHelper =
+        RuleEngineHelper(
             EvaluationType.Event(eventUid),
             RulesRepository(d2),
         )
-    }
 
     @Provides
     @PerActivity
@@ -88,8 +81,8 @@ class EventCaptureModule(
         resourceManager: ResourceManager,
         fileController: FileController,
         uniqueAttributeController: UniqueAttributeController,
-    ): FormValueStore {
-        return FormValueStore(
+    ): FormValueStore =
+        FormValueStore(
             d2,
             eventUid,
             EntryMode.DE,
@@ -101,13 +94,13 @@ class EventCaptureModule(
             fileController,
             uniqueAttributeController,
         )
-    }
 
     @Provides
     @PerActivity
-    fun searchTEIRepository(d2: D2): SearchTEIRepository {
-        return SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), CrashReportControllerImpl())
-    }
+    fun searchTEIRepository(
+        d2: D2,
+        crashReportController: CrashReportController,
+    ): SearchTEIRepository = SearchTEIRepositoryImpl(d2, DhisEnrollmentUtils(d2), crashReportController)
 
     @get:PerActivity
     @get:Provides
@@ -116,9 +109,5 @@ class EventCaptureModule(
 
     @Provides
     @PerActivity
-    fun pageConfigurator(
-        repository: EventCaptureRepository,
-    ): NavigationPageConfigurator {
-        return EventPageConfigurator(repository, isPortrait)
-    }
+    fun pageConfigurator(repository: EventCaptureRepository): NavigationPageConfigurator = EventPageConfigurator(repository, isPortrait)
 }

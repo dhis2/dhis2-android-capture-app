@@ -13,7 +13,11 @@ import dhis2.org.analytics.charts.renderers.NutritionRenderer
 
 class GraphToNutritionChart {
     private val maxValuesThreadhold = 10
-    fun map(context: Context, graph: Graph): LineChart {
+
+    fun map(
+        context: Context,
+        graph: Graph,
+    ): LineChart {
         val (lineData, totalValues) = GraphToNutritionData(NutritionColorsProviderImpl()).map(graph)
         return LineChart(context).apply {
             description.isEnabled = false
@@ -32,8 +36,16 @@ class GraphToNutritionChart {
                 position = XAxis.XAxisPosition.BOTTOM
                 valueFormatter = AgeInMonthLabelFormatter()
                 granularity = DEFAULT_GRANULARITY
-                axisMinimum = graph.series.first().coordinates.first().position ?: 0f
-                axisMaximum = graph.series.first().coordinates.last().position ?: 0f + 1f
+                axisMinimum = graph.series
+                    .first()
+                    .coordinates
+                    .first()
+                    .position ?: 0f
+                axisMaximum = graph.series
+                    .first()
+                    .coordinates
+                    .last()
+                    .position ?: 0f + 1f
             }
 
             axisLeft.apply {

@@ -1,6 +1,6 @@
 package org.dhis2.usescases.eventsWithoutRegistration.eventDetails.models
 
-import org.dhis2.ui.MetadataIconData
+import org.dhis2.mobile.commons.model.MetadataIconData
 import java.util.Date
 
 data class EventDetails(

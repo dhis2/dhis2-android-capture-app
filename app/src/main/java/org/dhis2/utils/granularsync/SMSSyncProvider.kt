@@ -15,13 +15,13 @@ import org.hisp.dhis.android.core.sms.domain.interactor.SmsSubmitCase
 import org.hisp.dhis.android.core.systeminfo.SMSVersion
 
 interface SMSSyncProvider {
-
     val d2: D2
     val syncContext: SyncContext
     val resourceManager: ResourceManager
     var smsSender: SmsSubmitCase
 
     fun isPlayServicesEnabled(): Boolean
+
     fun waitForSMSResponse(
         context: Context,
         senderNumber: String,
@@ -35,31 +35,49 @@ interface SMSSyncProvider {
         // default behaviour
     }
 
-    fun expectsResponseSMS(): Boolean {
-        return d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isWaitingForResult
-    }
+    fun expectsResponseSMS(): Boolean =
+        d2
+            .smsModule()
+            .configCase()
+            .getSmsModuleConfig()
+            .blockingGet()
+            .isWaitingForResult
 
-    fun getGatewayNumber(): String {
-        return d2.smsModule().configCase().getSmsModuleConfig().blockingGet().gateway
-    }
+    fun getGatewayNumber(): String =
+        d2
+            .smsModule()
+            .configCase()
+            .getSmsModuleConfig()
+            .blockingGet()
+            .gateway
 
     fun isSMSEnabled(isTrackerSync: Boolean): Boolean {
-        val hasCorrectSmsVersion = if (isTrackerSync) {
-            d2.systemInfoModule().versionManager().getSmsVersion() == SMSVersion.V2
-        } else {
-            true
-        }
+        val hasCorrectSmsVersion =
+            if (isTrackerSync) {
+                d2.systemInfoModule().versionManager().getSmsVersion() == SMSVersion.V2
+            } else {
+                true
+            }
 
         val smsModuleIsEnabled =
-            d2.smsModule().configCase().getSmsModuleConfig().blockingGet().isModuleEnabled
+            d2
+                .smsModule()
+                .configCase()
+                .getSmsModuleConfig()
+                .blockingGet()
+                .isModuleEnabled
 
         return hasCorrectSmsVersion && smsModuleIsEnabled
     }
 
-    fun getConvertTask(): Single<ConvertTaskResult> {
-        return when (syncContext.conflictType()) {
+    fun getConvertTask(): Single<ConvertTaskResult> =
+        when (syncContext.conflictType()) {
             ConflictType.EVENT -> {
-                if (d2.eventModule().events().uid(syncContext.recordUid()).blockingGet()
+                if (d2
+                        .eventModule()
+                        .events()
+                        .uid(syncContext.recordUid())
+                        .blockingGet()
                         ?.enrollment() == null
                 ) {
                     convertSimpleEvent()
@@ -68,7 +86,10 @@ interface SMSSyncProvider {
                 }
             }
             ConflictType.TEI -> {
-                if (d2.enrollmentModule().enrollments().uid(syncContext.recordUid())
+                if (d2
+                        .enrollmentModule()
+                        .enrollments()
+                        .uid(syncContext.recordUid())
                         .blockingExists()
                 ) {
                     convertEnrollment()
@@ -83,17 +104,20 @@ interface SMSSyncProvider {
             ConflictType.DATA_VALUES -> {
                 convertDataSet()
             }
-            else -> Single.error(
-                Exception(
-                    resourceManager.getString(R.string.granular_sync_unsupported_task),
-                ),
-            )
+            else ->
+                Single.error(
+                    Exception(
+                        resourceManager.getString(R.string.granular_sync_unsupported_task),
+                    ),
+                )
         }
-    }
 
     fun convertSimpleEvent(): Single<ConvertTaskResult>
+
     fun convertTrackerEvent(): Single<ConvertTaskResult>
+
     fun convertEnrollment(): Single<ConvertTaskResult>
+
     fun convertDataSet(): Single<ConvertTaskResult>
 
     fun sendSms(
@@ -102,6 +126,7 @@ interface SMSSyncProvider {
     ): Completable = Completable.complete()
 
     fun onSmsNotAccepted(): SmsSendingService.SendingStatus
+
     fun observeConfirmationNumber(): LiveData<Boolean?> = MutableLiveData(null)
 
     fun restartSmsSender() {

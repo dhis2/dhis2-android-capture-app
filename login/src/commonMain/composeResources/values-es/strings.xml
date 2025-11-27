@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">Autenticación de dos factores</string>
+    <string name="action_next">Siguiente</string>
+    <string name="two_fa_is_on">La autenticación de dos factores está activada.</string>
+    <string name="biometrics_login_title">Acceso rápido</string>
+    <string name="biometrics_login_text">¿Te gustaría usar tu huella o algún otro método biométrico para acceder?</string>
+    <string name="username_hint">Nombre de usuario</string>
+    <string name="password_hint">Contraseña</string>
+    <string name="openid_or">O</string>
+    <string name="tracking_title">¿Desea ayudarnos a mejorar esta aplicación?</string>
+    <string name="privacy_policy">política de privacidad</string>
+    <string name="action_no_now">Ahora no</string>
+    <string name="action_yes">Sí</string>
+    <string name="enter_pin_button">Desbloquear</string>
+    <string name="importing_successful">Importado con éxito</string>
+    </resources>

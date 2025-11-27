@@ -24,32 +24,37 @@ class RuleEngineHelper(
         var ruleEffects = emptyList<RuleEffect>()
         runBlocking {
             async { buildRuleEngineContextData(evaluationType.targetUid) }.await()
-            ruleEffects = async {
-                when (evaluationType) {
-                    is EvaluationType.Enrollment ->
-                        ruleEngine.evaluate(
-                            target = buildTargetEnrollment(evaluationType.targetUid).copy(
-                                attributeValues = rulesRepository.queryAttributeValues(
-                                    evaluationType.targetUid,
-                                ),
-                            ),
-                            ruleEvents = contextData.ruleEvents,
-                            executionContext = contextData.ruleEngineContext,
-                        )
+            ruleEffects =
+                async {
+                    when (evaluationType) {
+                        is EvaluationType.Enrollment ->
+                            ruleEngine.evaluate(
+                                target =
+                                    buildTargetEnrollment(evaluationType.targetUid).copy(
+                                        attributeValues =
+                                            rulesRepository.queryAttributeValues(
+                                                evaluationType.targetUid,
+                                            ),
+                                    ),
+                                ruleEvents = contextData.ruleEvents,
+                                executionContext = contextData.ruleEngineContext,
+                            )
 
-                    is EvaluationType.Event ->
-                        ruleEngine.evaluate(
-                            target = buildTargetEvent(evaluationType.targetUid).copy(
-                                dataValues = rulesRepository.queryDataValues(
-                                    evaluationType.targetUid,
-                                ),
-                            ),
-                            ruleEnrollment = contextData.ruleEnrollment,
-                            ruleEvents = contextData.ruleEvents,
-                            executionContext = contextData.ruleEngineContext,
-                        )
-                }
-            }.await()
+                        is EvaluationType.Event ->
+                            ruleEngine.evaluate(
+                                target =
+                                    buildTargetEvent(evaluationType.targetUid).copy(
+                                        dataValues =
+                                            rulesRepository.queryDataValues(
+                                                evaluationType.targetUid,
+                                            ),
+                                    ),
+                                ruleEnrollment = contextData.ruleEnrollment,
+                                ruleEvents = contextData.ruleEvents,
+                                executionContext = contextData.ruleEngineContext,
+                            )
+                    }
+                }.await()
         }
         return ruleEffects
     }
@@ -59,12 +64,13 @@ class RuleEngineHelper(
             val (programUid, orgUnitUid) = getProgramAndOrgUnit(targetUid)
 
             coroutineScope {
-                val rules = async {
-                    rulesRepository.rules(
-                        programUid = programUid,
-                        eventUid = targetUid.takeIf { evaluationType !is EvaluationType.Enrollment },
-                    )
-                }
+                val rules =
+                    async {
+                        rulesRepository.rules(
+                            programUid = programUid,
+                            eventUid = targetUid.takeIf { evaluationType !is EvaluationType.Enrollment },
+                        )
+                    }
 
                 val ruleVariables = async { rulesRepository.ruleVariables(programUid = programUid) }
                 val supplData = async { rulesRepository.supplementaryData(orgUnitUid = orgUnitUid) }
@@ -72,16 +78,18 @@ class RuleEngineHelper(
                 val ruleEnrollment = async { getRuleEnrollment(targetUid) }
                 val ruleEvents = async { getRuleEvents(targetUid) }
 
-                contextData = RuleEngineContextData(
-                    ruleEngineContext = RuleEngineContext(
-                        rules = rules.await(),
-                        ruleVariables = ruleVariables.await(),
-                        supplementaryData = supplData.await(),
-                        constantsValues = constants.await(),
-                    ),
-                    ruleEnrollment = ruleEnrollment.await(),
-                    ruleEvents = ruleEvents.await(),
-                )
+                contextData =
+                    RuleEngineContextData(
+                        ruleEngineContext =
+                            RuleEngineContext(
+                                rules = rules.await(),
+                                ruleVariables = ruleVariables.await(),
+                                supplementaryData = supplData.await(),
+                                constantsValues = constants.await(),
+                            ),
+                        ruleEnrollment = ruleEnrollment.await(),
+                        ruleEvents = ruleEvents.await(),
+                    )
             }
         }
     }
@@ -100,15 +108,18 @@ class RuleEngineHelper(
             null
         }
 
-    private suspend fun getRuleEvents(targetUid: String) = when (evaluationType) {
-        is EvaluationType.Enrollment -> rulesRepository.enrollmentEvents(
-            enrollmentUid = targetUid,
-        )
+    private suspend fun getRuleEvents(targetUid: String) =
+        when (evaluationType) {
+            is EvaluationType.Enrollment ->
+                rulesRepository.enrollmentEvents(
+                    enrollmentUid = targetUid,
+                )
 
-        is EvaluationType.Event -> rulesRepository.otherEvents(
-            eventUidToEvaluate = targetUid,
-        )
-    }
+            is EvaluationType.Event ->
+                rulesRepository.otherEvents(
+                    eventUidToEvaluate = targetUid,
+                )
+        }
 
     private fun buildTargetEnrollment(enrollmentUid: String): RuleEnrollment {
         if (::targetEnrollment.isInitialized.not() || refreshContext) {

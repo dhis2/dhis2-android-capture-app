@@ -10,8 +10,6 @@ import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.data.user.UserComponent;
 import org.dhis2.data.user.UserModule;
 import org.dhis2.ui.ThemeManager;
-import org.dhis2.usescases.login.accounts.AccountsComponent;
-import org.dhis2.usescases.login.accounts.AccountsModule;
 import org.dhis2.utils.category.CategoryDialogComponent;
 import org.dhis2.utils.category.CategoryDialogModule;
 import org.dhis2.utils.customviews.CategoryComboDialogComponent;
@@ -53,6 +51,4 @@ public interface ServerComponent extends Charts.Dependencies {
 
     @NonNull
     DhisPeriodUtils dhisPeriodUtils();
-
-    AccountsComponent plus(@NonNull AccountsModule module);
 }

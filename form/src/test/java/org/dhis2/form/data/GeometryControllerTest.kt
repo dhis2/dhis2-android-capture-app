@@ -10,7 +10,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 class GeometryControllerTest {
-
     private val geometryParser: GeometryParser = mock()
     private lateinit var controller: GeometryController
 
@@ -33,10 +32,11 @@ class GeometryControllerTest {
             geometryParser.parsePoint(any()),
         ) doReturn point
 
-        val result = controller.generateLocationFromCoordinates(
-            FeatureType.POINT,
-            "coordinates",
-        )
+        val result =
+            controller.generateLocationFromCoordinates(
+                FeatureType.POINT,
+                "coordinates",
+            )
 
         assertTrue(
             result?.type() == FeatureType.POINT &&

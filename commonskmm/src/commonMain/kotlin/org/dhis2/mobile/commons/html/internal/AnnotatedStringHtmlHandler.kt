@@ -19,29 +19,30 @@ internal class AnnotatedStringHtmlHandler(
     private val linkInteractionListener: LinkInteractionListener?,
     spanStyle: SpanStyle,
 ) : HtmlHandler {
-    private val textWriter = HtmlTextWriter(
-        builder,
-        object : HtmlTextWriter.Callbacks {
-            private var consumedNewLineIndex = -1
+    private val textWriter =
+        HtmlTextWriter(
+            builder,
+            object : HtmlTextWriter.Callbacks {
+                private var consumedNewLineIndex = -1
 
-            override fun onWriteNewLines(newLineCount: Int): Int {
-                val currentIndex = builder.length
-                if (currentIndex != consumedNewLineIndex) {
-                    val startIndex = paragraphStartIndex
-                    if (currentIndex == startIndex || (startIndex < 0 && currentIndex == paragraphEndIndex)) {
-                        // Paragraph style will automatically add a single new line at each boundary
-                        consumedNewLineIndex = currentIndex
-                        return newLineCount - 1
+                override fun onWriteNewLines(newLineCount: Int): Int {
+                    val currentIndex = builder.length
+                    if (currentIndex != consumedNewLineIndex) {
+                        val startIndex = paragraphStartIndex
+                        if (currentIndex == startIndex || (startIndex < 0 && currentIndex == paragraphEndIndex)) {
+                            // Paragraph style will automatically add a single new line at each boundary
+                            consumedNewLineIndex = currentIndex
+                            return newLineCount - 1
+                        }
                     }
+                    return newLineCount
                 }
-                return newLineCount
-            }
 
-            override fun onWriteContentStart() {
-                pushPendingSpanStyles()
-            }
-        },
-    )
+                override fun onWriteContentStart() {
+                    pushPendingSpanStyles()
+                }
+            },
+        )
     private val mainStyle = spanStyle
     private val pendingSpanStyles = mutableListOf(spanStyle)
     private var isAnchorPending = false
@@ -60,16 +61,44 @@ internal class AnnotatedStringHtmlHandler(
                 var boldHasBeenApplied = false
                 var underlinedHasBeenApplied = false
                 for (i in 0..<size) {
-                    combinedSpanStyle = combinedSpanStyle.copy(
-                        textDecoration = if (!underlinedHasBeenApplied) pendingSpanStyles[i].textDecoration else combinedSpanStyle.textDecoration,
-                        fontStyle = if (!italicHasBeenApplied) pendingSpanStyles[i].fontStyle else combinedSpanStyle.fontStyle,
-                        fontWeight = if (!boldHasBeenApplied) pendingSpanStyles[i].fontWeight else combinedSpanStyle.fontWeight,
-                    )
-                    if (pendingSpanStyles[i].textDecoration == TextDecoration.Underline) underlinedHasBeenApplied = true
-                    if (pendingSpanStyles[i].fontStyle == FontStyle.Companion.Italic) italicHasBeenApplied = true
-                    if (pendingSpanStyles[i].fontWeight == FontWeight.Companion.Bold) boldHasBeenApplied = true
+                    combinedSpanStyle =
+                        combinedSpanStyle.copy(
+                            textDecoration =
+                                if (!underlinedHasBeenApplied) {
+                                    pendingSpanStyles[i].textDecoration
+                                } else {
+                                    combinedSpanStyle.textDecoration
+                                },
+                            fontStyle =
+                                if (!italicHasBeenApplied) {
+                                    pendingSpanStyles[i].fontStyle
+                                } else {
+                                    combinedSpanStyle.fontStyle
+                                },
+                            fontWeight =
+                                if (!boldHasBeenApplied) {
+                                    pendingSpanStyles[i].fontWeight
+                                } else {
+                                    combinedSpanStyle.fontWeight
+                                },
+                        )
+                    if (pendingSpanStyles[i].textDecoration == TextDecoration.Underline) {
+                        underlinedHasBeenApplied =
+                            true
+                    }
+                    if (pendingSpanStyles[i].fontStyle == FontStyle.Companion.Italic) {
+                        italicHasBeenApplied =
+                            true
+                    }
+                    if (pendingSpanStyles[i].fontWeight == FontWeight.Companion.Bold) {
+                        boldHasBeenApplied =
+                            true
+                    }
                 }
-                if (boldHasBeenApplied) combinedSpanStyle = combinedSpanStyle.copy(color = TextColor.OnSurfaceVariant)
+                if (boldHasBeenApplied) {
+                    combinedSpanStyle =
+                        combinedSpanStyle.copy(color = TextColor.OnSurfaceVariant)
+                }
                 builder.pushStyle(combinedSpanStyle)
             } else {
                 builder.pushStyle(pendingSpanStyles[0])
@@ -78,7 +107,10 @@ internal class AnnotatedStringHtmlHandler(
         }
     }
 
-    override fun onOpenTag(name: String, attributes: (String) -> String?) {
+    override fun onOpenTag(
+        name: String,
+        attributes: (String) -> String?,
+    ) {
         when (name) {
             "div", "header", "footer", "main", "nav", "aside", "section", "article",
             "address", "figure", "figcaption",
@@ -93,6 +125,7 @@ internal class AnnotatedStringHtmlHandler(
                 pendingAnchorUrl = attributes("href").orEmpty()
                 isAnchorPending = true
             }
+
             "u" -> handleSpanStyleStart(mainStyle.copy(textDecoration = TextDecoration.Companion.Underline))
         }
     }
@@ -117,17 +150,20 @@ internal class AnnotatedStringHtmlHandler(
     }
 
     private fun handleAnchorStart(url: String) {
-        val combinedSpanStyle = pendingSpanStyles.fold(mainStyle) { acc, spanStyle ->
-            acc.merge(spanStyle)
-        }.copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline)
+        val combinedSpanStyle =
+            pendingSpanStyles
+                .fold(mainStyle) { acc, spanStyle ->
+                    acc.merge(spanStyle)
+                }.copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline)
         builder.pushLink(
             LinkAnnotation.Url(
                 url = url,
-                styles = TextLinkStyles(
-                    style = combinedSpanStyle,
-                    pressedStyle = style.textLinkStyles?.pressedStyle,
-                    hoveredStyle = style.textLinkStyles?.hoveredStyle,
-                ),
+                styles =
+                    TextLinkStyles(
+                        style = combinedSpanStyle,
+                        pressedStyle = style.textLinkStyles?.pressedStyle,
+                        hoveredStyle = style.textLinkStyles?.hoveredStyle,
+                    ),
                 linkInteractionListener = linkInteractionListener,
             ),
         )
@@ -140,7 +176,9 @@ internal class AnnotatedStringHtmlHandler(
             "video", "audio", "big", "small", "tt", "code",
             "del", "s", "strike", "h1", "h2", "h3", "h4", "h5", "h6", "sup", "sub",
             "hr", "script", "head", "table", "form", "fieldset", "title", "span",
-            -> {}
+            -> {
+            }
+
             "strong", "b", "em", "cite", "dfn", "i",
             "u",
             -> handleSpanStyleEnd()

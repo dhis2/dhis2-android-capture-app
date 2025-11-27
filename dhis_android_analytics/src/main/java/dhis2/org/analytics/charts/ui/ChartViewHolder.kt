@@ -17,14 +17,16 @@ class ChartViewHolder(
     val binding: ItemChartBinding,
     val onChartTypeChanged: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
-
     init {
         binding.composeChart.setViewCompositionStrategy(
             ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
         )
     }
 
-    fun bind(chart: ChartModel, adapterCallback: ChartItemCallback) {
+    fun bind(
+        chart: ChartModel,
+        adapterCallback: ChartItemCallback,
+    ) {
         chart.orgUnitCallback = { orgUnitType, linelistingColumnId ->
             adapterCallback.filterOrgUnit(chart, orgUnitType, linelistingColumnId)
         }
@@ -40,7 +42,10 @@ class ChartViewHolder(
         binding.chartModel = chart
         chart.observableChartType.addOnPropertyChangedCallback(
             object : Observable.OnPropertyChangedCallback() {
-                override fun onPropertyChanged(sender: Observable, propertyId: Int) {
+                override fun onPropertyChanged(
+                    sender: Observable,
+                    propertyId: Int,
+                ) {
                     onChartTypeChanged()
                     loadChart(chart)
                 }
@@ -56,10 +61,13 @@ class ChartViewHolder(
         )
         if (!rendersAsTable(chart)) {
             binding.resetDimensions.visibility = GONE
-            val chartView = chart.graph.toChartBuilder()
-                .withType(chart.observableChartType.get()!!)
-                .withGraphData(chart.graph)
-                .build().getChartView(binding.root.context)
+            val chartView =
+                chart.graph
+                    .toChartBuilder()
+                    .withType(chart.observableChartType.get()!!)
+                    .withGraphData(chart.graph)
+                    .build()
+                    .getChartView(binding.root.context)
 
             TransitionManager.beginDelayedTransition(binding.chartContainer, Slide(Gravity.START))
             binding.chartContainer.removeAllViews()
@@ -67,21 +75,25 @@ class ChartViewHolder(
         }
     }
 
-    private fun rendersAsTable(chart: ChartModel): Boolean {
-        return chart.observableChartType.get() == ChartType.TABLE ||
+    private fun rendersAsTable(chart: ChartModel): Boolean =
+        chart.observableChartType.get() == ChartType.TABLE ||
             chart.observableChartType.get() == ChartType.LINE_LISTING
-    }
 
-    private fun loadComposeChart(chart: ChartModel, visible: Boolean = true) {
+    private fun loadComposeChart(
+        chart: ChartModel,
+        visible: Boolean = true,
+    ) {
         binding.composeChart.setContent {
             DHIS2Theme {
                 if (visible) {
                     binding.chartContainer.removeAllViews()
-                    chart.graph.toChartBuilder()
+                    chart.graph
+                        .toChartBuilder()
                         .withType(chart.observableChartType.get()!!)
                         .withGraphData(chart.graph)
                         .withResetDimensions(binding.resetDimensions)
-                        .build().getComposeChart()
+                        .build()
+                        .getComposeChart()
                 }
             }
         }
@@ -95,8 +107,20 @@ class ChartViewHolder(
             lineListingColumnId: Int?,
         )
 
-        fun filterOrgUnit(chart: ChartModel, filters: OrgUnitFilterType, lineListingColumnId: Int?)
-        fun resetFilter(chart: ChartModel, filter: ChartFilter)
-        fun filterColumnValue(chart: ChartModel, column: Int)
+        fun filterOrgUnit(
+            chart: ChartModel,
+            filters: OrgUnitFilterType,
+            lineListingColumnId: Int?,
+        )
+
+        fun resetFilter(
+            chart: ChartModel,
+            filter: ChartFilter,
+        )
+
+        fun filterColumnValue(
+            chart: ChartModel,
+            column: Int,
+        )
     }
 }

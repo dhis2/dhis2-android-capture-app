@@ -16,9 +16,9 @@ fun filterRobotCommon(robotBody: FiltersRobot.() -> Unit) {
 class FiltersRobot : BaseRobot() {
 
     fun selectDate(year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        onView(withId(R.id.datePicker)).perform(
+        waitForView(withId(R.id.datePicker)).perform(
             PickerActions.setDate(year, monthOfYear, dayOfMonth)
         )
-        onView(withId(R.id.acceptBtn)).perform(click())
+        waitForView(withId(R.id.acceptBtn)).perform(click())
     }
 }

@@ -21,17 +21,22 @@ data class TableColors(
     val iconColor: Color = Color.LightGray,
     val onPrimary: Color = Color.White,
 ) {
-    fun cellTextColor(hasError: Boolean, hasWarning: Boolean, isEditable: Boolean) = when {
+    fun cellTextColor(
+        hasError: Boolean,
+        hasWarning: Boolean,
+        isEditable: Boolean,
+    ) = when {
         hasError -> errorColor
         hasWarning -> warningColor
         !isEditable -> disabledCellText
         else -> cellText
     }
 
-    fun cellMandatoryIconColor(hasValue: Boolean) = when (hasValue) {
-        true -> iconColor
-        false -> errorColor
-    }
+    fun cellMandatoryIconColor(hasValue: Boolean) =
+        when (hasValue) {
+            true -> iconColor
+            false -> errorColor
+        }
 }
 
 val LocalTableColors = staticCompositionLocalOf { TableColors() }

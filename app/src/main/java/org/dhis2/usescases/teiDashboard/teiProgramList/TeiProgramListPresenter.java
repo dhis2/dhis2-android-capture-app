@@ -66,7 +66,7 @@ public class TeiProgramListPresenter implements TeiProgramListContract.Presenter
     @Override
     public void onActiveEnrollClick(EnrollmentViewModel enrollmentModel) {
         preferences.removeValue(Preference.CURRENT_ORG_UNIT);
-        view.changeCurrentProgram(enrollmentModel.programUid(), enrollmentModel.uid());
+        view.changeCurrentProgram(enrollmentModel.getProgramUid(), enrollmentModel.getUid());
     }
 
     @Override

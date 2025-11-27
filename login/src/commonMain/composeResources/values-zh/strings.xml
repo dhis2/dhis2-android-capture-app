@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="two_fa_screen_title">双重身份验证</string>
+    <string name="two_fa_authentication_code">验证码</string>
+    <string name="action_next">下一步</string>
+    <string name="two_fa_is_on">双因素身份验证已开启。</string>
+    <string name="two_fa_code">验证码</string>
+    <string name="biometrics_login_title">快速登录</string>
+    <string name="biometrics_login_text">您想使用指纹或其他生物识别方法登录吗？</string>
+    <string name="username_hint">用户名</string>
+    <string name="password_hint">口令</string>
+    <string name="logging_in">登录...</string>
+    <string name="action_log_in">登录</string>
+    <string name="openid_or">或</string>
+    <string name="tracking_title">你想帮助我们改进这个应用程序吗？</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="action_no_now">现在不要</string>
+    <string name="action_yes">是</string>
+    <string name="enter_pin_button">解锁</string>
+    <string name="importing_successful">导入成功</string>
+    </resources>

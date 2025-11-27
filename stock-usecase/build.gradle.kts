@@ -3,17 +3,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     id("com.android.library")
     kotlin("android")
-    kotlin("kapt")
     id("kotlin-parcelize")
-    id("dagger.hilt.android.plugin")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
-
-repositories {
-    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-}
 
 base {
     archivesName.set("psm-v" + libs.versions.vName.get())
@@ -27,12 +21,6 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         testOptions.targetSdk = libs.versions.sdk.get().toInt()
         multiDexEnabled = true
-
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments["dagger.hilt.disableCrossCompilationRootValidation"] = "true"
-            }
-        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -87,17 +75,18 @@ kotlin {
 dependencies {
 
     implementation(project(":commons"))
+    implementation(project(":commonskmm"))
     implementation(project(":compose-table"))
     implementation(project(":dhis2-mobile-program-rules"))
     implementation(project(":dhis_android_analytics"))
-
+    api(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.composeVM)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
     implementation(libs.bundles.stock.implementation)
+    implementation(libs.androidx.compose)
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
-    kapt(libs.bundles.stock.kapt)
     testImplementation(libs.bundles.stock.test)
-}
-
-kapt {
-    correctErrorTypes = true
 }

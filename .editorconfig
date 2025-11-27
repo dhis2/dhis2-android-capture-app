@@ -1,0 +1,8 @@
+[*.{kt,kts}]
+ktlint_code_style = ktlint_official
+ktlint_standard_function-naming = disabled
+ktlint_standard_no-unused-imports = enabled
+ktlint_standard_no-wildcard-imports = enabled
+ktlint_standard_trailing-comma-on-call-site = enabled
+ktlint_standard_trailing-comma-on-declaration-site = enabled
+ktlint_standard_import-ordering = enabled

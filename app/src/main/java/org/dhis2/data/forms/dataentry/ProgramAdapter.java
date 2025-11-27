@@ -18,11 +18,6 @@ import org.dhis2.usescases.searchTrackEntity.ProgramSpinnerModel;
 
 import java.util.List;
 
-/**
- * x
- * Created by ppajuelo on 07/11/2017-sdfghsdfh .
- */
-
 public class ProgramAdapter extends ArrayAdapter<ProgramSpinnerModel> {
 
     private List<ProgramSpinnerModel> programs;

@@ -11,7 +11,11 @@ import timber.log.Timber
 
 const val MAX_LEN = 120
 
-fun debugRuleEngine(rules: List<Rule>, ruleVariables: List<RuleVariable>, events: List<RuleEvent>) {
+fun debugRuleEngine(
+    rules: List<Rule>,
+    ruleVariables: List<RuleVariable>,
+    events: List<RuleEvent>,
+) {
     val buffer = StringBuilder()
     buffer.append("-----                       Rules Engine dump                -----------")
     buffer.append("\n\n")
@@ -104,10 +108,12 @@ fun printRuleEffects(
     Timber.d(buffer.toString())
 }
 
-fun printRuleEngineData(buffer: StringBuilder, data: String) {
+fun printRuleEngineData(
+    buffer: StringBuilder,
+    data: String,
+) {
     val charsLen = data.length
     val desiredLen = MAX_LEN - charsLen - 2
-//    println(data)
     buffer.append("|" + data.padEnd(if (desiredLen > MAX_LEN) desiredLen else MAX_LEN) + "|\n")
 }
 

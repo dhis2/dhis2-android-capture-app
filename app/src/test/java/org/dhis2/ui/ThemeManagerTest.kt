@@ -23,14 +23,15 @@ class ThemeManagerTest {
     private val trackedEntityTypeConfiguration: TrackedEntityTypeConfiguration = mock()
     private val preferenceProvider: PreferenceProvider = mock()
     private val colorUtils: ColorUtils = mock()
-    private val themeManager = ThemeManager(
-        userManager,
-        programConfiguration,
-        dataSetConfiguration,
-        trackedEntityTypeConfiguration,
-        preferenceProvider,
-        colorUtils,
-    )
+    private val themeManager =
+        ThemeManager(
+            userManager,
+            programConfiguration,
+            dataSetConfiguration,
+            trackedEntityTypeConfiguration,
+            preferenceProvider,
+            colorUtils,
+        )
 
     @Test
     fun shouldSetProgramTheme() {
@@ -94,7 +95,7 @@ class ThemeManagerTest {
     @Test
     fun shouldReturnAppThemeColorIfProgramIsNull() {
         var result = false
-        whenever(userManager.theme)doReturn Single.just(Pair("flag", R.style.AppTheme))
+        whenever(userManager.theme) doReturn Single.just(Pair("flag", R.style.AppTheme))
         themeManager.getThemePrimaryColor(
             null,
             { result = false },
@@ -107,7 +108,7 @@ class ThemeManagerTest {
     fun shouldReturnAppThemeColorIfProgramColorIsNull() {
         var result = false
         whenever(programConfiguration.getProgramColor("uid")) doReturn null
-        whenever(userManager.theme)doReturn Single.just(Pair("flag", R.style.AppTheme))
+        whenever(userManager.theme) doReturn Single.just(Pair("flag", R.style.AppTheme))
         themeManager.getThemePrimaryColor(
             "uid",
             { result = false },

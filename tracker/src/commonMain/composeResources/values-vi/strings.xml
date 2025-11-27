@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_relationships">Không có mối quan hệ, bấm vào "+" để thêm một mối quan hệ.</string>
+    <string name="relation_creation_date">Mối quan hệ đã được tạo trên</string>
+    <string name="remove_relationship_title">Bỏ %1$s?</string>
+    <string name="remove_relationship_desc">%1$s sẽ bị xóa. Hành động này không thể hoàn lại. </string>
+    <string name="remove_some_relationships_title">Bỏ %1$d mối quan hệ được chọn?</string>
+    <string name="remove_some_relationships_desc">%1$d mối quan hệ được chọn sẽ bị xóa. Hành động này không thể hoàn tác.</string>
+    <string name="show_number_more">Hiển thị thêm %1$d...</string>
+    <string name="relationship">Mối quan hệ</string>
+    <string name="no_data">Không có dữ liệu</string>
+    <string name="syncing">Đang đồng bộ...</string>
+    <string name="show_more">Hiện thêm</string>
+    <string name="show_less">Ẩn bớt</string>
+    <string name="cancel">Hủy</string>
+    <string name="remove">Bỏ ra</string>
+    <string name="clear_search">Bỏ tìm kiếm</string>
+    <string name="search">Tìm kiếm</string>
+    <string name="optional">Không bắt buộc</string>
+
+</resources>

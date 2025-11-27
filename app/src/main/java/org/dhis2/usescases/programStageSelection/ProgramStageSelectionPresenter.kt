@@ -12,7 +12,6 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.data.RulesUtilsProvider
 import org.dhis2.form.model.EventMode
 import org.dhis2.tracker.events.CreateEventUseCase
-import org.dhis2.utils.Result
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.rules.models.RuleEffect
@@ -39,25 +38,26 @@ class ProgramStageSelectionPresenter(
         val ruleEffectFlowable = programStageSelectionRepository.calculate()
 
         // Combining results of two repositories into a single stream.
-        val stageModelsFlowable = Flowable.zip(
-            stagesFlowable.subscribeOn(schedulerProvider.io()),
-            ruleEffectFlowable.subscribeOn(schedulerProvider.io()),
-        ) { stageModels: List<ProgramStage>, calcResult: Result<RuleEffect> ->
-            applyEffects(
-                stageModels,
-                calcResult,
-            )
-        }
-        compositeDisposable.add(
-            stageModelsFlowable.map { programStages ->
-                programStages.map { programStage ->
-                    ProgramStageData(
-                        programStage,
-                        metadataIconProvider(programStage.style(), SurfaceColor.Primary),
-                    )
-                }
+        val stageModelsFlowable =
+            Flowable.zip(
+                stagesFlowable.subscribeOn(schedulerProvider.io()),
+                ruleEffectFlowable.subscribeOn(schedulerProvider.io()),
+            ) { stageModels, calcResult ->
+                applyEffects(
+                    stageModels,
+                    calcResult,
+                )
             }
-                .subscribeOn(schedulerProvider.io())
+        compositeDisposable.add(
+            stageModelsFlowable
+                .map { programStages ->
+                    programStages.map { programStage ->
+                        ProgramStageData(
+                            programStage,
+                            metadataIconProvider(programStage.style(), SurfaceColor.Primary),
+                        )
+                    }
+                }.subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(this::handleProgramStages) { t: Throwable? ->
                     Timber.e(t)
@@ -67,11 +67,12 @@ class ProgramStageSelectionPresenter(
 
     private fun handleProgramStages(programStages: List<ProgramStageData>) {
         when (programStages.size) {
-            1 -> view.setResult(
-                programStageUid = programStages.first().programStage.uid(),
-                repeatable = programStages.first().programStage.repeatable() == true,
-                periodType = programStages.first().programStage.periodType(),
-            )
+            1 ->
+                view.setResult(
+                    programStageUid = programStages.first().programStage.uid(),
+                    repeatable = programStages.first().programStage.repeatable() == true,
+                    periodType = programStages.first().programStage.periodType(),
+                )
 
             else -> view.setData(programStages)
         }
@@ -80,14 +81,17 @@ class ProgramStageSelectionPresenter(
     @VisibleForTesting
     fun applyEffects(
         stageModels: List<ProgramStage>,
-        calcResult: Result<RuleEffect>,
+        calcResult: Result<List<RuleEffect>>,
     ): List<ProgramStage> {
-        if (calcResult.error() != null) {
-            Timber.e(calcResult.error())
+        if (calcResult.isFailure) {
+            Timber.e(calcResult.exceptionOrNull())
             return stageModels
         }
-        val stageView = stageModels.map { it.uid() to it }.toMap().toMutableMap()
-        ruleUtils.applyRuleEffects(stageView, kotlin.Result.success(calcResult.items()))
+        val stageView = stageModels.associateBy { it.uid() }.toMutableMap()
+        ruleUtils.applyRuleEffects(
+            stageView,
+            Result.success(calcResult.getOrDefault(emptyList())),
+        )
         return ArrayList(stageView.values)
     }
 
@@ -111,9 +115,8 @@ class ProgramStageSelectionPresenter(
         }
     }
 
-    fun getStandardInterval(programStageUid: String): Int {
-        return programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
-    }
+    fun getStandardInterval(programStageUid: String): Int =
+        programStageSelectionRepository.getStage(programStageUid)?.standardInterval() ?: 0
 
     fun onOrgUnitForNewEventSelected(
         programStageUid: String,

@@ -21,27 +21,35 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
-fun HtmlContentBox(text: String, modifier: Modifier = Modifier) {
-    val textStyle = MaterialTheme.typography.bodyMedium.copy(
-        color = TextColor.OnSurfaceLight,
-    )
-    val formatedText = htmlToAnnotatedString(
-        html = text,
-        linkStyle = HtmlStyle(
-            textLinkStyles = TextLinkStyles(
-                style = textStyle.toSpanStyle().copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline),
-            ),
-        ),
-        genericStyle = textStyle,
-    )
+fun HtmlContentBox(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    val textStyle =
+        MaterialTheme.typography.bodyMedium.copy(
+            color = TextColor.OnSurfaceLight,
+        )
+    val formatedText =
+        htmlToAnnotatedString(
+            html = text,
+            linkStyle =
+                HtmlStyle(
+                    textLinkStyles =
+                        TextLinkStyles(
+                            style = textStyle.toSpanStyle().copy(color = SurfaceColor.Primary, textDecoration = TextDecoration.Underline),
+                        ),
+                ),
+            genericStyle = textStyle,
+        )
     Column(Modifier.fillMaxWidth().background(color = SurfaceColor.ContainerLowest)) {
         Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(
-                    color = SurfaceColor.ContainerLow,
-                    shape = Shape.Small,
-                ),
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = SurfaceColor.ContainerLow,
+                        shape = Shape.Small,
+                    ),
             contentAlignment = Alignment.CenterStart,
         ) {
             Column(Modifier.padding(Spacing.Spacing8)) {

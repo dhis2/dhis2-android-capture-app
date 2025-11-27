@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="default_column_label">القيم</string>
+    <string name="total_header_label">الإجمالي</string>
+    <string name="input_age_date_of_birth">تاريخ الميلاد</string>
+    <string name="input_age">عُمر</string>
+    <string name="input_age_or">أو</string>
+    <string name="input_action_accept">قبول</string>
+    <string name="input_action_cancel">إلغاء</string>
+    <string name="no_results_found">لم يتم العثور على نتائج</string>
+    <string name="search_to_find_more">ابحث للعثور على المزيد</string>
+    </resources>

@@ -1,11 +1,11 @@
 package org.dhis2.maps.geometry.mapper
 
-import com.mapbox.geojson.Feature
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeiEventsToFeatureCollection
 import org.dhis2.maps.geometry.mapper.featurecollection.MapTeisToFeatureCollection
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.maps.model.RelationshipUiComponentModel
+import org.maplibre.geojson.Feature
 
 internal fun Feature?.addTeiInfo(mapItemModel: MapItemModel): Feature? {
     if (this != null) {
@@ -65,9 +65,7 @@ internal fun Feature?.addTeiEnrollmentInfo(mapItemModel: MapItemModel): Feature?
     return this
 }
 
-fun Feature?.addRelationshipInfo(
-    relationshipUiComponentModel: RelationshipUiComponentModel,
-): Feature? {
+fun Feature?.addRelationshipInfo(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
@@ -97,9 +95,7 @@ fun Feature?.addRelationshipInfo(
     return this
 }
 
-fun Feature?.addRelationshipInfo(
-    mapItemModel: MapItemModel,
-): Feature? {
+fun Feature?.addRelationshipInfo(mapItemModel: MapItemModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
@@ -133,9 +129,7 @@ fun Feature?.addRelationshipInfo(
     return this
 }
 
-fun Feature?.addRelationFromInfo(
-    relationshipUiComponentModel: RelationshipUiComponentModel,
-): Feature? {
+fun Feature?.addRelationFromInfo(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,
@@ -157,9 +151,7 @@ fun Feature?.addRelationFromInfo(
     return this
 }
 
-fun Feature?.addRelationToInfo(
-    relationshipUiComponentModel: RelationshipUiComponentModel,
-): Feature? {
+fun Feature?.addRelationToInfo(relationshipUiComponentModel: RelationshipUiComponentModel): Feature? {
     if (this != null) {
         addStringProperty(
             org.dhis2.maps.extensions.PROPERTY_FEATURE_SOURCE,

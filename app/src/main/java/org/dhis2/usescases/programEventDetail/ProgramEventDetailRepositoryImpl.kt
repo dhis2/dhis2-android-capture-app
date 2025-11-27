@@ -1,7 +1,6 @@
 package org.dhis2.usescases.programEventDetail
 
 import androidx.paging.PagingData
-import com.mapbox.geojson.FeatureCollection
 import dhis2.org.analytics.charts.Charts
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -23,6 +22,7 @@ import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventFilter
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramStage
+import org.maplibre.geojson.FeatureCollection
 
 class ProgramEventDetailRepositoryImpl internal constructor(
     private val programUid: String,
@@ -33,12 +33,17 @@ class ProgramEventDetailRepositoryImpl internal constructor(
     private val charts: Charts?,
     private val eventInfoProvider: EventInfoProvider,
 ) : ProgramEventDetailRepository {
-
     private val programRepository = d2.programModule().programs().uid(programUid)
-    private val stageRepository = d2.programModule().programStages().byProgramUid().eq(programUid)
-    private val filterRepository = programRepository.blockingGet()?.let {
-        filterPresenter.filteredEventProgram(it)
-    }
+    private val stageRepository =
+        d2
+            .programModule()
+            .programStages()
+            .byProgramUid()
+            .eq(programUid)
+    private val filterRepository =
+        programRepository.blockingGet()?.let {
+            filterPresenter.filteredEventProgram(it)
+        }
 
     override fun filteredProgramEvents(): Flow<PagingData<Event>> {
         val program = program().blockingGet() ?: throw NullPointerException()
@@ -47,10 +52,9 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             .getPagingData(10)
     }
 
-    override fun filteredEventsForMap(
-        layersVisibility: Map<String, MapLayer>,
-    ): Flowable<ProgramEventMapData> {
-        return filterRepository?.get()
+    override fun filteredEventsForMap(layersVisibility: Map<String, MapLayer>): Flowable<ProgramEventMapData> =
+        filterRepository
+            ?.get()
             ?.map { listEvents ->
                 val (first, second) = mapUtils.eventsToFeatureCollection(listEvents)
                 val programEventFeatures = HashMap<String, FeatureCollection>()
@@ -62,22 +66,23 @@ class ProgramEventDetailRepositoryImpl internal constructor(
 
                 programEventFeatures.putAll(deFeatureCollection)
 
-                val mapEvents = listEvents.map { event ->
-                    with(eventInfoProvider) {
-                        MapItemModel(
-                            uid = event.uid(),
-                            avatarProviderConfiguration = getAvatar(event),
-                            title = getEventTitle(event),
-                            description = getEventDescription(event),
-                            lastUpdated = getEventLastUpdated(event),
-                            additionalInfoList = getAdditionInfoList(event),
-                            isOnline = false,
-                            geometry = event.geometry(),
-                            relatedInfo = getRelatedInfo(event),
-                            state = event.aggregatedSyncState() ?: State.SYNCED,
-                        )
+                val mapEvents =
+                    listEvents.map { event ->
+                        with(eventInfoProvider) {
+                            MapItemModel(
+                                uid = event.uid(),
+                                avatarProviderConfiguration = getAvatar(event),
+                                title = getEventTitle(event),
+                                description = getEventDescription(event),
+                                lastUpdated = getEventLastUpdated(event),
+                                additionalInfoList = getAdditionInfoList(event),
+                                isOnline = false,
+                                geometry = event.geometry(),
+                                relatedInfo = getRelatedInfo(event),
+                                state = event.aggregatedSyncState() ?: State.SYNCED,
+                            )
+                        }
                     }
-                }
 
                 ProgramEventMapData(
                     mapEvents.filterEventsByLayerVisibility(
@@ -87,19 +92,26 @@ class ProgramEventDetailRepositoryImpl internal constructor(
                     programEventFeatures,
                     second,
                 )
-            }
-            ?.toFlowable() ?: Flowable.empty()
-    }
+            }?.toFlowable() ?: Flowable.empty()
 
-    override fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel> {
-        return d2.eventModule().events().withTrackedEntityDataValues().uid(eventUid).get()
+    override fun getInfoForEvent(eventUid: String): Flowable<ProgramEventViewModel> =
+        d2
+            .eventModule()
+            .events()
+            .withTrackedEntityDataValues()
+            .uid(eventUid)
+            .get()
             .map(mapper::eventToProgramEvent)
             .toFlowable()
-    }
 
     override fun featureType(): Single<FeatureType> {
-        return d2.programModule().programStages()
-            .byProgramUid().eq(programUid).one().get()
+        return d2
+            .programModule()
+            .programStages()
+            .byProgramUid()
+            .eq(programUid)
+            .one()
+            .get()
             .map { stage ->
                 if (stage.featureType() != null) {
                     return@map stage.featureType()
@@ -109,61 +121,70 @@ class ProgramEventDetailRepositoryImpl internal constructor(
             }
     }
 
-    override fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo? {
-        return d2.categoryModule().categoryOptionCombos().uid(selectedCatOptionCombo).blockingGet()
-    }
+    override fun getCatOptCombo(selectedCatOptionCombo: String): CategoryOptionCombo? =
+        d2
+            .categoryModule()
+            .categoryOptionCombos()
+            .uid(selectedCatOptionCombo)
+            .blockingGet()
 
-    override fun program(): Single<Program?> {
-        return programRepository.get()
-    }
+    override fun program(): Single<Program?> = programRepository.get()
 
     override fun getAccessDataWrite(): Boolean {
-        var canWrite = programRepository.blockingGet()?.access()?.data()?.write() == true
+        var canWrite =
+            programRepository
+                .blockingGet()
+                ?.access()
+                ?.data()
+                ?.write() == true
 
         if (canWrite && stageRepository.one().blockingGet() != null) {
-            canWrite = stageRepository.one().blockingGet()
-                ?.access()?.data()?.write() == true
+            canWrite = stageRepository
+                .one()
+                .blockingGet()
+                ?.access()
+                ?.data()
+                ?.write() == true
         } else if (stageRepository.one().blockingGet() == null) {
             canWrite = false
         }
         return canWrite
     }
 
-    override fun workingLists(): Single<List<EventFilter>> {
-        return d2.eventModule().eventFilters()
+    override fun workingLists(): Single<List<EventFilter>> =
+        d2
+            .eventModule()
+            .eventFilters()
             .withEventDataFilters()
-            .byProgram().eq(programUid)
+            .byProgram()
+            .eq(programUid)
             .get()
-    }
 
-    override fun programStage(): Single<ProgramStage?> {
-        return stageRepository.one().get()
-    }
+    override fun programStage(): Single<ProgramStage?> = stageRepository.one().get()
 
     override fun programHasCoordinates(): Boolean {
-        val programStageHasCoordinates = programStage()
-            .map { stage ->
-                stage.featureType() != null && stage.featureType() != FeatureType.NONE
-            }
-            .blockingGet()
-        val eventDataElementHasCoordinates = filterRepository?.get()
-            ?.map { events ->
-                events.any { event -> event.geometry() != null }
-            }?.blockingGet() == true
+        val programStageHasCoordinates =
+            programStage()
+                .map { stage ->
+                    stage.featureType() != null && stage.featureType() != FeatureType.NONE
+                }.blockingGet()
+        val eventDataElementHasCoordinates =
+            filterRepository
+                ?.get()
+                ?.map { events ->
+                    events.any { event -> event.geometry() != null }
+                }?.blockingGet() == true
         return programStageHasCoordinates || eventDataElementHasCoordinates
     }
 
-    override fun programHasAnalytics(): Boolean {
-        return charts?.getVisualizationGroups(programUid)?.isNotEmpty() == true
-    }
+    override fun programHasAnalytics(): Boolean = charts?.getVisualizationGroups(programUid)?.isNotEmpty() == true
 
-    override fun isEventEditable(eventUid: String): Boolean {
-        return d2.eventModule().eventService().blockingIsEditable(eventUid)
-    }
+    override fun isEventEditable(eventUid: String): Boolean = d2.eventModule().eventService().blockingIsEditable(eventUid)
 
-    override fun displayOrganisationUnit(programUid: String): Boolean {
-        return d2.organisationUnitModule().organisationUnits()
+    override fun displayOrganisationUnit(programUid: String): Boolean =
+        d2
+            .organisationUnitModule()
+            .organisationUnits()
             .byProgramUids(listOf(programUid))
             .blockingCount() > 1
-    }
 }
