@@ -6,6 +6,8 @@
     <string name="sign_in">سیسټم ته داخلېدل</string>
     <string name="username">کارېدونکی نوم</string>
     <string name="password">پټنوم</string>
+    <string name="forgot_password">پټ نوم هېر شوی دی؟</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">دوام ورکول</string>
     <string name="delete">خذف یې کړئ</string>

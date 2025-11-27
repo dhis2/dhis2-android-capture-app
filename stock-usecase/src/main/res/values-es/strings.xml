@@ -88,9 +88,6 @@
     <string name="mandatory_facility_selection">
         Debe seleccionar el establecimiento antes de poder continuar
     </string>
-    <string name="mandatory_distributed_to_selection">
-        Se debe completar el campo \"Distribuido a\" antes de poder continuar
-    </string>
     <string name="mandatory_transaction_date_selection">
         Se debe completar el campo \"Distribuido a\" antes de poder continuar
     </string>

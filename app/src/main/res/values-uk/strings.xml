@@ -483,7 +483,6 @@
     <string name="action_agree">Погодитись</string>
     <string name="action_continue">Продовжити</string>
     <string name="login_server_info_title">URL-адреса серверу</string>
-    <string name="login_server_info_message">Введіть URL-адресу серверу DHIS 2 для Вашої організації, надану Вашим системним адміністратором. Альтернативно, Ви можете відсканувати QR-код, що містить URL-адресу Вашого сервера</string>
     <string name="forgot_your_code">Забули код?</string>
     <string name="event_form_end_options_title">Що б Ви хотіли зробити для цього випадку?</string>
     <string name="sectionSelectorEnd">КІН</string>
@@ -667,9 +666,9 @@
     <string name="dataset_overview">Деталі</string>
     <string name="dataset_comments">Коментарі</string>
     <string name="saved">Збережено!</string>
-    <string name="run_validation_rules">Хочете перевірити якість даних?</string>
+    <string name="run_validation_rules">Хочете перевірити якість даних\?</string>
     <string name="validation_success_title">Все виглядає добре!</string>
-    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних?</string>
+    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних\?</string>
     <string name="dataset_completed">Позначити як виконане</string>
     <string name="name">Ім\'я</string>
     <string name="formula">Формула</string>

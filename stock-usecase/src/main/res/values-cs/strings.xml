@@ -88,9 +88,6 @@
     <string name="mandatory_facility_selection">
         Než budete moci pokračovat, musí být vyplněno pole zařízení
     </string>
-    <string name="mandatory_distributed_to_selection">
-        Než budete moci pokračovat, musí být vyplněno pole „Distribuováno do“.
-    </string>
     <string name="mandatory_transaction_date_selection">
         Než budete moci pokračovat, musí být vyplněno pole „Distribuováno do“.
     </string>

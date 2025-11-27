@@ -20,6 +20,10 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.error.DomainErrorMapper
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
@@ -76,14 +80,12 @@ class MainModule(
         workManagerController: WorkManagerController,
         syncStatusController: SyncStatusController,
         filterManager: FilterManager,
-        preferences: PreferenceProvider,
     ): LogoutUser =
         LogoutUser(
             homeRepository,
             workManagerController,
             syncStatusController,
             filterManager,
-            preferences,
         )
 
     @Provides
@@ -97,14 +99,37 @@ class MainModule(
         charts: Charts?,
         preferencesProvider: PreferenceProvider,
         cryptographyManager: CryptographicActions,
-    ): HomeRepository =
+        domainErrorMapper: DomainErrorMapper,
+        ): HomeRepository =
         HomeRepositoryImpl(
             d2,
             charts,
             preferencesProvider,
-            D2ErrorMessageProviderImpl(),
             cryptographyManager,
             Dispatcher(),
+            domainErrorMapper,
+        )
+
+    @Provides
+    @PerActivity
+    fun provideDomainErrorMapper(
+        d2ErrorMessageProvider: D2ErrorMessageProvider,
+        networkStatusProvider: NetworkStatusProvider,
+    ): DomainErrorMapper =
+        DomainErrorMapper(
+            d2ErrorMessageProvider = d2ErrorMessageProvider,
+            networkStatusProvider = networkStatusProvider,
+        )
+
+    @Provides
+    @PerActivity
+    fun provideD2ErrorMessageProvider(): D2ErrorMessageProvider = D2ErrorMessageProviderImpl()
+
+    @Provides
+    @PerActivity
+    fun provideNetworkStatusProvider(): NetworkStatusProvider =
+        NetworkStatusProviderImpl(
+            context = view.context,
         )
 
     @Provides

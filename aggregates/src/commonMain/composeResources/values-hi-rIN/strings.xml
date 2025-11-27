@@ -18,6 +18,7 @@
     <string name="no">नहीं</string>
     <string name="yes">हाँ</string>
     <string name="error">त्रुटि</string>
+    <string name="errors">एरर्स</string>
     <string name="review">रिव्यू</string>
     <string name="action_next">आगे</string>
     <string name="add_file">फ़ाइल जोड़ें</string>

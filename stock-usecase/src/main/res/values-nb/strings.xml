@@ -6,6 +6,8 @@
     <string name="sign_in">Logg inn</string>
     <string name="username">Brukernavn</string>
     <string name="password">Passord</string>
+    <string name="forgot_password">Glemt passord\?</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">Fortsett</string>
     <string name="delete">Slett</string>

@@ -6,6 +6,7 @@
     <string name="yes">हाँ</string>
     <string name="no">नहीं</string>
     <string name="search">सर्च करें / खोजें</string>
+    <string name="events">इवेंट्स</string>
     <string name="done">पूरा हुआ</string>
 
     <string name="daily_period">रोज़ाना</string>
@@ -19,6 +20,8 @@
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_this_month">इस महीने</string>
+    <string name="filter_period_last_month">पिछला महीना</string>
     <string name="DAILY">रोज़ाना</string>
     <string name="WEEKLY">साप्ताहिक</string>
     <string name="MONTHLY">मासिक</string>
