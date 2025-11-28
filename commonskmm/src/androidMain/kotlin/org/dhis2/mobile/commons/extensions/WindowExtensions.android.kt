@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 
 @ExperimentalMaterial3WindowSizeClassApi
 @Composable
-internal actual fun getWindowSizeClass(): WindowSizeClass {
+actual fun getWindowSizeClass(): WindowSizeClass {
     val context = LocalContext.current
     val activity = context as ComponentActivity
     return calculateWindowSizeClass(activity)
