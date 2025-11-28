@@ -19,7 +19,6 @@ import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.data.SessionRepository
-import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
