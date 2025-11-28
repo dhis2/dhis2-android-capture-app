@@ -158,6 +158,7 @@ class RuleValidationHelperImpl(
             .get()
             .map {
                 it.toRuleVariableList(
+                    d2,
                     d2.trackedEntityModule().trackedEntityAttributes(),
                     d2.dataElementModule().dataElements(),
                 )
@@ -286,12 +287,7 @@ class RuleValidationHelperImpl(
                             .blockingGet()
                             ?.code(),
                     dataValues =
-                        event.trackedEntityDataValues()?.toRuleDataValue(
-                            event,
-                            d2.dataElementModule().dataElements(),
-                            d2.programModule().programRuleVariables(),
-                            d2.optionModule().options(),
-                        ) ?: emptyList(),
+                        event.trackedEntityDataValues()?.toRuleDataValue() ?: emptyList(),
                 )
             }.toList()
 
