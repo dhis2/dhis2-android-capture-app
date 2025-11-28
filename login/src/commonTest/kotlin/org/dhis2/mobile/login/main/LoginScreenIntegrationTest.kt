@@ -20,13 +20,13 @@ import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModel
 import org.dhis2.mobile.login.pin.data.SessionRepository
-import org.junit.After
-import org.junit.Before
 import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -50,7 +50,7 @@ class LoginScreenIntegrationTest {
 
     private lateinit var validateServer: ValidateServer
 
-    @Before
+    @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         whenever(appLinkNavigation.appLink).thenReturn(mockAppLinkFlow)
@@ -61,7 +61,7 @@ class LoginScreenIntegrationTest {
         getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
     }
 
-    @After
+    @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
     }
@@ -70,16 +70,6 @@ class LoginScreenIntegrationTest {
      *
      * Test case: ANDROAPP-7220
      * Scenario: Manage accounts screen
-     * Given the user is logged out
-     * And has <number_of_accounts> accounts stored
-     * When opens the app
-     * Then goes to <destination_screen>
-     *
-     * Examples:
-     * |number_of_accounts |destination_screen         |
-     * | none              |server configuration screen|
-     * | one               |existing account screen    |
-     * | two or more       |manage accounts screen     |
      *
      */
 
