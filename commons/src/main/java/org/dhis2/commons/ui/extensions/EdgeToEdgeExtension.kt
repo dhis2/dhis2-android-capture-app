@@ -21,7 +21,8 @@ fun Activity.handleInsets() {
         val bars =
             insets.getInsets(
                 WindowInsetsCompat.Type.systemBars()
-                    or WindowInsetsCompat.Type.displayCutout(),
+                    or WindowInsetsCompat.Type.displayCutout()
+                    or WindowInsetsCompat.Type.ime(),
             )
         v.updatePadding(
             left = bars.left,
