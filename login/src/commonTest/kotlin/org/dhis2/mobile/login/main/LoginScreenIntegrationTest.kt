@@ -140,7 +140,7 @@ class LoginScreenIntegrationTest {
         }
 
     @Test
-    fun `should navigate to oauth login screen when one oauth account is stored`() =
+    fun `should navigate to OAuth login screen when one OAuth account is stored`() =
         runTest {
             // Given the user is logged out and has one OAuth account stored
             val oauthAccount =
