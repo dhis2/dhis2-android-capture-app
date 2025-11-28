@@ -14,7 +14,7 @@
     <string name="sign_in_to_your_account">تسجيل الدخول إلى حسابك</string>
     <string name="username">اسم المستخدم</string>
     <string name="password">كلمة المرور</string>
-    <string name="forgot_password">هل نسيت كلمة السر \؟</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
 
     <string name="recent_activities_loading_message">تحميل الأنشطة الأخيرة...</string>
     <string name="recent_activities_empty_message">لم تقم بأي نشاط بعد</string>
@@ -52,15 +52,6 @@
 
     <!-- Stock table -->
     <string name="item">العنصر</string>
-    <string name="previous_page_lose_data_warning">
-        هل أنت متأكد من رغبتك في العودة إلى الشاشة السابقة؟
-        ستفقد البيانات التي أدخلتها للتو إذا قررت المتابعة.
-    </string>
-    <string name="force_sync_confirmation_message">
-        هل أنت متأكد من رغبتك في فرض المزامنة \؟
-    </string>
-    <string name="logout_confirmation_message">هل أنت متأكد من أنك تريد تسجيل الخروج \؟</string>
-
     <string name="prompt_email">بريد إلكتروني</string>
     <string name="prompt_password">كلمة المرور</string>
     <string name="action_sign_in">تسجيل الدخول أو التسجيل</string>
