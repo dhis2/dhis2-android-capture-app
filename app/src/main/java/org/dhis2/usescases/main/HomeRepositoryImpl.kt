@@ -10,6 +10,7 @@ import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
 import org.dhis2.commons.prefs.PreferenceProvider
+import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.hisp.dhis.android.core.D2
@@ -24,6 +25,7 @@ class HomeRepositoryImpl(
     private val d2: D2,
     private val charts: Charts?,
     private val preferences: PreferenceProvider,
+    private val cryptographyManager: CryptographicActions,
     private val dispatcher: Dispatcher,
     private val domainErrorMapper: DomainErrorMapper,
 ) : HomeRepository {
@@ -89,18 +91,15 @@ class HomeRepositoryImpl(
         }
 
     override fun checkDeleteBiometricsPermission() {
-        val hasOnlyTwoAccounts =
+        val hasLessThanTwoAccounts =
             d2
                 .userModule()
                 .accountManager()
                 .getAccounts()
-                .count() == 2
-        if (hasOnlyTwoAccounts) {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(BIOMETRICS_PERMISSION)
-                .blockingDeleteIfExist()
+                .count() <= 2
+        if (hasLessThanTwoAccounts) {
+            preferences.removeValue(BIOMETRICS_PERMISSION)
+            cryptographyManager.deleteInvalidKey()
         }
     }
 

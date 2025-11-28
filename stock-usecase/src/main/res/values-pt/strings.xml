@@ -106,15 +106,15 @@ Se decidir continuar, perderá os dados que acabou de introduzir.
     <string name="logout_confirmation_message"> Tem a certeza de que pretende terminar a sessão?</string>
 
     <string name="remove_correction_item_confirmation_message">
-      Tem a certeza de que pretende eliminar definitivamente a entrada para a correção de \"%1$s\"\?  
+      Tem a certeza de que pretende eliminar definitivamente a entrada para a correção de \"%1$s\"?  
 Esta ação não pode ser anulada.
     </string>
     <string name="remove_distribution_item_confirmation_message">
-        Tem a certeza de que pretende eliminar permanentemente a entrada para distribuição de\"%1$s\"\?
+        Tem a certeza de que pretende eliminar permanentemente a entrada para distribuição de\"%1$s\"?
         Esta ação não pode ser anulada.
     </string>
     <string name="remove_discard_item_confirmation_message">
-     Tem a certeza de que pretende eliminar permanentemente a entrada para eliminação de \"%1$s\"\?
+     Tem a certeza de que pretende eliminar permanentemente a entrada para eliminação de \"%1$s\"?
        Esta ação não pode ser anulada.
     </string>
 
@@ -178,7 +178,7 @@ Esta ação não pode ser anulada.
     <string name="restart_later"> Reiniciar mais tarde</string>
     <string name="confirm_app_restart_message">
        A aplicação necessita de ser reiniciada para que as alterações sejam efetuadas, no entanto,
-quaisquer alterações não guardadas serão perdidas. \n\nDeseja prosseguir com a reinicialização\?
+quaisquer alterações não guardadas serão perdidas. \n\nDeseja prosseguir com a reinicialização?
     </string>
     <string name="language_change_dialog_title"> Confirmar o reinício</string>
     <string name="scan_canceled"> Scan cancelado!</string>

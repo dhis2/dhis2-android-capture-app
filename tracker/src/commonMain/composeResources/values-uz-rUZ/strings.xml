@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Oʼzaro aloqalar mavjud emas, yangisini qoʼshish uchun \"+\" tugmasini bosing.</string>
+    <string name="empty_relationships">Oʼzaro aloqalar mavjud emas, yangisini qoʼshish uchun "+" tugmasini bosing.</string>
     <string name="relationship">Oʼzaro aloqa</string>
     <string name="no_data">Maʼlumot yoʼq</string>
     <string name="syncing">Sinxronizatsiyalanmoqda...</string>

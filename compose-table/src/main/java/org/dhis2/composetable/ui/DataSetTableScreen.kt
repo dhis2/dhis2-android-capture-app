@@ -92,6 +92,7 @@ fun DataSetTableScreen(
         focusManager.clearFocus(true)
         tableSelection = TableSelection.Unselected()
         onEdition(false)
+        currentCell = null
     }
 
     fun collapseBottomSheet(finish: Boolean = false) {

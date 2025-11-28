@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">Pouze pro zaměstnance ICRC</string>
     <string name="username">Uživatelské jméno</string>
     <string name="password">Heslo</string>
-    <string name="forgot_password">Zapomenuté heslo\?</string>
+    <string name="forgot_password">Zapomenuté heslo?</string>
 
     <string name="recent_activities_loading_message">Načítání nedávných aktivit&#8230;</string>
     <string name="recent_activities_empty_message">Ještě jste nevykonali žádnou činnost</string>
@@ -92,7 +92,7 @@
         Než budete moci pokračovat, musí být vyplněno pole „Distribuováno do“.
     </string>
     <string name="previous_page_lose_data_warning">
-        Opravdu se chcete vrátit na předchozí obrazovku\?
+        Opravdu se chcete vrátit na předchozí obrazovku?
         Pokud se rozhodnete pokračovat, ztratíte právě zadaná data.
     </string>
     <string name="transaction_completed">
@@ -102,20 +102,20 @@
         Transakce byla úspěšně zrušena!
     </string>
     <string name="force_sync_confirmation_message">
-        Opravdu chcete vynutit synchronizaci\?
+        Opravdu chcete vynutit synchronizaci?
     </string>
-    <string name="logout_confirmation_message">Opravdu se chcete odhlásit\?</string>
+    <string name="logout_confirmation_message">Opravdu se chcete odhlásit?</string>
 
     <string name="remove_correction_item_confirmation_message">
-        Opravdu chcete trvale smazat záznam pro opravu \"%1$s\"\?
+        Opravdu chcete trvale smazat záznam pro opravu \"%1$s\"?
         Tuto akci nelze vrátit zpět.
     </string>
     <string name="remove_distribution_item_confirmation_message">
-        Opravdu chcete trvale smazat záznam pro distribuci \"%1$s\"\?
+        Opravdu chcete trvale smazat záznam pro distribuci \"%1$s\"?
         Tuto akci nelze vrátit zpět.
     </string>
     <string name="remove_discard_item_confirmation_message">
-        Opravdu chcete trvale smazat záznam pro zahození \"%1$s\"\?
+        Opravdu chcete trvale smazat záznam pro zahození \"%1$s\"?
         Tuto akci nelze vrátit zpět.
     </string>
 
@@ -180,7 +180,7 @@
     <string name="restart_later">Restartovat později</string>
     <string name="confirm_app_restart_message">
         Aby se změny projevily, je třeba aplikaci restartovat,
-        všechny neuložené změny budou ztraceny.\n\nChcete pokračovat v restartu\?
+        všechny neuložené změny budou ztraceny.\n\nChcete pokračovat v restartu?
     </string>
     <string name="language_change_dialog_title">Potvrdit restart</string>
     <string name="scan_canceled">Skenování zrušeno!</string>

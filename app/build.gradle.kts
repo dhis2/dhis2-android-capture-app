@@ -16,11 +16,6 @@ plugins {
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
-repositories {
-    maven { url = uri("https://central.sonatype.com/repository/maven-snapshots") }
-    mavenCentral()
-}
-
 android {
 
     val getBuildDate by extra {

@@ -13,10 +13,12 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
+import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
@@ -96,12 +98,14 @@ class MainModule(
         d2: D2,
         charts: Charts?,
         preferencesProvider: PreferenceProvider,
+        cryptographyManager: CryptographicActions,
         domainErrorMapper: DomainErrorMapper,
     ): HomeRepository =
         HomeRepositoryImpl(
             d2,
             charts,
             preferencesProvider,
+            cryptographyManager,
             Dispatcher(),
             domainErrorMapper,
         )
@@ -127,6 +131,10 @@ class MainModule(
         NetworkStatusProviderImpl(
             context = view.context,
         )
+
+    @Provides
+    @PerActivity
+    fun provideCryptographicManager(): CryptographicActions = CryptographyManager()
 
     @Provides
     @PerActivity

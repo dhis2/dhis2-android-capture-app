@@ -38,12 +38,16 @@ interface LoginRepository {
 
     suspend fun hasOtherAccounts(): Boolean
 
+    suspend fun numberOfAccounts(): Int
+
     suspend fun updateTrackingPermissions(granted: Boolean)
 
     suspend fun updateBiometricsPermissions(granted: Boolean)
 
     context(context: PlatformContext)
     suspend fun loginWithBiometric(): Result<UserPassword>
+
+    suspend fun deleteBiometricCredentials()
 
     suspend fun importDatabase(path: String): Result<Unit>
 

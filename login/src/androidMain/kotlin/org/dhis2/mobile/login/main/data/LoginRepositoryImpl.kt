@@ -8,6 +8,7 @@ import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.SECURE_PASS
 import org.dhis2.mobile.commons.providers.SECURE_SERVER_URL
@@ -166,14 +167,7 @@ class LoginRepositoryImpl(
 
     private fun hasEnabledBiometricsPermission(): Boolean =
         try {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(BIOMETRICS_PERMISSION)
-                .blockingGet()
-                ?.value()
-                ?.lowercase()
-                ?.toBooleanStrictOrNull() ?: false
+            preferences.getBoolean(BIOMETRICS_PERMISSION, false)
         } catch (_: Exception) {
             false
         }
@@ -221,6 +215,15 @@ class LoginRepositoryImpl(
                 .isNotEmpty()
         }
 
+    override suspend fun numberOfAccounts(): Int =
+        withContext(dispatcher.io) {
+            d2
+                .userModule()
+                .accountManager()
+                .getAccounts()
+                .size
+        }
+
     override suspend fun updateTrackingPermissions(granted: Boolean) {
         withContext(dispatcher.io) {
             d2
@@ -252,11 +255,7 @@ class LoginRepositoryImpl(
 
     override suspend fun updateBiometricsPermissions(granted: Boolean) =
         withContext(dispatcher.io) {
-            d2
-                .dataStoreModule()
-                .localDataStore()
-                .value(BIOMETRICS_PERMISSION)
-                .blockingSet(granted.toString())
+            preferences.setValue(BIOMETRICS_PERMISSION, granted)
         }
 
     context(context: PlatformContext)
@@ -282,6 +281,13 @@ class LoginRepositoryImpl(
                     }
             } ?: kotlin.Result.failure(Exception("No biometrics found"))
         }
+
+    override suspend fun deleteBiometricCredentials() {
+        withContext(dispatcher.io) {
+            preferences.removeValue(BIOMETRIC_CREDENTIALS)
+            cryptographyManager.deleteInvalidKey()
+        }
+    }
 
     override suspend fun loginWithOpenId(
         serverUrl: String,

@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">Chỉ dành cho nhân viên ICRC</string>
     <string name="username">Tên đăng nhập</string>
     <string name="password">Mật khẩu</string>
-    <string name="forgot_password">Quên mật khẩu\?</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
 
     <string name="recent_activities_loading_message">Đang tải các hoạt động gần đây&#8230;</string>
     <string name="recent_activities_empty_message">Bạn chưa thực hiện bất kỳ hoạt động nào</string>
@@ -92,7 +92,7 @@
         Trường \"Phân bổ đến\" phải được điền đầy đủ trước khi tiếp tục
     </string>
     <string name="previous_page_lose_data_warning">
-        Bạn có chắc là muốn quay lại màn hình trước đó không\?
+        Bạn có chắc là muốn quay lại màn hình trước đó không?
         Bạn sẽ mất dữ liệu vừa mới nhập nếu bạn thực hiện điều này.
     </string>
     <string name="transaction_completed">
@@ -102,20 +102,20 @@
         Giao dịch đã được hủy bỏ
     </string>
     <string name="force_sync_confirmation_message">
-        Bạn có chắc muốn buộc đồng bộ không\?
+        Bạn có chắc muốn buộc đồng bộ không?
     </string>
-    <string name="logout_confirmation_message">Bạn có chắc muốn đăng xuất không\?</string>
+    <string name="logout_confirmation_message">Bạn có chắc muốn đăng xuất không?</string>
 
     <string name="remove_correction_item_confirmation_message">
-        Bạn có chắc muốn xóa mục này để sửa \"%1$s\"\?
+        Bạn có chắc muốn xóa mục này để sửa \"%1$s\"?
         Hành động này không thể được hoàn tác.
     </string>
     <string name="remove_distribution_item_confirmation_message">
-        Bạn có chắc muốn xóa vĩnh viễn mục này để phân bổ \"%1$s\"\?
+        Bạn có chắc muốn xóa vĩnh viễn mục này để phân bổ \"%1$s\"?
         Hoạt động này không thể hoàn tác.
     </string>
     <string name="remove_discard_item_confirmation_message">
-        Bạn có chắc muốn xóa vĩnh viễn biểu nhập để loại bỏ \"%1$s\"\?
+        Bạn có chắc muốn xóa vĩnh viễn biểu nhập để loại bỏ \"%1$s\"?
         Hoạt động này không thể hoàn tác.
     </string>
 
@@ -177,7 +177,7 @@
     <string name="restart_later">Khởi động lại sau</string>
     <string name="confirm_app_restart_message">
         Ứng dụng cần được khởi động lại cho các thay đổi được thực hiện, tuy nhiên
-        bất cứ thay đổi nào chưa lưu sẽ bị mất.\n\nBạn có muốn tiếp tục với việc khởi động lại không\?
+        bất cứ thay đổi nào chưa lưu sẽ bị mất.\n\nBạn có muốn tiếp tục với việc khởi động lại không?
     </string>
     <string name="language_change_dialog_title">Xác nhận Khởi động lại</string>
     <string name="scan_canceled">Đã hủy quét!</string>

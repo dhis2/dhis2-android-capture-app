@@ -15,7 +15,7 @@
     <string name="sign_in_to_with_oidc">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ ICRC</string>
     <string name="username">ຊື່ຜູ້ໃຊ້</string>
     <string name="password">ລະຫັດຜ່ານ</string>
-    <string name="forgot_password">ລືມລະຫັດຜ່ານ\?</string>
+    <string name="forgot_password">ລືມລະຫັດຜ່ານ?</string>
 
     <!-- FloatingActionButtons -->
     <string name="proceed">ດຳເນີນ</string>
@@ -33,7 +33,7 @@
 
     <string name="quantity">ປະລິມານ</string>
     <string name="items_available">ລາຍການທີ່ມີຢູ່</string>
-    <string name="logout_confirmation_message">ທ່ານໝັ້ນໃຈບໍວ່າທ່ານຕ້ອງການອອກຈາກລະບົບ\?</string>
+    <string name="logout_confirmation_message">ທ່ານໝັ້ນໃຈບໍວ່າທ່ານຕ້ອງການອອກຈາກລະບົບ?</string>
 
     <plurals name="items_found">
         <item quantity="other">%d ລາຍການ</item>

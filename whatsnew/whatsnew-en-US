@@ -1,7 +1,8 @@
-This is a patch version that fixes:
-
-- ANDROSDK-2164 Metadata sync not finishing in certain configurations
-
-Translations update from Transifex
+• New custom intents feature enables seamless integration with third-party Android apps through configurable settings
+• Sync data based on working lists defined in Capture web app
+• Redesigned login experience with modern UI and future 2FA support
+• Updated settings menu with cleaner navigation
+• Edge-to-edge improvements for better screen utilization on modern devices and tablets
+• Reduced app size for easier installation
 
 You can find all the details on Jira and Github.
