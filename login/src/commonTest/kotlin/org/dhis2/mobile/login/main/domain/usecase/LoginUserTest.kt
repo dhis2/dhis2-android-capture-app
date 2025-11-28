@@ -52,7 +52,7 @@ class LoginUserTest {
         }
 
     @Test
-    fun `GIVEN successful login with one existing account WHEN user logs in to second account THEN biometric credentials are deleted`() =
+    fun `GIVEN successful login with one existing account WHEN user logs in to second account THEN biometric credentials are NOT deleted`() =
         runTest {
             // GIVEN - User has one existing account (numberOfAccounts = 1)
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
@@ -70,7 +70,7 @@ class LoginUserTest {
             verify(repository).updateAvailableUsers(username)
             verify(repository).updateServerUrls(serverUrl)
             verify(repository).numberOfAccounts()
-            // Biometric credentials should NOT be deleted when numberOfAccounts == 1
+            // Biometric credentials should NOT be deleted when numberOfAccounts == 1 (only deleted when >= 2)
             verify(repository, never()).deleteBiometricCredentials()
         }
 
@@ -118,7 +118,7 @@ class LoginUserTest {
         }
 
     @Test
-    fun `GIVEN successful login WHEN user logs in to second account THEN biometric creds are deleted and tracking message displayed`() =
+    fun `GIVEN successful login WHEN user logs in to second account THEN biometric creds are NOT deleted but tracking message displayed`() =
         runTest {
             // GIVEN - User has one existing account and tracking message should be displayed
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
@@ -130,7 +130,7 @@ class LoginUserTest {
             // WHEN - User logs in successfully
             val result = loginUser(serverUrl, username, password, isNetworkAvailable)
 
-            // THEN - Login is successful, biometric credentials are deleted, and tracking message is shown
+            // THEN - Login is successful, biometric credentials are NOT deleted (only at >= 2), and tracking message is shown
             assertIs<LoginResult.Success>(result)
             assertEquals(true, result.displayTrackingMessage)
             assertEquals(false, result.initialSyncDone)
@@ -138,23 +138,23 @@ class LoginUserTest {
             verify(repository).updateAvailableUsers(username)
             verify(repository).updateServerUrls(serverUrl)
             verify(repository).numberOfAccounts()
-            verify(repository).deleteBiometricCredentials()
+            verify(repository, never()).deleteBiometricCredentials()
         }
 
     @Test
-    fun `GIVEN successful login exactly at threshold WHEN numberOfAccounts equals 1 THEN biometric credentials are deleted`() =
+    fun `GIVEN successful login exactly at threshold WHEN numberOfAccounts equals 2 THEN biometric credentials are deleted`() =
         runTest {
-            // GIVEN - numberOfAccounts is exactly 1 (the threshold)
+            // GIVEN - numberOfAccounts is exactly 2 (the threshold)
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
                 Result.success(Unit)
-            whenever(repository.numberOfAccounts()) doReturn 1
+            whenever(repository.numberOfAccounts()) doReturn 2
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
             // WHEN - User logs in successfully
             val result = loginUser(serverUrl, username, password, isNetworkAvailable)
 
-            // THEN - Biometric credentials are deleted (>= 1 condition)
+            // THEN - Biometric credentials are deleted (>= 2 condition)
             assertIs<LoginResult.Success>(result)
             verify(repository).numberOfAccounts()
             verify(repository).deleteBiometricCredentials()
