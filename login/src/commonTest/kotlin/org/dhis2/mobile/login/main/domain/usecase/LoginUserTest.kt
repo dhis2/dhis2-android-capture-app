@@ -188,7 +188,7 @@ class LoginUserTest {
     fun `GIVEN network is offline WHEN user logs in THEN login is attempted with offline flag`() =
         runTest {
             // GIVEN - Network is unavailable
-            val isOffline = false
+            val isOffline = true
             whenever(repository.loginUser(serverUrl, username, password, isOffline)) doReturn
                 Result.success(Unit)
             whenever(repository.numberOfAccounts()) doReturn 0
