@@ -52,7 +52,7 @@ class LoginUserTest {
         }
 
     @Test
-    fun `GIVEN successful login with one existing account WHEN user logs in to second account THEN biometric credentials are NOT deleted`() =
+    fun `GIVEN successful login with one existing account WHEN user logs in to second account THEN biometric creds are NOT deleted`() =
         runTest {
             // GIVEN - User has one existing account (numberOfAccounts = 1)
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
