@@ -64,13 +64,14 @@ class LoginUserTest {
             // WHEN - User logs in successfully to a second account
             val result = loginUser(serverUrl, username, password, isNetworkAvailable)
 
-            // THEN - Login is successful and biometric credentials are deleted
+            // THEN - Login is successful and biometric credentials are NOT deleted
             assertIs<LoginResult.Success>(result)
             verify(repository).unlockSession()
             verify(repository).updateAvailableUsers(username)
             verify(repository).updateServerUrls(serverUrl)
             verify(repository).numberOfAccounts()
-            verify(repository).deleteBiometricCredentials()
+            // Biometric credentials should NOT be deleted when numberOfAccounts == 1
+            verify(repository, never()).deleteBiometricCredentials()
         }
 
     @Test
