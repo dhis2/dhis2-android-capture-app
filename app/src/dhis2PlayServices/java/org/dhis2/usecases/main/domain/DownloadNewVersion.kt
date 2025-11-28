@@ -12,7 +12,7 @@ class DownloadNewVersion(
             val url = versionRepository.getUrl()
             url?.let {
                 Result.success(DownloadMethod.Url(it))
-            } ?: Result.failure(Exception("No url provided"))
+            } ?: Result.failure(DomainError.UnexpectedError("No url provided"))
         } catch (domainError: DomainError) {
             Result.failure(domainError)
         }
