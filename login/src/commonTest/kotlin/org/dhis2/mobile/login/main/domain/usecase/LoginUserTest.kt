@@ -147,7 +147,7 @@ class LoginUserTest {
             // GIVEN - numberOfAccounts is exactly 2 (the threshold)
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
                 Result.success(Unit)
-            whenever(repository.numberOfAccounts()) doReturn 1
+            whenever(repository.numberOfAccounts()) doReturn 2
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
