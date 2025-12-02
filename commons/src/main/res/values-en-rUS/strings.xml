@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search">खोज</string>
+    <!-- Periods -->
+    <string name="filter_period_today">आज</string>
+    <string name="overdue_today">आज</string>
+    </resources>

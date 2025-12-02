@@ -27,6 +27,7 @@
     <string name="event_completed">इवेंट कंप्लीटेड</string>
     <string name="state_error">त्रुटि</string>
     <string name="update">अपडेट करें</string>
+    <string name="date">तारीख</string>
     <string name="new_event">नया इवेंट</string>
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
@@ -69,6 +70,7 @@
     <string name="name">नाम</string>
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <string name="action_done">पूरा हुआ</string>
+    <string name="filters_title_date">तारीख</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
     <string name="customactivityoncrash_error_activity_error_details_close">बंद करें</string>
     <string name="break_glass_dialog_title">यह प्रोग्राम सुरक्षित है</string>

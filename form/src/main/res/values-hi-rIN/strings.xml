@@ -2,6 +2,7 @@
 <resources>
     <string name="error">त्रुटि</string>
     <string name="required">आवश्यकता है</string>
+    <string name="date">तारीख</string>
     <string name="hint_day">दिन</string>
     <string name="review">रिव्यू</string>
     <string name="complete">पूरा हुआ</string>
