@@ -47,7 +47,7 @@ class LoginUserTest {
             verify(repository).updateAvailableUsers(username)
             verify(repository).updateServerUrls(serverUrl)
             verify(repository).numberOfAccounts()
-            // Biometric credentials should NOT be deleted when numberOfAccounts < 1
+            // Biometric credentials should NOT be deleted when numberOfAccounts < 2
             verify(repository, never()).deleteBiometricCredentials()
         }
 
