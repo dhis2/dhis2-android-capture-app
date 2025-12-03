@@ -57,7 +57,7 @@ class LoginUserTest {
             // GIVEN - User has one existing account (numberOfAccounts = 1)
             whenever(repository.loginUser(serverUrl, username, password, isNetworkAvailable)) doReturn
                 Result.success(Unit)
-            whenever(repository.numberOfAccounts()) doReturn 2
+            whenever(repository.numberOfAccounts()) doReturn 1
             whenever(repository.displayTrackingMessage()) doReturn false
             whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
 
