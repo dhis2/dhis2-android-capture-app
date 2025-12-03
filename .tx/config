@@ -97,3 +97,12 @@ source_lang  = en
 type         = ANDROID
 minimum_perc = 0
 resource_name = Login
+
+[o:hisp-uio:p:dhis2-android-capture-app:r:sync-strings-xml]
+file_filter  = sync/src/commonMain/composeResources/values-<lang>/strings.xml
+source_file  = sync/src/commonMain/composeResources/values/strings.xml
+source_lang  = en
+type         = ANDROID
+minimum_perc = 0
+resource_name = Sync
+
