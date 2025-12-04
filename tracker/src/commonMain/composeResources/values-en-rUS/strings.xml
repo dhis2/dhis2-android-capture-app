@@ -2,5 +2,6 @@
 <resources>
     <string name="show_more">और दिखाएँ</string>
     <string name="show_less">कम दिखाएँ</string>
+    <string name="cancel">कैंसल</string>
     <string name="search">खोज</string>
     </resources>

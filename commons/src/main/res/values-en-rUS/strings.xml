@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="cancel">कैंसल</string>
+    <string name="yes">हाँ</string>
+    <string name="no">नहीं</string>
     <string name="search">खोज</string>
+    <string name="events">इवेंट्स</string>
+    <string name="enrollment_status_completed">पूरा</string>
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
+    <string name="filter_period_this_month">इस महीने</string>
+    <string name="filter_period_last_month">पिछला महीना</string>
+    <string name="complete">पूरा</string>
     <string name="overdue_today">आज</string>
     </resources>

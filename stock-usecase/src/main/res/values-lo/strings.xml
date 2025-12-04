@@ -31,6 +31,8 @@
     <string name="logout">ອອກຈາກລະບົບ</string>
 
 
+    <!-- Stock table -->
+    <string name="item">ລາຍການ</string>
     <string name="quantity">ປະລິມານ</string>
     <string name="items_available">ລາຍການທີ່ມີຢູ່</string>
     <plurals name="items_found">
