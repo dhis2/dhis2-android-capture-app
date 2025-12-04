@@ -1,0 +1,22 @@
+{
+  "appType": "APP",
+  "short_name": "simple-capture-plugin",
+  "name": "Simple Form Field Plugin",
+  "description": "A form field plugin. It can populate fields with dummy text and log the props that are provided to form field plugins",
+  "version": "1.0.0",
+  "plugin_launch_path": "plugin.html",
+  "plugin_type": "CAPTURE",
+  "default_locale": "en",
+  "activities": {
+    "dhis": {
+      "href": "*"
+    }
+  },
+  "icons": {
+    "48": "dhis2-app-icon.png"
+  },
+  "manifest_generated_at": "Wed Dec 03 2025 10:43:35 GMT+0100 (Central European Standard Time)",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}

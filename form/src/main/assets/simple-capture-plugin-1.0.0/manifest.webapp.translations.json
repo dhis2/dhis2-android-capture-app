@@ -1,0 +1,8 @@
+[
+  {
+    "locale": "en",
+    "shortcuts": {},
+    "title": "Simple Form Field Plugin",
+    "description": "A form field plugin. It can populate fields with dummy text and log the props that are provided to form field plugins"
+  }
+]
