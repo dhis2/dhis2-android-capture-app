@@ -1,0 +1,12 @@
+{
+  "type": "app",
+  "title": "Simple Form Field Plugin",
+  "description": "A form field plugin. It can populate fields with dummy text and log the props that are provided to form field plugins",
+  "pluginType": "CAPTURE",
+  "direction": "auto",
+  "name": "simple-capture-plugin",
+  "version": "1.0.0",
+  "entryPoints": {
+    "plugin": "plugin.html"
+  }
+}
