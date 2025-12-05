@@ -1,5 +1,7 @@
 package org.dhis2.form.ui
 
+import android.webkit.WebView
+import com.google.gson.Gson
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +29,8 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
@@ -33,6 +38,8 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.plugin.PluginInterface
+import org.dhis2.form.ui.plugin.PluginProps
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
@@ -47,6 +54,7 @@ fun Form(
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     resources: ResourceManager,
+    pluginProps: PluginProps? = null,
 ) {
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -92,6 +100,31 @@ fun Form(
             ),
         state = scrollState,
     ) {
+        item {
+            AndroidView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                factory = { context ->
+                    WebView(context).apply {
+                        settings.javaScriptEnabled = true
+                        addJavascriptInterface(
+                            PluginInterface {
+                                // TODO: Handle value update from plugin
+                            },
+                            "Android",
+                        )
+                        loadUrl("file:///android_asset/simple-capture-plugin-1.0.0/plugin.html")
+                    }
+                },
+                update = { webView ->
+                    pluginProps?.let {
+                        val propsJson = Gson().toJson(it)
+                        webView.evaluateJavascript("window.setProps($propsJson)", null)
+                    }
+                },
+            )
+        }
         if (sections.isNotEmpty()) {
             this.itemsIndexed(
                 items = sections,
