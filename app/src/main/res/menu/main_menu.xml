@@ -52,6 +52,11 @@
             android:visible="false"/>
 
         <item
+            android:id="@+id/menu_video_guide"
+            android:icon="@drawable/ic_menu_info"
+            android:title="@string/menu_video_guide" />
+
+        <item
             android:id="@+id/menu_about"
             android:icon="@drawable/ic_menu_info"
             android:title="@string/about" />

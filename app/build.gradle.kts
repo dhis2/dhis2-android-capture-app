@@ -101,6 +101,7 @@ android {
         buildConfigField("long", "VERSION_CODE", "${defaultConfig.versionCode}")
         buildConfigField("String", "VERSION_NAME", "\"${defaultConfig.versionName}\"")
         buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
+        buildConfigField("String", "DRUPAL_BASE_URL", "\"https://drupal.ddev.site/\"")
 
         manifestPlaceholders["appAuthRedirectScheme"] = ""
 
@@ -147,6 +148,9 @@ android {
             buildConfigField("int", "MATOMO_ID", "2")
             buildConfigField("String", "BUILD_DATE", "\"" + getBuildDate() + "\"")
             buildConfigField("String", "GIT_SHA", "\"" + getCommitHash() + "\"")
+            // エミュレーター用: ddevのポートマッピングに合わせる
+            // 注意: ポート番号はddev再起動時に変わる可能性があるため、変更時は ddev describe で確認してください
+            buildConfigField("String", "DRUPAL_BASE_URL", "\"http://10.0.2.2:32768/\"")
         }
         getByName("release") {
             isMinifyEnabled = false
@@ -293,6 +297,12 @@ dependencies {
     kapt(libs.dagger.compiler)
     kapt(libs.dagger.hilt.android.compiler)
     kapt(libs.deprecated.autoValueParcel)
+    
+    // Retrofit + Moshi for VideoGuide API
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.15.0")
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)

@@ -19,6 +19,7 @@ import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
 import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
+import org.dhis2.usescases.videoGuide.VideoGuideFragment
 
 class MainNavigator(
     private val dispatcherProvider: dispatch.core.DispatcherProvider,
@@ -37,6 +38,7 @@ class MainNavigator(
         SETTINGS(R.string.SYNC_MANAGER, R.id.sync_manager),
         TROUBLESHOOTING(R.string.main_menu_troubleshooting, R.id.menu_troubleshooting),
         ABOUT(R.string.about, R.id.menu_about),
+        VIDEO_GUIDE(R.string.menu_video_guide, R.id.menu_video_guide),
     }
 
     private var currentScreen = MutableLiveData<MainScreen?>(null)
@@ -91,6 +93,7 @@ class MainNavigator(
             MainScreen.SETTINGS -> openSettings()
             MainScreen.ABOUT -> openAbout()
             MainScreen.TROUBLESHOOTING -> openTroubleShooting(languageSelectorOpened)
+            MainScreen.VIDEO_GUIDE -> openVideoGuide()
         }
     }
 
@@ -124,6 +127,13 @@ class MainNavigator(
             fragment = TroubleshootingFragment.instance(languageSelectorOpened),
             screen = MainScreen.TROUBLESHOOTING,
             useFadeInTransition = languageSelectorOpened,
+        )
+    }
+
+    fun openVideoGuide() {
+        beginTransaction(
+            fragment = VideoGuideFragment(),
+            screen = MainScreen.VIDEO_GUIDE,
         )
     }
 

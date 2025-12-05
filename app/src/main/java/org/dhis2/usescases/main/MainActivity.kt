@@ -582,6 +582,10 @@ class MainActivity :
                 mainNavigator.openTroubleShooting()
             }
 
+            R.id.menu_video_guide -> {
+                mainNavigator.openVideoGuide()
+            }
+
             R.id.delete_account -> {
                 confirmAccountDelete()
             }
