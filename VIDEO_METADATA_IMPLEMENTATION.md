@@ -8,17 +8,17 @@
 
 以下のメタ情報をDrupalから取得します：
 
-- **title**: 動画のタイトル（既存の`name`フィールドを使用）
-- **description**: 動画の説明（既存実装あり）
-- **thumbnail**: サムネイル画像URL
-- **tag**: タグのリスト（タクソノミー用語）
-- **category**: カテゴリ（タクソノミー用語）
+- **title**: 動画のタイトル（`field_title`フィールド、なければ`name`フィールドを使用）
+- **description**: 動画の説明（`field_description`フィールド）
+- **thumbnail**: サムネイル画像URL（`thumbnail`または`field_video_thumbnail`から取得）
+- **tag**: タグ（単一のタクソノミー用語、`field_video_tag`）
+- **category**: カテゴリ（タクソノミー用語、`field_video_category`）
 
 ## 実装手順
 
 ### 1. Domain Model（VideoItem）の更新
 
-`VideoItem`に`tags`と`category`フィールドを追加します。
+`VideoItem`に`tag`と`category`フィールドを追加します。
 
 **ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/domain/model/VideoItem.kt`
 
@@ -32,8 +32,8 @@ data class VideoItem(
     val thumbnailUrl: String?,
     val videoUrl: String,
     val duration: String? = null,
-    val tags: List<String>? = null,        // タグのリスト
-    val category: String? = null,          // カテゴリ
+    val tag: String? = null,        // タグ（単一）
+    val category: String? = null,   // カテゴリ
 )
 ```
 
@@ -62,22 +62,28 @@ data class VideoMediaDto(
 @JsonClass(generateAdapter = true)
 data class VideoMediaAttributesDto(
     val name: String,
-    val description: String? = null,
+    @Json(name = "field_description")
+    val fieldDescription: String? = null,
+    @Json(name = "field_title")
+    val fieldTitle: String? = null,
 )
 
 @JsonClass(generateAdapter = true)
 data class VideoMediaRelationshipsDto(
     @Json(name = "field_media_video_file")
     val fieldMediaVideoFile: VideoFileRelationshipDto? = null,
-    // サムネイル画像（画像ファイルへの参照）
-    @Json(name = "field_media_image")
-    val fieldMediaImage: VideoRelationshipDto? = null,
-    // タグ（タクソノミー用語への参照、複数可）
-    @Json(name = "field_tags")
-    val fieldTags: VideoRelationshipListDto? = null,
-    // カテゴリ（タクソノミー用語への参照）
-    @Json(name = "field_category")
-    val fieldCategory: VideoRelationshipDto? = null,
+    // サムネイル（直接ファイル参照）
+    @Json(name = "thumbnail")
+    val thumbnail: VideoRelationshipDto? = null,
+    // サムネイル（メディア参照）
+    @Json(name = "field_video_thumbnail")
+    val fieldVideoThumbnail: VideoRelationshipDto? = null,
+    // カテゴリ（タクソノミー用語への参照、単一）
+    @Json(name = "field_video_category")
+    val fieldVideoCategory: VideoRelationshipDto? = null,
+    // タグ（タクソノミー用語への参照、単一）
+    @Json(name = "field_video_tag")
+    val fieldVideoTag: VideoRelationshipDto? = null,
 )
 
 @JsonClass(generateAdapter = true)
@@ -97,22 +103,12 @@ data class VideoRelationshipDto(
     val data: VideoReferenceDto? = null,
 )
 
-// 複数のrelationship用（tagsなど）
-@JsonClass(generateAdapter = true)
-data class VideoRelationshipListDto(
-    val data: List<VideoReferenceDto>? = null,
-)
-
 @JsonClass(generateAdapter = true)
 data class VideoReferenceDto(
     val id: String,
     val type: String,
 )
 ```
-
-**注意**: Drupalのフィールド名が異なる場合は、`@Json(name = "...")`アノテーションの値を調整してください。
-- `field_media_image` → `field_thumbnail` など
-- `field_tags` → `field_tag` など
 
 #### 2.2 VideoListResponseDtoの更新
 
@@ -260,7 +256,8 @@ class VideoMapper @Inject constructor() {
         }
 
         // サムネイル画像URLを取得
-        val thumbnailUrl = media.relationships?.fieldMediaImage?.data?.id?.let { mediaImageId ->
+        // 優先順位: field_video_thumbnail (media--image) > thumbnail (file--file)
+        val thumbnailUrl = media.relationships?.fieldVideoThumbnail?.data?.id?.let { mediaImageId ->
             // メディア画像IDからファイルIDを取得
             val imageFileId = mediaImageMap[mediaImageId]
             // ファイルIDからURLを取得
@@ -274,26 +271,39 @@ class VideoMapper @Inject constructor() {
                     }
                 }
             }
+        } ?: media.relationships?.thumbnail?.data?.id?.let { thumbnailFileId ->
+            // 直接ファイル参照の場合
+            val imagePath = imageFilesMap[thumbnailFileId]
+            imagePath?.let { path ->
+                if (path.startsWith("http")) {
+                    path
+                } else {
+                    "$baseUrl$path"
+                }
+            }
         }
 
-        // タグを取得
-        val tags = media.relationships?.fieldTags?.data?.mapNotNull { tagRef ->
-            taxonomyMap[tagRef.id]
+        // タグを取得（単一）
+        val tag = media.relationships?.fieldVideoTag?.data?.id?.let { tagId ->
+            taxonomyMap[tagId]
         }
 
-        // カテゴリを取得
-        val category = media.relationships?.fieldCategory?.data?.id?.let { categoryId ->
+        // カテゴリを取得（単一）
+        val category = media.relationships?.fieldVideoCategory?.data?.id?.let { categoryId ->
             taxonomyMap[categoryId]
         }
 
+        // タイトルを取得（field_titleを優先、なければname）
+        val title = media.attributes.fieldTitle ?: media.attributes.name
+
         return VideoItem(
             id = media.id,
-            title = media.attributes.name,
-            description = media.attributes.description ?: "",
+            title = title,
+            description = media.attributes.fieldDescription ?: "",
             thumbnailUrl = thumbnailUrl,
             videoUrl = videoUrl,
             duration = null,
-            tags = tags,
+            tag = tag,
             category = category,
         )
     }
@@ -317,24 +327,23 @@ import retrofit2.http.Query
 interface VideoApiService {
     @GET("jsonapi/media/video")
     suspend fun getVideos(
-        @Query("include") include: String = "field_media_video_file,field_media_image.field_media_image,field_tags,field_category",
+        @Query("include") include: String = "field_media_video_file,thumbnail,field_video_thumbnail.field_media_image,field_video_category,field_video_tag",
     ): VideoListResponseDto
 
     @GET("jsonapi/media/video/{id}")
     suspend fun getVideo(
         @Path("id") id: String,
-        @Query("include") include: String = "field_media_video_file,field_media_image.field_media_image,field_tags,field_category",
+        @Query("include") include: String = "field_media_video_file,thumbnail,field_video_thumbnail.field_media_image,field_video_category,field_video_tag",
     ): VideoListResponseDto
 }
 ```
 
 **includeパラメータの説明**:
 - `field_media_video_file`: 動画ファイル（既存）
-- `field_media_image.field_media_image`: サムネイル画像（メディア → ファイルのネストした関係）
-- `field_tags`: タグ（タクソノミー用語）
-- `field_category`: カテゴリ（タクソノミー用語）
-
-**注意**: Drupalのフィールド名が異なる場合は、このパラメータを調整してください。
+- `thumbnail`: サムネイル画像（直接ファイル参照）
+- `field_video_thumbnail.field_media_image`: サムネイル画像（メディア → ファイルのネストした関係）
+- `field_video_category`: カテゴリ（タクソノミー用語）
+- `field_video_tag`: タグ（タクソノミー用語）
 
 ### 5. DrupalVideoApiDataSourceの更新
 
@@ -426,9 +435,11 @@ class DrupalVideoApiDataSource @Inject constructor(
    ↓
 4. mapToDomain()でDTO → Domain Model変換
    - 動画URLを構築
-   - サムネイルURLを構築（メディア → ファイルの関係を解決）
-   - タグを取得（タクソノミー用語ID → 名前）
-   - カテゴリを取得（タクソノミー用語ID → 名前）
+   - タイトルを取得（field_titleを優先、なければname）
+   - 説明を取得（field_description）
+   - サムネイルURLを構築（field_video_thumbnailを優先、なければthumbnail）
+   - タグを取得（タクソノミー用語ID → 名前、単一）
+   - カテゴリを取得（タクソノミー用語ID → 名前、単一）
    ↓
 5. VideoItemが返される
 ```
@@ -441,12 +452,13 @@ class DrupalVideoApiDataSource @Inject constructor(
 
 1. ブラウザで以下のURLにアクセス：
    ```
-   https://your-drupal-site.com/jsonapi/media/video?include=field_media_video_file,field_media_image.field_media_image,field_tags,field_category
+   https://your-drupal-site.com/jsonapi/media/video?include=field_media_video_file,thumbnail,field_video_thumbnail.field_media_image,field_video_category,field_video_tag
    ```
 
 2. JSONレスポンスを確認し、以下のフィールド名を確認：
-   - `relationships`内のフィールド名（例: `field_media_image`, `field_tags`, `field_category`）
-   - `included`配列の`type`フィールド（例: `file--file`, `taxonomy_term--tags`, `media--image`）
+   - `attributes`内のフィールド名（例: `field_title`, `field_description`）
+   - `relationships`内のフィールド名（例: `thumbnail`, `field_video_thumbnail`, `field_video_tag`, `field_video_category`）
+   - `included`配列の`type`フィールド（例: `file--file`, `taxonomy_term--video_category`, `taxonomy_term--video_tags`, `media--image`）
 
 3. フィールド名が異なる場合は、以下のファイルを修正：
    - `VideoMediaDto.kt`: `@Json(name = "...")`アノテーション
@@ -458,22 +470,24 @@ class DrupalVideoApiDataSource @Inject constructor(
 ### 1. サムネイル画像が取得できない
 
 **原因**: 
-- `field_media_image`フィールド名が異なる
+- `thumbnail`または`field_video_thumbnail`フィールド名が異なる
 - `include`パラメータが正しくない（ネストした関係が含まれていない）
 
 **対処法**:
 - Drupal APIレスポンスで`relationships`内のフィールド名を確認
-- `include`パラメータに`field_media_image.field_media_image`が含まれているか確認
+- `include`パラメータに`thumbnail`と`field_video_thumbnail.field_media_image`が含まれているか確認
+- `field_video_thumbnail`が`media--image`型の場合、そのメディアの`field_media_image`からファイルIDを取得する必要がある
 
 ### 2. タグやカテゴリが取得できない
 
 **原因**:
-- タクソノミー用語の`type`が`taxonomy_term--tags`ではなく、別の形式（例: `taxonomy_term--tag`）
+- タクソノミー用語の`type`が`taxonomy_term--video_category`や`taxonomy_term--video_tags`ではなく、別の形式
 - `included`配列にタクソノミー用語が含まれていない
 
 **対処法**:
 - Drupal APIレスポンスで`included`配列の`type`を確認
 - `VideoMapper.createTaxonomyMap()`のフィルタ条件を調整（例: `it.type.startsWith("taxonomy_term--")`）
+- `field_video_tag`と`field_video_category`が単一の参照であることを確認（配列ではない）
 
 ### 3. フィールド名が異なる
 
@@ -494,8 +508,10 @@ class DrupalVideoApiDataSource @Inject constructor(
 
 3. **統合テスト**
    - アプリを実行して、動画一覧にメタ情報が表示されるか確認
-   - サムネイル画像が表示されるか確認
-   - タグやカテゴリが表示されるか確認
+   - `field_title`が設定されている場合はそれが表示され、なければ`name`が表示されるか確認
+   - `field_description`が表示されるか確認
+   - サムネイル画像が表示されるか確認（`field_video_thumbnail`と`thumbnail`の両方をテスト）
+   - タグやカテゴリが表示されるか確認（単一の値として）
 
 ## 参考
 

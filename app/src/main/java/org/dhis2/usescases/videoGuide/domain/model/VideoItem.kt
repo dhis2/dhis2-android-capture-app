@@ -7,5 +7,7 @@ data class VideoItem(
     val thumbnailUrl: String?,
     val videoUrl: String,
     val duration: String? = null,
+    val tag: String? = null,        // タグ（単一）
+    val category: String? = null,   // カテゴリ
 )
 

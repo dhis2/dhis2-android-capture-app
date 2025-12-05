@@ -15,10 +15,22 @@ class DrupalVideoApiDataSource @Inject constructor(
     override suspend fun getVideoList(): List<VideoItem> {
         return runCatching {
             val response = api.getVideos()
+            
+            // 各種マップを作成
             val filesMap = mapper.createFilesMap(response.included)
+            val imageFilesMap = mapper.createImageFilesMap(response.included)
+            val taxonomyMap = mapper.createTaxonomyMap(response.included)
+            val mediaImageMap = mapper.createMediaImageMap(response.included)
 
             response.data.mapNotNull { media ->
-                mapper.mapToDomain(media, filesMap, baseUrl)
+                mapper.mapToDomain(
+                    media = media,
+                    filesMap = filesMap,
+                    baseUrl = baseUrl,
+                    imageFilesMap = imageFilesMap,
+                    taxonomyMap = taxonomyMap,
+                    mediaImageMap = mediaImageMap,
+                )
             }
         }.onFailure { throwable ->
             Timber.e(throwable, "Failed to fetch videos from Drupal API")
@@ -28,10 +40,22 @@ class DrupalVideoApiDataSource @Inject constructor(
     override suspend fun getVideoById(videoId: String): VideoItem? {
         return runCatching {
             val response = api.getVideo(videoId)
+            
+            // 各種マップを作成
             val filesMap = mapper.createFilesMap(response.included)
+            val imageFilesMap = mapper.createImageFilesMap(response.included)
+            val taxonomyMap = mapper.createTaxonomyMap(response.included)
+            val mediaImageMap = mapper.createMediaImageMap(response.included)
 
             response.data.firstOrNull()?.let { media ->
-                mapper.mapToDomain(media, filesMap, baseUrl)
+                mapper.mapToDomain(
+                    media = media,
+                    filesMap = filesMap,
+                    baseUrl = baseUrl,
+                    imageFilesMap = imageFilesMap,
+                    taxonomyMap = taxonomyMap,
+                    mediaImageMap = mediaImageMap,
+                )
             }
         }.onFailure { throwable ->
             Timber.e(throwable, "Failed to fetch video by id: $videoId")

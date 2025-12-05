@@ -86,6 +86,28 @@ fun VideoItemCard(
                 modifier = Modifier.padding(bottom = 4.dp),
             )
         }
+        if (video.thumbnailUrl != null) {
+            Text(
+                text = "Thumbnail: ${video.thumbnailUrl}",
+                modifier = Modifier.padding(bottom = 4.dp),
+            )
+        }
+        if (video.tag != null) {
+            Text(
+                text = "Tag: ${video.tag}",
+                modifier = Modifier.padding(bottom = 4.dp),
+            )
+        }
+        if (video.category != null) {
+            Text(
+                text = "Category: ${video.category}",
+                modifier = Modifier.padding(bottom = 4.dp),
+            )
+        }
+        Text(
+            text = "URL: ${video.videoUrl}",
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
         if (video.duration != null) {
             Text(text = "Duration: ${video.duration}")
         }
