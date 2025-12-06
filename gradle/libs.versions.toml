@@ -94,6 +94,7 @@ androidx-navigation = "2.7.0"
 junitJupiter = "5.8.1"
 ktxml = "0.3.2"
 atomicfu = "0.27.0"
+room = "2.6.1"
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 kotlinPlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
@@ -231,6 +232,9 @@ androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navi
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
 atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 [plugins]
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "kotlinx-serialization" }

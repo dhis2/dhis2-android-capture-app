@@ -279,25 +279,50 @@ suspend fun isVideoDownloaded(videoId: String): Boolean
 
 **目標**: ExoPlayerのDownloadServiceを使って動画をダウンロードする
 
-#### 3.1 VideoDownloadManagerの作成
+**重要**: Media3 1.2.0では、ダウンロード関連のクラスは`androidx.media3.exoplayer.offline`パッケージにあります。
 
-**ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/video/VideoDownloadManager.kt`
+#### 3.1 DownloadManagerとSimpleCacheのセットアップ
+
+**ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/VideoGuideModule.kt` / `VideoPlayerModule.kt`
+
+**実装内容**:
+- `StandaloneDatabaseProvider`の作成
+- `SimpleCache`の作成（キャッシュディレクトリ: `context.cacheDir/video_downloads`）
+- `DownloadManager`の作成と設定
+
+**依存関係**:
+```kotlin
+import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.datasource.cache.NoOpCacheEvictor
+import androidx.media3.exoplayer.offline.DownloadManager
+```
+
+**注意**: Media3では、ダウンロードされたファイルは`SimpleCache`に保存されますが、**実際のファイルパスを取得する必要はありません**。再生時には元のURLを使用し、ExoPlayerが自動的にキャッシュから読み込みます。
+
+#### 3.2 DownloadTrackerの作成
+
+**ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/video/DownloadTracker.kt`
 
 **責務**:
-- ExoPlayerの`DownloadService`との連携
-- ダウンロードリクエストの管理
+- `DownloadManager.Listener`を実装
 - ダウンロード状態の監視
-- ダウンロード完了時のコールバック処理
+- `DownloadManager`からの状態更新を受け取る
+- UIへの状態通知（LiveData）
+
+**主要プロパティ**:
+```kotlin
+val downloadStates: LiveData<Map<String, Download>>
+val downloadProgress: LiveData<Map<String, Int>>
+```
 
 **主要メソッド**:
 ```kotlin
-fun downloadVideo(videoItem: VideoItem)
-fun cancelDownload(videoId: String)
-fun getDownloadState(videoId: String): DownloadState
-fun getAllDownloads(): List<Download>
+fun getDownloadState(videoId: String): Download?
+fun getDownloadProgress(videoId: String): Int
+fun release()
 ```
 
-#### 3.2 VideoDownloadServiceの作成
+#### 3.3 VideoDownloadServiceの作成
 
 **ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/video/VideoDownloadService.kt`
 
@@ -305,6 +330,7 @@ fun getAllDownloads(): List<Download>
 - `DownloadService`を継承
 - ダウンロードの実行と管理
 - フォアグラウンドサービスとして動作
+- ダウンロード進捗の通知表示
 
 **AndroidManifest.xmlへの追加**:
 ```xml
@@ -318,34 +344,83 @@ fun getAllDownloads(): List<Download>
 - `FOREGROUND_SERVICE`（既に追加済み）
 - `FOREGROUND_SERVICE_MEDIA_PLAYBACK`（Android 14+）
 
-#### 3.3 DownloadTrackerの作成
+#### 3.4 VideoDownloadManagerの作成
 
-**ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/video/DownloadTracker.kt`
+**ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/video/VideoDownloadManager.kt`
 
 **責務**:
-- ダウンロード状態の監視
-- `DownloadManager`からの状態更新を受け取る
-- UIへの状態通知（LiveData/Flow）
+- ExoPlayerの`DownloadService`との連携
+- ダウンロードリクエストの管理
+- ダウンロード状態の公開（DownloadTracker経由）
+- Room DBへの保存支援
 
-#### 3.4 VideoPlayerViewModelの拡張
+**主要プロパティ**:
+```kotlin
+val downloadStates: LiveData<Map<String, Download>>
+val downloadProgress: LiveData<Map<String, Int>>
+```
+
+**主要メソッド**:
+```kotlin
+fun downloadVideo(videoItem: VideoItem)
+fun cancelDownload(videoId: String)
+fun getDownloadState(videoId: String): Download?
+fun getAllDownloads(): List<Download>
+fun getDownloadProgress(videoId: String): Int
+suspend fun saveDownloadedVideoToDatabase(videoItem: VideoItem, localFilePath: String)
+```
+
+**重要な実装ポイント**:
+- `downloadTracker`はprivateプロパティとして保持し、必要なデータのみをpublicプロパティとして公開
+- ダウンロード完了時の処理は簡素化（ファイルパス取得は不要）
+- Room DBへの保存は、ViewModelから明示的に呼び出す
+
+**注意**: `getDownloadedFilePath()`のようなメソッドは実装不要です。Media3では、ダウンロード済みファイルの再生に元のURLを使用し、ExoPlayerが自動的にキャッシュから読み込みます。
+
+#### 3.5 VideoPlayerViewModelの拡張
 
 **追加プロパティ**:
-- `downloadState: LiveData<DownloadState>`
+- `downloadState: LiveData<Download?>`（現在の動画のダウンロード状態）
 - `downloadProgress: LiveData<Int>`（0-100%）
 
 **追加メソッド**:
-- `startDownload(videoId: String)`
-- `cancelDownload(videoId: String)`
-- `checkDownloadState(videoId: String)`
+- `startDownload()`: 現在の動画をダウンロード
+- `cancelDownload()`: 現在の動画のダウンロードをキャンセル
+- `checkDownloadState()`: ダウンロード状態を確認
 
-#### 3.5 VideoGuideViewModelの拡張
+**ダウンロード完了時の処理**:
+```kotlin
+// downloadStatesを監視して、ダウンロード完了時にRoom DBに保存
+downloadManager.downloadStates.observeForever { downloads ->
+    downloads.values.forEach { download ->
+        if (download.state == Download.STATE_COMPLETED) {
+            viewModelScope.launch {
+                val video = repository.getVideoById(download.request.id)
+                if (video != null) {
+                    // キャッシュディレクトリのパスを保存（実際のファイルパスは不要）
+                    val cachePath = File(context.cacheDir, "video_downloads").absolutePath
+                    downloadManager.saveDownloadedVideoToDatabase(video, cachePath)
+                }
+            }
+        }
+    }
+}
+```
+
+#### 3.6 VideoGuideViewModelの拡張
 
 **追加プロパティ**:
-- `downloadStates: Map<String, DownloadState>`（各動画のダウンロード状態）
+- `downloadStates: LiveData<Map<String, Download>>`（各動画のダウンロード状態）
+- `downloadProgress: LiveData<Map<String, Int>>`（各動画のダウンロード進捗）
 
 **追加メソッド**:
-- `checkDownloadState(videoId: String)`
-- `getDownloadedVideos()`（ローカルDBから取得）
+- `startDownload(videoId: String)`: 動画のダウンロードを開始
+- `cancelDownload(videoId: String)`: 動画のダウンロードをキャンセル
+- `checkDownloadState(videoId: String)`: ダウンロード状態を確認
+- `getDownloadedVideos()`: ローカルDBからダウンロード済み動画を取得
+
+**ダウンロード完了時の処理**:
+VideoPlayerViewModelと同様に、`downloadStates`を監視してダウンロード完了時にRoom DBに保存します。
 
 ---
 
@@ -374,18 +449,37 @@ fun getPlayer(): ExoPlayer?
 
 **実装場所**: `VideoPlayerActivity`または`ExoPlayerManager`
 
+**重要な理解**: Media3では、ダウンロード済みファイルの再生に**元のURLを使用**します。ExoPlayerが自動的に`SimpleCache`から読み込みます。実際のファイルパスを取得する必要はありません。
+
 **処理フロー**:
 1. 動画IDから動画情報を取得
    - まずローカルDBから取得を試みる（`VideoLocalDataSource.getDownloadedVideoById()`）
    - ローカルにない場合はリモートから取得（`VideoGuideRepository.getVideoById()`）
-2. ローカルDBでダウンロード済みかチェック（`VideoGuideRepository.isVideoDownloaded()`）
-3. ダウンロード済みの場合:
-   - ローカルファイルパスを取得（`DownloadedVideoEntity.localFilePath`）
-   - `FileDataSource`を使用してExoPlayerにセット
-4. 未ダウンロードの場合:
-   - `HttpDataSource`を使用してオンライン再生
+2. ダウンロード済みかチェック
+   - `DownloadIndex.getDownload(videoId)`でダウンロード状態を確認
+   - または`VideoGuideRepository.isVideoDownloaded(videoId)`でローカルDBを確認
+3. 再生方法:
+   - **ダウンロード済みの場合**: 元のURLを使用して`MediaItem.fromUri(videoUrl)`を作成
+     - ExoPlayerが自動的に`SimpleCache`から読み込む
+     - `FileDataSource`は使用しない（Media3が自動的に処理）
+   - **未ダウンロードの場合**: 元のURLを使用してオンライン再生
 
-**注意**: フェーズ1で実装した`VideoGuideRepository.getVideoById()`はリモートからのみ取得するが、フェーズ4ではローカルDBからも取得できるように拡張する可能性がある。
+**実装例**:
+```kotlin
+// ExoPlayerManager.kt
+fun prepareMediaItem(videoUrl: String, isDownloaded: Boolean) {
+    // Media3では、ダウンロード済みでも元のURLを使用
+    // ExoPlayerが自動的にキャッシュから読み込む
+    val mediaItem = MediaItem.fromUri(videoUrl)
+    player.setMediaItem(mediaItem)
+    player.prepare()
+}
+```
+
+**注意**: 
+- `FileDataSource`を直接使用する必要はありません
+- `DownloadRequest`のURI（元のURL）を使用することで、ExoPlayerが自動的にキャッシュを検索します
+- オフライン時でも、元のURLを使用すればキャッシュから再生されます
 
 #### 4.3 VideoPlayerActivityの拡張
 
@@ -514,12 +608,36 @@ exoPlayer.prepare()
 
 ### ダウンロード機能の実装
 
+#### DownloadManagerとSimpleCacheのセットアップ
+
+```kotlin
+// VideoGuideModule.kt または VideoPlayerModule.kt
+val databaseProvider = StandaloneDatabaseProvider(context)
+val downloadCache = SimpleCache(
+    File(context.cacheDir, "video_downloads"),
+    NoOpCacheEvictor(),
+    databaseProvider
+)
+val dataSourceFactory: HttpDataSource.Factory =
+    DefaultHttpDataSource.Factory()
+        .setUserAgent(Util.getUserAgent(context, "DHIS2-Android-Capture"))
+        .setAllowCrossProtocolRedirects(true)
+
+val downloadManager = DownloadManager(
+    context,
+    databaseProvider,
+    downloadCache,
+    dataSourceFactory,
+    Executors.newSingleThreadExecutor()
+)
+```
+
 #### DownloadRequestの作成
 
 ```kotlin
 val downloadRequest = DownloadRequest.Builder(videoId, Uri.parse(videoUrl))
     .setMimeType(MimeTypes.VIDEO_MP4)
-    .setData(videoItem.title.toByteArray())
+    .setData(videoItem.title.toByteArray()) // メタデータとして保存
     .build()
 ```
 
@@ -537,15 +655,40 @@ DownloadService.sendAddDownload(
 #### ダウンロード状態の監視
 
 ```kotlin
-val downloadManager = DownloadManager(
-    context,
-    databaseProvider,
-    downloadCache,
-    dataSourceFactory,
-    executor
-)
-
+// DownloadTrackerをリスナーとして追加
 downloadManager.addListener(downloadTracker)
+
+// DownloadTrackerはDownloadManager.Listenerを実装
+class DownloadTracker(
+    private val downloadManager: DownloadManager,
+) : DownloadManager.Listener {
+    // 状態をLiveDataで公開
+    val downloadStates: LiveData<Map<String, Download>>
+    val downloadProgress: LiveData<Map<String, Int>>
+}
+```
+
+#### ダウンロード完了時の処理
+
+**重要**: Media3では、ダウンロードされたファイルのパスを取得する必要はありません。再生時には元のURLを使用し、ExoPlayerが自動的にキャッシュから読み込みます。
+
+```kotlin
+// ViewModelでダウンロード完了を監視
+downloadManager.downloadStates.observeForever { downloads ->
+    downloads.values.forEach { download ->
+        if (download.state == Download.STATE_COMPLETED) {
+            viewModelScope.launch {
+                // VideoItemを取得してRoom DBに保存
+                val video = repository.getVideoById(download.request.id)
+                if (video != null) {
+                    // キャッシュディレクトリのパスを保存（実際のファイルパスは不要）
+                    val cachePath = File(context.cacheDir, "video_downloads").absolutePath
+                    downloadManager.saveDownloadedVideoToDatabase(video, cachePath)
+                }
+            }
+        }
+    }
+}
 ```
 
 ### Roomデータベースの実装
@@ -558,21 +701,30 @@ val databaseProvider = StandaloneDatabaseProvider(context)
 
 #### ダウンロード情報の保存
 
+**注意**: Media3では、ダウンロードされたファイルは`SimpleCache`に保存されますが、実際のファイルパスを取得する必要はありません。`localFilePath`にはキャッシュディレクトリのパスを保存しますが、これは主にダウンロード済みかどうかの判定に使用します。
+
 ```kotlin
 suspend fun saveDownloadedVideo(videoItem: VideoItem, localFilePath: String) {
     val entity = DownloadedVideoEntity(
         videoId = videoItem.id,
         title = videoItem.title,
         description = videoItem.description,
-        videoUrl = videoItem.videoUrl,
+        videoUrl = videoItem.videoUrl, // 再生時にはこのURLを使用
         thumbnailUrl = videoItem.thumbnailUrl,
-        localFilePath = localFilePath,
+        localFilePath = localFilePath, // キャッシュディレクトリのパス（主に判定用）
         downloadedAt = System.currentTimeMillis(),
-        fileSize = File(localFilePath).length(),
+        fileSize = 0L, // 実際のファイルサイズは取得困難なため、0またはDownloadから取得
         duration = null // ExoPlayerから取得可能
     )
     dao.insert(entity)
 }
+```
+
+**ファイルサイズの取得**:
+```kotlin
+// Downloadからファイルサイズを取得する場合
+val download = downloadIndex.getDownload(videoId)
+val fileSize = download?.contentLength ?: 0L
 ```
 
 ---
@@ -599,8 +751,8 @@ suspend fun saveDownloadedVideo(videoItem: VideoItem, localFilePath: String) {
    - ダウンロード開始 → 進行 → 完了 → DB保存
 
 2. **オフライン再生フローのテスト**
-   - ダウンロード済み動画の検出
-   - ローカルファイルからの再生
+   - ダウンロード済み動画の検出（DownloadIndexまたはRoom DB）
+   - 元のURLを使用した再生（ExoPlayerが自動的にキャッシュから読み込み）
 
 ### UIテスト
 
@@ -641,10 +793,14 @@ suspend fun saveDownloadedVideo(videoItem: VideoItem, localFilePath: String) {
 - [ ] DB操作の動作確認
 
 ### フェーズ3: ダウンロード機能
-- [ ] VideoDownloadManagerの作成
-- [ ] VideoDownloadServiceの作成
+- [ ] DownloadManagerとSimpleCacheのセットアップ（VideoGuideModule/VideoPlayerModule）
 - [ ] DownloadTrackerの作成
+- [ ] VideoDownloadServiceの作成
+- [ ] VideoDownloadManagerの作成
 - [ ] AndroidManifest.xmlへのサービス登録
+- [ ] VideoPlayerViewModelの拡張（ダウンロード機能）
+- [ ] VideoGuideViewModelの拡張（ダウンロード機能）
+- [ ] ダウンロード完了時のRoom DB保存処理
 - [ ] ダウンロード機能の動作確認
 
 ### フェーズ4: オフライン再生
@@ -663,6 +819,13 @@ suspend fun saveDownloadedVideo(videoItem: VideoItem, localFilePath: String) {
 
 ## 🚨 注意事項
 
+### Media3 1.2.0に関する重要な注意事項
+
+- **パッケージ名の変更**: ダウンロード関連のクラスは`androidx.media3.exoplayer.offline`パッケージにあります（`androidx.media3.exoplayer.download`ではない）
+- **Cacheパッケージ**: Cache関連のクラスは`androidx.media3.datasource.cache`パッケージにあります（`androidx.media3.exoplayer.upstream.cache`ではない）
+- **ファイルパス取得**: Media3では、ダウンロードされたファイルの実際のパスを取得する必要はありません。再生時には元のURLを使用し、ExoPlayerが自動的に`SimpleCache`から読み込みます
+- **オフライン再生**: ダウンロード済みファイルの再生には`FileDataSource`を使用せず、元のURLを使用してください
+
 ### パーミッション
 
 - **Android 10 (API 29)以降**: Scoped Storageの影響で、アプリ専用ディレクトリを使用する必要がある
@@ -670,9 +833,10 @@ suspend fun saveDownloadedVideo(videoItem: VideoItem, localFilePath: String) {
 
 ### ストレージ管理
 
-- ダウンロードした動画は`context.getExternalFilesDir()`または`context.filesDir`に保存
+- ダウンロードした動画は`SimpleCache`に保存され、キャッシュディレクトリ（`context.cacheDir/video_downloads`）に保存されます
 - アプリのアンインストール時に自動削除される
 - ストレージ容量の管理（最大容量の設定、古い動画の自動削除など）を検討
+- `SimpleCache`のサイズ制限を設定することを推奨
 
 ### パフォーマンス
 

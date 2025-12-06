@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -31,7 +29,9 @@ class VideoPlayerActivity : ActivityGlobalAbstract() {
     @Inject
     lateinit var viewModel: VideoPlayerViewModel
 
-    private var exoPlayer: ExoPlayer? = null
+    @Inject
+    lateinit var exoPlayerManager: ExoPlayerManager
+
     private var playerView: PlayerView? = null
     private var loadingIndicator: ProgressBar? = null
     private var errorMessage: TextView? = null
@@ -80,36 +80,35 @@ class VideoPlayerActivity : ActivityGlobalAbstract() {
     }
 
     private fun initializePlayer() {
-        exoPlayer = ExoPlayer.Builder(this).build().also { player ->
-            playerView?.player = player
+        val player = exoPlayerManager.initializePlayer()
+        playerView?.player = player
 
-            // 再生状態のリスナー
-            player.addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    when (playbackState) {
-                        Player.STATE_READY -> {
-                            loadingIndicator?.visibility = View.GONE
-                            // 保存された位置から再生
-                            if (playerPosition > 0) {
-                                player.seekTo(playerPosition)
-                            }
-                            player.playWhenReady = playerPlaying
+        // 再生状態のリスナー
+        player.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                when (playbackState) {
+                    Player.STATE_READY -> {
+                        loadingIndicator?.visibility = View.GONE
+                        // 保存された位置から再生
+                        if (playerPosition > 0) {
+                            player.seekTo(playerPosition)
                         }
-                        Player.STATE_BUFFERING -> {
-                            loadingIndicator?.visibility = View.VISIBLE
-                        }
-                        Player.STATE_ENDED -> {
-                            loadingIndicator?.visibility = View.GONE
-                        }
+                        player.playWhenReady = playerPlaying
+                    }
+                    Player.STATE_BUFFERING -> {
+                        loadingIndicator?.visibility = View.VISIBLE
+                    }
+                    Player.STATE_ENDED -> {
+                        loadingIndicator?.visibility = View.GONE
                     }
                 }
+            }
 
-                override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
-                    loadingIndicator?.visibility = View.GONE
-                    showError("Playback error: ${error.message}")
-                }
-            })
-        }
+            override fun onPlayerError(error: androidx.media3.common.PlaybackException) {
+                loadingIndicator?.visibility = View.GONE
+                showError("Playback error: ${error.message}")
+            }
+        })
     }
 
     private fun observeViewModel() {
@@ -133,10 +132,10 @@ class VideoPlayerActivity : ActivityGlobalAbstract() {
     }
 
     private fun playVideo(videoUrl: String) {
-        exoPlayer?.let { player ->
-            val mediaItem = MediaItem.fromUri(videoUrl)
-            player.setMediaItem(mediaItem)
-            player.prepare()
+        // Media3では、常に元のURLを使用
+        // SimpleCacheが自動的にキャッシュから読み込む
+        exoPlayerManager.prepareMediaItem(videoUrl)
+        exoPlayerManager.getPlayer()?.let { player ->
             player.playWhenReady = true
         }
     }
@@ -151,7 +150,7 @@ class VideoPlayerActivity : ActivityGlobalAbstract() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        exoPlayer?.let { player ->
+        exoPlayerManager.getPlayer()?.let { player ->
             outState.putLong(STATE_PLAYER_POSITION, player.currentPosition)
             outState.putBoolean(STATE_PLAYER_PLAYING, player.playWhenReady)
         }
@@ -159,12 +158,12 @@ class VideoPlayerActivity : ActivityGlobalAbstract() {
 
     override fun onPause() {
         super.onPause()
-        exoPlayer?.pause()
+        exoPlayerManager.getPlayer()?.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        exoPlayer?.play()
+        exoPlayerManager.getPlayer()?.play()
     }
 
     override fun onDestroy() {
@@ -173,12 +172,11 @@ class VideoPlayerActivity : ActivityGlobalAbstract() {
     }
 
     private fun releasePlayer() {
-        exoPlayer?.let { player ->
+        exoPlayerManager.getPlayer()?.let { player ->
             playerPosition = player.currentPosition
             playerPlaying = player.playWhenReady
-            player.release()
         }
-        exoPlayer = null
+        exoPlayerManager.releasePlayer()
         playerView?.player = null
     }
 }

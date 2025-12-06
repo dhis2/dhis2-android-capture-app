@@ -308,6 +308,15 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
     implementation("androidx.media3:media3-common:1.2.0")
+    
+    // ExoPlayer Download機能（Phase 3）
+    implementation("androidx.media3:media3-database:1.2.0")
+    implementation("androidx.media3:media3-datasource:1.2.0")
+    
+    // Room Database for VideoGuide offline storage (Phase 2)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    kapt(libs.room.compiler)
 
     testImplementation(libs.test.archCoreTesting)
     testImplementation(libs.test.testCore)
