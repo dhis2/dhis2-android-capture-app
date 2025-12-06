@@ -7,7 +7,7 @@
 ### 達成すべき機能
 
 1. ✅ **動画一覧の表示**（既に実装済み）
-2. 🔄 **動画のオンライン再生**（ExoPlayer統合）
+2. ✅ **動画のオンライン再生**（ExoPlayer統合）← フェーズ1完了
 3. 🔄 **動画のダウンロード機能**（ExoPlayer DownloadService）
 4. 🔄 **ダウンロード済み動画のオフライン再生**
 5. 🔄 **ダウンロード状態の管理とUI表示**
@@ -37,43 +37,41 @@ VideoGuideFragment
 
 VideoPlayerActivity
   └── VideoPlayerViewModel
-       └── VideoPlayerRepository
-            ├── VideoGuideRepository (動画情報取得)
-            ├── VideoDownloadManager (ダウンロード管理)
-            └── ExoPlayerManager (再生管理)
+       └── VideoGuideRepository (動画情報取得)
+            └── VideoRemoteDataSource (Drupal API)
+
+※ フェーズ3以降で以下を追加予定：
+   - VideoDownloadManager (ダウンロード管理)
+   - ExoPlayerManager (再生管理)
 ```
 
 ---
 
 ## 📦 実装フェーズ
 
-### フェーズ1: ExoPlayerの基本統合とオンライン再生
+### フェーズ1: ExoPlayerの基本統合とオンライン再生 ✅ 完了
 
 **目標**: ExoPlayerを使って動画をオンラインで再生できるようにする
+
+**実装完了日**: 2024年12月
 
 #### 1.1 依存関係の追加
 
 **ファイル**: `app/build.gradle.kts`
 
+**フェーズ1で追加した依存関係**:
 ```kotlin
 dependencies {
-    // ExoPlayer Core
+    // ExoPlayer Core（フェーズ1で追加）
     implementation("androidx.media3:media3-exoplayer:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
     implementation("androidx.media3:media3-common:1.2.0")
-    
-    // ExoPlayer Download (オフライン再生用)
-    implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
-    implementation("androidx.media3:media3-datasource:1.2.0")
-    implementation("androidx.media3:media3-datasource-okhttp:1.2.0")
-    implementation("androidx.media3:media3-database:1.2.0")
-    
-    // Room Database (ダウンロード状態管理用)
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
 }
 ```
+
+**注意**: フェーズ2以降で必要になる依存関係は、各フェーズの実装時に追加します：
+- ExoPlayer Download関連（フェーズ3で追加予定）
+- Room Database関連（フェーズ2で追加予定）
 
 #### 1.2 VideoPlayerActivityの実装
 
@@ -110,19 +108,29 @@ dependencies {
 - `app/src/main/java/org/dhis2/usescases/videoGuide/video/VideoPlayerComponent.kt`
 
 **提供する依存関係**:
-- `VideoGuideRepository`（既存のものを再利用）
+- `ActivityGlobalAbstract`（コンストラクタで受け取る）
+- `ViewModelStoreOwner`（コンストラクタで受け取る）
+- `VideoApiService`（Retrofit API）
+- `VideoRemoteDataSource`（DrupalVideoApiDataSource）
+- `VideoGuideRepository`（VideoPlayerModule内で作成）
 - `VideoPlayerViewModelFactory`
-- `ExoPlayer`インスタンス（オプション）
+- `VideoPlayerViewModel`（ViewModelProvider経由）
 
 **DIパターン**: `@PerActivity`スコープを使用（既存の`LoginModule`パターンを参考）
 
-#### 1.5 MainComponentへの追加
+**実装の注意点**:
+- `VideoGuideRepository`は`@PerFragment`スコープだが、`VideoPlayerModule`は`@PerActivity`スコープのため、`VideoPlayerModule`内で`VideoGuideRepository`を新規作成している
+- `VideoGuideModule`と同じ依存関係（VideoApiService、VideoMapper、baseUrl）を使用して`VideoGuideRepository`を構築
 
-**ファイル**: `app/src/main/java/org/dhis2/usescases/main/MainComponent.kt`
+#### 1.5 AppComponentへの追加
+
+**ファイル**: `app/src/main/java/org/dhis2/AppComponent.java`
 
 ```kotlin
-fun plus(videoPlayerModule: VideoPlayerModule): VideoPlayerComponent
+VideoPlayerComponent plus(VideoPlayerModule videoPlayerModule)
 ```
+
+**注意**: `MainComponent`ではなく`AppComponent`に追加（`LoginActivity`と同様のパターン）
 
 #### 1.6 AndroidManifest.xmlへの登録
 
@@ -141,8 +149,28 @@ fun plus(videoPlayerModule: VideoPlayerModule): VideoPlayerComponent
 
 **コンポーネント**:
 - `PlayerView`（ExoPlayerのUIコンポーネント）
-- ローディングインジケーター
-- エラーメッセージ表示
+- ローディングインジケーター（ProgressBar）
+- エラーメッセージ表示（TextView）
+
+#### 1.8 VideoResponseDtoの作成（追加実装）
+
+**ファイル**: `app/src/main/java/org/dhis2/usescases/videoGuide/data/dto/VideoResponseDto.kt`
+
+**実装理由**: Drupal JSON:APIの個別取得エンドポイント（`jsonapi/media/video/{id}`）は、一覧取得とは異なり、`data`フィールドが配列ではなく単一オブジェクトで返されるため。
+
+```kotlin
+@JsonClass(generateAdapter = true)
+data class VideoResponseDto(
+    val data: VideoMediaDto,  // 配列ではなく単一オブジェクト
+    val included: List<VideoIncludedDto>? = null,
+)
+```
+
+**VideoApiServiceの修正**:
+- `getVideo()`メソッドの戻り値の型を`VideoListResponseDto`から`VideoResponseDto`に変更
+
+**DrupalVideoApiDataSourceの修正**:
+- `getVideoById()`で`response.data`を直接使用（`firstOrNull()`ではなく）
 
 ---
 
@@ -233,6 +261,8 @@ suspend fun isVideoDownloaded(videoId: String): Boolean
 **実装方針**: 
 - `VideoLocalDataSource`を依存関係として追加
 - リモートとローカルの両方から取得できるようにする
+
+**注意**: 既存の`getVideoById()`メソッドは変更不要。フェーズ4でオフライン再生を実装する際に、ローカルDBからも取得できるように拡張する可能性がある。
 
 #### 2.4 VideoGuideModuleの拡張
 
@@ -346,12 +376,16 @@ fun getPlayer(): ExoPlayer?
 
 **処理フロー**:
 1. 動画IDから動画情報を取得
-2. ローカルDBでダウンロード済みかチェック
+   - まずローカルDBから取得を試みる（`VideoLocalDataSource.getDownloadedVideoById()`）
+   - ローカルにない場合はリモートから取得（`VideoGuideRepository.getVideoById()`）
+2. ローカルDBでダウンロード済みかチェック（`VideoGuideRepository.isVideoDownloaded()`）
 3. ダウンロード済みの場合:
-   - ローカルファイルパスを取得
+   - ローカルファイルパスを取得（`DownloadedVideoEntity.localFilePath`）
    - `FileDataSource`を使用してExoPlayerにセット
 4. 未ダウンロードの場合:
    - `HttpDataSource`を使用してオンライン再生
+
+**注意**: フェーズ1で実装した`VideoGuideRepository.getVideoById()`はリモートからのみ取得するが、フェーズ4ではローカルDBからも取得できるように拡張する可能性がある。
 
 #### 4.3 VideoPlayerActivityの拡張
 
@@ -414,6 +448,7 @@ app/src/main/java/org/dhis2/usescases/videoGuide/
 │   │   └── RoomVideoLocalDataSource.kt      # 新規
 │   ├── dto/
 │   │   ├── VideoListResponseDto.kt
+│   │   ├── VideoResponseDto.kt              # 新規（個別取得用）
 │   │   ├── VideoMediaDto.kt
 │   │   └── VideoFileDto.kt
 │   ├── local/                                # 新規
@@ -582,15 +617,19 @@ suspend fun saveDownloadedVideo(videoItem: VideoItem, localFilePath: String) {
 
 ## 📝 実装チェックリスト
 
-### フェーズ1: ExoPlayer基本統合
-- [ ] ExoPlayer依存関係の追加
-- [ ] VideoPlayerActivityの実装
-- [ ] VideoPlayerViewModelの作成
-- [ ] VideoPlayerModule/Componentの作成
-- [ ] MainComponentへの追加
-- [ ] AndroidManifest.xmlへの登録
-- [ ] レイアウトファイルの作成
-- [ ] オンライン再生の動作確認
+### フェーズ1: ExoPlayer基本統合 ✅ 完了
+- [x] ExoPlayer依存関係の追加
+- [x] VideoPlayerActivityの実装
+- [x] VideoPlayerViewModelの作成
+- [x] VideoPlayerViewModelFactoryの作成
+- [x] VideoPlayerModule/Componentの作成
+- [x] AppComponentへの追加
+- [x] AndroidManifest.xmlへの登録
+- [x] レイアウトファイルの作成
+- [x] VideoResponseDtoの作成（個別取得用）
+- [x] VideoApiService.getVideo()の修正
+- [x] DrupalVideoApiDataSource.getVideoById()の修正
+- [x] オンライン再生の動作確認
 
 ### フェーズ2: Roomデータベース
 - [ ] VideoDatabaseの作成
@@ -676,13 +715,29 @@ fun provideVideoDatabase(context: Context): VideoDatabase {
 }
 ```
 
-### MainComponentの拡張
+### AppComponentの拡張
 
-既存の`MainComponent`に以下を追加：
+既存の`AppComponent`に以下を追加：
 
 ```kotlin
-fun plus(videoPlayerModule: VideoPlayerModule): VideoPlayerComponent
+VideoPlayerComponent plus(VideoPlayerModule videoPlayerModule)
 ```
+
+**注意**: `MainComponent`ではなく`AppComponent`に追加（`LoginActivity`と同様のパターン）
+
+### VideoPlayerActivityの実装詳細
+
+**実装済みの機能**:
+- ExoPlayerインスタンスの作成とセットアップ
+- ViewModelから動画情報を取得
+- MediaItemの準備と再生
+- ライフサイクル管理（onPause/onResume/onDestroy）
+- 状態の保存と復元（onSaveInstanceState）
+- エラーハンドリング（再生エラーの表示）
+
+**実装パターン**:
+- `app().appComponent().plus(VideoPlayerModule(...))`でコンポーネントを作成
+- `LoginActivity`と同様のDIパターンを使用
 
 ### VideoGuideRepositoryの拡張
 
@@ -727,4 +782,4 @@ class VideoGuideRepository @Inject constructor(
 ---
 
 **作成日**: 2024年
-**最終更新**: 2024年
+**最終更新**: 2024年12月（フェーズ1完了）

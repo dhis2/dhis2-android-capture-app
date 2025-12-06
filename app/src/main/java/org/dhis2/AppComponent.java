@@ -22,6 +22,8 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.splash.SplashComponent;
 import org.dhis2.usescases.splash.SplashModule;
+import org.dhis2.usescases.videoGuide.video.VideoPlayerComponent;
+import org.dhis2.usescases.videoGuide.video.VideoPlayerModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.analytics.matomo.MatomoAnalyticsModule;
 import javax.inject.Singleton;
@@ -104,4 +106,6 @@ public  interface AppComponent {
     SplashComponent plus(SplashModule module);
 
     LoginComponent plus(LoginModule loginContractsModule);
+
+    VideoPlayerComponent plus(VideoPlayerModule videoPlayerModule);
 }

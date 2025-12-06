@@ -47,16 +47,15 @@ class DrupalVideoApiDataSource @Inject constructor(
             val taxonomyMap = mapper.createTaxonomyMap(response.included)
             val mediaImageMap = mapper.createMediaImageMap(response.included)
 
-            response.data.firstOrNull()?.let { media ->
-                mapper.mapToDomain(
-                    media = media,
-                    filesMap = filesMap,
-                    baseUrl = baseUrl,
-                    imageFilesMap = imageFilesMap,
-                    taxonomyMap = taxonomyMap,
-                    mediaImageMap = mediaImageMap,
-                )
-            }
+            // dataが単一オブジェクトなので、直接使用
+            mapper.mapToDomain(
+                media = response.data,
+                filesMap = filesMap,
+                baseUrl = baseUrl,
+                imageFilesMap = imageFilesMap,
+                taxonomyMap = taxonomyMap,
+                mediaImageMap = mediaImageMap,
+            )
         }.onFailure { throwable ->
             Timber.e(throwable, "Failed to fetch video by id: $videoId")
         }.getOrNull()

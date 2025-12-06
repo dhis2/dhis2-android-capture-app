@@ -80,6 +80,10 @@ fun VideoItemCard(
             text = video.title,
             modifier = Modifier.padding(bottom = 4.dp),
         )
+        Text(
+            text = "ID: ${video.id}",
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
         if (video.description.isNotEmpty()) {
             Text(
                 text = video.description,

@@ -92,7 +92,10 @@
 
         <activity android:name=".usescases.datasets.datasetDetail.DataSetDetailActivity" />
         <activity android:name=".usescases.datasets.datasetInitial.DataSetInitialActivity" />
-        <activity android:name=".usescases.videoGuide.video.VideoPlayerActivity" />
+        <activity
+            android:name=".usescases.videoGuide.video.VideoPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
 
         <receiver
             android:name=".widgets.DhisCustomLauncher"
