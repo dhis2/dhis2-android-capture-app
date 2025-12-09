@@ -492,8 +492,8 @@ class TeiDashboardMobileActivity :
     }
 
     private fun setData(dashboardModel: DashboardEnrollmentModel) {
-        themeManager.setProgramTheme(dashboardModel.currentProgram().uid())
-        setProgramColor(dashboardModel.currentProgram().uid())
+        dashboardModel.currentProgram()?.uid()?.let { themeManager.setProgramTheme(it) }
+        setProgramColor(dashboardModel.currentProgram()?.uid())
         val title =
             String.format(
                 "%s %s",
@@ -730,11 +730,11 @@ class TeiDashboardMobileActivity :
             DeleteBottomSheetDialog(
                 title =
                     getString(R.string.remove_enrollment_dialog_title).format(
-                        dashboardModel.currentProgram().displayName(),
+                        dashboardModel.currentProgram()?.displayName(),
                     ),
                 description =
                     getString(R.string.remove_enrollment_dialog_message).format(
-                        dashboardModel.currentProgram().displayName(),
+                        dashboardModel.currentProgram()?.displayName(),
                     ),
                 mainButtonText = getString(R.string.remove),
                 onMainButtonClick = {

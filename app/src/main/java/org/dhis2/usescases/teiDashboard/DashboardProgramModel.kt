@@ -48,7 +48,7 @@ data class DashboardEnrollmentModel(
         avatarPath,
         ownerOrgUnit,
     ) {
-    fun currentProgram(): Program = enrollmentPrograms.first { it.first.uid() == currentEnrollment.program() }.first
+    fun currentProgram(): Program? = enrollmentPrograms.firstOrNull { it.first.uid() == currentEnrollment.program() }?.first
 
     fun getCurrentOrgUnit(): OrganisationUnit = orgUnits.first { it.uid() == currentEnrollment.organisationUnit() }
 
