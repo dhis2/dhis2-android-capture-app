@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="dhis2-base-url" content="https://play.dhis2.org/40" />
+    <title>Plugin</title>
+    <base target="_blank" />
+    
+    <script>
+        // ========================================
+        // ANDROID BRIDGE - Injected before plugin loads
+        // ========================================
+        
+        console.log('[AndroidBridge] Initializing...');
+        
+        // 1. Store props from Android
+        window.__ANDROID_PROPS__ = null;
+        window.__ANDROID_PROPS_CALLBACKS__ = [];
+        
+        window.addEventListener('androidPropsUpdated', function(event) {
+            console.log('[AndroidBridge] Props received via event');
+            window.__ANDROID_PROPS__ = event.detail;
+            // Notify any waiting callbacks
+            window.__ANDROID_PROPS_CALLBACKS__.forEach(function(cb) { cb(event.detail); });
+        });
+        
+        window.setPluginProps = function(props) {
+            console.log('[AndroidBridge] Props received via direct call');
+            window.__ANDROID_PROPS__ = props;
+            // Notify any waiting callbacks
+            window.__ANDROID_PROPS_CALLBACKS__.forEach(function(cb) { cb(props); });
+        };
+        
+        // 2. Mock the fetch API to intercept /api/ calls
+        (function() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options) {
+                const urlStr = typeof url === 'string' ? url : url.toString();
+                console.log('[AndroidBridge] Fetch intercepted:', urlStr);
+                
+                if (urlStr.includes('/api/')) {
+                    console.log('[AndroidBridge] Mocking API:', urlStr);
+                    
+                    if (urlStr.includes('/api/system/info')) {
+                        return Promise.resolve(new Response(JSON.stringify({
+                            version: "2.40",
+                            revision: "android-sdk", 
+                            contextPath: "https://play.dhis2.org/40",
+                            systemId: "android-local",
+                            systemName: "DHIS2 Android"
+                        }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' }
+                        }));
+                    }
+                    
+                    // For user settings - return empty settings
+                    if (urlStr.includes('/userSettings')) {
+                        return Promise.resolve(new Response(JSON.stringify({
+                            keyUiLocale: "en",
+                            keyDbLocale: "en"
+                        }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' }
+                        }));
+                    }
+                    
+                    // For /me endpoint
+                    if (urlStr.includes('/me')) {
+                        return Promise.resolve(new Response(JSON.stringify({
+                            id: "android-user",
+                            username: "android"
+                        }), {
+                            status: 200,
+                            headers: { 'Content-Type': 'application/json' }
+                        }));
+                    }
+                    
+                    return Promise.resolve(new Response('{}', {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    }));
+                }
+                
+                return originalFetch.apply(this, arguments);
+            };
+            console.log('[AndroidBridge] Fetch interceptor installed');
+        })();
+        
+        // 3. Create mock post-robot module that will be used by the plugin
+        // The plugin imports post-robot and calls: Db.send(window.parent, "getPropsFromParent")
+        window.__postrobot_10_0_46__ = window.__postrobot_10_0_46__ || {};
+        
+        // Override postMessage to intercept post-robot messages
+        (function() {
+            const originalPostMessage = window.postMessage.bind(window);
+            window.postMessage = function(message, targetOrigin, transfer) {
+                if (message && message.type === 'postrobot_message_request') {
+                    console.log('[AndroidBridge] Intercepted post-robot request:', message.name);
+                    
+                    if (message.name === 'postrobot_hello') {
+                        // Respond to hello - simulate ACK and response
+                        setTimeout(function() {
+                            window.dispatchEvent(new MessageEvent('message', {
+                                data: {
+                                    type: 'postrobot_message_ack',
+                                    hash: message.hash,
+                                    name: message.name
+                                },
+                                source: window,
+                                origin: 'file://'
+                            }));
+                            window.dispatchEvent(new MessageEvent('message', {
+                                data: {
+                                    type: 'postrobot_message_response',
+                                    hash: message.hash,
+                                    name: message.name,
+                                    data: { instanceID: 'android-bridge-' + Date.now() }
+                                },
+                                source: window,
+                                origin: 'file://'
+                            }));
+                        }, 10);
+                        return;
+                    }
+                    
+                    if (message.name === 'getPropsFromParent') {
+                        console.log('[AndroidBridge] Handling getPropsFromParent');
+                        
+                        // Wait for props if not available yet
+                        function sendPropsResponse(props) {
+                            console.log('[AndroidBridge] Sending props response');
+                            
+                            // Create callback functions
+                            const propsWithCallbacks = {
+                                ...props,
+                                setFieldValue: function(params) {
+                                    console.log('[AndroidBridge] setFieldValue called:', JSON.stringify(params));
+                                    if (window.Android && window.Android.updateValue) {
+                                        window.Android.updateValue(JSON.stringify({
+                                            type: 'setFieldValue',
+                                            ...params
+                                        }));
+                                    }
+                                },
+                                setContextFieldValue: function(params) {
+                                    console.log('[AndroidBridge] setContextFieldValue called:', JSON.stringify(params));
+                                    if (window.Android && window.Android.updateValue) {
+                                        window.Android.updateValue(JSON.stringify({
+                                            type: 'setContextFieldValue',
+                                            ...params
+                                        }));
+                                    }
+                                }
+                            };
+                            
+                            // Send ACK
+                            window.dispatchEvent(new MessageEvent('message', {
+                                data: {
+                                    type: 'postrobot_message_ack',
+                                    hash: message.hash,
+                                    name: message.name
+                                },
+                                source: window,
+                                origin: 'file://'
+                            }));
+                            
+                            // Send response with props
+                            window.dispatchEvent(new MessageEvent('message', {
+                                data: {
+                                    type: 'postrobot_message_response',
+                                    hash: message.hash,
+                                    name: message.name,
+                                    data: { data: propsWithCallbacks }
+                                },
+                                source: window,
+                                origin: 'file://'
+                            }));
+                        }
+                        
+                        setTimeout(function() {
+                            if (window.__ANDROID_PROPS__) {
+                                sendPropsResponse(window.__ANDROID_PROPS__);
+                            } else {
+                                // Wait for props
+                                console.log('[AndroidBridge] Waiting for props...');
+                                window.__ANDROID_PROPS_CALLBACKS__.push(sendPropsResponse);
+                            }
+                        }, 10);
+                        return;
+                    }
+                }
+                
+                return originalPostMessage(message, targetOrigin, transfer);
+            };
+            console.log('[AndroidBridge] postMessage interceptor installed');
+        })();
+        
+        console.log('[AndroidBridge] Initialization complete');
+    </script>
+    
+    <!-- Load the actual plugin -->
+    <script type="module" crossorigin src="./assets/plugin-PnnCETzT.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/plugin-Dmx4sX17.css">
+</head>
+<body>
+    <noscript>You need to enable JavaScript to run this plugin.</noscript>
+    <div id="dhis2-app-root"></div>
+    <div id="dhis2-portal-root"></div>
+</body>
+</html>
