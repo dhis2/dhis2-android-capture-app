@@ -85,6 +85,7 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNoteDetails(user: String, noteText: String) {
+        waitForView(withId(R.id.notes_recycler)).check(matches(isDisplayed()))
         waitForView(allOf(withId(R.id.storeBy), isDisplayed(), withText(user)))
             .check(matches(isDisplayed()))
         waitForView(allOf(withId(R.id.note_text), isDisplayed(), withText(noteText)))
