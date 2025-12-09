@@ -123,7 +123,7 @@ class TroubleshootingRepository(
         .eq(programUid)
         .blockingGet()
         .toRuleVariableList(
-            d2,
+            d2.optionModule().options(),
             d2.trackedEntityModule().trackedEntityAttributes(),
             d2.dataElementModule().dataElements(),
         ).mapNotNull {
