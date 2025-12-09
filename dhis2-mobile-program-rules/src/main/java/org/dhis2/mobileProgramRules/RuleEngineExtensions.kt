@@ -7,12 +7,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toDeprecatedInstant
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
-import org.dhis2.commons.bindings.dataElement
-import org.dhis2.commons.bindings.teiAttribute
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.option.OptionCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRule
 import org.hisp.dhis.android.core.program.ProgramRuleAction
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
@@ -74,7 +73,7 @@ fun List<ProgramRuleAction>.toRuleActionList(): List<RuleAction> =
     }
 
 fun List<ProgramRuleVariable>.toRuleVariableList(
-    d2: D2,
+    optionCollectionRepository: OptionCollectionRepository,
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
 ): List<RuleVariable> =
@@ -92,7 +91,7 @@ fun List<ProgramRuleVariable>.toRuleVariableList(
                 else -> isCalculatedValue(it)
             }
         if (allowVariable) {
-            it.toRuleVariable(d2, attributeRepository, dataElementRepository)
+            it.toRuleVariable(optionCollectionRepository, attributeRepository, dataElementRepository)
         } else {
             null
         }
@@ -358,7 +357,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
 }
 
 fun ProgramRuleVariable.toRuleVariable(
-    d2: D2,
+    optionCollectionRepository: OptionCollectionRepository,
     attributeRepository: TrackedEntityAttributeCollectionRepository,
     dataElementRepository: DataElementCollectionRepository,
 ): RuleVariable {
@@ -392,9 +391,11 @@ fun ProgramRuleVariable.toRuleVariable(
     val useCodeForOptionSet = useCodeForOptionSet() ?: false
     val options =
         fetchOptions(
-            d2 = d2,
+            optionCollectionRepository = optionCollectionRepository,
             dataElementUid = dataElement()?.uid(),
             attributeUid = trackedEntityAttribute()?.uid(),
+            dataElementRepository = dataElementRepository,
+            attributeRepository = attributeRepository,
         )
 
     return when (programRuleVariableSourceType()) {
@@ -458,18 +459,31 @@ fun ProgramRuleVariable.toRuleVariable(
 }
 
 private fun fetchOptions(
-    d2: D2,
     dataElementUid: String?,
     attributeUid: String?,
-) = with(d2) {
-    if (dataElementUid == null && attributeUid == null) return@with emptyList()
-    if (dataElementUid != null) {
-        dataElement(dataElementUid)?.optionSetUid()
-    } else {
-        teiAttribute(attributeUid!!)?.optionSet()?.uid()
-    }?.let { optionSetUid ->
-        optionModule()
-            .options()
+    optionCollectionRepository: OptionCollectionRepository,
+    dataElementRepository: DataElementCollectionRepository,
+    attributeRepository: TrackedEntityAttributeCollectionRepository,
+): List<Option> {
+    val optionSetUid =
+        when {
+            dataElementUid != null ->
+                dataElementRepository
+                    .uid(dataElementUid)
+                    .blockingGet()
+                    ?.optionSet()
+                    ?.uid()
+            attributeUid != null ->
+                attributeRepository
+                    .uid(attributeUid)
+                    .blockingGet()
+                    ?.optionSet()
+                    ?.uid()
+            else -> null
+        }
+
+    return optionSetUid?.let { optionSetUid ->
+        optionCollectionRepository
             .byOptionSetUid()
             .eq(optionSetUid)
             .blockingGet()
@@ -491,21 +505,24 @@ fun ValueType.toRuleValueType(): RuleValueType =
 
 fun List<TrackedEntityDataValue>.toRuleDataValue(): List<RuleDataValue> =
     mapNotNull {
+        val dataElement = it.dataElement() ?: return@mapNotNull null
         it.value()?.let { value ->
             RuleDataValue(
-                dataElement = it.dataElement()!!,
+                dataElement = dataElement,
                 value = value,
             )
         }
     }
 
 fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(d2: D2) =
+
     mapNotNull {
+        val attributeUid = it.trackedEntityAttribute() ?: return@mapNotNull null
         val attr =
             d2
                 .trackedEntityModule()
                 .trackedEntityAttributes()
-                .uid(it.trackedEntityAttribute())
+                .uid(attributeUid)
                 .blockingGet()
         val numericValue =
             if (attr?.valueType()?.isNumeric == true) {
@@ -532,6 +549,6 @@ fun List<TrackedEntityAttributeValue>.toRuleAttributeValue(d2: D2) =
                 null
             }
         (numericValue ?: it.value())?.let { value ->
-            RuleAttributeValue(it.trackedEntityAttribute()!!, value)
+            RuleAttributeValue(attributeUid, value)
         }
     }

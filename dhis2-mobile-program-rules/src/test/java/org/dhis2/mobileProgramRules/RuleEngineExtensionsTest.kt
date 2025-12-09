@@ -6,6 +6,7 @@ import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
 import org.hisp.dhis.android.core.event.Event
+import org.hisp.dhis.android.core.option.OptionCollectionRepository
 import org.hisp.dhis.android.core.program.ProgramRuleAction
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramRuleVariable
@@ -36,6 +37,13 @@ class RuleEngineExtensionsTest {
         TrackedEntityAttributeCollectionRepository =
         Mockito.mock(
             TrackedEntityAttributeCollectionRepository::class.java,
+            RETURNS_DEEP_STUBS,
+        )
+
+    private val optionCollectionRepository:
+        OptionCollectionRepository =
+        Mockito.mock(
+            OptionCollectionRepository::class.java,
             RETURNS_DEEP_STUBS,
         )
 
@@ -87,6 +95,152 @@ class RuleEngineExtensionsTest {
         assertEquals(listOf(event3, event1, event2), sortedEvents)
     }
 
+    /*
+    @Test
+    fun `Should transform trackedEntityDataValues to ruleDataValues with optionName value`() {
+        whenever(
+            dataElementRepository.uid("dataElementUid").blockingGet(),
+        ) doReturn
+                DataElement
+                    .builder()
+                    .uid("dataElementUid")
+                    .optionSet(ObjectWithUid.create("optionSetUid"))
+                    .valueType(ValueType.TEXT)
+                    .build()
+
+        whenever(ruleVariableRepository.byProgramUid().eq("programUid")) doReturn mock()
+        whenever(
+            ruleVariableRepository
+                .byProgramUid()
+                .eq("programUid")
+                .byDataElementUid(),
+        ) doReturn mock()
+        whenever(
+            ruleVariableRepository
+                .byProgramUid()
+                .eq("programUid")
+                .byDataElementUid()
+                .eq("dataElementUid"),
+        ) doReturn mock()
+        whenever(
+            ruleVariableRepository
+                .byProgramUid()
+                .eq("programUid")
+                .byDataElementUid()
+                .eq("dataElementUid")
+                .byUseCodeForOptionSet(),
+        ) doReturn mock()
+        whenever(
+            ruleVariableRepository
+                .byProgramUid()
+                .eq("programUid")
+                .byDataElementUid()
+                .eq("dataElementUid")
+                .byUseCodeForOptionSet()
+                .isTrue,
+        ) doReturn mock()
+        whenever(
+            ruleVariableRepository
+                .byProgramUid()
+                .eq("programUid")
+                .byDataElementUid()
+                .eq("dataElementUid")
+                .byUseCodeForOptionSet()
+                .isTrue
+                .blockingIsEmpty(),
+        ) doReturn true
+
+        whenever(optionRepository.byOptionSetUid()) doReturn mock()
+        whenever(optionRepository.byOptionSetUid().eq("optionSetUid")) doReturn mock()
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode(),
+        ) doReturn mock()
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode"),
+        ) doReturn mock()
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode")
+                .one(),
+        ) doReturn mock()
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode")
+                .one()
+                .blockingExists(),
+        ) doReturn true
+
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq(""),
+        ) doReturn mock()
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("")
+                .one(),
+        ) doReturn mock()
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("")
+                .one()
+                .blockingExists(),
+        ) doReturn false
+
+        whenever(
+            optionRepository
+                .byOptionSetUid()
+                .eq("optionSetUid")
+                .byCode()
+                .eq("optionCode")
+                .one()
+                .blockingGet(),
+        ) doReturn
+                Option
+                    .builder()
+                    .uid("optionUid")
+                    .code("optionCode")
+                    .name("optionName")
+                    .build()
+
+        val rules =
+            getTrackedEntityDataValues().toRuleDataValue(
+                Event
+                    .builder()
+                    .uid("eventUid")
+                    .program("programUid")
+                    .programStage("stageUid")
+                    .eventDate(Date())
+                    .build(),
+                dataElementRepository,
+                ruleVariableRepository,
+                optionRepository,
+            )
+
+        assertTrue(rules.size == 1)
+        assertTrue(rules[0].value == "optionName")
+    }*/
     @Test
     fun `Should transform trackedEntityDataValues to ruleDataValues with optionCode value`() {
         val rules = getTrackedEntityDataValues().toRuleDataValue()
@@ -278,7 +432,7 @@ class RuleEngineExtensionsTest {
                 .build()
         val ruleVariable =
             programRuleVariable.toRuleVariable(
-                d2,
+                optionCollectionRepository = optionCollectionRepository,
                 attributeRepository = trackedEntityAttributeCollectionRepository,
                 dataElementRepository = dataElementRepository,
             )

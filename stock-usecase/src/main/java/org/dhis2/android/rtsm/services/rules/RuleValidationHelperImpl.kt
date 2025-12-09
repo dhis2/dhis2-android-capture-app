@@ -158,7 +158,7 @@ class RuleValidationHelperImpl(
             .get()
             .map {
                 it.toRuleVariableList(
-                    d2,
+                    d2.optionModule(),
                     d2.trackedEntityModule().trackedEntityAttributes(),
                     d2.dataElementModule().dataElements(),
                 )
