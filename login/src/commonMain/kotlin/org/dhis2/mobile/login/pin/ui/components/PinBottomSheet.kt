@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Pin
-import androidx.compose.material3.Icon
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -49,7 +46,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.model.SegmentedShellType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUIState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -240,13 +236,6 @@ fun PinBottomSheet(
 
                 Spacer(modifier = Modifier.height(Spacing.Spacing8))
             }
-        },
-        icon = {
-            Icon(
-                Icons.Outlined.Pin,
-                tint = SurfaceColor.Primary,
-                contentDescription = stringResource(Res.string.enter_pin),
-            )
         },
         buttonBlock = {
             when (windowSizeClass.widthSizeClass) {
