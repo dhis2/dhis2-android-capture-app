@@ -4,12 +4,13 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
+import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.dhis2.R
@@ -86,9 +87,9 @@ class NoteRobot : BaseRobot() {
 
     fun checkNoteDetails(user: String, noteText: String) {
         waitForView(withId(R.id.notes_recycler)).check(matches(isDisplayed()))
-        waitForView(allOf(withId(R.id.storeBy), isDisplayed(), withText(user)))
-            .check(matches(isDisplayed()))
-        waitForView(allOf(withId(R.id.note_text), isDisplayed(), withText(noteText)))
-            .check(matches(isDisplayed()))
+        waitForView(allOf(withId(R.id.storeBy), withEffectiveVisibility(Visibility.VISIBLE), withText(user)))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        waitForView(allOf(withId(R.id.note_text), withEffectiveVisibility(Visibility.VISIBLE), withText(noteText)))
+            .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
     }
 }
