@@ -13,15 +13,26 @@ import io.reactivex.subjects.BehaviorSubject
 fun TextView.textChanges(): Observable<CharSequence> {
     val subject = BehaviorSubject.createDefault<CharSequence>(text)
 
-    val watcher = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+    val watcher =
+        object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int,
+            ) {}
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            subject.onNext(s ?: "")
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int,
+            ) {
+                subject.onNext(s ?: "")
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
         }
-
-        override fun afterTextChanged(s: Editable?) {}
-    }
 
     addTextChangedListener(watcher)
 
