@@ -39,7 +39,7 @@ jobs:
 
     - name: Decode Keystore
       id: decode_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
@@ -55,7 +55,7 @@ jobs:
 
     - name: Decode Training Keystore
       id: decode_training_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_training_keystore.jks'
         encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
