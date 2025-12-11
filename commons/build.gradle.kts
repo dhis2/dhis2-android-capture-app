@@ -106,7 +106,6 @@ dependencies {
     api(libs.barcodeScanner.zxing.android) {
         exclude("com.google.zxing", "core")
     }
-    api(libs.rx.binding.compat)
     testApi(libs.test.junit)
     testApi(libs.test.mockitoCore)
     testApi(libs.test.mockitoKotlin)
