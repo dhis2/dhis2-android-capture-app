@@ -39,6 +39,9 @@ class MockedWorkManagerController(private val workInfoStatuses: LiveData<List<Wo
     override fun cancelAllWork() {
     }
 
+    override suspend fun cancelAllWorkAndWait() {
+    }
+
     override fun cancelAllWorkByTag(tag: String) {
     }
 

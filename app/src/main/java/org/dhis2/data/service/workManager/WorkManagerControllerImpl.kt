@@ -35,6 +35,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import androidx.work.await
 import org.dhis2.data.service.CheckVersionWorker
 import org.dhis2.data.service.SyncDataWorker
 import org.dhis2.data.service.SyncGranularWorker
@@ -109,6 +110,11 @@ class WorkManagerControllerImpl(
 
     override fun cancelAllWork() {
         workManager.cancelAllWork()
+    }
+
+    override suspend fun cancelAllWorkAndWait() {
+        val operation = workManager.cancelAllWork()
+        operation.await()
     }
 
     override fun cancelAllWorkByTag(tag: String) {

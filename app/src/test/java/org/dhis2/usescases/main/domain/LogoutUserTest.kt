@@ -41,7 +41,7 @@ class LogoutUserTest {
             whenever(repository.logOut()) doReturn Result.success(Unit)
             whenever(repository.accountsCount()) doReturn 1
             val result = logoutUser()
-            verify(workManagerController).cancelAllWork()
+            verify(workManagerController).cancelAllWorkAndWait()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
             verify(repository).clearSessionLock()
@@ -57,7 +57,7 @@ class LogoutUserTest {
             val testException = DomainError.UnexpectedError("test")
             whenever(repository.clearSessionLock()) doReturn Result.failure(testException)
             val result = logoutUser()
-            verify(workManagerController).cancelAllWork()
+            verify(workManagerController).cancelAllWorkAndWait()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
             verify(repository).clearSessionLock()
@@ -80,7 +80,7 @@ class LogoutUserTest {
                 assertTrue(e == testException)
             }
 
-            verify(workManagerController).cancelAllWork()
+            verify(workManagerController).cancelAllWorkAndWait()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
             verify(repository).clearSessionLock()
