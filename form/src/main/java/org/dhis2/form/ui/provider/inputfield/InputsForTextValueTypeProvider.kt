@@ -18,6 +18,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.provider.onFieldFocusChanged
 import org.hisp.dhis.mobile.ui.designsystem.component.InputBarCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
@@ -126,6 +127,15 @@ private fun ProvideQRInput(
                 )
             }
         },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteList = fieldUiModel.autocompleteList(),
         autoCompleteItemSelected = {
             focusManager.clearFocus()
@@ -164,6 +174,15 @@ private fun ProvideDefaultTextInput(
                     value.text,
                     fieldUiModel.valueType,
                 ),
+            )
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -230,6 +249,15 @@ private fun ProvideBarcodeInput(
                     ),
                 )
             }
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
         autoCompleteItemSelected = {

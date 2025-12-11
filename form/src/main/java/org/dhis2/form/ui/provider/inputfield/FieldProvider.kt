@@ -38,6 +38,7 @@ import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.keyboard.keyboardAsState
+import org.dhis2.form.ui.provider.onFieldFocusChanged
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
@@ -589,6 +590,15 @@ private fun ProvideIntegerPositive(
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteItemSelected = {
             focusManager.clearFocus()
         },
@@ -633,6 +643,15 @@ private fun ProvideIntegerPositiveOrZero(
                     value.text,
                     fieldUiModel.valueType,
                 ),
+            )
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -680,6 +699,15 @@ private fun ProvidePercentage(
                     value.text,
                     fieldUiModel.valueType,
                 ),
+            )
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -731,6 +759,15 @@ private fun ProvideNumber(
         },
         notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
         autoCompleteList = fieldUiModel.autocompleteList(),
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteItemSelected = {
             focusManager.clearFocus()
         },
@@ -781,6 +818,15 @@ private fun ProvideIntegerNegative(
                 ),
             )
         },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteList = fieldUiModel.autocompleteList(),
         autoCompleteItemSelected = {
             focusManager.clearFocus()
@@ -825,6 +871,15 @@ private fun ProvideLongText(
                     value.text,
                     fieldUiModel.valueType,
                 ),
+            )
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
             )
         },
         imeAction = ImeAction.Default,
@@ -874,6 +929,15 @@ private fun ProvideLetter(
                 ),
             )
         },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteList = fieldUiModel.autocompleteList(),
         autoCompleteItemSelected = {
             focusManager.clearFocus()
@@ -919,6 +983,15 @@ private fun ProvideInteger(
                     value.text,
                     fieldUiModel.valueType,
                 ),
+            )
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -978,6 +1051,15 @@ private fun ProvideEmail(
                 ),
             )
         },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteList = fieldUiModel.autocompleteList(),
         autoCompleteItemSelected = {
             focusManager.clearFocus()
@@ -1035,6 +1117,15 @@ private fun ProvideInputPhoneNumber(
                 ),
             )
         },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
+            )
+        },
         autoCompleteList = fieldUiModel.autocompleteList(),
         autoCompleteItemSelected = {
             focusManager.clearFocus()
@@ -1090,6 +1181,15 @@ private fun ProvideInputLink(
                     value.text,
                     fieldUiModel.uid,
                 ),
+            )
+        },
+        onFocusChanged = { isFocused ->
+            onFieldFocusChanged(
+                fieldUiModel.uid,
+                value.text,
+                fieldUiModel.valueType,
+                isFocused,
+                intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
