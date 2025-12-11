@@ -49,7 +49,6 @@ timber = "5.0.1"
 rxlint = "1.7.8"
 crashactivity = "2.4.0"
 zxing = "3.5.4"
-zxingbarcode = "1.9.8"
 zxingandroid = "4.3.0"
 root = "0.1.1"
 openid = "0.11.1"
@@ -161,7 +160,6 @@ github-glide = { group = "com.github.bumptech.glide", name = "glide", version.re
 github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 github-charts = { group = "com.github.PhilJay", name = "MPAndroidChart", version = "v3.1.0" }
 barcodeScanner-zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
-barcodeScanner-scanner = { group = "me.dm7.barcodescanner", name = "zxing", version.ref = "zxingbarcode" }
 barcodeScanner-zxing-android = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingandroid" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
