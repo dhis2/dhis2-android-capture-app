@@ -390,11 +390,9 @@ class TEIDataPresenter(
         view.showSyncDialog(eventUid, enrollmentUid)
     }
 
-    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String) =
-        teiDataRepository.enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit)
+    fun enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit: String) = teiDataRepository.enrollmentOrgUnitInCaptureScope(enrollmentOrgUnit)
 
-    private fun canAddNewEvents(): Boolean =
-        d2.canCreateEventInEnrollment(enrollmentUid, stagesToHide)
+    private fun canAddNewEvents(): Boolean = d2.canCreateEventInEnrollment(enrollmentUid, stagesToHide)
 
     fun getOrgUnitName(orgUnitUid: String): String = teiDataRepository.getOrgUnitName(orgUnitUid)
 
@@ -433,7 +431,8 @@ class TEIDataPresenter(
         } else {
             when (eventCreationType) {
                 EventCreationType.REFERAL,
-                EventCreationType.ADDNEW -> {
+                EventCreationType.ADDNEW,
+                -> {
                     createEventInEnrollment(eventCreationType)
                 }
 
