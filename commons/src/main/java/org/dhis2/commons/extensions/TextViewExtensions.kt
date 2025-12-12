@@ -11,7 +11,7 @@ import io.reactivex.subjects.BehaviorSubject
  * This replaces the RxBinding library's RxTextView.textChanges().
  */
 fun TextView.textChanges(): Observable<CharSequence> {
-    val subject = BehaviorSubject.createDefault<CharSequence>(text)
+    val subject = BehaviorSubject.createDefault(text)
 
     val watcher =
         object : TextWatcher {
@@ -20,7 +20,9 @@ fun TextView.textChanges(): Observable<CharSequence> {
                 start: Int,
                 count: Int,
                 after: Int,
-            ) {}
+            ) {
+                // Not needed - we only care about text changes, not pre-change state
+            }
 
             override fun onTextChanged(
                 s: CharSequence?,
@@ -31,7 +33,9 @@ fun TextView.textChanges(): Observable<CharSequence> {
                 subject.onNext(s ?: "")
             }
 
-            override fun afterTextChanged(s: Editable?) {}
+            override fun afterTextChanged(s: Editable?) {
+                // Not needed - onTextChanged already emits the new value
+            }
         }
 
     addTextChangedListener(watcher)
