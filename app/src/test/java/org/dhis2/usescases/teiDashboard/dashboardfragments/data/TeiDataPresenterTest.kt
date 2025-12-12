@@ -369,6 +369,37 @@ class TeiDataPresenterTest {
         verifyNoMoreInteractions(view)
     }
 
+    @Test
+    fun `should create event in enrollment when ADDNEW is selected with null stage`() =
+        runBlocking {
+            // given
+            val lifecycleOwner: LifecycleOwner = Mockito.mock(LifecycleOwner::class.java)
+            val lifecycle = LifecycleRegistry(Mockito.mock(LifecycleOwner::class.java))
+            lifecycle.currentState = Lifecycle.State.RESUMED
+            Mockito.`when`(lifecycleOwner.lifecycle).thenReturn(lifecycle)
+
+            val contractLiveData = MutableLiveData<Unit>()
+            whenever(view.viewLifecycleOwner()) doReturn lifecycleOwner
+            whenever(teiDataContractHandler.createEvent(any())) doReturn contractLiveData
+
+            val mockedEnrollment: Enrollment =
+                mock {
+                    on { organisationUnit() } doReturn "orgUnitUid"
+                }
+            whenever(teiDataRepository.getEnrollment()) doReturn Single.just(mockedEnrollment)
+            whenever(teiDataRepository.enrollmentOrgUnitInCaptureScope("orgUnitUid")) doReturn true
+
+            // when
+            teiDataPresenter.onAddNewEventOptionSelected(
+                eventCreationType = EventCreationType.ADDNEW,
+                stage = null,
+            )
+            contractLiveData.value = Unit
+
+            // then
+            verify(teiDataContractHandler).createEvent(any())
+        }
+
     private fun fakeModel(
         eventCount: Int = 0,
         type: EventViewModelType = EventViewModelType.STAGE,
