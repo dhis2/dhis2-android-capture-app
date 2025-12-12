@@ -3,7 +3,6 @@ package org.dhis2.usescases.datasets.datasetInitial;
 import androidx.annotation.NonNull;
 
 import org.hisp.dhis.android.core.D2;
-import org.hisp.dhis.android.core.category.Category;
 import org.hisp.dhis.android.core.category.CategoryCombo;
 import org.hisp.dhis.android.core.category.CategoryOption;
 import org.hisp.dhis.android.core.common.BaseIdentifiableObject;
@@ -12,7 +11,6 @@ import org.hisp.dhis.android.core.period.PeriodType;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import io.reactivex.Flowable;
@@ -72,9 +70,16 @@ public class DataSetInitialRepositoryImpl implements DataSetInitialRepository {
     @NonNull
     @Override
     public Flowable<String> getCategoryOptionCombo(List<String> catOptions, String catCombo) {
-        return d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
-                .map(BaseIdentifiableObject::uid)
-                .toFlowable();
+        CategoryCombo categoryCombo = d2.categoryModule().categoryCombos().uid(catCombo).blockingGet();
+        if (categoryCombo != null && Boolean.TRUE.equals(categoryCombo.isDefault())) {
+            return d2.categoryModule().categoryOptionCombos().byCategoryComboUid().eq(catCombo).one().get()
+                    .map(BaseIdentifiableObject::uid)
+                    .toFlowable();
+        } else {
+            return d2.categoryModule().categoryOptionCombos().withCategoryOptions().byCategoryOptions(catOptions).byCategoryComboUid().eq(catCombo).one().get()
+                    .map(BaseIdentifiableObject::uid)
+                    .toFlowable();
+        }
     }
 
     @NonNull
