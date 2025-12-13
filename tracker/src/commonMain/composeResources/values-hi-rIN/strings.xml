@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_data">कोई डेटा नहीं</string>
     <string name="show_more">और दिखाएँ</string>
     <string name="show_less">कम दिखाएँ</string>
     <string name="cancel">रद्द करें</string>
     <string name="remove">हटाएं</string>
     <string name="search">सर्च करें / खोजें</string>
-</resources>
+    </resources>

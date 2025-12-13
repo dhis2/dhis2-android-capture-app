@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">पूरा</string>
+    <string name="save_anyway">फिर भी सेव करें</string>
+    <string name="action_close">बंद करे</string>
+    <string name="input_action_cancel">कैंसल</string>
+    <!--*******************->
+       END OF D2 Error Messages
+    **********************-->
+
+</resources>

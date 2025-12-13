@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">पूरा</string>
+    <string name="cancel">कैंसल</string>
+    <string name="save">सेव</string>
+    <string name="clear">साफ़ करें</string>
+    <string name="action_cancel">कैंसल</string>
+    <string name="action_close">बंद करे</string>
+    <string name="hint_search">खोज</string>
+    </resources>

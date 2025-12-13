@@ -1,0 +1,29 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <!-- Input hints -->
+    <string name="search">खोज</string>
+    <string name="new_event">नया इवेंट</string>
+    <string name="cancel">कैंसल</string>
+    <string name="delete">डिलीट</string>
+    <string name="events">इवेंट्स</string>
+    <string name="wipe_data_no">कैंसल</string>
+    <!-- SEARCH OPTION SET -->
+    <string name="search_optionset">खोज</string>
+    <string name="date_dialog_clear">साफ़ करें</string>
+    <string name="SAVE">सेव</string>
+    <string name="save">सेव</string>
+    <string name="dialog_generate_new_event">नया इवेंट जनरेट करें</string>
+    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं\?</string>
+    <string name="finish">समाप्त करें</string>
+    <string name="action_close">बंद करे</string>
+    <string name="data_set_complete">पूरा</string>
+    <string name="filter_period_today">आज</string>
+    <string name="filter_period_this_month">इस महीने</string>
+    <string name="filter_period_last_month">पिछला महीना</string>
+    <string name="enrollment_status_completed">पूरा</string>
+    <string name="customactivityoncrash_error_activity_error_details_close">बंद करे</string>
+    <string name="search_too_many_results">बहुत अधिक परिणाम</string>
+    <string name="search_create_new">नया बनाएँ</string>
+    <string name="event">इवेंट्</string>
+    <string name="show_more">और दिखाएँ</string>
+    <string name="show_less">कम दिखाएँ</string>
+    </resources>

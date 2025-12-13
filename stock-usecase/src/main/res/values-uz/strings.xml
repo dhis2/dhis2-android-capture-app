@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">ICRC ходимлари учун</string>
     <string name="username">Фойдаланувчи исми</string>
     <string name="password">Пароль</string>
-    <string name="forgot_password">Паролни унутдингизми?</string>
+    <string name="forgot_password">Паролни унутдингизми\?</string>
 
     <string name="recent_activities_loading_message">Охирги фаоллик юкланмоқда &#8230;</string>
     <string name="recent_activities_empty_message">Ҳозирда ҳеч қандай фаоллик амалга оширилмаган</string>
