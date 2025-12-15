@@ -467,7 +467,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
-                    mScannerView.decodeSingle(this);
+                    mScannerView.decodeContinuous(this);
                 })
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.downloadEventWORegistration();
