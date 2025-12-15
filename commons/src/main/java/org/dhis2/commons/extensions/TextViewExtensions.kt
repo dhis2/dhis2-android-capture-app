@@ -12,8 +12,8 @@ import io.reactivex.Observable
  * The TextWatcher is only added when the Observable is subscribed to,
  * and removed when unsubscribed, preventing memory leaks.
  */
-fun TextView.textChanges(): Observable<CharSequence> {
-    return Observable.create { emitter ->
+fun TextView.textChanges(): Observable<CharSequence> =
+    Observable.create { emitter ->
         val watcher =
             object : TextWatcher {
                 override fun beforeTextChanged(
@@ -54,4 +54,3 @@ fun TextView.textChanges(): Observable<CharSequence> {
             removeTextChangedListener(watcher)
         }
     }
-}
