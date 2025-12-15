@@ -45,7 +45,9 @@ fun TextView.textChanges(): Observable<CharSequence> {
         addTextChangedListener(watcher)
 
         // Emit the current text value immediately
-        emitter.onNext(text)
+        if (!emitter.isDisposed) {
+            emitter.onNext(text ?: "")
+        }
 
         // Remove the watcher when unsubscribed
         emitter.setCancellable {
