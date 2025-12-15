@@ -176,8 +176,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
     }
 
     private void initScanner() {
-        mScannerView.decodeSingle(this);
-        mScannerView.resume();
+        mScannerView.decodeContinuous(this);
     }
 
 
