@@ -170,6 +170,12 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeC
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mScannerView.pause();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == 101 && grantResults[0] == PERMISSION_GRANTED)
             initScanner();
