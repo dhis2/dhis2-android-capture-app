@@ -13,10 +13,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
-import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.Observable
 import org.dhis2.R
 import org.dhis2.bindings.app
+import org.dhis2.commons.extensions.textChanges
 import org.dhis2.databinding.DialogOptionSetBinding
 import java.util.Date
 import javax.inject.Inject
@@ -131,8 +131,8 @@ class CategoryDialog(
     }
 
     override fun searchSource(): Observable<String> =
-        RxTextView
-            .textChanges(binding.txtSearch)
+        binding.txtSearch
+            .textChanges()
             .startWith("")
             .map { it.toString() }
 

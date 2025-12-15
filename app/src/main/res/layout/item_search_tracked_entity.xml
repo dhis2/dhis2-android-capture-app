@@ -102,7 +102,7 @@
                     app:srcCompat="@drawable/ic_overdue" />
 
                 <ImageView
-                    android:id="@+id/follow_up"
+                    android:id="@+id/followUpIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

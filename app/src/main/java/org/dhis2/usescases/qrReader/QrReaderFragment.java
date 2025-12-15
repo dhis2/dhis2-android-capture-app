@@ -21,7 +21,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.Result;
+import com.google.zxing.ResultPoint;
+import com.journeyapps.barcodescanner.BarcodeCallback;
+import com.journeyapps.barcodescanner.BarcodeResult;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
+import com.journeyapps.barcodescanner.DefaultDecoderFactory;
 
 import org.dhis2.Components;
 import org.dhis2.R;
@@ -38,13 +42,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import kotlin.Pair;
 import kotlin.Triple;
-import me.dm7.barcodescanner.zxing.ZXingScannerView;
 import timber.log.Timber;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -55,9 +59,9 @@ import static org.dhis2.commons.Constants.PROGRAM_UID;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingScannerView.ResultHandler, QrReaderContracts.View {
+public class QrReaderFragment extends FragmentGlobalAbstract implements BarcodeCallback, QrReaderContracts.View {
 
-    private ZXingScannerView mScannerView;
+    private DecoratedBarcodeView mScannerView;
     private Context context;
     FragmentQrBinding binding;
     private boolean isPermissionRequested = false;
@@ -93,18 +97,24 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_qr, container, false);
         presenter.init(this);
         mScannerView = binding.scannerView;
-        mScannerView.setAutoFocus(true);
-        ArrayList<BarcodeFormat> formats = new ArrayList<>();
-        formats.add(BarcodeFormat.QR_CODE);
-        mScannerView.setFormats(formats);
+        mScannerView.setDecoderFactory(new DefaultDecoderFactory(Collections.singletonList(BarcodeFormat.QR_CODE)));
         return binding.getRoot();
     }
 
     @Override
-    public void handleResult(Result result) {
+    public void barcodeResult(BarcodeResult result) {
+        handleResult(result.getText());
+    }
+
+    @Override
+    public void possibleResultPoints(List<ResultPoint> resultPoints) {
+        // Not used
+    }
+
+    private void handleResult(String resultText) {
 
         try {
-            QRjson qRjson = new Gson().fromJson(result.getText(), QRjson.class);
+            QRjson qRjson = new Gson().fromJson(resultText, QRjson.class);
             switch (qRjson.getType()) {
                 case QRjson.EVENT_JSON:
                     presenter.handleEventWORegistrationInfo(new JSONObject(qRjson.getData()));
@@ -156,7 +166,13 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     @Override
     public void onPause() {
         super.onPause();
-        mScannerView.stopCamera();
+        mScannerView.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mScannerView.pause();
     }
 
     @Override
@@ -166,8 +182,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
     }
 
     private void initScanner() {
-        mScannerView.setResultHandler(this);
-        mScannerView.startCamera();
+        mScannerView.decodeContinuous(this);
     }
 
 
@@ -242,7 +257,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
-                    mScannerView.resumeCameraPreview(this);
+                    mScannerView.decodeContinuous(this);
                 })
                 .setNegativeButton(getString(R.string.cancel), (dialog, which) -> dialog.dismiss())
                 .show();
@@ -412,7 +427,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
-                    mScannerView.resumeCameraPreview(this);
+                    mScannerView.decodeSingle(this);
                 })
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.download();
@@ -458,7 +473,7 @@ public class QrReaderFragment extends FragmentGlobalAbstract implements ZXingSca
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.action_accept), (dialog, which) -> {
                     dialog.dismiss();
-                    mScannerView.resumeCameraPreview(this);
+                    mScannerView.decodeContinuous(this);
                 })
                 .setNegativeButton(getString(R.string.save_qr), (dialog, which) -> {
                     presenter.downloadEventWORegistration();
