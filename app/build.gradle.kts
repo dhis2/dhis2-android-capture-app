@@ -280,6 +280,7 @@ dependencies {
     implementation(libs.analytics.customactivityoncrash)
     implementation(libs.koin.core)
     implementation(libs.koin.android)
+    implementation(libs.lottie.compose)
 
     coreLibraryDesugaring(libs.desugar)
 
