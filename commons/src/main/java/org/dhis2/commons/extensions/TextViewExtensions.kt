@@ -32,11 +32,7 @@ fun TextView.textChanges(): Observable<CharSequence> {
                     count: Int,
                 ) {
                     if (!emitter.isDisposed) {
-                        try {
-                            emitter.onNext(s ?: "")
-                        } catch (_: Exception) {
-                            // Emitter was disposed - ignore
-                        }
+                        emitter.onNext(s ?: "")
                     }
                 }
 
@@ -50,11 +46,7 @@ fun TextView.textChanges(): Observable<CharSequence> {
 
         // Emit the current text value immediately
         if (!emitter.isDisposed) {
-            try {
-                emitter.onNext(text ?: "")
-            } catch (_: Exception) {
-                // Emitter was disposed - ignore
-            }
+            emitter.onNext(text ?: "")
         }
 
         // Remove the watcher when unsubscribed
