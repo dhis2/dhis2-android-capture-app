@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
@@ -41,9 +39,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.dhis2.commons.ui.icons.SyncingIcon
 import org.dhis2.ui.R
-import org.dhis2.ui.items.SyncStatusItem
 import org.dhis2.ui.theme.colorPrimary
 import org.dhis2.ui.theme.textPrimary
 import org.dhis2.ui.theme.textSecondary
@@ -167,7 +163,11 @@ fun BottomSheetDialogUi(
             ) {
                 (
                     bottomSheetDialogUiModel.secondaryButton?.textLabel
-                        ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) }
+                        ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let {
+                            stringResource(
+                                id = it,
+                            )
+                        }
                 )?.let {
                     Button(
                         modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
@@ -192,7 +192,11 @@ fun BottomSheetDialogUi(
 
                 (
                     bottomSheetDialogUiModel.mainButton?.textLabel
-                        ?: bottomSheetDialogUiModel.mainButton?.textResource?.let { stringResource(id = it) }
+                        ?: bottomSheetDialogUiModel.mainButton?.textResource?.let {
+                            stringResource(
+                                id = it,
+                            )
+                        }
                 )?.let {
                     Button(
                         modifier = Modifier.testTag(MAIN_BUTTON_TAG),
@@ -248,6 +252,7 @@ fun IssueItem(
                         IssueType.ERROR_ON_COMPLETE,
                         IssueType.MANDATORY,
                         -> R.drawable.ic_error_outline
+
                         else -> R.drawable.ic_warning_alert
                     },
                 ),
@@ -359,67 +364,6 @@ fun DialogPreview4() {
         onMainButtonClicked = {},
     ) {
         ErrorFieldList(fieldsWithIssues = fieldsWithIssues)
-    }
-}
-
-@Preview
-@Composable
-fun SubtitleDialogPreview() {
-    BottomSheetDialogUi(
-        bottomSheetDialogUiModel =
-            BottomSheetDialogUiModel(
-                title = "Title",
-                subtitle = "subtitle",
-                message = "Content message. Content message. Content message",
-                iconResource = R.drawable.ic_warning_alert,
-                mainButton = DialogButtonStyle.MainButton(R.string.review),
-            ),
-        onMainButtonClicked = {},
-    ) {
-        LazyColumn(
-            verticalArrangement = spacedBy(8.dp),
-        ) {
-            items(listOf("a")) {
-                SyncStatusItem(
-                    title = "Name",
-                    subtitle = "Description",
-                    onClick = {
-                    },
-                ) {
-                    SyncingIcon()
-                }
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun SubtitleNoMessageDialogPreview() {
-    BottomSheetDialogUi(
-        bottomSheetDialogUiModel =
-            BottomSheetDialogUiModel(
-                title = "Title",
-                subtitle = "subtitle",
-                iconResource = R.drawable.ic_warning_alert,
-                mainButton = DialogButtonStyle.MainButton(R.string.review),
-            ),
-        onMainButtonClicked = {},
-    ) {
-        LazyColumn(
-            verticalArrangement = spacedBy(8.dp),
-        ) {
-            items(listOf("a")) {
-                SyncStatusItem(
-                    title = "Name",
-                    subtitle = "Description",
-                    onClick = {
-                    },
-                ) {
-                    SyncingIcon()
-                }
-            }
-        }
     }
 }
 

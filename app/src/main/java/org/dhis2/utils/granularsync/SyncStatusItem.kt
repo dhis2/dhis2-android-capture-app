@@ -1,4 +1,4 @@
-package org.dhis2.ui.items
+package org.dhis2.utils.granularsync
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
