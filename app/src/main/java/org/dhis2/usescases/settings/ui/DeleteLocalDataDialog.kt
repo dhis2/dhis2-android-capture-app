@@ -23,10 +23,11 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import org.dhis2.R
-import org.dhis2.ui.dialogs.alert.CONFIRM_BUTTON_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
+
+private const val CONFIRM_BUTTON_TAG = "CONFIRM_BUTTON_TAG"
 
 @Composable
 fun DeleteLocalDataDialog(

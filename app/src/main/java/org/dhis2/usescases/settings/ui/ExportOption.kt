@@ -46,13 +46,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import org.dhis2.R
-import org.dhis2.ui.dialogs.alert.CONFIRM_BUTTON_TAG
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+
+private const val CONFIRM_BUTTON_TAG = "CONFIRM_BUTTON_TAG"
 
 @Composable
 fun ExportOption(
