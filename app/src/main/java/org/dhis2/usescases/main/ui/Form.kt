@@ -1,4 +1,4 @@
-package org.dhis2.ui.icons.imagevectors
+package org.dhis2.usescases.main.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
