@@ -1,4 +1,4 @@
-package org.dhis2.ui.icons
+package org.dhis2.commons.ui.icons
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.RepeatMode
@@ -85,7 +85,7 @@ fun SyncingIcon() {
 }
 
 @Composable
-fun syncAnimation(
+private fun syncAnimation(
     radius: Float,
     delayMillis: Int,
 ): TransitionData {

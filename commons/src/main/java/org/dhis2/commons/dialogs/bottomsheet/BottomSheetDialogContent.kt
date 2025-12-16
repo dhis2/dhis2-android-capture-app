@@ -41,8 +41,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.dhis2.commons.ui.icons.SyncingIcon
 import org.dhis2.ui.R
-import org.dhis2.ui.icons.SyncingIcon
 import org.dhis2.ui.items.SyncStatusItem
 import org.dhis2.ui.theme.colorPrimary
 import org.dhis2.ui.theme.textPrimary
