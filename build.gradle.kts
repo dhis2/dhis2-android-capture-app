@@ -1,23 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-// Conditional Dependency Verification: Enable strict mode only for release builds
-gradle.startParameter.let { params ->
-    val requestedTasks = params.taskNames
-    val isReleaseBuild = requestedTasks.any { task ->
-        task.contains("Release", ignoreCase = true) &&
-        (task.contains("assemble", ignoreCase = true) ||
-         task.contains("bundle", ignoreCase = true) ||
-         task.startsWith("build", ignoreCase = true))
-    }
-
-    // Only enable strict verification for release builds
-    if (isReleaseBuild) {
-        println("🔒 Dependency verification: STRICT mode (release build)")
-        // Note: The mode is already set in gradle.properties, this just logs
-    } else {
-        println("🔓 Dependency verification: LENIENT mode (debug/development build)")
-    }
-}
 buildscript {
     dependencies {
         classpath(libs.gradlePlugin)
