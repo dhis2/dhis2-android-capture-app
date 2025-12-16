@@ -47,11 +47,10 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
-import org.dhis2.ui.dialogs.alert.AlertDialog
-import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
+import org.dhis2.usescases.main.ui.NewVersionDialog
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -190,7 +189,11 @@ class MainActivity :
         setUpDevelopmentMode()
 
         val restoreScreenName = savedInstanceState?.getString(FRAGMENT)
-        presenter.updateSingleProgramNavigationDone(savedInstanceState?.getBoolean(SINGLE_PROGRAM_NAVIGATION) ?: false)
+        presenter.updateSingleProgramNavigationDone(
+            savedInstanceState?.getBoolean(
+                SINGLE_PROGRAM_NAVIGATION,
+            ) ?: false,
+        )
 
         val openScreen = intent.getStringExtra(FRAGMENT)
 
@@ -647,32 +650,21 @@ class MainActivity :
 
     override fun cancelNotifications() {
         val notificationManager: NotificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancelAll()
     }
 
     private fun showNewVersionAlert(version: String) {
-        AlertDialog(
-            labelText = getString(R.string.software_update),
-            descriptionText = getString(R.string.new_version_message).format(version),
-            iconResource = R.drawable.ic_software_update,
-            spanText = version,
-            dismissButton =
-                ButtonUiModel(
-                    getString(R.string.remind_me_later),
-                    onClick = { presenter.remindLaterAlertNewVersion() },
-                ),
-            confirmButton =
-                ButtonUiModel(
-                    getString(R.string.download_now),
-                    onClick = {
-                        if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
-                            onDownloadNewVersion()
-                        } else {
-                            requestWritePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        }
-                    },
-                ),
+        NewVersionDialog(
+            newVersion = version,
+            onRemindMeLater = presenter::remindLaterAlertNewVersion,
+            onDownloadVersion = {
+                if (hasPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))) {
+                    onDownloadNewVersion()
+                } else {
+                    requestWritePermissions.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                }
+            },
         ).show(supportFragmentManager)
     }
 
