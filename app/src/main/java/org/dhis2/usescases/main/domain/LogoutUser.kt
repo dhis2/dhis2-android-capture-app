@@ -14,7 +14,7 @@ class LogoutUser(
     private val filterManager: FilterManager,
 ) {
     suspend operator fun invoke(): Result<AccountCount> {
-        workManagerController.cancelAllWork()
+        workManagerController.cancelAllWorkAndWait()
         syncStatusController.restore()
         filterManager.clearAllFilters()
 
