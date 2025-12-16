@@ -16,7 +16,6 @@ import org.dhis2.usescases.orgunitselector.orgUnitSelectorRobot
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity
 import org.dhis2.usescases.teidashboard.entity.EnrollmentUIModel
-import org.dhis2.usescases.teidashboard.entity.UpperEnrollmentUIModel
 import org.dhis2.usescases.teidashboard.robot.analyticsRobot
 import org.dhis2.usescases.teidashboard.robot.enrollmentRobot
 import org.dhis2.usescases.teidashboard.robot.eventRobot
@@ -25,6 +24,7 @@ import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Assume
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -312,6 +312,7 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
+    @Ignore("Form Idling resource become idle")
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         enableIntents()
@@ -398,13 +399,6 @@ class TeiDashboardTest : BaseTest() {
             checkGraphType(1, ChartType.LINE_CHART)
         }
     }
-
-    private fun createExpectedUpperInformation() =
-        UpperEnrollmentUIModel(
-            "10/1/2024",
-            "10/1/2021",
-            "Ngelehun CHC"
-        )
 
     private fun createExpectedEnrollmentInformation() =
         EnrollmentUIModel(
