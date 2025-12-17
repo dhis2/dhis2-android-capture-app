@@ -568,6 +568,9 @@ private fun ProvideIntegerPositive(
     var value by remember(fieldUiModel.value) {
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
     InputPositiveInteger(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -577,7 +580,10 @@ private fun ProvideIntegerPositive(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -596,6 +602,7 @@ private fun ProvideIntegerPositive(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -624,6 +631,9 @@ private fun ProvideIntegerPositiveOrZero(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
     InputPositiveIntegerOrZero(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -633,7 +643,10 @@ private fun ProvideIntegerPositiveOrZero(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -651,6 +664,7 @@ private fun ProvideIntegerPositiveOrZero(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -680,6 +694,10 @@ private fun ProvidePercentage(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputPercentage(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -689,7 +707,10 @@ private fun ProvidePercentage(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -707,6 +728,7 @@ private fun ProvidePercentage(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -736,6 +758,10 @@ private fun ProvideNumber(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputNumber(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -745,7 +771,10 @@ private fun ProvideNumber(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -765,6 +794,7 @@ private fun ProvideNumber(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -797,6 +827,10 @@ private fun ProvideIntegerNegative(
         )
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputNegativeInteger(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -806,7 +840,10 @@ private fun ProvideIntegerNegative(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -824,6 +861,7 @@ private fun ProvideIntegerNegative(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -852,6 +890,11 @@ private fun ProvideLongText(
     var value by remember(fieldUiModel.value) {
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
+
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputLongText(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -861,7 +904,10 @@ private fun ProvideLongText(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -879,6 +925,7 @@ private fun ProvideLongText(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -908,6 +955,11 @@ private fun ProvideLetter(
     var value by remember(fieldUiModel.value) {
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
+
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputLetter(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -917,7 +969,10 @@ private fun ProvideLetter(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -935,6 +990,7 @@ private fun ProvideLetter(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -964,6 +1020,10 @@ private fun ProvideInteger(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputInteger(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -973,7 +1033,10 @@ private fun ProvideInteger(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -991,6 +1054,7 @@ private fun ProvideInteger(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -1021,6 +1085,10 @@ private fun ProvideEmail(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputEmail(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -1030,7 +1098,10 @@ private fun ProvideEmail(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -1057,6 +1128,7 @@ private fun ProvideEmail(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -1087,6 +1159,10 @@ private fun ProvideInputPhoneNumber(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputPhoneNumber(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -1096,7 +1172,10 @@ private fun ProvideInputPhoneNumber(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -1123,6 +1202,7 @@ private fun ProvideInputPhoneNumber(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -1153,6 +1233,10 @@ private fun ProvideInputLink(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", savedTextSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputLink(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -1162,7 +1246,10 @@ private fun ProvideInputLink(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             savedTextSelection = it?.selection ?: TextRange.Zero
@@ -1189,6 +1276,7 @@ private fun ProvideInputLink(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },

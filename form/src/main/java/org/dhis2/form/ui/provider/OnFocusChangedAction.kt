@@ -8,9 +8,10 @@ inline fun onFieldFocusChanged(
     value: String,
     valueType: ValueType?,
     isFocused: Boolean,
+    onNextClicked: Boolean,
     intentHandler: (FormIntent) -> Unit,
 ) {
-    if (!isFocused) {
+    if (!isFocused && !onNextClicked) {
         intentHandler(
             FormIntent.OnSave(
                 fieldUid,

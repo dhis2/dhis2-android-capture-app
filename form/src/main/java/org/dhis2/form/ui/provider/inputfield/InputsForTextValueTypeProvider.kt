@@ -85,6 +85,10 @@ private fun ProvideQRInput(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputQRCode(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -94,7 +98,10 @@ private fun ProvideQRInput(
         inputTextFieldValue = value,
         inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             intentHandler(
@@ -133,6 +140,7 @@ private fun ProvideQRInput(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -156,6 +164,11 @@ private fun ProvideDefaultTextInput(
     var value by remember(fieldUiModel.value) {
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
+
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputText(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -165,7 +178,10 @@ private fun ProvideDefaultTextInput(
         inputTextFieldValue = value,
         inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             intentHandler(
@@ -182,6 +198,7 @@ private fun ProvideDefaultTextInput(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
@@ -208,6 +225,10 @@ private fun ProvideBarcodeInput(
         mutableStateOf(TextFieldValue(fieldUiModel.value ?: "", textSelection))
     }
 
+    var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
     InputBarCode(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -217,7 +238,10 @@ private fun ProvideBarcodeInput(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onNextClicked = {
+            clickedOnNext = true
+            onNextClicked()
+        },
         onValueChanged = {
             value = it ?: TextFieldValue()
             intentHandler(
@@ -256,6 +280,7 @@ private fun ProvideBarcodeInput(
                 value.text,
                 fieldUiModel.valueType,
                 isFocused,
+                clickedOnNext,
                 intentHandler,
             )
         },
