@@ -458,7 +458,6 @@
     <string name="action_agree">Розиман</string>
     <string name="action_continue">Давом этиш</string>
     <string name="login_server_info_title">Сервер URLи</string>
-    <string name="login_server_info_message">Ташкилотингиз учун тизим маъмури томонидан тақдим этилган DHIS2 сервер URL манзилини киритинг. \n\ Бошқа ҳолда, сиз серверингиз URL манзилини ўз ичига олган QR кодини сканерлашингиз мумкин.</string>
     <string name="forgot_your_code">Кодингизни унутдингизми?</string>
     <string name="event_form_end_options_title">Ушбу ҳодиса/тадбир учун нима қилмоқчисиз?</string>
     <string name="sectionSelectorEnd">ТАМОМ</string>

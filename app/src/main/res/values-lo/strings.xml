@@ -470,7 +470,6 @@
     <string name="action_agree">ຍິນຍອມ</string>
     <string name="action_continue">ຕໍ່ໄປ</string>
     <string name="login_server_info_title">ທີ່ຢູ່ຂອງເຄື່ອງຄອມພີວເຕີໜ່ວຍແມ່</string>
-    <string name="login_server_info_message">ປ້ອນທີ່ຢູ່ຂອງຄອມພິວເຕີໜ່ວຍແມ່ DHIS 2 ສຳລັບອົງກອນຂອງທ່ານ ຕາມທີ່ຜູ້ດູແລລະບົບຂອງທ່ານໃຫ້ມາ ຫຼື ທ່ານສາມາດສະແກນຄິວອາໂຄ້ດທີ່ມີທີ່ຢູ່ຂອງຄອມພິວເຕີໜ່ວຍແມ່ຂອງທ່ານ</string>
     <string name="forgot_your_code">ລືມລະຫັດຂອງທ່ານ?</string>
     <string name="event_form_end_options_title">ທ່ານຕ້ອງເຮັດຫຍັງສໍາລັບເຫດການນີ້?</string>
     <string name="sectionSelectorEnd">ສິ້ນສຸດ</string>

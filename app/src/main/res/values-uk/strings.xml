@@ -94,6 +94,7 @@
 
     <string name="event_open">Відкрити</string>
     <string name="event_not_completed">Не завершено</string>
+    <string name="event_completed">Подія завершена</string>
     <string name="read_only">Тільки читати</string>
     <string name="finish_and_complete">Закінчити і завершити</string>
     <string name="completed">Завершено</string>
@@ -483,7 +484,6 @@
     <string name="action_agree">Погодитись</string>
     <string name="action_continue">Продовжити</string>
     <string name="login_server_info_title">URL-адреса серверу</string>
-    <string name="login_server_info_message">Введіть URL-адресу серверу DHIS 2 для Вашої організації, надану Вашим системним адміністратором. Альтернативно, Ви можете відсканувати QR-код, що містить URL-адресу Вашого сервера</string>
     <string name="forgot_your_code">Забули код?</string>
     <string name="event_form_end_options_title">Що б Ви хотіли зробити для цього випадку?</string>
     <string name="sectionSelectorEnd">КІН</string>
@@ -894,4 +894,5 @@
     <string name="syncing_something">Синхронізація %s…</string>
     <string name="show_description">Показати опис</string>
     <string name="hide_description">Приховати опис</string>
+    <string name="transfer">Перевести</string>
     </resources>

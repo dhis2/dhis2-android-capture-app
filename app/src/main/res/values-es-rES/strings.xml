@@ -466,7 +466,6 @@
     <string name="action_agree">Confirmar</string>
     <string name="action_continue">Seguir</string>
     <string name="login_server_info_title">URL de servidor</string>
-    <string name="login_server_info_message">Introduzca la URL del servidor DHIS 2 de su organización proporcionada por su administrador. También puede escanear un código QR con la URL de su servidor. </string>
     <string name="forgot_your_code">¿Olvido su código?</string>
     <string name="event_form_end_options_title">¿Que quiere hacer con este evento?</string>
     <string name="sectionSelectorEnd">FIN</string>

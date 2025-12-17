@@ -427,7 +427,7 @@
     <string name="tuto_main_10">قم بتسجيل الخروج لتغيير المستخدم أو الخادم. ستتمكن من تسجيل الدخول مرة أخرى حتى إذا لم يكن هناك اتصال بالإنترنت.</string>
     <string name="text_plus_colon">%s:</string>
     <string name="relationships">العلاقات</string>
-    <string name="empty_tei_add">لا توجد أحداث مسجلة ، انقر على \"+\" لإضافة حدث جديد.</string>
+    <string name="empty_tei_add">لا توجد أحداث مسجلة، انقر على \"+\" لإضافة حدث جديد.</string>
     <string name="empty_tei_no_add">لا توجد أحداث مسجلة</string>
     <string name="qr_data_values">قيم البيانات</string>
     <string name="info">معلومات</string>
@@ -493,7 +493,6 @@
     <string name="action_agree">قبول</string>
     <string name="action_continue">متابعة</string>
     <string name="login_server_info_title">رابط الخادم</string>
-    <string name="login_server_info_message">أدخل عنوان URL لخادم DHIS 2 لمؤسستك على النحو الذي حصلت عليه من مسؤول النظام.\n\n أو بدلاً من ذلك ، يمكنك مسح رمز الـ QR الذي يحتوي على عنوان URL لخادمك</string>
     <string name="forgot_your_code">نسيت الرمز الخاص بك؟</string>
     <string name="event_form_end_options_title">ما الذي تريد فعله لهذا الحدث؟</string>
     <string name="sectionSelectorEnd">إنهاء</string>

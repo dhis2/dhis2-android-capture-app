@@ -88,4 +88,5 @@
     <string name="category_combo">Tổ hợp phân loại</string>
     <string name="no_options">Không có tùy chọn</string>
     <string name="cat_combo">Tổ hợp Phân Loại</string>
+    <string name="storage_permission_denied">Quyền lưu trữ không được cấp.\nBạn phải cấp quyền để sử dụng tính năng này.</string>
     </resources>

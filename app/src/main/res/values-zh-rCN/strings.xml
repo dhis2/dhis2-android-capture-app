@@ -491,7 +491,6 @@
     <string name="action_agree">同意</string>
     <string name="action_continue">继续</string>
     <string name="login_server_info_title">服务器URL</string>
-    <string name="login_server_info_message">输入管理员提供的服务器地址。\n\n 可选的你可以扫描服务器地址 二维码</string>
     <string name="forgot_your_code">忘记你的数字口令</string>
     <string name="event_form_end_options_title">对该事件你想做什么？</string>
     <string name="sectionSelectorEnd">结束</string>

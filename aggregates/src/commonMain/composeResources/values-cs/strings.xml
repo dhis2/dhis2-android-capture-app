@@ -53,6 +53,25 @@
     %1$s is the attribute option combo name
     -->
     <string name="attribute_option_combo_no_access">Nemáte oprávnění upravovat data pro %1$s</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">Data z těchto stránek nelze upravovat. %1$s</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">Data pro %1$s nelze upravovat v %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">Data pro %1$s nelze upravovat v %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">Data za období %1$s nelze upravovat v %2$s</string>
     <string name="dataset_closed">Tato data nelze upravovat, protože jsou označena jako uzavřená.</string>
     <string name="dataset_expired">Tato data nelze upravovat, protože vypršela doba jejich editace.</string>
 
