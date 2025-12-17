@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">Solo para miembros del personal del CICR</string>
     <string name="username">Nombre de usuario</string>
     <string name="password">Contraseña</string>
-    <string name="forgot_password">¿Has olvidado tu contraseña\?</string>
+    <string name="forgot_password">¿Has olvidado tu contraseña?</string>
 
     <string name="recent_activities_loading_message">Cargando actividades recientes&#8230;</string>
     <string name="recent_activities_empty_message">Aún no has realizado ninguna actividad</string>

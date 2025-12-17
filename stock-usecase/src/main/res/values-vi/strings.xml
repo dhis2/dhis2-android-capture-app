@@ -24,13 +24,13 @@
     <string name="icrc_staff_members">Chỉ dành cho nhân viên ICRC</string>
     <string name="username">Tên đăng nhập</string>
     <string name="password">Mật khẩu</string>
-    <string name="forgot_password">Quên mật khẩu\?</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
 
     <string name="recent_activities_loading_message">Đang tải các hoạt động gần đây&#8230;</string>
     <string name="recent_activities_empty_message">Bạn chưa thực hiện bất kỳ hoạt động nào</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230</string>
+    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230;</string>
     <string name="metadata_sync_error">Không thể hoàn thành đồng bộ siêu dữ liệu</string>
     <string name="data_sync_in_progress">Đang đồng bộ dữ liệu&#3230;</string>
     <string name="data_sync_error">Không thể hoàn thành đồng bộ dữ liệu</string>

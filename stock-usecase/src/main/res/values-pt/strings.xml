@@ -24,7 +24,7 @@
     <string name="icrc_staff_members"> Apenas para membros do ICRC </string>
     <string name="username">Nome de utilizador</string>
     <string name="password">Senha</string>
-    <string name="forgot_password">Esqueceu a password\?</string>
+    <string name="forgot_password">Esqueceu a password?</string>
 
     <string name="recent_activities_loading_message"> Carregar actividades recentes&#8230;</string>
     <string name="recent_activities_empty_message"> Ainda não realizou nenhuma atividade</string>

@@ -7,7 +7,7 @@
     <string name="sign_in">Увійти</string>
     <string name="username">Ім\'я користувача</string>
     <string name="password">Пароль</string>
-    <string name="forgot_password">Забули пароль\?</string>
+    <string name="forgot_password">Забули пароль?</string>
 
     <!-- FloatingActionButtons -->
     <string name="proceed">Продовжити</string>

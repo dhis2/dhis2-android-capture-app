@@ -15,7 +15,7 @@
     <string name="sign_in_to_with_oidc">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ ICRC</string>
     <string name="username">ຊື່ຜູ້ໃຊ້</string>
     <string name="password">ລະຫັດຜ່ານ</string>
-    <string name="forgot_password">ລຶມລະຫັດຜ່ານ\?</string>
+    <string name="forgot_password">ລຶມລະຫັດຜ່ານ?</string>
 
     <!-- FloatingActionButtons -->
     <string name="proceed">ດຳເນີນ</string>
