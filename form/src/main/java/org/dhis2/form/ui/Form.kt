@@ -105,6 +105,7 @@ fun Form(
                             scrollState.animateScrollToItem(sections.indexOf(it))
                         }
                     } ?: run {
+                        intentHandler.invoke(FormIntent.OnFocus("", null))
                         focusManager.clearFocus()
                     }
                 }

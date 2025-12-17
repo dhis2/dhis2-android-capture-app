@@ -827,7 +827,7 @@ class FormRepositoryImpl(
             when (action.type) {
                 ActionType.ON_NEXT -> getNextItem(action.id)
                 ActionType.ON_FINISH -> null
-                else -> action.id
+                else -> action.id.takeIf { it.isNotEmpty() }
             }
     }
 

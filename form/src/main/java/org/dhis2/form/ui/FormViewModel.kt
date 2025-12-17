@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
@@ -66,7 +67,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import kotlin.collections.forEach
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -131,20 +131,26 @@ class FormViewModel(
                     } else {
                         old == new
                     }
+                }.onEach {
+                    FormCountingIdlingResource.increment()
                 }.map { intent -> createRowActionStore(intent) }
                 .flowOn(dispatcher.io())
-                .collect { result -> displayResult(result) }
+                .collect { result ->
+                    displayResult(result)
+                    FormCountingIdlingResource.decrement()
+                }
         }
 
         viewModelScope.launch(dispatcher.io()) {
             fieldListChannel.consumeEach { fieldListConfiguration ->
+                FormCountingIdlingResource.increment()
                 val result = repository.composeList(fieldListConfiguration.skipProgramRules)
                 _items.postValue(result)
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
+                FormCountingIdlingResource.decrement()
             }
-            FormCountingIdlingResource.decrement()
         }
 
         loadData()
@@ -196,8 +202,6 @@ class FormViewModel(
                         handler.postDelayed({
                             processCalculatedItems(skipProgramRules = true)
                         }, 500L)
-                    } else {
-                        FormCountingIdlingResource.decrement()
                     }
                 }
 
@@ -806,9 +810,11 @@ class FormViewModel(
         skipProgramRules: Boolean = false,
         finish: Boolean = false,
     ) {
-        fieldListChannel.trySend(
-            FieldListConfiguration(skipProgramRules, finish),
-        )
+        viewModelScope.launch {
+            fieldListChannel.send(
+                FieldListConfiguration(skipProgramRules, finish),
+            )
+        }
     }
 
     fun updateConfigurationErrors() {
