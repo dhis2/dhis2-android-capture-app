@@ -43,7 +43,7 @@ jobs:
 
     - name: Decode Keystore
       id: decode_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
@@ -59,7 +59,7 @@ jobs:
 
     - name: Decode Training Keystore
       id: decode_training_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_training_keystore.jks'
         encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
@@ -80,7 +80,7 @@ jobs:
 
     - name: Upload to Play Store
       if: ${{ inputs.google_play_release }}
-      uses: r0adkll/upload-google-play@v1
+      uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
@@ -92,7 +92,7 @@ jobs:
 
     - name: Upload to Github
       if: ${{ inputs.github_release }}
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b
       with:
         allowUpdates: true
         draft: true
