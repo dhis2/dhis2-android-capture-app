@@ -31,7 +31,7 @@
 
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Xảy ra lỗi trong quá trình đồng bộ. Vui lòng thử lại.</string>
-    <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận cho tất cả dữ liệu. Đó là các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
+    <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận máy chủ cho tất cả dữ liệu. Các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
     <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy thử đồng bộ cấu hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của chương trình, các Đối Tượng Theo Dõi và các sự kiện với các dấu hiệu xung đột là @.</string>
     <string name="server_sync_error">Có lỗi và máy chủ không phản hồi. Liên hệ quản trị viên của bạn.</string>
 
@@ -491,7 +491,6 @@
     <string name="action_agree">Đồng ý</string>
     <string name="action_continue">Tiếp tục</string>
     <string name="login_server_info_title">Đường dẫn đến máy chủ</string>
-    <string name="login_server_info_message">Nhập đường dẫn liên kết đến máy chủ DHIS 2 với đơn vị được cung cấp bởi quản lý của bạn.\n\n Hoặc bạn có thể quét mã QR có chứa đường dẫn liên kết đến máy chủ.</string>
     <string name="forgot_your_code">Bạn đã quên mã của bạn phải không?</string>
     <string name="event_form_end_options_title">Bạn muốn làm gì với sự kiện này?</string>
     <string name="sectionSelectorEnd">KẾT THÚC</string>

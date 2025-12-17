@@ -55,11 +55,6 @@
 
     <!-- Stock table -->
     <string name="item">Пункт</string>
-    <string name="force_sync_confirmation_message">
-        Вы уверены, что хотите принудительно провести синхронизацию?
-    </string>
-    <string name="logout_confirmation_message">Вы уверены, что хотите выйти из системы?</string>
-
     <string name="prompt_email">адрес электронной почты</string>
     <string name="prompt_password">Пароль</string>
     <string name="action_sign_in">Войдите или зарегистрируйтесь</string>

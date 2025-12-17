@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="no_data">कोई डेटा नहीं</string>
     <string name="action_accept">स्वीकार करें</string>
     <string name="next">आगे</string>
     <string name="cancel">रद्द करें</string>
     <string name="yes">हाँ</string>
     <string name="no">नहीं</string>
     <string name="search">सर्च करें / खोजें</string>
+    <string name="events">इवेंट्स</string>
     <string name="done">पूरा हुआ</string>
 
+    <string name="filters_title_date">तारीख</string>
     <string name="daily_period">रोज़ाना</string>
     <string name="weekly">साप्ताहिक</string>
     <string name="monthly">मासिक</string>
@@ -19,6 +22,10 @@
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_this_month">इस महीने</string>
+    <string name="filter_period_last_month">पिछला महीना</string>
+    <string name="filter_period_this_year">इस वर्ष</string>
+    <string name="filter_period_last_year">पिछला वर्ष</string>
     <string name="DAILY">रोज़ाना</string>
     <string name="WEEKLY">साप्ताहिक</string>
     <string name="MONTHLY">मासिक</string>
@@ -33,6 +40,8 @@
     <string name="not_now">अभी नहीं</string>
     <string name="review">रिव्यू</string>
     <string name="complete">पूरा हुआ</string>
+    <string name="default_table_header_label">वैल्यू</string>
+    <string name="default_empty_dataset_section_label">डेटा</string>
     <string name="overdue_today">आज</string>
     <plurals name="overdue_days">
         <item quantity="one">%d दिन बाकी है</item>
