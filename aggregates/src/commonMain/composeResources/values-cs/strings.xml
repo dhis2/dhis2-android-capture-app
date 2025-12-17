@@ -17,9 +17,9 @@
     <string name="format_error">Nesprávný formát</string>
     <string name="input_not_supported">Není podporováno</string>
     <string name="completion_dialog_title">Vše vypadá dobře</string>
-    <string name="completion_dialog_description">Chcete také doplnit datovou sadu?</string>
+    <string name="completion_dialog_description">Chcete také doplnit datovou sadu\?</string>
     <string name="validation_success_title">Vše vypadá dobře</string>
-    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
+    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat\?</string>
     <string name="not_now">Teď ne</string>
     <string name="complete">Dokončit</string>
     <string name="saved">Uloženo!</string>
@@ -28,7 +28,7 @@
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Uloženo a dokončeno!</string>
     <string name="error_on_complete_dataset">Při vyplňování datové sady došlo k chybě</string>
-    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
+    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat\?</string>
     <string name="no">Ne</string>
     <string name="yes">Ano</string>
     <string name="error">Chyba</string>
@@ -53,6 +53,25 @@
     %1$s is the attribute option combo name
     -->
     <string name="attribute_option_combo_no_access">Nemáte oprávnění upravovat data pro %1$s</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">Data z těchto stránek nelze upravovat. %1$s</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">Data pro %1$s nelze upravovat v %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">Data pro %1$s nelze upravovat v %2$s</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">Data za období %1$s nelze upravovat v %2$s</string>
     <string name="dataset_closed">Tato data nelze upravovat, protože jsou označena jako uzavřená.</string>
     <string name="dataset_expired">Tato data nelze upravovat, protože vypršela doba jejich editace.</string>
 

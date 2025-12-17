@@ -6,6 +6,8 @@
     <string name="sign_in">Logga in</string>
     <string name="username">Användarnamn</string>
     <string name="password">Lösenord</string>
+    <string name="forgot_password">Glömt ditt lösenord\?</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">Fortsätta</string>
     <string name="delete">Radera</string>

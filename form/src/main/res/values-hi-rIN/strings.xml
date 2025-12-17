@@ -2,10 +2,14 @@
 <resources>
     <string name="error">त्रुटि</string>
     <string name="required">आवश्यकता है</string>
+    <string name="date">तारीख</string>
+    <string name="hint_year">वर्ष</string>
+    <string name="hint_month">महीने</string>
     <string name="hint_day">दिन</string>
     <string name="review">रिव्यू</string>
     <string name="complete">पूरा हुआ</string>
     <string name="not_now">अभी नहीं</string>
+    <string name="save_anyway">सेव करें</string>
     <string name="keep_editing">संपादन करते रहें</string>
     <string name="share">साझा करें</string>
     <string name="action_close">बंद करें</string>

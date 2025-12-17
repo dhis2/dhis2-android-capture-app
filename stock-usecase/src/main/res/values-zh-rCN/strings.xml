@@ -7,6 +7,8 @@
     <string name="sign_in">登记</string>
     <string name="username">用户名</string>
     <string name="password">口令</string>
+    <string name="forgot_password">忘记口令</string>
+
     <!-- FloatingActionButtons -->
     <string name="proceed">处理</string>
     <string name="review">审查</string>

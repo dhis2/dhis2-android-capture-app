@@ -4,6 +4,8 @@
 
     <string name="username">Номи корбар</string>
     <string name="password">Парол</string>
+    <string name="forgot_password">Паролро фаромӯш кардед\?</string>
+
     <string name="delete">Нест кардан</string>
     <string name="ok">OK</string>
     <string name="cancel">Бекор кардан</string>

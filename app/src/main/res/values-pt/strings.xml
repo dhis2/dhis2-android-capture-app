@@ -495,7 +495,6 @@
     <string name="action_agree">Aceita</string>
     <string name="action_continue">Continuar</string>
     <string name="login_server_info_title">url do servidor</string>
-    <string name="login_server_info_message">Digite o URL do servidor DHIS 2 da sua organização, conforme fornecido pelo administrador do sistema.\n\nAlternativamente, você pode digitalizar um código QR contendo o URL do seu servido</string>
     <string name="forgot_your_code">Esqueceu seu código?</string>
     <string name="event_form_end_options_title">O que você gostaria de fazer para este evento?</string>
     <string name="sectionSelectorEnd">FIM</string>
@@ -679,9 +678,9 @@
     <string name="dataset_overview">Detalhes</string>
     <string name="dataset_comments">Comentarios</string>
     <string name="saved">Gravado!</string>
-    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados\?</string>
     <string name="validation_success_title">Tudo parece bem!</string>
-    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados?</string>
+    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados\?</string>
     <string name="dataset_completed">Marcar como completado</string>
     <string name="name">Nome</string>
     <string name="formula">Fórmula</string>

@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">Solo para miembros del personal del CICR</string>
     <string name="username">Nombre de usuario</string>
     <string name="password">Contraseña</string>
-    <string name="forgot_password">¿Has olvidado tu contraseña?</string>
+    <string name="forgot_password">¿Has olvidado tu contraseña\?</string>
 
     <string name="recent_activities_loading_message">Cargando actividades recientes&#8230;</string>
     <string name="recent_activities_empty_message">Aún no has realizado ninguna actividad</string>
@@ -88,15 +88,8 @@
     <string name="mandatory_facility_selection">
         Debe seleccionar el establecimiento antes de poder continuar
     </string>
-    <string name="mandatory_distributed_to_selection">
-        Se debe completar el campo \"Distribuido a\" antes de poder continuar
-    </string>
     <string name="mandatory_transaction_date_selection">
         Se debe completar el campo \"Distribuido a\" antes de poder continuar
-    </string>
-    <string name="previous_page_lose_data_warning">
-        ¿Estás seguro de que quieres volver a la pantalla anterior?
-        Perderá los datos que acaba de ingresar si decide continuar.
     </string>
     <string name="transaction_completed">
        ¡La transacción se completó exitosamente!
@@ -104,24 +97,6 @@
     <string name="transaction_cancelled">
         ¡La cancelación de la transacción se realizó con éxito!
     </string>
-    <string name="force_sync_confirmation_message">
-        ¿Estás seguro de que quieres forzar la sincronización?
-    </string>
-    <string name="logout_confirmation_message">¿Estás seguro de que quieres cerrar sesión?</string>
-
-    <string name="remove_correction_item_confirmation_message">
-       ¿Estás seguro de que quieres eliminar permanentemente la entrada para la corrección de \"%1$s\"?
-        Esta acción no se puede deshacer.
-    </string>
-    <string name="remove_distribution_item_confirmation_message">
-       ¿Estás seguro de que quieres eliminar permanentemente la entrada para la distribución de \"%1$s\"?
-        Esta acción no se puede deshacer.
-    </string>
-    <string name="remove_discard_item_confirmation_message">
-       ¿Estás seguro de que quieres eliminar permanentemente la entrada para descarte de \"%1$s\"?
-        Esta acción no se puede deshacer.
-    </string>
-
     <plurals name="items_found">
         <item quantity="one">%d artículo</item>
         <item quantity="many">%d artículos</item>
@@ -180,10 +155,6 @@
     <string name="select_language">Seleccione el idioma deseado</string>
 
     <string name="restart_later">Reiniciar más tarde</string>
-    <string name="confirm_app_restart_message">
-        La aplicación necesita reiniciar para que se realicen los cambios, sin embargo,
-        los cambios no guardados se perderán.\n\n¿Quieres continuar con el reinicio?
-    </string>
     <string name="language_change_dialog_title">Confirmar reinicio</string>
     <string name="scan_canceled">¡Escaneo cancelado!</string>
     <string name="logout_error_message">
