@@ -149,7 +149,6 @@ class FormViewModel(
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
-                FormCountingIdlingResource.decrement()
             }
         }
 
@@ -773,6 +772,7 @@ class FormViewModel(
 
     fun onItemsRendered() {
         loading.value = false
+        FormCountingIdlingResource.decrement()
     }
 
     private fun setCoordinateFieldValue(
@@ -823,6 +823,7 @@ class FormViewModel(
 
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
+            FormCountingIdlingResource.increment()
             val result =
                 async(dispatcher.io()) {
                     repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
@@ -1014,6 +1015,7 @@ class FormViewModel(
     fun loadData() {
         loading.postValue(true)
         viewModelScope.launch(dispatcher.io()) {
+            FormCountingIdlingResource.increment()
             val result = repository.fetchFormItems(openErrorLocation)
             dateFormatConfig =
                 async {
