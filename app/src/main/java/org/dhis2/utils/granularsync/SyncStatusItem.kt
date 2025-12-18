@@ -1,4 +1,4 @@
-package org.dhis2.ui.items
+package org.dhis2.utils.granularsync
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,8 +19,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.dhis2.ui.R
-import org.dhis2.ui.theme.textPrimary
-import org.dhis2.ui.theme.textSecondary
 
 @Composable
 fun SyncStatusItem(
@@ -45,7 +43,7 @@ fun SyncStatusItem(
                 text = title,
                 style =
                     MaterialTheme.typography.bodyMedium
-                        .copy(color = textPrimary),
+                        .copy(color = MaterialTheme.colorScheme.onSurface),
             )
             subtitle?.let {
                 Text(
@@ -53,7 +51,7 @@ fun SyncStatusItem(
                     text = subtitle,
                     style =
                         MaterialTheme.typography.bodyMedium.copy(
-                            color = textSecondary,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.54f),
                         ),
                 )
             }

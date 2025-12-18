@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
@@ -42,14 +40,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.ui.R
-import org.dhis2.ui.icons.SyncingIcon
-import org.dhis2.ui.items.SyncStatusItem
-import org.dhis2.ui.theme.colorPrimary
-import org.dhis2.ui.theme.textPrimary
-import org.dhis2.ui.theme.textSecondary
-import org.dhis2.ui.theme.textSubtitle
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 
 @Composable
 fun BottomSheetDialogUi(
@@ -85,7 +78,7 @@ fun BottomSheetDialogUi(
             Text(
                 text = bottomSheetDialogUiModel.title,
                 style = MaterialTheme.typography.headlineSmall,
-                color = textPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier =
                     Modifier
@@ -97,7 +90,7 @@ fun BottomSheetDialogUi(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = textSubtitle,
+                    color = TextColor.OnDisabledSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -108,7 +101,7 @@ fun BottomSheetDialogUi(
                     Text(
                         text = message,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = textSecondary,
+                        color = TextColor.OnSurfaceLight,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -127,7 +120,7 @@ fun BottomSheetDialogUi(
                                 addStyle(
                                     style =
                                         SpanStyle(
-                                            color = colorPrimary,
+                                            color = MaterialTheme.colorScheme.primary,
                                             textDecoration = TextDecoration.Underline,
                                         ),
                                     start = clickableWordIndex,
@@ -136,7 +129,7 @@ fun BottomSheetDialogUi(
                             },
                         style =
                             MaterialTheme.typography.bodyMedium.copy(
-                                color = textSecondary,
+                                color = TextColor.OnSurfaceLight,
                                 textAlign = TextAlign.Start,
                             ),
                         onClick = {
@@ -167,7 +160,11 @@ fun BottomSheetDialogUi(
             ) {
                 (
                     bottomSheetDialogUiModel.secondaryButton?.textLabel
-                        ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let { stringResource(id = it) }
+                        ?: bottomSheetDialogUiModel.secondaryButton?.textResource?.let {
+                            stringResource(
+                                id = it,
+                            )
+                        }
                 )?.let {
                     Button(
                         modifier = Modifier.testTag(SECONDARY_BUTTON_TAG),
@@ -192,7 +189,11 @@ fun BottomSheetDialogUi(
 
                 (
                     bottomSheetDialogUiModel.mainButton?.textLabel
-                        ?: bottomSheetDialogUiModel.mainButton?.textResource?.let { stringResource(id = it) }
+                        ?: bottomSheetDialogUiModel.mainButton?.textResource?.let {
+                            stringResource(
+                                id = it,
+                            )
+                        }
                 )?.let {
                     Button(
                         modifier = Modifier.testTag(MAIN_BUTTON_TAG),
@@ -248,6 +249,7 @@ fun IssueItem(
                         IssueType.ERROR_ON_COMPLETE,
                         IssueType.MANDATORY,
                         -> R.drawable.ic_error_outline
+
                         else -> R.drawable.ic_warning_alert
                     },
                 ),
@@ -262,13 +264,13 @@ fun IssueItem(
         Column(Modifier.padding(start = 11.dp)) {
             Text(
                 text = fieldWithIssue.fieldName,
-                color = textPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.sp,
             )
             if (fieldWithIssue.message.isNotEmpty()) {
                 Text(
                     text = fieldWithIssue.message,
-                    color = textSecondary,
+                    color = TextColor.OnSurfaceLight,
                     fontSize = 14.sp,
                 )
             }
@@ -359,67 +361,6 @@ fun DialogPreview4() {
         onMainButtonClicked = {},
     ) {
         ErrorFieldList(fieldsWithIssues = fieldsWithIssues)
-    }
-}
-
-@Preview
-@Composable
-fun SubtitleDialogPreview() {
-    BottomSheetDialogUi(
-        bottomSheetDialogUiModel =
-            BottomSheetDialogUiModel(
-                title = "Title",
-                subtitle = "subtitle",
-                message = "Content message. Content message. Content message",
-                iconResource = R.drawable.ic_warning_alert,
-                mainButton = DialogButtonStyle.MainButton(R.string.review),
-            ),
-        onMainButtonClicked = {},
-    ) {
-        LazyColumn(
-            verticalArrangement = spacedBy(8.dp),
-        ) {
-            items(listOf("a")) {
-                SyncStatusItem(
-                    title = "Name",
-                    subtitle = "Description",
-                    onClick = {
-                    },
-                ) {
-                    SyncingIcon()
-                }
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun SubtitleNoMessageDialogPreview() {
-    BottomSheetDialogUi(
-        bottomSheetDialogUiModel =
-            BottomSheetDialogUiModel(
-                title = "Title",
-                subtitle = "subtitle",
-                iconResource = R.drawable.ic_warning_alert,
-                mainButton = DialogButtonStyle.MainButton(R.string.review),
-            ),
-        onMainButtonClicked = {},
-    ) {
-        LazyColumn(
-            verticalArrangement = spacedBy(8.dp),
-        ) {
-            items(listOf("a")) {
-                SyncStatusItem(
-                    title = "Name",
-                    subtitle = "Description",
-                    onClick = {
-                    },
-                ) {
-                    SyncingIcon()
-                }
-            }
-        }
     }
 }
 
