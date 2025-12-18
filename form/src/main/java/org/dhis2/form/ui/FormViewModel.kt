@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -123,23 +123,21 @@ class FormViewModel(
     var filePath: String? = null
 
     init {
-        viewModelScope.launch {
-            pendingIntents
-                .distinctUntilChanged { old, new ->
-                    if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
-                        false
-                    } else {
-                        old == new
-                    }
-                }.onEach {
-                    FormCountingIdlingResource.increment()
-                }.map { intent -> createRowActionStore(intent) }
-                .flowOn(dispatcher.io())
-                .collect { result ->
-                    displayResult(result)
-                    FormCountingIdlingResource.decrement()
+
+        pendingIntents
+            .distinctUntilChanged { old, new ->
+                if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
+                    false
+                } else {
+                    old == new
                 }
-        }
+            }.onEach { intent ->
+                FormCountingIdlingResource.increment()
+                val result = createRowActionStore(intent)
+                displayResult(result)
+                FormCountingIdlingResource.decrement()
+            }.flowOn(dispatcher.io())
+            .launchIn(viewModelScope)
 
         viewModelScope.launch(dispatcher.io()) {
             fieldListChannel.consumeEach { fieldListConfiguration ->
@@ -149,6 +147,7 @@ class FormViewModel(
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
+                FormCountingIdlingResource.decrement()
             }
         }
 
@@ -772,7 +771,6 @@ class FormViewModel(
 
     fun onItemsRendered() {
         loading.value = false
-        FormCountingIdlingResource.decrement()
     }
 
     private fun setCoordinateFieldValue(
@@ -835,6 +833,7 @@ class FormViewModel(
             } finally {
                 val list = repository.composeList()
                 _items.postValue(list)
+                FormCountingIdlingResource.decrement()
             }
         }
     }
@@ -1026,6 +1025,8 @@ class FormViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
                 _items.postValue(emptyList())
+            } finally {
+                FormCountingIdlingResource.decrement()
             }
         }
     }

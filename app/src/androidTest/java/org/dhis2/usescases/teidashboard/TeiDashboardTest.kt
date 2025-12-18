@@ -292,6 +292,7 @@ class TeiDashboardTest : BaseTest() {
         val enrollmentFullDetails = createExpectedEnrollmentInformation()
 
         teiDashboardRobot(composeTestRule) {
+            waitUntilActivityVisible<TeiDashboardMobileActivity>()
             clickOnSeeDetails()
             composeTestRule.waitForIdle()
             checkFullDetails(enrollmentFullDetails)

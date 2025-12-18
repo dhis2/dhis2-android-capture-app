@@ -571,6 +571,11 @@ private fun ProvideIntegerPositive(
     var clickedOnNext by remember {
         mutableStateOf(false)
     }
+
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputPositiveInteger(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -597,13 +602,14 @@ private fun ProvideIntegerPositive(
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteItemSelected = {
@@ -634,6 +640,11 @@ private fun ProvideIntegerPositiveOrZero(
     var clickedOnNext by remember {
         mutableStateOf(false)
     }
+
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputPositiveIntegerOrZero(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -659,13 +670,14 @@ private fun ProvideIntegerPositiveOrZero(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -698,6 +710,10 @@ private fun ProvidePercentage(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputPercentage(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -723,13 +739,14 @@ private fun ProvidePercentage(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -762,6 +779,10 @@ private fun ProvideNumber(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputNumber(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -789,13 +810,14 @@ private fun ProvideNumber(
         notation = RegExValidations.BRITISH_DECIMAL_NOTATION,
         autoCompleteList = fieldUiModel.autocompleteList(),
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteItemSelected = {
@@ -831,6 +853,10 @@ private fun ProvideIntegerNegative(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputNegativeInteger(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -856,13 +882,14 @@ private fun ProvideIntegerNegative(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -895,6 +922,10 @@ private fun ProvideLongText(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputLongText(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -920,13 +951,14 @@ private fun ProvideLongText(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         imeAction = ImeAction.Default,
@@ -960,6 +992,10 @@ private fun ProvideLetter(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputLetter(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -985,13 +1021,14 @@ private fun ProvideLetter(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -1024,6 +1061,10 @@ private fun ProvideInteger(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputInteger(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -1049,13 +1090,14 @@ private fun ProvideInteger(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -1086,6 +1128,10 @@ private fun ProvideEmail(
     }
 
     var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
+    var lostFocus by remember {
         mutableStateOf(false)
     }
 
@@ -1123,13 +1169,14 @@ private fun ProvideEmail(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -1160,6 +1207,10 @@ private fun ProvideInputPhoneNumber(
     }
 
     var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
+    var lostFocus by remember {
         mutableStateOf(false)
     }
 
@@ -1197,13 +1248,14 @@ private fun ProvideInputPhoneNumber(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -1234,6 +1286,10 @@ private fun ProvideInputLink(
     }
 
     var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
+    var lostFocus by remember {
         mutableStateOf(false)
     }
 
@@ -1271,13 +1327,14 @@ private fun ProvideInputLink(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),

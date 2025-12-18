@@ -89,6 +89,10 @@ private fun ProvideQRInput(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputQRCode(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -135,13 +139,14 @@ private fun ProvideQRInput(
             }
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -169,6 +174,10 @@ private fun ProvideDefaultTextInput(
         mutableStateOf(false)
     }
 
+    var lostFocus by remember {
+        mutableStateOf(false)
+    }
+
     InputText(
         modifier = modifier.fillMaxWidth(),
         title = fieldUiModel.label,
@@ -193,13 +202,14 @@ private fun ProvideDefaultTextInput(
             )
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
@@ -226,6 +236,10 @@ private fun ProvideBarcodeInput(
     }
 
     var clickedOnNext by remember {
+        mutableStateOf(false)
+    }
+
+    var lostFocus by remember {
         mutableStateOf(false)
     }
 
@@ -275,13 +289,14 @@ private fun ProvideBarcodeInput(
             }
         },
         onFocusChanged = { isFocused ->
+            lostFocus = lostFocus == true && isFocused == false
             onFieldFocusChanged(
-                fieldUiModel.uid,
-                value.text,
-                fieldUiModel.valueType,
-                isFocused,
-                clickedOnNext,
-                intentHandler,
+                fieldUid = fieldUiModel.uid,
+                value = value.text,
+                valueType = fieldUiModel.valueType,
+                lostFocus = lostFocus,
+                onNextClicked = clickedOnNext,
+                intentHandler = intentHandler,
             )
         },
         autoCompleteList = fieldUiModel.autocompleteList(),
