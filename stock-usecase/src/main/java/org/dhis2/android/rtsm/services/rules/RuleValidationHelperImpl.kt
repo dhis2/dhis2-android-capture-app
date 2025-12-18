@@ -216,6 +216,8 @@ class RuleValidationHelperImpl(
                 .enrollments()
                 .byTrackedEntityInstance()
                 .eq(teiUid)
+                .byStatus()
+                .eq(EnrollmentStatus.ACTIVE)
                 .byProgram()
                 .eq(programUid)
                 .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
