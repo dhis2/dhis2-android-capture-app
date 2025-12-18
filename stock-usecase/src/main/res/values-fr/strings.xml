@@ -37,15 +37,10 @@
     <string name="item">Élément</string>
     <string name="stock_on_hand">Stock disponible</string>
     <string name="quantity">Quantité</string>
-    <string name="previous_page_lose_data_warning">
-Etes-vous sûr de retouner au menu précédent?\n\n
- Si vous décidez de continuer, vous allez perdre les données saisies.</string>
     <string name="transaction_completed">
 La transaction a été effectuée avec succès.</string>
     <string name="transaction_cancelled">
 La transaction a été annulée avec succès.</string>
-    <string name="logout_confirmation_message">Etes-vous sûr de vouloir vous déconnecter?</string>
-
     <string name="no_items_found">Aucun produit trouvé</string>
     <string name="prompt_email">Adresse e-mail</string>
     <string name="prompt_password">Mot de passe</string>
