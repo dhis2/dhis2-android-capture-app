@@ -159,14 +159,14 @@ class FormViewModel(
             when (it) {
                 ValueStoreResult.VALUE_CHANGED -> {
                     result.first.let {
-                        _savedValue.value = it
+                        _savedValue.postValue(it)
                     }
                     processCalculatedItems()
                 }
 
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
                     loading.postValue(false)
-                    showToast.value = R.string.update_field_error
+                    showToast.postValue(R.string.update_field_error)
                     processCalculatedItems(true)
                 }
 
@@ -178,11 +178,12 @@ class FormViewModel(
                 }
 
                 ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                    showInfo.value =
+                    showInfo.postValue(
                         InfoUiModel(
                             R.string.error,
                             R.string.unique_warning,
-                        )
+                        ),
+                    )
                     processCalculatedItems()
                 }
 
@@ -193,7 +194,7 @@ class FormViewModel(
                 ValueStoreResult.TEXT_CHANGING -> {
                     result.first.let {
                         Timber.d("${result.first.id} is changing its value")
-                        _queryData.value = it
+                        _queryData.postValue(it)
                     }
                     if (repository.hasLegendSet(result.first.id)) {
                         handler.removeCallbacksAndMessages(null)
