@@ -13,6 +13,7 @@ plugins {
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.compose.compiler)
+    alias(libs.plugins.sentry)
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
@@ -315,4 +316,27 @@ dependencies {
     androidTestImplementation(libs.test.rx2.idler)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
+}
+
+sentry {
+    org.set("dhis2")
+    projectName.set("dhis2-android-capture")
+    authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
+
+    // Enable ProGuard/R8 mapping upload for deobfuscation, maps are available in the build folder
+    includeProguardMapping.set(true)
+    //Upload the mapping on every release build
+    autoUploadProguardMapping.set(true)
+
+    // Disable native symbols upload (not needed for this project)
+    uploadNativeSymbols.set(false)
+    includeNativeSources.set(false)
+
+    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
+    // This enables source context, allowing you to see your source
+    // code as part of your stack traces in Sentry.
+    includeSourceContext.set(true)
+
+    // Telemetry
+    telemetry.set(false)
 }
