@@ -53,7 +53,7 @@ class MainNavigator(
 
     fun isVisualizations(): Boolean = currentScreen.value == MainScreen.VISUALIZATIONS
 
-    fun getCurrentIfProgram(): ProgramFragment? = currentFragment?.takeIf { it is ProgramFragment } as ProgramFragment
+    fun getCurrentIfProgram(): ProgramFragment? = currentFragment?.takeIf { it is ProgramFragment } as? ProgramFragment
 
     fun currentScreenName() = currentScreen.value?.name
 
