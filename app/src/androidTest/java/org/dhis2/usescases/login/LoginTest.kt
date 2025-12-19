@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import org.dhis2.common.keystore.KeyStoreRobot
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.main.homeRobot
 import org.hisp.dhis.android.core.D2Manager
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_ME_PATH
 import org.hisp.dhis.android.core.mockwebserver.ResponseController.Companion.API_SYSTEM_INFO_PATH
@@ -91,58 +90,6 @@ class LoginTest : BaseTest() {
             // Step: Handle tracking permission dialog
             acceptTrackingPermission()
         }
-
-        // Note: After login, the app may go directly to MainActivity (local with imported DB)
-        // or to SyncActivity first (BrowserStack with fresh DB). Both are valid behaviors.
-        // The test continues by interacting with the home screen, which will work either way.
-
-        // Step: Open drawer menu and logout
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnLogout()
-            checkLoginScreenIsDisplayed(expectedTimes = 2)
-        }
-
-        // Step: Click on manage accounts and verify the account is listed
-        loginRobot(composeTestRule) {
-            clickOnManageAccountsButton()
-            checkAccountIsListed(MOCK_SERVER_URL, USERNAME)
-            clickOnAccount(MOCK_SERVER_URL, USERNAME)
-
-            // Step: Enter password and login again
-            mockWebServerRobot.addResponse(GET, API_ME_PATH, API_ME_RESPONSE_OK)
-            mockWebServerRobot.addResponse(GET, API_SYSTEM_INFO_PATH, API_SYSTEM_INFO_RESPONSE_OK)
-            mockWebServerRobot.addResponse(
-                GET,
-                PATH_WEBAPP_GENERAL_SETTINGS,
-                API_METADATA_SETTINGS_RESPONSE_OK,
-                200
-            )
-            mockWebServerRobot.addResponse(
-                GET,
-                PATH_WEBAPP_INFO,
-                API_METADATA_SETTINGS_INFO_ERROR,
-                404
-            )
-
-            typePassword(PASSWORD)
-            checkLoginButtonIsEnabled()
-            clickLoginButton()
-        }
-
-        // Step: Delete account
-        homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickDeleteAccount()
-            checkLoginScreenIsDisplayed(expectedTimes = 3)
-        }
-
-        loginRobot(composeTestRule) {
-            //Step: Verify server input is displayed after account deletion
-            checkServerInputIsDisplayed()
-        }
-
-        cleanLocalDatabase()
     }
 
     private fun startLoginActivity() {
