@@ -667,9 +667,9 @@
     <string name="dataset_overview">Деталі</string>
     <string name="dataset_comments">Коментарі</string>
     <string name="saved">Збережено!</string>
-    <string name="run_validation_rules">Хочете перевірити якість даних?</string>
+    <string name="run_validation_rules">Хочете перевірити якість даних\?</string>
     <string name="validation_success_title">Все виглядає добре!</string>
-    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних?</string>
+    <string name="mark_dataset_complete">Ви бажаєте також завершити набір даних\?</string>
     <string name="dataset_completed">Позначити як виконане</string>
     <string name="name">Ім\'я</string>
     <string name="formula">Формула</string>

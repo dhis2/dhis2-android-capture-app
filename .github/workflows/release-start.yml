@@ -35,7 +35,7 @@ jobs:
 
     steps:
     - name: Check out code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
@@ -57,7 +57,7 @@ jobs:
 
       # Uses the GH API to create the signed commit.
     - name: Commit and Push Changes to auxiliary branch
-      uses: flex-development/gh-commit@1.0.0
+      uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
       with:
         message: 'Update version to ${{ env.RELEASE_VERSION }}'
         ref: ${{ env.TEMP_RELEASE_BRANCH }}
@@ -83,7 +83,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
 
@@ -104,7 +104,7 @@ jobs:
         run: python scripts/updateDependencyVersions.py ${{ env.DEVELOPMENT_SDK_VERSION }} ${{ env.DEVELOPMENT_DESIGN_VERSION }}
 
       - name: Commit and Push Changes
-        uses: flex-development/gh-commit@1.0.0
+        uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
         with:
           message: 'Update version to ${{ env.DEVELOPMENT_VERSION }}'
           ref: ${{ env.DEVELOPMENT_BRANCH }}

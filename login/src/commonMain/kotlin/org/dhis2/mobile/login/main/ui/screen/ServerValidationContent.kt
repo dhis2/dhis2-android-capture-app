@@ -77,6 +77,7 @@ internal fun ServerValidationContent(
         Text(
             text = stringResource(Res.string.server_verification_title),
             style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
         )
         Spacer(Modifier.size(Spacing.Spacing16))
 

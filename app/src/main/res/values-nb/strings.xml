@@ -638,9 +638,9 @@
     <string name="dataset_overview">Detaljer</string>
     <string name="dataset_comments">Kommentarer</string>
     <string name="saved">Lagret!</string>
-    <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
+    <string name="run_validation_rules">Vil du sjekke datakvaliteten\?</string>
     <string name="validation_success_title">Alt ser bra ut</string>
-    <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
+    <string name="mark_dataset_complete">Vil du også fullføre datasettet\?</string>
     <string name="dataset_completed">Merk som fullført</string>
     <string name="name">Navn</string>
     <string name="formula">Formel</string>

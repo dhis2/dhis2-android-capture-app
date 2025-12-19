@@ -654,7 +654,7 @@ class TEIDataFragment :
             val intent = Intent(activity, EventInitialActivity::class.java)
             val bundle = Bundle()
 
-            bundle.putString(Constants.PROGRAM_UID, model.currentProgram().uid())
+            bundle.putString(Constants.PROGRAM_UID, model.currentProgram()?.uid())
             bundle.putString(
                 Constants.TRACKED_ENTITY_INSTANCE,
                 model.trackedEntityInstance.uid(),

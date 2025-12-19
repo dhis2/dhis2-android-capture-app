@@ -97,7 +97,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.FABStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicator
 import org.hisp.dhis.mobile.ui.designsystem.component.ProgressIndicatorType
@@ -863,21 +862,16 @@ private fun WarningInfoBar(message: String?) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         InfoBar(
-            infoBarData =
-                InfoBarData(
-                    text = message ?: "",
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.ErrorOutline,
-                            contentDescription = "warning",
-                            tint = AdditionalInfoItemColor.WARNING.color,
-                        )
-                    },
-                    color = AdditionalInfoItemColor.WARNING.color,
-                    backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
-                    actionText = null,
-                    onClick = {},
-                ),
+            text = message ?: "",
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = "warning",
+                    tint = AdditionalInfoItemColor.WARNING.color,
+                )
+            },
+            textColor = AdditionalInfoItemColor.WARNING.color,
+            backgroundColor = AdditionalInfoItemColor.WARNING.color.copy(alpha = 0.1f),
         )
     }
 }

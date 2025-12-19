@@ -650,9 +650,9 @@
     <string name="dataset_overview">ລາຍລະອຽດ</string>
     <string name="dataset_comments">ຄຳເຫັນ</string>
     <string name="saved">ບັນທຶກແລ້ວ!</string>
-    <string name="run_validation_rules">ທ່ານຕ້ອງການກວດສອບຄຸນນະພາບຂໍ້ມູນນີ້ບໍ?</string>
+    <string name="run_validation_rules">ທ່ານຕ້ອງການກວດສອບຄຸນນະພາບຂໍ້ມູນນີ້ບໍ\?</string>
     <string name="validation_success_title">ທຸກຢ່າງຮຽບຮ້ອຍດີ</string>
-    <string name="mark_dataset_complete">ທ່ານຕ້ອງການເຮັດຊຸດຂໍ້ມູນໃຫ້ຄົບຖ້ວນບໍ?</string>
+    <string name="mark_dataset_complete">ທ່ານຕ້ອງການເຮັດຊຸດຂໍ້ມູນໃຫ້ຄົບຖ້ວນບໍ\?</string>
     <string name="dataset_completed">ເຮັດໃຫ້ສຳເລັດແລ້ວ</string>
     <string name="name">ຊື່</string>
     <string name="formula">Formula</string>

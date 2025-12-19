@@ -27,10 +27,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
 import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
 import org.dhis2.form.extensions.supportingText
+import org.dhis2.form.model.EnrollmentDetail
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
@@ -1111,6 +1113,8 @@ private fun ProvideOrgUnitInput(
         mutableStateOf(fieldUiModel.displayName)
     }
 
+    val showResetButton = (fieldUiModel.uid != EnrollmentDetail.ORG_UNIT_UID.name && fieldUiModel.uid != EVENT_ORG_UNIT_UID)
+
     InputOrgUnit(
         modifier = modifier.fillMaxWidth(),
         inputStyle = inputStyle,
@@ -1140,6 +1144,7 @@ private fun ProvideOrgUnitInput(
                 ),
             )
         },
+        showResetButton = showResetButton,
     )
 }
 

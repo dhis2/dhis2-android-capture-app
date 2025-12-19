@@ -17,8 +17,6 @@ import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.data.FormFileProvider.init
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.mobile.login.authentication.TwoFASettingsActivity
-import org.dhis2.ui.dialogs.alert.AlertDialog
-import org.dhis2.ui.model.ButtonUiModel
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.reservedValue.ReservedValueActivity
 import org.dhis2.usescases.settings.models.ErrorViewModel
@@ -38,7 +36,6 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
     @JvmField
     @Inject
     var colorUtils: ColorUtils? = null
-    private var deleteLocalDataDialog: AlertDialog? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -79,19 +76,11 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
                             )
                         },
                         showErrorLogs = ::showSyncErrors,
-                        displayDeleteLocalDataWarning = ::deleteLocalData,
                         showShareActions = ::shareDB,
                         display2FASettingsScreen = ::display2FASettingsScreen,
                     )
                 }
             }
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (deleteLocalDataDialog != null && deleteLocalDataDialog!!.isVisible) {
-            deleteLocalDataDialog!!.dismiss()
         }
     }
 
@@ -105,33 +94,6 @@ class SyncManagerFragment : FragmentGlobalAbstract() {
     override fun onDestroy() {
         super.onDestroy()
         presenter.closeChannel()
-    }
-
-    private fun deleteLocalData() {
-        deleteLocalDataDialog =
-            AlertDialog(
-                labelText = getString(R.string.delete_local_data),
-                descriptionText = getString(R.string.delete_local_data_message),
-                spanText = null,
-                iconResource = null,
-                animationRes = R.raw.warning,
-                dismissButton =
-                    ButtonUiModel(
-                        getString(R.string.cancel),
-                        true,
-                    ) { null },
-                confirmButton =
-                    ButtonUiModel(
-                        getString(R.string.action_accept),
-                        true,
-                    ) {
-                        if (deleteLocalDataDialog!!.isAdded) {
-                            presenter.deleteLocalData()
-                        }
-                        null
-                    },
-            )
-        deleteLocalDataDialog!!.show(requireActivity().supportFragmentManager)
     }
 
     private fun showSyncErrors(data: List<ErrorViewModel>) {

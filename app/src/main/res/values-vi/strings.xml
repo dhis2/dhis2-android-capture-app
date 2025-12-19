@@ -674,9 +674,9 @@
     <string name="dataset_overview">Chi tiết</string>
     <string name="dataset_comments">Ghi chú</string>
     <string name="saved">Đã lưu!</string>
-    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không?</string>
+    <string name="run_validation_rules">Ban có muốn kiểm tra chất lượng dữ liệu không\?</string>
     <string name="validation_success_title">Mọi thứ đều ổn!</string>
-    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không?</string>
+    <string name="mark_dataset_complete">Bạn cũng muốn hoàn tất biểu nhập phải không\?</string>
     <string name="dataset_completed">Đánh dấu đã hoàn tất</string>
     <string name="name">Tên</string>
     <string name="formula">Công thức</string>

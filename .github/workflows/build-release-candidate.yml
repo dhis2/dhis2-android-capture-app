@@ -21,7 +21,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Runs a single command using the runners shell
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     # Set Repository Name As Env Variable
     - name: Set repository name as env variable
@@ -39,7 +39,7 @@ jobs:
 
     - name: Decode Keystore
       id: decode_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
@@ -55,7 +55,7 @@ jobs:
 
     - name: Decode Training Keystore
       id: decode_training_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_training_keystore.jks'
         encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
@@ -72,25 +72,25 @@ jobs:
     - name: Read version name from file
       working-directory: ./gradle
       id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+      run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> $GITHUB_OUTPUT
 
     # Upload DhisRelease APK
     - name: Upload DhisRelease APK
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: ${{ env.repository_name }} - DhisRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/release/dhis2-v${{ steps.read-version.outputs.vName }}.apk
 
     # Upload DhisPlayServicesRelease APK
     - name: Upload DhisPlayServicesRelease APK
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: ${{ env.repository_name }} - DhisPlayServicesRelease APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2PlayServices/release/dhis2-v${{ steps.read-version.outputs.vName }}-googlePlay.apk
 
       # Upload Training Release APK
     - name: Upload Training Release APK
-      uses: actions/upload-artifact@v4.6.2
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: ${{ env.repository_name }} - Training Release APK
         path: ${{ env.main_project_module }}/build/outputs/apk/dhis2Training/release/dhis2-v${{ steps.read-version.outputs.vName }}-training.apk

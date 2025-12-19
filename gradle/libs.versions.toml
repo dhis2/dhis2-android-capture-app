@@ -5,13 +5,13 @@ navigationCompose = "2.9.1"
 sdk = "36"
 minSdk = "21"
 vCode = "150"
-vName = "3.3.0.1"
-gradle = "8.13.0"
-kotlin = '2.2.20'
+vName = "3.3.1-Dev"
+gradle = "8.13.2"
+kotlin = '2.2.21'
 dagger = '2.57.2'
 jacoco = '0.8.14'
-designSystem = "0.6.0"
-dhis2sdk = "1.13.0.1"
+designSystem = "0.6.1-SNAPSHOT"
+dhis2sdk = "1.13.1-SNAPSHOT"
 ruleEngine = "3.3.11"
 expressionParser = "1.2.1"
 appcompat = "1.7.1"
@@ -22,7 +22,7 @@ multidex = "2.0.1"
 constraintlayout = "2.2.1"
 lifecycle = "2.9.4"
 work = "2.10.5"
-exif = "1.4.1"
+exif = "1.4.2"
 corektx = "1.17.0"
 fragmentktx = "1.8.9"
 recyclerview = "1.4.0"
@@ -41,7 +41,6 @@ fancyshowcase = "1.4.0"
 lottie = "6.6.10"
 rxjava = "2.2.21"
 rxandroid = "2.1.1"
-rxbindings = "2.2.0"
 maplibremarkerview = "3.0.2"
 maplibreannotation = "3.0.2"
 matomo = "4.4"
@@ -49,8 +48,7 @@ sentry = "8.23.0"
 timber = "5.0.1"
 rxlint = "1.7.8"
 crashactivity = "2.4.0"
-zxing = "3.5.3"
-zxingbarcode = "1.9.8"
+zxing = "3.5.4"
 zxingandroid = "4.3.0"
 root = "0.1.1"
 openid = "0.11.1"
@@ -85,7 +83,7 @@ material3WindowSize = "1.4.0"
 material3WindowSizeCompose = "1.8.2"
 material3AdaptiveAndroid = "1.1.0"
 koin = "4.1.1"
-junitJupiter = "6.0.0"
+junitJupiter = "6.0.1"
 ktxml = "1.0.0"
 atomicfu = "0.29.0"
 playservicesauth = "21.4.0"
@@ -155,7 +153,6 @@ dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" 
 dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava" }
 rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
-rx-binding-compat = { group = "com.jakewharton.rxbinding2", name = "rxbinding-appcompat-v7", version.ref = "rxbindings" }
 rx-relay = { group = "com.jakewharton.rxrelay2", name = "rxrelay", version.ref = "rxrelay" }
 github-pinlock = { group = "com.github.aritraroy", name = "PinLockView", version.ref = "pinlock" }
 github-fancyshowcase = { group = "com.github.faruktoptas", name = "FancyShowCaseView", version.ref = "fancyshowcase" }
@@ -163,7 +160,6 @@ github-glide = { group = "com.github.bumptech.glide", name = "glide", version.re
 github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 github-charts = { group = "com.github.PhilJay", name = "MPAndroidChart", version = "v3.1.0" }
 barcodeScanner-zxing = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
-barcodeScanner-scanner = { group = "me.dm7.barcodescanner", name = "zxing", version.ref = "zxingbarcode" }
 barcodeScanner-zxing-android = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingandroid" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }

@@ -2,9 +2,8 @@ package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.ui.graphics.Color
 import org.dhis2.ui.R
-import org.dhis2.ui.theme.colorPrimary
-import org.dhis2.ui.theme.warningColor
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 sealed class DialogButtonStyle(
     open val textLabel: String? = null,
@@ -33,7 +32,7 @@ sealed class DialogButtonStyle(
         override val textLabel: String,
     ) : DialogButtonStyle(
             textLabel = textLabel,
-            colorResource = colorPrimary,
+            colorResource = SurfaceColor.Primary,
         )
 
     data class SecondaryButton(
@@ -41,7 +40,7 @@ sealed class DialogButtonStyle(
         override val buttonStyle: ButtonStyle = ButtonStyle.TEXT,
     ) : DialogButtonStyle(
             textResource = textResource,
-            colorResource = colorPrimary,
+            colorResource = SurfaceColor.Primary,
             buttonStyle = ButtonStyle.TEXT,
         )
 
@@ -55,14 +54,14 @@ sealed class DialogButtonStyle(
     class DiscardButton :
         DialogButtonStyle(
             textResource = R.string.discard_changes,
-            colorResource = warningColor,
+            colorResource = SurfaceColor.Warning,
         )
 
     class NeutralButton(
         override val textResource: Int,
     ) : DialogButtonStyle(
             textResource = textResource,
-            colorResource = colorPrimary,
+            colorResource = SurfaceColor.Primary,
             backgroundColor = Color.White,
         )
 }

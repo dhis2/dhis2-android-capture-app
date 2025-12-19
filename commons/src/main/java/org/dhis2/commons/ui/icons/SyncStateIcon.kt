@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.core.graphics.toColorInt
 import org.dhis2.commons.R
-import org.dhis2.ui.icons.SyncingIcon
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 

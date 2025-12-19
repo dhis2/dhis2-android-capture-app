@@ -430,7 +430,9 @@ class TEIDataPresenter(
             }
         } else {
             when (eventCreationType) {
-                EventCreationType.REFERAL -> {
+                EventCreationType.REFERAL,
+                EventCreationType.ADDNEW,
+                -> {
                     createEventInEnrollment(eventCreationType)
                 }
 

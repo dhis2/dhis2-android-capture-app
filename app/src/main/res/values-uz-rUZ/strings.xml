@@ -617,9 +617,9 @@
     <string name="dataset_overview">Тафсилотлари</string>
     <string name="dataset_comments">Izohlar</string>
     <string name="saved">Saqlandi!</string>
-    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi?</string>
+    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi\?</string>
     <string name="validation_success_title">Koʼrinishidan hammasi yaxshi!</string>
-    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi?</string>
+    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi\?</string>
     <string name="dataset_completed">Tugallangan deb belgilang</string>
     <string name="name">Исми</string>
     <string name="formula">Formula</string>
