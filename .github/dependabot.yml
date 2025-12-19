@@ -20,6 +20,8 @@ updates:
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
       - dependency-name: "org.hisp.dhis:android-core"
+      - dependency-name: "org.hisp.dhis.lib.expression:expression-parser-jvm"
+      - dependency-name: "org.hisp.dhis.rules:rule-engine-jvm"
     groups:
       gradle-updates:
         patterns:
