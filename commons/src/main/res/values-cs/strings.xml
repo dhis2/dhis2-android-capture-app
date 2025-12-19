@@ -273,19 +273,44 @@
     <string name="file_downloaded">Soubor úspěšně stažen</string>
 
 
+    <string name="dialog_layer_enrollment_coordinates_v2">Zobrazit souřadnice %s </string>
     <string name="enrollment_data_section_label_V2">%s data</string>
+    <string name="enrollment_coordinates_V2">%s souřadnice</string>
     <string name="enrollment_date_V2">%s datum</string>
     <string name="enrollment_status">%s stav</string>
     <string name="break_glass_dialog_description_V2">V tomto chráněném programu musíte uvést důvod kontroly na %s. Veškerá činnost bude zaznamenána.</string>
+    <string name="break_glass_reason_V2">Důvod pro kontrolu %s</string>
+    <string name="edition_enrollment_is_no_open_V2">Tyto data nelze upravovat, protože %s je dokončen nebo zrušen</string>
     <string name="enrollment_completed_V2">%s dokončeno</string>
     <string name="enrollment_cancelled_V2">%s zrušeno</string>
     <string name="new_enrollment">Nový %s</string>
     <string name="enrolling_ou">Zapsáno v:</string>
+    <string name="program_selector_V2">Program %s</string>
+    <string name="more_enrollments">Více zápisů</string>
+    <string name="remove_from">Odebrat z</string>
+    <string name="refresh_this_record">Obnovit tento záznam</string>
+    <string name="view_timeline">Zobrazit časovou osu</string>
+    <string name="group_by_stage">Skupina podle etapy</string>
+
+
     <string name="event_label_completed">%s dokončeno</string>
+    <string name="event_label_created">%s vytvořeno</string>
     <string name="new_event_label">Nový %s</string>
     <string name="event_label_date">%s datum</string>
     <string name="delete_event_label">Smazat %s</string>
+    <string name="event_label_was_deleted">%s úspěšně smazáno</string>
+    <string name="delete_event_label_error">Tato stránka %s ještě nebyla vytvořena</string>
+    <string name="event_label_was_skipped">Stránka %s byla označena jako vynechaná</string>
+    <string name="confirm_delete_event_label">Opravdu chcete tuto stránku %s odstranit?</string>
+    <string name="event_label_updated">%s aktualizováno</string>
+    <string name="event_label_date_in_future_message">Tato stránka %s nemůže mít datum v budoucnosti. Změňte ho prosím.</string>
+    <string name="failed_insert_event_label">Nepodařilo se vložit nový %s</string>
     <string name="week_period_span_default_label">Týden %d %s až %s</string>
+    <string name="group_event_label_by_stage">Skupina %s podle etapy</string>
+    <string name="show_event_label_timeline">Zobrazit časovou osu %s </string>
+    <string name="empty_tei_event_label_add">Nejsou zaregistrovány žádné stránky %s, kliknutím na tlačítko \"+\" přidáte novou.</string>
+    <string name="empty_tei_event_label_no_add">Nejsou registrovány žádné stránky %s.</string>
+    <string name="enrollment_date_edition_warning_event_label">Na stránkách %s jsou plánovány akce, které nebudou přeplánovány.</string>
     <string name="enrollment_reopen">znovu otevřít</string>
 
     <string name="sync_retry">Opakování synchronizace</string>
@@ -295,8 +320,12 @@
     <string name="period_weekly_title">Týden</string>
     <string name="period_biweekly_title">Dvoutýdenní</string>
     <string name="period_monthly_title">Měsíc</string>
+    <string name="period_bi_monthly_title">Za dva měsíce</string>
     <string name="period_quarter_title">Čtvrtletí</string>
+    <string name="period_six_monthly_title">Za šest měsíců</string>
     <string name="period_yearly_title">Rok</string>
+    <string name="period_financial_year_title">Finanční rok</string>
+    <string name="no_periods">Žádné období k dispozici\n</string>
     <string name="database_import_failed">Import databáze se nezdařil</string>
     <string name="invalid_file">Neplatný soubor</string>
     <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>

@@ -91,33 +91,19 @@
     <string name="mandatory_transaction_date_selection">
         必须填写“分发给”字段才能继续
     </string>
-    <string name="previous_page_lose_data_warning">
-        您确定要返回上一屏幕吗？
-        如果您决定继续，您将丢失刚刚输入的数据。
-    </string>
+    <string name="previous_page_lose_data_warning">\n        您确定要返回上一屏幕吗？\n        如果您决定继续，您将丢失刚刚输入的数据。\n    </string>
     <string name="transaction_completed">
         交易成功完成！
     </string>
     <string name="transaction_cancelled">
         交易取消成功！
     </string>
-    <string name="force_sync_confirmation_message">
-        您确定要强制同步吗？
-    </string>
+    <string name="force_sync_confirmation_message">\n        您确定要强制同步吗？\n    </string>
     <string name="logout_confirmation_message">您确定要退出吗？</string>
 
-    <string name="remove_correction_item_confirmation_message">
-        您确定要永久删除更正“%1$s”\的条目吗？
-        此操作无法撤消。
-    </string>
-    <string name="remove_distribution_item_confirmation_message">
-        您确定要永久删除“%1$s”\ 的分发条目吗？
-        此操作无法撤消。
-    </string>
-    <string name="remove_discard_item_confirmation_message">
-        您确定要永久删除“%1$s”\的丢弃条目吗？
-        此操作无法撤消。
-    </string>
+    <string name="remove_correction_item_confirmation_message">\n        您确定要永久删除更正“%1$s”\的条目吗？\n        此操作无法撤消。\n    </string>
+    <string name="remove_distribution_item_confirmation_message">\n        您确定要永久删除“%1$s”\ 的分发条目吗？\n        此操作无法撤消。\n    </string>
+    <string name="remove_discard_item_confirmation_message">\n        您确定要永久删除“%1$s”\的丢弃条目吗？\n        此操作无法撤消。\n    </string>
 
     <plurals name="items_found">
         <item quantity="other">%d 项目</item>
@@ -173,10 +159,7 @@
     <string name="select_language">选择您想要的语言</string>
 
     <string name="restart_later">稍后重启</string>
-    <string name="confirm_app_restart_message">
-        需要重新启动应用程序才能使更改生效，但是，
-        任何未保存的更改都将丢失。\n\n您要继续重启\吗？
-    </string>
+    <string name="confirm_app_restart_message">\n        需要重新启动应用程序才能使更改生效，但是，\n        任何未保存的更改都将丢失。\n\n您要继续重启\吗？\n    </string>
     <string name="language_change_dialog_title">确认重启</string>
     <string name="scan_canceled">扫描已取消！</string>
     <string name="logout_error_message">

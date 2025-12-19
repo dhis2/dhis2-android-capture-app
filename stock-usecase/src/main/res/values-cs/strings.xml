@@ -88,36 +88,23 @@
     <string name="mandatory_facility_selection">
         Než budete moci pokračovat, musí být vyplněno pole zařízení
     </string>
+    <string name="mandatory_distributed_to_selection">\n        Před pokračováním je třeba vyplnit pole \"Distribuováno do\".</string>
     <string name="mandatory_transaction_date_selection">
         Než budete moci pokračovat, musí být vyplněno pole „Distribuováno do“.
     </string>
-    <string name="previous_page_lose_data_warning">
-        Opravdu se chcete vrátit na předchozí obrazovku?
-        Pokud se rozhodnete pokračovat, ztratíte právě zadaná data.
-    </string>
+    <string name="previous_page_lose_data_warning">\n        Opravdu se chcete vrátit na předchozí obrazovku?\n        Pokud se rozhodnete pokračovat, ztratíte právě zadané údaje.\n    </string>
     <string name="transaction_completed">
         Transakce byla úspěšně dokončena!
     </string>
     <string name="transaction_cancelled">
         Transakce byla úspěšně zrušena!
     </string>
-    <string name="force_sync_confirmation_message">
-        Opravdu chcete vynutit synchronizaci?
-    </string>
+    <string name="force_sync_confirmation_message">\n        Opravdu chcete vynutit synchronizaci?\n    </string>
     <string name="logout_confirmation_message">Opravdu se chcete odhlásit?</string>
 
-    <string name="remove_correction_item_confirmation_message">
-        Opravdu chcete trvale smazat záznam pro opravu \"%1$s\"?
-        Tuto akci nelze vrátit zpět.
-    </string>
-    <string name="remove_distribution_item_confirmation_message">
-        Opravdu chcete trvale smazat záznam pro distribuci \"%1$s\"?
-        Tuto akci nelze vrátit zpět.
-    </string>
-    <string name="remove_discard_item_confirmation_message">
-        Opravdu chcete trvale smazat záznam pro zahození \"%1$s\"?
-        Tuto akci nelze vrátit zpět.
-    </string>
+    <string name="remove_correction_item_confirmation_message">\n        Opravdu chcete trvale odstranit záznam pro opravu \"%1$s\"?\n        Tuto akci nelze vzít zpět.\n    </string>
+    <string name="remove_distribution_item_confirmation_message">\n        Opravdu chcete trvale odstranit položku pro distribuci \"%1$s\"?\n        Tuto akci nelze vzít zpět.\n    </string>
+    <string name="remove_discard_item_confirmation_message">\n        Opravdu chcete trvale odstranit položku pro vyřazení \"%1$s\"?\n        Tuto akci nelze vrátit zpět.\n    </string>
 
     <plurals name="items_found">
         <item quantity="one">%d položka</item>
@@ -178,10 +165,7 @@
     <string name="select_language">Vyberte požadovaný jazyk</string>
 
     <string name="restart_later">Restartovat později</string>
-    <string name="confirm_app_restart_message">
-        Aby se změny projevily, je třeba aplikaci restartovat,
-        všechny neuložené změny budou ztraceny.\n\nChcete pokračovat v restartu?
-    </string>
+    <string name="confirm_app_restart_message">\n        Aby se však změny projevily, je třeba aplikaci restartovat,\n        všechny neuložené změny budou ztraceny.\n\nChcete pokračovat v restartu?\n    </string>
     <string name="language_change_dialog_title">Potvrdit restart</string>
     <string name="scan_canceled">Skenování zrušeno!</string>
     <string name="logout_error_message">

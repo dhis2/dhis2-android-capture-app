@@ -345,4 +345,6 @@
     <string name="period_yearly_title">Año</string>
     <string name="period_financial_year_title">Año fiscal</string>
     <string name="no_periods">No hay periodos disponibles\n</string>
+    <string name="database_import_failed">Importación de la base de datos fallida</string>
+    <string name="invalid_file">Archivo no válido</string>
     </resources>

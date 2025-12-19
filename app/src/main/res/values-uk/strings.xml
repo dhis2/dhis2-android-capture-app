@@ -94,6 +94,7 @@
 
     <string name="event_open">Відкрити</string>
     <string name="event_not_completed">Не завершено</string>
+    <string name="event_completed">Подія завершена</string>
     <string name="read_only">Тільки читати</string>
     <string name="finish_and_complete">Закінчити і завершити</string>
     <string name="completed">Завершено</string>
@@ -893,4 +894,5 @@
     <string name="syncing_something">Синхронізація %s…</string>
     <string name="show_description">Показати опис</string>
     <string name="hide_description">Приховати опис</string>
+    <string name="transfer">Перевести</string>
     </resources>
