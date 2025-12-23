@@ -141,7 +141,7 @@ class TEICardMapper(
         return attributeList.also { list ->
             if (
                 !searchTEIModel.ownerOrgUnit.isNullOrEmpty() &&
-                !searchTEIModel.ownerOrgUnit.equals(searchTEIModel.enrolledOrgUnit)
+                searchTEIModel.ownerOrgUnit != searchTEIModel.enrolledOrgUnit
             ) {
                 addOwnedBy(
                     list = list,
