@@ -827,7 +827,8 @@ public class SearchRepositoryImpl implements SearchRepository {
             if (selectedProgram != null) {
                 setRelationshipsInfo(searchTei, selectedProgram);
             }
-            if (!searchItem.getProgramOwners().get(0).getOwnerOrgUnit().equals(searchItem.getOrganisationUnit())) {
+            if (!searchItem.getProgramOwners().isEmpty() &&
+                !searchItem.getProgramOwners().get(0).getOwnerOrgUnit().equals(searchItem.getOrganisationUnit())) {
                 searchTei.setOwnerOrgUnit(orgUnitName(searchItem.getProgramOwners().get(0).getOwnerOrgUnit()));
             }
             if (searchTei.getSelectedEnrollment() != null) {
@@ -838,11 +839,14 @@ public class SearchRepositoryImpl implements SearchRepository {
             searchTei.setProfilePicture(profilePictureProvider.invoke(dbTei, selectedProgram != null ? selectedProgram.uid() : null));
         } else {
             searchTei.setTei(teiFromItem);
-            if (searchItem.getProgramOwners().get(0).getOwnerOrgUnit().equals(searchItem.getOrganisationUnit())) {
+            if (!searchItem.getProgramOwners().isEmpty() &&
+                searchItem.getProgramOwners().get(0).getOwnerOrgUnit().equals(searchItem.getOrganisationUnit())) {
                 searchTei.setEnrolledOrgUnit(orgUnitName(searchTei.getTei().organisationUnit()));
             } else {
                 searchTei.setEnrolledOrgUnit(orgUnitName(searchTei.getTei().organisationUnit()));
-                searchTei.setOwnerOrgUnit(orgUnitName(searchItem.getProgramOwners().get(0).getOwnerOrgUnit()));
+                if (!searchItem.getProgramOwners().isEmpty()) {
+                    searchTei.setOwnerOrgUnit(orgUnitName(searchItem.getProgramOwners().get(0).getOwnerOrgUnit()));
+                }
             }
 
             for (TrackedEntitySearchItemAttribute attribute : searchItem.getAttributeValues()) {
