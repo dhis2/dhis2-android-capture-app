@@ -160,7 +160,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
         create("dhis2Training") {
-            signingConfig = signingConfigs.getByName("training")
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
@@ -321,16 +321,30 @@ dependencies {
 sentry {
     org.set("dhis2")
     projectName.set("dhis2-android-capture")
-    authToken.set(System.getenv("SENTRY_AUTH_TOKEN"))
 
-    // Enable ProGuard/R8 mapping upload for deobfuscation, maps are available in the build folder
-    includeProguardMapping.set(true)
-    //Upload the mapping on every release build
-    autoUploadProguardMapping.set(true)
+    val sentryAuthToken = System.getenv("SENTRY_AUTH_TOKEN")
+    if (!sentryAuthToken.isNullOrBlank()) {
+        authToken.set(sentryAuthToken)
+
+        // Enable ProGuard/R8 mapping upload for deobfuscation, maps are available in the build folder
+        includeProguardMapping.set(true)
+        // Upload the mapping on every release build
+        autoUploadProguardMapping.set(true)
+    } else {
+        // When no auth token is available (e.g., local development), disable uploads
+        includeProguardMapping.set(false)
+        autoUploadProguardMapping.set(false)
+    }
 
     // Disable native symbols upload (not needed for this project)
     uploadNativeSymbols.set(false)
     includeNativeSources.set(false)
+
+    // Enable auto-installation of Sentry components (sentry-android SDK and okhttp, timber, fragment and compose integrations).
+    autoInstallation {
+        enabled.set(true)
+        sentryVersion.set(libs.versions.sentry)
+    }
 
     // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
     // This enables source context, allowing you to see your source
