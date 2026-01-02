@@ -228,7 +228,8 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnSeeDetails() {
-        onView(withId(R.id.editButton)).perform(click())
+        waitForView(withId(R.id.editButton))
+            .perform(click())
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {

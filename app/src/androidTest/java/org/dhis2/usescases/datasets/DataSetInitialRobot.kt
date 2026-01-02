@@ -50,6 +50,7 @@ internal class DataSetInitialRobot(
     }
 
     fun chooseDate(date: String) {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("DATE_PICKER").assertIsDisplayed()
         composeTestRule.onNodeWithContentDescription(
             label = "text",
@@ -61,10 +62,10 @@ internal class DataSetInitialRobot(
     }
 
     fun checkActionInputIsNotDisplayed() {
-        onView(withId(R.id.actionButton)).check(matches(not(isDisplayed())))
+        waitForView(withId(R.id.actionButton)).check(matches(not(isDisplayed())))
     }
 
     fun checkActionInputIsDisplayed() {
-        onView(withId(R.id.actionButton)).check(matches(isDisplayed()))
+        waitForView(withId(R.id.actionButton)).check(matches(isDisplayed()))
     }
 }
