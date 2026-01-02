@@ -24,7 +24,6 @@ import org.dhis2.usescases.teidashboard.robot.noteRobot
 import org.dhis2.usescases.teidashboard.robot.teiDashboardRobot
 import org.hisp.dhis.android.core.mockwebserver.ResponseController
 import org.junit.Assume
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -313,7 +312,6 @@ class TeiDashboardTest : BaseTest() {
         }
     }
 
-    @Ignore("Form Idling resource become idle")
     @Test
     fun shouldEnrollToOtherProgramWhenClickOnProgramEnrollments() {
         enableIntents()
