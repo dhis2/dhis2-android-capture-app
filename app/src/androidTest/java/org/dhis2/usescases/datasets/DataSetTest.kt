@@ -24,10 +24,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 
 @RunWith(AndroidJUnit4::class)
@@ -943,26 +941,14 @@ class DataSetTest : BaseTest() {
                 clickOnInputCatCombo()
                 selectCatCombo(catCombo)
             }
-        }
-
-        dataSetInitialRobot (composeTestRule) {
             checkActionInputIsNotDisplayed()
             clickOnInputOrgUnit()
-        }
-
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
-
-        dataSetInitialRobot(composeTestRule) {
+            orgUnitSelectorRobot(composeTestRule) {
+                selectTreeOrgUnit(orgUnit)
+            }
             checkActionInputIsNotDisplayed()
             clickOnInputPeriod()
-            composeTestRule.waitForIdle()
             chooseDate(date)
-        }
-
-
-        dataSetInitialRobot(composeTestRule) {
             checkActionInputIsDisplayed()
             clickOnActionButton()
         }
