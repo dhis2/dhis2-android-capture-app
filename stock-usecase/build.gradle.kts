@@ -89,4 +89,5 @@ dependencies {
     testImplementation(project(":dhis_android_analytics"))
     coreLibraryDesugaring(libs.bundles.stock.core)
     testImplementation(libs.bundles.stock.test)
+    implementation(libs.androidx.compose.constraintlayout)
 }
