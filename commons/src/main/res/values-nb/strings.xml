@@ -154,4 +154,5 @@
     <string name="period_monthly_title">Måned</string>
     <string name="period_quarter_title">Kvartal</string>
     <string name="period_yearly_title">År</string>
-    </resources>
+    <string name="action_clear_all">Fjern alt</string>
+</resources>

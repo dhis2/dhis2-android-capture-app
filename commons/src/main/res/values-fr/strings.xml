@@ -220,4 +220,5 @@
     <string name="period_monthly_title">Mois</string>
     <string name="period_quarter_title">Trimestre</string>
     <string name="period_yearly_title">Année</string>
-    </resources>
+    <string name="action_clear_all">Tout effacer</string>
+</resources>
