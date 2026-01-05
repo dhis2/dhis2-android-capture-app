@@ -78,4 +78,5 @@
     <string name="remove">Ta bort</string>
     <string name="period_daily_title">Dagligen</string>
     <string name="period_yearly_title">År</string>
-    </resources>
+    <string name="action_clear_all">Rensa alla</string>
+</resources>

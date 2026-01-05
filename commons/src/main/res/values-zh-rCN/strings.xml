@@ -329,4 +329,5 @@
     <string name="period_yearly_title">年</string>
     <string name="period_financial_year_title">财政年度</string>
     <string name="no_periods">无可用时段</string>
-    </resources>
+    <string name="action_clear_all">全清除</string>
+</resources>

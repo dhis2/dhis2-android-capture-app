@@ -146,7 +146,7 @@ private fun SquareWithNumber(number: Int) {
             text = "+$number",
             color = "#6f6f6f".toColor(),
             textAlign = TextAlign.Center,
-            fontFamily = FontFamily(Font(org.dhis2.ui.R.font.rubik_regular)),
+            fontFamily = FontFamily(Font(R.font.rubik_regular)),
         )
     }
 }
