@@ -160,7 +160,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
         create("dhis2Training") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("training")
         }
     }
 
