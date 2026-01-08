@@ -307,12 +307,10 @@ class DataSetTest : BaseTest() {
         val threeDaysFromNowStr = threeDaysFromNow.format(formatter)
         val fiveDaysAgoStr = fiveDaysAgo.format(formatter)
 
-        printCurrentState("Enter data set")
         enterDataSetStep(
             uid = dataSetUid,
             name = dataSetName,
         )
-        printCurrentState("Create Daily Period")
         createDailyPeriodDataSetInstanceStep(
             date = fiveDaysAgoStr,
             orgUnit = orgUnit,
@@ -321,7 +319,6 @@ class DataSetTest : BaseTest() {
 
         checkTableIsNotEditable()
 
-        printCurrentState("Create Daily Period 2")
         createDailyPeriodDataSetInstanceStep(
             date = threeDaysFromNowStr,
             orgUnit = orgUnit,
@@ -340,7 +337,6 @@ class DataSetTest : BaseTest() {
             tapOnCompleteButton()
         }
 
-        printCurrentState("Reopen data set")
         dataSetDetailRobot(composeTestRule){
             clickOnDataSetAtPosition(0)
         }
