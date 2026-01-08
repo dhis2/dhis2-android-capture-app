@@ -36,22 +36,6 @@ class CrashReportControllerImpl(
         Sentry.close()
     }
 
-    override fun trackUser(
-        user: String?,
-        server: String?,
-    ) {
-        if (isCrashReportPermissionGranted()) {
-            val sentryUser =
-                io.sentry.protocol.User().apply {
-                    user?.let { this.username = user }
-                    server?.let {
-                        data?.put(SERVER_NAME, server)
-                    }
-                }
-            Sentry.setUser(sentryUser)
-        }
-    }
-
     override fun trackServer(
         server: String?,
         serverDhisVersion: String?,
