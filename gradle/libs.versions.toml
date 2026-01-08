@@ -44,7 +44,8 @@ rxandroid = "2.1.1"
 maplibremarkerview = "3.0.2"
 maplibreannotation = "3.0.2"
 matomo = "4.4"
-sentry = "8.23.0"
+sentry = "8.29.0"
+sentryPlugin = "5.12.2"
 timber = "5.0.1"
 rxlint = "1.7.8"
 crashactivity = "2.4.0"
@@ -227,6 +228,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+sentry = { id = "io.sentry.android.gradle", version.ref = "sentryPlugin" }
 
 [bundles]
 uicomponents-implementation = ["androidx-coreKtx", "androidx-material3", "androidx-material3-window", "androidx-material3-adaptative-android", "google-material", "lottie-compose", "dhis2-mobile-designsystem"]
