@@ -213,8 +213,4 @@ open class BaseTest {
         const val MOCK_SERVER_URL = "http://127.0.0.1:8080"
         const val API = "api"
     }
-
-    fun printCurrentState(message: String){
-        Timber.tag("TEST_STATE").d("******* $message *******")
-    }
 }
