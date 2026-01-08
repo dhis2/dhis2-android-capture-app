@@ -342,14 +342,12 @@ sentry {
 
     // Enable auto-installation of Sentry components (sentry-android SDK and okhttp, timber, fragment and compose integrations).
     autoInstallation {
-        enabled.set(true)
+        enabled.set(false)
         sentryVersion.set(libs.versions.sentry)
     }
 
-    // Generates a JVM (Java, Kotlin, etc.) source bundle and uploads your source code to Sentry.
-    // This enables source context, allowing you to see your source
-    // code as part of your stack traces in Sentry.
-    includeSourceContext.set(true)
+    // Disabled to avoid uploading source code to Sentry; rely on ProGuard/R8 mappings instead.
+    includeSourceContext.set(false)
 
     // Telemetry
     telemetry.set(false)
