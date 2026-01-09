@@ -14,6 +14,8 @@ plugins {
     alias(libs.plugins.compose) apply false
     alias(libs.plugins.kotlin.compose.compiler) apply false
     alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.cyclonedx)
+
 }
 
 // Variables to hold aggregated test results
