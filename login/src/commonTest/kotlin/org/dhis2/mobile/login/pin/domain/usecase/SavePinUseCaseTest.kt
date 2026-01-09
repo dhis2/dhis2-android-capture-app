@@ -2,10 +2,10 @@ package org.dhis2.mobile.login.pin.domain.usecase
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.pin.data.SessionRepository
-import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -13,7 +13,7 @@ class SavePinUseCaseTest {
     private lateinit var useCase: SavePinUseCase
     private val repository: SessionRepository = mock()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         useCase = SavePinUseCase(repository)
     }
