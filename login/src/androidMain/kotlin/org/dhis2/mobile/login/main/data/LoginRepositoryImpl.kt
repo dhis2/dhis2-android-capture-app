@@ -262,23 +262,21 @@ class LoginRepositoryImpl(
     override suspend fun loginWithBiometric(): kotlin.Result<UserPassword> =
         withContext(dispatcher.main) {
             preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
-                cryptographyManager
+                val cipher = cryptographyManager
                     .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
-                    .let { cipher ->
-                        suspendCancellableCoroutine { continuation ->
-                            authenticator.authenticate(cipher) { cipher ->
-                                val pass =
-                                    cryptographyManager.decryptData(
-                                        ciphertextWrapper.ciphertext,
-                                        cipher,
-                                    )
-                                continuation.resume(value = kotlin.Result.success(pass)) { _, _, _ -> }
-                            }
-                            continuation.invokeOnCancellation {
-                                // If needed perform action on cancellation
-                            }
-                        }
+                suspendCancellableCoroutine { continuation ->
+                    authenticator.authenticate(cipher) { cipher ->
+                        val pass =
+                            cryptographyManager.decryptData(
+                                ciphertextWrapper.ciphertext,
+                                cipher,
+                            )
+                        continuation.resume(value = kotlin.Result.success(pass)) { _, _, _ -> }
                     }
+                    continuation.invokeOnCancellation {
+                        // If needed perform action on cancellation
+                    }
+                }
             } ?: kotlin.Result.failure(Exception("No biometrics found"))
         }
 
