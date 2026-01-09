@@ -380,8 +380,6 @@ class RulesRepository(
         d2
             .enrollmentModule()
             .enrollments()
-            .byStatus()
-            .eq(EnrollmentStatus.ACTIVE)
             .uid(enrollmentUid)
             .blockingGet()
             ?.let { enrollment ->
