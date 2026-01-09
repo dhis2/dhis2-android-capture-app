@@ -28,10 +28,10 @@ class LocaleManager {
         ): Context {
             val config = updateConfiguration(context, language)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                return context.createConfigurationContext(config)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                context.createConfigurationContext(config)
             } else {
-                return context
+                context
             }
         }
 
@@ -44,7 +44,7 @@ class LocaleManager {
             val resources = context.resources
             val config = Configuration(resources.configuration)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val localeList = LocaleList(newLocale)
                 LocaleList.setDefault(localeList)
                 config.setLocales(localeList) // additionally sets the layout direction

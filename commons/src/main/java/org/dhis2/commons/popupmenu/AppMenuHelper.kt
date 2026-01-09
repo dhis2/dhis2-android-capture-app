@@ -1,7 +1,6 @@
 package org.dhis2.commons.popupmenu
 
 import android.content.Context
-import android.os.Build
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
@@ -26,11 +25,7 @@ class AppMenuHelper private constructor(
     fun show() {
         val contextWrapper = ContextThemeWrapper(context, R.style.PopupMenuMarginStyle)
         popupMenu =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                PopupMenu(contextWrapper, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
-            } else {
-                PopupMenu(contextWrapper, anchor, Gravity.END)
-            }
+            PopupMenu(contextWrapper, anchor, Gravity.END, 0, R.style.PopupMenuMarginStyle)
         try {
             val fields = popupMenu.javaClass.declaredFields
             for (field in fields) {
