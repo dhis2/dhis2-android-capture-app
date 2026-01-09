@@ -199,7 +199,7 @@ class GraphToTable {
                                         color = TextColor.OnSurfaceLight,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Normal,
-                                        fontFamily = FontFamily(Font(org.dhis2.ui.R.font.roboto_regular)),
+                                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
                                         lineHeight = 16.sp,
                                         letterSpacing = (0.4).sp,
                                         textAlign = TextAlign.End,
