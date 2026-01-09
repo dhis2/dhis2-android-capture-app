@@ -3,7 +3,6 @@ package org.dhis2.usescases.teiDashboard
 import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -630,15 +629,13 @@ class TeiDashboardMobileActivity :
         }
         binding.executePendingBindings()
         setTheme(themeManager.getProgramTheme())
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            val window = window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            val typedValue = TypedValue()
-            val a = obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimaryDark))
-            val colorToReturn = a.getColor(0, 0)
-            a.recycle()
-            window.statusBarColor = colorToReturn
-        }
+        val window = window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        val typedValue = TypedValue()
+        val a = obtainStyledAttributes(typedValue.data, intArrayOf(R.attr.colorPrimaryDark))
+        val colorToReturn = a.getColor(0, 0)
+        a.recycle()
+        window.statusBarColor = colorToReturn
     }
 
     override fun updateNoteBadge(numberOfNotes: Int) {
