@@ -51,9 +51,10 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
-import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -252,15 +253,36 @@ fun SearchParametersScreen(
                                     .testTag("SEARCH_PARAM_ITEM"),
                             model =
                                 provideParameterSelectorItem(
-                                    resources = resourceManager,
-                                    focusManager = focusManager,
-                                    fieldUiModel = fieldUiModel,
-                                    callback = callback,
+                                    inputModel =
+                                        fieldUiModel.toParameterInputModel(
+                                            onValueChange = { value ->
+                                                fieldUiModel.onSave(value)
+                                            },
+                                        ),
+                                    helperText = resourceManager.getString(R.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
                                         if (nextIndex < uiState.items.size) {
                                             uiState.items[nextIndex].onItemClick()
                                         }
+                                    },
+                                    onQRScanRequest = {
+                                        callback.recyclerViewUiEvents(
+                                            RecyclerViewUiEvents.ScanQRCode(
+                                                uid = fieldUiModel.uid,
+                                                optionSet = fieldUiModel.optionSet,
+                                                renderingType = fieldUiModel.renderingType,
+                                            ),
+                                        )
+                                    },
+                                    onBarcodeScanRequest = {
+                                        callback.recyclerViewUiEvents(
+                                            RecyclerViewUiEvents.ScanQRCode(
+                                                uid = fieldUiModel.uid,
+                                                optionSet = fieldUiModel.optionSet,
+                                                renderingType = fieldUiModel.renderingType,
+                                            ),
+                                        )
                                     },
                                 ),
                         )

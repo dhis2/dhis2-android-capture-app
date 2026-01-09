@@ -1,0 +1,49 @@
+package org.dhis2.tracker.search.ui.model
+
+data class ParameterInputModel(
+    val uid: String,
+    val label: String,
+    val value: String?,
+    val focused: Boolean,
+    val valueType: ParameterValueType?,
+    val renderingType: ParameterRenderingType?,
+    val optionSet: String?,
+    val onItemClick: () -> Unit,
+    val onValueChange: (String?) -> Unit,
+)
+
+enum class ParameterRenderingType {
+    DEFAULT,
+    QR_CODE,
+    BAR_CODE,
+    GS1_DATAMATRIX,
+}
+
+enum class ParameterValueType {
+    TEXT,
+    LONG_TEXT,
+    LETTER,
+    PHONE_NUMBER,
+    EMAIL,
+    USERNAME,
+    URL,
+    NUMBER,
+    INTEGER,
+    INTEGER_POSITIVE,
+    INTEGER_NEGATIVE,
+    INTEGER_ZERO_OR_POSITIVE,
+    PERCENTAGE,
+    UNIT_INTERVAL,
+    DATE,
+    DATETIME,
+    TIME,
+    AGE,
+    BOOLEAN,
+    TRUE_ONLY,
+    COORDINATE,
+    ORGANISATION_UNIT,
+    FILE_RESOURCE,
+    IMAGE,
+    TRACKER_ASSOCIATE,
+    MULTI_TEXT,
+}
