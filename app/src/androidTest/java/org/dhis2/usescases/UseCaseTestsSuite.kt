@@ -30,5 +30,6 @@ import org.junit.runners.Suite
     SyncActivityTest::class,
     TeiDashboardTest::class,
     SchedulingDialogUiTest::class,
+    LoginTest::class,
 )
 class UseCaseTestsSuite
