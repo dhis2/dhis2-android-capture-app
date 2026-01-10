@@ -6,18 +6,10 @@ data class ParameterInputModel(
     val value: String?,
     val focused: Boolean,
     val valueType: ParameterValueType?,
-    val renderingType: ParameterRenderingType?,
     val optionSet: String?,
     val onItemClick: () -> Unit,
     val onValueChange: (String?) -> Unit,
 )
-
-enum class ParameterRenderingType {
-    DEFAULT,
-    QR_CODE,
-    BAR_CODE,
-    GS1_DATAMATRIX,
-}
 
 enum class ParameterValueType {
     TEXT,
@@ -46,4 +38,6 @@ enum class ParameterValueType {
     IMAGE,
     TRACKER_ASSOCIATE,
     MULTI_TEXT,
+    QR_CODE,
+    BAR_CODE,
 }

@@ -18,7 +18,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterRenderingType
 import org.dhis2.tracker.search.ui.model.ParameterValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
@@ -32,6 +31,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
@@ -69,11 +69,15 @@ fun ParameterInputProvider(
     }
 
     when (inputModel.valueType) {
-        ParameterValueType.TEXT, ParameterValueType.USERNAME -> {
+        ParameterValueType.TEXT,
+        ParameterValueType.USERNAME,
+        ParameterValueType.QR_CODE,
+        ParameterValueType.BAR_CODE,
+        -> {
             InputText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -92,7 +96,7 @@ fun ParameterInputProvider(
             InputLongText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -111,7 +115,7 @@ fun ParameterInputProvider(
             InputLetter(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -130,7 +134,7 @@ fun ParameterInputProvider(
             InputEmail(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onEmailActionCLicked = {},
@@ -150,7 +154,7 @@ fun ParameterInputProvider(
             InputPhoneNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onCallActionClicked = {},
@@ -170,7 +174,7 @@ fun ParameterInputProvider(
             InputLink(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onLinkActionCLicked = {},
@@ -190,7 +194,7 @@ fun ParameterInputProvider(
             InputNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -209,7 +213,7 @@ fun ParameterInputProvider(
             InputInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -228,7 +232,7 @@ fun ParameterInputProvider(
             InputPositiveInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -247,7 +251,7 @@ fun ParameterInputProvider(
             InputNegativeInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -266,7 +270,7 @@ fun ParameterInputProvider(
             InputPositiveIntegerOrZero(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -285,7 +289,7 @@ fun ParameterInputProvider(
             InputPercentage(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = org.hisp.dhis.mobile.ui.designsystem.component.InputShellState.UNFOCUSED,
+                state = InputShellState.UNFOCUSED,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -311,42 +315,26 @@ fun ParameterInputProvider(
 }
 
 @Composable
-fun ProvideParameterIcon(
-    valueType: ParameterValueType?,
-    renderingType: ParameterRenderingType?,
-) = when (valueType) {
-    ParameterValueType.TEXT -> {
-        when (renderingType) {
-            ParameterRenderingType.QR_CODE, ParameterRenderingType.GS1_DATAMATRIX -> {
-                Icon(
-                    imageVector = Icons.Outlined.QrCode2,
-                    contentDescription = "QR Code Icon",
-                    tint = SurfaceColor.Primary,
-                )
-            }
+fun ProvideParameterIcon(valueType: ParameterValueType?) =
+    when (valueType) {
+        ParameterValueType.QR_CODE ->
+            Icon(
+                imageVector = Icons.Outlined.QrCode2,
+                contentDescription = "QR Code Icon",
+                tint = SurfaceColor.Primary,
+            )
 
-            ParameterRenderingType.BAR_CODE -> {
-                Icon(
-                    painter = provideDHIS2Icon("material_barcode_scanner"),
-                    contentDescription = "Barcode Icon",
-                    tint = SurfaceColor.Primary,
-                )
-            }
+        ParameterValueType.BAR_CODE ->
+            Icon(
+                painter = provideDHIS2Icon("material_barcode_scanner"),
+                contentDescription = "Barcode Icon",
+                tint = SurfaceColor.Primary,
+            )
 
-            else -> {
-                Icon(
-                    imageVector = Icons.Outlined.AddCircleOutline,
-                    contentDescription = "Add Icon",
-                    tint = SurfaceColor.Primary,
-                )
-            }
-        }
+        else ->
+            Icon(
+                imageVector = Icons.Outlined.AddCircleOutline,
+                contentDescription = "Add Icon",
+                tint = SurfaceColor.Primary,
+            )
     }
-
-    else ->
-        Icon(
-            imageVector = Icons.Outlined.AddCircleOutline,
-            contentDescription = "Add Icon",
-            tint = SurfaceColor.Primary,
-        )
-}
