@@ -12,14 +12,14 @@
     <string name="input_coordinate_latitude">Garis lintang</string>
     <string name="input_coordinate_longitude">Garis bujur</string>
     <string name="input_not_supported">Tidak didukung</string>
-    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set\?</string>
     <string name="complete">Lengkap</string>
     <string name="saved">Tersimpan!</string>
     <string name="field_mandatory">Terdapat hal penting yang hilang. Harap mengisinya untuk melengkapi data.set</string>
     <string name="field_required">Jika Anda mengisi, semua baris harus terisi untuk menyelesaikan data set</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Tersimpan dan selesai!</string>
-    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data\?</string>
     <string name="no">Tidak</string>
     <string name="yes">Iya</string>
     <string name="error">Kesalahan</string>

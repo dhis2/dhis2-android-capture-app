@@ -17,9 +17,9 @@
     <string name="format_error">Неверный формат</string>
     <string name="input_not_supported">Не поддерживается</string>
     <string name="completion_dialog_title">Все выглядит хорошо</string>
-    <string name="completion_dialog_description">Вы также хотите завершить набор данных?</string>
+    <string name="completion_dialog_description">Вы также хотите завершить набор данных\?</string>
     <string name="validation_success_title">Все выглядит хорошо</string>
-    <string name="mark_dataset_complete">Вы также хотите завершить набор данных?</string>
+    <string name="mark_dataset_complete">Вы также хотите завершить набор данных\?</string>
     <string name="not_now">Не сейчас</string>
     <string name="complete">Завершить</string>
     <string name="saved">Сохранено!</string>
@@ -28,7 +28,7 @@
     <string name="ok">ОК</string>
     <string name="dataset_saved_completed">Сохранено и завершено!</string>
     <string name="error_on_complete_dataset">Произошла ошибка при завершении набора данных</string>
-    <string name="run_validation_rules">Вы хотите проверить качество данных?</string>
+    <string name="run_validation_rules">Вы хотите проверить качество данных\?</string>
     <string name="no">Нет</string>
     <string name="yes">Да</string>
     <string name="error">Ошибка</string>
