@@ -3,7 +3,6 @@ package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterRenderingType
 import org.dhis2.tracker.search.ui.model.ParameterValueType
 import org.hisp.dhis.android.core.common.ValueType
 
@@ -13,24 +12,21 @@ fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): Parame
         label = label,
         value = value,
         focused = focused,
-        valueType = valueType?.toParameterValueType(),
-        renderingType = renderingType?.toParameterRenderingType(),
+        valueType = valueType?.toParameterValueType(renderingType),
         optionSet = optionSet,
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
     )
 
-fun UiRenderType.toParameterRenderingType(): ParameterRenderingType =
+private fun ValueType.toParameterValueType(renderingType: UiRenderType?): ParameterValueType =
     when (this) {
-        UiRenderType.QR_CODE -> ParameterRenderingType.QR_CODE
-        UiRenderType.BAR_CODE -> ParameterRenderingType.BAR_CODE
-        UiRenderType.GS1_DATAMATRIX -> ParameterRenderingType.GS1_DATAMATRIX
-        else -> ParameterRenderingType.DEFAULT
-    }
-
-fun ValueType.toParameterValueType(): ParameterValueType =
-    when (this) {
-        ValueType.TEXT -> ParameterValueType.TEXT
+        ValueType.TEXT -> {
+            when (renderingType) {
+                UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> ParameterValueType.QR_CODE
+                UiRenderType.BAR_CODE -> ParameterValueType.BAR_CODE
+                else -> ParameterValueType.TEXT
+            }
+        }
         ValueType.LONG_TEXT -> ParameterValueType.LONG_TEXT
         ValueType.LETTER -> ParameterValueType.LETTER
         ValueType.PHONE_NUMBER -> ParameterValueType.PHONE_NUMBER
