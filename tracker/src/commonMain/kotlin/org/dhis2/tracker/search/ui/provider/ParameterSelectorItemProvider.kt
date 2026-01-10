@@ -16,8 +16,7 @@ fun provideParameterSelectorItem(
     inputModel: ParameterInputModel,
     helperText: String,
     onNextClicked: () -> Unit,
-    onQRScanRequest: (() -> Unit)? = null,
-    onBarcodeScanRequest: (() -> Unit)? = null,
+    onScanRequest: (() -> Unit)? = null,
 ): ParameterSelectorItemModel {
     val focusRequester = remember { FocusRequester() }
 
@@ -54,8 +53,7 @@ fun provideParameterSelectorItem(
         onExpand = {
             inputModel.onItemClick()
             when (inputModel.valueType) {
-                ParameterValueType.QR_CODE -> onQRScanRequest?.invoke()
-                ParameterValueType.BAR_CODE -> onBarcodeScanRequest?.invoke()
+                ParameterValueType.QR_CODE, ParameterValueType.BAR_CODE -> onScanRequest?.invoke()
                 else -> {}
             }
         },

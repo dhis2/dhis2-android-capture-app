@@ -266,16 +266,7 @@ fun SearchParametersScreen(
                                             uiState.items[nextIndex].onItemClick()
                                         }
                                     },
-                                    onQRScanRequest = {
-                                        callback.recyclerViewUiEvents(
-                                            RecyclerViewUiEvents.ScanQRCode(
-                                                uid = fieldUiModel.uid,
-                                                optionSet = fieldUiModel.optionSet,
-                                                renderingType = fieldUiModel.renderingType,
-                                            ),
-                                        )
-                                    },
-                                    onBarcodeScanRequest = {
+                                    onScanRequest = {
                                         callback.recyclerViewUiEvents(
                                             RecyclerViewUiEvents.ScanQRCode(
                                                 uid = fieldUiModel.uid,
