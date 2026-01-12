@@ -1,6 +1,7 @@
-package org.dhis2.tracker.input.model
+package org.dhis2.tracker.ui.input.model
 
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
@@ -16,6 +17,7 @@ data class TrackerInputModel(
     val description: String?,
     val mandatory: Boolean,
     val editable: Boolean,
+    val legend: LegendData?,
     val onItemClick: () -> Unit,
     val onValueChange: (String?) -> Unit,
 )

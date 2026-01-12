@@ -1,4 +1,4 @@
-package org.dhis2.tracker.input.model
+package org.dhis2.tracker.ui.input.model
 
 enum class TrackerInputType {
     TEXT,

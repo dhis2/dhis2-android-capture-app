@@ -1,4 +1,4 @@
-package org.dhis2.tracker.input.model
+package org.dhis2.tracker.ui.input.model
 
 sealed interface TrackerInputUiEvent {
     data class OnQRButtonClicked(
@@ -11,5 +11,7 @@ sealed interface TrackerInputUiEvent {
 
     data class OnOrgUnitButtonClicked(
         val uid: String,
+        val label: String,
+        val value: String?,
     ) : TrackerInputUiEvent
 }
