@@ -20,6 +20,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.tracker.input.model.TrackerInputModel
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.model.TrackerInputUiEvent
+import org.dhis2.tracker.input.model.inputState
+import org.dhis2.tracker.input.model.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -33,7 +35,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
-import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
@@ -76,7 +77,9 @@ fun ParameterInputProvider(
             InputText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -95,7 +98,9 @@ fun ParameterInputProvider(
             InputLongText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -114,7 +119,9 @@ fun ParameterInputProvider(
             InputLetter(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -133,7 +140,9 @@ fun ParameterInputProvider(
             InputEmail(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onEmailActionCLicked = {},
@@ -153,7 +162,9 @@ fun ParameterInputProvider(
             InputPhoneNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onCallActionClicked = {},
@@ -173,7 +184,9 @@ fun ParameterInputProvider(
             InputLink(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onLinkActionCLicked = {},
@@ -193,7 +206,9 @@ fun ParameterInputProvider(
             InputNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -212,7 +227,9 @@ fun ParameterInputProvider(
             InputInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -231,7 +248,9 @@ fun ParameterInputProvider(
             InputPositiveInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -250,7 +269,9 @@ fun ParameterInputProvider(
             InputNegativeInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -269,7 +290,9 @@ fun ParameterInputProvider(
             InputPositiveIntegerOrZero(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -288,7 +311,9 @@ fun ParameterInputProvider(
             InputPercentage(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
@@ -311,7 +336,9 @@ fun ParameterInputProvider(
             InputQRCode(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
-                state = InputShellState.UNFOCUSED,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onQRButtonClicked = {
