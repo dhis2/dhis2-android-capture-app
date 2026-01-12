@@ -18,6 +18,7 @@ data class TrackerInputModel(
     val mandatory: Boolean,
     val editable: Boolean,
     val legend: LegendData?,
+    val optionSetConfiguration: TrackerOptionSetConfiguration? = null,
     val onItemClick: () -> Unit,
     val onValueChange: (String?) -> Unit,
 )
