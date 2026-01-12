@@ -51,6 +51,7 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.input.model.TrackerInputUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
@@ -115,7 +116,8 @@ fun SearchParametersScreen(
                             onShowOrgUnit(
                                 uiEvent.uid,
                                 uiEvent.value?.let { listOf(it) } ?: emptyList(),
-                                uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
+                                uiEvent.orgUnitSelectorScope
+                                    ?: OrgUnitSelectorScope.UserSearchScope(),
                                 uiEvent.label,
                             )
 
@@ -259,6 +261,7 @@ fun SearchParametersScreen(
                                                 fieldUiModel.onSave(value)
                                             },
                                         ),
+                                    // TODO is this always the same string?, check if it is optional somewhere
                                     helperText = resourceManager.getString(R.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
@@ -266,14 +269,29 @@ fun SearchParametersScreen(
                                             uiState.items[nextIndex].onItemClick()
                                         }
                                     },
-                                    onScanRequest = {
-                                        callback.recyclerViewUiEvents(
-                                            RecyclerViewUiEvents.ScanQRCode(
-                                                uid = fieldUiModel.uid,
-                                                optionSet = fieldUiModel.optionSet,
-                                                renderingType = fieldUiModel.renderingType,
-                                            ),
-                                        )
+                                    onUiEvent = { uiEvent ->
+                                        when (uiEvent) {
+                                            is TrackerInputUiEvent.OnQRButtonClicked -> {
+                                                callback.recyclerViewUiEvents(
+                                                    RecyclerViewUiEvents.ScanQRCode(
+                                                        uid = fieldUiModel.uid,
+                                                        optionSet = fieldUiModel.optionSet,
+                                                        renderingType = fieldUiModel.renderingType,
+                                                    ),
+                                                )
+                                            }
+
+                                            is TrackerInputUiEvent.OnBarcodeButtonClicked -> {
+                                                callback.recyclerViewUiEvents(
+                                                    RecyclerViewUiEvents.ScanQRCode(
+                                                        uid = fieldUiModel.uid,
+                                                        optionSet = fieldUiModel.optionSet,
+                                                        renderingType = fieldUiModel.renderingType,
+                                                    ),
+                                                )
+                                            }
+                                            is TrackerInputUiEvent.OnOrgUnitButtonClicked -> TODO()
+                                        }
                                     },
                                 ),
                         )
