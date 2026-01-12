@@ -34,7 +34,6 @@ fun FieldUiModel.toParameterInputModel(
             }
 
             eventCategories != null -> {
-                // TODO EVENT CATEGORIES
                 TrackerInputType.NOT_SUPPORTED
             }
 
