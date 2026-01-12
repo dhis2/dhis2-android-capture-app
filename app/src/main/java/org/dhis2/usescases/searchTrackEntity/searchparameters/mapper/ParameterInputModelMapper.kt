@@ -34,6 +34,11 @@ fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): Tracke
         focused = focused,
         valueType = trackerInputType,
         optionSet = optionSet,
+        error = error,
+        warning = warning,
+        description = description,
+        mandatory = mandatory,
+        editable = editable,
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
     )
