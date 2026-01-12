@@ -69,11 +69,7 @@ fun ParameterInputProvider(
     }
 
     when (inputModel.valueType) {
-        ParameterValueType.TEXT,
-        ParameterValueType.USERNAME,
-        ParameterValueType.QR_CODE,
-        ParameterValueType.BAR_CODE,
-        -> {
+        ParameterValueType.TEXT -> {
             InputText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -304,7 +300,29 @@ fun ParameterInputProvider(
             )
         }
 
-        else -> {
+        ParameterValueType.UNIT_INTERVAL -> TODO()
+        ParameterValueType.AGE -> TODO()
+        ParameterValueType.ORGANISATION_UNIT -> TODO()
+        ParameterValueType.MULTI_SELECTION -> TODO()
+        ParameterValueType.QR_CODE -> {
+            TODO()
+        }
+
+        ParameterValueType.BAR_CODE -> {
+            TODO()
+        }
+
+        ParameterValueType.CHECKBOX -> TODO()
+        ParameterValueType.RADIO_BUTTON -> TODO()
+        ParameterValueType.YES_ONLY_SWITCH -> TODO()
+        ParameterValueType.YES_ONLY_CHECKBOX -> TODO()
+        ParameterValueType.DATE_TIME -> TODO()
+        ParameterValueType.PERIOD_SELECTOR -> TODO()
+        ParameterValueType.MATRIX -> TODO()
+        ParameterValueType.SEQUENTIAL -> TODO()
+        ParameterValueType.DROPDOWN -> TODO()
+
+        ParameterValueType.NOT_SUPPORTED -> {
             InputNotSupported(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
