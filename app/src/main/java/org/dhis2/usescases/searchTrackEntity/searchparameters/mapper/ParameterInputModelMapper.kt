@@ -1,15 +1,27 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.ui.input.model.TrackerOptionItem
+import org.dhis2.tracker.ui.input.model.TrackerOptionSetConfiguration
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 
-fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): TrackerInputModel {
+@Composable
+fun FieldUiModel.toParameterInputModel(
+    onValueChange: (String?) -> Unit,
+    fetchOptions: () -> Unit,
+): TrackerInputModel {
     val trackerInputType =
         when {
             optionSet != null && valueType != ValueType.MULTI_TEXT -> {
@@ -49,8 +61,39 @@ fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): Tracke
                     popUpLegendDescriptionData = it.legendsInfo,
                 )
             },
+        optionSetConfiguration =
+            optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions),
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
+    )
+}
+
+@Composable
+private fun org.dhis2.form.model.OptionSetConfiguration.toTrackerOptionSetConfiguration(
+    fetchOptions: () -> Unit,
+): TrackerOptionSetConfiguration {
+    val optionsData =
+        optionFlow
+            .collectAsLazyPagingItems()
+            .also { LaunchedEffect(this) { it.refresh() } }
+
+    val options by remember {
+        derivedStateOf {
+            (0 until (optionsData.itemCount)).mapNotNull { index ->
+                optionsData[index]?.let { optionData ->
+                    TrackerOptionItem(
+                        code = optionData.option.code() ?: "",
+                        displayName = optionData.option.displayName() ?: "",
+                    )
+                }
+            }
+        }
+    }
+
+    return TrackerOptionSetConfiguration(
+        options = options,
+        onSearch = onSearch,
+        onLoadOptions = fetchOptions,
     )
 }
 
