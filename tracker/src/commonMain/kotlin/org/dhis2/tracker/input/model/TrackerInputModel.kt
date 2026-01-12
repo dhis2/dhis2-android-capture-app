@@ -1,5 +1,9 @@
 package org.dhis2.tracker.input.model
 
+import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+
 data class TrackerInputModel(
     val uid: String,
     val label: String,
@@ -7,6 +11,41 @@ data class TrackerInputModel(
     val focused: Boolean,
     val valueType: TrackerInputType,
     val optionSet: String?,
+    val error: String?,
+    val warning: String?,
+    val description: String?,
+    val mandatory: Boolean,
+    val editable: Boolean,
     val onItemClick: () -> Unit,
     val onValueChange: (String?) -> Unit,
 )
+
+fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
+    listOfNotNull(
+        error?.let {
+            SupportingTextData(
+                it,
+                SupportingTextState.ERROR,
+            )
+        },
+        warning?.let {
+            SupportingTextData(
+                it,
+                SupportingTextState.WARNING,
+            )
+        },
+        description?.let {
+            SupportingTextData(
+                it,
+                SupportingTextState.DEFAULT,
+            )
+        },
+    ).ifEmpty { null }
+
+fun TrackerInputModel.inputState(): InputShellState =
+    when {
+        !editable -> InputShellState.DISABLED
+        error != null -> InputShellState.ERROR
+        focused -> InputShellState.FOCUSED
+        else -> InputShellState.UNFOCUSED
+    }
