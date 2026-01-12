@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterValueType
+import org.dhis2.tracker.search.ui.model.ParameterInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 
@@ -53,7 +53,7 @@ fun provideParameterSelectorItem(
         onExpand = {
             inputModel.onItemClick()
             when (inputModel.valueType) {
-                ParameterValueType.QR_CODE, ParameterValueType.BAR_CODE -> onScanRequest?.invoke()
+                ParameterInputType.QR_CODE, ParameterInputType.BAR_CODE -> onScanRequest?.invoke()
                 else -> {}
             }
         },

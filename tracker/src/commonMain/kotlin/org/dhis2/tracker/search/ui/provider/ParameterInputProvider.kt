@@ -18,7 +18,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterValueType
+import org.dhis2.tracker.search.ui.model.ParameterInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -69,7 +69,7 @@ fun ParameterInputProvider(
     }
 
     when (inputModel.valueType) {
-        ParameterValueType.TEXT -> {
+        ParameterInputType.TEXT -> {
             InputText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -88,7 +88,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.LONG_TEXT -> {
+        ParameterInputType.LONG_TEXT -> {
             InputLongText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -107,7 +107,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.LETTER -> {
+        ParameterInputType.LETTER -> {
             InputLetter(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -126,7 +126,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.EMAIL -> {
+        ParameterInputType.EMAIL -> {
             InputEmail(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -146,7 +146,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.PHONE_NUMBER -> {
+        ParameterInputType.PHONE_NUMBER -> {
             InputPhoneNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -166,7 +166,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.URL -> {
+        ParameterInputType.URL -> {
             InputLink(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -186,7 +186,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.NUMBER -> {
+        ParameterInputType.NUMBER -> {
             InputNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -205,7 +205,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.INTEGER -> {
+        ParameterInputType.INTEGER -> {
             InputInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -224,7 +224,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.INTEGER_POSITIVE -> {
+        ParameterInputType.INTEGER_POSITIVE -> {
             InputPositiveInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -243,7 +243,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.INTEGER_NEGATIVE -> {
+        ParameterInputType.INTEGER_NEGATIVE -> {
             InputNegativeInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -262,7 +262,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.INTEGER_ZERO_OR_POSITIVE -> {
+        ParameterInputType.INTEGER_ZERO_OR_POSITIVE -> {
             InputPositiveIntegerOrZero(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -281,7 +281,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.PERCENTAGE -> {
+        ParameterInputType.PERCENTAGE -> {
             InputPercentage(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -300,29 +300,29 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterValueType.UNIT_INTERVAL -> TODO()
-        ParameterValueType.AGE -> TODO()
-        ParameterValueType.ORGANISATION_UNIT -> TODO()
-        ParameterValueType.MULTI_SELECTION -> TODO()
-        ParameterValueType.QR_CODE -> {
+        ParameterInputType.UNIT_INTERVAL -> TODO()
+        ParameterInputType.AGE -> TODO()
+        ParameterInputType.ORGANISATION_UNIT -> TODO()
+        ParameterInputType.MULTI_SELECTION -> TODO()
+        ParameterInputType.QR_CODE -> {
             TODO()
         }
 
-        ParameterValueType.BAR_CODE -> {
+        ParameterInputType.BAR_CODE -> {
             TODO()
         }
 
-        ParameterValueType.CHECKBOX -> TODO()
-        ParameterValueType.RADIO_BUTTON -> TODO()
-        ParameterValueType.YES_ONLY_SWITCH -> TODO()
-        ParameterValueType.YES_ONLY_CHECKBOX -> TODO()
-        ParameterValueType.DATE_TIME -> TODO()
-        ParameterValueType.PERIOD_SELECTOR -> TODO()
-        ParameterValueType.MATRIX -> TODO()
-        ParameterValueType.SEQUENTIAL -> TODO()
-        ParameterValueType.DROPDOWN -> TODO()
+        ParameterInputType.CHECKBOX -> TODO()
+        ParameterInputType.RADIO_BUTTON -> TODO()
+        ParameterInputType.YES_ONLY_SWITCH -> TODO()
+        ParameterInputType.YES_ONLY_CHECKBOX -> TODO()
+        ParameterInputType.DATE_TIME -> TODO()
+        ParameterInputType.PERIOD_SELECTOR -> TODO()
+        ParameterInputType.MATRIX -> TODO()
+        ParameterInputType.SEQUENTIAL -> TODO()
+        ParameterInputType.DROPDOWN -> TODO()
 
-        ParameterValueType.NOT_SUPPORTED -> {
+        ParameterInputType.NOT_SUPPORTED -> {
             InputNotSupported(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -333,16 +333,16 @@ fun ParameterInputProvider(
 }
 
 @Composable
-fun ProvideParameterIcon(valueType: ParameterValueType?) =
+fun ProvideParameterIcon(valueType: ParameterInputType?) =
     when (valueType) {
-        ParameterValueType.QR_CODE ->
+        ParameterInputType.QR_CODE ->
             Icon(
                 imageVector = Icons.Outlined.QrCode2,
                 contentDescription = "QR Code Icon",
                 tint = SurfaceColor.Primary,
             )
 
-        ParameterValueType.BAR_CODE ->
+        ParameterInputType.BAR_CODE ->
             Icon(
                 painter = provideDHIS2Icon("material_barcode_scanner"),
                 contentDescription = "Barcode Icon",
