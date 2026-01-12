@@ -1,11 +1,11 @@
-package org.dhis2.tracker.search.ui.model
+package org.dhis2.tracker.input.model
 
-data class ParameterInputModel(
+data class TrackerInputModel(
     val uid: String,
     val label: String,
     val value: String?,
     val focused: Boolean,
-    val valueType: ParameterInputType,
+    val valueType: TrackerInputType,
     val optionSet: String?,
     val onItemClick: () -> Unit,
     val onValueChange: (String?) -> Unit,
