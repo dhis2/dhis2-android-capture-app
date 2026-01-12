@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,7 +24,9 @@ import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
 import org.dhis2.tracker.ui.input.model.inputState
 import org.dhis2.tracker.ui.input.model.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
+import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
 import org.hisp.dhis.mobile.ui.designsystem.component.InputBarCode
+import org.hisp.dhis.mobile.ui.designsystem.component.InputDropDown
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -521,7 +524,54 @@ fun ParameterInputProvider(
         }
 
         TrackerInputType.DROPDOWN -> {
-            TODO()
+            val optionSetConfiguration = inputModel.optionSetConfiguration!!
+
+            var selectedItem by remember(inputModel.uid, inputModel.value) {
+                val displayName =
+                    optionSetConfiguration.options
+                        .find {
+                            it.code == inputModel.value
+                        }?.displayName
+                mutableStateOf(displayName ?: inputModel.value ?: "")
+            }
+
+            val options = optionSetConfiguration.options
+            val useDropdown by remember {
+                derivedStateOf { options.size < 15 }
+            }
+
+            InputDropDown(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                inputStyle = inputStyle,
+                title = inputModel.label,
+                state = inputModel.inputState(),
+                selectedItem = DropdownItem(selectedItem),
+                supportingTextData = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequiredField = inputModel.mandatory,
+                onResetButtonClicked = {
+                    selectedItem = ""
+                    inputModel.onValueChange(null)
+                },
+                fetchItem = { index ->
+                    DropdownItem(options.getOrNull(index)?.displayName ?: "")
+                },
+                onSearchOption = { query ->
+                    optionSetConfiguration.onSearch?.invoke(query)
+                },
+                itemCount = options.size,
+                useDropDown = useDropdown,
+                onItemSelected = { index, newSelectedItem ->
+                    selectedItem = newSelectedItem.label
+                    inputModel.onValueChange(options.getOrNull(index)?.code)
+                },
+                loadOptions = {
+                    optionSetConfiguration.onLoadOptions?.invoke()
+                },
+                onDismiss = {
+                    optionSetConfiguration.onSearch?.invoke("")
+                },
+            )
         }
 
         TrackerInputType.NOT_SUPPORTED -> {
