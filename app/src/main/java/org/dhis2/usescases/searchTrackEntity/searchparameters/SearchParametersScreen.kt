@@ -51,6 +51,7 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.input.model.TrackerInputUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
