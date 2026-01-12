@@ -3,12 +3,12 @@ package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterInputType
+import org.dhis2.tracker.input.model.TrackerInputModel
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.ValueType
 
-fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): ParameterInputModel {
-    val parameterInputType =
+fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): TrackerInputModel {
+    val trackerInputType =
         when {
             optionSet != null && valueType != ValueType.MULTI_TEXT -> {
                 getInputTypeForOptionSetByRenderingType(renderingType)
@@ -16,102 +16,102 @@ fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): Parame
 
             customIntent != null -> {
                 // TODO CUSTOM INTENT
-                ParameterInputType.NOT_SUPPORTED
+                TrackerInputType.NOT_SUPPORTED
             }
 
             eventCategories != null -> {
                 // TODO EVENT CATEGORIES
-                ParameterInputType.NOT_SUPPORTED
+                TrackerInputType.NOT_SUPPORTED
             }
 
             else -> getInputTypeByValueType(valueType, renderingType, periodSelector)
         }
 
-    return ParameterInputModel(
+    return TrackerInputModel(
         uid = uid,
         label = label,
         value = value,
         focused = focused,
-        valueType = parameterInputType,
+        valueType = trackerInputType,
         optionSet = optionSet,
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
     )
 }
 
-private fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?): ParameterInputType =
+private fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?): TrackerInputType =
     when (renderingType) {
         UiRenderType.HORIZONTAL_RADIOBUTTONS,
         UiRenderType.VERTICAL_RADIOBUTTONS,
-        -> ParameterInputType.RADIO_BUTTON
+        -> TrackerInputType.RADIO_BUTTON
 
         UiRenderType.HORIZONTAL_CHECKBOXES,
         UiRenderType.VERTICAL_CHECKBOXES,
-        -> ParameterInputType.CHECKBOX
+        -> TrackerInputType.CHECKBOX
 
-        UiRenderType.MATRIX -> ParameterInputType.MATRIX
+        UiRenderType.MATRIX -> TrackerInputType.MATRIX
 
-        UiRenderType.SEQUENCIAL -> ParameterInputType.SEQUENTIAL
+        UiRenderType.SEQUENCIAL -> TrackerInputType.SEQUENTIAL
 
-        else -> ParameterInputType.DROPDOWN
+        else -> TrackerInputType.DROPDOWN
     }
 
 private fun getInputTypeByValueType(
     valueType: ValueType?,
     renderingType: UiRenderType?,
     periodSelector: PeriodSelector?,
-): ParameterInputType =
+): TrackerInputType =
     when (valueType) {
         ValueType.TEXT -> {
             when (renderingType) {
-                UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> ParameterInputType.QR_CODE
-                UiRenderType.BAR_CODE -> ParameterInputType.BAR_CODE
-                else -> ParameterInputType.TEXT
+                UiRenderType.QR_CODE, UiRenderType.GS1_DATAMATRIX -> TrackerInputType.QR_CODE
+                UiRenderType.BAR_CODE -> TrackerInputType.BAR_CODE
+                else -> TrackerInputType.TEXT
             }
         }
 
-        ValueType.INTEGER_POSITIVE -> ParameterInputType.INTEGER_POSITIVE
-        ValueType.INTEGER_ZERO_OR_POSITIVE -> ParameterInputType.INTEGER_ZERO_OR_POSITIVE
-        ValueType.PERCENTAGE -> ParameterInputType.PERCENTAGE
-        ValueType.NUMBER -> ParameterInputType.NUMBER
-        ValueType.INTEGER_NEGATIVE -> ParameterInputType.INTEGER_NEGATIVE
-        ValueType.LONG_TEXT -> ParameterInputType.LONG_TEXT
-        ValueType.LETTER -> ParameterInputType.LETTER
-        ValueType.INTEGER -> ParameterInputType.INTEGER
-        ValueType.ORGANISATION_UNIT -> ParameterInputType.ORGANISATION_UNIT
-        ValueType.UNIT_INTERVAL -> ParameterInputType.UNIT_INTERVAL
-        ValueType.EMAIL -> ParameterInputType.EMAIL
-        ValueType.URL -> ParameterInputType.URL
+        ValueType.INTEGER_POSITIVE -> TrackerInputType.INTEGER_POSITIVE
+        ValueType.INTEGER_ZERO_OR_POSITIVE -> TrackerInputType.INTEGER_ZERO_OR_POSITIVE
+        ValueType.PERCENTAGE -> TrackerInputType.PERCENTAGE
+        ValueType.NUMBER -> TrackerInputType.NUMBER
+        ValueType.INTEGER_NEGATIVE -> TrackerInputType.INTEGER_NEGATIVE
+        ValueType.LONG_TEXT -> TrackerInputType.LONG_TEXT
+        ValueType.LETTER -> TrackerInputType.LETTER
+        ValueType.INTEGER -> TrackerInputType.INTEGER
+        ValueType.ORGANISATION_UNIT -> TrackerInputType.ORGANISATION_UNIT
+        ValueType.UNIT_INTERVAL -> TrackerInputType.UNIT_INTERVAL
+        ValueType.EMAIL -> TrackerInputType.EMAIL
+        ValueType.URL -> TrackerInputType.URL
         ValueType.BOOLEAN -> {
             when (renderingType) {
                 UiRenderType.HORIZONTAL_CHECKBOXES,
                 UiRenderType.VERTICAL_CHECKBOXES,
-                -> ParameterInputType.CHECKBOX
+                -> TrackerInputType.CHECKBOX
 
-                else -> ParameterInputType.RADIO_BUTTON
+                else -> TrackerInputType.RADIO_BUTTON
             }
         }
 
         ValueType.TRUE_ONLY -> {
             when (renderingType) {
-                UiRenderType.TOGGLE -> ParameterInputType.YES_ONLY_SWITCH
-                else -> ParameterInputType.YES_ONLY_CHECKBOX
+                UiRenderType.TOGGLE -> TrackerInputType.YES_ONLY_SWITCH
+                else -> TrackerInputType.YES_ONLY_CHECKBOX
             }
         }
 
-        ValueType.PHONE_NUMBER -> ParameterInputType.PHONE_NUMBER
+        ValueType.PHONE_NUMBER -> TrackerInputType.PHONE_NUMBER
         ValueType.DATE,
         ValueType.DATETIME,
         ValueType.TIME,
         -> {
             when (periodSelector) {
-                null -> ParameterInputType.DATE_TIME
-                else -> ParameterInputType.PERIOD_SELECTOR
+                null -> TrackerInputType.DATE_TIME
+                else -> TrackerInputType.PERIOD_SELECTOR
             }
         }
 
-        ValueType.AGE -> ParameterInputType.AGE
-        ValueType.MULTI_TEXT -> ParameterInputType.MULTI_SELECTION
+        ValueType.AGE -> TrackerInputType.AGE
+        ValueType.MULTI_TEXT -> TrackerInputType.MULTI_SELECTION
         ValueType.FILE_RESOURCE,
         ValueType.COORDINATE,
         ValueType.IMAGE,
@@ -120,5 +120,5 @@ private fun getInputTypeByValueType(
         ValueType.USERNAME,
         ValueType.TRACKER_ASSOCIATE,
         null,
-        -> ParameterInputType.NOT_SUPPORTED
+        -> TrackerInputType.NOT_SUPPORTED
     }
