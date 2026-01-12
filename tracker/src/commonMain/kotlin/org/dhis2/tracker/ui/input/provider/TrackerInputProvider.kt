@@ -1,4 +1,4 @@
-package org.dhis2.tracker.input.provider
+package org.dhis2.tracker.ui.input.provider
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -17,11 +17,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import org.dhis2.tracker.input.model.TrackerInputModel
-import org.dhis2.tracker.input.model.TrackerInputType
-import org.dhis2.tracker.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.input.model.inputState
-import org.dhis2.tracker.input.model.supportingText
+import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
+import org.dhis2.tracker.ui.input.model.inputState
+import org.dhis2.tracker.ui.input.model.supportingText
+import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
+import org.hisp.dhis.mobile.ui.designsystem.component.InputBarCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -30,6 +32,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNotSupported
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
+import org.hisp.dhis.mobile.ui.designsystem.component.InputOrgUnit
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
@@ -37,6 +40,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
 import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
+import org.hisp.dhis.mobile.ui.designsystem.component.InputUnitInterval
+import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlyCheckBox
+import org.hisp.dhis.mobile.ui.designsystem.component.InputYesOnlySwitch
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
@@ -79,6 +85,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -100,6 +107,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -121,6 +129,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -142,6 +151,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -164,6 +174,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -186,6 +197,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -208,6 +220,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -229,6 +242,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -250,6 +264,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -271,6 +286,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -292,6 +308,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -313,6 +330,7 @@ fun ParameterInputProvider(
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -328,16 +346,68 @@ fun ParameterInputProvider(
             )
         }
 
-        TrackerInputType.UNIT_INTERVAL -> TODO()
-        TrackerInputType.AGE -> TODO()
-        TrackerInputType.ORGANISATION_UNIT -> TODO()
-        TrackerInputType.MULTI_SELECTION -> TODO()
+        TrackerInputType.UNIT_INTERVAL -> {
+            InputUnitInterval(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                title = inputModel.label,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequiredField = inputModel.mandatory,
+                inputStyle = inputStyle,
+                inputTextFieldValue = textValue,
+                onValueChanged = { newValue ->
+                    newValue?.let {
+                        if (it.text != inputModel.value) {
+                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                        }
+                    }
+                },
+                imeAction = ImeAction.Next,
+                onImeActionClick = onImeActionClick,
+            )
+        }
+
+        TrackerInputType.AGE -> {
+            // TODO
+        }
+
+        TrackerInputType.ORGANISATION_UNIT -> {
+            InputOrgUnit(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                title = inputModel.label,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequiredField = inputModel.mandatory,
+                inputStyle = inputStyle,
+                inputText = inputModel.value,
+                onValueChanged = { newValue ->
+                    inputModel.onValueChange(newValue)
+                },
+                onOrgUnitActionCLicked = {
+                    onUiEvent(
+                        TrackerInputUiEvent.OnOrgUnitButtonClicked(
+                            uid = inputModel.uid,
+                            label = inputModel.label,
+                            value = inputModel.value,
+                        ),
+                    )
+                },
+            )
+        }
+
+        TrackerInputType.MULTI_SELECTION -> {
+            TODO()
+        }
+
         TrackerInputType.QR_CODE -> {
             InputQRCode(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
                 state = inputModel.inputState(),
                 supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
@@ -361,18 +431,98 @@ fun ParameterInputProvider(
         }
 
         TrackerInputType.BAR_CODE -> {
+            InputBarCode(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                title = inputModel.label,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequiredField = inputModel.mandatory,
+                inputStyle = inputStyle,
+                inputTextFieldValue = textValue,
+                onActionButtonClicked = {
+                    onUiEvent(
+                        TrackerInputUiEvent.OnBarcodeButtonClicked(
+                            uid = inputModel.uid,
+                        ),
+                    )
+                },
+                onValueChanged = { newValue ->
+                    newValue?.let {
+                        if (it.text != inputModel.value) {
+                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                        }
+                    }
+                },
+                imeAction = ImeAction.Next,
+                onImeActionClick = onImeActionClick,
+            )
+        }
+
+        TrackerInputType.CHECKBOX -> {
             TODO()
         }
 
-        TrackerInputType.CHECKBOX -> TODO()
-        TrackerInputType.RADIO_BUTTON -> TODO()
-        TrackerInputType.YES_ONLY_SWITCH -> TODO()
-        TrackerInputType.YES_ONLY_CHECKBOX -> TODO()
-        TrackerInputType.DATE_TIME -> TODO()
-        TrackerInputType.PERIOD_SELECTOR -> TODO()
-        TrackerInputType.MATRIX -> TODO()
-        TrackerInputType.SEQUENTIAL -> TODO()
-        TrackerInputType.DROPDOWN -> TODO()
+        TrackerInputType.RADIO_BUTTON -> {
+            TODO()
+        }
+
+        TrackerInputType.YES_ONLY_SWITCH -> {
+            InputYesOnlySwitch(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                title = inputModel.label,
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequired = inputModel.mandatory,
+                inputStyle = inputStyle,
+                isChecked = inputModel.value?.toBooleanStrictOrNull() == true,
+                onClick = { isChecked ->
+                    inputModel.onValueChange(if (isChecked) "true" else null)
+                },
+            )
+        }
+
+        TrackerInputType.YES_ONLY_CHECKBOX -> {
+            InputYesOnlyCheckBox(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                checkBoxData =
+                    CheckBoxData(
+                        uid = inputModel.uid,
+                        checked = inputModel.value?.toBooleanStrictOrNull() == true,
+                        enabled = inputModel.editable,
+                        textInput = inputModel.label,
+                    ),
+                state = inputModel.inputState(),
+                supportingText = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequired = inputModel.mandatory,
+                inputStyle = inputStyle,
+                onClick = { isChecked ->
+                    inputModel.onValueChange(if (isChecked) "true" else null)
+                },
+            )
+        }
+
+        TrackerInputType.DATE_TIME -> {
+            TODO()
+        }
+
+        TrackerInputType.PERIOD_SELECTOR -> {
+            TODO()
+        }
+
+        TrackerInputType.MATRIX -> {
+            TODO()
+        }
+
+        TrackerInputType.SEQUENTIAL -> {
+            TODO()
+        }
+
+        TrackerInputType.DROPDOWN -> {
+            TODO()
+        }
 
         TrackerInputType.NOT_SUPPORTED -> {
             InputNotSupported(

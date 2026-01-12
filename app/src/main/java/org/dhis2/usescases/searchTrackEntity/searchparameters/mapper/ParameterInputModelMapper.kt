@@ -1,11 +1,13 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
 
+import androidx.compose.ui.graphics.Color
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.tracker.input.model.TrackerInputModel
-import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 
 fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): TrackerInputModel {
     val trackerInputType =
@@ -39,6 +41,14 @@ fun FieldUiModel.toParameterInputModel(onValueChange: (String?) -> Unit): Tracke
         description = description,
         mandatory = mandatory,
         editable = editable,
+        legend =
+            legend?.let {
+                LegendData(
+                    color = Color(it.color),
+                    title = it.label ?: "",
+                    popUpLegendDescriptionData = it.legendsInfo,
+                )
+            },
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
     )
