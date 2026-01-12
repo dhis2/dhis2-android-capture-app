@@ -260,6 +260,15 @@ fun SearchParametersScreen(
                                             onValueChange = { value ->
                                                 fieldUiModel.onSave(value)
                                             },
+                                            fetchOptions = {
+                                                intentHandler(
+                                                    FormIntent.FetchOptions(
+                                                        uid = fieldUiModel.uid,
+                                                        optionSetUid = fieldUiModel.optionSet!!,
+                                                        value = fieldUiModel.value,
+                                                    ),
+                                                )
+                                            },
                                         ),
                                     // TODO is this always the same string?, check if it is optional somewhere
                                     helperText = resourceManager.getString(R.string.optional),
