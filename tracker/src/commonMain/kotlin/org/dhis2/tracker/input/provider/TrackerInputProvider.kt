@@ -1,4 +1,4 @@
-package org.dhis2.tracker.search.ui.provider
+package org.dhis2.tracker.input.provider
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
@@ -17,8 +17,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterInputType
+import org.dhis2.tracker.input.model.TrackerInputModel
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.model.TrackerInputUiEvent
 import org.hisp.dhis.mobile.ui.designsystem.component.InputEmail
 import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
@@ -31,6 +32,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputPercentage
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPhoneNumber
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputPositiveIntegerOrZero
+import org.hisp.dhis.mobile.ui.designsystem.component.InputQRCode
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InputText
@@ -40,9 +42,10 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 @Composable
 fun ParameterInputProvider(
     modifier: Modifier = Modifier,
-    inputModel: ParameterInputModel,
-    inputStyle: InputStyle = InputStyle.ParameterInputStyle(),
+    inputModel: TrackerInputModel,
+    inputStyle: InputStyle,
     onNextClicked: () -> Unit,
+    onUiEvent: (TrackerInputUiEvent) -> Unit,
 ) {
     var textValue by remember(inputModel.uid) {
         mutableStateOf(
@@ -69,7 +72,7 @@ fun ParameterInputProvider(
     }
 
     when (inputModel.valueType) {
-        ParameterInputType.TEXT -> {
+        TrackerInputType.TEXT -> {
             InputText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -88,7 +91,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.LONG_TEXT -> {
+        TrackerInputType.LONG_TEXT -> {
             InputLongText(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -107,7 +110,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.LETTER -> {
+        TrackerInputType.LETTER -> {
             InputLetter(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -126,7 +129,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.EMAIL -> {
+        TrackerInputType.EMAIL -> {
             InputEmail(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -146,7 +149,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.PHONE_NUMBER -> {
+        TrackerInputType.PHONE_NUMBER -> {
             InputPhoneNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -166,7 +169,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.URL -> {
+        TrackerInputType.URL -> {
             InputLink(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -186,7 +189,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.NUMBER -> {
+        TrackerInputType.NUMBER -> {
             InputNumber(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -205,7 +208,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.INTEGER -> {
+        TrackerInputType.INTEGER -> {
             InputInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -224,7 +227,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.INTEGER_POSITIVE -> {
+        TrackerInputType.INTEGER_POSITIVE -> {
             InputPositiveInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -243,7 +246,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.INTEGER_NEGATIVE -> {
+        TrackerInputType.INTEGER_NEGATIVE -> {
             InputNegativeInteger(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -262,7 +265,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.INTEGER_ZERO_OR_POSITIVE -> {
+        TrackerInputType.INTEGER_ZERO_OR_POSITIVE -> {
             InputPositiveIntegerOrZero(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -281,7 +284,7 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.PERCENTAGE -> {
+        TrackerInputType.PERCENTAGE -> {
             InputPercentage(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -300,29 +303,51 @@ fun ParameterInputProvider(
             )
         }
 
-        ParameterInputType.UNIT_INTERVAL -> TODO()
-        ParameterInputType.AGE -> TODO()
-        ParameterInputType.ORGANISATION_UNIT -> TODO()
-        ParameterInputType.MULTI_SELECTION -> TODO()
-        ParameterInputType.QR_CODE -> {
+        TrackerInputType.UNIT_INTERVAL -> TODO()
+        TrackerInputType.AGE -> TODO()
+        TrackerInputType.ORGANISATION_UNIT -> TODO()
+        TrackerInputType.MULTI_SELECTION -> TODO()
+        TrackerInputType.QR_CODE -> {
+            InputQRCode(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                title = inputModel.label,
+                state = InputShellState.UNFOCUSED,
+                inputStyle = inputStyle,
+                inputTextFieldValue = textValue,
+                onQRButtonClicked = {
+                    onUiEvent(
+                        TrackerInputUiEvent.OnQRButtonClicked(
+                            uid = inputModel.uid,
+                        ),
+                    )
+                },
+                onValueChanged = { newValue ->
+                    newValue?.let {
+                        if (it.text != inputModel.value) {
+                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                        }
+                    }
+                },
+                imeAction = ImeAction.Next,
+                onImeActionClick = onImeActionClick,
+            )
+        }
+
+        TrackerInputType.BAR_CODE -> {
             TODO()
         }
 
-        ParameterInputType.BAR_CODE -> {
-            TODO()
-        }
+        TrackerInputType.CHECKBOX -> TODO()
+        TrackerInputType.RADIO_BUTTON -> TODO()
+        TrackerInputType.YES_ONLY_SWITCH -> TODO()
+        TrackerInputType.YES_ONLY_CHECKBOX -> TODO()
+        TrackerInputType.DATE_TIME -> TODO()
+        TrackerInputType.PERIOD_SELECTOR -> TODO()
+        TrackerInputType.MATRIX -> TODO()
+        TrackerInputType.SEQUENTIAL -> TODO()
+        TrackerInputType.DROPDOWN -> TODO()
 
-        ParameterInputType.CHECKBOX -> TODO()
-        ParameterInputType.RADIO_BUTTON -> TODO()
-        ParameterInputType.YES_ONLY_SWITCH -> TODO()
-        ParameterInputType.YES_ONLY_CHECKBOX -> TODO()
-        ParameterInputType.DATE_TIME -> TODO()
-        ParameterInputType.PERIOD_SELECTOR -> TODO()
-        ParameterInputType.MATRIX -> TODO()
-        ParameterInputType.SEQUENTIAL -> TODO()
-        ParameterInputType.DROPDOWN -> TODO()
-
-        ParameterInputType.NOT_SUPPORTED -> {
+        TrackerInputType.NOT_SUPPORTED -> {
             InputNotSupported(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
@@ -333,16 +358,16 @@ fun ParameterInputProvider(
 }
 
 @Composable
-fun ProvideParameterIcon(valueType: ParameterInputType?) =
+fun ProvideParameterIcon(valueType: TrackerInputType?) =
     when (valueType) {
-        ParameterInputType.QR_CODE ->
+        TrackerInputType.QR_CODE ->
             Icon(
                 imageVector = Icons.Outlined.QrCode2,
                 contentDescription = "QR Code Icon",
                 tint = SurfaceColor.Primary,
             )
 
-        ParameterInputType.BAR_CODE ->
+        TrackerInputType.BAR_CODE ->
             Icon(
                 painter = provideDHIS2Icon("material_barcode_scanner"),
                 contentDescription = "Barcode Icon",
