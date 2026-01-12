@@ -6,17 +6,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import org.dhis2.tracker.search.ui.model.ParameterInputModel
-import org.dhis2.tracker.search.ui.model.ParameterInputType
+import org.dhis2.tracker.input.model.TrackerInputModel
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.model.TrackerInputUiEvent
+import org.dhis2.tracker.input.provider.ParameterInputProvider
+import org.dhis2.tracker.input.provider.ProvideParameterIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 
 @Composable
 fun provideParameterSelectorItem(
-    inputModel: ParameterInputModel,
+    inputModel: TrackerInputModel,
     helperText: String,
     onNextClicked: () -> Unit,
-    onScanRequest: (() -> Unit)? = null,
+    onUiEvent: (TrackerInputUiEvent) -> Unit,
 ): ParameterSelectorItemModel {
     val focusRequester = remember { FocusRequester() }
 
@@ -47,13 +50,17 @@ fun provideParameterSelectorItem(
                 inputStyle = InputStyle.ParameterInputStyle(),
                 inputModel = inputModel,
                 onNextClicked = onNextClicked,
+                onUiEvent = onUiEvent,
             )
         },
         status = status,
         onExpand = {
             inputModel.onItemClick()
             when (inputModel.valueType) {
-                ParameterInputType.QR_CODE, ParameterInputType.BAR_CODE -> onScanRequest?.invoke()
+                TrackerInputType.QR_CODE ->
+                    onUiEvent(TrackerInputUiEvent.OnQRButtonClicked(inputModel.uid))
+                TrackerInputType.BAR_CODE ->
+                    onUiEvent(TrackerInputUiEvent.OnBarcodeButtonClicked(inputModel.uid))
                 else -> {}
             }
         },

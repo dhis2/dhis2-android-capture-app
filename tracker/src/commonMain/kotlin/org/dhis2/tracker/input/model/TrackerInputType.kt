@@ -1,6 +1,6 @@
-package org.dhis2.tracker.search.ui.model
+package org.dhis2.tracker.input.model
 
-enum class ParameterInputType {
+enum class TrackerInputType {
     TEXT,
     LONG_TEXT,
     LETTER,
