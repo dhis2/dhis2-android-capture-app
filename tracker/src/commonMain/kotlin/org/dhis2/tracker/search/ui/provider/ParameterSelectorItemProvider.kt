@@ -6,11 +6,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import org.dhis2.tracker.input.model.TrackerInputModel
-import org.dhis2.tracker.input.model.TrackerInputType
-import org.dhis2.tracker.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.input.provider.ParameterInputProvider
-import org.dhis2.tracker.input.provider.ProvideParameterIcon
+import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
+import org.dhis2.tracker.ui.input.provider.ParameterInputProvider
+import org.dhis2.tracker.ui.input.provider.ProvideParameterIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 
