@@ -375,6 +375,10 @@ fun ParameterInputProvider(
             // TODO
         }
 
+        TrackerInputType.DATE_TIME -> {
+            TODO()
+        }
+
         TrackerInputType.ORGANISATION_UNIT -> {
             InputOrgUnit(
                 modifier = modifierWithFocus.fillMaxWidth(),
@@ -507,22 +511,6 @@ fun ParameterInputProvider(
             )
         }
 
-        TrackerInputType.DATE_TIME -> {
-            TODO()
-        }
-
-        TrackerInputType.PERIOD_SELECTOR -> {
-            TODO()
-        }
-
-        TrackerInputType.MATRIX -> {
-            TODO()
-        }
-
-        TrackerInputType.SEQUENTIAL -> {
-            TODO()
-        }
-
         TrackerInputType.DROPDOWN -> {
             val optionSetConfiguration = inputModel.optionSetConfiguration!!
 
@@ -574,7 +562,11 @@ fun ParameterInputProvider(
             )
         }
 
-        TrackerInputType.NOT_SUPPORTED -> {
+        TrackerInputType.PERIOD_SELECTOR,
+        TrackerInputType.MATRIX,
+        TrackerInputType.SEQUENTIAL,
+        TrackerInputType.NOT_SUPPORTED,
+        -> {
             InputNotSupported(
                 modifier = modifierWithFocus.fillMaxWidth(),
                 title = inputModel.label,
