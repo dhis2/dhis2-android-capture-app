@@ -40,9 +40,15 @@ fun enrollmentRobot(
 
 class EnrollmentRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
+    @OptIn(ExperimentalTestApi::class)
     fun clickOnAProgramForEnrollment(composeTestRule: ComposeTestRule, program: String) {
+        val testTag = PROGRAM_TO_ENROLL.format(program)
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithTag(PROGRAM_TO_ENROLL.format(program), useUnmergedTree = true)
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasTestTag(testTag),
+            TIMEOUT
+        )
+        composeTestRule.onNodeWithTag(testTag, useUnmergedTree = true)
             .performClick()
         composeTestRule.waitForIdle()
     }
