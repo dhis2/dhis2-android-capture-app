@@ -61,7 +61,7 @@ class CheckSingleNavigationTest {
     @Test
     fun `should return failure if there is a domain exception`() =
         runTest {
-            given(homeRepository.homeItemCount()) willAnswer { throw DomainError.DataBaseError("Test") }
+            given(homeRepository.homeItemCount()) willAnswer { throw DomainError.DatabaseError("Test") }
             with(checkSingleNavigation()) {
                 assertTrue(isFailure)
                 assertTrue(exceptionOrNull() is DomainError)

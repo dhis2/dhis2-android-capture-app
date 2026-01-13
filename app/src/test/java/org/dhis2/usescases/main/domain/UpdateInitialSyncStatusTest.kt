@@ -33,7 +33,7 @@ class UpdateInitialSyncStatusTest {
     @Test
     fun `should return failure when repository fails`() =
         runTest {
-            val exception = DomainError.DataBaseError("Error")
+            val exception = DomainError.DatabaseError("Error")
             given(homeRepository.setInitialSyncDone()).willAnswer {
                 throw exception
             }

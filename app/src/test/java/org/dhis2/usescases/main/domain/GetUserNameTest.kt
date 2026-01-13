@@ -86,7 +86,7 @@ class GetUserNameTest {
     @Test
     fun `should return failure if repository throws error`() =
         runTest {
-            val exception = DomainError.DataBaseError("Error")
+            val exception = DomainError.DatabaseError("Error")
             given(homeRepository.user()) willAnswer {
                 throw exception
             }

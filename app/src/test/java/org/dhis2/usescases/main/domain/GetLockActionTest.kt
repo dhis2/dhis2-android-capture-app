@@ -45,7 +45,7 @@ class GetLockActionTest {
     fun `should return failure if an exception is thrown`() =
         runTest {
             given(homeRepository.isPinStored()) willAnswer {
-                throw DomainError.DataBaseError("Test")
+                throw DomainError.DatabaseError("Test")
             }
             val result = getLockAction()
             assertTrue(result.isFailure)

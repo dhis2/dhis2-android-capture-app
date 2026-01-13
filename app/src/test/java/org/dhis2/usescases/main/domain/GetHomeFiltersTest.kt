@@ -36,7 +36,7 @@ class GetHomeFiltersTest {
     fun `should return a failure when an exception is thrown`() =
         runTest {
             given(filterRepository.homeFilters()) willAnswer {
-                throw DomainError.DataBaseError("Test")
+                throw DomainError.DatabaseError("Test")
             }
             val result = getHomeFilters()
             assert(result.isFailure)

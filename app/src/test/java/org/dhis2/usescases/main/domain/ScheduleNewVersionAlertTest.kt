@@ -42,7 +42,7 @@ class ScheduleNewVersionAlertTest {
     @Test
     fun `should return failure when remove version info fails`() =
         runTest {
-            val exception = DomainError.DataBaseError("Error")
+            val exception = DomainError.DatabaseError("Error")
             given(versionRepository.removeVersionInfo()).willAnswer {
                 throw exception
             }

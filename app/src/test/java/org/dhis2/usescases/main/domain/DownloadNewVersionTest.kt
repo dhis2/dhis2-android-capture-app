@@ -50,7 +50,7 @@ class DownloadNewVersionTest {
     fun `should return failure if an exception is thrown`() =
         runTest {
             given(versionRepository.download(any(), any(), any())) willAnswer {
-                throw DomainError.DataBaseError("Test")
+                throw DomainError.DatabaseError("Test")
             }
             val context: Context = mock()
 

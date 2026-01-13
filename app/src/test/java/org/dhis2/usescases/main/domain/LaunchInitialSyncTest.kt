@@ -1,9 +1,7 @@
 package org.dhis2.usescases.main.domain
 
 import kotlinx.coroutines.test.runTest
-import org.dhis2.commons.Constants
 import org.dhis2.data.service.VersionRepository
-import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.data.HomeRepository
@@ -20,7 +18,6 @@ import org.mockito.kotlin.whenever
 class LaunchInitialSyncTest {
     private val homeRepository: HomeRepository = mock()
     private val versionRepository: VersionRepository = mock()
-    private val workManagerController: WorkManagerController = mock()
     private lateinit var launchInitialSync: LaunchInitialSync
 
     @Test
@@ -31,7 +28,6 @@ class LaunchInitialSyncTest {
                     skipSync = true,
                     homeRepository = homeRepository,
                     versionRepository = versionRepository,
-                    workManagerController = workManagerController,
                 )
 
             val result = launchInitialSync()
@@ -40,7 +36,6 @@ class LaunchInitialSyncTest {
             assertEquals(InitialSyncAction.Skip, result.getOrNull())
             verifyNoInteractions(homeRepository)
             verifyNoInteractions(versionRepository)
-            verifyNoInteractions(workManagerController)
         }
 
     @Test
@@ -52,7 +47,6 @@ class LaunchInitialSyncTest {
                     skipSync = false,
                     homeRepository = homeRepository,
                     versionRepository = versionRepository,
-                    workManagerController = workManagerController,
                 )
 
             val result = launchInitialSync()
@@ -71,7 +65,6 @@ class LaunchInitialSyncTest {
                     skipSync = false,
                     homeRepository = homeRepository,
                     versionRepository = versionRepository,
-                    workManagerController = workManagerController,
                 )
 
             val result = launchInitialSync()
@@ -90,7 +83,6 @@ class LaunchInitialSyncTest {
                     skipSync = false,
                     homeRepository = homeRepository,
                     versionRepository = versionRepository,
-                    workManagerController = workManagerController,
                 )
 
             val result = launchInitialSync()
@@ -98,16 +90,12 @@ class LaunchInitialSyncTest {
             assertTrue(result.isSuccess)
             assertEquals(InitialSyncAction.Syncing, result.getOrNull())
             verify(versionRepository).checkVersionUpdates()
-            verify(workManagerController).syncDataForWorker(
-                Constants.DATA_NOW,
-                Constants.INITIAL_SYNC,
-            )
         }
 
     @Test
     fun `should return failure if check version update fails`() =
         runTest {
-            val exception = DomainError.DataBaseError("Error")
+            val exception = DomainError.DatabaseError("Error")
             whenever(homeRepository.isImportedDb()) doReturn false
             whenever(homeRepository.getInitialSyncDone()) doReturn false
             given(versionRepository.checkVersionUpdates()).willAnswer {
@@ -118,7 +106,6 @@ class LaunchInitialSyncTest {
                     skipSync = false,
                     homeRepository = homeRepository,
                     versionRepository = versionRepository,
-                    workManagerController = workManagerController,
                 )
 
             val result = launchInitialSync()
@@ -130,7 +117,7 @@ class LaunchInitialSyncTest {
     @Test
     fun `should return failure if home repository fails`() =
         runTest {
-            val exception = DomainError.DataBaseError("Error")
+            val exception = DomainError.DatabaseError("Error")
             given(homeRepository.isImportedDb()).willAnswer {
                 throw exception
             }
@@ -139,7 +126,6 @@ class LaunchInitialSyncTest {
                     skipSync = false,
                     homeRepository = homeRepository,
                     versionRepository = versionRepository,
-                    workManagerController = workManagerController,
                 )
 
             val result = launchInitialSync()
