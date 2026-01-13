@@ -230,7 +230,7 @@ class MainPresenter(
                 .user()
                 .blockingGet()
                 ?.uid() ?: ""
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
 
@@ -373,7 +373,7 @@ class MainPresenter(
             versionRepository.download(
                 context = context,
                 onDownloadCompleted = {
-                    onDownloadCompleted(it)
+                    onDownloadCompleted(it.toUri())
                     downloadingVersion.value = false
                 },
                 onDownloading = { downloadingVersion.value = true },
