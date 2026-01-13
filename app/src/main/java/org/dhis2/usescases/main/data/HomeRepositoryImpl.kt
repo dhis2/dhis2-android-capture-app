@@ -194,7 +194,7 @@ class HomeRepositoryImpl(
         }
 
     override suspend fun stopBackgroundSync() {
-        workManagerController.cancelAllWork()
+        workManagerController.cancelAllWorkAndWait()
         workManagerController.pruneWork()
     }
 
