@@ -28,11 +28,7 @@ class LocaleManager {
         ): Context {
             val config = updateConfiguration(context, language)
 
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                context.createConfigurationContext(config)
-            } else {
-                context
-            }
+            return context.createConfigurationContext(config)
         }
 
         @JvmStatic
