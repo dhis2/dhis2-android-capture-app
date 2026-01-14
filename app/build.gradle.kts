@@ -5,6 +5,9 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.text.SimpleDateFormat
 import java.util.Date
 
+group = "org.hisp.dhis"
+version = libs.versions.vName.get()
+
 plugins {
     id("com.android.application")
     kotlin("android")
