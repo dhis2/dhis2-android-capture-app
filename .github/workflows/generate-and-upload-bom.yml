@@ -1,4 +1,4 @@
-name: 'This workflow creates bill of material and uploads it to Dependency-Track each night'
+name: 'Dependency Tracker'
 
 on:
   schedule:
@@ -22,13 +22,3 @@ jobs:
         run: chmod +x ./gradlew
       - name: Generate BOM
         run: ./gradlew cyclonedxBom
-      - name: Upload SBOM to DependencyTrack
-        env:
-          DEPENDENCY_TRACK_API: 'https://dt.security.dhis2.org/api/v1/bom'
-        run: |
-          curl -X POST "$DEPENDENCY_TRACK_API" \
-              --fail-with-body \
-              -H "Content-Type: multipart/form-data" \
-              -H "X-Api-Key: ${{ secrets.DEPENDENCYTRACK_APIKEY }}" \
-              -F "project=5d9c948b-3968-4f47-867f-3b7f04ba9fb6" \
-              -F "bom=@build/reports/bom.json"
