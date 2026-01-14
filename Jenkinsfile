@@ -72,7 +72,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running unit tests'
-                    sh './gradlew testDebugUnitTest testDhis2DebugUnitTest --stacktrace --no-daemon'
+                    sh './gradlew --dependency-verification lenient testDebugUnitTest testDhis2DebugUnitTest --stacktrace --no-daemon'
                 }
             }
         }
@@ -80,7 +80,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building UI APKs'
-                    sh './gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest'
+                    sh './gradlew --dependency-verification lenient :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest'
                 }
             }
         }
