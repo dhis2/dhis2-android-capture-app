@@ -1,7 +1,6 @@
 package org.dhis2.usescases.main.domain
 
 import android.content.Context
-import android.net.Uri
 import kotlinx.coroutines.test.runTest
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.error.DomainError
@@ -27,7 +26,7 @@ class DownloadNewVersionTest {
     fun `should successfully download new version`() =
         runTest {
             // GIVEN
-            val fakeUri: Uri = mock()
+            val fakeUriPath = "fakeUriPath"
             whenever(
                 versionRepository.download(
                     context = any(),
@@ -36,8 +35,8 @@ class DownloadNewVersionTest {
                 ),
             ).thenAnswer {
                 // Simulate the callback being called upon successful download
-                val onDownloadCompletedCallback = it.getArgument<(Uri) -> Unit>(1)
-                onDownloadCompletedCallback.invoke(fakeUri)
+                val onDownloadCompletedCallback = it.getArgument<(String) -> Unit>(1)
+                onDownloadCompletedCallback.invoke(fakeUriPath)
             }
             val context: Context = mock()
 
