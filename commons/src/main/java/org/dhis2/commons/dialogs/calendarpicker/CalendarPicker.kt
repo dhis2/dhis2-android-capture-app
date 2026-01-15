@@ -3,12 +3,9 @@ package org.dhis2.commons.dialogs.calendarpicker
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.DatePicker
-import android.widget.LinearLayout
-import androidx.databinding.BindingAdapter
 import org.dhis2.commons.R
 import org.dhis2.commons.databinding.CalendarPickerViewBinding
 import org.dhis2.commons.dialogs.calendarpicker.di.CalendarPickerComponentProvider
@@ -172,15 +169,5 @@ class CalendarPicker(
             datePicker.maxDate = it.time
             calendarPicker.maxDate = it.time
         }
-    }
-}
-
-@BindingAdapter("versionCustomVisibility")
-fun setCustomVisibility(
-    linearLayout: LinearLayout,
-    check: Boolean,
-) {
-    if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-        linearLayout.visibility = View.GONE
     }
 }

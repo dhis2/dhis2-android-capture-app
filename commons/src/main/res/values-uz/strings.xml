@@ -168,4 +168,5 @@
     <string name="period_monthly_title">Ой</string>
     <string name="period_quarter_title">Чорак</string>
     <string name="period_yearly_title">Йил</string>
-    </resources>
+    <string name="action_clear_all">Барчасини тозалаш</string>
+</resources>
