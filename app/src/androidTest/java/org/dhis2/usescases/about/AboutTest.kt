@@ -1,5 +1,6 @@
 package org.dhis2.usescases.about
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.bindings.buildInfo
@@ -18,13 +19,16 @@ class AboutTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
     fun shouldCheckVersionsWhenOpenAboutScreen() {
         startActivity()
         val appVersion = getAppVersionName()
         val sdkVersion = getSDKVersionName()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickAbout()
         }
