@@ -53,9 +53,16 @@ jobs:
         id: read-version
         run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> "$GITHUB_OUTPUT"
 
+      - name: Get JIRA issue number
+        id: jira-issue-number
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          JIRA_ISSUE=$(echo "$BRANCH_NAME" | grep -oE '[a-zA-Z]+-[0-9]+' | head -1 || echo "$BRANCH_NAME")
+          echo "issue=$JIRA_ISSUE" >> "$GITHUB_OUTPUT"
+
       # Upload Artifact Build
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/debug/dhis2-v${{ steps.read-version.outputs.vName }}.apk
+          path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/debug/dhis2-v${{ steps.read-version.outputs.vName }}-${ steps.jira-issue-number.outputs.issue}}.apk
