@@ -15,9 +15,9 @@ import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
 import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
-import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -31,7 +31,7 @@ class PinViewModelTest {
     private val resourceProvider: PinResourceProvider = mock()
     private val testDispatcher = StandardTestDispatcher()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
     }
