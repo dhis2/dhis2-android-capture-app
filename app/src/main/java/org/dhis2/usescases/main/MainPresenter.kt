@@ -40,6 +40,7 @@ import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
@@ -230,7 +231,7 @@ class MainPresenter(
                 .user()
                 .blockingGet()
                 ?.uid() ?: ""
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ""
         }
 
@@ -373,7 +374,7 @@ class MainPresenter(
             versionRepository.download(
                 context = context,
                 onDownloadCompleted = {
-                    onDownloadCompleted(it)
+                    onDownloadCompleted(it.toUri())
                     downloadingVersion.value = false
                 },
                 onDownloading = { downloadingVersion.value = true },
