@@ -51,9 +51,11 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
+import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
-import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -114,7 +116,8 @@ fun SearchParametersScreen(
                             onShowOrgUnit(
                                 uiEvent.uid,
                                 uiEvent.value?.let { listOf(it) } ?: emptyList(),
-                                uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
+                                uiEvent.orgUnitSelectorScope
+                                    ?: OrgUnitSelectorScope.UserSearchScope(),
                                 uiEvent.label,
                             )
 
@@ -252,14 +255,51 @@ fun SearchParametersScreen(
                                     .testTag("SEARCH_PARAM_ITEM"),
                             model =
                                 provideParameterSelectorItem(
-                                    resources = resourceManager,
-                                    focusManager = focusManager,
-                                    fieldUiModel = fieldUiModel,
-                                    callback = callback,
+                                    inputModel =
+                                        fieldUiModel.toParameterInputModel(
+                                            onValueChange = { value ->
+                                                fieldUiModel.onSave(value)
+                                            },
+                                            fetchOptions = {
+                                                intentHandler(
+                                                    FormIntent.FetchOptions(
+                                                        uid = fieldUiModel.uid,
+                                                        optionSetUid = fieldUiModel.optionSet!!,
+                                                        value = fieldUiModel.value,
+                                                    ),
+                                                )
+                                            },
+                                        ),
+                                    // TODO is this always the same string?, check if it is optional somewhere
+                                    helperText = resourceManager.getString(R.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
                                         if (nextIndex < uiState.items.size) {
                                             uiState.items[nextIndex].onItemClick()
+                                        }
+                                    },
+                                    onUiEvent = { uiEvent ->
+                                        when (uiEvent) {
+                                            is TrackerInputUiEvent.OnQRButtonClicked -> {
+                                                callback.recyclerViewUiEvents(
+                                                    RecyclerViewUiEvents.ScanQRCode(
+                                                        uid = fieldUiModel.uid,
+                                                        optionSet = fieldUiModel.optionSet,
+                                                        renderingType = fieldUiModel.renderingType,
+                                                    ),
+                                                )
+                                            }
+
+                                            is TrackerInputUiEvent.OnBarcodeButtonClicked -> {
+                                                callback.recyclerViewUiEvents(
+                                                    RecyclerViewUiEvents.ScanQRCode(
+                                                        uid = fieldUiModel.uid,
+                                                        optionSet = fieldUiModel.optionSet,
+                                                        renderingType = fieldUiModel.renderingType,
+                                                    ),
+                                                )
+                                            }
+                                            is TrackerInputUiEvent.OnOrgUnitButtonClicked -> TODO()
                                         }
                                     },
                                 ),
