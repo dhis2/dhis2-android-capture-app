@@ -34,4 +34,10 @@ interface HomeRepository {
     suspend fun getInitialSyncDone(): Boolean
 
     suspend fun isImportedDb(): Boolean
+
+    suspend fun stopBackgroundSync()
+
+    suspend fun restoreSyncStatus()
+
+    suspend fun syncData()
 }

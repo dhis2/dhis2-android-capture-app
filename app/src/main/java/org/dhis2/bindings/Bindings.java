@@ -5,11 +5,9 @@ import android.content.res.TypedArray;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -166,13 +164,6 @@ public class Bindings {
 
         imageView.setBackground(drawable);
 
-    }
-
-    @BindingAdapter("versionVisibility")
-    public static void setVisibility(LinearLayout linearLayout, boolean check) {
-        if (check && Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            linearLayout.setVisibility(View.GONE);
-        }
     }
 
     @BindingAdapter("settingIcon")

@@ -63,7 +63,6 @@ kotlin {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    api(project(":ui-components"))
     implementation(project(":commonskmm"))
 
     api(libs.dhis2.android.sdk) {

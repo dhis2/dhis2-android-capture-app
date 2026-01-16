@@ -260,7 +260,7 @@ class LoginRepositoryImpl(
             preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
                 cryptographyManager
                     .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
-                    ?.let { cipher ->
+                    .let { cipher ->
                         suspendCancellableCoroutine { continuation ->
                             authenticator.authenticate(cipher) { cipher ->
                                 val pass =

@@ -136,4 +136,5 @@
     <string name="period_daily_title">Кунлик</string>
     <string name="period_weekly_title">Hafta</string>
     <string name="period_yearly_title">Yil</string>
-    </resources>
+    <string name="action_clear_all">Barchasini tozalash</string>
+</resources>

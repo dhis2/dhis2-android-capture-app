@@ -307,6 +307,7 @@ class DataSetTest : BaseTest() {
         val cellId = "PGRlPlhOcmpYcVpySEQ4Ojxjb2M+SGxsdlg1MGNYQzA="
         val threeDaysFromNowStr = threeDaysFromNow.format(formatter)
         val fiveDaysAgoStr = fiveDaysAgo.format(formatter)
+
         enterDataSetStep(
             uid = dataSetUid,
             name = dataSetName,
@@ -318,10 +319,7 @@ class DataSetTest : BaseTest() {
         )
 
         checkTableIsNotEditable()
-        dataSetTableRobot(composeTestRule) {
-            tapOnSaveButton()
-        }
-        composeTestRule.waitForIdle()
+
         createDailyPeriodDataSetInstanceStep(
             date = threeDaysFromNowStr,
             orgUnit = orgUnit,
@@ -387,8 +385,9 @@ class DataSetTest : BaseTest() {
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").printToLog("TABLE_LOG")
         dataSetTableRobot(composeTestRule) {
             checkItemWithTextIsDisplayed("This data is not editable")
+            tapOnSaveButton()
+            composeTestRule.waitForIdle()
         }
-        composeTestRule.waitForIdle()
     }
 
     private suspend fun checkContentBoxesAreDisplayed() {
