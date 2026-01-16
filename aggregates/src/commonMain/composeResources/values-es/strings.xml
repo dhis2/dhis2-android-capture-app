@@ -28,7 +28,7 @@
     <string name="ok">Aceptar</string>
     <string name="dataset_saved_completed">¡Guardado y completado!</string>
     <string name="error_on_complete_dataset">Ha ocurrido un error al completar el conjunto de datos</string>
-    <string name="run_validation_rules">¿Quieree validar la calidad de los datos?</string>
+    <string name="run_validation_rules">¿Quiere validar la calidad de los datos?</string>
     <string name="no">No</string>
     <string name="yes">Sí</string>
     <string name="error">Error</string>

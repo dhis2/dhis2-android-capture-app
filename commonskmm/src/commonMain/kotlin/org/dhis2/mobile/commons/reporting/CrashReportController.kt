@@ -5,11 +5,6 @@ interface CrashReportController {
 
     fun close()
 
-    fun trackUser(
-        user: String?,
-        server: String?,
-    )
-
     fun trackServer(
         server: String?,
         serverDhisVersion: String?,

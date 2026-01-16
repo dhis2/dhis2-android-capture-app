@@ -45,7 +45,6 @@ class SplashPresenter internal constructor(
                                 trackUserInfo(
                                     serverUrl = systemInfo?.contextPath() ?: "",
                                     serverVersion = systemInfo?.version() ?: "",
-                                    userName = userManager.userName().blockingGet(),
                                 )
                             }
                             view.goToNextScreen(
@@ -87,10 +86,8 @@ class SplashPresenter internal constructor(
     private fun trackUserInfo(
         serverUrl: String,
         serverVersion: String,
-        userName: String,
     ) {
         crashReportController.trackServer(serverUrl, serverVersion)
-        crashReportController.trackUser(userName, serverUrl)
     }
 
     fun getAccounts(): Int =
