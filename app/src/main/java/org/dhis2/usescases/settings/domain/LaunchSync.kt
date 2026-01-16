@@ -73,6 +73,8 @@ class LaunchSync(
         data object InProgress : SyncStatus
 
         data object Finished : SyncStatus
+
+        data object Cancelled : SyncStatus
     }
 
     data class SyncStatusProgress(
@@ -103,6 +105,13 @@ class LaunchSync(
     ): SyncStatusProgress {
         if (workState != null) {
             when (workState) {
+                WorkInfo.State.CANCELLED ->
+                    when (workerTag) {
+                        Constants.META_NOW -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Cancelled) }
+                        Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Cancelled) }
+                        else -> syncStatus
+                    }
+
                 WorkInfo.State.ENQUEUED,
                 WorkInfo.State.RUNNING,
                 WorkInfo.State.BLOCKED,

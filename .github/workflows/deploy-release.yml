@@ -26,7 +26,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Set repository name as env variable
       run: echo "repository_name=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
@@ -43,7 +43,7 @@ jobs:
 
     - name: Decode Keystore
       id: decode_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
@@ -52,6 +52,7 @@ jobs:
       run: ./gradlew app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -59,7 +60,7 @@ jobs:
 
     - name: Decode Training Keystore
       id: decode_training_keystore
-      uses: timheuer/base64-to-file@v1
+      uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
       with:
         fileName: 'dhis_training_keystore.jks'
         encodedString: ${{ secrets.TRAINING_KEYSTORE_BASE64 }}
@@ -67,6 +68,7 @@ jobs:
     - name: Build Training APK
       env:
         SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         TRAINING_KEY_ALIAS: ${{ secrets.TRAINING_KEY_ALIAS }}
         TRAINING_KEY_PASSWORD: ${{ secrets.TRAINING_KEY_PASSWORD }}
         TRAINING_STORE_PASSWORD: ${{ secrets.TRAINING_STORE_PASSWORD }}
@@ -76,11 +78,11 @@ jobs:
     - name: Read version name from file
       working-directory: ./gradle
       id: read-version
-      run: echo "::set-output name=vName::$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')"
+      run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> $GITHUB_OUTPUT
 
     - name: Upload to Play Store
       if: ${{ inputs.google_play_release }}
-      uses: r0adkll/upload-google-play@v1
+      uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         packageName: com.dhis2
@@ -92,7 +94,7 @@ jobs:
 
     - name: Upload to Github
       if: ${{ inputs.github_release }}
-      uses: ncipollo/release-action@v1
+      uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b
       with:
         allowUpdates: true
         draft: true

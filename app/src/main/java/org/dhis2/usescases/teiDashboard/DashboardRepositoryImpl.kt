@@ -517,24 +517,23 @@ class DashboardRepositoryImpl(
         }
     }
 
-    private fun getOwnerOrgUnit(teiUid: String): OrganisationUnit? {
-        val orgUnitId =
-            d2
-                .trackedEntityModule()
-                .trackedEntityInstances()
-                .withProgramOwners()
-                .uid(teiUid)
-                .blockingGet()
-                ?.programOwners()
-                ?.first { it.trackedEntityInstance() == teiUid }
-                ?.ownerOrgUnit()
-
-        return d2
-            .organisationUnitModule()
-            .organisationUnits()
-            .uid(orgUnitId)
+    private fun getOwnerOrgUnit(teiUid: String): OrganisationUnit? =
+        d2
+            .trackedEntityModule()
+            .trackedEntityInstances()
+            .withProgramOwners()
+            .uid(teiUid)
             .blockingGet()
-    }
+            ?.programOwners()
+            ?.firstOrNull { it.trackedEntityInstance() == teiUid }
+            ?.ownerOrgUnit()
+            ?.let { orgUnitUid ->
+                d2
+                    .organisationUnitModule()
+                    .organisationUnits()
+                    .uid(orgUnitUid)
+                    .blockingGet()
+            }
 
     override fun getDashboardModel(): DashboardModel =
         if (programUid.isNullOrEmpty()) {

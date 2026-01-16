@@ -15,7 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.dhis2.commons.date.DateUtils
@@ -66,7 +67,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
-import kotlin.collections.forEach
 
 class FormViewModel(
     private val repository: FormRepository,
@@ -123,28 +123,32 @@ class FormViewModel(
     var filePath: String? = null
 
     init {
-        viewModelScope.launch {
-            pendingIntents
-                .distinctUntilChanged { old, new ->
-                    if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
-                        false
-                    } else {
-                        old == new
-                    }
-                }.map { intent -> createRowActionStore(intent) }
-                .flowOn(dispatcher.io())
-                .collect { result -> displayResult(result) }
-        }
+
+        pendingIntents
+            .distinctUntilChanged { old, new ->
+                if (old is FormIntent.OnFinish && new is FormIntent.OnFinish) {
+                    false
+                } else {
+                    old == new
+                }
+            }.onEach { intent ->
+                FormCountingIdlingResource.increment()
+                val result = createRowActionStore(intent)
+                displayResult(result)
+                FormCountingIdlingResource.decrement()
+            }.flowOn(dispatcher.io())
+            .launchIn(viewModelScope)
 
         viewModelScope.launch(dispatcher.io()) {
             fieldListChannel.consumeEach { fieldListConfiguration ->
+                FormCountingIdlingResource.increment()
                 val result = repository.composeList(fieldListConfiguration.skipProgramRules)
                 _items.postValue(result)
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
+                FormCountingIdlingResource.decrement()
             }
-            FormCountingIdlingResource.decrement()
         }
 
         loadData()
@@ -155,14 +159,14 @@ class FormViewModel(
             when (it) {
                 ValueStoreResult.VALUE_CHANGED -> {
                     result.first.let {
-                        _savedValue.value = it
+                        _savedValue.postValue(it)
                     }
                     processCalculatedItems()
                 }
 
                 ValueStoreResult.ERROR_UPDATING_VALUE -> {
                     loading.postValue(false)
-                    showToast.value = R.string.update_field_error
+                    showToast.postValue(R.string.update_field_error)
                     processCalculatedItems(true)
                 }
 
@@ -174,11 +178,12 @@ class FormViewModel(
                 }
 
                 ValueStoreResult.VALUE_NOT_UNIQUE -> {
-                    showInfo.value =
+                    showInfo.postValue(
                         InfoUiModel(
                             R.string.error,
                             R.string.unique_warning,
-                        )
+                        ),
+                    )
                     processCalculatedItems()
                 }
 
@@ -189,15 +194,13 @@ class FormViewModel(
                 ValueStoreResult.TEXT_CHANGING -> {
                     result.first.let {
                         Timber.d("${result.first.id} is changing its value")
-                        _queryData.value = it
+                        _queryData.postValue(it)
                     }
                     if (repository.hasLegendSet(result.first.id)) {
                         handler.removeCallbacksAndMessages(null)
                         handler.postDelayed({
                             processCalculatedItems(skipProgramRules = true)
                         }, 500L)
-                    } else {
-                        FormCountingIdlingResource.decrement()
                     }
                 }
 
@@ -806,9 +809,11 @@ class FormViewModel(
         skipProgramRules: Boolean = false,
         finish: Boolean = false,
     ) {
-        fieldListChannel.trySend(
-            FieldListConfiguration(skipProgramRules, finish),
-        )
+        viewModelScope.launch {
+            fieldListChannel.send(
+                FieldListConfiguration(skipProgramRules, finish),
+            )
+        }
     }
 
     fun updateConfigurationErrors() {
@@ -817,6 +822,7 @@ class FormViewModel(
 
     fun runDataIntegrityCheck(backButtonPressed: Boolean? = null) {
         viewModelScope.launch {
+            FormCountingIdlingResource.increment()
             val result =
                 async(dispatcher.io()) {
                     repository.runDataIntegrityCheck(backPressed = backButtonPressed ?: false)
@@ -828,6 +834,7 @@ class FormViewModel(
             } finally {
                 val list = repository.composeList()
                 _items.postValue(list)
+                FormCountingIdlingResource.decrement()
             }
         }
     }
@@ -1008,6 +1015,7 @@ class FormViewModel(
     fun loadData() {
         loading.postValue(true)
         viewModelScope.launch(dispatcher.io()) {
+            FormCountingIdlingResource.increment()
             val result = repository.fetchFormItems(openErrorLocation)
             dateFormatConfig =
                 async {
@@ -1018,6 +1026,8 @@ class FormViewModel(
             } catch (e: Exception) {
                 Timber.e(e)
                 _items.postValue(emptyList())
+            } finally {
+                FormCountingIdlingResource.decrement()
             }
         }
     }

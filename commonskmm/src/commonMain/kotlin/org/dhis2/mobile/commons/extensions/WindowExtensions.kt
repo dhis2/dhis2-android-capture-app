@@ -6,7 +6,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 
 @Composable
-internal expect fun getWindowSizeClass(): WindowSizeClass
+expect fun getWindowSizeClass(): WindowSizeClass
 
 @Composable
 fun deviceIsInLandscapeMode(): Boolean {

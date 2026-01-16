@@ -1,9 +1,7 @@
-• Updated SDK 1.13.0.1
-• New custom intents feature enables seamless integration with third-party Android apps through configurable settings
-• Sync data based on working lists defined in Capture web app
-• Redesigned login experience with modern UI and future 2FA support
-• Updated settings menu with cleaner navigation
-• Edge-to-edge improvements for better screen utilization on modern devices and tablets
-• Reduced app size for easier installation
-
+This is a patch version that fixes:
+- ANDROAPP-7269 Crash on search
+- ANDROAPP-7293 Bottom sheet landscape behavior
+- ANDROAPP-7345 Changes to enrollment date not respected by program rules
+- ANDROAPP-7368 Crash when trying to update fields in Tracker
+....
 You can find all the details on Jira and Github.

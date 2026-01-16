@@ -35,7 +35,6 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.inputfield.FieldProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InfoBarData
 import org.hisp.dhis.mobile.ui.designsystem.component.Section
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
@@ -106,6 +105,7 @@ fun Form(
                             scrollState.animateScrollToItem(sections.indexOf(it))
                         }
                     } ?: run {
+                        intentHandler.invoke(FormIntent.OnFocus("", null))
                         focusManager.clearFocus()
                     }
                 }
@@ -197,25 +197,20 @@ fun NoFieldsWarning(resources: ResourceManager) {
                 .padding(Spacing.Spacing16),
     ) {
         InfoBar(
-            infoBarData =
-                InfoBarData(
-                    text = resources.getString(R.string.form_without_fields),
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Outlined.ErrorOutline,
-                            contentDescription = "no fields",
-                            tint = SurfaceColor.Warning,
-                        )
-                    },
-                    color = SurfaceColor.Warning,
-                    backgroundColor = SurfaceColor.WarningContainer,
-                    actionText = null,
-                    onClick = null,
-                ),
             modifier =
                 Modifier
                     .clip(shape = RoundedCornerShape(Radius.Full))
                     .background(SurfaceColor.WarningContainer),
+            text = resources.getString(R.string.form_without_fields),
+            icon = {
+                Icon(
+                    imageVector = Icons.Outlined.ErrorOutline,
+                    contentDescription = "no fields",
+                    tint = SurfaceColor.Warning,
+                )
+            },
+            textColor = SurfaceColor.Warning,
+            backgroundColor = SurfaceColor.WarningContainer,
         )
     }
 }

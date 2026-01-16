@@ -158,6 +158,7 @@ class RuleValidationHelperImpl(
             .get()
             .map {
                 it.toRuleVariableList(
+                    d2.optionModule().options(),
                     d2.trackedEntityModule().trackedEntityAttributes(),
                     d2.dataElementModule().dataElements(),
                 )
@@ -215,6 +216,8 @@ class RuleValidationHelperImpl(
                 .enrollments()
                 .byTrackedEntityInstance()
                 .eq(teiUid)
+                .byStatus()
+                .eq(EnrollmentStatus.ACTIVE)
                 .byProgram()
                 .eq(programUid)
                 .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
@@ -286,12 +289,7 @@ class RuleValidationHelperImpl(
                             .blockingGet()
                             ?.code(),
                     dataValues =
-                        event.trackedEntityDataValues()?.toRuleDataValue(
-                            event,
-                            d2.dataElementModule().dataElements(),
-                            d2.programModule().programRuleVariables(),
-                            d2.optionModule().options(),
-                        ) ?: emptyList(),
+                        event.trackedEntityDataValues()?.toRuleDataValue() ?: emptyList(),
                 )
             }.toList()
 

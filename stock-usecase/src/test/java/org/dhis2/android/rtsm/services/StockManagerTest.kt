@@ -15,12 +15,14 @@ import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.option.Option
@@ -39,6 +41,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -413,16 +416,24 @@ class StockManagerTest {
     }
 
     private fun mockEnrollmentCall(enrollment: Enrollment) {
-        val enrollmentCollectionRepository: EnrollmentCollectionRepository = mock()
+        val afterStatusRepo: EnrollmentCollectionRepository = mock()
+        val teiFilterConnector: StringFilterConnector<EnrollmentCollectionRepository> = mock()
+        val afterTeiRepo: EnrollmentCollectionRepository = mock()
         val enrollmentObjectRepository: ReadOnlyOneObjectRepositoryFinalImpl<Enrollment> = mock()
+
         whenever(
             d2
                 .enrollmentModule()
                 .enrollments()
-                .byTrackedEntityInstance()
-                .eq(any()),
-        ) doReturn enrollmentCollectionRepository
-        whenever(enrollmentCollectionRepository.one()) doReturn enrollmentObjectRepository
+                .byStatus()
+                .eq(EnrollmentStatus.ACTIVE),
+        ) doReturn afterStatusRepo
+
+        whenever(afterStatusRepo.byTrackedEntityInstance()) doReturn teiFilterConnector
+
+        whenever(teiFilterConnector.eq(anyOrNull())) doReturn afterTeiRepo
+
+        whenever(afterTeiRepo.one()) doReturn enrollmentObjectRepository
         whenever(enrollmentObjectRepository.blockingGet()) doReturn enrollment
     }
 

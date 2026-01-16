@@ -7,4 +7,4 @@ import androidx.compose.runtime.Composable
 
 @ExperimentalMaterial3WindowSizeClassApi
 @Composable
-internal actual fun getWindowSizeClass(): WindowSizeClass = calculateWindowSizeClass()
+actual fun getWindowSizeClass(): WindowSizeClass = calculateWindowSizeClass()

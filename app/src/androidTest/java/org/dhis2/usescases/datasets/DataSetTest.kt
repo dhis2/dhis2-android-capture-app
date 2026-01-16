@@ -24,12 +24,11 @@ import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
 
@@ -327,6 +326,11 @@ class DataSetTest : BaseTest() {
             date = threeDaysFromNowStr,
             orgUnit = orgUnit,
             catCombo = catCombo
+        )
+        // Wait for table to be ready after creating the second dataset instance
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag("TABLE_SCROLLABLE_COLUMN"),
+            timeoutMillis = 10000
         )
         tableIsVisible()
         enterDataStep(
@@ -943,26 +947,14 @@ class DataSetTest : BaseTest() {
                 clickOnInputCatCombo()
                 selectCatCombo(catCombo)
             }
-        }
-
-        dataSetInitialRobot (composeTestRule) {
             checkActionInputIsNotDisplayed()
             clickOnInputOrgUnit()
-        }
-
-        orgUnitSelectorRobot(composeTestRule) {
-            selectTreeOrgUnit(orgUnit)
-        }
-
-        dataSetInitialRobot(composeTestRule) {
+            orgUnitSelectorRobot(composeTestRule) {
+                selectTreeOrgUnit(orgUnit)
+            }
             checkActionInputIsNotDisplayed()
             clickOnInputPeriod()
-            composeTestRule.waitForIdle()
             chooseDate(date)
-        }
-
-
-        dataSetInitialRobot(composeTestRule) {
             checkActionInputIsDisplayed()
             clickOnActionButton()
         }
