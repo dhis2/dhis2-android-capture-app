@@ -206,7 +206,7 @@ class MainPresenterTest {
                 .serverUrl("https://www.random.com/")
                 .encrypted(false)
                 .databaseName("none")
-                .databaseCreationDate(DateUtils.SIMPLE_DATE_FORMAT.parse("16/2/2012"))
+                .databaseCreationDate(DateUtils.SIMPLE_DATE_FORMAT.parse("2012-2-16"))
                 .build()
         val secondRandomUserAccount =
             DatabaseAccount
@@ -215,7 +215,7 @@ class MainPresenterTest {
                 .serverUrl("https://www.random.com/")
                 .encrypted(false)
                 .databaseName("none")
-                .databaseCreationDate(DateUtils.SIMPLE_DATE_FORMAT.parse("16/2/2012"))
+                .databaseCreationDate(DateUtils.SIMPLE_DATE_FORMAT.parse("2012-2-16"))
                 .build()
 
         val randomFile = File("random")
