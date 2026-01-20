@@ -1,6 +1,7 @@
-name: 'This workflow creates bill of material and uploads it to Dependency-Track each night'
+name: 'Dependency Tracker'
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
 
