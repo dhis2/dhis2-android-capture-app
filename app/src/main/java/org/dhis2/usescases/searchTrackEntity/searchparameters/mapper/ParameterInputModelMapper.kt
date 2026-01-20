@@ -157,15 +157,9 @@ private fun getInputTypeByValueType(
         }
 
         ValueType.PHONE_NUMBER -> TrackerInputType.PHONE_NUMBER
-        ValueType.DATE,
-        ValueType.DATETIME,
-        ValueType.TIME,
-        -> {
-            when (periodSelector) {
-                null -> TrackerInputType.DATE_TIME
-                else -> TrackerInputType.PERIOD_SELECTOR
-            }
-        }
+        ValueType.DATE -> TrackerInputType.DATE
+        ValueType.DATETIME -> TrackerInputType.DATE_TIME
+        ValueType.TIME -> TrackerInputType.TIME
 
         ValueType.AGE -> TrackerInputType.AGE
         ValueType.MULTI_TEXT -> TrackerInputType.MULTI_SELECTION

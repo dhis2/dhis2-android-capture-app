@@ -372,11 +372,21 @@ fun ParameterInputProvider(
         }
 
         TrackerInputType.AGE -> {
-            // TODO
+            ProvideTrackerAgeInput(
+                model = inputModel,
+                inputStyle = inputStyle,
+                onNextClicked = onNextClicked,
+                modifier = modifierWithFocus,
+            )
         }
 
-        TrackerInputType.DATE_TIME -> {
-            TODO()
+        TrackerInputType.DATE_TIME, TrackerInputType.DATE, TrackerInputType.TIME -> {
+            ProvideTrackerDateTimeInput(
+                model = inputModel,
+                inputStyle = inputStyle,
+                onNextClicked = onNextClicked,
+                modifier = modifierWithFocus,
+            )
         }
 
         TrackerInputType.ORGANISATION_UNIT -> {

@@ -24,6 +24,8 @@ enum class TrackerInputType {
     YES_ONLY_SWITCH,
     YES_ONLY_CHECKBOX,
     DATE_TIME,
+    DATE,
+    TIME,
     PERIOD_SELECTOR,
     MATRIX,
     SEQUENTIAL,
