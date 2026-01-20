@@ -431,7 +431,11 @@ fun ParameterInputProvider(
                 legendData = inputModel.legend,
                 isRequired = inputModel.mandatory,
                 onItemsSelected = { checkBoxData ->
-                    val checkedValues = checkBoxData.filter { it.checked }.joinToString(",") { it.uid }
+                    val checkedValues =
+                        checkBoxData
+                            .filter { it.checked }
+                            .joinToString(",") { it.uid }
+                            .takeIf { it.isNotEmpty() }
                     inputModel.onValueChange(checkedValues)
                 },
                 onClearItemSelection = {
