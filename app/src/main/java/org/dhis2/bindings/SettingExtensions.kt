@@ -15,6 +15,7 @@ const val MANUAL = 0
 fun MetadataSyncPeriod.toSeconds(): Int =
     when (this) {
         MetadataSyncPeriod.EVERY_HOUR -> EVERY_HOUR
+        MetadataSyncPeriod.EVERY_6_HOURS -> EVERY_6_HOUR
         MetadataSyncPeriod.EVERY_12_HOURS -> EVERY_12_HOUR
         MetadataSyncPeriod.EVERY_24_HOURS -> EVERY_24_HOUR
         MetadataSyncPeriod.EVERY_7_DAYS -> EVERY_7_DAYS
