@@ -7,7 +7,6 @@ import org.dhis2.tracker.ui.input.model.inputState
 import org.dhis2.tracker.ui.input.model.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
@@ -40,7 +39,7 @@ fun TrackerRadioButtonInputProvider(
         inputStyle = inputStyle,
         title = model.label,
         radioButtonData = data,
-        orientation = Orientation.VERTICAL,
+        orientation = model.orientation,
         state = model.inputState(),
         supportingText = model.supportingText(),
         legendData = model.legend,

@@ -7,7 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.google.common.primitives.Booleans
+import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
@@ -16,11 +20,13 @@ import org.dhis2.tracker.ui.input.model.TrackerOptionItem
 import org.dhis2.tracker.ui.input.model.TrackerOptionSetConfiguration
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
+import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 
 @Composable
 fun FieldUiModel.toParameterInputModel(
     onValueChange: (String?) -> Unit,
     fetchOptions: () -> Unit,
+    resourceManager: ResourceManager,
 ): TrackerInputModel {
     val trackerInputType =
         when {
@@ -60,8 +66,12 @@ fun FieldUiModel.toParameterInputModel(
                     popUpLegendDescriptionData = it.legendsInfo,
                 )
             },
+        orientation = renderingType.getOrientation(),
         optionSetConfiguration =
-            optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions),
+            when (valueType) {
+                ValueType.BOOLEAN -> getBooleanOptionConfiguration(resourceManager)
+                else -> optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions)
+            },
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
     )
@@ -174,3 +184,27 @@ private fun getInputTypeByValueType(
         null,
         -> TrackerInputType.NOT_SUPPORTED
     }
+
+private fun UiRenderType?.getOrientation(): Orientation =
+    when (this) {
+        UiRenderType.HORIZONTAL_CHECKBOXES,
+        UiRenderType.HORIZONTAL_RADIOBUTTONS,
+        -> Orientation.HORIZONTAL
+
+        else -> Orientation.VERTICAL
+    }
+
+private fun getBooleanOptionConfiguration(resourceManager: ResourceManager) =
+    TrackerOptionSetConfiguration(
+        options =
+            listOf(
+                TrackerOptionItem(
+                    true.toString(),
+                    resourceManager.getString(R.string.yes),
+                ),
+                TrackerOptionItem(
+                    false.toString(),
+                    resourceManager.getString(R.string.no),
+                ),
+            ),
+    )

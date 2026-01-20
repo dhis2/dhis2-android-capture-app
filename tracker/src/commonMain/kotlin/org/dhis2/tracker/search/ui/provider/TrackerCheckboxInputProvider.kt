@@ -8,7 +8,6 @@ import org.dhis2.tracker.ui.input.model.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
-import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 
 @Composable
 fun TrackerCheckboxInputProvider(
@@ -40,7 +39,7 @@ fun TrackerCheckboxInputProvider(
         inputStyle = inputStyle,
         title = model.label,
         checkBoxData = data,
-        orientation = Orientation.VERTICAL,
+        orientation = model.orientation,
         state = model.inputState(),
         supportingText = model.supportingText(),
         legendData = model.legend,
