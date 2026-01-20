@@ -417,7 +417,7 @@ fun ParameterInputProvider(
                                     ?.split(",")
                                     ?.contains(code)
                             } ?: false,
-                        enabled = true,
+                        enabled = inputModel.editable,
                         textInput = optionItem.displayName,
                     )
                 } ?: emptyList()
