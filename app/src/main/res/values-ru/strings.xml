@@ -650,9 +650,9 @@
     <string name="dataset_overview">Детали</string>
     <string name="dataset_comments">Комментарии</string>
     <string name="saved">Сохранено!</string>
-    <string name="run_validation_rules">Вы хотите проверить качество данных\?</string>
+    <string name="run_validation_rules">Вы хотите проверить качество данных?</string>
     <string name="validation_success_title">Все выглядит хорошо!</string>
-    <string name="mark_dataset_complete">Вы также хотите завершить набор данных\?</string>
+    <string name="mark_dataset_complete">Вы также хотите завершить набор данных?</string>
     <string name="dataset_completed">Отметить как завершенное</string>
     <string name="name">Название</string>
     <string name="formula">Формула</string>

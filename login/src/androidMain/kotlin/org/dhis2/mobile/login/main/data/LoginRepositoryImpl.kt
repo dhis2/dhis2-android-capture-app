@@ -245,10 +245,6 @@ class LoginRepositoryImpl(
                     currentAccount?.serverUrl(),
                     systemInfo?.version(),
                 )
-                crashReportController.trackUser(
-                    currentAccount?.username(),
-                    currentAccount?.serverUrl(),
-                )
             }
         }
     }
@@ -264,7 +260,7 @@ class LoginRepositoryImpl(
             preferences.getBiometricCredentials()?.let { ciphertextWrapper ->
                 cryptographyManager
                     .getInitializedCipherForDecryption(ciphertextWrapper.initializationVector)
-                    ?.let { cipher ->
+                    .let { cipher ->
                         suspendCancellableCoroutine { continuation ->
                             authenticator.authenticate(cipher) { cipher ->
                                 val pass =

@@ -1,7 +1,7 @@
 package org.dhis2.commons.dialogs.bottomsheet
 
 import androidx.compose.ui.graphics.Color
-import org.dhis2.ui.R
+import org.dhis2.commons.R
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 

@@ -4,6 +4,7 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.HomeRepository
 import org.junit.Assert.assertTrue

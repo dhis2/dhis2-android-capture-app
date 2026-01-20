@@ -28,6 +28,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class DataSetTest : BaseTest() {
 
@@ -306,6 +307,7 @@ class DataSetTest : BaseTest() {
         val cellId = "PGRlPlhOcmpYcVpySEQ4Ojxjb2M+SGxsdlg1MGNYQzA="
         val threeDaysFromNowStr = threeDaysFromNow.format(formatter)
         val fiveDaysAgoStr = fiveDaysAgo.format(formatter)
+
         enterDataSetStep(
             uid = dataSetUid,
             name = dataSetName,
@@ -317,14 +319,16 @@ class DataSetTest : BaseTest() {
         )
 
         checkTableIsNotEditable()
-        dataSetTableRobot(composeTestRule) {
-            tapOnSaveButton()
-        }
-        composeTestRule.waitForIdle()
+
         createDailyPeriodDataSetInstanceStep(
             date = threeDaysFromNowStr,
             orgUnit = orgUnit,
             catCombo = catCombo
+        )
+        // Wait for table to be ready after creating the second dataset instance
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag("TABLE_SCROLLABLE_COLUMN"),
+            timeoutMillis = 10000
         )
         tableIsVisible()
         enterDataStep(
@@ -381,8 +385,9 @@ class DataSetTest : BaseTest() {
         composeTestRule.onNodeWithTag("TABLE_SCROLLABLE_COLUMN").printToLog("TABLE_LOG")
         dataSetTableRobot(composeTestRule) {
             checkItemWithTextIsDisplayed("This data is not editable")
+            tapOnSaveButton()
+            composeTestRule.waitForIdle()
         }
-        composeTestRule.waitForIdle()
     }
 
     private suspend fun checkContentBoxesAreDisplayed() {

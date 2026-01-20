@@ -28,9 +28,11 @@ import org.dhis2.data.server.UserManager
 import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
+import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
@@ -204,7 +206,7 @@ class MainPresenterTest {
                 .serverUrl("https://www.random.com/")
                 .encrypted(false)
                 .databaseName("none")
-                .databaseCreationDate("16/2/2012")
+                .databaseCreationDate(DateUtils.SIMPLE_DATE_FORMAT.parse("2012-2-16"))
                 .build()
         val secondRandomUserAccount =
             DatabaseAccount
@@ -213,7 +215,7 @@ class MainPresenterTest {
                 .serverUrl("https://www.random.com/")
                 .encrypted(false)
                 .databaseName("none")
-                .databaseCreationDate("16/2/2012")
+                .databaseCreationDate(DateUtils.SIMPLE_DATE_FORMAT.parse("2012-2-16"))
                 .build()
 
         val randomFile = File("random")

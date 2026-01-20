@@ -640,9 +640,9 @@
     <string name="dataset_overview">Тафсилотлари</string>
     <string name="dataset_comments">Изоҳлар</string>
     <string name="saved">Сақланди!</string>
-    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми\?</string>
+    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
     <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
-    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми\?</string>
+    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
     <string name="dataset_completed">Тугалланган сифатида белгилансин</string>
     <string name="name">Исми</string>
     <string name="formula">Формула</string>

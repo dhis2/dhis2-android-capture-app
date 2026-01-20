@@ -273,4 +273,5 @@
     <string name="period_monthly_title">Mês</string>
     <string name="period_quarter_title">Trimestral</string>
     <string name="period_yearly_title">Ano</string>
-    </resources>
+    <string name="action_clear_all">Limpar tudo</string>
+</resources>
