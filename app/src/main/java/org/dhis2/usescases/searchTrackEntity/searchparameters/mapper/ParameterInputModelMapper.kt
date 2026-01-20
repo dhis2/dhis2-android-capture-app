@@ -33,8 +33,7 @@ fun FieldUiModel.toParameterInputModel(
             }
 
             customIntent != null -> {
-                // TODO CUSTOM INTENT
-                TrackerInputType.NOT_SUPPORTED
+                TrackerInputType.CUSTOM_INTENT
             }
 
             eventCategories != null -> {
@@ -70,6 +69,7 @@ fun FieldUiModel.toParameterInputModel(
                 ValueType.BOOLEAN -> getBooleanOptionConfiguration(resourceManager)
                 else -> optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions)
             },
+        customIntentUid = customIntent?.uid,
         onItemClick = { onItemClick() },
         onValueChange = onValueChange,
     )

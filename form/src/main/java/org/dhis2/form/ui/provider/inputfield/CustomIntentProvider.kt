@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import org.dhis2.commons.resources.ResourceManager
+import androidx.compose.ui.res.stringResource
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.supportingText
@@ -29,7 +29,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 @Composable
 fun ProvideCustomIntentInput(
     fieldUiModel: FieldUiModel,
-    resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     inputStyle: InputStyle,
@@ -48,7 +47,7 @@ fun ProvideCustomIntentInput(
     val errorGettingDataMessage =
         SupportingTextData(
             state = SupportingTextState.ERROR,
-            text = resources.getString(R.string.custom_intent_error),
+            text = stringResource(R.string.custom_intent_error),
         )
     val fieldErrorMessage =
         SupportingTextData(
@@ -80,15 +79,16 @@ fun ProvideCustomIntentInput(
                         FormIntent.OnSave(
                             it.fieldUid,
                             it.value,
-                            fieldUiModel.valueType,
+                            null,
                         ),
                     )
                 }
             }
         }
+    val defaultLauncherTitle = stringResource(R.string.select_app_intent)
     InputCustomIntent(
         title = fieldUiModel.label,
-        buttonText = resources.getString(R.string.custom_intent_launch),
+        buttonText = stringResource(R.string.custom_intent_launch),
         supportingText = supportingTextList.toList(),
         inputShellState = inputShellState,
         inputStyle = inputStyle,
@@ -108,12 +108,12 @@ fun ProvideCustomIntentInput(
                 if (supportingTextList.contains(errorGettingDataMessage)) {
                     supportingTextList.remove(errorGettingDataMessage)
                 }
-                fieldUiModel.customIntent?.let {
+                fieldUiModel.customIntent?.let { customIntent ->
                     launcher.launch(
                         CustomIntentInput(
                             fieldUid = fieldUiModel.uid,
-                            customIntent = it,
-                            defaultTitle = fieldUiModel.customIntent?.name ?: resources.getString(R.string.select_app_intent),
+                            customIntent = customIntent,
+                            defaultTitle = customIntent.name ?: defaultLauncherTitle,
                         ),
                     )
                 }

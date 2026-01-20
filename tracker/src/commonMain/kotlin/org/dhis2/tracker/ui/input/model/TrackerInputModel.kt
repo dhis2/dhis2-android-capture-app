@@ -21,6 +21,7 @@ data class TrackerInputModel(
     val legend: LegendData?,
     val orientation: Orientation,
     val optionSetConfiguration: TrackerOptionSetConfiguration? = null,
+    val customIntentUid: String? = null,
     val onItemClick: () -> Unit,
     val onValueChange: (String?) -> Unit,
 )

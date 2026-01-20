@@ -19,12 +19,12 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.mobile.tracker.resources.Res
+import org.dhis2.mobile.tracker.resources.custom_intent_launch
 import org.dhis2.tracker.search.ui.provider.TrackerCheckboxInputProvider
 import org.dhis2.tracker.search.ui.provider.TrackerRadioButtonInputProvider
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent.*
 import org.dhis2.tracker.ui.input.model.inputState
 import org.dhis2.tracker.ui.input.model.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -412,7 +412,7 @@ fun ParameterInputProvider(
                 },
                 onOrgUnitActionCLicked = {
                     onUiEvent(
-                        OnOrgUnitButtonClicked(
+                        TrackerInputUiEvent.OnOrgUnitButtonClicked(
                             uid = inputModel.uid,
                             label = inputModel.label,
                             value = inputModel.value,
@@ -474,7 +474,7 @@ fun ParameterInputProvider(
                 inputTextFieldValue = textValue,
                 onQRButtonClicked = {
                     onUiEvent(
-                        OnQRButtonClicked(
+                        TrackerInputUiEvent.OnQRButtonClicked(
                             uid = inputModel.uid,
                         ),
                     )
@@ -503,7 +503,7 @@ fun ParameterInputProvider(
                 inputTextFieldValue = textValue,
                 onActionButtonClicked = {
                     onUiEvent(
-                        OnBarcodeButtonClicked(
+                        TrackerInputUiEvent.OnBarcodeButtonClicked(
                             uid = inputModel.uid,
                         ),
                     )
@@ -619,50 +619,44 @@ fun ParameterInputProvider(
         TrackerInputType.CUSTOM_INTENT -> {
             val values by remember(inputModel) {
                 derivedStateOf {
-                    inputModel.value?.takeIf { it.isNotEmpty() }?.let { value ->
-                        mutableListOf(*value.split(",").toTypedArray())
-                    } ?: mutableListOf()
+                    inputModel.value
+                        ?.takeIf { it.isNotEmpty() }
+                        ?.split(",")
+                        ?.toMutableList() ?: mutableListOf()
                 }
+            }
+
+            var customIntentState by remember(inputModel) {
+                mutableStateOf(
+                    if (inputModel.value.isNullOrEmpty()) {
+                        CustomIntentState.LAUNCH
+                    } else {
+                        CustomIntentState.LOADED
+                    },
+                )
             }
 
             InputCustomIntent(
                 title = inputModel.label,
                 buttonText = stringResource(Res.string.custom_intent_launch),
-                supportingText = supportingTextList.toList(),
+                supportingText = inputModel.supportingText(),
                 inputShellState = inputModel.inputState(),
                 inputStyle = inputStyle,
                 modifier = modifier,
                 isRequired = inputModel.mandatory,
                 onLaunch = {
-                    if (reEvaluateRequestParams) {
-                        customIntentState = CustomIntentState.LOADING
-                        uiEventHandler.invoke(
-                            RecyclerViewUiEvents.LaunchCustomIntent(
-                                fieldUiModel.customIntent,
-                                fieldUiModel.uid,
+                    customIntentState = CustomIntentState.LOADING
+                    inputModel.customIntentUid?.let { customIntentUid ->
+                        onUiEvent(
+                            TrackerInputUiEvent.OnLaunchCustomIntent(
+                                inputModel.uid,
+                                customIntentUid,
                             ),
                         )
-                    } else {
-                        customIntentState = CustomIntentState.LOADING
-                        if (supportingTextList.contains(errorGettingDataMessage)) {
-                            supportingTextList.remove(errorGettingDataMessage)
-                        }
-                        fieldUiModel.customIntent?.let {
-                            launcher.launch(
-                                CustomIntentInput(
-                                    fieldUid = fieldUiModel.uid,
-                                    customIntent = it,
-                                    defaultTitle =
-                                        fieldUiModel.customIntent?.name
-                                            ?: resources.getString(R.string.select_app_intent),
-                                ),
-                            )
-                        }
                     }
                 },
                 onClear = {
-                    values.clear()
-                    intentHandler(FormIntent.ClearValue(fieldUiModel.uid))
+                    inputModel.onValueChange(null)
                 },
                 customIntentState = customIntentState,
                 values = values.toList(),
