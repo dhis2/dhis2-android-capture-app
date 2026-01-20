@@ -678,9 +678,9 @@
     <string name="dataset_overview">Detalhes</string>
     <string name="dataset_comments">Comentarios</string>
     <string name="saved">Gravado!</string>
-    <string name="run_validation_rules">Você quer verificar a qualidade dos dados\?</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
     <string name="validation_success_title">Tudo parece bem!</string>
-    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados\?</string>
+    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados?</string>
     <string name="dataset_completed">Marcar como completado</string>
     <string name="name">Nome</string>
     <string name="formula">Fórmula</string>

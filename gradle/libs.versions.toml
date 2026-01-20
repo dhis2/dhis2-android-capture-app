@@ -4,7 +4,7 @@ lifecycleRuntimeCompose = "2.9.6"
 navigationCompose = "2.9.1"
 sdk = "36"
 minSdk = "23"
-vCode = "150"
+vCode = "151"
 vName = "3.4.0-DEV"
 gradle = "8.13.2"
 kotlin = '2.2.21'
@@ -44,7 +44,8 @@ rxandroid = "2.1.1"
 maplibremarkerview = "3.0.2"
 maplibreannotation = "3.0.2"
 matomo = "4.4"
-sentry = "8.23.0"
+sentry = "8.29.0"
+sentryPlugin = "5.12.2"
 timber = "5.0.1"
 rxlint = "1.7.8"
 crashactivity = "2.4.0"
@@ -228,6 +229,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
+sentry = { id = "io.sentry.android.gradle", version.ref = "sentryPlugin" }
 cyclonedx = { id = "org.cyclonedx.bom", version.ref = "cyclonedx" }
 
 [bundles]
