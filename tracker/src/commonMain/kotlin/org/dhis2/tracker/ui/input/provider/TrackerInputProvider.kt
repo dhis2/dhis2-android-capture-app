@@ -430,6 +430,7 @@ fun ParameterInputProvider(
                 supportingTextData = inputModel.supportingText(),
                 legendData = inputModel.legend,
                 isRequired = inputModel.mandatory,
+                inputStyle = inputStyle,
                 onItemsSelected = { checkBoxData ->
                     val checkedValues =
                         checkBoxData
