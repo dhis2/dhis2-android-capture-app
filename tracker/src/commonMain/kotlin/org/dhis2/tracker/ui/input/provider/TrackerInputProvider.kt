@@ -411,8 +411,12 @@ fun ParameterInputProvider(
                     CheckBoxData(
                         uid = optionItem.code,
                         checked =
-                            optionItem.code.let { inputModel.value?.split(",")?.contains(it) }
-                                ?: false,
+                            optionItem.code.let { code ->
+                                inputModel.value
+                                    ?.takeIf { it.isNotEmpty() }
+                                    ?.split(",")
+                                    ?.contains(code)
+                            } ?: false,
                         enabled = true,
                         textInput = optionItem.displayName,
                     )
