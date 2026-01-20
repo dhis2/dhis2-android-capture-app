@@ -133,12 +133,9 @@ private fun getInputTypeByValueType(
         ValueType.NUMBER -> TrackerInputType.NUMBER
         ValueType.INTEGER_NEGATIVE -> TrackerInputType.INTEGER_NEGATIVE
         ValueType.LONG_TEXT -> TrackerInputType.LONG_TEXT
-        ValueType.LETTER -> TrackerInputType.LETTER
         ValueType.INTEGER -> TrackerInputType.INTEGER
         ValueType.ORGANISATION_UNIT -> TrackerInputType.ORGANISATION_UNIT
-        ValueType.UNIT_INTERVAL -> TrackerInputType.UNIT_INTERVAL
         ValueType.EMAIL -> TrackerInputType.EMAIL
-        ValueType.URL -> TrackerInputType.URL
         ValueType.BOOLEAN -> {
             when (renderingType) {
                 UiRenderType.HORIZONTAL_CHECKBOXES,
@@ -169,13 +166,17 @@ private fun getInputTypeByValueType(
 
         ValueType.AGE -> TrackerInputType.AGE
         ValueType.MULTI_TEXT -> TrackerInputType.MULTI_SELECTION
-        ValueType.FILE_RESOURCE,
+
+        ValueType.USERNAME,
+        ValueType.LETTER,
+        ValueType.UNIT_INTERVAL,
+        ValueType.TRACKER_ASSOCIATE,
+        ValueType.REFERENCE,
         ValueType.COORDINATE,
         ValueType.IMAGE,
-        ValueType.REFERENCE,
+        ValueType.FILE_RESOURCE,
         ValueType.GEOJSON,
-        ValueType.USERNAME,
-        ValueType.TRACKER_ASSOCIATE,
+        ValueType.URL,
         null,
         -> TrackerInputType.NOT_SUPPORTED
     }
