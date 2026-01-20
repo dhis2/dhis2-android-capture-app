@@ -71,6 +71,15 @@ android {
             }
             storePassword = System.getenv("TRAINING_STORE_PASSWORD")
         }
+        val customKeystorePath = System.getenv("DEBUG_KEYSTORE_PATH")
+        if (customKeystorePath != null ) {
+            getByName("debug") {
+                keyAlias = System.getenv("DEBUG_KEYSTORE_ALIAS")
+                keyPassword = System.getenv("DEBUG_KEY_PASS")
+                storeFile = file(customKeystorePath)
+                storePassword = System.getenv("DEBUG_KEYSTORE_PASSWORD")
+            }
+        }
     }
 
     testOptions {

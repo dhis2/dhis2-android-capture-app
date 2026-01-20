@@ -42,11 +42,22 @@ jobs:
       - name: Change wrapper permissions
         run: chmod +x ./gradlew
 
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
+        with:
+          fileName: 'debug.keystore'
+          encodedString: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
+
       # Create APK Debug
       - name: Build apk debug project (APK) - ${{ env.main_project_module }} module
         run: ./gradlew --dependency-verification lenient assembleDhis2Debug
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          DEBUG_KEYSTORE_ALIAS: ${{ secrets.DEBUG_KEYSTORE_ALIAS }}
+          DEBUG_KEY_PASS: ${{ secrets.DEBUG_KEY_PASS }}
+          DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
+          DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
 
       - name: Read version name from file
         working-directory: ./gradle
