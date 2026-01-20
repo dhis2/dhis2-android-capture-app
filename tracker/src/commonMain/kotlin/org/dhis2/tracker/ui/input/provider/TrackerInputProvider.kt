@@ -32,6 +32,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.InputInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLetter
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLink
 import org.hisp.dhis.mobile.ui.designsystem.component.InputLongText
+import org.hisp.dhis.mobile.ui.designsystem.component.InputMultiSelection
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNegativeInteger
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNotSupported
 import org.hisp.dhis.mobile.ui.designsystem.component.InputNumber
@@ -405,7 +406,43 @@ fun ParameterInputProvider(
         }
 
         TrackerInputType.MULTI_SELECTION -> {
-            TODO()
+            val options =
+                inputModel.optionSetConfiguration?.options?.map { optionItem ->
+                    CheckBoxData(
+                        uid = optionItem.code,
+                        checked =
+                            optionItem.code.let { code ->
+                                inputModel.value
+                                    ?.takeIf { it.isNotEmpty() }
+                                    ?.split(",")
+                                    ?.contains(code)
+                            } ?: false,
+                        enabled = inputModel.editable,
+                        textInput = optionItem.displayName,
+                    )
+                } ?: emptyList()
+
+            InputMultiSelection(
+                modifier = modifierWithFocus.fillMaxWidth(),
+                title = inputModel.label,
+                items = options,
+                state = inputModel.inputState(),
+                supportingTextData = inputModel.supportingText(),
+                legendData = inputModel.legend,
+                isRequired = inputModel.mandatory,
+                inputStyle = inputStyle,
+                onItemsSelected = { checkBoxData ->
+                    val checkedValues =
+                        checkBoxData
+                            .filter { it.checked }
+                            .joinToString(",") { it.uid }
+                            .takeIf { it.isNotEmpty() }
+                    inputModel.onValueChange(checkedValues)
+                },
+                onClearItemSelection = {
+                    inputModel.onValueChange(null)
+                },
+            )
         }
 
         TrackerInputType.QR_CODE -> {
