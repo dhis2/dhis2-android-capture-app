@@ -49,12 +49,7 @@ class SettingsRepository(
                 null
             }
     private val programSettings: ProgramSettings?
-        get() =
-            if (d2.settingModule().programSetting().blockingExists()) {
-                d2.settingModule().programSetting().blockingGet()
-            } else {
-                null
-            }
+        get() = syncSettings?.programSettings()
     private val smsConfig: ConfigCase.SmsConfig
         get() =
             d2
@@ -179,13 +174,13 @@ class SettingsRepository(
                 .isNotEmpty()
 
     private fun metadataPeriod(): Int =
-        generalSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
+        syncSettings?.metadataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_META,
             TIME_WEEKLY,
         )
 
     private fun dataPeriod(): Int =
-        generalSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
+        syncSettings?.dataSync()?.toSeconds() ?: prefs.getInt(
             Preference.TIME_DATA,
             TIME_DAILY,
         )
@@ -231,14 +226,11 @@ class SettingsRepository(
     private fun getLimitedScopeFromPreferences(): LimitScope {
         val byOrgUnit = prefs.getBoolean(Constants.LIMIT_BY_ORG_UNIT, false)
         val byProgram = prefs.getBoolean(Constants.LIMIT_BY_PROGRAM, false)
-        return if (byOrgUnit && !byProgram) {
-            LimitScope.PER_ORG_UNIT
-        } else if (!byOrgUnit && byProgram) {
-            LimitScope.PER_PROGRAM
-        } else if (byOrgUnit && byProgram) {
-            LimitScope.PER_OU_AND_PROGRAM
-        } else {
-            LimitScope.GLOBAL
+        return when {
+            byOrgUnit && byProgram -> LimitScope.PER_OU_AND_PROGRAM
+            byOrgUnit && !byProgram -> LimitScope.PER_ORG_UNIT
+            !byOrgUnit && byProgram -> LimitScope.PER_PROGRAM
+            else -> LimitScope.GLOBAL
         }
     }
 
@@ -253,6 +245,7 @@ class SettingsRepository(
     suspend fun saveLimitScope(limitScope: LimitScope) {
         when (limitScope) {
             LimitScope.ALL_ORG_UNITS -> {
+                // Do nothing
             }
 
             LimitScope.GLOBAL -> {
@@ -289,7 +282,7 @@ class SettingsRepository(
                 .setGatewayNumber(gatewayNumber)
                 .blockingAwait()
         } catch (e: Exception) {
-            Timber.d(e.message)
+            Timber.d(e)
         }
     }
 
