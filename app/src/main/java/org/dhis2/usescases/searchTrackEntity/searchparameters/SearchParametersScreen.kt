@@ -479,8 +479,9 @@ fun initSearchScreen(
                             CustomIntentInput(
                                 fieldUid = fieldUid,
                                 customIntent = customIntentModel,
-                                defaultTitle = customIntentModel.name
-                                    ?: resources.getString(org.dhis2.form.R.string.select_app_intent),
+                                defaultTitle =
+                                    customIntentModel.name
+                                        ?: resources.getString(org.dhis2.form.R.string.select_app_intent),
                             )
                         },
                     )
