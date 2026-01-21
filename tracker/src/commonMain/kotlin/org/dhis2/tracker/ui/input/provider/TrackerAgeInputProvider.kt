@@ -111,10 +111,8 @@ fun ProvideTrackerAgeInput(
 
             when (val type = inputType) {
                 is AgeInputType.Age -> {
-                    if (type.value.text.isNotEmpty()) {
-                        calculateDateFromAge(type.value.text.toInt(), type.unit.name)?.let { calculatedDate ->
-                            model.onValueChange(calculatedDate)
-                        }
+                    calculateDateFromAge(type.value.text, type.unit.name)?.let { calculatedDate ->
+                        model.onValueChange(calculatedDate)
                     }
                 }
 
@@ -131,7 +129,7 @@ fun ProvideTrackerAgeInput(
                 }
             }
         },
-        onImeActionClick = { imeAction ->
+        onImeActionClick = { _ ->
             onNextClicked()
         },
         modifier = modifier,

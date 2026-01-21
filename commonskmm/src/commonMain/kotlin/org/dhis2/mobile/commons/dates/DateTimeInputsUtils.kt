@@ -19,7 +19,7 @@ import kotlin.time.ExperimentalTime
  */
 @OptIn(ExperimentalTime::class)
 fun calculateDateFromAge(
-    ageValue: Int,
+    ageValue: String,
     timeUnit: String,
 ): String? {
     return try {
@@ -29,9 +29,9 @@ fun calculateDateFromAge(
 
         val calculatedDate =
             when (timeUnit) {
-                "YEARS" -> today.minus(ageValue, DateTimeUnit.YEAR)
-                "MONTHS" -> today.minus(ageValue, DateTimeUnit.MONTH)
-                "DAYS" -> today.minus(ageValue, DateTimeUnit.DAY)
+                "YEARS" -> today.minus(ageValue.toInt(), DateTimeUnit.YEAR)
+                "MONTHS" -> today.minus(ageValue.toInt(), DateTimeUnit.MONTH)
+                "DAYS" -> today.minus(ageValue.toInt(), DateTimeUnit.DAY)
                 else -> return null
             }
 

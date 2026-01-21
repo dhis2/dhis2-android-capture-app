@@ -87,7 +87,7 @@ fun ProvideTrackerDateTimeInput(
             value = it ?: TextFieldValue()
             model.onValueChange(value.text.ifEmpty { null })
         },
-        onImeActionClick = { imeAction ->
+        onImeActionClick = { _ ->
             onNextClicked()
         },
     )
