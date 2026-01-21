@@ -46,7 +46,7 @@ jobs:
         id: decode_keystore
         uses: timheuer/base64-to-file@784a1a4a994315802b7d8e2084e116e783d157be
         with:
-          fileName: 'debug_keystore.jks'
+          fileName: 'debug.keystore'
           encodedString: ${{ secrets.DEBUG_KEYSTORE_BASE64 }}
 
       # Create APK Debug
