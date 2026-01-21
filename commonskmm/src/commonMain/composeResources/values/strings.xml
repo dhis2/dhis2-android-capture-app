@@ -212,5 +212,10 @@
     <!--*******************->
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">OR</string>
+    <string name="age">AGE</string>
+    <string name="date_of_birth">DATE OF BIRTH</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 
 </resources>
