@@ -79,7 +79,7 @@ fun ProvideCustomIntentInput(
                         FormIntent.OnSave(
                             it.fieldUid,
                             it.value,
-                            null,
+                            fieldUiModel.valueType,
                         ),
                     )
                 }

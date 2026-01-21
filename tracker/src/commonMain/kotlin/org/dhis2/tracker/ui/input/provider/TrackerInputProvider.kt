@@ -626,7 +626,7 @@ fun ParameterInputProvider(
                 }
             }
 
-            var customIntentState by remember(inputModel) {
+            var customIntentState by remember(inputModel, inputModel.value) {
                 mutableStateOf(
                     if (inputModel.value.isNullOrEmpty()) {
                         CustomIntentState.LAUNCH
