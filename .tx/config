@@ -62,7 +62,7 @@ resource_name = Compose Table
 file_filter  = tracker/src/commonMain/composeResources/values-<lang>/strings.xml
 source_file  = tracker/src/commonMain/composeResources/values/strings.xml
 source_lang  = en
-type         = ANDROID
+type         = XML
 minimum_perc = 0
 resource_name = Tracker
 
@@ -70,7 +70,7 @@ resource_name = Tracker
 file_filter  = aggregates/src/commonMain/composeResources/values-<lang>/strings.xml
 source_file  = aggregates/src/commonMain/composeResources/values/strings.xml
 source_lang  = en
-type         = ANDROID
+type         = XML
 minimum_perc = 0
 resource_name = Aggregates
 
@@ -78,7 +78,7 @@ resource_name = Aggregates
 file_filter  = commonskmm/src/commonMain/composeResources/values-<lang>/strings.xml
 source_file  = commonskmm/src/commonMain/composeResources/values/strings.xml
 source_lang  = en
-type         = ANDROID
+type         = XML
 minimum_perc = 0
 resource_name = CommonsKMM
 
@@ -86,7 +86,7 @@ resource_name = CommonsKMM
 file_filter  = login/src/commonMain/composeResources/values-<lang>/strings.xml
 source_file  = login/src/commonMain/composeResources/values/strings.xml
 source_lang  = en
-type         = ANDROID
+type         = XML
 minimum_perc = 0
 resource_name = Login
 
@@ -94,7 +94,7 @@ resource_name = Login
 file_filter  = sync/src/commonMain/composeResources/values-<lang>/strings.xml
 source_file  = sync/src/commonMain/composeResources/values/strings.xml
 source_lang  = en
-type         = ANDROID
+type         = XML
 minimum_perc = 0
 resource_name = Sync
 
