@@ -10,7 +10,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
