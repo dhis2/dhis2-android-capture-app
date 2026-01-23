@@ -39,6 +39,21 @@ android {
         }
     }
 
+    val getBranchName by extra {
+        fun(): String {
+            return try {
+                val process = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
+                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                    .redirectError(ProcessBuilder.Redirect.PIPE)
+                    .start()
+                val branchName = process.inputStream.bufferedReader().readText().trim()
+                branchName.replace(Regex("[/\\\\:*?\"<>|]"), "-")
+            } catch (e: Exception) {
+                "unknown"
+            }
+        }
+    }
+
     signingConfigs {
         create("release") {
             keyAlias = System.getenv("SIGNING_KEY_ALIAS")
@@ -55,6 +70,15 @@ android {
                 storeFile = file(path)
             }
             storePassword = System.getenv("TRAINING_STORE_PASSWORD")
+        }
+        val customKeystorePath = System.getenv("DEBUG_KEYSTORE_PATH")
+        if (customKeystorePath != null ) {
+            getByName("debug") {
+                keyAlias = System.getenv("DEBUG_KEYSTORE_ALIAS")
+                keyPassword = System.getenv("DEBUG_KEY_PASS")
+                storeFile = file(customKeystorePath)
+                storePassword = System.getenv("DEBUG_KEYSTORE_PASSWORD")
+            }
         }
     }
 
@@ -215,6 +239,7 @@ android {
                     val suffix = when {
                         buildType == "release" && flavorName == "dhis2Training" -> "-training"
                         buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
+                        buildType == "debug" -> "-${getBranchName()}"
                         else -> ""
                     }
 
