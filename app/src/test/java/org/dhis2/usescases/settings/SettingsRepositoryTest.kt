@@ -27,6 +27,7 @@ import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.MetadataSyncPeriod
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.sms.domain.interactor.ConfigCase
 import org.junit.Before
 import org.junit.Test
@@ -70,6 +71,7 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return metadata period from general settings if exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(true)
         val testObserver = settingsRepository.metaSync().test()
         testObserver
@@ -92,6 +94,7 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return data period from general settings if exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(true)
         configureDataErrors()
         val testObserver = settingsRepository.dataSync().test()
@@ -104,6 +107,7 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return data period from preferences if general settings does not exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(false)
         configureDataErrors()
         val testObserver = settingsRepository.dataSync().test()
@@ -116,29 +120,29 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return parameters from general settings if exist`() {
+        configureSyncSettings(true)
         configureGeneralSettings(true)
-        configureProgramSettings(true)
         val testObserver = settingsRepository.syncParameters().test()
         testObserver
             .assertNoErrors()
             .assertValue {
                 it.numberOfTeiToDownload == SETTINGS_TEI_DOWNLOAD &&
-                    it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
-                    it.limitScope == SETTINGS_LIMIT_SCOPE
+                        it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
+                        it.limitScope == SETTINGS_LIMIT_SCOPE
             }
     }
 
     @Test
     fun `Should return parameters from preferences if general settings does not exist`() {
+        configureSyncSettings(false)
         configureGeneralSettings(false)
-        configureProgramSettings(false)
         val testObserver = settingsRepository.syncParameters().test()
         testObserver
             .assertNoErrors()
             .assertValue {
                 it.numberOfTeiToDownload == SETTINGS_PREF_TEI_DOWNLOAD &&
-                    it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
-                    it.limitScope != SETTINGS_LIMIT_SCOPE
+                        it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
+                        it.limitScope != SETTINGS_LIMIT_SCOPE
             }
     }
 
@@ -175,22 +179,24 @@ class SettingsRepositoryTest {
             }
     }
 
-    private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
-        whenever(d2.settingModule().generalSetting().blockingExists()) doReturn
-            hasGeneralSettings
-        whenever(userManager.theme) doReturn Single.just(Pair("flag", 1))
-        if (hasGeneralSettings) {
-            whenever(d2.settingModule().generalSetting().blockingGet()) doReturn
-                mockedGeneralSettings()
+    private fun configureSyncSettings(hasSyncSettings: Boolean) {
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingExists()
+        ) doReturn hasSyncSettings
+        if (hasSyncSettings) {
+            whenever(
+                d2.settingModule().synchronizationSettings().blockingGet()
+            ) doReturn mockedSyncSettings()
         }
     }
 
-    private fun configureProgramSettings(hasProgramSettings: Boolean) {
-        whenever(d2.settingModule().programSetting().blockingExists()) doReturn
-            hasProgramSettings
-        if (hasProgramSettings) {
-            whenever(d2.settingModule().programSetting().blockingGet()) doReturn
-                mockedProgramSettings()
+    private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
+        whenever(d2.settingModule().generalSetting().blockingExists()) doReturn
+                hasGeneralSettings
+        whenever(userManager.theme) doReturn Single.just(Pair("flag", 1))
+        if (hasGeneralSettings) {
+            whenever(d2.settingModule().generalSetting().blockingGet()) doReturn
+                    mockedGeneralSettings()
         }
     }
 
@@ -272,7 +278,7 @@ class SettingsRepositoryTest {
                 .`in`(State.ERROR)
                 .blockingGet(),
         ) doReturn
-            emptyList()
+                emptyList()
         whenever(
             d2
                 .eventModule()
@@ -281,7 +287,7 @@ class SettingsRepositoryTest {
                 .`in`(State.WARNING)
                 .blockingGet(),
         ) doReturn
-            emptyList()
+                emptyList()
 
         whenever(
             d2
@@ -469,11 +475,16 @@ class SettingsRepositoryTest {
         whenever(d2.smsModule().configCase()) doReturn configCase
     }
 
+    private fun mockedSyncSettings() = SynchronizationSettings
+        .builder()
+        .dataSync(SETTINGS_DATA_PERIOD)
+        .metadataSync(SETTINGS_METADATA_PERIOD)
+        .programSettings(mockedProgramSettings())
+        .build()
+
     private fun mockedGeneralSettings(): GeneralSettings =
         GeneralSettings
             .builder()
-            .dataSync(SETTINGS_DATA_PERIOD)
-            .metadataSync(SETTINGS_METADATA_PERIOD)
             .encryptDB(SETTINGS_ENCRYPT)
             .reservedValues(SETTINGS_RV)
             .build()
