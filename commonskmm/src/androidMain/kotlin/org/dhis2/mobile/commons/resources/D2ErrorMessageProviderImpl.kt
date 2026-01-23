@@ -51,8 +51,13 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
             D2ErrorCode.BAD_CREDENTIALS ->
                 getString(Res.string.login_error_bad_credentials)
 
-            D2ErrorCode.UNKNOWN_HOST ->
-                getString(Res.string.login_error_unknown_host)
+            D2ErrorCode.UNKNOWN_HOST -> {
+                if (isNetworkAvailable) {
+                    getString(Res.string.login_error_unknown_host)
+                } else {
+                    getString(Res.string.error_no_internet_connection)
+                }
+            }
 
             D2ErrorCode.UNEXPECTED ->
                 getString(Res.string.error_unexpected)
