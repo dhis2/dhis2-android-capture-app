@@ -1,6 +1,7 @@
 package org.dhis2.usescases.settings.ui
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +22,11 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import org.dhis2.R
+import org.dhis2.bindings.EVERY_12_HOUR
 import org.dhis2.bindings.EVERY_24_HOUR
+import org.dhis2.bindings.EVERY_6_HOUR
 import org.dhis2.bindings.EVERY_7_DAYS
-import org.dhis2.commons.Constants
+import org.dhis2.commons.Constants.TIME_MANUAL
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.models.MetadataSettingsViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -77,10 +80,17 @@ internal fun SyncMetadataSettingItem(
                 if (metadataSettings.canEdit) {
                     val metaSyncPeriods =
                         listOf(
-                            stringResource(R.string.a_day),
-                            stringResource(R.string.a_week),
-                            stringResource(R.string.Manual),
+                            SyncMetadataPeriods.Every6Hours,
+                            SyncMetadataPeriods.Every12Hours,
+                            SyncMetadataPeriods.Every24Hours,
+                            SyncMetadataPeriods.EveryWeek,
+                            SyncMetadataPeriods.Manual,
                         )
+
+                    val dropdownItemLabel =
+                        metaSyncPeriods.map {
+                            stringResource(it.label)
+                        }
 
                     var selectedItem by
                         remember {
@@ -101,21 +111,14 @@ internal fun SyncMetadataSettingItem(
                         itemCount = metaSyncPeriods.size,
                         onSearchOption = {},
                         fetchItem = { index ->
-                            DropdownItem(metaSyncPeriods[index])
+                            DropdownItem(dropdownItemLabel[index])
                         },
                         selectedItem = selectedItem,
                         onResetButtonClicked = { },
                         onItemSelected = { index, newItem ->
                             selectedItem = newItem
                             inputSyncConfigurationState = InputShellState.UNFOCUSED
-                            when (index) {
-                                0 -> onSyncMetaPeriodChanged(EVERY_24_HOUR)
-                                1 -> onSyncMetaPeriodChanged(EVERY_7_DAYS)
-                                2 -> onSyncMetaPeriodChanged(Constants.TIME_MANUAL)
-                                else -> {
-                                    // do nothing
-                                }
-                            }
+                            onSyncMetaPeriodChanged(metaSyncPeriods[index].syncPeriod)
                         },
                         showSearchBar = false,
                         loadOptions = {},
@@ -193,3 +196,18 @@ private fun provideSyncInProgressInfoItems(
         isConstantItem = true,
     ),
 )
+
+internal sealed class SyncMetadataPeriods(
+    @StringRes val label: Int,
+    val syncPeriod: Int,
+) {
+    data object Every24Hours : SyncMetadataPeriods(R.string.a_day, EVERY_24_HOUR)
+
+    data object Every12Hours : SyncMetadataPeriods(R.string.every_12_hours, EVERY_12_HOUR)
+
+    data object Every6Hours : SyncMetadataPeriods(R.string.every_6_hours, EVERY_6_HOUR)
+
+    data object EveryWeek : SyncMetadataPeriods(R.string.a_week, EVERY_7_DAYS)
+
+    data object Manual : SyncMetadataPeriods(R.string.Manual, TIME_MANUAL)
+}
