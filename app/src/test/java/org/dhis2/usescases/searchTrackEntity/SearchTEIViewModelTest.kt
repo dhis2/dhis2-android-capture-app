@@ -879,19 +879,19 @@ class SearchTEIViewModelTest {
         }
 
     @Test
-    fun `should set error if custom intent result is error`() =
-        runTest {
-            viewModel.searchParametersUiState =
-                viewModel.searchParametersUiState.copy(items = customIntentFieldUIModels())
-            viewModel.handleCustomIntentResult(
-                CustomIntentResult.Error("fieldUid"),
-            )
-            assertTrue(
-                viewModel.searchParametersUiState.items
-                    .first()
-                    .error != null,
-            )
-        }
+    fun `should set error if custom intent result is error`() {
+        whenever(resourceManager.getString(R.string.custom_intent_error)) doReturn "Custom intent error message"
+        viewModel.searchParametersUiState =
+            viewModel.searchParametersUiState.copy(items = customIntentFieldUIModels())
+        viewModel.handleCustomIntentResult(
+            CustomIntentResult.Error("fieldUid"),
+        )
+        assertTrue(
+            viewModel.searchParametersUiState.items
+                .first()
+                .error != null,
+        )
+    }
 
     @Test
     fun `should update values if custom intent result is successful`() =
