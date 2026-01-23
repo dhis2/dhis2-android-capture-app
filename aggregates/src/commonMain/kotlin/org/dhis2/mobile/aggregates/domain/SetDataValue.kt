@@ -25,6 +25,7 @@ internal class SetDataValue(
             dataElementUid = dataElementUid,
             categoryOptionComboUid = categoryOptionComboUid,
             value = value,
+            sourceDataSetUid = dataSetUid,
         )
     }
 }

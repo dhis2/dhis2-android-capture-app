@@ -87,6 +87,7 @@ internal interface DataSetInstanceRepository {
         attrOptionComboUid: String,
         dataElementUid: String,
         categoryOptionComboUid: String,
+        sourceDataSetUid: String,
     ): String?
 
     suspend fun updateValue(
@@ -96,6 +97,7 @@ internal interface DataSetInstanceRepository {
         dataElementUid: String,
         categoryOptionComboUid: String,
         value: String?,
+        sourceDataSetUid: String,
     ): Result<Unit>
 
     suspend fun categoryOptionComboFromCategoryOptions(
@@ -165,6 +167,7 @@ internal interface DataSetInstanceRepository {
         orgUnitUid: String,
         categoryOptionComboUid: String,
         attrOptionComboUid: String,
+        sourceDataSetUid: String,
     ): Pair<ColorString?, LegendLabel?>?
 
     suspend fun uploadFile(

@@ -203,6 +203,8 @@ class D2ErrorMessageProviderImpl : D2ErrorMessageProvider {
 
             D2ErrorCode.ORGUNIT_NOT_IN_SEARCH_SCOPE ->
                 getString(Res.string.error_org_unit_scope)
+            D2ErrorCode.INVALID_CONFIGURATION ->
+                getString(Res.string.invalid_configuration)
 
             D2ErrorCode.INVALID_CHARACTERS ->
                 getString(Res.string.error_invalid_characters)
