@@ -181,11 +181,11 @@ class SettingsRepositoryTest {
 
     private fun configureSyncSettings(hasSyncSettings: Boolean) {
         whenever(
-            d2.settingModule().synchronizationSettings().blockingExists()
+            d2.settingModule().synchronizationSettings().blockingExists(),
         ) doReturn hasSyncSettings
         if (hasSyncSettings) {
             whenever(
-                d2.settingModule().synchronizationSettings().blockingGet()
+                d2.settingModule().synchronizationSettings().blockingGet(),
             ) doReturn mockedSyncSettings()
         }
     }
@@ -475,12 +475,13 @@ class SettingsRepositoryTest {
         whenever(d2.smsModule().configCase()) doReturn configCase
     }
 
-    private fun mockedSyncSettings() = SynchronizationSettings
-        .builder()
-        .dataSync(SETTINGS_DATA_PERIOD)
-        .metadataSync(SETTINGS_METADATA_PERIOD)
-        .programSettings(mockedProgramSettings())
-        .build()
+    private fun mockedSyncSettings() =
+        SynchronizationSettings
+            .builder()
+            .dataSync(SETTINGS_DATA_PERIOD)
+            .metadataSync(SETTINGS_METADATA_PERIOD)
+            .programSettings(mockedProgramSettings())
+            .build()
 
     private fun mockedGeneralSettings(): GeneralSettings =
         GeneralSettings
