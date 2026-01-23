@@ -128,8 +128,8 @@ class SettingsRepositoryTest {
             .assertNoErrors()
             .assertValue {
                 it.numberOfTeiToDownload == SETTINGS_TEI_DOWNLOAD &&
-                        it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
-                        it.limitScope == SETTINGS_LIMIT_SCOPE
+                    it.numberOfEventsToDownload == SETTINGS_EVENT_DOWNLOAD &&
+                    it.limitScope == SETTINGS_LIMIT_SCOPE
             }
     }
 
@@ -143,8 +143,8 @@ class SettingsRepositoryTest {
             .assertNoErrors()
             .assertValue {
                 it.numberOfTeiToDownload == SETTINGS_PREF_TEI_DOWNLOAD &&
-                        it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
-                        it.limitScope != SETTINGS_LIMIT_SCOPE
+                    it.numberOfEventsToDownload == SETTINGS_PREF_EVENT_DOWNLOAD &&
+                    it.limitScope != SETTINGS_LIMIT_SCOPE
             }
     }
 
@@ -197,11 +197,11 @@ class SettingsRepositoryTest {
 
     private fun configureGeneralSettings(hasGeneralSettings: Boolean) {
         whenever(d2.settingModule().generalSetting().blockingExists()) doReturn
-                hasGeneralSettings
+            hasGeneralSettings
         whenever(userManager.theme) doReturn Single.just(Pair("flag", 1))
         if (hasGeneralSettings) {
             whenever(d2.settingModule().generalSetting().blockingGet()) doReturn
-                    mockedGeneralSettings()
+                mockedGeneralSettings()
         }
     }
 
@@ -283,7 +283,7 @@ class SettingsRepositoryTest {
                 .`in`(State.ERROR)
                 .blockingGet(),
         ) doReturn
-                emptyList()
+            emptyList()
         whenever(
             d2
                 .eventModule()
@@ -292,7 +292,7 @@ class SettingsRepositoryTest {
                 .`in`(State.WARNING)
                 .blockingGet(),
         ) doReturn
-                emptyList()
+            emptyList()
 
         whenever(
             d2
