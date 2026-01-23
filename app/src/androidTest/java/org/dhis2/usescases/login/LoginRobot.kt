@@ -84,6 +84,7 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun checkLoginButtonIsEnabled() {
+        closeKeyboard()
         composeTestRule.waitUntilExactlyOneExists(
             hasTestTag(CREDENTIALS_LOGIN_BUTTON_TAG),
             TIMEOUT,
