@@ -122,6 +122,7 @@ class SettingsRepositoryTest {
     fun `Should return parameters from general settings if exist`() {
         configureSyncSettings(true)
         configureGeneralSettings(true)
+
         val testObserver = settingsRepository.syncParameters().test()
         testObserver
             .assertNoErrors()
@@ -136,6 +137,7 @@ class SettingsRepositoryTest {
     fun `Should return parameters from preferences if general settings does not exist`() {
         configureSyncSettings(false)
         configureGeneralSettings(false)
+
         val testObserver = settingsRepository.syncParameters().test()
         testObserver
             .assertNoErrors()
@@ -150,6 +152,7 @@ class SettingsRepositoryTest {
     fun `Should return reserved values from settings if exist`() {
         configureGeneralSettings(true)
         val testObserver = settingsRepository.reservedValues().test()
+
         testObserver
             .assertNoErrors()
             .assertValue {
@@ -161,6 +164,7 @@ class SettingsRepositoryTest {
     fun `Should return reserved values from preferences if settings does not exist`() {
         configureGeneralSettings(false)
         val testObserver = settingsRepository.reservedValues().test()
+
         testObserver
             .assertNoErrors()
             .assertValue {
@@ -172,6 +176,7 @@ class SettingsRepositoryTest {
     fun `Should return editable sms configuration if settings does not exist`() {
         configureGeneralSettings(false)
         val testObserver = settingsRepository.sms().test()
+
         testObserver
             .assertNoErrors()
             .assertValue {
