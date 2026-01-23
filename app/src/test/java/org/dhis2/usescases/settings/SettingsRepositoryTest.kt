@@ -107,7 +107,6 @@ class SettingsRepositoryTest {
 
     @Test
     fun `Should return data period from preferences if general settings does not exist`() {
-        configureSyncSettings(true)
         configureGeneralSettings(false)
         configureDataErrors()
         val testObserver = settingsRepository.dataSync().test()
