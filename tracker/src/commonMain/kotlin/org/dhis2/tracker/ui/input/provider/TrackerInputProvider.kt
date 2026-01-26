@@ -18,6 +18,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import org.dhis2.tracker.search.ui.provider.TrackerCheckboxInputProvider
+import org.dhis2.tracker.search.ui.provider.TrackerRadioButtonInputProvider
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
@@ -514,11 +516,11 @@ fun ParameterInputProvider(
         }
 
         TrackerInputType.CHECKBOX -> {
-            TODO()
+            TrackerCheckboxInputProvider(inputModel, inputStyle, modifierWithFocus)
         }
 
         TrackerInputType.RADIO_BUTTON -> {
-            TODO()
+            TrackerRadioButtonInputProvider(inputModel, inputStyle, modifierWithFocus)
         }
 
         TrackerInputType.YES_ONLY_SWITCH -> {
