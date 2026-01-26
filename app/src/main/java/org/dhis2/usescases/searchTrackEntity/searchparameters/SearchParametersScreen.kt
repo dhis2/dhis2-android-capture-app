@@ -269,6 +269,7 @@ fun SearchParametersScreen(
                                                     ),
                                                 )
                                             },
+                                            resourceManager = resourceManager,
                                         ),
                                     // TODO is this always the same string?, check if it is optional somewhere
                                     helperText = resourceManager.getString(R.string.optional),
