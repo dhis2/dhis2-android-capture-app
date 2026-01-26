@@ -14,4 +14,9 @@ sealed interface TrackerInputUiEvent {
         val label: String,
         val value: String?,
     ) : TrackerInputUiEvent
+
+    data class OnLaunchCustomIntent(
+        val uid: String,
+        val customIntentUid: String,
+    ) : TrackerInputUiEvent
 }
