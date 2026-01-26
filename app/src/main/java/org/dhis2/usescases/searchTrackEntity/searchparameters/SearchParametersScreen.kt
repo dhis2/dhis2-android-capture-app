@@ -48,11 +48,16 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
+import org.dhis2.form.ui.customintent.CustomIntentInput
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
+import org.dhis2.form.ui.event.RecyclerViewUiEvents.ScanQRCode
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
+import org.dhis2.usescases.searchTrackEntity.SearchAction
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
@@ -66,6 +71,9 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
+
+typealias CustomIntentUid = String
+typealias FieldUid = String
 
 @Composable
 fun SearchParametersScreen(
@@ -81,6 +89,7 @@ fun SearchParametersScreen(
     onSearch: () -> Unit,
     onClear: () -> Unit,
     onClose: () -> Unit,
+    onLaunchCustomIntent: (FieldUid, CustomIntentUid) -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -283,7 +292,7 @@ fun SearchParametersScreen(
                                         when (uiEvent) {
                                             is TrackerInputUiEvent.OnQRButtonClicked -> {
                                                 callback.recyclerViewUiEvents(
-                                                    RecyclerViewUiEvents.ScanQRCode(
+                                                    ScanQRCode(
                                                         uid = fieldUiModel.uid,
                                                         optionSet = fieldUiModel.optionSet,
                                                         renderingType = fieldUiModel.renderingType,
@@ -293,14 +302,21 @@ fun SearchParametersScreen(
 
                                             is TrackerInputUiEvent.OnBarcodeButtonClicked -> {
                                                 callback.recyclerViewUiEvents(
-                                                    RecyclerViewUiEvents.ScanQRCode(
+                                                    ScanQRCode(
                                                         uid = fieldUiModel.uid,
                                                         optionSet = fieldUiModel.optionSet,
                                                         renderingType = fieldUiModel.renderingType,
                                                     ),
                                                 )
                                             }
+
                                             is TrackerInputUiEvent.OnOrgUnitButtonClicked -> TODO()
+                                            is TrackerInputUiEvent.OnLaunchCustomIntent -> {
+                                                onLaunchCustomIntent(
+                                                    uiEvent.uid,
+                                                    uiEvent.customIntentUid,
+                                                )
+                                            }
                                         }
                                     },
                                 ),
@@ -392,6 +408,7 @@ fun SearchFormPreview() {
         onSearch = {},
         onClear = {},
         onClose = {},
+        onLaunchCustomIntent = { _, _ -> },
     )
 }
 
@@ -423,6 +440,7 @@ fun SearchFormPreviewWithClear() {
         onSearch = {},
         onClear = {},
         onClose = {},
+        onLaunchCustomIntent = { _, _ -> },
     )
 }
 
@@ -445,6 +463,32 @@ fun initSearchScreen(
         teiTypeUid = teiType,
     )
     composeView.setContent {
+        val launcher =
+            rememberLauncherForActivityResult(
+                contract = CustomIntentActivityResultContract(),
+                onResult = viewModel::handleCustomIntentResult,
+            )
+
+        ObserveAsEvents(
+            flow = viewModel.searchActions,
+        ) { action ->
+            when (action) {
+                is SearchAction.LaunchCustomIntent -> {
+                    launcher.launch(
+                        with(action) {
+                            CustomIntentInput(
+                                fieldUid = fieldUid,
+                                customIntent = customIntentModel,
+                                defaultTitle =
+                                    customIntentModel.name
+                                        ?: resources.getString(org.dhis2.form.R.string.select_app_intent),
+                            )
+                        },
+                    )
+                }
+            }
+        }
+
         SearchParametersScreen(
             resourceManager = resources,
             uiState = viewModel.searchParametersUiState,
@@ -457,6 +501,7 @@ fun initSearchScreen(
                 viewModel.clearFocus()
             },
             onClose = { viewModel.clearFocus() },
+            onLaunchCustomIntent = viewModel::onLaunchCustomIntent,
         )
     }
 }
