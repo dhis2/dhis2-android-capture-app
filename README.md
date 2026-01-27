@@ -22,10 +22,10 @@ Developer-oriented documentation and architecture details can be found in [AGENT
 
 ## Getting Started
 
-This app is built using the [DHIS2 Android SDK](https://github.com/dhis2/dhis2-android-sdk). To get started with development, check the [AGENTS.md](AGENTS.md) file for comprehensive development guidelines, architecture patterns, and best practices.
+This app is built using the [DHIS2 Android SDK](https://github.com/dhis2/dhis2-android-sdk) and the [DHIS2 Mobile UI library](https://developers.dhis2.org/docs/mobile/mobile-ui/overview). To get started with development, check the [AGENTS.md](AGENTS.md) file for comprehensive development guidelines, architecture patterns, and best practices.
 
 ## Community
 
-Community support can be found in the [Mobile category](https://community.dhis2.org/c/implementation/mobile) in the DHIS2 Community portal. Any feedback on the app will be highly appreciated.
+Community support can be found in the [DHIS2 Community portal](https://community.dhis2.org/c/implementation/mobile). Any feedback on the app will be highly appreciated.
 
-To report bugs or request new features, visit the [DHIS2 Jira project](https://jira.dhis2.org/projects/ANDROAPP/issues). Please do not hesitate to create an issue with your request.
+To report bugs or request new features, visit the [DHIS2 Jira project](https://jira.dhis2.org/projects/ANDROAPP/issues).
