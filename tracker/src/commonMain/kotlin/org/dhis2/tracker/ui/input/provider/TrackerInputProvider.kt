@@ -56,7 +56,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun ParameterInputProvider(
+fun TrackerInputProvider(
     modifier: Modifier = Modifier,
     inputModel: TrackerInputModel,
     inputStyle: InputStyle,
