@@ -485,7 +485,7 @@ fun TrackerInputProvider(
                 legendData = inputModel.legend,
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
-                inputText = inputModel.value,
+                inputText = inputModel.displayName,
                 onValueChanged = { newValue ->
                     onUiEvent(
                         TrackerInputUiEvent.OnValueChange(
