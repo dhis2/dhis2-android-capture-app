@@ -22,7 +22,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 
 @Composable
 fun FieldUiModel.toParameterInputModel(
-    onValueChange: (String?) -> Unit,
     fetchOptions: () -> Unit,
     resourceManager: ResourceManager,
 ): TrackerInputModel {
@@ -70,8 +69,6 @@ fun FieldUiModel.toParameterInputModel(
                 else -> optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions)
             },
         customIntentUid = customIntent?.uid,
-        onItemClick = { onItemClick() },
-        onValueChange = onValueChange,
     )
 }
 

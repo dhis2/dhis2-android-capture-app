@@ -19,4 +19,13 @@ sealed interface TrackerInputUiEvent {
         val uid: String,
         val customIntentUid: String,
     ) : TrackerInputUiEvent
+
+    data class OnItemClick(
+        val uid: String,
+    ) : TrackerInputUiEvent
+
+    data class OnValueChange(
+        val uid: String,
+        val value: String?,
+    ) : TrackerInputUiEvent
 }
