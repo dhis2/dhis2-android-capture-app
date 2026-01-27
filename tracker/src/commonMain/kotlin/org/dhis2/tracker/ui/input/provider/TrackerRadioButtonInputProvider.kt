@@ -1,16 +1,16 @@
-package org.dhis2.tracker.search.ui.provider
+package org.dhis2.tracker.ui.input.provider
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.inputState
 import org.dhis2.tracker.ui.input.model.supportingText
-import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
-import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
+import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
-fun TrackerCheckboxInputProvider(
+fun TrackerRadioButtonInputProvider(
     model: TrackerInputModel,
     inputStyle: InputStyle,
     modifier: Modifier,
@@ -21,9 +21,9 @@ fun TrackerCheckboxInputProvider(
                 optionDataList?.forEach { optionData ->
                     put(
                         optionData.code,
-                        CheckBoxData(
+                        RadioButtonData(
                             uid = optionData.code,
-                            checked = model.value == optionData.code,
+                            selected = model.value == optionData.code,
                             enabled = true,
                             textInput = optionData.displayName,
                         ),
@@ -34,22 +34,24 @@ fun TrackerCheckboxInputProvider(
 
     val (codeList, data) = dataMap.toList().unzip()
 
-    InputCheckBox(
+    InputRadioButton(
         modifier = modifier,
         inputStyle = inputStyle,
         title = model.label,
-        checkBoxData = data,
+        radioButtonData = data,
         orientation = model.orientation,
         state = model.inputState(),
         supportingText = model.supportingText(),
         legendData = model.legend,
         isRequired = model.mandatory,
+        itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            val selectedIndex = data.indexOf(item)
-            model.onValueChange(if (item.checked) null else codeList[selectedIndex])
-        },
-        onClearSelection = {
-            model.onValueChange(null)
+            if (item != null) {
+                val selectedIndex = data.indexOf(item)
+                model.onValueChange(codeList[selectedIndex])
+            } else {
+                model.onValueChange(null)
+            }
         },
     )
 }
