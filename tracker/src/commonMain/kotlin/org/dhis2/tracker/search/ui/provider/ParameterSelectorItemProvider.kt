@@ -9,7 +9,7 @@ import androidx.compose.ui.focus.focusRequester
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.ui.input.provider.ParameterInputProvider
+import org.dhis2.tracker.ui.input.provider.TrackerInputProvider
 import org.dhis2.tracker.ui.input.provider.ProvideParameterIcon
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
@@ -43,7 +43,7 @@ fun provideParameterSelectorItem(
         label = inputModel.label,
         helper = helperText,
         inputField = {
-            ParameterInputProvider(
+            TrackerInputProvider(
                 modifier =
                     Modifier
                         .focusRequester(focusRequester),
