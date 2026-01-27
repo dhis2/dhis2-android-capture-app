@@ -8,6 +8,7 @@ import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.periodUntil
 import kotlinx.datetime.todayIn
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 /**
@@ -24,7 +25,7 @@ fun calculateDateFromAge(
 ): String? {
     return try {
         val today =
-            kotlin.time.Clock.System
+            Clock.System
                 .todayIn(TimeZone.currentSystemDefault())
 
         val calculatedDate =
@@ -56,7 +57,7 @@ fun calculateAgeFromDate(
     try {
         val birthDate = LocalDate.parse(dateString)
         val today =
-            kotlin.time.Clock.System
+            Clock.System
                 .todayIn(TimeZone.currentSystemDefault())
 
         when (timeUnit) {
