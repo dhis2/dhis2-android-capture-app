@@ -146,8 +146,8 @@ class SearchTEIViewModel(
 
     private val onNewSearch = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private val _trackerInputActions = Channel<TrackerInputAction>()
-    val searchActions = _trackerInputActions.receiveAsFlow()
+    private val _searchActions = Channel<TrackerInputAction>()
+    val searchActions = _searchActions.receiveAsFlow()
 
     val searchPagingData =
         onNewSearch
@@ -1193,7 +1193,7 @@ class SearchTEIViewModel(
     ) {
         viewModelScope.launch {
             searchRepositoryKt.getCustomIntent(fieldUid)?.let { customIntentModel ->
-                _trackerInputActions.send(
+                _searchActions.send(
                     TrackerInputAction.LaunchCustomIntent(
                         fieldUid = fieldUid,
                         customIntentModel = customIntentModel,
