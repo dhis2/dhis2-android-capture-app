@@ -56,8 +56,10 @@ import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
+import org.dhis2.tracker.ui.input.action.CustomIntentUid
+import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
-import org.dhis2.usescases.searchTrackEntity.SearchAction
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
@@ -71,9 +73,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
-
-typealias CustomIntentUid = String
-typealias FieldUid = String
 
 @Composable
 fun SearchParametersScreen(
@@ -473,7 +472,7 @@ fun initSearchScreen(
             flow = viewModel.searchActions,
         ) { action ->
             when (action) {
-                is SearchAction.LaunchCustomIntent -> {
+                is TrackerInputAction.LaunchCustomIntent -> {
                     launcher.launch(
                         with(action) {
                             CustomIntentInput(

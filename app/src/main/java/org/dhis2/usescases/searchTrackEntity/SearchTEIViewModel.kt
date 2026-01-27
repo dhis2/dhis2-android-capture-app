@@ -55,9 +55,10 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.ui.input.action.CustomIntentUid
+import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.dhis2.usescases.searchTrackEntity.searchparameters.CustomIntentUid
-import org.dhis2.usescases.searchTrackEntity.searchparameters.FieldUid
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -145,8 +146,8 @@ class SearchTEIViewModel(
 
     private val onNewSearch = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
-    private val _searchActions = Channel<SearchAction>()
-    val searchActions = _searchActions.receiveAsFlow()
+    private val _trackerInputActions = Channel<TrackerInputAction>()
+    val searchActions = _trackerInputActions.receiveAsFlow()
 
     val searchPagingData =
         onNewSearch
@@ -1192,8 +1193,8 @@ class SearchTEIViewModel(
     ) {
         viewModelScope.launch {
             searchRepositoryKt.getCustomIntent(fieldUid)?.let { customIntentModel ->
-                _searchActions.send(
-                    SearchAction.LaunchCustomIntent(
+                _trackerInputActions.send(
+                    TrackerInputAction.LaunchCustomIntent(
                         fieldUid = fieldUid,
                         customIntentModel = customIntentModel,
                     ),

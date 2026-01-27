@@ -6,7 +6,7 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
-import org.dhis2.usescases.searchTrackEntity.searchparameters.FieldUid
+import org.dhis2.tracker.ui.input.action.FieldUid
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 

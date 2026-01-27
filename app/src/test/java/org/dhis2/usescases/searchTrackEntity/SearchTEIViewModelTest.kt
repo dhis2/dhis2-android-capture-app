@@ -32,6 +32,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ValueType
@@ -874,7 +875,7 @@ class SearchTEIViewModelTest {
             whenever(repositoryKt.getCustomIntent(any())) doReturn customIntentModel
             viewModel.searchActions.test {
                 viewModel.onLaunchCustomIntent("fieldUid", "customIntentUid")
-                assertTrue(awaitItem() is SearchAction.LaunchCustomIntent)
+                assertTrue(awaitItem() is TrackerInputAction.LaunchCustomIntent)
             }
         }
 
