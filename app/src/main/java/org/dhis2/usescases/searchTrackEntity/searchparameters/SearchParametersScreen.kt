@@ -265,9 +265,6 @@ fun SearchParametersScreen(
                                 provideParameterSelectorItem(
                                     inputModel =
                                         fieldUiModel.toParameterInputModel(
-                                            onValueChange = { value ->
-                                                fieldUiModel.onSave(value)
-                                            },
                                             fetchOptions = {
                                                 intentHandler(
                                                     FormIntent.FetchOptions(
@@ -315,6 +312,13 @@ fun SearchParametersScreen(
                                                     uiEvent.uid,
                                                     uiEvent.customIntentUid,
                                                 )
+                                            }
+
+                                            is TrackerInputUiEvent.OnItemClick -> {
+                                                fieldUiModel.onItemClick()
+                                            }
+                                            is TrackerInputUiEvent.OnValueChange -> {
+                                                fieldUiModel.onSave(uiEvent.value)
                                             }
                                         }
                                     },

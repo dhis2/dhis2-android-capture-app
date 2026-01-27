@@ -9,8 +9,8 @@ import androidx.compose.ui.focus.focusRequester
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.ui.input.provider.TrackerInputProvider
 import org.dhis2.tracker.ui.input.provider.ProvideParameterIcon
+import org.dhis2.tracker.ui.input.provider.TrackerInputProvider
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 
@@ -55,7 +55,7 @@ fun provideParameterSelectorItem(
         },
         status = status,
         onExpand = {
-            inputModel.onItemClick()
+            onUiEvent(TrackerInputUiEvent.OnItemClick(inputModel.uid))
             when (inputModel.valueType) {
                 TrackerInputType.QR_CODE ->
                     onUiEvent(TrackerInputUiEvent.OnQRButtonClicked(inputModel.uid))

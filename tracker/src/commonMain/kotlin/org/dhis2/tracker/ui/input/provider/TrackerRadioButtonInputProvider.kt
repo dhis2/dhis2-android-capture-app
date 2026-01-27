@@ -14,6 +14,7 @@ fun TrackerRadioButtonInputProvider(
     model: TrackerInputModel,
     inputStyle: InputStyle,
     modifier: Modifier,
+    onValueChange: (String?) -> Unit,
 ) {
     val dataMap =
         buildMap {
@@ -48,9 +49,9 @@ fun TrackerRadioButtonInputProvider(
         onItemChange = { item ->
             if (item != null) {
                 val selectedIndex = data.indexOf(item)
-                model.onValueChange(codeList[selectedIndex])
+                onValueChange(codeList[selectedIndex])
             } else {
-                model.onValueChange(null)
+                onValueChange(null)
             }
         },
     )

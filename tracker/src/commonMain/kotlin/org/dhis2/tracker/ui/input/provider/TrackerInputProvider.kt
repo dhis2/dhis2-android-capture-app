@@ -101,7 +101,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -123,7 +128,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -145,7 +155,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -168,7 +183,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -191,7 +211,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -214,7 +239,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -236,7 +266,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -258,7 +293,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -280,7 +320,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -302,7 +347,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -324,7 +374,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -346,7 +401,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -368,7 +428,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -383,6 +448,14 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 onNextClicked = onNextClicked,
                 modifier = modifierWithFocus,
+                onValueChange = { newValue ->
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = newValue,
+                        ),
+                    )
+                },
             )
         }
 
@@ -392,6 +465,14 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 onNextClicked = onNextClicked,
                 modifier = modifierWithFocus,
+                onValueChange = { newValue ->
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = newValue,
+                        ),
+                    )
+                },
             )
         }
 
@@ -406,7 +487,12 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputText = inputModel.value,
                 onValueChanged = { newValue ->
-                    inputModel.onValueChange(newValue)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = newValue,
+                        ),
+                    )
                 },
                 onOrgUnitActionCLicked = {
                     onUiEvent(
@@ -452,10 +538,20 @@ fun TrackerInputProvider(
                             .filter { it.checked }
                             .joinToString(",") { it.uid }
                             .takeIf { it.isNotEmpty() }
-                    inputModel.onValueChange(checkedValues)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = checkedValues,
+                        ),
+                    )
                 },
                 onClearItemSelection = {
-                    inputModel.onValueChange(null)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = null,
+                        ),
+                    )
                 },
             )
         }
@@ -480,7 +576,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -509,7 +610,12 @@ fun TrackerInputProvider(
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
-                            inputModel.onValueChange(it.text.takeIf { text -> text.isNotEmpty() })
+                            onUiEvent(
+                                TrackerInputUiEvent.OnValueChange(
+                                    uid = inputModel.uid,
+                                    value = it.text.takeIf { text -> text.isNotEmpty() },
+                                ),
+                            )
                         }
                     }
                 },
@@ -519,11 +625,35 @@ fun TrackerInputProvider(
         }
 
         TrackerInputType.CHECKBOX -> {
-            TrackerCheckboxInputProvider(inputModel, inputStyle, modifierWithFocus)
+            TrackerCheckboxInputProvider(
+                model = inputModel,
+                inputStyle = inputStyle,
+                modifier = modifierWithFocus,
+                onValueChange = { newValue ->
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = newValue,
+                        ),
+                    )
+                },
+            )
         }
 
         TrackerInputType.RADIO_BUTTON -> {
-            TrackerRadioButtonInputProvider(inputModel, inputStyle, modifierWithFocus)
+            TrackerRadioButtonInputProvider(
+                model = inputModel,
+                inputStyle = inputStyle,
+                modifier = modifierWithFocus,
+                onValueChange = { newValue ->
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = newValue,
+                        ),
+                    )
+                },
+            )
         }
 
         TrackerInputType.YES_ONLY_SWITCH -> {
@@ -537,7 +667,12 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 isChecked = inputModel.value?.toBooleanStrictOrNull() == true,
                 onClick = { isChecked ->
-                    inputModel.onValueChange(if (isChecked) "true" else null)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = if (isChecked) "true" else null,
+                        ),
+                    )
                 },
             )
         }
@@ -558,7 +693,12 @@ fun TrackerInputProvider(
                 isRequired = inputModel.mandatory,
                 inputStyle = inputStyle,
                 onClick = { isChecked ->
-                    inputModel.onValueChange(if (isChecked) "true" else null)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = if (isChecked) "true" else null,
+                        ),
+                    )
                 },
             )
         }
@@ -591,7 +731,12 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 onResetButtonClicked = {
                     selectedItem = ""
-                    inputModel.onValueChange(null)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = null,
+                        ),
+                    )
                 },
                 fetchItem = { index ->
                     DropdownItem(options.getOrNull(index)?.displayName ?: "")
@@ -603,7 +748,12 @@ fun TrackerInputProvider(
                 useDropDown = useDropdown,
                 onItemSelected = { index, newSelectedItem ->
                     selectedItem = newSelectedItem.label
-                    inputModel.onValueChange(options.getOrNull(index)?.code)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = options.getOrNull(index)?.code,
+                        ),
+                    )
                 },
                 loadOptions = {
                     optionSetConfiguration.onLoadOptions?.invoke()
@@ -654,7 +804,12 @@ fun TrackerInputProvider(
                     }
                 },
                 onClear = {
-                    inputModel.onValueChange(null)
+                    onUiEvent(
+                        TrackerInputUiEvent.OnValueChange(
+                            uid = inputModel.uid,
+                            value = null,
+                        ),
+                    )
                 },
                 customIntentState = customIntentState,
                 values = values.toList(),

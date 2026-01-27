@@ -33,6 +33,7 @@ fun ProvideTrackerAgeInput(
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     modifier: Modifier,
+    onValueChange: (String?) -> Unit,
 ) {
     var inputType by remember {
         mutableStateOf(
@@ -112,7 +113,7 @@ fun ProvideTrackerAgeInput(
             when (val type = inputType) {
                 is AgeInputType.Age -> {
                     calculateDateFromAge(type.value.text, type.unit.name)?.let { calculatedDate ->
-                        model.onValueChange(calculatedDate)
+                        onValueChange(calculatedDate)
                     }
                 }
 
@@ -120,12 +121,12 @@ fun ProvideTrackerAgeInput(
                     type.value.text
                         .takeIf { it != model.value }
                         ?.let {
-                            model.onValueChange(it)
+                            onValueChange(it)
                         }
                 }
 
                 AgeInputType.None -> {
-                    model.onValueChange(null)
+                    onValueChange(null)
                 }
             }
         },

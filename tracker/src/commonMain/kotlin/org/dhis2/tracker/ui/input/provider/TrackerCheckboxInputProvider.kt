@@ -14,6 +14,7 @@ fun TrackerCheckboxInputProvider(
     model: TrackerInputModel,
     inputStyle: InputStyle,
     modifier: Modifier,
+    onValueChange: (String?) -> Unit,
 ) {
     val dataMap =
         buildMap {
@@ -46,10 +47,10 @@ fun TrackerCheckboxInputProvider(
         isRequired = model.mandatory,
         onItemChange = { item ->
             val selectedIndex = data.indexOf(item)
-            model.onValueChange(if (item.checked) null else codeList[selectedIndex])
+            onValueChange(if (item.checked) null else codeList[selectedIndex])
         },
         onClearSelection = {
-            model.onValueChange(null)
+            onValueChange(null)
         },
     )
 }

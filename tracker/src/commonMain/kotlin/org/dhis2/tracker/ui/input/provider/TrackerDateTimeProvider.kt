@@ -30,6 +30,7 @@ fun ProvideTrackerDateTimeInput(
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     modifier: Modifier,
+    onValueChange: (String?) -> Unit,
 ) {
     val (actionType, visualTransformation) =
         when (model.valueType) {
@@ -85,7 +86,7 @@ fun ProvideTrackerDateTimeInput(
             },
         onValueChanged = {
             value = it ?: TextFieldValue()
-            model.onValueChange(value.text.ifEmpty { null })
+            onValueChange(value.text.ifEmpty { null })
         },
         onImeActionClick = { _ ->
             onNextClicked()
