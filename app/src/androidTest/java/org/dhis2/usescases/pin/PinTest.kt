@@ -1,5 +1,6 @@
 package org.dhis2.usescases.pin
 
+import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
 import org.dhis2.usescases.BaseTest
@@ -15,11 +16,14 @@ class PinTest : BaseTest() {
     @get:Rule
     val rule = ActivityTestRule(MainActivity::class.java, false, false)
 
+    @get:Rule
+    val composeTestRule = createComposeRule()
+
     @Test
     fun openPin() {
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnPin()
         }

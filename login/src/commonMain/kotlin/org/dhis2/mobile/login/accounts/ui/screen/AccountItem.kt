@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import org.dhis2.mobile.commons.resources.getDrawableResource
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -19,6 +20,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardDescriptionModel
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
+
+const val ACCOUNT_ITEM_TAG = "account_item"
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -61,7 +64,8 @@ fun AccountItem(
     ListCard(
         modifier =
             modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .testTag("${ACCOUNT_ITEM_TAG}_${account.serverUrl}_${account.name}"),
         listCardState = listCardState,
         onCardClick = { onItemClicked(account) },
         listAvatar = {
