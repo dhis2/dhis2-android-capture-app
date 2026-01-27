@@ -51,7 +51,6 @@ import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
 import org.dhis2.form.ui.customintent.CustomIntentInput
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
-import org.dhis2.form.ui.event.RecyclerViewUiEvents.ScanQRCode
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
@@ -119,30 +118,7 @@ fun SearchParametersScreen(
                 }
 
                 override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
-                    when (uiEvent) {
-                        is ScanQRCode -> {
-                            qrScanLauncher.launch(
-                                ScanOptions().apply {
-                                    setDesiredBarcodeFormats()
-                                    setPrompt("")
-                                    setBeepEnabled(true)
-                                    setBarcodeImageEnabled(false)
-                                    addExtra(Constants.UID, uiEvent.uid)
-                                    uiEvent.optionSet?.let {
-                                        addExtra(
-                                            Constants.OPTION_SET,
-                                            uiEvent.optionSet,
-                                        )
-                                    }
-                                    addExtra(Constants.SCAN_RENDERING_TYPE, uiEvent.renderingType)
-                                },
-                            )
-                        }
-
-                        else -> {
-                            // no-op
-                        }
-                    }
+                    // no - op
                 }
             }
         }
@@ -257,13 +233,15 @@ fun SearchParametersScreen(
                                     inputModel =
                                         fieldUiModel.toParameterInputModel(
                                             fetchOptions = {
-                                                intentHandler(
-                                                    FormIntent.FetchOptions(
-                                                        uid = fieldUiModel.uid,
-                                                        optionSetUid = fieldUiModel.optionSet!!,
-                                                        value = fieldUiModel.value,
-                                                    ),
-                                                )
+                                                fieldUiModel.optionSet?.let { optionSetUid ->
+                                                    intentHandler(
+                                                        FormIntent.FetchOptions(
+                                                            uid = fieldUiModel.uid,
+                                                            optionSetUid = optionSetUid,
+                                                            value = fieldUiModel.value,
+                                                        ),
+                                                    )
+                                                }
                                             },
                                             resourceManager = resourceManager,
                                         ),
@@ -277,23 +255,25 @@ fun SearchParametersScreen(
                                     },
                                     onUiEvent = { uiEvent ->
                                         when (uiEvent) {
-                                            is TrackerInputUiEvent.OnQRButtonClicked -> {
-                                                callback.recyclerViewUiEvents(
-                                                    ScanQRCode(
-                                                        uid = fieldUiModel.uid,
-                                                        optionSet = fieldUiModel.optionSet,
-                                                        renderingType = fieldUiModel.renderingType,
-                                                    ),
-                                                )
-                                            }
-
-                                            is TrackerInputUiEvent.OnBarcodeButtonClicked -> {
-                                                callback.recyclerViewUiEvents(
-                                                    ScanQRCode(
-                                                        uid = fieldUiModel.uid,
-                                                        optionSet = fieldUiModel.optionSet,
-                                                        renderingType = fieldUiModel.renderingType,
-                                                    ),
+                                            is TrackerInputUiEvent.OnScanButtonClicked -> {
+                                                qrScanLauncher.launch(
+                                                    ScanOptions().apply {
+                                                        setDesiredBarcodeFormats()
+                                                        setPrompt("")
+                                                        setBeepEnabled(true)
+                                                        setBarcodeImageEnabled(false)
+                                                        addExtra(Constants.UID, uiEvent.uid)
+                                                        fieldUiModel.optionSet?.let {
+                                                            addExtra(
+                                                                Constants.OPTION_SET,
+                                                                it,
+                                                            )
+                                                        }
+                                                        addExtra(
+                                                            Constants.SCAN_RENDERING_TYPE,
+                                                            fieldUiModel.renderingType,
+                                                        )
+                                                    },
                                                 )
                                             }
 
