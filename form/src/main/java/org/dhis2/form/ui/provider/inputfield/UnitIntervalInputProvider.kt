@@ -39,7 +39,7 @@ fun ProvideUnitIntervalInput(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = onNextClicked,
+        onImeActionClick = { onNextClicked() },
         onValueChanged = {
             value = it ?: TextFieldValue()
             intentHandler(

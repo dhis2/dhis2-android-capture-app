@@ -131,7 +131,7 @@ internal fun ServerValidationContent(
                 server = it ?: TextFieldValue()
             },
             imeAction = ImeAction.Done,
-            onNextClicked = {
+            onImeActionClick = {
                 onValidate(server.text)
                 inputFocusState = InputShellState.UNFOCUSED
             },
