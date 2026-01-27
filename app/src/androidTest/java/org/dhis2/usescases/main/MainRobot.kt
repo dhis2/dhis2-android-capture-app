@@ -5,6 +5,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.espresso.Espresso.onView
@@ -57,6 +58,7 @@ class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun checkHomeIsDisplayed(composeTestRule: ComposeTestRule) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag(HOME_ITEMS), TIMEOUT)
         composeTestRule.onNodeWithTag(HOME_ITEMS).assertIsDisplayed()
     }
 
