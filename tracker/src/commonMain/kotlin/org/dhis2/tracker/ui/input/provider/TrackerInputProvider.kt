@@ -20,8 +20,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.custom_intent_launch
-import org.dhis2.tracker.search.ui.provider.TrackerCheckboxInputProvider
-import org.dhis2.tracker.search.ui.provider.TrackerRadioButtonInputProvider
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
