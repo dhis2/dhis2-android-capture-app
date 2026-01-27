@@ -79,7 +79,7 @@ fun ProvideTrackerAgeInput(
                 }
 
             AgeInputType.None -> {
-                // no-óp
+                // no-op
             }
         }
 
