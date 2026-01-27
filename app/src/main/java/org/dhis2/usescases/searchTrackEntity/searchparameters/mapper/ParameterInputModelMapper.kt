@@ -69,6 +69,7 @@ fun FieldUiModel.toParameterInputModel(
                 else -> optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions)
             },
         customIntentUid = customIntent?.uid,
+        displayName = displayName,
     )
 }
 

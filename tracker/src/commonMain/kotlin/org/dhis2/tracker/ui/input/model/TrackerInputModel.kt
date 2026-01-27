@@ -22,6 +22,7 @@ data class TrackerInputModel(
     val orientation: Orientation,
     val optionSetConfiguration: TrackerOptionSetConfiguration? = null,
     val customIntentUid: String? = null,
+    val displayName: String?,
 )
 
 fun TrackerInputModel.supportingText(): List<SupportingTextData>? =

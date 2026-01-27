@@ -120,16 +120,7 @@ fun SearchParametersScreen(
 
                 override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
                     when (uiEvent) {
-                        is RecyclerViewUiEvents.OpenOrgUnitDialog ->
-                            onShowOrgUnit(
-                                uiEvent.uid,
-                                uiEvent.value?.let { listOf(it) } ?: emptyList(),
-                                uiEvent.orgUnitSelectorScope
-                                    ?: OrgUnitSelectorScope.UserSearchScope(),
-                                uiEvent.label,
-                            )
-
-                        is RecyclerViewUiEvents.ScanQRCode -> {
+                        is ScanQRCode -> {
                             qrScanLauncher.launch(
                                 ScanOptions().apply {
                                     setDesiredBarcodeFormats()
@@ -306,7 +297,17 @@ fun SearchParametersScreen(
                                                 )
                                             }
 
-                                            is TrackerInputUiEvent.OnOrgUnitButtonClicked -> TODO()
+                                            is TrackerInputUiEvent.OnOrgUnitButtonClicked -> {
+                                                onShowOrgUnit(
+                                                    uiEvent.uid,
+                                                    uiEvent.value?.let { listOf(it) }
+                                                        ?: emptyList(),
+                                                    fieldUiModel.orgUnitSelectorScope
+                                                        ?: OrgUnitSelectorScope.UserSearchScope(),
+                                                    uiEvent.label,
+                                                )
+                                            }
+
                                             is TrackerInputUiEvent.OnLaunchCustomIntent -> {
                                                 onLaunchCustomIntent(
                                                     uiEvent.uid,
@@ -317,6 +318,7 @@ fun SearchParametersScreen(
                                             is TrackerInputUiEvent.OnItemClick -> {
                                                 fieldUiModel.onItemClick()
                                             }
+
                                             is TrackerInputUiEvent.OnValueChange -> {
                                                 fieldUiModel.onSave(uiEvent.value)
                                             }
