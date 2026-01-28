@@ -488,7 +488,7 @@ fun TrackerInputProvider(
                         ),
                     )
                 },
-                onOrgUnitActionCLicked = {
+                onOrgUnitActionClicked = {
                     onUiEvent(
                         TrackerInputUiEvent.OnOrgUnitButtonClicked(
                             uid = inputModel.uid,
