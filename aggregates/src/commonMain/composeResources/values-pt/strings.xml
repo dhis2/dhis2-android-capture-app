@@ -13,7 +13,7 @@
     <string name="input_coordinate_longitude">Longitude</string>
     <string name="input_coordinate_add_location">Adicionar localização</string>
     <string name="input_not_supported">Não suportado</string>
-    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados?</string>
+    <string name="mark_dataset_complete">Você também deseja completar o conjunto de dados\?</string>
     <string name="not_now">Agora não</string>
     <string name="complete">Concluir</string>
     <string name="saved">Gravado!</string>
@@ -21,7 +21,7 @@
     <string name="field_required">Se você definir um valor, a linha inteira precisa de todos os valores para concluir o conjunto de dados.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Salvo e concluído!</string>
-    <string name="run_validation_rules">Você quer verificar a qualidade dos dados?</string>
+    <string name="run_validation_rules">Você quer verificar a qualidade dos dados\?</string>
     <string name="no">Não</string>
     <string name="yes">sim</string>
     <string name="error">Erro</string>
@@ -35,4 +35,8 @@
     <string name="take_photo"> Tirar fotografia</string>
     <string name="indicators_label">Indicadores</string>
     <string name="no_data_write_access">Não tem permissão para editar estes dados</string>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">Não tem permissão para editar dados para %1$s</string>
     </resources>

@@ -264,4 +264,5 @@
     <string name="period_daily_title">Щодня</string>
     <string name="period_weekly_title">Тиждень</string>
     <string name="period_yearly_title">Рік</string>
-    </resources>
+    <string name="action_clear_all">Очистити все</string>
+</resources>
