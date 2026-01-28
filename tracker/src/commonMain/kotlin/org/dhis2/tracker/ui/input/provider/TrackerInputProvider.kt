@@ -173,7 +173,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onEmailActionCLicked = {},
+                onEmailActionClicked = {},
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
