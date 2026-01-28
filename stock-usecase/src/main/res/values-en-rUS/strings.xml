@@ -1,0 +1,39 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="title_activity_review">Review</string>
+    <string name="review">Review</string>
+
+    <string name="cancel">Cancel</string>
+    <!--SDK error codes-->
+    <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
+    <string name="login_error_unknown_host">Unknown server</string>
+    <string name="online_search_parsing_error">Error while parsing results</string>
+    <string name="error_many_requests">The server is a bit busy at this moment. Please try a bit later.</string>
+    <string name="error_already_authenticated">The user is already logged in.</string>
+    <string name="error_already_executed">The request has already been executed.</string>
+    <string name="error_api_invalid_query">Server request is invalid.</string>
+    <string name="error_create_existing_error">Creation aborted. The object already exists.</string>
+    <string name="error_export_login">Please login to export the database.</string>
+    <string name="error_export_encrypted">Exporting an encrypted database is not supported.</string>
+    <string name="error_import_exist">You are importing an already existing database.</string>
+    <string name="error_import_logout">Please logout to import a new database.</string>
+    <string name="error_import_version">The version of the imported database is higher than supported.</string>
+    <string name="error_user_no_authenticated">There is no user authenticated.</string>
+    <string name="error_user_no_authenticated_offline">There is no user authenticated offline.</string>
+    <string name="error_different_offline_user">You are trying to login offline with a different user.</string>
+    <string name="error_object_update">The object could not be updated.</string>
+    <string name="error_object_insert">The object could not be inserted.</string>
+    <string name="error_null_url">The server URL is missing. Please enter URL.</string>
+    <string name="error_server_malformed">The server URL is not well formed. Please check it.</string>
+    <string name="error_settings_app_not_supported">This version of the Settings Web App is not supported.</string>
+    <string name="error_settings_app_not_intalled">The Settings Web App is not installed in the server.</string>
+    <string name="error_socket_timeout">The server took too much time to respond. We canceled the request. </string>
+    <string name="error_url_not_found">We couldn´t find the URL. Please verify it.</string>
+    <string name="error_account_disabled">Your user account have been disabled. If this is an error, contact your administrator.</string>
+    <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
+    <string name="error_set_value">The value could not be set.</string>
+    <string name="error_ssl">There is a problem with the server certificates. Please, contact your administrator.</string>
+    <string name="not_saved">Not saved</string>
+    <string name="formatting_error">Formatting error</string>
+    <string name="invalid_possitive_zero">Only positive numbers or zero allowed</string>
+    <string name="leading_zero_error">Leading zero numbers are not allowed</string>
+</resources>
