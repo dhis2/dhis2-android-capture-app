@@ -57,7 +57,7 @@ fun TrackerInputProvider(
     onNextClicked: () -> Unit,
     onUiEvent: (TrackerInputUiEvent) -> Unit,
 ) {
-    var textValue by remember(inputModel.uid) {
+    var textValue by remember(inputModel.uid, inputModel.value) {
         mutableStateOf(
             TextFieldValue(
                 text = inputModel.value ?: "",
