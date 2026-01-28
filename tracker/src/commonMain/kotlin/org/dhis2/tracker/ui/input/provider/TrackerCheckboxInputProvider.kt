@@ -25,7 +25,7 @@ fun TrackerCheckboxInputProvider(
                         CheckBoxData(
                             uid = optionData.code,
                             checked = model.value == optionData.code,
-                            enabled = true,
+                            enabled = model.editable,
                             textInput = optionData.displayName,
                         ),
                     )
