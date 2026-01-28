@@ -585,7 +585,7 @@ private fun ProvideIntegerPositive(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -654,7 +654,7 @@ private fun ProvideIntegerPositiveOrZero(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -723,7 +723,7 @@ private fun ProvidePercentage(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -792,7 +792,7 @@ private fun ProvideNumber(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -866,7 +866,7 @@ private fun ProvideIntegerNegative(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -935,9 +935,13 @@ private fun ProvideLongText(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
-            clickedOnNext = true
-            onNextClicked()
+        onImeActionClick = { imeAction ->
+            when (imeAction) {
+                ImeAction.Next -> {
+                    clickedOnNext = true
+                    onNextClicked()
+                }
+            }
         },
         onValueChanged = {
             value = it ?: TextFieldValue()
@@ -1005,7 +1009,7 @@ private fun ProvideLetter(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -1074,7 +1078,7 @@ private fun ProvideInteger(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -1144,7 +1148,7 @@ private fun ProvideEmail(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -1223,7 +1227,7 @@ private fun ProvideInputPhoneNumber(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -1302,7 +1306,7 @@ private fun ProvideInputLink(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
