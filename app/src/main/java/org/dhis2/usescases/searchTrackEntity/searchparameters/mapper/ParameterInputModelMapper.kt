@@ -101,7 +101,7 @@ private fun org.dhis2.form.model.OptionSetConfiguration.toTrackerOptionSetConfig
     )
 }
 
-private fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?): TrackerInputType =
+internal fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?): TrackerInputType =
     when (renderingType) {
         UiRenderType.HORIZONTAL_RADIOBUTTONS,
         UiRenderType.VERTICAL_RADIOBUTTONS,
@@ -118,7 +118,7 @@ private fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?
         else -> TrackerInputType.DROPDOWN
     }
 
-private fun getInputTypeByValueType(
+internal fun getInputTypeByValueType(
     valueType: ValueType?,
     renderingType: UiRenderType?,
 ): TrackerInputType =
@@ -179,7 +179,7 @@ private fun getInputTypeByValueType(
         -> TrackerInputType.NOT_SUPPORTED
     }
 
-private fun UiRenderType?.getOrientation(): Orientation =
+internal fun UiRenderType?.getOrientation(): Orientation =
     when (this) {
         UiRenderType.HORIZONTAL_CHECKBOXES,
         UiRenderType.HORIZONTAL_RADIOBUTTONS,
@@ -188,7 +188,7 @@ private fun UiRenderType?.getOrientation(): Orientation =
         else -> Orientation.VERTICAL
     }
 
-private fun getBooleanOptionConfiguration(resourceManager: ResourceManager) =
+internal fun getBooleanOptionConfiguration(resourceManager: ResourceManager) =
     TrackerOptionSetConfiguration(
         options =
             listOf(
