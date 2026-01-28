@@ -472,6 +472,12 @@ class SearchTEIViewModel(
                     searching && networkUtils.isOnline(),
                 )
 
+            //parámetros a pasar al usecase,
+            // searchParametersmodel: SearchParametersModel,
+            // el usecase tiene que tener acceso mediante inyección, su propio repositorio
+            // el filterRepository
+
+            //TODO MAP to new model
             return@withContext getPagingData.map { pagingData ->
                 pagingData.map { item ->
                     withContext(dispatchers.io()) {

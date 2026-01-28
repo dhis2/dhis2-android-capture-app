@@ -1,8 +1,12 @@
-package org.dhis2.tracker.search
+package org.dhis2.tracker.search.data
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
+import org.dhis2.tracker.search.model.SearchTrackedEntityAttribute
+import org.dhis2.tracker.search.model.SearchTrackerParameterResult
 import org.dhis2.tracker.search.model.SearchTrackerParametersModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
@@ -11,10 +15,69 @@ class LoadSearchResultsRepositoryImpl(
     private val d2: D2,
     private val filterPresenter: FilterPresenter,
     private val customIntentRepository: CustomIntentRepository,
-    private val teiType: String,
-) {
+): LoadSearchResultsRepository {
 
     var trackedEntityInstanceQuery: TrackedEntitySearchCollectionRepository? = null
+
+    override suspend fun isTETypeAttribute(
+        teType: String,
+        dataId: String
+    ): Boolean {
+       return d2.trackedEntityModule().trackedEntityTypeAttributes()
+           .byTrackedEntityTypeUid().eq(teType)
+           .byTrackedEntityAttributeUid().eq(dataId).one().blockingExists()
+    }
+
+    override suspend fun getTEAttribute(dataId: String): SearchTrackedEntityAttribute {
+        val attribute =
+            d2.trackedEntityModule().trackedEntityAttributes().uid(dataId).blockingGet()
+        return SearchTrackedEntityAttribute(
+            isUnique = attribute?.unique() == true,
+            isOptionSet = (attribute?.optionSet() != null)
+        )
+    }
+
+    override suspend fun addToQuery(
+        dataId: String,
+        dataValues: List<String>,
+        isUnique: Boolean,
+        isOptionSet: Boolean
+    ) {
+
+        if (dataValues.size > 1) {
+            // return any tracked entities with attributes that match the the values in the list
+             trackedEntityInstanceQuery?.byFilter(dataId)?.`in`(dataValues)
+        } else {
+            if (dataValues.size == 1) {
+                var dataValue = dataValues.get(0)
+                if (isUnique || isOptionSet) {
+                    // If the attribute is unique or an option set, we want an exact match
+                     trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValue)
+                } else if (dataValue.contains(OPTION_SET_REGEX)) {
+                    //legacy code could no longer be needed
+                    dataValue = dataValue.split(OPTION_SET_REGEX.toRegex())
+                        .dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+                     trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValue)
+                } else  // return tracked entities that contain the data value
+                     trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValue)
+            } else {
+                 trackedEntityInstanceQuery
+            }
+        }
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun addFiltersToQuery(program: String?, teType: String) {
+        trackedEntityInstanceQuery = filterPresenter.filteredTrackedEntityInstances(
+            program, teType
+        )
+    }
+
+    override suspend fun getResults(
+    ): Flow<PagingData<SearchTrackerParameterResult>> {
+
+    }
+
 
     fun getFilteredRepository(searchTrackerParametersModel: SearchTrackerParametersModel): TrackedEntitySearchCollectionRepository? {
 

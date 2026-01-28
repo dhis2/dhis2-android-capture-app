@@ -70,11 +70,14 @@ class SearchRepositoryImplKt(
         trackedEntitySearchQuery(searchParametersModel, isOnline)
             .getPagingData(10)
 
+    //TODO: Replicate this in the LoadSearchResultsUseCase
     private fun trackedEntitySearchQuery(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
     ): TrackedEntitySearchCollectionRepository {
         var allowCache = false
+
+        // Have to ensure that the is also persisted in the new logic
         savedSearchParameters = searchParametersModel.copy()
         savedFilters = FilterManager.getInstance().copy()
 
@@ -83,6 +86,7 @@ class SearchRepositoryImplKt(
                 .getInstance()
                 .sameFilters(savedFilters)
         ) {
+            //getFiltered repository has been moved already
             trackedEntityInstanceQuery =
                 searchRepositoryJava.getFilteredRepository(searchParametersModel)
         } else {
