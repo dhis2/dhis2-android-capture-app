@@ -18,5 +18,6 @@
     <string name="clear_search">Clear search</string>
     <string name="search">Search</string>
     <string name="optional">Optional</string>
+    <string name="custom_intent_launch">Launch</string>
 
 </resources>

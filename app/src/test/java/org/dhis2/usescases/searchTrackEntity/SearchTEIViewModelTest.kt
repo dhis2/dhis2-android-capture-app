@@ -26,10 +26,13 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.ui.customintent.CustomIntentResult
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ValueType
@@ -48,7 +51,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.text.get
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchTEIViewModelTest {
@@ -717,7 +719,8 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should return user-friendly names on search parameters fields`() {
-        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getFieldUIModels())
+        viewModel.searchParametersUiState =
+            viewModel.searchParametersUiState.copy(items = getFieldUIModels())
         val expectedMap =
             mapOf(
                 "uid1" to "Friendly OrgUnit Name",
@@ -737,7 +740,8 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should clear uiState when clearing data`() {
-        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getFieldUIModels())
+        viewModel.searchParametersUiState =
+            viewModel.searchParametersUiState.copy(items = getFieldUIModels())
         performSearch()
         viewModel.clearQueryData()
         assert(viewModel.queryData.isEmpty())
@@ -747,7 +751,8 @@ class SearchTEIViewModelTest {
 
     @Test
     fun `should return date without format`() {
-        viewModel.searchParametersUiState = viewModel.searchParametersUiState.copy(items = getMalformedDateFieldUIModels())
+        viewModel.searchParametersUiState =
+            viewModel.searchParametersUiState.copy(items = getMalformedDateFieldUIModels())
         val expectedMap =
             mapOf(
                 "uid1" to "04",
@@ -862,6 +867,72 @@ class SearchTEIViewModelTest {
                 ),
         )
     }
+
+    @Test
+    fun `should send launch custom intent action`() =
+        runTest {
+            val customIntentModel: CustomIntentModel = mock()
+            whenever(repositoryKt.getCustomIntent(any())) doReturn customIntentModel
+            viewModel.searchActions.test {
+                viewModel.onLaunchCustomIntent("fieldUid", "customIntentUid")
+                assertTrue(awaitItem() is TrackerInputAction.LaunchCustomIntent)
+            }
+        }
+
+    @Test
+    fun `should set error if custom intent result is error`() {
+        whenever(resourceManager.getString(R.string.custom_intent_error)) doReturn "Custom intent error message"
+        viewModel.searchParametersUiState =
+            viewModel.searchParametersUiState.copy(items = customIntentFieldUIModels())
+        viewModel.handleCustomIntentResult(
+            CustomIntentResult.Error("fieldUid"),
+        )
+        assertTrue(
+            viewModel.searchParametersUiState.items
+                .first()
+                .error != null,
+        )
+    }
+
+    @Test
+    fun `should update values if custom intent result is successful`() =
+        runTest {
+            viewModel.searchParametersUiState =
+                viewModel.searchParametersUiState.copy(items = customIntentFieldUIModels())
+            viewModel.handleCustomIntentResult(
+                CustomIntentResult.Success("fieldUid", "customValue"),
+            )
+            assertTrue(
+                viewModel.searchParametersUiState.items
+                    .first()
+                    .error == null,
+            )
+            assertTrue(
+                viewModel.searchParametersUiState.items
+                    .first()
+                    .value == "customValue",
+            )
+        }
+
+    private fun customIntentFieldUIModels() =
+        listOf(
+            FieldUiModelImpl(
+                uid = "fieldUid",
+                label = "CustomIntent",
+                value = null,
+                autocompleteList = emptyList(),
+                optionSetConfiguration = null,
+                customIntent =
+                    CustomIntentModel(
+                        uid = "customIntentUid",
+                        name = "test",
+                        packageName = "test.test.test",
+                        customIntentRequest = listOf(),
+                        customIntentResponse = listOf(),
+                    ),
+                valueType = ValueType.TEXT,
+            ),
+        )
 
     private fun getMalformedDateFieldUIModels(): List<FieldUiModel> =
         listOf(

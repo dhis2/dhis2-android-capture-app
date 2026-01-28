@@ -48,12 +48,20 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
+import org.dhis2.form.ui.customintent.CustomIntentInput
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
+import org.dhis2.tracker.ui.input.action.CustomIntentUid
+import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.ui.input.action.TrackerInputAction
+import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
-import org.dhis2.usescases.searchTrackEntity.searchparameters.provider.provideParameterSelectorItem
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
@@ -79,6 +87,7 @@ fun SearchParametersScreen(
     onSearch: () -> Unit,
     onClear: () -> Unit,
     onClose: () -> Unit,
+    onLaunchCustomIntent: (FieldUid, CustomIntentUid) -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -109,38 +118,7 @@ fun SearchParametersScreen(
                 }
 
                 override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
-                    when (uiEvent) {
-                        is RecyclerViewUiEvents.OpenOrgUnitDialog ->
-                            onShowOrgUnit(
-                                uiEvent.uid,
-                                uiEvent.value?.let { listOf(it) } ?: emptyList(),
-                                uiEvent.orgUnitSelectorScope ?: OrgUnitSelectorScope.UserSearchScope(),
-                                uiEvent.label,
-                            )
-
-                        is RecyclerViewUiEvents.ScanQRCode -> {
-                            qrScanLauncher.launch(
-                                ScanOptions().apply {
-                                    setDesiredBarcodeFormats()
-                                    setPrompt("")
-                                    setBeepEnabled(true)
-                                    setBarcodeImageEnabled(false)
-                                    addExtra(Constants.UID, uiEvent.uid)
-                                    uiEvent.optionSet?.let {
-                                        addExtra(
-                                            Constants.OPTION_SET,
-                                            uiEvent.optionSet,
-                                        )
-                                    }
-                                    addExtra(Constants.SCAN_RENDERING_TYPE, uiEvent.renderingType)
-                                },
-                            )
-                        }
-
-                        else -> {
-                            // no-op
-                        }
-                    }
+                    // no - op
                 }
             }
         }
@@ -252,14 +230,78 @@ fun SearchParametersScreen(
                                     .testTag("SEARCH_PARAM_ITEM"),
                             model =
                                 provideParameterSelectorItem(
-                                    resources = resourceManager,
-                                    focusManager = focusManager,
-                                    fieldUiModel = fieldUiModel,
-                                    callback = callback,
+                                    inputModel =
+                                        fieldUiModel.toParameterInputModel(
+                                            fetchOptions = {
+                                                fieldUiModel.optionSet?.let { optionSetUid ->
+                                                    intentHandler(
+                                                        FormIntent.FetchOptions(
+                                                            uid = fieldUiModel.uid,
+                                                            optionSetUid = optionSetUid,
+                                                            value = fieldUiModel.value,
+                                                        ),
+                                                    )
+                                                }
+                                            },
+                                            resourceManager = resourceManager,
+                                        ),
+                                    // TODO is this always the same string?, check if it is optional somewhere
+                                    helperText = resourceManager.getString(R.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
                                         if (nextIndex < uiState.items.size) {
                                             uiState.items[nextIndex].onItemClick()
+                                        }
+                                    },
+                                    onUiEvent = { uiEvent ->
+                                        when (uiEvent) {
+                                            is TrackerInputUiEvent.OnScanButtonClicked -> {
+                                                qrScanLauncher.launch(
+                                                    ScanOptions().apply {
+                                                        setDesiredBarcodeFormats()
+                                                        setPrompt("")
+                                                        setBeepEnabled(true)
+                                                        setBarcodeImageEnabled(false)
+                                                        addExtra(Constants.UID, uiEvent.uid)
+                                                        fieldUiModel.optionSet?.let {
+                                                            addExtra(
+                                                                Constants.OPTION_SET,
+                                                                it,
+                                                            )
+                                                        }
+                                                        addExtra(
+                                                            Constants.SCAN_RENDERING_TYPE,
+                                                            fieldUiModel.renderingType,
+                                                        )
+                                                    },
+                                                )
+                                            }
+
+                                            is TrackerInputUiEvent.OnOrgUnitButtonClicked -> {
+                                                onShowOrgUnit(
+                                                    uiEvent.uid,
+                                                    uiEvent.value?.let { listOf(it) }
+                                                        ?: emptyList(),
+                                                    fieldUiModel.orgUnitSelectorScope
+                                                        ?: OrgUnitSelectorScope.UserSearchScope(),
+                                                    uiEvent.label,
+                                                )
+                                            }
+
+                                            is TrackerInputUiEvent.OnLaunchCustomIntent -> {
+                                                onLaunchCustomIntent(
+                                                    uiEvent.uid,
+                                                    uiEvent.customIntentUid,
+                                                )
+                                            }
+
+                                            is TrackerInputUiEvent.OnItemClick -> {
+                                                fieldUiModel.onItemClick()
+                                            }
+
+                                            is TrackerInputUiEvent.OnValueChange -> {
+                                                fieldUiModel.onSave(uiEvent.value)
+                                            }
                                         }
                                     },
                                 ),
@@ -351,6 +393,7 @@ fun SearchFormPreview() {
         onSearch = {},
         onClear = {},
         onClose = {},
+        onLaunchCustomIntent = { _, _ -> },
     )
 }
 
@@ -382,6 +425,7 @@ fun SearchFormPreviewWithClear() {
         onSearch = {},
         onClear = {},
         onClose = {},
+        onLaunchCustomIntent = { _, _ -> },
     )
 }
 
@@ -404,6 +448,32 @@ fun initSearchScreen(
         teiTypeUid = teiType,
     )
     composeView.setContent {
+        val launcher =
+            rememberLauncherForActivityResult(
+                contract = CustomIntentActivityResultContract(),
+                onResult = viewModel::handleCustomIntentResult,
+            )
+
+        ObserveAsEvents(
+            flow = viewModel.searchActions,
+        ) { action ->
+            when (action) {
+                is TrackerInputAction.LaunchCustomIntent -> {
+                    launcher.launch(
+                        with(action) {
+                            CustomIntentInput(
+                                fieldUid = fieldUid,
+                                customIntent = customIntentModel,
+                                defaultTitle =
+                                    customIntentModel.name
+                                        ?: resources.getString(org.dhis2.form.R.string.select_app_intent),
+                            )
+                        },
+                    )
+                }
+            }
+        }
+
         SearchParametersScreen(
             resourceManager = resources,
             uiState = viewModel.searchParametersUiState,
@@ -416,6 +486,7 @@ fun initSearchScreen(
                 viewModel.clearFocus()
             },
             onClose = { viewModel.clearFocus() },
+            onLaunchCustomIntent = viewModel::onLaunchCustomIntent,
         )
     }
 }

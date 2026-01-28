@@ -17,5 +17,6 @@
     <string name="clear_search">清除搜索</string>
     <string name="search">搜索</string>
     <string name="optional">可选项描述</string>
+    <string name="custom_intent_launch">启动</string>
 
 </resources>

@@ -101,7 +101,7 @@ kotlin {
 }
 
 compose.resources {
-    publicResClass = false
+    publicResClass = true
     packageOfResClass = "org.dhis2.mobile.commons.resources"
     generateResClass = always
 }
