@@ -206,6 +206,7 @@
     <string name="database_import_failed">数据库导入失败</string>
     <string name="invalid_file">无效文件</string>
     <string name="not_in_totp_2fa_enrollment_mode">未进入 TOTP 2FA 注册模式</string>
+    <string name="openid_login_cancelled">认证取消</string>
     <!--*******************->
        END OF D2 Error Messages
     **********************-->
