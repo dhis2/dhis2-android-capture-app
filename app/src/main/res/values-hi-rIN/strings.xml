@@ -24,6 +24,7 @@
     <string name="action_share_zero_items">साझा करें</string>
     <!-- Input hints -->
     <string name="search">सर्च करें / खोजें</string>
+    <string name="choose_date">दिन चुनें</string>
     <string name="event_completed">इवेंट कंप्लीटेड</string>
     <string name="state_error">त्रुटि</string>
     <!--Event initial-->
@@ -54,8 +55,16 @@
     <string name="SAVE">सहेजें</string>
     <string name="button_ok">ठीक है</string>
     <string name="share">साझा करें</string>
+    <string name="max">अधिकतम</string>
     <string name="error_on_complete_title">त्रुटि</string>
     <string name="save">सहेजें</string>
+    <string name="invalid_phone_number">यह मान्य फ़ोन नंबर नहीं है</string>
+    <string name="invalid_email">यह मान्य ईमेल नहीं है</string>
+    <string name="invalid_negative_number">केवल नेगेटिव संख्या ही अनुमति है</string>
+    <string name="invalid_possitive_zero">केवल शून्य या पॉजिटिव संख्या ही अनुमति है</string>
+    <string name="invalid_possitive">केवल पॉजिटिव संख्या ही अनुमति है</string>
+    <string name="invalid_interval">केवल 0 से 1 के मान ही अनुमति हैं</string>
+    <string name="invalid_percentage">केवल 0 से 100 के वैल्यूज़ अनुमति हैं</string>
     <string name="dialog_generate_new_event">नया इवेंट जनरेट करें</string>
     <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं\?</string>
     <string name="skip">छोड़ें</string>
@@ -65,16 +74,21 @@
     <string name="data_set_complete">पूरा हुआ</string>
     <string name="data_every_day">रोज़ाना</string>
     <string name="data_every_week">साप्ताहिक</string>
+    <string name="validation_url">यह मान्य URL नहीं है</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_this_week">इस सप्ताह</string>
     <string name="filter_period_last_week">पिछला सप्ताह</string>
     <string name="filter_period_this_month">इस महीने</string>
     <string name="filter_period_last_month">पिछला महीना</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
     <string name="go_back">पीछे जाएं</string>
+    <string name="data_sets">डेटा सेट्स</string>
     <string name="interval_yesterday">कल (बिता हुआ)</string>
+    <string name="select_time">समय चुनें</string>
     <string name="filter_sync_error">सिंक की गलती</string>
+    <string name="saved">सेव</string>
     <string name="name">नाम</string>
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <string name="event_data">डेटा</string>
@@ -84,6 +98,7 @@
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
     <string name="customactivityoncrash_error_activity_error_details_close">बंद करें</string>
     <string name="filter_period_this_year">इस वर्ष</string>
+    <string name="filter_period_last_quarter">पिछली तिमाही</string>
     <string name="filter_period_last_year">पिछला वर्ष</string>
     <string name="value">वैल्यू</string>
     <string name="break_glass_dialog_title">यह प्रोग्राम सुरक्षित है</string>
