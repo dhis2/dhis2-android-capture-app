@@ -173,7 +173,7 @@ fun TrackerInputProvider(
                 isRequiredField = inputModel.mandatory,
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
-                onEmailActionClicked = {},
+                onEmailActionCLicked = {},
                 onValueChanged = { newValue ->
                     newValue?.let {
                         if (it.text != inputModel.value) {
@@ -488,7 +488,7 @@ fun TrackerInputProvider(
                         ),
                     )
                 },
-                onOrgUnitActionClicked = {
+                onOrgUnitActionCLicked = {
                     onUiEvent(
                         TrackerInputUiEvent.OnOrgUnitButtonClicked(
                             uid = inputModel.uid,
