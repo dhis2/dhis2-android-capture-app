@@ -34,15 +34,15 @@ class FilterPresenter
         fun filteredEventProgram(program: Program): EventQueryCollectionRepository =
             eventProgramFilterSearchHelper.getFilteredEventRepository(program)
 
-        fun filteredTrackerProgram(program: Program): TrackedEntitySearchCollectionRepository =
-            trackerFilterSearchHelper.getFilteredProgramRepository(program.uid())
+        fun filteredTrackerProgram(program: String): TrackedEntitySearchCollectionRepository =
+            trackerFilterSearchHelper.getFilteredProgramRepository(program)
 
         fun filteredTrackedEntityTypes(trackedEntityTypeUid: String): TrackedEntitySearchCollectionRepository =
             trackerFilterSearchHelper
                 .getFilteredTrackedEntityTypeRepository(trackedEntityTypeUid)
 
         fun filteredTrackedEntityInstances(
-            program: Program?,
+            program: String?,
             trackedEntityTypeUid: String,
         ): TrackedEntitySearchCollectionRepository =
             program?.let { filteredTrackerProgram(program) }
