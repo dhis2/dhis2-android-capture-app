@@ -22,6 +22,7 @@
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_last_week">पिछला सप्ताह</string>
     <string name="filter_period_this_month">इस महीने</string>
     <string name="filter_period_last_month">पिछला महीना</string>
     <string name="filter_period_this_year">इस वर्ष</string>
