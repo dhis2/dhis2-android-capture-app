@@ -5,11 +5,7 @@ import androidx.compose.material.icons.outlined.AddCircleOutline
 import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
@@ -26,8 +22,6 @@ fun provideParameterSelectorItem(
     onNextClicked: () -> Unit,
     onUiEvent: (TrackerInputUiEvent) -> Unit,
 ): ParameterSelectorItemModel {
-    val focusRequester = remember { FocusRequester() }
-
     val status =
         if (inputModel.focused) {
             ParameterSelectorItemModel.Status.FOCUSED
@@ -37,21 +31,13 @@ fun provideParameterSelectorItem(
             ParameterSelectorItemModel.Status.UNFOCUSED
         }
 
-    LaunchedEffect(key1 = status) {
-        if (status == ParameterSelectorItemModel.Status.FOCUSED) {
-            focusRequester.requestFocus()
-        }
-    }
-
     return ParameterSelectorItemModel(
         icon = { ProvideParameterIcon(inputModel.valueType) },
         label = inputModel.label,
         helper = helperText,
         inputField = {
             TrackerInputProvider(
-                modifier =
-                    Modifier
-                        .focusRequester(focusRequester),
+                modifier = Modifier,
                 inputStyle = InputStyle.ParameterInputStyle(),
                 inputModel = inputModel,
                 onNextClicked = onNextClicked,
