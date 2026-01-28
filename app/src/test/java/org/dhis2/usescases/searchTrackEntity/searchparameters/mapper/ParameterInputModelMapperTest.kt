@@ -1,17 +1,8 @@
 package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
 
-import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
-import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.FieldUiModelImpl
-import org.dhis2.form.model.LegendValue
-import org.dhis2.form.model.PeriodSelector
-import org.dhis2.form.model.UiEventType
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.form.ui.event.UiEventFactory
-import org.dhis2.form.ui.intent.FormIntent
-import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
