@@ -26,6 +26,8 @@
     <string name="search">सर्च करें / खोजें</string>
     <string name="event_completed">इवेंट कंप्लीटेड</string>
     <string name="state_error">त्रुटि</string>
+    <!--Event initial-->
+    <string name="create">बनाएँ</string>
     <string name="update">अपडेट करें</string>
     <string name="date">तारीख</string>
     <string name="new_event">नया इवेंट</string>
@@ -46,6 +48,7 @@
     <string name="hint_day">दिन</string>
     <string name="hint_month">महीने</string>
     <string name="hint_year">वर्ष</string>
+    <string name="week">सप्ताह</string>
     <string name="date_dialog_clear">साफ़ करें</string>
     <string name="next">आगे</string>
     <string name="SAVE">सहेजें</string>
@@ -64,6 +67,7 @@
     <string name="data_every_week">साप्ताहिक</string>
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_last_week">पिछला सप्ताह</string>
     <string name="filter_period_this_month">इस महीने</string>
     <string name="filter_period_last_month">पिछला महीना</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
