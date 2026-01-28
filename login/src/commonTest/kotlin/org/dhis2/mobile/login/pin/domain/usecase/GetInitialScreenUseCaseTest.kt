@@ -6,12 +6,12 @@ import org.dhis2.mobile.login.accounts.domain.model.AccountModel
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.pin.data.SessionRepository
-import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -20,7 +20,7 @@ class GetInitialScreenUseCaseTest {
     private val accountRepository: AccountRepository = mock()
     private val sessionRepository: SessionRepository = mock()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         useCase = GetInitialScreen(accountRepository, sessionRepository)
     }
