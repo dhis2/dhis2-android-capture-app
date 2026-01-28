@@ -10,7 +10,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.PeriodSelector
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
@@ -39,7 +38,7 @@ fun FieldUiModel.toParameterInputModel(
                 TrackerInputType.NOT_SUPPORTED
             }
 
-            else -> getInputTypeByValueType(valueType, renderingType, periodSelector)
+            else -> getInputTypeByValueType(valueType, renderingType)
         }
 
     return TrackerInputModel(
@@ -122,7 +121,6 @@ private fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?
 private fun getInputTypeByValueType(
     valueType: ValueType?,
     renderingType: UiRenderType?,
-    periodSelector: PeriodSelector?,
 ): TrackerInputType =
     when (valueType) {
         ValueType.TEXT -> {

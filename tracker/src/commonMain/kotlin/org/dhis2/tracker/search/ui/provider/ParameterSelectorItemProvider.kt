@@ -67,7 +67,9 @@ fun provideParameterSelectorItem(
                 ->
                     onUiEvent(TrackerInputUiEvent.OnScanButtonClicked(inputModel.uid))
 
-                else -> {}
+                else -> {
+                    // no-op
+                }
             }
         },
     )
