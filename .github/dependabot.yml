@@ -19,8 +19,10 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
-      - dependency-name: "org.hisp.dhis:android-core"
     groups:
+      dhis2-android-core:
+        patterns:
+          - "org.hisp.dhis:android-core"
       gradle-updates:
         patterns:
           - "*"                       # Group all Gradle updates into one PR
