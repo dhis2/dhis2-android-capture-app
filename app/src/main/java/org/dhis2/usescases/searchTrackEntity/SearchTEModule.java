@@ -63,6 +63,9 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository;
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.tracker.data.ProfilePictureProvider;
+import org.dhis2.tracker.search.data.SearchTrackedEntityRepository;
+import org.dhis2.tracker.search.data.SearchTrackedEntityRepositoryImpl;
+import org.dhis2.tracker.search.domain.SearchTrackedEntities;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
@@ -327,7 +330,8 @@ public class SearchTEModule {
             ResourceManager resourceManager,
             DisplayNameProvider displayNameProvider,
             FilterManager filterManager,
-            ProgramConfigurationRepository programConfigurationRepository
+            ProgramConfigurationRepository programConfigurationRepository,
+            SearchTrackedEntities searchTrackedEntities
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -346,7 +350,33 @@ public class SearchTEModule {
                 ),
                 resourceManager,
                 displayNameProvider,
-                filterManager
+                filterManager,
+                searchTrackedEntities
+        );
+    }
+
+    @Provides
+    @PerActivity
+    SearchTrackedEntities provideLoadSearchResultsUseCase(
+            SearchTrackedEntityRepository searchTrackedEntityRepository,
+            org.dhis2.mobile.commons.customintents.CustomIntentRepository customIntentRepository
+    ) {
+        return new SearchTrackedEntities(
+                searchTrackedEntityRepository,
+                customIntentRepository,
+                teiType
+        );
+    }
+
+    @Provides
+    @PerActivity
+    SearchTrackedEntityRepository provideLoadSearchResultsRepository(
+            D2 d2,
+            FilterPresenter filterPresenter
+    ) {
+        return new SearchTrackedEntityRepositoryImpl(
+                d2,
+                filterPresenter
         );
     }
 
