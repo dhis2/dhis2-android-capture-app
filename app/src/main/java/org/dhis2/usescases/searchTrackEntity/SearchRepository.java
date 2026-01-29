@@ -34,9 +34,6 @@ public interface SearchRepository {
     void clearFetchedList();
 
     @NonNull
-    Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline);
-
-    @NonNull
     Observable<Pair<String, String>> saveToEnroll(@NonNull String teiType, @NonNull String orgUnitUID, @NonNull String programUid, @Nullable String teiUid, HashMap<String, List<String>> queryData, @Nullable String fromRelationshipUid);
 
     Observable<List<OrganisationUnit>> getOrgUnits(@Nullable String selectedProgramUid);
@@ -46,8 +43,6 @@ public interface SearchRepository {
     Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid);
 
     TrackedEntityType getTrackedEntityType();
-
-    List<EventModel> getEventsForMap(List<SearchTeiModel> teis);
 
     Observable<D2Progress> downloadTei(String teiUid);
 
@@ -85,9 +80,4 @@ public interface SearchRepository {
 
     boolean filtersApplyOnGlobalSearch();
 
-    @NotNull HashSet<String> getFetchedTeiUIDs();
-
-    SearchParametersModel getSavedSearchParameters();
-
-    FilterManager getSavedFilters();
 }
