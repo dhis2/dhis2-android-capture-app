@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.api
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.compose)
@@ -36,6 +38,7 @@ kotlin {
             implementation(libs.compose.material3.window)
             implementation(compose.components.resources)
             implementation(project(":commonskmm"))
+            implementation(libs.androidx.compose.paging)
 
             // Koin
             api(libs.koin.core)
