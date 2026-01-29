@@ -76,21 +76,13 @@ private fun TrackedEntityType.toTrackedEntityType(): TrackedEntityTypeDomain =
 
 private fun TrackedEntityTypeAttribute.toTrackedEntityTypeAttribute(): TrackedEntityTypeAttributeDomain =
     TrackedEntityTypeAttributeDomain(
-        trackedEntityTypeUid = this.trackedEntityType()?.uid() ?: "",
-        trackedEntityAttributeUid = this.trackedEntityAttribute()?.uid() ?: "",
+        trackedEntityTypeUid = this.trackedEntityType()?.uid(),
+        trackedEntityAttributeUid = this.trackedEntityAttribute()?.uid(),
         displayInList = this.displayInList() ?: false,
         mandatory = this.mandatory() ?: false,
         searchable = this.searchable() ?: false,
         sortOrder = this.sortOrder() ?: 0,
     )
-
-// private fun org.hisp.dhis.android.core.arch.helpers.Access.toAccess(): Access {
-//    return when {
-//        this.write() -> Access.WRITE
-//        this.data() -> Access.DATA
-//        else -> Access.READ
-//    }
-// }
 
 private fun TrackedEntitySearchItemAttribute.toTrackedEntitySearchItemAttribute(): TrackedEntitySearchItemAttributeDomain =
     TrackedEntitySearchItemAttributeDomain(

@@ -38,16 +38,16 @@ data class TrackedEntityTypeDomain(
     val featureType: GeometryFeatureType,
 )
 
-class TrackedEntityTypeAttributeDomain(
-    val trackedEntityTypeUid: String,
-    val trackedEntityAttributeUid: String,
+data class TrackedEntityTypeAttributeDomain(
+    val trackedEntityTypeUid: String?,
+    val trackedEntityAttributeUid: String?,
     val displayInList: Boolean,
     val mandatory: Boolean,
     val searchable: Boolean,
     val sortOrder: Int,
 )
 
-class TrackedEntitySearchItemProgramOwnerDomain(
+data class TrackedEntitySearchItemProgramOwnerDomain(
     val program: String,
     val organisationUnit: String,
 )
@@ -79,4 +79,3 @@ enum class SyncState {
     SENT_VIA_SMS,
     SYNCED_VIA_SMS,
 }
-
