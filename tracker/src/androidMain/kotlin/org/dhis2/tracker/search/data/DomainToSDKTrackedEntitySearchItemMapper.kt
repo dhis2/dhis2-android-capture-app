@@ -8,6 +8,7 @@ import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.FeatureType
+import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -40,16 +41,16 @@ fun transformDomainTeiToSDKTei(trackedEntitySearchItemResult: TrackedEntitySearc
             },
     )
 
-private fun TrackedEntityGeometry.toSDKGeometry(): org.hisp.dhis.android.core.common.Geometry? =
+private fun TrackedEntityGeometry.toSDKGeometry(): Geometry? =
     coordinates?.let {
-        org.hisp.dhis.android.core.common.Geometry
+        Geometry
             .builder()
             .type(geometryFeatureType.toSDKFeatureType())
             .coordinates(it)
             .build()
     }
 
-private fun GeometryFeatureType.toSDKFeatureType(): org.hisp.dhis.android.core.common.FeatureType =
+private fun GeometryFeatureType.toSDKFeatureType(): FeatureType =
     when (this) {
         GeometryFeatureType.POINT -> FeatureType.POINT
         GeometryFeatureType.POLYGON -> FeatureType.POLYGON
