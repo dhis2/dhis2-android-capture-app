@@ -1,5 +1,3 @@
-import org.gradle.kotlin.dsl.api
-
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.compose)
