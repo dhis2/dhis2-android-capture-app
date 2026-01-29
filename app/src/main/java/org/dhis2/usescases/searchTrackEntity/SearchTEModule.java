@@ -331,7 +331,7 @@ public class SearchTEModule {
             DisplayNameProvider displayNameProvider,
             FilterManager filterManager,
             ProgramConfigurationRepository programConfigurationRepository,
-            org.dhis2.tracker.search.domain.SearchTrackedEntities searchTrackedEntities
+            SearchTrackedEntities searchTrackedEntities
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
