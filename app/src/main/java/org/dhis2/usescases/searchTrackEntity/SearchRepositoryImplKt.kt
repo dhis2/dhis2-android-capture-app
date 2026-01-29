@@ -106,6 +106,24 @@ class SearchRepositoryImplKt(
         return pagerFlow
     }
 
+    override fun saveSearchValuesAndGetAllowCache(queryData: MutableMap<String, List<String>?>?): Boolean {
+        savedSearchParameters = savedSearchParameters.copy(queryData = queryData)
+        savedFilters = FilterManager.getInstance().copy()
+        return (
+            queryData == savedSearchParameters.queryData ||
+                FilterManager
+                    .getInstance()
+                    .sameFilters(savedFilters)
+        )
+    }
+
+    override fun getExcludeValues(): HashSet<String>? =
+        fetchedTeiUids.ifEmpty {
+            null
+        }
+
+    override fun getStateFilters(): Boolean = FilterManager.getInstance().stateFilters.isNotEmpty()
+
     override suspend fun searchParameters(
         programUid: String?,
         teiTypeUid: String,
