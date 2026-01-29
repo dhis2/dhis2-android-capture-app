@@ -55,6 +55,7 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
