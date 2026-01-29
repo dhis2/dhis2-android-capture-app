@@ -58,6 +58,15 @@ jobs:
           DEBUG_KEY_PASS: ${{ secrets.DEBUG_KEY_PASS }}
           DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
           DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
+      
+      - name: Locate built APK
+        id: apk-path
+        run: |
+          echo "Searching for APKs under ${{ env.main_project_module }}/build/outputs/apk"
+          find "${{ env.main_project_module }}/build/outputs/apk" -type f -name "*.apk" -print
+          APK_PATH=$(find "${{ env.main_project_module }}/build/outputs/apk" -type f -name "*.apk" -print -quit)
+          echo "APK_PATH=$APK_PATH"
+          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Read version name from file
         working-directory: ./gradle
@@ -76,4 +85,4 @@ jobs:
         uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/debug/dhis2-v${{ steps.read-version.outputs.vName }}-${{ steps.jira-issue-number.outputs.issue}}.apk
+          path: ${{ steps.apk-path.outputs.apk_path }}
