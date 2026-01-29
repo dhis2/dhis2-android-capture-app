@@ -359,7 +359,7 @@ public class SearchTEModule {
     @PerActivity
     SearchTrackedEntities provideLoadSearchResultsUseCase(
             SearchTrackedEntityRepository searchTrackedEntityRepository,
-            org.dhis2.mobile.commons.customintents.CustomIntentRepository customIntentRepository
+            CustomIntentRepository customIntentRepository
     ) {
         return new SearchTrackedEntities(
                 searchTrackedEntityRepository,

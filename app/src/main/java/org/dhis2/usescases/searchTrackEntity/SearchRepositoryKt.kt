@@ -42,4 +42,10 @@ interface SearchRepositoryKt {
     ): List<MapItemModel>
 
     suspend fun getCustomIntent(fieldUid: FieldUid): CustomIntentModel?
+
+    fun saveSearchValuesAndGetAllowCache(queryData: MutableMap<String, List<String>?>?): Boolean
+
+    fun getExcludeValues(): HashSet<String>?
+
+    fun getStateFilters(): Boolean
 }
