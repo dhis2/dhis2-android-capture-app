@@ -211,9 +211,10 @@ public class SearchRepositoryImpl implements SearchRepository {
     public TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
         this.savedSearchParameters = searchParametersModel.copy();
         this.savedFilters = FilterManager.getInstance().copy();
-
+        String programUid = searchParametersModel.getSelectedProgram() != null ?
+                searchParametersModel.getSelectedProgram().uid() : null;
         trackedEntityInstanceQuery = filterPresenter.filteredTrackedEntityInstances(
-                searchParametersModel.getSelectedProgram(), teiType
+                programUid, teiType
         );
 
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
