@@ -18,5 +18,10 @@ interface LoadSearchResultsRepository {
     )
 
     suspend fun addFiltersToQuery(program: String?, teType: String)
-    suspend fun getResults() : Flow<PagingData<SearchTrackerParameterResult>>
+    suspend fun excludeValuesFromQuery(excludeValues: List<String>)
+
+    suspend fun fetchResults(isOnline: Boolean,
+                             hasStateFilters: Boolean,
+                             allowCache: Boolean,
+    ) : Flow<PagingData<SearchTrackerParameterResult>>
 }

@@ -55,6 +55,7 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.search.model.SearchTrackerParametersModel
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
@@ -466,6 +467,7 @@ class SearchTEIViewModel(
                     selectedProgram = searchRepository.getProgram(initialProgramUid),
                     queryData = queryData,
                 )
+
             val getPagingData =
                 searchRepositoryKt.searchTrackedEntities(
                     searchParametersModel,
@@ -504,6 +506,36 @@ class SearchTEIViewModel(
                 }
             }
         }
+
+
+    private fun newLoadResults() {
+        viewModelScope.launch {
+            val excludeValues = searchRepositoryKt.getExcludeValues()
+            val isOnline = searching && networkUtils.isOnline()
+            // save search values and check whether cache is allowed
+
+            val searchParametersModel =
+                SearchParametersModel(
+                    selectedProgram = searchRepository.getProgram(initialProgramUid),
+                    queryData = queryData,
+                )
+            // maybe this function can be adapted to not use the old SearchParametersModel
+            // will keep it as is for now
+            val allowCache = searchRepositoryKt.setSearchValuesAndGetAllowCache(searchParametersModel)
+
+            val newTrackerSearchModel = SearchTrackerParametersModel(
+                selectedProgram = searchParametersModel.selectedProgram?.uid(),
+                allowCache = allowCache,
+                excludeValues = excludeValues,
+                hasStateFilters = filterManager.stateFilters.isNotEmpty(),
+                isOnline = isOnline,
+                queryData = queryData.ifEmpty { null },
+            )
+
+            //TODO invoke new use Case here to load results
+
+        }
+    }
 
     private suspend fun loadDisplayInListResults() =
         withContext(dispatchers.io()) {
