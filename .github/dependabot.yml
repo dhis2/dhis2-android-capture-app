@@ -19,6 +19,8 @@ updates:
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
+      - dependency-name: "org.hisp.dhis.rules:rule-engine-jvm"
+      - dependency-name: "org.hisp.dhis.lib.expression:expression-parser-jvm"
     groups:
       dhis2-android-core:
         patterns:
@@ -28,6 +30,24 @@ updates:
           - "*"                       # Group all Gradle updates into one PR
         update-types:
           - "patch"                   # Only include patch updates (no major or minor versions)
+
+  # Rule engine and expression parser updates (all semver types)
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "develop"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    allow:
+      - dependency-name: "org.hisp.dhis.rules:rule-engine-jvm"
+      - dependency-name: "org.hisp.dhis.lib.expression:expression-parser-jvm"
+    groups:
+      dhis2-rules:
+        patterns:
+          - "org.hisp.dhis.rules:rule-engine-jvm"
+          - "org.hisp.dhis.lib.expression:expression-parser-jvm"
 
   # GitHub Actions updates (optional)
   - package-ecosystem: "github-actions"
