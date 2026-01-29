@@ -45,10 +45,11 @@ class SearchTrackedEntities(
         repository.addFiltersToQuery(input.selectedProgram, teType)
 
         input.queryData?.let {
+            val dataTypedArray = it.keys.toTypedArray()
             // iterate through the query data and add to the repository query
             for (i in it.keys.indices) {
-                val dataId = input.queryData.keys.toTypedArray()[i]
-                var dataValues = input.queryData[dataId]?.toMutableList()
+                val dataId = dataTypedArray[i]
+                var dataValues = input.queryData[dataId]
 
                 // checks if the dataId is an attribute of the teType
                 val isTETypeAttribute = repository.isTETypeAttribute(teType, dataId)
