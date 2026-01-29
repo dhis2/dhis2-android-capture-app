@@ -4,6 +4,18 @@ tasks.register("jacocoReport", JacocoReport::class) {
     group = "Coverage"
     description = "Generate XML/HTML code coverage reports for coverage.ec"
 
+    // Make sure tests are run before generating the report
+    // Only add dependencies if the tasks exist
+    val testTask = tasks.findByName("testDebugUnitTest")
+    val androidTestTask = tasks.findByName("connectedDebugAndroidTest")
+    
+    if (testTask != null) {
+        dependsOn(testTask)
+    }
+    if (androidTestTask != null) {
+        dependsOn(androidTestTask)
+    }
+
     sourceDirectories.setFrom("${project.projectDir}/src/main/java")
 
     val excludes = mutableSetOf<String>(
@@ -62,18 +74,18 @@ tasks.register("jacocoReport", JacocoReport::class) {
         "**/lambda\$*\$*.*"
     )
 
-    val javaClassesApp = fileTree("${buildDir}/intermediates/javac/dhisDebug"){
+    val javaClassesApp = fileTree(layout.buildDirectory.dir("intermediates/javac/dhisDebug")){
         exclude(
             excludes
         )
     }
-    val kotlinClassesApp = fileTree("${buildDir}/tmp/kotlin-classes/dhisDebug"){
+    val kotlinClassesApp = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/dhisDebug")){
         exclude(excludes)
     }
-    val javaClasses = fileTree("${buildDir}/intermediates/javac/debug"){
+    val javaClasses = fileTree(layout.buildDirectory.dir("intermediates/javac/debug")){
         exclude(excludes)
     }
-    val kotlinClasses = fileTree("${buildDir}/tmp/kotlin-classes/debug"){
+    val kotlinClasses = fileTree(layout.buildDirectory.dir("tmp/kotlin-classes/debug")){
         exclude(excludes)
     }
 
@@ -88,10 +100,10 @@ tasks.register("jacocoReport", JacocoReport::class) {
         )
     )
 
-    val unitTestsData = fileTree("${buildDir}/jacoco") {
+    val unitTestsData = fileTree(layout.buildDirectory.dir("jacoco")) {
         include("*.exec")
     }
-    val androidTestsData = fileTree("${buildDir}/outputs/code_coverage") {
+    val androidTestsData = fileTree(layout.buildDirectory.dir("outputs/code_coverage")) {
         include(listOf("**/*.ec"))
     }
 
@@ -106,10 +118,10 @@ tasks.register("jacocoReport", JacocoReport::class) {
 
     fun JacocoReportsContainer.reports() {
         xml.required.set(true)
-        xml.outputLocation.set(file("${buildDir}/coverage-report/jacocoTestReport.xml"))
+        xml.outputLocation.set(layout.buildDirectory.file("coverage-report/jacocoTestReport.xml"))
 
         html.required.set(true)
-        html.outputLocation.set(file("${buildDir}/coverage-report"))
+        html.outputLocation.set(layout.buildDirectory.dir("coverage-report"))
     }
 
     reports {
@@ -117,12 +129,4 @@ tasks.register("jacocoReport", JacocoReport::class) {
     }
 }
 
-/*android {
-    buildTypes {
-        getByName("debug") {
-            // jacoco test coverage reports both for
-            // androidTest and test source sets
-            testCoverageEnabled = false
-        }
-    }
-}*/
+
