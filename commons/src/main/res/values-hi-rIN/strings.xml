@@ -8,6 +8,7 @@
     <string name="no">नहीं</string>
     <string name="search">सर्च करें / खोजें</string>
     <string name="events">इवेंट्स</string>
+    <string name="data_sets">डेटा सेट्स</string>
     <string name="done">पूरा हुआ</string>
 
     <string name="filters_title_date">तारीख</string>
@@ -22,9 +23,12 @@
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
+    <string name="filter_period_this_week">इस सप्ताह</string>
+    <string name="filter_period_last_week">पिछला सप्ताह</string>
     <string name="filter_period_this_month">इस महीने</string>
     <string name="filter_period_last_month">पिछला महीना</string>
     <string name="filter_period_this_year">इस वर्ष</string>
+    <string name="filter_period_last_quarter">पिछली तिमाही</string>
     <string name="filter_period_last_year">पिछला वर्ष</string>
     <string name="DAILY">रोज़ाना</string>
     <string name="WEEKLY">साप्ताहिक</string>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="complete">Complete</string>
+    <string name="discard_changes">Discard changes</string>
+    <string name="not_now">Not now</string>
+    <string name="keep_editing">Keep editing</string>
+    <string name="review">Review</string>
+    <string name="cancel">Cancel</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    </resources>
