@@ -7,9 +7,4 @@ data class SearchTrackedEntitiesInput(
     val hasStateFilters: Boolean,
     val isOnline: Boolean,
     val queryData: MutableMap<String, List<String>?>?,
-) {
-    fun copy(): SearchTrackedEntitiesInput =
-        copy(
-            queryData = mutableMapOf<String, List<String>?>().apply { queryData?.let { putAll(it) } },
-        )
-}
+)

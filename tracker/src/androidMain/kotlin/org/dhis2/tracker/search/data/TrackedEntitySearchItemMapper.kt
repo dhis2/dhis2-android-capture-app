@@ -38,11 +38,13 @@ fun TrackedEntitySearchItem.toTrackedEntitySearchItemResult(): TrackedEntitySear
         programOwners = this.programOwners?.map { it.toTrackedEntitySearchItemProgramOwner() } ?: emptyList(),
     )
 
-private fun Geometry?.toDomainGeometry(): TrackedEntityGeometry =
-    TrackedEntityGeometry(
-        geometryFeatureType = getGeometryType(this?.type()),
-        coordinates = this?.coordinates(),
-    )
+private fun Geometry?.toDomainGeometry(): TrackedEntityGeometry? =
+    this?.type()?.let {
+        TrackedEntityGeometry(
+            geometryFeatureType = getGeometryType(it),
+            coordinates = this.coordinates(),
+        )
+    }
 
 private fun getGeometryType(type: FeatureType?): GeometryFeatureType =
     when (type) {
