@@ -7,6 +7,7 @@ import org.dhis2.tracker.search.model.TrackedEntitySearchItemAttributeDomain
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
 import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -50,11 +51,11 @@ private fun TrackedEntityGeometry.toSDKGeometry(): org.hisp.dhis.android.core.co
 
 private fun GeometryFeatureType.toSDKFeatureType(): org.hisp.dhis.android.core.common.FeatureType =
     when (this) {
-        GeometryFeatureType.POINT -> org.hisp.dhis.android.core.common.FeatureType.POINT
-        GeometryFeatureType.POLYGON -> org.hisp.dhis.android.core.common.FeatureType.POLYGON
-        GeometryFeatureType.MULTI_POLYGON -> org.hisp.dhis.android.core.common.FeatureType.MULTI_POLYGON
-        GeometryFeatureType.NONE -> org.hisp.dhis.android.core.common.FeatureType.NONE
-        GeometryFeatureType.SYMBOL -> org.hisp.dhis.android.core.common.FeatureType.POINT
+        GeometryFeatureType.POINT -> FeatureType.POINT
+        GeometryFeatureType.POLYGON -> FeatureType.POLYGON
+        GeometryFeatureType.MULTI_POLYGON -> FeatureType.MULTI_POLYGON
+        GeometryFeatureType.NONE -> FeatureType.NONE
+        GeometryFeatureType.SYMBOL -> FeatureType.SYMBOL
     }
 
 private fun SyncState.toSDKState(): State =
