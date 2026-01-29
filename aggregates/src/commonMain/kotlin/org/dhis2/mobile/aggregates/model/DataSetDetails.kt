@@ -53,6 +53,8 @@ sealed class NonEditableReason {
     data object Closed : NonEditableReason()
 
     data object Expired : NonEditableReason()
+
+    data object PeriodNotInDataInputPeriods : NonEditableReason()
 }
 
 enum class TextAlignment {
