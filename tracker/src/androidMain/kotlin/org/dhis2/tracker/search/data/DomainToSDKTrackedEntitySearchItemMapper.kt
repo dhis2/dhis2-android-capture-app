@@ -45,7 +45,7 @@ private fun TrackedEntityGeometry.toSDKGeometry(): Geometry? =
     coordinates?.let {
         Geometry
             .builder()
-            .type(geometryFeatureType.toSDKFeatureType())
+            .type(geometryFeatureType?.toSDKFeatureType())
             .coordinates(it)
             .build()
     }
