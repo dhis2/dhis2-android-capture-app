@@ -8,14 +8,11 @@ import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
-import org.dhis2.commons.data.EventModel;
-import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
-import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -86,7 +83,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import dhis2.org.analytics.charts.Charts;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Pair;
@@ -129,7 +125,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                          FilterPresenter filterPresenter,
                          ResourceManager resources,
                          SearchSortingValueSetter sortingValueSetter,
-                         DhisPeriodUtils periodUtils,
                          Charts charts,
                          CrashReportController crashReportController,
                          NetworkUtils networkUtils,
