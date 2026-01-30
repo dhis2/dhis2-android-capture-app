@@ -45,6 +45,7 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModelImpl
+import org.dhis2.form.ui.customintent.CustomIntentResult
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.extensions.toStringProperty
@@ -54,6 +55,9 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.ui.input.action.CustomIntentUid
+import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
@@ -141,6 +145,9 @@ class SearchTEIViewModel(
     private var fetchJob: Job? = null
 
     private val onNewSearch = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
+    private val _searchActions = Channel<TrackerInputAction>()
+    val searchActions = _searchActions.receiveAsFlow()
 
     val searchPagingData =
         onNewSearch
@@ -393,6 +400,7 @@ class SearchTEIViewModel(
     private fun updateSearchParameters(
         uid: String,
         values: List<String>?,
+        errorMessage: String? = null,
     ) {
         val updatedItems =
             searchParametersUiState.items.map {
@@ -406,6 +414,7 @@ class SearchTEIViewModel(
                                 optionSet = it.optionSet,
                                 periodType = it.periodSelector?.type,
                             ),
+                        error = errorMessage,
                     )
                 } else {
                     it
@@ -446,7 +455,8 @@ class SearchTEIViewModel(
                 ),
             )
         }
-        searchParametersUiState = searchParametersUiState.copy(searchEnabled = queryData.isNotEmpty())
+        searchParametersUiState =
+            searchParametersUiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
     private suspend fun loadSearchResults() =
@@ -621,7 +631,8 @@ class SearchTEIViewModel(
                             R.string.search_min_num_attr,
                             minAttributesToSearch,
                         )
-                    searchParametersUiState = searchParametersUiState.copy(minAttributesMessage = message)
+                    searchParametersUiState =
+                        searchParametersUiState.copy(minAttributesMessage = message)
                     searchParametersUiState.updateMinAttributeWarning(true)
                     setSearchScreen()
                     _refreshData.postValue(Unit)
@@ -1174,5 +1185,40 @@ class SearchTEIViewModel(
     fun filterVisibleMapItems(layersVisibility: Map<String, MapLayer>) {
         this.layersVisibility = layersVisibility
         fetchMapResults()
+    }
+
+    fun onLaunchCustomIntent(
+        fieldUid: FieldUid,
+        customIntentUid: CustomIntentUid,
+    ) {
+        viewModelScope.launch {
+            searchRepositoryKt.getCustomIntent(fieldUid)?.let { customIntentModel ->
+                _searchActions.send(
+                    TrackerInputAction.LaunchCustomIntent(
+                        fieldUid = fieldUid,
+                        customIntentModel = customIntentModel,
+                    ),
+                )
+            }
+        }
+    }
+
+    fun handleCustomIntentResult(customIntentResult: CustomIntentResult) {
+        when (customIntentResult) {
+            is CustomIntentResult.Error -> {
+                updateSearchParameters(
+                    customIntentResult.fieldUid,
+                    null,
+                    resourceManager.getString(R.string.custom_intent_error),
+                )
+            }
+
+            is CustomIntentResult.Success -> {
+                updateSearchParameters(
+                    customIntentResult.fieldUid,
+                    listOf(customIntentResult.value),
+                )
+            }
+        }
     }
 }

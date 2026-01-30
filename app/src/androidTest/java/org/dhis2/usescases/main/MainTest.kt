@@ -32,7 +32,7 @@ class MainTest : BaseTest() {
 
     @Test
     fun checkHomeScreenRecyclerviewHasElements() {
-        homeRobot {
+        homeRobot(composeTestRule) {
             composeTestRule.waitForIdle()
             checkViewIsNotEmpty(composeTestRule)
         }
@@ -40,7 +40,7 @@ class MainTest : BaseTest() {
 
     @Test
     fun shouldNavigateToHomeWhenBackPressed() {
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
             pressBack()

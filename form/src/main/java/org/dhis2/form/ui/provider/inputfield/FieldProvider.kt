@@ -130,7 +130,6 @@ fun FieldProvider(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
-                resources = resources,
                 inputStyle = inputStyle,
                 reEvaluateRequestParams = reEvaluateCustomIntentRequestParameters,
                 modifier = modifierWithFocus,
