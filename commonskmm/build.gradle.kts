@@ -12,6 +12,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+apply(from = "${project.rootDir}/jacoco/jacoco-kmp.gradle.kts")
+
 kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xcontext-parameters")

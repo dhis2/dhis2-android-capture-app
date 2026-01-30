@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
+apply(from = "${project.rootDir}/jacoco/jacoco-kmp.gradle.kts")
+
 kotlin {
     androidTarget {
         compilerOptions {

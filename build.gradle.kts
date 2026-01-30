@@ -58,7 +58,7 @@ allprojects {
             cacheChangingModulesFor(0, TimeUnit.SECONDS)
             eachDependency {
                 if (requested.group == "org.jacoco")
-                    useVersion("0.8.10")
+                    useVersion(libs.versions.jacoco.get())
             }
         }
     }
