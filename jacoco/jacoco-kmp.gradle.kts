@@ -136,8 +136,8 @@ tasks.register("jacocoReport", JacocoReport::class) {
     }
     
     if (isKmpProject) {
-        val commonTestTask = tasks.findByName("test")
-        val androidTestTask = tasks.findByName("androidTest")
+        val commonTestTask = tasks.findByName("testDebugUnitTest") ?: tasks.findByName("test")
+        val androidTestTask = tasks.findByName("connectedDebugAndroidTest") ?: tasks.findByName("androidTest")
         
         if (commonTestTask != null) dependsOn(commonTestTask)
         if (androidTestTask != null) dependsOn(androidTestTask)
