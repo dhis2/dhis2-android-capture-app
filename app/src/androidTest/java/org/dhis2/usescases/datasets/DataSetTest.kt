@@ -346,6 +346,10 @@ class DataSetTest : BaseTest() {
         dataSetDetailRobot(composeTestRule){
             clickOnDataSetAtPosition(0)
         }
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag("TABLE_SCROLLABLE_COLUMN"),
+            timeoutMillis = 15000
+        )
         tableIsVisible()
         dataSetTableRobot(composeTestRule) {
             checkItemWithTextIsDisplayed("Re-open form to edit")
