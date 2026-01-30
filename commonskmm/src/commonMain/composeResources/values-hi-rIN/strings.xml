@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="error">त्रुटि</string>
+    <string name="invalid_percentage">केवल 0 से 100 के वैल्यूज़ अनुमति हैं</string>
+    <string name="invalid_field">कृपया इस फ़ील्ड की रिव्यू करें</string>
+    <string name="invalid_possitive">केवल पॉजिटिव संख्या ही अनुमति है</string>
+    <string name="invalid_phone_number">यह मान्य फ़ोन नंबर नहीं है</string>
+    <string name="invalid_email">यह मान्य ईमेल नहीं है</string>
+    <string name="invalid_negative_number">केवल नेगेटिव संख्या ही अनुमति है</string>
+    <string name="invalid_possitive_zero">केवल शून्य या पॉजिटिव संख्या ही अनुमति है</string>
+    <string name="invalid_interval">केवल 0 से 1 के मान ही अनुमति हैं</string>
+    <string name="validation_url">यह मान्य URL नहीं है</string>
+    <string name="error">एरर्स</string>
+    <string name="select_time">समय चुनें</string>
+    <string name="choose_date">दिन चुनें</string>
     <string name="required">आवश्यकता है</string>
+    <string name="date">तारीख</string>
+    <string name="hint_year">वर्ष</string>
+    <string name="hint_month">महीने</string>
     <string name="hint_day">दिन</string>
     <string name="review">रिव्यू</string>
     <string name="complete">पूरा हुआ</string>
+    <string name="saved">सेव</string>
     <string name="not_now">अभी नहीं</string>
     <string name="save_anyway">सेव करें</string>
     <string name="keep_editing">संपादन करते रहें</string>
