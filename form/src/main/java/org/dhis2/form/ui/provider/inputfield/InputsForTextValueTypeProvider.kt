@@ -102,7 +102,7 @@ private fun ProvideQRInput(
         inputTextFieldValue = value,
         inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -187,7 +187,7 @@ private fun ProvideDefaultTextInput(
         inputTextFieldValue = value,
         inputStyle = inputStyle,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },
@@ -252,7 +252,7 @@ private fun ProvideBarcodeInput(
         legendData = fieldUiModel.legend(),
         inputTextFieldValue = value,
         isRequiredField = fieldUiModel.mandatory,
-        onNextClicked = {
+        onImeActionClick = {
             clickedOnNext = true
             onNextClicked()
         },

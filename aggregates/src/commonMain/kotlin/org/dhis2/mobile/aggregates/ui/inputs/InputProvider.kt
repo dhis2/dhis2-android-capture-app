@@ -223,7 +223,7 @@ internal fun InputProvider(
                         onAction(UiAction.OnValueChanged(inputData.id, value))
                     }
                 },
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 modifier = modifierWithFocus,
             )
         }
@@ -329,7 +329,7 @@ internal fun InputProvider(
                     dateTextValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, dateTextValue.text))
                 },
-                onNextClicked = { onAction(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction(UiAction.OnNextClick(inputData.id)) },
                 modifier = modifierWithFocus,
             )
         }
@@ -342,7 +342,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -457,7 +457,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -477,7 +477,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -497,7 +497,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -517,7 +517,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -537,7 +537,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     if (textValue.text != it?.text) {
                         textValue = it ?: TextFieldValue()
@@ -559,7 +559,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -783,7 +783,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -824,7 +824,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -847,7 +847,7 @@ internal fun InputProvider(
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
                 onCallActionClicked = { onAction(UiAction.OnCall(inputData.id, textValue.text)) },
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -867,7 +867,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -909,7 +909,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
@@ -928,7 +928,7 @@ internal fun InputProvider(
                 legendData = inputData.legendData,
                 inputTextFieldValue = textValue,
                 isRequiredField = inputData.isRequired,
-                onNextClicked = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
+                onImeActionClick = { onAction.invoke(UiAction.OnNextClick(inputData.id)) },
                 onValueChanged = {
                     textValue = it ?: TextFieldValue()
                     onAction(UiAction.OnValueChanged(inputData.id, textValue.text))
