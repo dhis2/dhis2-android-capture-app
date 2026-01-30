@@ -34,7 +34,7 @@ class SettingsTest : BaseTest() {
     fun shouldFindEditPeriodDisabledWhenClickOnSyncData() {
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
@@ -49,7 +49,7 @@ class SettingsTest : BaseTest() {
     fun shouldFindEditDisabledWhenClickOnSyncConfiguration() {
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
@@ -64,7 +64,7 @@ class SettingsTest : BaseTest() {
     fun shouldFindEditDisableWhenClickOnSyncParameters() {
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
@@ -79,7 +79,7 @@ class SettingsTest : BaseTest() {
     fun shouldRefillValuesWhenClickOnReservedValues() {
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
@@ -94,7 +94,7 @@ class SettingsTest : BaseTest() {
     fun shouldSuccessfullyOpenLogs() {
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
@@ -112,7 +112,7 @@ class SettingsTest : BaseTest() {
 
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }
@@ -129,7 +129,7 @@ class SettingsTest : BaseTest() {
 
         startActivity()
 
-        homeRobot {
+        homeRobot(composeTestRule) {
             clickOnNavigationDrawerMenu()
             clickOnSettings()
         }

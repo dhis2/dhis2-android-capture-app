@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -101,6 +102,12 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+
+const val CREDENTIALS_USERNAME_INPUT_TAG = "credentials_username_input"
+const val CREDENTIALS_PASSWORD_INPUT_TAG = "credentials_password_input"
+const val CREDENTIALS_LOGIN_BUTTON_TAG = "credentials_login_button"
+const val CREDENTIALS_ERROR_INFO_BAR_TAG = "credentials_error_info_bar"
+const val CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG = "credentials_manage_accounts_button"
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -384,7 +391,7 @@ private fun CredentialsContainer(
     ) {
         if (isUsernameEditable) {
             InputUser(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_USERNAME_INPUT_TAG),
                 uiModel =
                     InputUserModel(
                         title = stringResource(Res.string.username_hint),
@@ -417,7 +424,7 @@ private fun CredentialsContainer(
             )
         }
         InputPassword(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_PASSWORD_INPUT_TAG),
             uiModel =
                 InputPasswordModel(
                     title = stringResource(Res.string.password_hint),
@@ -471,7 +478,7 @@ private fun LoginStatus(
         )
     } else if (loginErrorMessage != null) {
         InfoBar(
-            modifier = Modifier,
+            modifier = Modifier.testTag(CREDENTIALS_ERROR_INFO_BAR_TAG),
             text = loginErrorMessage,
             textColor = MaterialTheme.colorScheme.onErrorContainer,
             backgroundColor = MaterialTheme.colorScheme.errorContainer,
@@ -501,7 +508,7 @@ private fun CredentialActions(
         verticalArrangement = spacedBy(Spacing.Spacing0),
     ) {
         Button(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_LOGIN_BUTTON_TAG),
             enabled = canLogin,
             text = stringResource(Res.string.action_log_in),
             style = ButtonStyle.FILLED,
@@ -591,7 +598,7 @@ private fun CredentialActions(
                 contentAlignment = Alignment.BottomCenter,
             ) {
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG),
                     text = stringResource(Res.string.action_manage_account),
                     style = ButtonStyle.OUTLINED,
                     onClick = {

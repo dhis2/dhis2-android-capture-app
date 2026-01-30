@@ -17,13 +17,16 @@ import org.dhis2.common.BaseRobot
 import org.dhis2.usescases.main.program.HOME_ITEMS
 import org.dhis2.usescases.main.program.hasPrograms
 
-fun homeRobot(robotBody: MainRobot.() -> Unit) {
-    MainRobot().apply {
+fun homeRobot(
+    composeTestRule: ComposeTestRule,
+    robotBody: MainRobot.() -> Unit
+) {
+    MainRobot(composeTestRule).apply {
         robotBody()
     }
 }
 
-class MainRobot : BaseRobot() {
+class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnNavigationDrawerMenu() = apply {
         waitForView(withId(R.id.menu)).perform(click())
@@ -41,10 +44,6 @@ class MainRobot : BaseRobot() {
     fun clickAbout() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_about))
         waitToDebounce(FRAGMENT_TRANSITION)
-    }
-
-    fun clickDeleteAccount() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.delete_account))
     }
 
     fun checkViewIsNotEmpty(composeTestRule: ComposeTestRule) {
@@ -65,6 +64,5 @@ class MainRobot : BaseRobot() {
 
     companion object {
         const val FRAGMENT_TRANSITION = 1500L
-        const val LOGOUT_TRANSITION = 2000L
     }
 }
