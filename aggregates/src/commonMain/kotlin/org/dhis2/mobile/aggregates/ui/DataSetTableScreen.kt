@@ -70,6 +70,7 @@ import org.dhis2.mobile.aggregates.resources.empty_section_message
 import org.dhis2.mobile.aggregates.resources.no_data_write_access
 import org.dhis2.mobile.aggregates.resources.org_unit_not_in_capture_scope
 import org.dhis2.mobile.aggregates.resources.period_not_in_attribute_option_combo_range
+import org.dhis2.mobile.aggregates.resources.period_not_in_data_input_periods
 import org.dhis2.mobile.aggregates.resources.period_not_in_org_unit_range
 import org.dhis2.mobile.aggregates.ui.component.HtmlContentBox
 import org.dhis2.mobile.aggregates.ui.component.ValidationBar
@@ -575,6 +576,9 @@ private fun nonEditableReasonLabel(edition: DataSetEdition) =
                 edition.nonEditableReason.periodLabel,
                 edition.nonEditableReason.orgUnitLabel,
             )
+
+        is NonEditableReason.PeriodNotInDataInputPeriods ->
+            stringResource(Res.string.period_not_in_data_input_periods)
     }
 
 /**
