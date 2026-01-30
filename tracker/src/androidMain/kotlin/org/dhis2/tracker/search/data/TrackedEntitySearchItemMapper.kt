@@ -39,9 +39,9 @@ fun TrackedEntitySearchItem.toTrackedEntitySearchItemResult(): TrackedEntitySear
     )
 
 private fun Geometry?.toDomainGeometry(): TrackedEntityGeometry? =
-    this?.type()?.let {
+    this?.let {
         TrackedEntityGeometry(
-            geometryFeatureType = getGeometryType(it),
+            geometryFeatureType = getGeometryType(it.type()),
             coordinates = this.coordinates(),
         )
     }
