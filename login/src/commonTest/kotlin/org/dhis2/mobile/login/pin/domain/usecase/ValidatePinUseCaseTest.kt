@@ -4,9 +4,9 @@ import kotlinx.coroutines.test.runTest
 import org.dhis2.mobile.login.pin.data.SessionRepository
 import org.dhis2.mobile.login.pin.domain.model.PinError
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
-import org.junit.Before
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -15,7 +15,7 @@ class ValidatePinUseCaseTest {
     private lateinit var useCase: ValidatePinUseCase
     private val repository: SessionRepository = mock()
 
-    @Before
+    @BeforeTest
     fun setUp() {
         useCase = ValidatePinUseCase(repository)
     }

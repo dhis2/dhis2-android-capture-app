@@ -58,10 +58,6 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(kotlin("test"))
-                // Koin Test features
-                implementation(libs.koin.test)
-                implementation(libs.koin.test.junit5)
-                implementation(libs.koin.test.junit4)
                 implementation(libs.test.turbine)
                 implementation(libs.test.kotlinCoroutines)
                 implementation(libs.test.mockitoKotlin)
