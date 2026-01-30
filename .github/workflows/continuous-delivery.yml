@@ -58,22 +58,18 @@ jobs:
           DEBUG_KEY_PASS: ${{ secrets.DEBUG_KEY_PASS }}
           DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
           DEBUG_KEYSTORE_PATH: ${{ steps.decode_keystore.outputs.filePath }}
-
-      - name: Read version name from file
-        working-directory: ./gradle
-        id: read-version
-        run: echo "vName=$(grep 'vName' libs.versions.toml | awk -F' = ' '{print $2}' | tr -d '"')" >> "$GITHUB_OUTPUT"
-
-      - name: Get JIRA issue number
-        id: jira-issue-number
+      
+      - name: Locate built APK
+        id: apk-path
         run: |
-          BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
-          JIRA_ISSUE=$(echo "$BRANCH_NAME" | grep -oE '[a-zA-Z]+-[0-9]+' | head -1 || echo "$BRANCH_NAME")
-          echo "issue=$JIRA_ISSUE" >> "$GITHUB_OUTPUT"
+          echo "Searching for APKs under ${{ env.main_project_module }}/build/outputs/apk"
+          find "${{ env.main_project_module }}/build/outputs/apk" -type f -name "*.apk"
+          APK_PATH=$(find "${{ env.main_project_module }}/build/outputs/apk" -type f -name "*.apk" -print -quit)
+          echo "apk_path=$APK_PATH" >> "$GITHUB_OUTPUT"
 
       # Upload Artifact Build
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
-          path: ${{ env.main_project_module }}/build/outputs/apk/dhis2/debug/dhis2-v${{ steps.read-version.outputs.vName }}-${{ steps.jira-issue-number.outputs.issue}}.apk
+          path: ${{ steps.apk-path.outputs.apk_path }}
