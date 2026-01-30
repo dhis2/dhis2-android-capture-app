@@ -166,7 +166,6 @@ public class SearchTEModule {
                 filterPresenter,
                 resources,
                 searchSortingValueSetter,
-                periodUtils,
                 charts,
                 crashReportController,
                 networkUtils,

@@ -8,14 +8,11 @@ import org.dhis2.bindings.ExtensionsKt;
 import org.dhis2.bindings.ValueExtensionsKt;
 import org.dhis2.commons.Constants;
 import org.dhis2.commons.data.EntryMode;
-import org.dhis2.commons.data.EventModel;
-import org.dhis2.commons.data.EventViewModelType;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.filters.FilterManager;
 import org.dhis2.commons.filters.data.FilterPresenter;
 import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
-import org.dhis2.commons.resources.DhisPeriodUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
@@ -86,7 +83,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import dhis2.org.analytics.charts.Charts;
-import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import kotlin.Pair;
@@ -99,10 +95,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final D2 d2;
     private final SearchSortingValueSetter sortingValueSetter;
     private TrackedEntitySearchCollectionRepository trackedEntityInstanceQuery;
-    public SearchParametersModel savedSearchParameters;
-    private FilterManager savedFilters;
     private FilterPresenter filterPresenter;
-    private DhisPeriodUtils periodUtils;
     private String currentProgram;
     private final Charts charts;
     private final CrashReportController crashReportController;
@@ -132,7 +125,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                          FilterPresenter filterPresenter,
                          ResourceManager resources,
                          SearchSortingValueSetter sortingValueSetter,
-                         DhisPeriodUtils periodUtils,
                          Charts charts,
                          CrashReportController crashReportController,
                          NetworkUtils networkUtils,
@@ -148,7 +140,6 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.resources = resources;
         this.sortingValueSetter = sortingValueSetter;
         this.filterPresenter = filterPresenter;
-        this.periodUtils = periodUtils;
         this.charts = charts;
         this.crashReportController = crashReportController;
         this.dateUtils = dateUtils;
@@ -184,36 +175,15 @@ public class SearchRepositoryImpl implements SearchRepository {
         fetchedTeiUids.clear();
     }
 
-    @NonNull
-    @Override
-    public Flowable<List<SearchTeiModel>> searchTeiForMap(SearchParametersModel searchParametersModel, boolean isOnline) {
-
-        boolean allowCache = false;
-        if (!searchParametersModel.equals(savedSearchParameters) || !FilterManager.getInstance().equals(savedFilters)) {
-            trackedEntityInstanceQuery = getFilteredRepository(searchParametersModel);
-        } else {
-            allowCache = true;
-        }
-
-        if (isOnline && FilterManager.getInstance().getStateFilters().isEmpty())
-            return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst().get().toFlowable()
-                    .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), false, FilterManager.getInstance().getSortingItem()))
-                    .toList().toFlowable();
-        else
-            return trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly().get().toFlowable()
-                    .flatMapIterable(list -> list)
-                    .map(tei -> transform(tei, searchParametersModel.getSelectedProgram(), true, FilterManager.getInstance().getSortingItem()))
-                    .toList().toFlowable();
-    }
 
     @Override
     public TrackedEntitySearchCollectionRepository getFilteredRepository(SearchParametersModel searchParametersModel) {
-        this.savedSearchParameters = searchParametersModel.copy();
-        this.savedFilters = FilterManager.getInstance().copy();
 
+        String programUid = searchParametersModel.getSelectedProgram() != null
+                ? searchParametersModel.getSelectedProgram().uid()
+                : null;
         trackedEntityInstanceQuery = filterPresenter.filteredTrackedEntityInstances(
-                searchParametersModel.getSelectedProgram(), teiType
+                programUid, teiType
         );
 
         for (int i = 0; i < searchParametersModel.getQueryData().keySet().size(); i++) {
@@ -666,20 +636,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                 !FilterManager.getInstance().getStateFilters().isEmpty();
     }
 
-    @Override
-    public @NotNull HashSet<String> getFetchedTeiUIDs() {
-        return fetchedTeiUids;
-    }
-
-    @Override
-    public SearchParametersModel getSavedSearchParameters() {
-        return savedSearchParameters;
-    }
-
-    @Override
-    public FilterManager getSavedFilters() {
-        return savedFilters;
-    }
 
     @Override
     public Observable<TrackedEntityType> getTrackedEntityType(String trackedEntityUid) {
@@ -689,59 +645,6 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public TrackedEntityType getTrackedEntityType() {
         return d2.trackedEntityModule().trackedEntityTypes().uid(teiType).blockingGet();
-    }
-
-    @Override
-    public List<EventModel> getEventsForMap(List<SearchTeiModel> teis) {
-        List<EventModel> eventModels = new ArrayList<>();
-        List<String> teiUidList = new ArrayList<>();
-        for (SearchTeiModel tei : teis) {
-            teiUidList.add(tei.getTei().uid());
-        }
-
-        List<Event> events = d2.eventModule().events()
-                .byTrackedEntityInstanceUids(teiUidList)
-                .byDeleted().isFalse()
-                .blockingGet();
-
-        HashMap<String, ProgramStage> cacheStages = new HashMap<>();
-
-        for (Event event : events) {
-            if (!cacheStages.containsKey(event.programStage())) {
-                ProgramStage stage = d2.programModule().programStages()
-                        .uid(event.programStage())
-                        .blockingGet();
-                cacheStages.put(event.programStage(), stage);
-            }
-
-            eventModels.add(
-                    new EventModel(
-                            EventViewModelType.EVENT,
-                            cacheStages.get(event.programStage()),
-                            event,
-                            0,
-                            null,
-                            true,
-                            true,
-                            orgUnitName(event.organisationUnit()),
-                            true,
-                            null,
-                            null,
-                            false,
-                            false,
-                            false,
-                            false,
-                            false,
-                            0,
-                            periodUtils.getPeriodUIString(cacheStages.get(event.programStage()).periodType(), event.eventDate() != null ? event.eventDate() : event.dueDate(), Locale.getDefault()),
-                            null,
-                            metadataIconProvider.invoke(cacheStages.get(event.programStage()).style()),
-                            true,
-                            true
-                    ));
-        }
-
-        return eventModels;
     }
 
     private String orgUnitName(String orgUnitUid) {

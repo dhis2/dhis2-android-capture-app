@@ -7,7 +7,6 @@ import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.data.FilterPresenter
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.network.NetworkUtils
-import org.dhis2.commons.resources.DhisPeriodUtils
 import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
@@ -91,7 +90,6 @@ class SearchRepositoryTest {
     private val filterPresenter: FilterPresenter = mock()
     private val resourceManager: ResourceManager = mock()
     private val sortingValueSetter: SearchSortingValueSetter = mock()
-    private val dhisPeriodUtils: DhisPeriodUtils = mock()
     private val charts: Charts = mock()
     private val crashReporterController: CrashReportController = mock()
     private val networkUtils: NetworkUtils = mock()
@@ -137,7 +135,6 @@ class SearchRepositoryTest {
                 filterPresenter,
                 resourceManager,
                 sortingValueSetter,
-                dhisPeriodUtils,
                 charts,
                 crashReporterController,
                 networkUtils,
