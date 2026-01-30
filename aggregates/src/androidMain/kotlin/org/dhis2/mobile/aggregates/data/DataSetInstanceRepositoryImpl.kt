@@ -339,8 +339,10 @@ internal class DataSetInstanceRepositoryImpl(
             .blockingGet()
             ?.let {
                 DataSetRenderingConfig(
-                    useVerticalTabs = it.displayOptions()
-                        ?.tabsDirection() == TabsDirection.VERTICAL,
+                    useVerticalTabs =
+                        it
+                            .displayOptions()
+                            ?.tabsDirection() == TabsDirection.VERTICAL,
                 )
             } ?: DataSetRenderingConfig(
             useVerticalTabs = true,
@@ -1084,7 +1086,7 @@ internal class DataSetInstanceRepositoryImpl(
                 ?.compulsoryDataElementOperands()
                 ?.any {
                     it.dataElement()?.uid() == dataElementUid &&
-                            it.categoryOptionCombo()?.uid() == categoryOptionComboUid
+                        it.categoryOptionCombo()?.uid() == categoryOptionComboUid
                 } ?: false
         val dataElementValueType = dataElement?.valueType()?.toInputType()
         val inputType =
@@ -1172,16 +1174,16 @@ internal class DataSetInstanceRepositoryImpl(
         .blockingGet()
         .associate { indicator ->
             (indicator.displayName() ?: indicator.uid()) to
-                    d2
-                        .indicatorModule()
-                        .dataSetIndicatorEngine()
-                        .blockingEvaluate(
-                            indicator.uid(),
-                            dataSetUid,
-                            periodId,
-                            orgUnitUid,
-                            attributeOptionComboUid,
-                        ).toString()
+                d2
+                    .indicatorModule()
+                    .dataSetIndicatorEngine()
+                    .blockingEvaluate(
+                        indicator.uid(),
+                        dataSetUid,
+                        periodId,
+                        orgUnitUid,
+                        attributeOptionComboUid,
+                    ).toString()
         }.toSortedMap(compareBy { it })
         .takeIf { it.isNotEmpty() }
 
