@@ -41,7 +41,13 @@ android {
 
     val getBranchName by extra {
         fun(): String {
+            val envBranchName = System.getenv("GITHUB_HEAD_REF")
+                ?: System.getenv("GITHUB_REF_NAME")
+
             return try {
+                if (!envBranchName.isNullOrBlank()) {
+                    return envBranchName.replace(Regex("[/\\\\:*?\"<>|]"), "-")
+                }
                 val process = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
                     .redirectOutput(ProcessBuilder.Redirect.PIPE)
                     .redirectError(ProcessBuilder.Redirect.PIPE)
