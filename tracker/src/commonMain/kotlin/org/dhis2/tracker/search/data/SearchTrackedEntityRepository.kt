@@ -27,7 +27,7 @@ interface SearchTrackedEntityRepository {
 
     suspend fun excludeValuesFromQuery(excludeValues: List<String>)
 
-    suspend fun fetchResults(
+    fun fetchResults(
         isOnline: Boolean,
         hasStateFilters: Boolean,
         allowCache: Boolean,

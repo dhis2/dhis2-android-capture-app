@@ -95,7 +95,7 @@ class SearchTrackedEntityRepositoryImpl(
         trackedEntityInstanceQuery = trackedEntityInstanceQuery?.excludeUids()?.`in`(excludeValues)
     }
 
-    override suspend fun fetchResults(
+    override fun fetchResults(
         isOnline: Boolean,
         hasStateFilters: Boolean,
         allowCache: Boolean,
