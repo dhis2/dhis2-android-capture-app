@@ -52,7 +52,7 @@ class SearchTrackedEntityRepositoryImpl(
     ) {
         trackedEntityInstanceQuery =
             if (dataValues.size > 1) {
-                // return any tracked entities with attributes that match the the values in the list
+                // return any tracked entities with attributes that match the values in the list
                 trackedEntityInstanceQuery?.byFilter(dataId)?.`in`(dataValues)
             } else {
                 if (dataValues.size == 1) {
@@ -109,7 +109,7 @@ class SearchTrackedEntityRepositoryImpl(
                 trackedEntityInstanceQuery?.allowOnlineCache()?.eq(allowCache)?.offlineOnly()
             }
 
-        // map the paging data to SearchTrackerParameterResult
+        // map the paging data to TrackedEntitySearchItemResult
         return pagerFlow?.getPagingData(10)?.map { pagingData ->
             pagingData.map { item ->
                 item.toTrackedEntitySearchItemResult()
