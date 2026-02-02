@@ -35,6 +35,7 @@ import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityType
@@ -1035,6 +1036,7 @@ class SearchTEIViewModelTest {
         .displayFrontPageList(displayFrontPageList)
         .minAttributesRequiredToSearch(minAttributesToSearch)
         .trackedEntityType(TrackedEntityType.builder().uid("teTypeUid").build())
+        .categoryCombo(ObjectWithUid.create("categoryComboUid"))
         .apply {
             maxTeiCountToReturn?.let {
                 maxTeiCountToReturn(maxTeiCountToReturn)

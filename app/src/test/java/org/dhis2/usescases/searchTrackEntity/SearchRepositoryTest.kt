@@ -25,6 +25,7 @@ import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilt
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.enrollment.Enrollment
@@ -167,7 +168,8 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOverdueEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
-        val program = Program.builder().uid("programUid").build()
+        val program = Program.builder().uid("programUid")
+            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
@@ -200,7 +202,8 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOverdueScheduledEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
-        val program = Program.builder().uid("programUid").build()
+        val program = Program.builder().uid("programUid")
+            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
@@ -232,7 +235,8 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOutOverdueEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
-        val program = Program.builder().uid("programUid").build()
+        val program = Program.builder().uid("programUid")
+            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
@@ -352,6 +356,7 @@ class SearchRepositoryTest {
                 .builder()
                 .uid(programUid)
                 .displayFrontPageList(true)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         // Mock setOverdueEvents

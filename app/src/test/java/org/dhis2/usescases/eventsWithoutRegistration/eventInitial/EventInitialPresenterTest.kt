@@ -12,6 +12,7 @@ import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventFieldMapp
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventEditableStatus.Editable
 import org.hisp.dhis.android.core.event.EventEditableStatus.NonEditable
@@ -364,7 +365,8 @@ class EventInitialPresenterTest {
         programStageUid: String?,
         moreOrgUnits: Boolean = false,
     ) {
-        val program = Program.builder().uid(uid).build()
+        val program = Program.builder().uid(uid)
+            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
         val orgUnits =
             mutableListOf(
                 OrganisationUnit

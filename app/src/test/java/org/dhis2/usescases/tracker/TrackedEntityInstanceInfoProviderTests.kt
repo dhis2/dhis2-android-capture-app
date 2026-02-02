@@ -8,6 +8,7 @@ import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
@@ -217,6 +218,7 @@ class TrackedEntityInstanceInfoProviderTests {
 
     private fun mockProgram(hasStyle: Boolean = false): Program {
         val program = Program.builder().uid("programUid")
+            .categoryCombo(ObjectWithUid.create("categoryComboUid"))
 
         if (hasStyle) {
             program.style(

@@ -18,6 +18,7 @@ import org.dhis2.commons.filters.workingLists.ProgramStageToWorkingListItemMappe
 import org.dhis2.commons.filters.workingLists.TeiFilterToWorkingListItemMapper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.category.CategoryCombo
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.settings.FilterSetting
 import org.hisp.dhis.android.core.settings.HomeFilter
@@ -211,6 +212,7 @@ class FilterRepositoryTest {
             Program
                 .builder()
                 .uid("random")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .build()
         val catCombo =
@@ -286,6 +288,7 @@ class FilterRepositoryTest {
             Program
                 .builder()
                 .uid("random")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .build()
         val catCombo =
@@ -380,6 +383,7 @@ class FilterRepositoryTest {
             Program
                 .builder()
                 .uid("random")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .build()
         val catCombo =
@@ -459,6 +463,7 @@ class FilterRepositoryTest {
             Program
                 .builder()
                 .uid("random")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .trackedEntityType(
                     TrackedEntityType
@@ -600,6 +605,7 @@ class FilterRepositoryTest {
             Program
                 .builder()
                 .uid("random")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .trackedEntityType(
                     TrackedEntityType
