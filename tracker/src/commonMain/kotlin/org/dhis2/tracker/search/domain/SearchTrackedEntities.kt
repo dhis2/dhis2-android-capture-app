@@ -44,33 +44,33 @@ class SearchTrackedEntities(
         // Add filters from FilterManager
         repository.addFiltersToQuery(input.selectedProgram, teType)
 
-        input.queryData?.let {
-            val dataTypedArray = it.keys.toTypedArray()
+        input.queryData?.let { queryData ->
             // iterate through the query data and add to the repository query
-            for (i in it.keys.indices) {
-                val dataId = dataTypedArray[i]
-                var dataValues = input.queryData[dataId]
-
+            for ((dataId, dataValues) in queryData) {
                 // checks if the dataId is an attribute of the teType
                 val isTETypeAttribute = repository.isTETypeAttribute(teType, dataId)
 
                 if (input.selectedProgram != null || isTETypeAttribute) {
                     // fetches the teAttribute details (isUnique, isOptionSet)
                     val teAttribute = repository.getTEAttribute(dataId)
-                    dataValues?.let {
-                        // checks if the attribute has custom intent associated with it that returns multiple values
-                        if (!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(
-                                dataId,
-                                CustomIntentActionTypeModel.SEARCH,
-                            ) && dataValues.size > 1
-                        ) {
-                            // if it has multiple values, we join them into a single value separated by commas
-                            dataValues = mutableListOf(dataValues.joinToString(","))
-                        }
+
+                    dataValues?.let { values ->
+                        // normalize values: if the attribute doesn't have custom intent that returns multiple values
+                        // and there are multiple values, join them into a single comma-separated value
+                        val normalizedValues =
+                            if (!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(
+                                    dataId,
+                                    CustomIntentActionTypeModel.SEARCH,
+                                ) && values.size > 1
+                            ) {
+                                mutableListOf(values.joinToString(","))
+                            } else {
+                                values
+                            }
 
                         repository.addToQuery(
                             dataId,
-                            dataValues,
+                            normalizedValues,
                             teAttribute.isUnique,
                             teAttribute.isOptionSet,
                         )
