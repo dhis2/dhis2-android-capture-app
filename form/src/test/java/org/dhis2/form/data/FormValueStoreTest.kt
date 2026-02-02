@@ -731,6 +731,7 @@ class FormValueStoreTest {
                 .builder()
                 .uid("fieldUid")
                 .valueType(ValueType.TEXT)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         val storeResult =
             deValueStore.deleteOptionValueIfSelected(
@@ -1178,6 +1179,7 @@ class FormValueStoreTest {
                 .builder()
                 .uid(testingUid)
                 .valueType(ValueType.TEXT)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         whenever(
             d2
@@ -1386,6 +1388,7 @@ class FormValueStoreTest {
             .builder()
             .uid("uid")
             .valueType(ValueType.TEXT)
+            .categoryCombo(ObjectWithUid.create("categoryComboUid"))
             .build()
 
     private fun mockedUniqueAttribute(): TrackedEntityAttribute =

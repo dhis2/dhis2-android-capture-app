@@ -5,6 +5,7 @@ import io.reactivex.Single
 import org.dhis2.data.dhislogic.AUTH_ALL
 import org.dhis2.data.dhislogic.AUTH_UNCOMPLETE_EVENT
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -752,7 +753,9 @@ class EventCaptureRepositoryImplTest {
                     .sortOrder(sectionOrderC)
                     .dataElements(
                         mutableListOf(
-                            DataElement.builder().uid(sectionCDataElementA).build(),
+                            DataElement.builder().uid(sectionCDataElementA)
+                                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                                .build(),
                         ),
                     ).build(),
                 ProgramStageSection
@@ -762,8 +765,12 @@ class EventCaptureRepositoryImplTest {
                     .sortOrder(sectionOrderB)
                     .dataElements(
                         mutableListOf(
-                            DataElement.builder().uid(sectionBDataElementA).build(),
-                            DataElement.builder().uid(sectionBDataElementB).build(),
+                            DataElement.builder().uid(sectionBDataElementA)
+                                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                                .build(),
+                            DataElement.builder().uid(sectionBDataElementB)
+                                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                                .build(),
                         ),
                     ).build(),
                 ProgramStageSection
@@ -773,7 +780,9 @@ class EventCaptureRepositoryImplTest {
                     .sortOrder(sectionOrderA)
                     .dataElements(
                         mutableListOf(
-                            DataElement.builder().uid(sectionADataElementA).build(),
+                            DataElement.builder().uid(sectionADataElementA)
+                                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                                .build(),
                         ),
                     ).build(),
             )

@@ -270,7 +270,7 @@ class StockManagerTest {
 
             // Mock mandatory field check to pass
             val dataElement =
-                mock<DataElement> {
+                mock<ObjectWithUid> {
                     on { uid() } doReturn "de_uid"
                 }
             val mandatoryDataElement =
@@ -343,7 +343,7 @@ class StockManagerTest {
 
             // Mock mandatory field check to fail
             val dataElement =
-                mock<DataElement> {
+                mock<ObjectWithUid> {
                     on { uid() } doReturn "de_uid"
                 }
             val mandatoryDataElement =
