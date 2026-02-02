@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
+import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
@@ -37,6 +38,7 @@ class LoginViewModelTest {
     private val importDatabase: ImportDatabase = mock()
     private val validateServer: ValidateServer = mock()
     private val appLinkNavigation: AppLinkNavigation = mock()
+    private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val mockAppLinkFlow = MutableSharedFlow<String>()
     private val networkStatusProvider: NetworkStatusProvider = mock()
@@ -68,6 +70,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
+                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
                 )
 
@@ -103,6 +106,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
+                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
                 )
 
@@ -147,6 +151,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
+                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
                 )
 
@@ -189,6 +194,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
+                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
                 )
 
@@ -219,6 +225,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
+                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
                 )
 
@@ -246,6 +253,7 @@ class LoginViewModelTest {
                     importDatabase = importDatabase,
                     validateServer = validateServer,
                     appLinkNavigation = appLinkNavigation,
+                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
                 )
 

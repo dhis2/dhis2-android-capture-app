@@ -8,6 +8,7 @@ import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
 import org.dhis2.mobile.commons.providers.PreferenceProvider
 import org.dhis2.mobile.commons.providers.SECURE_PASS
@@ -22,6 +23,7 @@ import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
+import org.hisp.dhis.android.core.maintenance.D2Error
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.jetbrains.compose.resources.getString
@@ -47,6 +49,7 @@ class LoginRepositoryImpl(
     private val analyticActions: AnalyticActions,
     private val openIdController: OpenIdController,
     private val dispatcher: Dispatcher,
+    private val domainErrorMapper: DomainErrorMapper,
 ) : LoginRepository {
     override suspend fun validateServer(
         server: String,
@@ -120,6 +123,15 @@ class LoginRepositoryImpl(
                         e.cause,
                     ),
                 )
+            }
+        }
+
+    override suspend fun getDeviceEnrollmentUrl(serverUrl: String) =
+        withContext(dispatcher.io) {
+            try {
+                d2.userModule().oauth2Handler().blockingBuildEnrollmentUrl(serverUrl)
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
 

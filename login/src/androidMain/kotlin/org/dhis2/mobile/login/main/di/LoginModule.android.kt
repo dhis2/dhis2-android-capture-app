@@ -35,6 +35,7 @@ internal actual val accountModule =
                 get(),
                 get { parametersOf(params.get()) },
                 get(),
+                get(),
             )
         }
 

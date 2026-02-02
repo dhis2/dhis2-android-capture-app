@@ -64,4 +64,6 @@ interface LoginRepository {
     suspend fun getUsername(): String
 
     suspend fun logoutUser(): Result<Unit>
+
+    suspend fun getDeviceEnrollmentUrl(serverUrl: String): String
 }

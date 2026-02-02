@@ -73,6 +73,14 @@
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="dhis2oauth"
+                    android:host="oauth" />
+            </intent-filter>
         </activity>
         <activity android:name=".usescases.main.MainActivity" />
         <activity android:name=".usescases.programEventDetail.ProgramEventDetailActivity" />

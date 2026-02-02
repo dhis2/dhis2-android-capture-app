@@ -5,6 +5,7 @@ import org.dhis2.mobile.login.authentication.di.twoFAModule
 import org.dhis2.mobile.login.main.domain.usecase.BiometricLogin
 import org.dhis2.mobile.login.main.domain.usecase.GetAvailableUsernames
 import org.dhis2.mobile.login.main.domain.usecase.GetBiometricInfo
+import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetHasOtherAccounts
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
@@ -71,6 +72,11 @@ internal val mainLoginModule =
         factory { params ->
             OpenIdLogin(get { parametersOf(params.get()) })
         }
+
+        factory { params ->
+            GetDeviceEnrollmentUrl(get { parametersOf(params.get()) })
+        }
+
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
             LoginViewModel(
@@ -79,6 +85,7 @@ internal val mainLoginModule =
                 get { parametersOf(context) },
                 get { parametersOf(context) },
                 get(),
+                get { parametersOf(context) },
                 get(),
             )
         }
