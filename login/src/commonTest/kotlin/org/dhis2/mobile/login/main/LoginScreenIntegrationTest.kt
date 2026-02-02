@@ -16,6 +16,7 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -53,6 +54,8 @@ class LoginScreenIntegrationTest {
 
     private lateinit var getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl
 
+    private lateinit var processDeviceEnrollment: ProcessDeviceEnrollment
+
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
@@ -63,6 +66,7 @@ class LoginScreenIntegrationTest {
         validateServer = ValidateServer(repository = loginRepository)
         getInitialScreen = GetInitialScreen(accountRepository, sessionRepository)
         getDeviceEnrollmentUrl = GetDeviceEnrollmentUrl(repository = loginRepository)
+        processDeviceEnrollment = ProcessDeviceEnrollment(repository = loginRepository)
     }
 
     @AfterTest
@@ -220,6 +224,7 @@ class LoginScreenIntegrationTest {
                 appLinkNavigation = appLinkNavigation,
                 getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                 networkStatusProvider = networkStatusProvider,
+                processDeviceEnrollment = processDeviceEnrollment,
             )
     }
 

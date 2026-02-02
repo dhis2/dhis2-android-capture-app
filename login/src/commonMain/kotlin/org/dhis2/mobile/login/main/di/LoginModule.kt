@@ -12,6 +12,7 @@ import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
 import org.dhis2.mobile.login.main.domain.usecase.LogOutUser
 import org.dhis2.mobile.login.main.domain.usecase.LoginUser
 import org.dhis2.mobile.login.main.domain.usecase.OpenIdLogin
+import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.UpdateBiometricPermission
 import org.dhis2.mobile.login.main.domain.usecase.UpdateTrackingPermission
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
@@ -77,6 +78,10 @@ internal val mainLoginModule =
             GetDeviceEnrollmentUrl(get { parametersOf(params.get()) })
         }
 
+        factory { params ->
+            ProcessDeviceEnrollment(get { parametersOf(params.get()) })
+        }
+
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
             LoginViewModel(
@@ -85,6 +90,7 @@ internal val mainLoginModule =
                 get { parametersOf(context) },
                 get { parametersOf(context) },
                 get(),
+                get { parametersOf(context) },
                 get { parametersOf(context) },
                 get(),
             )

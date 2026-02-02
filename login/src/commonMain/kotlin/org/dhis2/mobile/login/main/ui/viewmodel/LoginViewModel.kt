@@ -15,8 +15,10 @@ import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.OauthLogin
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
+import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -29,6 +31,8 @@ class LoginViewModel(
     private val importDatabase: ImportDatabase,
     private val validateServer: ValidateServer,
     private val appLinkNavigation: AppLinkNavigation,
+    private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl,
+    private val processDeviceEnrollment: ProcessDeviceEnrollment,
     networkStatusProvider: NetworkStatusProvider,
 ) : ViewModel() {
     private val isNetworkOnline =
@@ -46,12 +50,11 @@ class LoginViewModel(
     val importDatabaseState = _importDatabaseState.asStateFlow()
 
     private var serverValidationJob: Job? = null
-    private val redirectUri = "https://vgarciabnz.github.io"
 
     init {
         launchUseCase {
             appLinkNavigation.appLink.collect { urlString ->
-                handleAppLink(urlString)
+                handleOAuthCallbacks(urlString)
             }
         }
         goToInitialScreen()
@@ -108,8 +111,21 @@ class LoginViewModel(
                         stopValidation()
                     }
 
-                    ServerValidationResult.Oauth -> {
-                        navigator.navigate(OauthLogin(serverUrl))
+                    is ServerValidationResult.Oauth -> {
+                        getDeviceEnrollmentUrl(serverUrl).fold(
+                            onSuccess = { enrollmentURL ->
+                                navigator.navigate(OauthLogin(enrollmentURL))
+                            },
+                            onFailure = { error ->
+                                _serverValidationState.update {
+                                    it.copy(
+                                        currentServer = serverUrl,
+                                        error = error.message,
+                                        validationRunning = false,
+                                    )
+                                }
+                            },
+                        )
                         stopValidation()
                     }
                 }
@@ -125,20 +141,55 @@ class LoginViewModel(
         _serverValidationState.update { it.copy(validationRunning = false) }
     }
 
-    private fun handleAppLink(urlString: String) {
-        if (urlString.startsWith(redirectUri)) {
-            val code = urlString.substringAfter("code=").substringBefore('&')
-            if (code.isNotEmpty()) {
-                // TODO "Use the authorization code to get a token and log in, then show statistics screen"
-            } else {
-                val error = urlString.substringAfter("error=").substringBefore('&')
-                _serverValidationState.update {
-                    it.copy(
-                        error = error,
-                        validationRunning = false,
-                    )
-                }
+    private fun handleOAuthCallbacks(urlString: String) {
+        // First check if there is any error
+        val error = urlString.substringAfter("error=", "").substringBefore('&')
+        if (error.isNotEmpty()) {
+            _serverValidationState.update {
+                it.copy(
+                    error = error,
+                    validationRunning = false,
+                )
             }
+            return
+        }
+
+        // Check if there is a device enrollment callback
+        val iat = urlString.substringAfter("iat=", "").substringBefore('&')
+        if (iat.isNotEmpty()) {
+            registerDevice(urlString, iat)
+            return
+        }
+
+        // Check if there is a login callback with the authorization code
+        val code = urlString.substringAfter("code=", "").substringBefore('&')
+        if (code.isNotEmpty()) {
+            val state = urlString.substringAfter("state=").substringBefore('&')
+            // TODO ProcessLoginCallback
+            return
+        }
+
+        _serverValidationState.update {
+            it.copy(
+                error = "Unknown error",
+                validationRunning = false,
+            )
+        }
+    }
+
+    private fun registerDevice(
+        urlString: String,
+        iat: String,
+    ) {
+        launchUseCase {
+            processDeviceEnrollment(iat).fold(
+                onSuccess = { uriString ->
+                    navigator.navigate(OauthLogin(uriString))
+                },
+                onFailure = { error ->
+                    TODO("Implement device error")
+                },
+            )
         }
     }
 

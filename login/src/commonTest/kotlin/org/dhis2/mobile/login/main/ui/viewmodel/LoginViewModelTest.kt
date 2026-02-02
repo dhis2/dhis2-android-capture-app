@@ -14,6 +14,7 @@ import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
@@ -39,6 +40,7 @@ class LoginViewModelTest {
     private val validateServer: ValidateServer = mock()
     private val appLinkNavigation: AppLinkNavigation = mock()
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
+    private val processDeviceEnrollment: ProcessDeviceEnrollment = mock()
     private val testDispatcher = UnconfinedTestDispatcher()
     private val mockAppLinkFlow = MutableSharedFlow<String>()
     private val networkStatusProvider: NetworkStatusProvider = mock()
@@ -72,6 +74,7 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
+                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             verify(navigator).navigate(
@@ -108,6 +111,7 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
+                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.serverValidationState.test(timeout = 5.seconds) {
@@ -153,6 +157,7 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
+                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.serverValidationState.test {
@@ -196,6 +201,7 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
+                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.serverValidationState.test {
@@ -227,6 +233,7 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
+                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.importDatabaseState.test {
@@ -255,6 +262,7 @@ class LoginViewModelTest {
                     appLinkNavigation = appLinkNavigation,
                     getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
+                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.importDatabaseState.test {

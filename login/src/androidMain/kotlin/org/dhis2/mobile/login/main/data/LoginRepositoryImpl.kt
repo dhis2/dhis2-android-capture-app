@@ -8,6 +8,7 @@ import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.biometrics.BiometricActions
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
 import org.dhis2.mobile.commons.coroutine.Dispatcher
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.BIOMETRIC_CREDENTIALS
 import org.dhis2.mobile.commons.providers.PreferenceProvider
@@ -24,6 +25,7 @@ import org.dhis2.mobile.login.resources.server_url_error
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.maintenance.D2Error
+import org.hisp.dhis.android.core.user.oauth2.OAuth2Config
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.hisp.dhis.android.core.user.openid.OpenIDConnectConfig
 import org.jetbrains.compose.resources.getString
@@ -135,6 +137,33 @@ class LoginRepositoryImpl(
             }
         }
 
+    override suspend fun enrollDevice(input: String) =
+        withContext(dispatcher.io) {
+            try {
+                val serverUrl = "https://dev.im.dhis2.org/android5"
+                d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
+                    serverUrl = serverUrl,
+                    iat = input,
+                )
+                if (d2.userModule().oauth2Handler().isDeviceRegistered()) {
+                    val config = OAuth2Config(serverUrl = serverUrl)
+                    val intentWithRequestCode =
+                        d2
+                            .userModule()
+                            .oauth2Handler()
+                            .blockingLogIn(config)
+
+                    val intent = intentWithRequestCode.intent
+                    val uriString = intent.data.toString()
+                    uriString
+                } else {
+                    throw DomainError.ServerError("Device not registered")
+                }
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            }
+        }
+
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
             preferences.getSet(PREF_USERS, HashSet())?.toList() ?: emptyList()
@@ -191,7 +220,10 @@ class LoginRepositoryImpl(
     override suspend fun initialSyncDone(
         serverUrl: String,
         username: String,
-    ): Boolean = withContext(dispatcher.io) { isImportedDatabase(serverUrl, username) or entryExists() }
+    ): Boolean =
+        withContext(dispatcher.io) {
+            isImportedDatabase(serverUrl, username) or entryExists()
+        }
 
     override suspend fun canLoginWithBiometrics(serverUrl: String): Boolean =
         withContext(dispatcher.io) {
