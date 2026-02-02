@@ -178,7 +178,7 @@ internal class ProgramRepositoryImpl(
     private fun getTrackerTeiCount(program: Program): Int {
         val teiIds =
             filterPresenter
-                .filteredTrackerProgram(program)
+                .filteredTrackerProgram(program.uid())
                 .offlineFirst()
                 .blockingGetUids()
         val teiCount = teiIds.size
