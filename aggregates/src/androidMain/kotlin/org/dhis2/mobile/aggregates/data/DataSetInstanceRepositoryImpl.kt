@@ -179,6 +179,9 @@ internal class DataSetInstanceRepositoryImpl(
 
                                     DataSetNonEditableReason.EXPIRED ->
                                         NonEditableReason.Expired
+
+                                    DataSetNonEditableReason.PERIOD_NOT_IN_DATA_INPUT_PERIODS ->
+                                        NonEditableReason.PeriodNotInDataInputPeriods
                                 }
                             } ?: NonEditableReason.None,
                     )
@@ -336,7 +339,10 @@ internal class DataSetInstanceRepositoryImpl(
             .blockingGet()
             ?.let {
                 DataSetRenderingConfig(
-                    useVerticalTabs = it.displayOptions()?.tabsDirection() == TabsDirection.VERTICAL,
+                    useVerticalTabs =
+                        it
+                            .displayOptions()
+                            ?.tabsDirection() == TabsDirection.VERTICAL,
                 )
             } ?: DataSetRenderingConfig(
             useVerticalTabs = true,

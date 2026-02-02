@@ -72,6 +72,7 @@
     %2$s is the attribute option combo name
     -->
     <string name="period_not_in_attribute_option_combo_range">You cannot edit data for the period %1$s in %2$s</string>
+    <string name="period_not_in_data_input_periods">This data is not editable because the selected period is outside the data input period</string>
     <string name="dataset_closed">This data is not editable because it is marked as closed</string>
     <string name="dataset_expired">This data is not editable because its edition time has expired</string>
 
