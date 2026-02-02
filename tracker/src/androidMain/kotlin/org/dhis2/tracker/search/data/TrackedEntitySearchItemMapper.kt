@@ -42,7 +42,7 @@ private fun Geometry?.toDomainGeometry(): TrackedEntityGeometry? =
     this?.let {
         TrackedEntityGeometry(
             geometryFeatureType = getGeometryType(it.type()),
-            coordinates = this.coordinates(),
+            coordinates = it.coordinates(),
         )
     }
 
@@ -128,7 +128,7 @@ private fun ValueType.toTrackerInputType(): TrackerInputType =
         ValueType.TRACKER_ASSOCIATE -> TrackerInputType.NOT_SUPPORTED
         ValueType.REFERENCE -> TrackerInputType.NOT_SUPPORTED
         ValueType.GEOJSON -> TrackerInputType.NOT_SUPPORTED
-        else -> TrackerInputType.TEXT
+        ValueType.MULTI_TEXT -> TrackerInputType.MULTI_SELECTION
     }
 
 private fun TrackedEntitySearchItemProgramOwner.toTrackedEntitySearchItemProgramOwner(): TrackedEntitySearchItemProgramOwnerDomain =

@@ -107,9 +107,10 @@ private fun TrackerInputType.toSDKValueType(): ValueType =
         TrackerInputType.TIME -> ValueType.TIME
         TrackerInputType.CHECKBOX,
         TrackerInputType.RADIO_BUTTON,
+        -> ValueType.BOOLEAN
         TrackerInputType.YES_ONLY_SWITCH,
         TrackerInputType.YES_ONLY_CHECKBOX,
-        -> ValueType.BOOLEAN
+        -> ValueType.TRUE_ONLY
         TrackerInputType.QR_CODE,
         TrackerInputType.BAR_CODE,
         -> ValueType.TEXT
