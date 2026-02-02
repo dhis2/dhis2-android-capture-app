@@ -151,7 +151,7 @@ fun ProvideInputAge(
                 }
             }
         },
-        onNextClicked = onNextClicked,
+        onImeActionClick = { onNextClicked() },
         modifier = modifier,
     )
 }

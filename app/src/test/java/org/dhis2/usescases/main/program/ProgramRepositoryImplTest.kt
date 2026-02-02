@@ -242,7 +242,7 @@ class ProgramRepositoryImplTest {
             filterPresenter.filteredTrackerProgram(any()).offlineFirst(),
         ) doReturn mock()
         whenever(
-            filterPresenter.filteredTrackerProgram(any<Program>()).offlineFirst().blockingGetUids(),
+            filterPresenter.filteredTrackerProgram(any()).offlineFirst().blockingGetUids(),
         ) doReturn listOf("0", "1")
     }
 
