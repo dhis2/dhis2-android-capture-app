@@ -66,7 +66,7 @@
     <string name="invalid_interval">केवल 0 से 1 के मान ही अनुमति हैं</string>
     <string name="invalid_percentage">केवल 0 से 100 के वैल्यूज़ अनुमति हैं</string>
     <string name="dialog_generate_new_event">नया इवेंट जनरेट करें</string>
-    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं\?</string>
+    <string name="message_generate_new_event">क्या आप एक और इवेंट बनाना चाहते हैं?</string>
     <string name="skip">छोड़ें</string>
     <string name="event_overdue">अतिदेय</string>
     <string name="local_data_accept">स्वीकार करें</string>
@@ -93,7 +93,7 @@
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <string name="event_data">डेटा</string>
     <string name="action_done">पूरा हुआ</string>
-    <string name="are_you_sure">क्या आप सुनिश्चित हैं\?</string>
+    <string name="are_you_sure">क्या आप सुनिश्चित हैं?</string>
     <string name="filters_title_date">तारीख</string>
     <string name="customactivityoncrash_error_activity_restart_app">पीछे जाएं</string>
     <string name="customactivityoncrash_error_activity_error_details_close">बंद करें</string>

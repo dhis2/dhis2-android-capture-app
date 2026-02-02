@@ -25,7 +25,7 @@
     <string name="wipe_data_ok">Accept</string>
     <string name="wipe_data_no">Cancel</string>
     <string name="add_file">Add file</string>
-    <string name="missing_mandatory_fields_events">Some fields need your attention.\nDo you want to review the form\?</string>
+    <string name="missing_mandatory_fields_events">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="tei_coordinates">Coordinates for the</string>
 
     <!--AGE CUSTOM VIEW-->
@@ -82,12 +82,12 @@
     <string name="program_rules_loop_warning_title">Program rules warning</string>
     <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
     <string name="not_saved">Not saved</string>
-    <string name="review_message">Some fields need your attention.\nDo you want to review the form\?</string>
+    <string name="review_message">Some fields need your attention.\nDo you want to review the form?</string>
     <string name="missing_warning_fields_completed_events">You have some warning messages.</string>
     <string name="missing_warning_fields_events">You have some warning messages.\nDo you want to mark this form as complete\?</string>
-    <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form\?</string>
-    <string name="event_can_be_completed">Do you want to mark this form as complete\?</string>
-    <string name="event_error_on_complete">You have some error messages.\nDo you want to review them\?</string>
+    <string name="missing_error_fields_events">Some fields have errors and they are not saved. \nDo you want to review the form?</string>
+    <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
+    <string name="event_error_on_complete">You have some error messages.\nDo you want to review them?</string>
     <string name="tracked_entity_type_details">%s details</string>
     <string name="sync_dialog_action_not_now">Not now</string>
     <string name="coordinates">Coordinates</string>
