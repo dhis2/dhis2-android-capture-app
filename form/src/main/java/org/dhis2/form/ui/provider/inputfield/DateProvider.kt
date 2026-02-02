@@ -105,7 +105,7 @@ fun ProvideInputDate(
                 }
             intentHandler.invoke(formIntent)
         },
-        onNextClicked = onNextClicked,
+        onImeActionClick = { onNextClicked() },
     )
 }
 
