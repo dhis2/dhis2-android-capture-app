@@ -48,12 +48,8 @@ class SearchTrackedEntities(
             // iterate through the query data and add to the repository query
             for ((dataId, dataValues) in queryData) {
                 // checks if the dataId is an attribute of the teType
-                val isTETypeAttribute =
-                    if (input.selectedProgram == null) {
-                        repository.isTETypeAttribute(teType, dataId)
-                    } else {
-                        false
-                    }
+                val isTETypeAttribute = getIsTETypeAttribute(input.selectedProgram, dataId, teType)
+
                 if (input.selectedProgram != null || isTETypeAttribute) {
                     // fetches the teAttribute details (isUnique, isOptionSet)
 
@@ -85,4 +81,15 @@ class SearchTrackedEntities(
             }
         }
     }
+
+    private suspend fun getIsTETypeAttribute(
+        selectedProgram: String?,
+        dataId: String,
+        teType: String,
+    ): Boolean =
+        if (selectedProgram == null) {
+            repository.isTETypeAttribute(teType, dataId)
+        } else {
+            false
+        }
 }
