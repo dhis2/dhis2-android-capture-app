@@ -363,7 +363,7 @@ public class SearchTEModule {
         return new SearchTrackedEntities(
                 searchTrackedEntityRepository,
                 customIntentRepository,
-                teiType
+                this.teiType
         );
     }
 

@@ -1,9 +1,10 @@
 package org.dhis2.usescases.searchTrackEntity.di
 
-import org.dhis2.tracker.search.domain.SearchTrackedEntities
+import org.dhis2.usescases.searchTrackEntity.SearchRepository
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiViewModelFactory
 import org.koin.core.module.dsl.viewModel
+import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 /**
@@ -22,15 +23,7 @@ val searchTEKoinModule =
             val teType: String = params.get() // teType is required
 
             // Get SearchRepository from Dagger to access teType
-            val searchRepository: org.dhis2.usescases.searchTrackEntity.SearchRepository = get()
-
-            // Create SearchTrackedEntities with teType
-            val searchTrackedEntities =
-                SearchTrackedEntities(
-                    repository = get(),
-                    customIntentRepository = get(),
-                    teType = teType,
-                )
+            val searchRepository: SearchRepository = get()
 
             SearchTeiViewModelFactory(
                 searchRepository = searchRepository,
@@ -45,7 +38,7 @@ val searchTEKoinModule =
                 resourceManager = get(),
                 displayNameProvider = get(),
                 filterManager = get(),
-                searchTrackedEntities = searchTrackedEntities,
+                searchTrackedEntities = get { parametersOf(teType) },
             )
         }
 
@@ -58,15 +51,7 @@ val searchTEKoinModule =
             val teType: String = params.get() // teType is required
 
             // Get SearchRepository from Dagger
-            val searchRepository: org.dhis2.usescases.searchTrackEntity.SearchRepository = get()
-
-            // Create SearchTrackedEntities with teType
-            val searchTrackedEntities =
-                SearchTrackedEntities(
-                    repository = get(),
-                    customIntentRepository = get(),
-                    teType = teType,
-                )
+            val searchRepository: SearchRepository = get()
 
             SearchTEIViewModel(
                 initialProgramUid = initialProgramUid,
@@ -81,7 +66,7 @@ val searchTEKoinModule =
                 resourceManager = get(),
                 displayNameProvider = get(),
                 filterManager = get(),
-                searchTrackedEntities = searchTrackedEntities,
+                searchTrackedEntities = get { parametersOf(teType) },
             )
         }
     }
