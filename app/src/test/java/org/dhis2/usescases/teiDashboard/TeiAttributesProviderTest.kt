@@ -267,8 +267,12 @@ class TeiAttributesProviderTest {
                 .byTrackedEntityTypeUid()
                 .eq(teType)
                 .blockingGet()[0],
-        ) doReturn Program.builder().uid(program)
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        ) doReturn
+            Program
+                .builder()
+                .uid(program)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(d2.programModule().programTrackedEntityAttributes()) doReturn mock()
         whenever(d2.programModule().programTrackedEntityAttributes().byProgram()) doReturn mock()

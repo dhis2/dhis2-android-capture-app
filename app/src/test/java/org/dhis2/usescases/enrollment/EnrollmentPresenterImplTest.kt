@@ -164,8 +164,12 @@ class EnrollmentPresenterImplTest {
                 .geometry(geometry)
                 .uid("random")
                 .build()
-        val program = Program.builder().uid("tUID")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid("tUID")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
         whenever(programRepository.blockingGet()) doReturn program
@@ -197,8 +201,12 @@ class EnrollmentPresenterImplTest {
                 .geometry(geometry)
                 .uid("random")
                 .build()
-        val program = Program.builder().uid("tUID")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid("tUID")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
         whenever(programRepository.blockingGet()) doReturn program

@@ -168,8 +168,12 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOverdueEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
-        val program = Program.builder().uid("programUid")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
@@ -202,8 +206,12 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOverdueScheduledEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
-        val program = Program.builder().uid("programUid")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 
@@ -235,8 +243,12 @@ class SearchRepositoryTest {
     @Test
     fun shouldTransformToSearchTeiModelWithOutOverdueEvents() {
         val searchItem = getTrackedEntitySearchItem("header")
-        val program = Program.builder().uid("programUid")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
         val sorting = SortingItem.create(Filters.ENROLLMENT_DATE)
         val tei = TrackedEntitySearchItemHelper.toTrackedEntityInstance(searchItem)
 

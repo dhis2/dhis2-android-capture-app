@@ -753,7 +753,9 @@ class EventCaptureRepositoryImplTest {
                     .sortOrder(sectionOrderC)
                     .dataElements(
                         mutableListOf(
-                            DataElement.builder().uid(sectionCDataElementA)
+                            DataElement
+                                .builder()
+                                .uid(sectionCDataElementA)
                                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                                 .build(),
                         ),
@@ -765,10 +767,14 @@ class EventCaptureRepositoryImplTest {
                     .sortOrder(sectionOrderB)
                     .dataElements(
                         mutableListOf(
-                            DataElement.builder().uid(sectionBDataElementA)
+                            DataElement
+                                .builder()
+                                .uid(sectionBDataElementA)
                                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                                 .build(),
-                            DataElement.builder().uid(sectionBDataElementB)
+                            DataElement
+                                .builder()
+                                .uid(sectionBDataElementB)
                                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                                 .build(),
                         ),
@@ -780,7 +786,9 @@ class EventCaptureRepositoryImplTest {
                     .sortOrder(sectionOrderA)
                     .dataElements(
                         mutableListOf(
-                            DataElement.builder().uid(sectionADataElementA)
+                            DataElement
+                                .builder()
+                                .uid(sectionADataElementA)
                                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                                 .build(),
                         ),

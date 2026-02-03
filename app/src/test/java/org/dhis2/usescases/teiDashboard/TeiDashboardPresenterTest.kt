@@ -66,8 +66,12 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should set program and restore adapter`() {
         val programUid = "programUid"
-        val program = Program.builder().uid(programUid)
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid(programUid)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
         val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
         val enrollment = Enrollment.builder().uid("enrollmentUid").build()
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
@@ -83,8 +87,11 @@ class TeiDashboardPresenterTest {
         val programs =
             listOf(
                 Pair(
-                    Program.builder().uid(programUid)
-                        .categoryCombo(ObjectWithUid.create("categoryComboUid")).build(),
+                    Program
+                        .builder()
+                        .uid(programUid)
+                        .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                        .build(),
                     MetadataIconData.defaultIcon(),
                 ),
             )

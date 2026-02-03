@@ -217,8 +217,11 @@ class TrackedEntityInstanceInfoProviderTests {
             .build()
 
     private fun mockProgram(hasStyle: Boolean = false): Program {
-        val program = Program.builder().uid("programUid")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+        val program =
+            Program
+                .builder()
+                .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
 
         if (hasStyle) {
             program.style(

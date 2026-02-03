@@ -365,8 +365,12 @@ class EventInitialPresenterTest {
         programStageUid: String?,
         moreOrgUnits: Boolean = false,
     ) {
-        val program = Program.builder().uid(uid)
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid(uid)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
         val orgUnits =
             mutableListOf(
                 OrganisationUnit

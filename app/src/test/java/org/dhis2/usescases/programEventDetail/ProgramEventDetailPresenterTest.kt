@@ -70,8 +70,12 @@ class ProgramEventDetailPresenterTest {
 
     @Test
     fun `Should init screen`() {
-        val program = Program.builder().uid("programUid")
-            .categoryCombo(ObjectWithUid.create("categoryComboUid")).build()
+        val program =
+            Program
+                .builder()
+                .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(repository.getAccessDataWrite()) doReturn true
         whenever(repository.program()) doReturn Single.just(program)
