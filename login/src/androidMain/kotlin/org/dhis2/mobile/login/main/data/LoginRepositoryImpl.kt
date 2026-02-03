@@ -137,28 +137,41 @@ class LoginRepositoryImpl(
             }
         }
 
-    override suspend fun enrollDevice(input: String) =
+    override suspend fun enrollDevice(input: String): String {
+        val serverUrl = "https://dev.im.dhis2.org/android5"
+
+        // Handle enrollment on IO dispatcher
         withContext(dispatcher.io) {
             try {
-                val serverUrl = "https://dev.im.dhis2.org/android5"
                 d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
                     serverUrl = serverUrl,
                     iat = input,
                 )
-                if (d2.userModule().oauth2Handler().isDeviceRegistered()) {
-                    val config = OAuth2Config(serverUrl = serverUrl)
-                    val intentWithRequestCode =
-                        d2
-                            .userModule()
-                            .oauth2Handler()
-                            .blockingLogIn(config)
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            }
+        }
 
-                    val intent = intentWithRequestCode.intent
-                    val uriString = intent.data.toString()
-                    uriString
-                } else {
-                    throw DomainError.ServerError("Device not registered")
-                }
+        if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
+            throw DomainError.ServerError("Device not registered")
+        }
+
+        val config = OAuth2Config(serverUrl = serverUrl)
+        val intentWithRequestCode =
+            d2
+                .userModule()
+                .oauth2Handler()
+                .blockingLogIn(config)
+
+        return intentWithRequestCode.intent.data.toString()
+    }
+
+    override suspend fun loginUserWithOAuth(serverUrl: String, code: String) =
+        withContext(dispatcher.io) {
+            try {
+                val user =
+                    d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code)
+                kotlin.Result.success(user.username())
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
             }

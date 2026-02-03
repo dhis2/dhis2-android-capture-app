@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.OauthLogin
@@ -18,6 +19,7 @@ import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
+import org.dhis2.mobile.login.main.domain.usecase.LoginUserWithOAuth
 import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
@@ -33,6 +35,7 @@ class LoginViewModel(
     private val appLinkNavigation: AppLinkNavigation,
     private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl,
     private val processDeviceEnrollment: ProcessDeviceEnrollment,
+    private val loginUserWithOAuth: LoginUserWithOAuth,
     networkStatusProvider: NetworkStatusProvider,
 ) : ViewModel() {
     private val isNetworkOnline =
@@ -165,7 +168,27 @@ class LoginViewModel(
         val code = urlString.substringAfter("code=", "").substringBefore('&')
         if (code.isNotEmpty()) {
             val state = urlString.substringAfter("state=").substringBefore('&')
-            // TODO ProcessLoginCallback
+            launchUseCase {
+                val result =
+                    withMinimumDuration {
+                        loginUserWithOAuth(
+                            serverUrl = "https://dev.im.dhis2.org/android5",
+                            code = code
+                        )
+                    }
+                when (result) {
+                    is LoginResult.Error -> _serverValidationState.update {
+                        it.copy(
+                            error = "Unknown error",
+                            validationRunning = false,
+                        )
+                    }
+
+                    is LoginResult.Success -> {
+                        navigator.navigateToSync()
+                    }
+                }
+            }
             return
         }
 
@@ -183,11 +206,17 @@ class LoginViewModel(
     ) {
         launchUseCase {
             processDeviceEnrollment(iat).fold(
-                onSuccess = { uriString ->
-                    navigator.navigate(OauthLogin(uriString))
+                onSuccess = {
+                    // Open Consent permissions
+                    navigator.navigate(OauthLogin(it))
                 },
                 onFailure = { error ->
-                    TODO("Implement device error")
+                    _serverValidationState.update {
+                        it.copy(
+                            error = error.message,
+                            validationRunning = false,
+                        )
+                    }
                 },
             )
         }
