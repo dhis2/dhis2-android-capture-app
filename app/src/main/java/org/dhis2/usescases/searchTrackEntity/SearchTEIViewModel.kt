@@ -494,7 +494,7 @@ class SearchTEIViewModel(
                     searchRepository.transform(
                         sdkTei,
                         selectedProgram,
-                        searchOnline,
+                        !searchOnline,
                         filterManager.sortingItem,
                     )
                 }

@@ -107,22 +107,20 @@ class SearchRepositoryImplKt(
     }
 
     override fun saveSearchValuesAndGetAllowCache(queryData: MutableMap<String, List<String>?>?): Boolean {
-        savedSearchParameters = savedSearchParameters.copy(queryData = queryData)
-        savedFilters = FilterManager.getInstance().copy()
-        return (
-            queryData == savedSearchParameters.queryData ||
+        val allowCache =
+            queryData == savedSearchParameters.queryData &&
                 FilterManager
                     .getInstance()
                     .sameFilters(savedFilters)
-        )
+        savedSearchParameters = savedSearchParameters.copy(queryData = queryData)
+        savedFilters = FilterManager.getInstance().copy()
+        return allowCache
     }
 
     override fun getExcludeValues(): HashSet<String>? =
         fetchedTeiUids.ifEmpty {
             null
         }
-
-    override fun getStateFilters(): Boolean = FilterManager.getInstance().stateFilters.isNotEmpty()
 
     override suspend fun searchParameters(
         programUid: String?,

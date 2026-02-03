@@ -46,6 +46,4 @@ interface SearchRepositoryKt {
     fun saveSearchValuesAndGetAllowCache(queryData: MutableMap<String, List<String>?>?): Boolean
 
     fun getExcludeValues(): HashSet<String>?
-
-    fun getStateFilters(): Boolean
 }
