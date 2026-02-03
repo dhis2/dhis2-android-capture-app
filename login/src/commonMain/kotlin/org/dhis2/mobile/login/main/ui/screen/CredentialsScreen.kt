@@ -1,8 +1,5 @@
 package org.dhis2.mobile.login.main.ui.screen
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -109,9 +106,7 @@ const val CREDENTIALS_LOGIN_BUTTON_TAG = "credentials_login_button"
 const val CREDENTIALS_ERROR_INFO_BAR_TAG = "credentials_error_info_bar"
 const val CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG = "credentials_manage_accounts_button"
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-context(sharedTransitionScope: SharedTransitionScope, animatedVisibilityScope: AnimatedVisibilityScope)
 fun CredentialsScreen(
     selectedServer: String,
     selectedServerName: String?,
@@ -176,20 +171,13 @@ fun CredentialsScreen(
                 .padding(Spacing.Spacing16),
         verticalArrangement = spacedBy(Spacing.Spacing24),
     ) {
-        with(sharedTransitionScope) {
-            ServerInfo(
-                modifier =
-                    Modifier
-                        .sharedElement(
-                            sharedContentState = rememberSharedContentState(key = "$selectedUsername@$selectedServer"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                        ),
-                serverName = selectedServerName,
-                serverUrl = selectedServer,
-                selectedUsername = selectedUsername,
-                serverImageUrl = selectedServerFlag,
-            )
-        }
+        ServerInfo(
+            modifier = Modifier,
+            serverName = selectedServerName,
+            serverUrl = selectedServer,
+            selectedUsername = selectedUsername,
+            serverImageUrl = selectedServerFlag,
+        )
         CredentialsContainer(
             availableUsernames = screenState.credentialsInfo.availableUsernames,
             username = screenState.credentialsInfo.username,

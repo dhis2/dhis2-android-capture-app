@@ -1,8 +1,5 @@
 package org.dhis2.mobile.login.accounts.ui.screen
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -36,12 +33,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun AccountsScreen(
-    sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-) {
+fun AccountsScreen() {
     val context = LocalPlatformContext.current
     val viewModel = koinViewModel<AccountsViewModel> { parametersOf(context) }
     val accounts by viewModel.accounts.collectAsState()
@@ -63,18 +56,11 @@ fun AccountsScreen(
                 verticalArrangement = spacedBy(8.dp),
             ) {
                 items(items = accounts) { account ->
-                    with(sharedTransitionScope) {
-                        AccountItem(
-                            modifier =
-                                Modifier
-                                    .sharedElement(
-                                        sharedContentState = rememberSharedContentState(account.key()),
-                                        animatedVisibilityScope = animatedVisibilityScope,
-                                    ),
-                            account = account,
-                            onItemClicked = viewModel::onAccountClicked,
-                        )
-                    }
+                    AccountItem(
+                        modifier = Modifier,
+                        account = account,
+                        onItemClicked = viewModel::onAccountClicked,
+                    )
                 }
             }
 
