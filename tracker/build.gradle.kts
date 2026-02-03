@@ -35,8 +35,8 @@ kotlin {
             }
             implementation(libs.compose.material3.window)
             implementation(compose.components.resources)
-            implementation(libs.androidx.compose.paging)
             implementation(project(":commonskmm"))
+            implementation(libs.androidx.compose.paging.multiplatform)
 
             // Koin
             api(libs.koin.core)
