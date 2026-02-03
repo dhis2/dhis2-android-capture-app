@@ -68,7 +68,7 @@ open class LocationProviderImpl(
                         onLocationProviderChanged()
                     }
                 }
-            val deviceProviders = locationManager.allProviders
+            val deviceProviders = locationManager.allProviders.toList()
             if (deviceProviders.contains(LocationManager.NETWORK_PROVIDER)) {
                 locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER,
