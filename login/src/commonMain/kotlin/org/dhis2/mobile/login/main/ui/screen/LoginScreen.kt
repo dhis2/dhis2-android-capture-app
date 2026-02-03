@@ -227,7 +227,10 @@ fun LoginScreen(
                 composable<LoginScreenState.Accounts> {
                     displayMoreActions = true
                     displayBackArrow = false
-                    AccountsScreen()
+                    AccountsScreen(
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable,
+                    )
                 }
                 composable<LoginScreenState.RecoverAccount> {
                     val arg = it.toRoute<LoginScreenState.RecoverAccount>()
