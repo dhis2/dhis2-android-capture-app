@@ -35,4 +35,8 @@
     <string name="take_photo"> Tirar fotografia</string>
     <string name="indicators_label">Indicadores</string>
     <string name="no_data_write_access">Não tem permissão para editar estes dados</string>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">Não tem permissão para editar dados para %1$s</string>
     </resources>
