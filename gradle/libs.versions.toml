@@ -28,9 +28,8 @@ fragmentktx = "1.8.9"
 recyclerview = "1.4.0"
 compose = "1.9.5"
 composePluginVersion = "1.9.3"
-composePaging = "3.3.6"
-pagingTesting = "3.3.6"
-composePagingKMM = "3.4.0"
+composePaging = "3.4.0"
+pagingTesting = "3.4.0"
 composeConstraintLayout = "1.1.1"
 activityCompose = "1.11.0"
 viewModelCompose = "2.9.4"
@@ -121,10 +120,7 @@ androidx-compose-constraintlayout = { group = "androidx.constraintlayout", name 
 androidx-compose-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "compose" }
 androidx-compose-uitooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "compose" }
 androidx-compose-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "compose" }
-#noinspection SimilarGradleDependency
 androidx-compose-paging = { group = "androidx.paging", name = "paging-compose", version.ref = "composePaging" }
-#noinspection SimilarGradleDependency
-androidx-compose-paging-multiplatform = { group = "androidx.paging", name = "paging-compose", version.ref = "composePagingKMM" }
 lifecycle-runtime-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 test-androidx-paging = { group = "androidx.paging", name = "paging-testing", version.ref = "pagingTesting" }
