@@ -64,11 +64,11 @@ class SearchTrackedEntityRepositoryImpl(
                         // OPTION SET REGEX MIGHT NO LONGER BE NEEDED
                     } else if (dataValue.contains(OPTION_SET_REGEX)) {
                         // legacy code could no longer be needed
-                        dataValue =
+                        val parts =
                             dataValue
                                 .split(OPTION_SET_REGEX.toRegex())
-                                .dropLastWhile { it.isEmpty() }
-                                .toTypedArray()[1]
+                                .filter { it.isNotEmpty() }
+                        dataValue = parts.getOrNull(1) ?: dataValue
                         trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValue)
                     } else {
                         // return tracked entities that contain the data value

@@ -48,25 +48,31 @@ class SearchTrackedEntities(
             // iterate through the query data and add to the repository query
             for ((dataId, dataValues) in queryData) {
                 // checks if the dataId is an attribute of the teType
-                val isTETypeAttribute = repository.isTETypeAttribute(teType, dataId)
-
+                val isTETypeAttribute =
+                    if (input.selectedProgram == null) {
+                        repository.isTETypeAttribute(teType, dataId)
+                    } else {
+                        false
+                    }
                 if (input.selectedProgram != null || isTETypeAttribute) {
                     // fetches the teAttribute details (isUnique, isOptionSet)
-                    val teAttribute = repository.getTEAttribute(dataId)
 
                     dataValues?.let { values ->
                         // normalize values: if the attribute doesn't have custom intent that returns multiple values
                         // and there are multiple values, join them into a single comma-separated value
                         val normalizedValues =
-                            if (!customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(
+                            if (values.size > 1 &&
+                                !customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(
                                     dataId,
                                     CustomIntentActionTypeModel.SEARCH,
-                                ) && values.size > 1
+                                )
                             ) {
                                 mutableListOf(values.joinToString(","))
                             } else {
                                 values
                             }
+
+                        val teAttribute = repository.getTEAttribute(dataId)
 
                         repository.addToQuery(
                             dataId,
