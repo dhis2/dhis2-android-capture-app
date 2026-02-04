@@ -56,23 +56,12 @@ class SearchTrackedEntityRepositoryImpl(
                 trackedEntityInstanceQuery?.byFilter(dataId)?.`in`(dataValues)
             } else {
                 if (dataValues.size == 1) {
-                    var dataValue = dataValues[0]
                     if (isUnique || isOptionSet) {
                         // If the attribute is unique or an option set, we want an exact match
-                        trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValue)
-
-                        // OPTION SET REGEX MIGHT NO LONGER BE NEEDED
-                    } else if (dataValue.contains(OPTION_SET_REGEX)) {
-                        // legacy code could no longer be needed
-                        val parts =
-                            dataValue
-                                .split(OPTION_SET_REGEX.toRegex())
-                                .filter { it.isNotEmpty() }
-                        dataValue = parts.getOrNull(1) ?: dataValue
-                        trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValue)
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValues[0])
                     } else {
                         // return tracked entities that contain the data value
-                        trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValue)
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValues[0])
                     }
                 } else {
                     trackedEntityInstanceQuery
@@ -115,9 +104,5 @@ class SearchTrackedEntityRepositoryImpl(
                 item.toTrackedEntitySearchItemResult()
             }
         } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
-    }
-
-    companion object {
-        const val OPTION_SET_REGEX = "_os_"
     }
 }
