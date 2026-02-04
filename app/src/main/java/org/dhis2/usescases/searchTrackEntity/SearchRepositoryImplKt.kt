@@ -61,42 +61,6 @@ class SearchRepositoryImplKt(
 
     private val fetchedTeiUids = HashSet<String>()
 
-    private fun trackedEntitySearchQuery(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): TrackedEntitySearchCollectionRepository {
-        var allowCache = false
-        savedSearchParameters = searchParametersModel.copy()
-        savedFilters = FilterManager.getInstance().copy()
-
-        if (searchParametersModel != savedSearchParameters ||
-            !FilterManager
-                .getInstance()
-                .sameFilters(savedFilters)
-        ) {
-            trackedEntityInstanceQuery =
-                searchRepositoryJava.getFilteredRepository(searchParametersModel)
-        } else {
-            trackedEntityInstanceQuery =
-                searchRepositoryJava.getFilteredRepository(searchParametersModel)
-            allowCache = true
-        }
-
-        if (fetchedTeiUids.isNotEmpty() && searchParametersModel.selectedProgram == null) {
-            trackedEntityInstanceQuery =
-                trackedEntityInstanceQuery.excludeUids().`in`(fetchedTeiUids.toList())
-        }
-
-        val pagerFlow =
-            if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
-                trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
-            } else {
-                trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
-            }
-
-        return pagerFlow
-    }
-
     override fun saveSearchValuesAndGetAllowCache(
         queryData: MutableMap<String, List<String>?>?,
         programUid: String?,
@@ -152,13 +116,6 @@ class SearchRepositoryImplKt(
             .uid(teaUid)
             .blockingGet()
             ?.unique() ?: false
-
-    override suspend fun searchTrackedEntitiesImmediate(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): List<TrackedEntitySearchItem> =
-        trackedEntitySearchQuery(searchParametersModel, isOnline)
-            .blockingGet()
 
     override fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,

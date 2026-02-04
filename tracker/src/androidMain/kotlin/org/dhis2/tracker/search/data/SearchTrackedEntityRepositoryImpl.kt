@@ -105,4 +105,22 @@ class SearchTrackedEntityRepositoryImpl(
             }
         } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
     }
+
+    override suspend fun fetchImmediateResults(
+        isOnline: Boolean,
+        hasStateFilters: Boolean,
+    ): List<TrackedEntitySearchItemResult> {
+        // if the device is online and there are no state filters, we can use online cache
+        val results =
+            if (isOnline && !hasStateFilters) {
+                trackedEntityInstanceQuery?.offlineFirst()?.blockingGet()
+            } else {
+                // otherwise we use offline only
+                trackedEntityInstanceQuery?.offlineOnly()?.blockingGet()
+            }
+
+        return results?.map { item ->
+            item.toTrackedEntitySearchItemResult()
+        } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
+    }
 }

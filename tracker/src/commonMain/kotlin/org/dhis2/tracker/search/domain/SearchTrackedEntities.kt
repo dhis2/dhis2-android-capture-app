@@ -37,6 +37,29 @@ class SearchTrackedEntities(
         }
     }
 
+    /**
+     * Invoke method for immediate non-paginated results.
+     * Useful for scenarios like QR code scanning where immediate results are needed.
+     */
+    suspend fun invokeImmediate(input: SearchTrackedEntitiesInput): Result<List<TrackedEntitySearchItemResult>> {
+        try {
+            prepareQuery(input, teType)
+            // Due to performance issues and possible duplicates we exclude the values in the exclude list only when no program is selected
+            if (input.excludeValues?.isNotEmpty() == true && input.selectedProgram == null) {
+                repository.excludeValuesFromQuery(input.excludeValues.toList())
+            }
+            // fetch immediate results from repository
+            return Result.success(
+                repository.fetchImmediateResults(
+                    isOnline = input.isOnline,
+                    hasStateFilters = input.hasStateFilters,
+                ),
+            )
+        } catch (domainError: DomainError) {
+            return Result.failure(domainError)
+        }
+    }
+
     private suspend fun prepareQuery(
         input: SearchTrackedEntitiesInput,
         teType: String,

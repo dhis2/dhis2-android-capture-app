@@ -6,18 +6,12 @@ import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 
 interface SearchRepositoryKt {
     suspend fun searchParameters(
         programUid: String?,
         teiTypeUid: String,
     ): List<FieldUiModel>
-
-    suspend fun searchTrackedEntitiesImmediate(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): List<TrackedEntitySearchItem>
 
     fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,

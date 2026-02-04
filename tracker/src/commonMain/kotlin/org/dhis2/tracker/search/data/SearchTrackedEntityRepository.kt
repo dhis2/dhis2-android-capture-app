@@ -32,4 +32,9 @@ interface SearchTrackedEntityRepository {
         hasStateFilters: Boolean,
         allowCache: Boolean,
     ): Flow<PagingData<TrackedEntitySearchItemResult>>
+
+    suspend fun fetchImmediateResults(
+        isOnline: Boolean,
+        hasStateFilters: Boolean,
+    ): List<TrackedEntitySearchItemResult>
 }
