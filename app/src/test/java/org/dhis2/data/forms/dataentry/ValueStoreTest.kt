@@ -8,6 +8,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.hisp.dhis.android.core.D2
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElement
 import org.hisp.dhis.android.core.option.Option
@@ -346,6 +347,7 @@ class ValueStoreTest {
                 .builder()
                 .uid("fieldUid")
                 .valueType(ValueType.TEXT)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         val storeResult =
             deValueStore.deleteOptionValueIfSelected(
@@ -418,6 +420,7 @@ class ValueStoreTest {
                 .builder()
                 .uid(testingUid)
                 .valueType(ValueType.TEXT)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         whenever(
             d2
@@ -509,6 +512,7 @@ class ValueStoreTest {
             .builder()
             .uid("uid")
             .valueType(ValueType.TEXT)
+            .categoryCombo(ObjectWithUid.create("categoryComboUid"))
             .build()
 
     private fun mockedUniqueAttribute(): TrackedEntityAttribute =

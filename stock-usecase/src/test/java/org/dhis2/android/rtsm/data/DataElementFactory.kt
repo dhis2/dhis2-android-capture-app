@@ -1,5 +1,6 @@
 package org.dhis2.android.rtsm.data
 
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.dataelement.DataElement
 
 object DataElementFactory {
@@ -12,5 +13,6 @@ object DataElementFactory {
             .uid(uid)
             .name(name)
             .displayName(name)
+            .categoryCombo(ObjectWithUid.create("categoryComboUid"))
             .build()
 }

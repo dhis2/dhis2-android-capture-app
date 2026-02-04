@@ -8,6 +8,7 @@ import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.hisp.dhis.android.core.common.ObjectStyle
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.Program
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -128,5 +129,6 @@ class TEICardExtensionsTest {
                     .color("color")
                     .icon("icon")
                     .build(),
-            ).build()
+            ).categoryCombo(ObjectWithUid.create("categoryComboUid"))
+            .build()
 }

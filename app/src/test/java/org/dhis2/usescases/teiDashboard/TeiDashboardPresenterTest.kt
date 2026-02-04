@@ -12,6 +12,7 @@ import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.DELETE_TEI
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
@@ -65,7 +66,12 @@ class TeiDashboardPresenterTest {
     @Test
     fun `Should set program and restore adapter`() {
         val programUid = "programUid"
-        val program = Program.builder().uid(programUid).build()
+        val program =
+            Program
+                .builder()
+                .uid(programUid)
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
         val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
         val enrollment = Enrollment.builder().uid("enrollmentUid").build()
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
@@ -81,7 +87,11 @@ class TeiDashboardPresenterTest {
         val programs =
             listOf(
                 Pair(
-                    Program.builder().uid(programUid).build(),
+                    Program
+                        .builder()
+                        .uid(programUid)
+                        .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                        .build(),
                     MetadataIconData.defaultIcon(),
                 ),
             )

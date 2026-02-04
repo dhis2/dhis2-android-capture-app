@@ -4,6 +4,7 @@ import org.dhis2.R
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.model.MetadataIconData
 import org.dhis2.usescases.teiDashboard.DashboardEnrollmentModel
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -132,6 +133,7 @@ class TEIDetailMapperTest {
                     .builder()
                     .uid("Program1Uid")
                     .displayName("Program 1")
+                    .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 MetadataIconData.defaultIcon(),
             ),
@@ -140,6 +142,7 @@ class TEIDetailMapperTest {
                     .builder()
                     .uid("Program2Uid")
                     .displayName("Program 2")
+                    .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 MetadataIconData.defaultIcon(),
             ),

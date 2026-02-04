@@ -15,6 +15,7 @@ import org.hisp.dhis.android.core.common.Access
 import org.hisp.dhis.android.core.common.DataAccess
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.EnrollmentAccess
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -73,6 +74,7 @@ class EnrollmentPresenterImplTest {
             Program
                 .builder()
                 .uid("")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(
                     Access
                         .builder()
@@ -94,6 +96,7 @@ class EnrollmentPresenterImplTest {
             Program
                 .builder()
                 .uid("")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(
                     Access
                         .builder()
@@ -161,7 +164,12 @@ class EnrollmentPresenterImplTest {
                 .geometry(geometry)
                 .uid("random")
                 .build()
-        val program = Program.builder().uid("tUID").build()
+        val program =
+            Program
+                .builder()
+                .uid("tUID")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
         whenever(programRepository.blockingGet()) doReturn program
@@ -193,7 +201,12 @@ class EnrollmentPresenterImplTest {
                 .geometry(geometry)
                 .uid("random")
                 .build()
-        val program = Program.builder().uid("tUID").build()
+        val program =
+            Program
+                .builder()
+                .uid("tUID")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
         whenever(programRepository.blockingGet()) doReturn program

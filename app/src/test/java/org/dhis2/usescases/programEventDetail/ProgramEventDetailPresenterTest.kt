@@ -15,6 +15,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
+import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.program.Program
 import org.junit.After
 import org.junit.Assert.assertTrue
@@ -69,7 +70,12 @@ class ProgramEventDetailPresenterTest {
 
     @Test
     fun `Should init screen`() {
-        val program = Program.builder().uid("programUid").build()
+        val program =
+            Program
+                .builder()
+                .uid("programUid")
+                .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .build()
 
         whenever(repository.getAccessDataWrite()) doReturn true
         whenever(repository.program()) doReturn Single.just(program)
