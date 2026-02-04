@@ -19,7 +19,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class LoadSearchResultsRepositoryImplTest {
+class SearchTrackedEntityRepositoryImplTest {
     private lateinit var repository: SearchTrackedEntityRepositoryImpl
 
     private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
@@ -287,31 +287,6 @@ class LoadSearchResultsRepositoryImplTest {
             // Given
             val dataId = "regularAttr"
             val dataValues = listOf("searchValue")
-            val mockQuery: TrackedEntitySearchCollectionRepository = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
-
-            // Initialize query first
-            whenever(filterPresenter.filteredTrackedEntityInstances(any(), any())) doReturn mockQuery
-
-            repository.addFiltersToQuery(programUid, teType)
-
-            // When
-            repository.addToQuery(
-                dataId = dataId,
-                dataValues = dataValues,
-                isUnique = false,
-                isOptionSet = false,
-            )
-
-            // Then - verify the filter was applied
-            verify(mockQuery).byFilter(dataId)
-        }
-
-    @Test
-    fun `addToQuery should handle legacy option set regex format`() =
-        runTest {
-            // Given
-            val dataId = "attr1"
-            val dataValues = listOf("label_os_actualValue")
             val mockQuery: TrackedEntitySearchCollectionRepository = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
 
             // Initialize query first

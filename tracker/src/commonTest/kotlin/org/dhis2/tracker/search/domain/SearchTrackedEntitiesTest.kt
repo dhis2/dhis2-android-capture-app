@@ -23,7 +23,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
-class LoadSearchResultsUseCaseTest {
+class SearchTrackedEntitiesTest {
     private lateinit var useCase: SearchTrackedEntities
 
     private val repository: SearchTrackedEntityRepository = mock()

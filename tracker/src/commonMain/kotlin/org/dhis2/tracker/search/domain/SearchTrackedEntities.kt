@@ -32,7 +32,7 @@ class SearchTrackedEntities(
                 ),
             )
         } catch (domainError: DomainError) {
-            // will manage error from view,
+            // Errors will be handled by the view layer
             return Result.failure(domainError)
         }
     }
