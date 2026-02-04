@@ -2,11 +2,9 @@
 
 package org.dhis2.usescases.searchTrackEntity
 
-import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
@@ -63,13 +61,6 @@ class SearchRepositoryImplKt(
 
     private val fetchedTeiUids = HashSet<String>()
 
-    override fun searchTrackedEntities(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): Flow<PagingData<TrackedEntitySearchItem>> =
-        trackedEntitySearchQuery(searchParametersModel, isOnline)
-            .getPagingData(10)
-
     private fun trackedEntitySearchQuery(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
@@ -106,7 +97,17 @@ class SearchRepositoryImplKt(
         return pagerFlow
     }
 
-    override fun saveSearchValuesAndGetAllowCache(queryData: MutableMap<String, List<String>?>?): Boolean {
+    override fun saveSearchValuesAndGetAllowCache(
+        queryData: MutableMap<String, List<String>?>?,
+        programUid: String?,
+    ): Boolean {
+        if (!this::savedSearchParameters.isInitialized) {
+            savedSearchParameters =
+                SearchParametersModel(queryData = queryData, selectedProgram = searchRepositoryJava.getProgram(programUid))
+        }
+        if (!this::savedFilters.isInitialized) {
+            savedFilters = FilterManager.getInstance().copy()
+        }
         val allowCache =
             queryData == savedSearchParameters.queryData &&
                 FilterManager

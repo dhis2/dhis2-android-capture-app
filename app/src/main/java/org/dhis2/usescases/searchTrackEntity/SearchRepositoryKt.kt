@@ -1,7 +1,5 @@
 package org.dhis2.usescases.searchTrackEntity
 
-import androidx.paging.PagingData
-import kotlinx.coroutines.flow.Flow
 import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.maps.model.MapItemModel
@@ -11,11 +9,6 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 
 interface SearchRepositoryKt {
-    fun searchTrackedEntities(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): Flow<PagingData<TrackedEntitySearchItem>>
-
     suspend fun searchParameters(
         programUid: String?,
         teiTypeUid: String,
@@ -43,7 +36,10 @@ interface SearchRepositoryKt {
 
     suspend fun getCustomIntent(fieldUid: FieldUid): CustomIntentModel?
 
-    fun saveSearchValuesAndGetAllowCache(queryData: MutableMap<String, List<String>?>?): Boolean
+    fun saveSearchValuesAndGetAllowCache(
+        queryData: MutableMap<String, List<String>?>?,
+        programUid: String?,
+    ): Boolean
 
     fun getExcludeValues(): HashSet<String>?
 }
