@@ -32,6 +32,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -73,6 +74,7 @@ class SearchTEIViewModelTest {
     private val resourceManager: ResourceManager = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val filterManager: FilterManager = mock()
+    private val searchTrackedEntities: SearchTrackedEntities = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -106,6 +108,7 @@ class SearchTEIViewModelTest {
                 resourceManager = resourceManager,
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
+                searchTrackedEntities = searchTrackedEntities,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -798,6 +801,7 @@ class SearchTEIViewModelTest {
                 resourceManager = resourceManager,
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
+                searchTrackedEntities = searchTrackedEntities,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -844,6 +848,7 @@ class SearchTEIViewModelTest {
                     },
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
+                searchTrackedEntities = searchTrackedEntities,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 
