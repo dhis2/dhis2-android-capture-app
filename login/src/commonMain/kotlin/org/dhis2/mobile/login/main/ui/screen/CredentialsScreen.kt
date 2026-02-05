@@ -120,6 +120,7 @@ fun CredentialsScreen(
     allowRecovery: Boolean,
     oidcInfo: OidcInfo?,
     fromHome: Boolean,
+    oAuthEnable: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -133,6 +134,7 @@ fun CredentialsScreen(
                 oidcInfo,
                 context,
                 fromHome,
+                oAuthEnable,
             )
         }
 

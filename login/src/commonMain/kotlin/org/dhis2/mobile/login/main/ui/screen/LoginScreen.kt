@@ -216,6 +216,7 @@ fun LoginScreen(
                                 info.serverUrl == arg.selectedServer
                             },
                         fromHome = fromHome,
+                        oAuthEnable = arg.oAuthEnabled,
                     )
                 }
                 composable<LoginScreenState.OauthLogin> {

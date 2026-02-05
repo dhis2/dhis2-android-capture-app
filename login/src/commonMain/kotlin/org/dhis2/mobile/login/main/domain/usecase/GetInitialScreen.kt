@@ -27,28 +27,24 @@ class GetInitialScreen(
     }
 
     private fun handleSingleAccount(account: AccountModel): LoginScreenState =
-        if (account.isOauthEnabled) {
-            LoginScreenState.OauthLogin(selectedServer = account.serverUrl)
-        } else {
-            account.toLegacyLoginState()
-        }
+        LoginScreenState.LegacyLogin(
+            selectedServer = account.serverUrl,
+            selectedUsername = account.name,
+            serverName = account.serverName,
+            selectedServerFlag = account.serverFlag,
+            allowRecovery = account.allowRecovery,
+            oAuthEnabled = account.isOauthEnabled,
+        )
 
     private suspend fun handleLockedSession(): LoginScreenState {
         val activeAccount = accountRepository.getActiveAccount() ?: return LoginScreenState.Accounts
-
-        return if (activeAccount.isOauthEnabled) {
-            LoginScreenState.OauthLogin(selectedServer = activeAccount.serverUrl)
-        } else {
-            activeAccount.toLegacyLoginState()
-        }
-    }
-
-    private fun AccountModel.toLegacyLoginState(): LoginScreenState.LegacyLogin =
-        LoginScreenState.LegacyLogin(
-            selectedServer = serverUrl,
-            selectedUsername = name,
-            serverName = serverName,
-            selectedServerFlag = serverFlag,
-            allowRecovery = allowRecovery,
+        return LoginScreenState.LegacyLogin(
+            selectedServer = activeAccount.serverUrl,
+            selectedUsername = activeAccount.name,
+            serverName = activeAccount.serverName,
+            selectedServerFlag = activeAccount.serverFlag,
+            allowRecovery = activeAccount.allowRecovery,
+            oAuthEnabled = activeAccount.isOauthEnabled,
         )
+    }
 }

@@ -90,15 +90,11 @@ internal val mainLoginModule =
         viewModel { parameters ->
             val context = parameters.get<PlatformContext>()
             LoginViewModel(
-                get(),
-                get(),
-                get { parametersOf(context) },
-                get { parametersOf(context) },
-                get(),
-                get { parametersOf(context) },
-                get { parametersOf(context) },
-                get { parametersOf(context) },
-                get(),
+                navigator = get(),
+                getInitialScreen = get(),
+                importDatabase = get { parametersOf(context) },
+                validateServer = get { parametersOf(context) },
+                networkStatusProvider = get(),
             )
         }
         viewModel { parameters ->
@@ -109,6 +105,7 @@ internal val mainLoginModule =
             val oidcInfo = parameters[4] as OidcInfo?
             val context = parameters[5] as PlatformContext
             val fromHome = parameters[6] as Boolean
+            val oAuthEnable = parameters[7] as Boolean
             CredentialsViewModel(
                 navigator = get(),
                 getAvailableUsernames = get { parametersOf(context) },
@@ -118,8 +115,12 @@ internal val mainLoginModule =
                 logOutUser = get { parametersOf(context) },
                 openIdLogin = get { parametersOf(context) },
                 biometricLogin = get { parametersOf(context) },
+                loginUserWithOAuth = get { parametersOf(context) },
+                getDeviceEnrollmentUrl = get { parametersOf(context) },
+                processDeviceEnrollment = get { parametersOf(context) },
                 updateTrackingPermission = get { parametersOf(context) },
                 updateBiometricPermission = get { parametersOf(context) },
+                appLinkNavigation = get(),
                 networkStatusProvider = get(),
                 serverName = serverName,
                 serverUrl = serverUrl,
@@ -129,6 +130,7 @@ internal val mainLoginModule =
                 oidcInfo = oidcInfo,
                 forgotPinUseCase = get(),
                 fromHome = fromHome,
+                oAuthEnable = oAuthEnable,
             )
         }
     }

@@ -3,7 +3,6 @@ package org.dhis2.mobile.login.main.ui.viewmodel
 import app.cash.turbine.test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -11,12 +10,9 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
-import org.dhis2.mobile.login.main.domain.usecase.GetDeviceEnrollmentUrl
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
-import org.dhis2.mobile.login.main.domain.usecase.ProcessDeviceEnrollment
 import org.dhis2.mobile.login.main.domain.usecase.ValidateServer
-import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.navigation.Navigator
 import org.dhis2.mobile.login.main.ui.state.DatabaseImportState
 import org.dhis2.mobile.login.main.ui.state.ServerValidationUiState
@@ -38,18 +34,13 @@ class LoginViewModelTest {
     private val getInitialScreen: GetInitialScreen = mock()
     private val importDatabase: ImportDatabase = mock()
     private val validateServer: ValidateServer = mock()
-    private val appLinkNavigation: AppLinkNavigation = mock()
-    private val getDeviceEnrollmentUrl: GetDeviceEnrollmentUrl = mock()
-    private val processDeviceEnrollment: ProcessDeviceEnrollment = mock()
     private val testDispatcher = UnconfinedTestDispatcher()
-    private val mockAppLinkFlow = MutableSharedFlow<String>()
     private val networkStatusProvider: NetworkStatusProvider = mock()
     private val mockNetworkStatusFlow = MutableStateFlow(true)
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        whenever(appLinkNavigation.appLink).thenReturn(mockAppLinkFlow)
         whenever(networkStatusProvider.connectionStatus).thenReturn(mockNetworkStatusFlow)
     }
 
@@ -71,10 +62,7 @@ class LoginViewModelTest {
                     getInitialScreen = getInitialScreen,
                     importDatabase = importDatabase,
                     validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
-                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             verify(navigator).navigate(
@@ -108,10 +96,7 @@ class LoginViewModelTest {
                     getInitialScreen = getInitialScreen,
                     importDatabase = importDatabase,
                     validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
-                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.serverValidationState.test(timeout = 5.seconds) {
@@ -154,10 +139,7 @@ class LoginViewModelTest {
                     getInitialScreen = getInitialScreen,
                     importDatabase = importDatabase,
                     validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
-                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.serverValidationState.test {
@@ -178,46 +160,6 @@ class LoginViewModelTest {
         }
 
     @Test
-    fun `app link with valid code is handled correctly`() =
-        runTest {
-            val redirectUri = "https://vgarciabnz.github.io"
-            val code = "auth_code_123"
-            val appLinkUrl = "$redirectUri?code=$code&state=test"
-
-            whenever(getInitialScreen()).thenReturn(
-                LoginScreenState.ServerValidation(
-                    currentServer = "https://test.dhis2.org",
-                    availableServers = listOf("https://test.dhis2.org"),
-                    hasAccounts = false,
-                ),
-            )
-
-            viewModel =
-                LoginViewModel(
-                    navigator = navigator,
-                    getInitialScreen = getInitialScreen,
-                    importDatabase = importDatabase,
-                    validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
-                    networkStatusProvider = networkStatusProvider,
-                    processDeviceEnrollment = processDeviceEnrollment,
-                )
-
-            viewModel.serverValidationState.test {
-                assertEquals(ServerValidationUiState(), awaitItem())
-
-                // Send app link
-                mockAppLinkFlow.emit(appLinkUrl)
-
-                // TODO: Verify that the code is processed correctly
-                // Currently the LoginViewModel has a TODO comment for this functionality
-
-                expectNoEvents()
-            }
-        }
-
-    @Test
     fun `successfully import database`() =
         runTest {
             whenever(importDatabase("path")).thenReturn(
@@ -230,10 +172,7 @@ class LoginViewModelTest {
                     getInitialScreen = getInitialScreen,
                     importDatabase = importDatabase,
                     validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
-                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.importDatabaseState.test {
@@ -259,10 +198,7 @@ class LoginViewModelTest {
                     getInitialScreen = getInitialScreen,
                     importDatabase = importDatabase,
                     validateServer = validateServer,
-                    appLinkNavigation = appLinkNavigation,
-                    getDeviceEnrollmentUrl = getDeviceEnrollmentUrl,
                     networkStatusProvider = networkStatusProvider,
-                    processDeviceEnrollment = processDeviceEnrollment,
                 )
 
             viewModel.importDatabaseState.test {

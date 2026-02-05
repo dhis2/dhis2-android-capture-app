@@ -22,6 +22,7 @@ sealed interface LoginScreenState {
         val serverName: String?,
         val selectedServerFlag: String?,
         val allowRecovery: Boolean,
+        val oAuthEnabled: Boolean,
     ) : LoginScreenState
 
     @Serializable
