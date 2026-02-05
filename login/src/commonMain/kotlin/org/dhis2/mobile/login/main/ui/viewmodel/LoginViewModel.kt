@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.update
 import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
+import org.dhis2.mobile.login.main.domain.model.DeviceEnrollmentInfo
 import org.dhis2.mobile.login.main.domain.model.LoginResult
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
@@ -160,7 +161,10 @@ class LoginViewModel(
         // Check if there is a device enrollment callback
         val iat = urlString.substringAfter("iat=", "").substringBefore('&')
         if (iat.isNotEmpty()) {
-            registerDevice(urlString, iat)
+            registerDevice(
+                serverURL = serverValidationState.value.currentServer,
+                iat = iat,
+            )
             return
         }
 
@@ -168,27 +172,10 @@ class LoginViewModel(
         val code = urlString.substringAfter("code=", "").substringBefore('&')
         if (code.isNotEmpty()) {
             val state = urlString.substringAfter("state=").substringBefore('&')
-            launchUseCase {
-                val result =
-                    withMinimumDuration {
-                        loginUserWithOAuth(
-                            serverUrl = "https://dev.im.dhis2.org/android5",
-                            code = code
-                        )
-                    }
-                when (result) {
-                    is LoginResult.Error -> _serverValidationState.update {
-                        it.copy(
-                            error = "Unknown error",
-                            validationRunning = false,
-                        )
-                    }
-
-                    is LoginResult.Success -> {
-                        navigator.navigateToSync()
-                    }
-                }
-            }
+            loginOAuth(
+                serverUrl = serverValidationState.value.currentServer,
+                code = code,
+            )
             return
         }
 
@@ -201,11 +188,16 @@ class LoginViewModel(
     }
 
     private fun registerDevice(
-        urlString: String,
+        serverURL: String,
         iat: String,
     ) {
         launchUseCase {
-            processDeviceEnrollment(iat).fold(
+            processDeviceEnrollment(
+                DeviceEnrollmentInfo(
+                    iat = iat,
+                    serverURL = serverURL,
+                ),
+            ).fold(
                 onSuccess = {
                     // Open Consent permissions
                     navigator.navigate(OauthLogin(it))
@@ -219,6 +211,34 @@ class LoginViewModel(
                     }
                 },
             )
+        }
+    }
+
+    fun loginOAuth(
+        serverUrl: String,
+        code: String,
+    ) {
+        launchUseCase {
+            val result =
+                withMinimumDuration {
+                    loginUserWithOAuth(
+                        serverUrl = serverUrl,
+                        code = code,
+                    )
+                }
+            when (result) {
+                is LoginResult.Success -> {
+                    // TODO build post login actions
+                    navigator.navigateToSync()
+                }
+                is LoginResult.Error ->
+                    _serverValidationState.update {
+                        it.copy(
+                            error = "Unknown error",
+                            validationRunning = false,
+                        )
+                    }
+            }
         }
     }
 

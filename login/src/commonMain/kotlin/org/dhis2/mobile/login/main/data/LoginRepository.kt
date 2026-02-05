@@ -68,9 +68,13 @@ interface LoginRepository {
 
     suspend fun getDeviceEnrollmentUrl(serverUrl: String): String
 
-    suspend fun enrollDevice(input: String): String
+    suspend fun enrollDevice(
+        iat: String,
+        serverURL: String,
+    ): String
+
     suspend fun loginUserWithOAuth(
         serverUrl: String,
-        code: String
+        code: String,
     ): Result<String?>
 }

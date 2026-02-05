@@ -5,10 +5,10 @@ import org.dhis2.mobile.login.main.domain.model.LoginResult
 
 class LoginUserWithOAuth(
     repository: LoginRepository,
-): BaseLogin(repository) {
+) : BaseLogin(repository) {
     suspend operator fun invoke(
         serverUrl: String,
-        code: String
+        code: String,
     ): LoginResult {
         val result = repository.loginUserWithOAuth(serverUrl, code)
         when {
@@ -19,7 +19,6 @@ class LoginUserWithOAuth(
             else -> {
                 return LoginResult.Error(result.exceptionOrNull()?.message)
             }
-
         }
     }
 }

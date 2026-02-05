@@ -137,45 +137,42 @@ class LoginRepositoryImpl(
             }
         }
 
-    override suspend fun enrollDevice(input: String): String {
-        val serverUrl = "https://dev.im.dhis2.org/android5"
-
+    override suspend fun enrollDevice(
+        iat: String,
+        serverURL: String,
+    ): String =
         // Handle enrollment on IO dispatcher
         withContext(dispatcher.io) {
             try {
                 d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
-                    serverUrl = serverUrl,
-                    iat = input,
+                    serverUrl = serverURL,
+                    iat = iat,
                 )
+
+                if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
+                    throw DomainError.ServerError("Device not registered")
+                }
+
+                val config = OAuth2Config(serverUrl = serverURL)
+                // Return the authorization URL
+                d2.userModule().oauth2Handler().blockingLogIn(config)
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
             }
         }
 
-        if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
-            throw DomainError.ServerError("Device not registered")
+    override suspend fun loginUserWithOAuth(
+        serverUrl: String,
+        code: String,
+    ) = withContext(dispatcher.io) {
+        try {
+            val user =
+                d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code)
+            kotlin.Result.success(user.username())
+        } catch (d2Error: D2Error) {
+            throw domainErrorMapper.mapToDomainError(d2Error)
         }
-
-        val config = OAuth2Config(serverUrl = serverUrl)
-        val intentWithRequestCode =
-            d2
-                .userModule()
-                .oauth2Handler()
-                .blockingLogIn(config)
-
-        return intentWithRequestCode.intent.data.toString()
     }
-
-    override suspend fun loginUserWithOAuth(serverUrl: String, code: String) =
-        withContext(dispatcher.io) {
-            try {
-                val user =
-                    d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code)
-                kotlin.Result.success(user.username())
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
-            }
-        }
 
     override suspend fun getAvailableLoginUsernames(): List<String> =
         withContext(dispatcher.io) {
