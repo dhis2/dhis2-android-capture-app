@@ -43,7 +43,6 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.customintent.CustomIntentResult
 import org.dhis2.form.ui.intent.FormIntent
@@ -55,7 +54,9 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
+import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
@@ -461,116 +462,130 @@ class SearchTEIViewModel(
             searchParametersUiState.copy(searchEnabled = queryData.isNotEmpty())
     }
 
-    private suspend fun loadSearchResults() =
-        withContext(dispatchers.io()) {
-            val searchParametersModel =
-                SearchParametersModel(
-                    selectedProgram = searchRepository.getProgram(initialProgramUid),
+    private fun loadSearchResults(): Flow<PagingData<SearchTeiModel>> =
+        flow {
+            // get uids to exclude for possible duplicates
+            val excludeValues = searchRepositoryKt.getExcludeValues()
+
+            val isOnline = searching && networkUtils.isOnline()
+            val selectedProgram = searchRepository.getProgram(initialProgramUid)
+
+            val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+            val newTrackerSearchModel =
+                SearchTrackedEntitiesInput(
+                    selectedProgram = selectedProgram?.uid(),
+                    allowCache = allowCache,
+                    excludeValues = excludeValues,
+                    hasStateFilters = filterManager.stateFilters.isNotEmpty(),
+                    isOnline = isOnline,
                     queryData = queryData,
                 )
-            val getPagingData =
-                searchRepositoryKt.searchTrackedEntities(
-                    searchParametersModel,
-                    searching && networkUtils.isOnline(),
-                )
+            val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
-            return@withContext getPagingData.map { pagingData ->
-                pagingData.map { item ->
-                    withContext(dispatchers.io()) {
-                        if (
-                            searching &&
-                            networkUtils.isOnline() &&
-                            filterManager.stateFilters.isEmpty()
-                        ) {
+            emitAll(
+                results.getOrThrow().map { pagingData ->
+                    pagingData.map { item ->
+                        withContext(dispatchers.io()) {
+                            // TODO Create a new SearchTeiModel that does not use
+                            // SDK objects and remove this mapping from the domain model back to the SDK one
+                            val sdkTei = transformDomainTeiToSDKTei(item)
+                            val searchOnline =
+                                isOnline &&
+                                    filterManager.stateFilters.isEmpty()
                             searchRepository.transform(
-                                item,
-                                searchParametersModel.selectedProgram,
-                                false,
+                                sdkTei,
+                                selectedProgram,
+                                !searchOnline,
                                 filterManager.sortingItem,
                             )
-                        } else {
+                        }
+                    }
+                },
+            )
+        }
+
+    private fun loadDisplayInListResults(): Flow<PagingData<SearchTeiModel>> =
+        flow {
+            val excludeValues = searchRepositoryKt.getExcludeValues()
+            val selectedProgram = searchRepository.getProgram(initialProgramUid)
+
+            val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+            val newTrackerSearchModel =
+                SearchTrackedEntitiesInput(
+                    selectedProgram = selectedProgram?.uid(),
+                    allowCache = allowCache,
+                    excludeValues = excludeValues,
+                    hasStateFilters = filterManager.stateFilters.isNotEmpty(),
+                    isOnline = false,
+                    queryData = queryData,
+                )
+            val results = searchTrackedEntities.invoke(newTrackerSearchModel)
+
+            emitAll(
+                results.getOrThrow().map { pagingData ->
+                    pagingData.map { item ->
+                        withContext(dispatchers.io()) {
+                            // TODO Create a new SearchTeiModel that does not use
+                            // SDK objects and remove this mapping from the domain model back to the SDK one
+                            val sdkTei = transformDomainTeiToSDKTei(item)
                             searchRepository.transform(
-                                item,
-                                searchParametersModel.selectedProgram,
+                                sdkTei,
+                                selectedProgram,
                                 true,
                                 filterManager.sortingItem,
                             )
                         }
                     }
-                }
-            }
+                },
+            )
         }
 
-    private suspend fun loadDisplayInListResults() =
-        withContext(dispatchers.io()) {
-            val searchParametersModel =
-                SearchParametersModel(
-                    selectedProgram = searchRepository.getProgram(initialProgramUid),
-                    queryData = queryData,
-                )
-            val getPagingData =
-                searchRepositoryKt.searchTrackedEntities(
-                    searchParametersModel,
-                    false,
-                )
+    fun fetchGlobalResults(): Flow<PagingData<SearchTeiModel>>? {
+        // get uids to exclude for possible duplicates
+        return if (searching) {
+            flow {
+                val excludeValues = searchRepositoryKt.getExcludeValues()
 
-            return@withContext getPagingData.map { pagingData ->
-                pagingData.map { item ->
-                    withContext(dispatchers.io()) {
-                        searchRepository.transform(
-                            item,
-                            searchParametersModel.selectedProgram,
-                            true,
-                            filterManager.sortingItem,
-                        )
-                    }
-                }
-            }
-        }
+                val isOnline = searching && networkUtils.isOnline()
+                val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-    suspend fun fetchGlobalResults() =
-        withContext(dispatchers.io()) {
-            val searchParametersModel =
-                SearchParametersModel(
-                    selectedProgram = null,
-                    queryData = queryData,
-                )
-            val getPagingData =
-                searchRepositoryKt.searchTrackedEntities(
-                    searchParametersModel,
-                    searching && networkUtils.isOnline(),
-                )
+                val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+                val newTrackerSearchModel =
+                    SearchTrackedEntitiesInput(
+                        selectedProgram = null,
+                        allowCache = allowCache,
+                        excludeValues = excludeValues,
+                        hasStateFilters = filterManager.stateFilters.isNotEmpty(),
+                        isOnline = isOnline,
+                        queryData = queryData,
+                    )
+                val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
-            return@withContext if (searching) {
-                getPagingData.map { pagingData ->
-                    pagingData.map { item ->
-                        withContext(dispatchers.io()) {
-                            if (
-                                searching &&
-                                networkUtils.isOnline() &&
-                                filterManager.stateFilters.isEmpty()
-                            ) {
+                emitAll(
+                    results.getOrThrow().map { pagingData ->
+                        pagingData.map { item ->
+                            withContext(dispatchers.io()) {
+                                // TODO Create a new SearchTeiModel that does not use
+                                // SDK objects and remove this mapping from the domain model back to the SDK one
+                                val sdkTei = transformDomainTeiToSDKTei(item)
+                                val searchOnline =
+                                    isOnline &&
+                                        filterManager.stateFilters.isEmpty()
                                 searchRepository.transform(
-                                    item,
-                                    searchParametersModel.selectedProgram,
-                                    false,
-                                    filterManager.sortingItem,
-                                )
-                            } else {
-                                searchRepository.transform(
-                                    item,
-                                    searchParametersModel.selectedProgram,
-                                    true,
+                                    sdkTei,
+                                    selectedProgram,
+                                    !searchOnline,
                                     filterManager.sortingItem,
                                 )
                             }
                         }
-                    }
-                }
-            } else {
-                null
+                    },
+                )
             }
+        } else {
+            null
         }
+    }
 
     fun fetchMapResults() {
         CoroutineTracker.increment()
@@ -1070,33 +1085,43 @@ class SearchTEIViewModel(
                     searchedItems = getFriendlyQueryData(),
                 )
 
-            val searchParametersModel =
-                SearchParametersModel(
-                    selectedProgram = searchRepository.getProgram(initialProgramUid),
+            val isOnline = searching && networkUtils.isOnline()
+            val selectedProgram = searchRepository.getProgram(initialProgramUid)
+
+            // get uids to exclude for possible duplicates
+            val excludeValues = searchRepositoryKt.getExcludeValues()
+
+            val newTrackerSearchModel =
+                SearchTrackedEntitiesInput(
+                    selectedProgram = selectedProgram?.uid(),
+                    allowCache = false, // No need for cache in immediate search
+                    excludeValues = excludeValues,
+                    hasStateFilters = filterManager.stateFilters.isNotEmpty(),
+                    isOnline = isOnline,
                     queryData = queryData,
                 )
-            val isOnline = searching && networkUtils.isOnline()
-            val trackedEntities =
-                async(dispatchers.io()) {
-                    searchRepositoryKt.searchTrackedEntitiesImmediate(
-                        searchParametersModel = searchParametersModel,
-                        isOnline = isOnline,
-                    )
-                }.await()
+
+            // Use invokeImmediate for QR code scanning to get immediate non-paginated results
+            val trackedEntitiesResult = searchTrackedEntities.invokeImmediate(newTrackerSearchModel)
+
+            val trackedEntities = trackedEntitiesResult.getOrNull() ?: emptyList()
 
             if (trackedEntities.isEmpty() || trackedEntities.size > 1) return@launch
 
             val tei = trackedEntities.first()
+
+            // Transform domain model to SDK model for compatibility with existing code
+            val sdkTei =
+                withContext(dispatchers.io()) {
+                    transformDomainTeiToSDKTei(tei)
+                }
+
             val searchTeiModel =
                 withContext(dispatchers.io()) {
                     searchRepository.transform(
-                        // searchItem =
-                        tei,
-                        // selectedProgram =
-                        searchParametersModel.selectedProgram,
-                        // offlineOnly =
+                        sdkTei,
+                        selectedProgram,
                         !(isOnline && filterManager.stateFilters.isEmpty()),
-                        // sortingItem =
                         filterManager.sortingItem,
                     )
                 }

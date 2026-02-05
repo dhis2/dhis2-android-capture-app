@@ -2,11 +2,9 @@
 
 package org.dhis2.usescases.searchTrackEntity
 
-import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
@@ -63,48 +61,31 @@ class SearchRepositoryImplKt(
 
     private val fetchedTeiUids = HashSet<String>()
 
-    override fun searchTrackedEntities(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): Flow<PagingData<TrackedEntitySearchItem>> =
-        trackedEntitySearchQuery(searchParametersModel, isOnline)
-            .getPagingData(10)
-
-    private fun trackedEntitySearchQuery(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): TrackedEntitySearchCollectionRepository {
-        var allowCache = false
-        savedSearchParameters = searchParametersModel.copy()
+    override fun saveSearchValuesAndGetAllowCache(
+        queryData: MutableMap<String, List<String>?>?,
+        programUid: String?,
+    ): Boolean {
+        if (!this::savedSearchParameters.isInitialized) {
+            savedSearchParameters =
+                SearchParametersModel(queryData = queryData, selectedProgram = searchRepositoryJava.getProgram(programUid))
+        }
+        if (!this::savedFilters.isInitialized) {
+            savedFilters = FilterManager.getInstance().copy()
+        }
+        val allowCache =
+            queryData == savedSearchParameters.queryData &&
+                FilterManager
+                    .getInstance()
+                    .sameFilters(savedFilters)
+        savedSearchParameters = savedSearchParameters.copy(queryData = queryData)
         savedFilters = FilterManager.getInstance().copy()
-
-        if (searchParametersModel != savedSearchParameters ||
-            !FilterManager
-                .getInstance()
-                .sameFilters(savedFilters)
-        ) {
-            trackedEntityInstanceQuery =
-                searchRepositoryJava.getFilteredRepository(searchParametersModel)
-        } else {
-            trackedEntityInstanceQuery =
-                searchRepositoryJava.getFilteredRepository(searchParametersModel)
-            allowCache = true
-        }
-
-        if (fetchedTeiUids.isNotEmpty() && searchParametersModel.selectedProgram == null) {
-            trackedEntityInstanceQuery =
-                trackedEntityInstanceQuery.excludeUids().`in`(fetchedTeiUids.toList())
-        }
-
-        val pagerFlow =
-            if (isOnline && FilterManager.getInstance().stateFilters.isEmpty()) {
-                trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineFirst()
-            } else {
-                trackedEntityInstanceQuery.allowOnlineCache().eq(allowCache).offlineOnly()
-            }
-
-        return pagerFlow
+        return allowCache
     }
+
+    override fun getExcludeValues(): HashSet<String>? =
+        fetchedTeiUids.ifEmpty {
+            null
+        }
 
     override suspend fun searchParameters(
         programUid: String?,
@@ -135,13 +116,6 @@ class SearchRepositoryImplKt(
             .uid(teaUid)
             .blockingGet()
             ?.unique() ?: false
-
-    override suspend fun searchTrackedEntitiesImmediate(
-        searchParametersModel: SearchParametersModel,
-        isOnline: Boolean,
-    ): List<TrackedEntitySearchItem> =
-        trackedEntitySearchQuery(searchParametersModel, isOnline)
-            .blockingGet()
 
     override fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,

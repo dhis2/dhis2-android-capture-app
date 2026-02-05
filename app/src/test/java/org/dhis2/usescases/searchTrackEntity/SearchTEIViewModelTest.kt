@@ -23,7 +23,6 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.customintent.CustomIntentResult
@@ -33,6 +32,7 @@ import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
+import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -49,8 +49,9 @@ import org.junit.Test
 import org.maplibre.geojson.BoundingBox
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -63,10 +64,7 @@ class SearchTEIViewModelTest {
     private val initialProgram = "programUid"
     private val initialQuery = mutableMapOf<String, List<String>?>()
     private val repository: SearchRepository = mock()
-    private val repositoryKt: SearchRepositoryKt =
-        mock {
-            on { searchTrackedEntities(any(), any()) } doReturn flowOf(PagingData.empty())
-        }
+    private val repositoryKt: SearchRepositoryKt = mock()
     private val pageConfigurator: SearchPageConfigurator = mock()
     private val mapDataRepository: MapDataRepository = mock()
     private val networkUtils: NetworkUtils = mock()
@@ -74,7 +72,10 @@ class SearchTEIViewModelTest {
     private val resourceManager: ResourceManager = mock()
     private val displayNameProvider: DisplayNameProvider = mock()
     private val filterManager: FilterManager = mock()
-    private val searchTrackedEntities: SearchTrackedEntities = mock()
+    private val searchTrackedEntities: SearchTrackedEntities =
+        mock {
+            onBlocking { invoke(any()) } doReturn Result.success(flowOf(PagingData.empty()))
+        }
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -88,6 +89,8 @@ class SearchTEIViewModelTest {
         whenever(repository.canCreateInProgramWithoutSearch()) doReturn true
         whenever(repository.getTrackedEntityType()) doReturn testingTrackedEntityType()
         whenever(repository.filtersApplyOnGlobalSearch()) doReturn true
+        whenever(repositoryKt.getExcludeValues()) doReturn HashSet<String>()
+        whenever(repositoryKt.saveSearchValuesAndGetAllowCache(any(), any())) doReturn true
         viewModel =
             SearchTEIViewModel(
                 initialProgram,
@@ -279,12 +282,17 @@ class SearchTEIViewModelTest {
 
             viewModel.searchPagingData.take(1).asSnapshot()
 
-            verify(repositoryKt).searchTrackedEntities(
-                SearchParametersModel(
-                    selectedProgram = testingProgram,
-                    queryData = mutableMapOf(),
+            verify(searchTrackedEntities).invoke(
+                eq(
+                    SearchTrackedEntitiesInput(
+                        selectedProgram = testingProgram.uid(),
+                        queryData = mutableMapOf(),
+                        allowCache = true,
+                        excludeValues = emptySet(),
+                        hasStateFilters = false,
+                        isOnline = false,
+                    ),
                 ),
-                false,
             )
         }
 
@@ -295,21 +303,7 @@ class SearchTEIViewModelTest {
             setCurrentProgram(testingProgram)
             viewModel.searchPagingData.test {
                 awaitItem()
-                verify(repositoryKt, times(0)).searchTrackedEntities(
-                    SearchParametersModel(
-                        selectedProgram = testingProgram,
-                        queryData = mutableMapOf(),
-                    ),
-                    true,
-                )
-
-                verify(repositoryKt, times(0)).searchTrackedEntities(
-                    SearchParametersModel(
-                        selectedProgram = testingProgram,
-                        queryData = mutableMapOf(),
-                    ),
-                    false,
-                )
+                verify(searchTrackedEntities, never()).invoke(any())
             }
         }
 
