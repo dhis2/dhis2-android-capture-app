@@ -3,6 +3,6 @@
     <!-- Add sync module strings here -->
     <string name="app_name">Dhis2</string>
     <string name="syncing_settings">Checking web settings</string>
-    <string name="syncing_configuration">Syncing your configuration</string>
+    <string name="syncing_configuration">Syncing your configuration</string>"
 </resources>
 
