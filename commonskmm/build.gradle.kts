@@ -77,6 +77,7 @@ kotlin {
             implementation(libs.androidx.browser)
             // Sentry
             api(libs.analytics.sentry)
+            implementation(libs.androidx.work)
         }
 
         androidUnitTest.dependencies {
