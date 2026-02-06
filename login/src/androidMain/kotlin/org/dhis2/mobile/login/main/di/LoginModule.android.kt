@@ -26,16 +26,16 @@ internal actual val accountModule =
 
         factory<LoginRepository> { params ->
             LoginRepositoryImpl(
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get(),
-                get { parametersOf(params.get()) },
-                get(),
-                get(),
+                d2 = get(),
+                authenticator = get(),
+                cryptographyManager = get(),
+                preferences = get(),
+                d2ErrorMessageProvider = get(),
+                crashReportController = get(),
+                analyticActions = get(),
+                openIdController = get { parametersOf(params.get()) },
+                dispatcher = get(),
+                domainErrorMapper = get(),
             )
         }
 

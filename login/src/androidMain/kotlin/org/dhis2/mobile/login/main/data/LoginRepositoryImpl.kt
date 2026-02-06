@@ -19,6 +19,7 @@ import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.error_device_not_registered
 import org.dhis2.mobile.login.resources.openid_invalid_auth_result
 import org.dhis2.mobile.login.resources.openid_process_cancelled
 import org.dhis2.mobile.login.resources.server_url_error
@@ -140,26 +141,24 @@ class LoginRepositoryImpl(
     override suspend fun enrollDevice(
         iat: String,
         serverURL: String,
-    ): String =
-        // Handle enrollment on IO dispatcher
-        withContext(dispatcher.io) {
-            try {
-                d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
-                    serverUrl = serverURL,
-                    iat = iat,
-                )
+    ) = withContext(dispatcher.io) {
+        try {
+            d2.userModule().oauth2Handler().blockingHandleEnrollmentResponse(
+                serverUrl = serverURL,
+                iat = iat,
+            )
 
-                if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
-                    throw DomainError.ServerError("Device not registered")
-                }
-
-                val config = OAuth2Config(serverUrl = serverURL)
-                // Return the authorization URL
-                d2.userModule().oauth2Handler().blockingLogIn(config)
-            } catch (d2Error: D2Error) {
-                throw domainErrorMapper.mapToDomainError(d2Error)
+            if (!d2.userModule().oauth2Handler().isDeviceRegistered()) {
+                throw DomainError.AuthenticationError(getString(Res.string.error_device_not_registered))
             }
+
+            val config = OAuth2Config(serverUrl = serverURL)
+            // Return the authorization URL
+            d2.userModule().oauth2Handler().blockingLogIn(config)
+        } catch (d2Error: D2Error) {
+            throw domainErrorMapper.mapToDomainError(d2Error)
         }
+    }
 
     override suspend fun loginUserWithOAuth(
         serverUrl: String,
