@@ -8,6 +8,7 @@ import java.net.URI
 @Composable
 actual fun WebAuthenticator(
     url: String,
+    clearCache: Boolean,
     onDismiss: () -> Unit,
 ) {
     LaunchedEffect(url) {

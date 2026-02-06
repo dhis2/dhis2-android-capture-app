@@ -163,7 +163,13 @@ class CredentialsViewModel(
     private suspend fun fetchOAuthEnrollmentUrl() {
         getDeviceEnrollmentUrl(serverUrl).fold(
             onSuccess = { enrollmentURL ->
-                navigator.navigate(LoginScreenState.OauthLogin(enrollmentURL))
+                // First OAuth call (enrollment) - clear any previous OAuth sessions
+                navigator.navigate(
+                    LoginScreenState.OauthLogin(
+                        selectedServer = enrollmentURL,
+                        clearCache = true,
+                    ),
+                )
             },
             onFailure = { error ->
                 _credentialsScreenState.update {
@@ -232,7 +238,13 @@ class CredentialsViewModel(
                 ),
             ).fold(
                 onSuccess = { consentUrl ->
-                    navigator.navigate(LoginScreenState.OauthLogin(consentUrl))
+                    // Second OAuth call (consent) - keep session from enrollment
+                    navigator.navigate(
+                        LoginScreenState.OauthLogin(
+                            selectedServer = consentUrl,
+                            clearCache = false,
+                        ),
+                    )
                 },
                 onFailure = { error ->
                     _credentialsScreenState.update {

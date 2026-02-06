@@ -221,9 +221,13 @@ fun LoginScreen(
                 }
                 composable<LoginScreenState.OauthLogin> {
                     val args = it.toRoute<LoginScreenState.OauthLogin>()
-                    WebAuthenticator(url = args.selectedServer) {
-                        viewModel.onOauthLoginCancelled()
-                    }
+                    WebAuthenticator(
+                        url = args.selectedServer,
+                        clearCache = args.clearCache,
+                        onDismiss = {
+                            viewModel.onOauthLoginCancelled()
+                        },
+                    )
                 }
                 composable<LoginScreenState.Accounts> {
                     displayMoreActions = true

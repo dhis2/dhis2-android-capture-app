@@ -28,6 +28,7 @@ sealed interface LoginScreenState {
     @Serializable
     data class OauthLogin(
         val selectedServer: String,
+        val clearCache: Boolean = false,
     ) : LoginScreenState
 
     @Serializable

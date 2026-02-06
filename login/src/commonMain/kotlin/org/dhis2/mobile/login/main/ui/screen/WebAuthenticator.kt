@@ -5,5 +5,6 @@ import androidx.compose.runtime.Composable
 @Composable
 expect fun WebAuthenticator(
     url: String,
+    clearCache: Boolean = false,
     onDismiss: () -> Unit,
 )
