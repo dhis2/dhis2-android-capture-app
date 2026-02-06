@@ -192,25 +192,28 @@ fun CredentialsScreen(
                 serverImageUrl = selectedServerFlag,
             )
         }
-        CredentialsContainer(
-            availableUsernames = screenState.credentialsInfo.availableUsernames,
-            username = screenState.credentialsInfo.username,
-            password = screenState.credentialsInfo.password,
-            isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
-            isLoggingIn = isLoggingIn,
-            onCredentialsUpdate = { credentialsUpdate ->
-                when (credentialsUpdate) {
-                    CredentialsUpdate.Complete ->
-                        viewModel.onLoginClicked()
 
-                    is CredentialsUpdate.Password ->
-                        viewModel.updatePassword(credentialsUpdate.password)
+        if (!oAuthEnable) {
+            CredentialsContainer(
+                availableUsernames = screenState.credentialsInfo.availableUsernames,
+                username = screenState.credentialsInfo.username,
+                password = screenState.credentialsInfo.password,
+                isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
+                isLoggingIn = isLoggingIn,
+                onCredentialsUpdate = { credentialsUpdate ->
+                    when (credentialsUpdate) {
+                        CredentialsUpdate.Complete ->
+                            viewModel.onLoginClicked()
 
-                    is CredentialsUpdate.Username ->
-                        viewModel.updateUsername(credentialsUpdate.username)
-                }
-            },
-        )
+                        is CredentialsUpdate.Password ->
+                            viewModel.updatePassword(credentialsUpdate.password)
+
+                        is CredentialsUpdate.Username ->
+                            viewModel.updateUsername(credentialsUpdate.username)
+                    }
+                },
+            )
+        }
         LoginStatus(
             isLoggingIn = isLoggingIn,
             loginErrorMessage = screenState.errorMessage,
@@ -271,11 +274,13 @@ private fun handleCredentialAction(
 
         CredentialsAction.OnLoginClicked ->
             viewModel.onLoginClicked()
+
         CredentialsAction.OnManageAccounts ->
             viewModel.onManageAccountsClicked()
 
         CredentialsAction.OnOpenIdLogin ->
             viewModel.onOpenIdLogin()
+
         CredentialsAction.OnRecoverAccount ->
             viewModel.onRecoverAccountClicked()
     }
@@ -600,7 +605,10 @@ private fun CredentialActions(
                 contentAlignment = Alignment.BottomCenter,
             ) {
                 Button(
-                    modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .testTag(CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG),
                     text = stringResource(Res.string.action_manage_account),
                     style = ButtonStyle.OUTLINED,
                     onClick = {
