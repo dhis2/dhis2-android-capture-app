@@ -103,15 +103,6 @@ class CredentialsViewModel(
     private var loginJob: Job? = null
 
     private val _credentialsScreenState = MutableStateFlow(initialState)
-
-    init {
-        launchUseCase {
-            appLinkNavigation.appLink.collect { urlString ->
-                handleOAuthCallbacks(urlString)
-            }
-        }
-    }
-
     val credentialsScreenState =
         _credentialsScreenState
             .onStart {
@@ -121,6 +112,16 @@ class CredentialsViewModel(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = initialState,
             )
+
+    init {
+        launchUseCase {
+            appLinkNavigation.appLink.collect { urlString ->
+                if (credentialsScreenState.value.loginState is LoginState.Running) {
+                    handleOAuthCallbacks(urlString)
+                }
+            }
+        }
+    }
 
     private fun loadData() {
         launchUseCase {
@@ -156,25 +157,33 @@ class CredentialsViewModel(
         }
     }
 
-    private suspend fun fetchOAuthEnrollmentUrl() {
-        getDeviceEnrollmentUrl(serverUrl).fold(
-            onSuccess = { enrollmentURL ->
-                // First OAuth call (enrollment) - clear any previous OAuth sessions
-                navigator.navigate(
-                    LoginScreenState.OauthLogin(
-                        selectedServer = enrollmentURL,
-                        clearCache = true,
-                    ),
-                )
-            },
-            onFailure = { error ->
-                _credentialsScreenState.update {
-                    it.copy(
-                        errorMessage = error.message,
+    private fun fetchOAuthEnrollmentUrl() {
+        _credentialsScreenState.update {
+            it.copy(
+                loginState = LoginState.Running,
+            )
+        }
+        launchUseCase {
+            getDeviceEnrollmentUrl(serverUrl).fold(
+                onSuccess = { enrollmentURL ->
+                    // First OAuth call (enrollment) - clear any previous OAuth sessions
+                    navigator.navigate(
+                        LoginScreenState.OauthLogin(
+                            selectedServer = enrollmentURL,
+                            clearCache = true,
+                        ),
                     )
-                }
-            },
-        )
+                },
+                onFailure = { error ->
+                    _credentialsScreenState.update {
+                        it.copy(
+                            loginState = LoginState.Enabled,
+                            errorMessage = error.message,
+                        )
+                    }
+                },
+            )
+        }
     }
 
     private fun handleOAuthCallbacks(urlString: String) {
@@ -296,9 +305,7 @@ class CredentialsViewModel(
 
     fun onLoginClicked() {
         if (_credentialsScreenState.value.oAuthEnable) {
-            launchUseCase {
-                fetchOAuthEnrollmentUrl()
-            }
+            fetchOAuthEnrollmentUrl()
         } else {
             startLoginJob {
                 loginUser(
