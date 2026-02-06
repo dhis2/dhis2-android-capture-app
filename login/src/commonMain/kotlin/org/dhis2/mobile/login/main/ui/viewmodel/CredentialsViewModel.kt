@@ -102,6 +102,8 @@ class CredentialsViewModel(
 
     private var loginJob: Job? = null
 
+    private val _credentialsScreenState = MutableStateFlow(initialState)
+
     init {
         launchUseCase {
             appLinkNavigation.appLink.collect { urlString ->
@@ -109,8 +111,6 @@ class CredentialsViewModel(
             }
         }
     }
-
-    private val _credentialsScreenState = MutableStateFlow(initialState)
     val credentialsScreenState =
         _credentialsScreenState
             .onStart {
@@ -152,11 +152,6 @@ class CredentialsViewModel(
                     oAuthEnable = oAuthEnable,
                 ),
             )
-
-            if (oAuthEnable) {
-                // This looks like an OAuth account resume - fetch the enrollment URL
-                fetchOAuthEnrollmentUrl()
-            }
         }
     }
 
