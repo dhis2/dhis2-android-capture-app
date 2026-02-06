@@ -1,15 +1,13 @@
 package org.dhis2.usescases.sync
 
-import androidx.lifecycle.LiveData
-import androidx.work.WorkInfo
 import io.reactivex.disposables.CompositeDisposable
-import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.METADATA_MESSAGE
-import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.SyncJobStatus
+import org.dhis2.mobile.sync.model.SyncStatus
 import timber.log.Timber
 
 const val WAS_INITIAL_SYNC_DONE = "WasInitialSyncDone"
@@ -18,35 +16,35 @@ class SyncPresenter internal constructor(
     private val view: SyncView,
     private val userManager: UserManager?,
     private val schedulerProvider: SchedulerProvider,
-    private val workManagerController: WorkManagerController,
+    private val backgroundJobAction: SyncBackgroundJobAction,
     private val preferences: PreferenceProvider,
 ) {
     private val disposable = CompositeDisposable()
 
     fun sync() {
-        workManagerController
-            .syncMetaDataForWorker(Constants.META_NOW, Constants.INITIAL_SYNC)
+        backgroundJobAction.launchMetadataSync(0)
     }
 
-    fun observeSyncProcess(): LiveData<List<WorkInfo>> = workManagerController.getWorkInfosForUniqueWorkLiveData(Constants.INITIAL_SYNC)
+    fun observeSyncProcess() = backgroundJobAction.observeMetadataJob()
 
-    fun handleSyncInfo(workInfoList: List<WorkInfo>) {
+    fun handleSyncInfo(workInfoList: List<SyncJobStatus>) {
         workInfoList.forEach { workInfo ->
-            if (workInfo.tags.contains(Constants.META_NOW)) {
-                handleMetaState(workInfo.state, workInfo.outputData.getString(METADATA_MESSAGE))
+            if (workInfo.tags.contains("METADATA_SYNC_NOW")) {
+                handleMetaState(workInfo.status, workInfo.message)
             }
         }
     }
 
     private fun handleMetaState(
-        state: WorkInfo.State,
+        state: SyncStatus,
         message: String?,
     ) {
         when (state) {
-            WorkInfo.State.RUNNING -> view.setMetadataSyncStarted()
-            WorkInfo.State.SUCCEEDED -> view.setMetadataSyncSucceed()
-            WorkInfo.State.FAILED -> view.showMetadataFailedMessage(message)
+            SyncStatus.Running -> view.setMetadataSyncStarted()
+            SyncStatus.Succeed -> view.setMetadataSyncSucceed()
+            SyncStatus.Failed -> view.showMetadataFailedMessage(message)
             else -> {
+                // do nothing
             }
         }
     }

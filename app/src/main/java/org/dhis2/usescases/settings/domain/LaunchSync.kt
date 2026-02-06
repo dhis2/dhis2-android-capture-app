@@ -15,12 +15,16 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.mobile.commons.providers.TIME_META
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SYNC_DATA_NOW
 import org.dhis2.utils.analytics.SYNC_METADATA_NOW
+import org.dhis2.mobile.sync.model.SyncStatus as Status
 
 class LaunchSync(
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
     private val workManagerController: WorkManagerController,
     private val preferenceProvider: PreferenceProvider,
     private val analyticsHelper: AnalyticsHelper,
@@ -34,12 +38,19 @@ class LaunchSync(
         )
 
     private val metadataWorkInfo =
-        workManagerController
-            .getWorkInfosByTagLiveData(Constants.META_NOW)
-            .asFlow()
+        syncBackgroundJobAction
+            .observeMetadataJob()
             .map { workStatuses ->
-                var workState: WorkInfo.State? = workStatuses.getOrNull(0)?.state
-                onWorkStatusesUpdate(workState, Constants.META_NOW)
+                var workState = workStatuses.firstOrNull()?.status
+                when (workState) {
+                    Status.Enqueue,
+                    Status.Running,
+                    Status.Blocked,
+                    -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.InProgress) }
+                    Status.Cancelled -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Cancelled) }
+                    else -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Finished) }
+                }
+                syncStatus.value
             }
 
     private val dataWorkInfo =
@@ -107,7 +118,6 @@ class LaunchSync(
             when (workState) {
                 WorkInfo.State.CANCELLED ->
                     when (workerTag) {
-                        Constants.META_NOW -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Cancelled) }
                         Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Cancelled) }
                         else -> syncStatus
                     }
@@ -117,14 +127,12 @@ class LaunchSync(
                 WorkInfo.State.BLOCKED,
                 ->
                     when (workerTag) {
-                        Constants.META_NOW -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.InProgress) }
                         Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.InProgress) }
                         else -> syncStatus
                     }
 
                 else ->
                     when (workerTag) {
-                        Constants.META_NOW -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Finished) }
                         Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Finished) }
                         else -> syncStatus
                     }
@@ -157,48 +165,31 @@ class LaunchSync(
 
     private fun syncMeta() {
         analyticsHelper.setEvent(SYNC_METADATA_NOW, CLICK, SYNC_METADATA_NOW)
-        val workerItem =
-            WorkerItem(
-                Constants.META_NOW,
-                WorkerType.METADATA,
-                null,
-                null,
-                ExistingWorkPolicy.KEEP,
-                null,
-            )
-        workManagerController.syncDataForWorker(workerItem)
+        syncBackgroundJobAction.launchMetadataSync(0)
     }
 
     private fun updateSyncDataPeriod(seconds: Int) {
         if (seconds != Constants.TIME_MANUAL) {
             syncData(seconds)
         } else {
-            cancelPendingWork(Constants.DATA)
+            preferenceProvider.setValue(Constants.TIME_DATA, 0)
+            workManagerController.cancelUniqueWork(Constants.DATA)
         }
     }
 
-    private fun updateSyncMetadataPeriod(seconds: Int) {
+    private suspend fun updateSyncMetadataPeriod(seconds: Int) {
         if (seconds != Constants.TIME_MANUAL) {
             syncMeta(seconds)
         } else {
-            cancelPendingWork(Constants.META)
+            preferenceProvider.setValue(TIME_META, 0)
+            syncBackgroundJobAction.cancelMetadataSync()
         }
     }
 
     private fun syncMeta(seconds: Int) {
         analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_DATA, CLICK)
         preferenceProvider.setValue(Constants.TIME_META, seconds)
-        workManagerController.cancelUniqueWork(Constants.META)
-        val workerItem =
-            WorkerItem(
-                Constants.META,
-                WorkerType.METADATA,
-                seconds.toLong(),
-                null,
-                null,
-                ExistingPeriodicWorkPolicy.REPLACE,
-            )
-        workManagerController.enqueuePeriodicWork(workerItem)
+        syncBackgroundJobAction.launchMetadataSync(seconds.toLong())
     }
 
     private fun syncData(seconds: Int) {
@@ -214,16 +205,5 @@ class LaunchSync(
                 ExistingPeriodicWorkPolicy.REPLACE,
             )
         workManagerController.enqueuePeriodicWork(workerItem)
-    }
-
-    private fun cancelPendingWork(tag: String) {
-        preferenceProvider.setValue(
-            when (tag) {
-                Constants.DATA -> Constants.TIME_DATA
-                else -> Constants.TIME_META
-            },
-            0,
-        )
-        workManagerController.cancelUniqueWork(tag)
     }
 }

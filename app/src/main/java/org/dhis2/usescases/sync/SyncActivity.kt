@@ -5,18 +5,22 @@ import android.os.Bundle
 import android.view.View.GONE
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
-import androidx.work.WorkInfo
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.Bindings
 import org.dhis2.bindings.userComponent
 import org.dhis2.databinding.ActivitySynchronizationBinding
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.main.navigateTo
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
+import org.koin.android.ext.android.inject
 import javax.inject.Inject
 
 class SyncActivity :
@@ -30,9 +34,12 @@ class SyncActivity :
     @Inject
     lateinit var animations: SyncAnimations
 
+    private val backgroundJobAction: SyncBackgroundJobAction by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val serverComponent = (applicationContext as App).serverComponent()
-        userComponent()?.plus(SyncModule(this, serverComponent))?.inject(this) ?: finish()
+        userComponent()?.plus(SyncModule(this, backgroundJobAction, serverComponent))?.inject(this)
+            ?: finish()
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization)
         binding.presenter = presenter
@@ -41,8 +48,8 @@ class SyncActivity :
 
     override fun onResume() {
         super.onResume()
-        presenter.observeSyncProcess().observe(this) { workInfoList: List<WorkInfo> ->
-            presenter.handleSyncInfo(workInfoList)
+        lifecycleScope.launch {
+            presenter.observeSyncProcess().collect(presenter::handleSyncInfo)
         }
     }
 
