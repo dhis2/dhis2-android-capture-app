@@ -111,6 +111,7 @@ class CredentialsViewModel(
             }
         }
     }
+
     val credentialsScreenState =
         _credentialsScreenState
             .onStart {
@@ -140,7 +141,7 @@ class CredentialsViewModel(
                             availableUsernames = getAvailableUsernames(),
                             usernameCanBeEdited = username == null,
                         ),
-                    loginState = LoginState.Disabled,
+                    loginState = if (oAuthEnable) LoginState.Enabled else LoginState.Disabled,
                     errorMessage = null,
                     allowRecovery = allowRecovery,
                     canUseBiometrics = getBiometricInfo(serverUrl).canUseBiometrics,
@@ -294,13 +295,19 @@ class CredentialsViewModel(
     }
 
     fun onLoginClicked() {
-        startLoginJob {
-            loginUser(
-                serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
-                username = _credentialsScreenState.value.credentialsInfo.username,
-                password = _credentialsScreenState.value.credentialsInfo.password,
-                isNetworkAvailable = isNetworkOnline.value,
-            )
+        if (_credentialsScreenState.value.oAuthEnable) {
+            launchUseCase {
+                fetchOAuthEnrollmentUrl()
+            }
+        } else {
+            startLoginJob {
+                loginUser(
+                    serverUrl = _credentialsScreenState.value.serverInfo.serverUrl,
+                    username = _credentialsScreenState.value.credentialsInfo.username,
+                    password = _credentialsScreenState.value.credentialsInfo.password,
+                    isNetworkAvailable = isNetworkOnline.value,
+                )
+            }
         }
     }
 

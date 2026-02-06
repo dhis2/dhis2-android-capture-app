@@ -41,6 +41,7 @@
     <string name="password_hint">Password</string>
     <string name="logging_in">Logging in...</string>
     <string name="action_log_in">Log in</string>
+    <string name="action_log_in_with_oauth">Log in with OAuth</string>
     <string name="action_recover_account">Recover account</string>
     <string name="openid_or">Or</string>
     <string name="action_openid_log_in">Log in with openID</string>
