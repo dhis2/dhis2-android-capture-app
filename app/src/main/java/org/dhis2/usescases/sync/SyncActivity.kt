@@ -18,6 +18,7 @@ import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
+import org.dhis2.usescases.main.navigateTo
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
