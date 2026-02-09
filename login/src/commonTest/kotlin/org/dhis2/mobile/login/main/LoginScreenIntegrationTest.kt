@@ -110,7 +110,7 @@ class LoginScreenIntegrationTest {
             // Then goes to existing account screen (LegacyLogin)
             verify(navigator).navigate(
                 eq(
-                    LoginScreenState.LegacyLogin(
+                    LoginScreenState.LoginCredentials(
                         selectedServer = singleAccount.serverUrl,
                         selectedUsername = singleAccount.name,
                         serverName = singleAccount.serverName,
@@ -142,7 +142,7 @@ class LoginScreenIntegrationTest {
             // Then goes to OAuth login screen (LegacyLogin with oAuthEnabled = true)
             verify(navigator).navigate(
                 eq(
-                    LoginScreenState.LegacyLogin(
+                    LoginScreenState.LoginCredentials(
                         selectedServer = oauthAccount.serverUrl,
                         selectedUsername = oauthAccount.name,
                         serverName = oauthAccount.serverName,

@@ -50,7 +50,7 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertTrue(result is LoginScreenState.LegacyLogin)
+            assertTrue(result is LoginScreenState.LoginCredentials)
         }
 
     @Test
@@ -64,9 +64,8 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertTrue(result is LoginScreenState.LegacyLogin)
-            val legacyLogin = result as LoginScreenState.LegacyLogin
-            assertEquals(true, legacyLogin.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
+            assertTrue(result is LoginScreenState.LoginCredentials)
+            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
         }
 
     @Test
@@ -107,7 +106,7 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertIs<LoginScreenState.LegacyLogin>(result)
+            assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("https://active.com", result.selectedServer)
             assertEquals("active_user", result.selectedUsername)
             assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
@@ -137,7 +136,7 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertIs<LoginScreenState.LegacyLogin>(result)
+            assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("https://active.com", result.selectedServer)
             assertEquals("active_user", result.selectedUsername)
         }
@@ -186,7 +185,7 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertIs<LoginScreenState.LegacyLogin>(result)
+            assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("locked_user", result.selectedUsername)
         }
 

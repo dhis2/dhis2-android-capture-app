@@ -12,7 +12,7 @@ import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.extensions.withMinimumDuration
 import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.login.main.domain.model.LoginScreenState
-import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LegacyLogin
+import org.dhis2.mobile.login.main.domain.model.LoginScreenState.LoginCredentials
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
 import org.dhis2.mobile.login.main.domain.usecase.GetInitialScreen
 import org.dhis2.mobile.login.main.domain.usecase.ImportDatabase
@@ -85,31 +85,17 @@ class LoginViewModel(
                         }
                     }
 
-                    is ServerValidationResult.Legacy -> {
+                    is ServerValidationResult.Success -> {
                         navigator.navigate(
                             destination =
-                                LegacyLogin(
+                                LoginCredentials(
                                     serverName = result.serverName,
                                     allowRecovery = result.allowRecovery,
                                     selectedServer = serverUrl,
                                     selectedServerFlag = result.countryFlag,
                                     selectedUsername = null,
-                                    oAuthEnabled = false,
+                                    oAuthEnabled = result.oAuthEnabled,
                                 ),
-                        )
-                        stopValidation()
-                    }
-
-                    is ServerValidationResult.Oauth -> {
-                        navigator.navigate(
-                            LegacyLogin(
-                                selectedServer = serverUrl,
-                                selectedUsername = null,
-                                serverName = null,
-                                selectedServerFlag = null,
-                                allowRecovery = false,
-                                oAuthEnabled = true,
-                            ),
                         )
                         stopValidation()
                     }

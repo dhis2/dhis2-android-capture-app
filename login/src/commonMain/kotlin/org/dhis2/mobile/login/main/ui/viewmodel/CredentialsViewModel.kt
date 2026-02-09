@@ -168,7 +168,7 @@ class CredentialsViewModel(
                 onSuccess = { enrollmentURL ->
                     // First OAuth call (enrollment) - clear any previous OAuth sessions
                     navigator.navigate(
-                        LoginScreenState.OauthLogin(
+                        LoginScreenState.OauthAuthentication(
                             selectedServer = enrollmentURL,
                             clearCache = true,
                         ),
@@ -245,7 +245,7 @@ class CredentialsViewModel(
                 onSuccess = { consentUrl ->
                     // Second OAuth call (consent) - keep session from enrollment
                     navigator.navigate(
-                        LoginScreenState.OauthLogin(
+                        LoginScreenState.OauthAuthentication(
                             selectedServer = consentUrl,
                             clearCache = false,
                         ),

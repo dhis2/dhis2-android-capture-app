@@ -61,26 +61,25 @@ class LoginRepositoryImpl(
         withContext(dispatcher.io) {
             when (val result = d2.serverModule().blockingCheckServerUrl(server)) {
                 is Result.Success -> {
-                    if (result.value.isOauthEnabled()) {
-                        ServerValidationResult.Oauth
-                    } else {
-                        val oidcProvider = result.value.oidcProviders.firstOrNull()
-                        val serverName =
-                            result.value.applicationTitle ?: try {
-                                server.substringAfter("://").substringBefore("/")
-                            } catch (_: Exception) {
-                                server
-                            }
-                        ServerValidationResult.Legacy(
-                            serverName = serverName,
-                            serverDescription = result.value.applicationDescription,
-                            countryFlag = result.value.countryFlag,
-                            allowRecovery = result.value.allowAccountRecovery,
-                            oidcIcon = oidcProvider?.icon,
-                            oidcLoginText = oidcProvider?.loginText,
-                            oidcUrl = oidcProvider?.url,
-                        )
-                    }
+                    val serverName =
+                        result.value.applicationTitle ?: try {
+                            server.substringAfter("://").substringBefore("/")
+                        } catch (_: Exception) {
+                            server
+                        }
+
+                    val oidcProvider = result.value.oidcProviders.firstOrNull()
+                    ServerValidationResult.Success(
+                        serverName = serverName,
+                        serverDescription = result.value.applicationDescription,
+                        countryFlag = result.value.countryFlag,
+                        allowRecovery = result.value.allowAccountRecovery,
+                        oidcIcon = oidcProvider?.icon,
+                        oidcLoginText = oidcProvider?.loginText,
+                        oidcUrl = oidcProvider?.url,
+                        oAuthEnabled = result.value.isOauthEnabled()
+                    )
+
                 }
 
                 is Result.Failure -> {

@@ -27,7 +27,7 @@ class GetInitialScreen(
     }
 
     private fun handleSingleAccount(account: AccountModel): LoginScreenState =
-        LoginScreenState.LegacyLogin(
+        LoginScreenState.LoginCredentials(
             selectedServer = account.serverUrl,
             selectedUsername = account.name,
             serverName = account.serverName,
@@ -38,7 +38,7 @@ class GetInitialScreen(
 
     private suspend fun handleLockedSession(): LoginScreenState {
         val activeAccount = accountRepository.getActiveAccount() ?: return LoginScreenState.Accounts
-        return LoginScreenState.LegacyLogin(
+        return LoginScreenState.LoginCredentials(
             selectedServer = activeAccount.serverUrl,
             selectedUsername = activeAccount.name,
             serverName = activeAccount.serverName,

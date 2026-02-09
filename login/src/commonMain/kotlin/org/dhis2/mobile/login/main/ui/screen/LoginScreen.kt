@@ -201,8 +201,8 @@ fun LoginScreen(
                         onManageAccounts = viewModel::onBackToManageAccounts,
                     )
                 }
-                composable<LoginScreenState.LegacyLogin> {
-                    val arg = it.toRoute<LoginScreenState.LegacyLogin>()
+                composable<LoginScreenState.LoginCredentials> {
+                    val arg = it.toRoute<LoginScreenState.LoginCredentials>()
                     displayMoreActions = arg.selectedServer.isEmpty()
                     displayBackArrow = true
                     CredentialsScreen(
@@ -219,8 +219,8 @@ fun LoginScreen(
                         oAuthEnable = arg.oAuthEnabled,
                     )
                 }
-                composable<LoginScreenState.OauthLogin> {
-                    val args = it.toRoute<LoginScreenState.OauthLogin>()
+                composable<LoginScreenState.OauthAuthentication> {
+                    val args = it.toRoute<LoginScreenState.OauthAuthentication>()
                     WebAuthenticator(
                         url = args.selectedServer,
                         clearCache = args.clearCache,
