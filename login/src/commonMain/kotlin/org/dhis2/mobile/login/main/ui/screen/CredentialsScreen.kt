@@ -64,7 +64,6 @@ import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
 import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_log_in
-import org.dhis2.mobile.login.resources.action_log_in_with_oauth
 import org.dhis2.mobile.login.resources.action_manage_account
 import org.dhis2.mobile.login.resources.action_no_now
 import org.dhis2.mobile.login.resources.action_openid_log_in
@@ -234,7 +233,6 @@ fun CredentialsScreen(
                     handleCredentialAction(viewModel, context, credentialsAction)
                 },
                 hasOtherAccounts = screenState.hasOtherAccounts,
-                oAuthEnable = screenState.oAuthEnable,
             )
         }
     }
@@ -518,7 +516,6 @@ private fun CredentialActions(
     oidcInfo: OidcInfo?,
     canLogin: Boolean,
     hasOtherAccounts: Boolean,
-    oAuthEnable: Boolean,
     onCredentialsAction: (CredentialsAction) -> Unit,
 ) {
     Column(
@@ -528,12 +525,7 @@ private fun CredentialActions(
         Button(
             modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_LOGIN_BUTTON_TAG),
             enabled = canLogin,
-            text =
-                if (oAuthEnable) {
-                    stringResource(Res.string.action_log_in_with_oauth)
-                } else {
-                    stringResource(Res.string.action_log_in)
-                },
+            text = stringResource(Res.string.action_log_in),
             style = ButtonStyle.FILLED,
             onClick = {
                 onCredentialsAction(CredentialsAction.OnLoginClicked)
