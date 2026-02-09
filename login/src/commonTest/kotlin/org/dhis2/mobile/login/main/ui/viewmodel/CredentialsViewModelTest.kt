@@ -39,6 +39,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
@@ -550,32 +551,39 @@ class CredentialsViewModelTest {
             val authCode = "auth_code_123"
             val appLinkUrl = "https://vgarciabnz.github.io?code=$authCode&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase()) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(
                 loginUserWithOAuth.invoke(any(), any()),
             ) doReturn LoginResult.Success(initialSyncDone = true, displayTrackingMessage = false)
 
-            initViewModel(serverUrl = serverUrl, username = "testuser")
+            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
+            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 awaitItem()
                 awaitItem()
 
-                // WHEN - Send app link with authorization code
-                mockAppLinkFlow.emit(appLinkUrl)
+                // Trigger OAuth flow by clicking login
+                viewModel.onLoginClicked()
                 testDispatcher.scheduler.advanceUntilIdle()
 
-                // THEN - Login state should be running
+                // Login state should be running after clicking login
                 val runningState = awaitItem()
                 assertEquals(LoginState.Running, runningState.loginState)
 
-                // Advance time for login to complete
+                // WHEN - Send app link with authorization code (simulates OAuth callback)
+                mockAppLinkFlow.emit(appLinkUrl)
                 testDispatcher.scheduler.advanceUntilIdle()
+
+                // Advance time for login to complete
+                testDispatcher.scheduler.advanceTimeBy(4.seconds)
 
                 // Login should succeed and show after login actions
                 val finalState = awaitItem()
@@ -599,6 +607,7 @@ class CredentialsViewModelTest {
             val serverUrl = "https://test.server.org"
             val iat = "enrollment_iat_token"
             val consentUrl = "https://test.server.org/oauth2/consent"
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
             val appLinkUrl = "https://vgarciabnz.github.io?iat=$iat&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
 
@@ -607,31 +616,35 @@ class CredentialsViewModelTest {
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase()) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
             whenever(
                 processDeviceEnrollment.invoke(any()),
             ) doReturn Result.success(consentUrl)
 
-            // Use oAuthEnable=false to avoid triggering fetchOAuthEnrollmentUrl on init
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = false)
+            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
+            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 awaitItem()
                 awaitItem()
 
-                // WHEN - Send app link with IAT token
-                mockAppLinkFlow.emit(appLinkUrl)
+                // Trigger OAuth flow by clicking login
+                viewModel.onLoginClicked()
+                testDispatcher.scheduler.advanceUntilIdle()
 
-                // THEN - Login state should be running during enrollment
+                // Login state should be running after clicking login
                 val runningState = awaitItem()
                 assertEquals(LoginState.Running, runningState.loginState)
 
+                // WHEN - Send app link with IAT token (simulates enrollment callback)
+                mockAppLinkFlow.emit(appLinkUrl)
                 testDispatcher.scheduler.advanceUntilIdle()
 
                 // Verify device enrollment was called with the correct IAT
                 verify(processDeviceEnrollment).invoke(any())
 
-                // Verify navigation to OauthLogin happened
-                verify(navigator).navigate(any<LoginScreenState>(), any())
+                // Verify navigation happened twice: once for enrollment URL, once for consent URL
+                verify(navigator, times(2)).navigate(any<LoginScreenState>(), any())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -644,21 +657,33 @@ class CredentialsViewModelTest {
             val serverUrl = "https://test.server.org"
             val appLinkUrl = "https://vgarciabnz.github.io?error=access_denied&state=test"
             val mockAppLinkFlow = MutableSharedFlow<String>()
+            val enrollmentUrl = "https://test.server.org/oauth2/enrollment"
 
             whenever(getAvailableUsernames()) doReturn emptyList()
             whenever(getBiometricInfo(any())) doReturn BiometricsInfo(false, false)
             whenever(getHasOtherAccounts.invoke()) doReturn false
             whenever(getIsSessionLockedUseCase()) doReturn false
             whenever(appLinkNavigation.appLink) doReturn mockAppLinkFlow
+            whenever(getDeviceEnrollmentUrl(any())) doReturn Result.success(enrollmentUrl)
 
-            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = false)
+            // Use oAuthEnable=true and fromHome=true to avoid auto-launch but enable OAuth flow
+            initViewModel(serverUrl = serverUrl, username = "testuser", oAuthEnable = true, fromHome = true)
 
             viewModel.credentialsScreenState.test(timeout = turbineTimeout) {
                 awaitItem()
                 awaitItem()
 
-                // WHEN - Send app link with error
+                // Trigger OAuth flow by clicking login
+                viewModel.onLoginClicked()
+                testDispatcher.scheduler.advanceUntilIdle()
+
+                // Login state should be running after clicking login
+                val runningState = awaitItem()
+                assertEquals(LoginState.Running, runningState.loginState)
+
+                // WHEN - Send app link with error (simulates OAuth error callback)
                 mockAppLinkFlow.emit(appLinkUrl)
+                testDispatcher.scheduler.advanceUntilIdle()
 
                 // THEN - Error message should be shown
                 val errorState = awaitItem()
@@ -675,6 +700,7 @@ class CredentialsViewModelTest {
         username: String? = null,
         allowRecovery: Boolean = true,
         oAuthEnable: Boolean = false,
+        fromHome: Boolean = false,
     ) {
         viewModel =
             CredentialsViewModel(
@@ -700,7 +726,7 @@ class CredentialsViewModelTest {
                 getIsSessionLockedUseCase,
                 forgotPinUseCase,
                 oidcInfo = null,
-                fromHome = false,
+                fromHome = fromHome,
                 oAuthEnable = oAuthEnable,
             )
     }
