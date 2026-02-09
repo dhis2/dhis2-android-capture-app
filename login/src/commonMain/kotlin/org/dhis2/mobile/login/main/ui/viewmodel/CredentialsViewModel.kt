@@ -154,6 +154,10 @@ class CredentialsViewModel(
                     oAuthEnable = oAuthEnable,
                 ),
             )
+
+            if (_credentialsScreenState.value.oAuthEnable && !fromHome) {
+                fetchOAuthEnrollmentUrl()
+            }
         }
     }
 
