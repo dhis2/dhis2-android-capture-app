@@ -5,6 +5,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -349,6 +350,11 @@ class DataSetTest : BaseTest() {
         composeTestRule.waitUntilExactlyOneExists(
             hasTestTag("TABLE_SCROLLABLE_COLUMN"),
             timeoutMillis = 15000
+        )
+        // Wait for completion state to be reflected in the UI
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Re-open form to edit"),
+            timeoutMillis = 10000
         )
         tableIsVisible()
         dataSetTableRobot(composeTestRule) {

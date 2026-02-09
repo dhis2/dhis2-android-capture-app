@@ -400,6 +400,10 @@ internal class DataSetTableRobot(
 
     fun checkItemWithTextIsDisplayed(text: String) {
         assertTableIsDisplayed()
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText(text, substring = true),
+            timeoutMillis = 5000
+        )
         composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
             .assertIsDisplayed()
     }

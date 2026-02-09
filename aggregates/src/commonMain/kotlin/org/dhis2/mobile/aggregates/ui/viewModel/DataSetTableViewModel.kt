@@ -58,6 +58,7 @@ import org.dhis2.mobile.aggregates.ui.states.OverwrittenDimension
 import org.dhis2.mobile.aggregates.ui.states.ValidationBarUiState
 import org.dhis2.mobile.aggregates.ui.states.mapper.InputDataUiStateMapper
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
+import org.dhis2.mobile.commons.extensions.launchUseCase
 import org.dhis2.mobile.commons.input.CallbackStatus
 import org.dhis2.mobile.commons.input.InputType
 import org.dhis2.mobile.commons.input.UiAction
@@ -104,7 +105,7 @@ internal class DataSetTableViewModel(
             )
 
     fun loadDataSet() {
-        viewModelScope.launch(dispatcher.io()) {
+        launchUseCase(dispatcher.io()) {
             val dataSetInstanceData = getDataSetInstanceData(this)
             val initialSection = dataSetInstanceData.initialSectionToLoad
 
@@ -379,7 +380,14 @@ internal class DataSetTableViewModel(
                     } else {
                         it.dataSetSectionTable
                     },
-                selectedCellInfo = if (showInputDialog) inputData else CellSelectionState.Default(TableSelection.Unselected()),
+                selectedCellInfo =
+                    if (showInputDialog) {
+                        inputData
+                    } else {
+                        CellSelectionState.Default(
+                            TableSelection.Unselected(),
+                        )
+                    },
             ) ?: it
         }
         CoroutineTracker.decrement()
@@ -432,11 +440,16 @@ internal class DataSetTableViewModel(
                                     selectedCellInfo is CellSelectionState.InputDataUiState &&
                                         selectedCellInfo.inputType is InputType.MultiText ->
                                         !selectedCellInfo.multiTextExtras().optionsFetched
+
                                     else ->
                                         false
                                 }
 
-                            updateSelectedCell(uiAction.id, fetchOptions, showInputDialog = uiAction.showInputDialog)
+                            updateSelectedCell(
+                                uiAction.id,
+                                fetchOptions,
+                                showInputDialog = uiAction.showInputDialog,
+                            )
                         },
                         onFailure = {
                             updateSelectedCell(
@@ -737,14 +750,11 @@ internal class DataSetTableViewModel(
                     it
                 }
             }
-            CoroutineTracker.decrement()
         }
     }
 
     private fun checkValidationRules() {
-        viewModelScope.launch {
-            CoroutineTracker.increment()
-
+        launchUseCase {
             val rules =
                 withContext(dispatcher.io()) {
                     runValidationRules()
@@ -793,7 +803,6 @@ internal class DataSetTableViewModel(
                     }
                 }
             }
-            CoroutineTracker.decrement()
         }
     }
 
@@ -823,8 +832,7 @@ internal class DataSetTableViewModel(
     }
 
     private fun attemptToFinish() {
-        viewModelScope.launch {
-            CoroutineTracker.increment()
+        launchUseCase {
             val onSavedMessage = resourceManager.provideSaved()
 
             val result =
@@ -851,13 +859,11 @@ internal class DataSetTableViewModel(
                     }
                 }
             }
-            CoroutineTracker.decrement()
         }
     }
 
     private fun attemptToComplete() {
-        viewModelScope.launch {
-            CoroutineTracker.increment()
+        launchUseCase {
             val result =
                 withContext(dispatcher.io()) {
                     completeDataSet()
@@ -907,7 +913,6 @@ internal class DataSetTableViewModel(
                     showSnackbar(resourceManager.provideErrorOnCompleteDataset())
                 }
             }
-            CoroutineTracker.decrement()
         }
     }
 
