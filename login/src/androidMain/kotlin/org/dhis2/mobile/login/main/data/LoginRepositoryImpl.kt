@@ -70,16 +70,15 @@ class LoginRepositoryImpl(
 
                     val oidcProvider = result.value.oidcProviders.firstOrNull()
                     ServerValidationResult.Success(
-                        serverName = serverName,
+                        serverName = serverName.ifEmpty { "DHIS2" },
                         serverDescription = result.value.applicationDescription,
                         countryFlag = result.value.countryFlag,
                         allowRecovery = result.value.allowAccountRecovery,
                         oidcIcon = oidcProvider?.icon,
                         oidcLoginText = oidcProvider?.loginText,
                         oidcUrl = oidcProvider?.url,
-                        oAuthEnabled = result.value.isOauthEnabled()
+                        oAuthEnabled = result.value.isOauthEnabled(),
                     )
-
                 }
 
                 is Result.Failure -> {
