@@ -19,6 +19,7 @@
     <string name="state_error">त्रुटि</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
+    <string name="filter_event_status_completed">पूरा हुआ</string>
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
