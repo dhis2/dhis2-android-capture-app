@@ -167,7 +167,8 @@ class LoginRepositoryImpl(
                 d2.userModule().oauth2Handler().blockingHandleLogInResponse(serverUrl, code)
             kotlin.Result.success(user.username())
         } catch (d2Error: D2Error) {
-            throw domainErrorMapper.mapToDomainError(d2Error)
+            val mappedError = domainErrorMapper.mapToDomainError(d2Error)
+            kotlin.Result.failure(mappedError)
         }
     }
 
