@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="default_column_label">वैल्यू</string>
     <string name="total_header_label">कुल</string>
     <string name="input_age_date_of_birth">जन्म तिथि</string>
     <string name="input_age">आयु</string>
@@ -9,19 +10,69 @@
     <string name="no_results_found">कोई परिणाम नहीं मिला</string>
     <string name="search_to_find_more">खोजें और अधिक पाएं</string>
     <string name="action_done">पूरा हुआ</string>
+    <string name="input_coordinate_latitude">अक्षांश</string>
+    <string name="input_coordinate_longitude">देशांतर</string>
     <string name="input_coordinate_add_location">लोकेशन</string>
+    <string name="input_date_out_of_range">सीमा से बाहर</string>
+    <string name="format_error">गलत फ़ॉर्मैट</string>
+    <string name="input_not_supported">सपोर्टेड नहीं है</string>
     <string name="completion_dialog_title">सब ठीक है</string>
+    <string name="completion_dialog_description">क्या आप डेटा सेट पूरा करना चाहते हैं\?</string>
     <string name="validation_success_title">सब ठीक है</string>
+    <string name="mark_dataset_complete">क्या आप डेटा सेट पूरा करना चाहते हैं\?</string>
     <string name="not_now">अभी नहीं</string>
     <string name="complete">पूरा हुआ</string>
     <string name="saved">सेव</string>
+    <string name="field_mandatory">कुछ अनिवार्य फ़ील्ड खाली हैं। डेटा सेट पूरा करने के लिए उन्हें भरें।</string>
+    <string name="field_required">यदि आप कोई वैल्यू दर्ज करते हैं, तो डेटा सेट पूरा करने के लिए पूरी पंक्ति के सभी वैल्यू आवश्यक हैं।</string>
     <string name="ok">ठीक है</string>
+    <string name="dataset_saved_completed">सेव और कंप्लीटेड</string>
+    <string name="error_on_complete_dataset">डेटा सेट पूरा करें में एक एरर हुआ</string>
+    <string name="run_validation_rules">क्या आप डेटा क्वालिटी चेक करना चाहते हैं\?</string>
     <string name="no">नहीं</string>
     <string name="yes">हाँ</string>
     <string name="error">त्रुटि</string>
     <string name="errors">एरर्स</string>
+    <string name="complete_anyway">फिर भी पूरा करें</string>
     <string name="review">रिव्यू</string>
+    <string name="validation_rules_data_to_review">रिव्यू के लिए डेटा</string>
+    <string name="action_can_not_be_performed">यह एक्शन नहीं की जा सकती</string>
     <string name="action_next">आगे</string>
     <string name="add_file">फ़ाइल जोड़ें</string>
+    <string name="file_downloaded">फ़ाइल सफलतापूर्वक डाउनलोड हो गई</string>
+    <string name="file_download_error">फ़ाइल डाउनलोड नहीं हो सकी</string>
     <string name="add_image">इमेज जोड़ें</string>
-    </resources>
+    <string name="take_photo">फ़ोटो लें</string>
+    <string name="from_gallery">गैलरी से ऐड करें</string>
+    <string name="empty_section_message">यह सेक्शन सही तरह से कॉन्फ़िगर नहीं है\nअपने एडमिन से संपर्क करें</string>
+    <string name="empty_dataset_message">यह डेटा सेट सही तरह से कॉन्फ़िगर नहीं है\nअपने एडमिन से संपर्क करें</string>
+
+    <string name="indicators_label">इंडिकेटर्स</string>
+    <string name="no_data_write_access">इस डेटा को संपादित करने की अनुमति नहीं है</string>
+    <!--
+    %1$s is the attribute option combo name
+    -->
+    <string name="attribute_option_combo_no_access">%1$s डेटा को संपादित करने की अनुमति नहीं है</string>
+    <!--
+    %1$s is the organisation unit name
+    -->
+    <string name="org_unit_not_in_capture_scope">आप %1$s से डेटा संपादित नहीं कर सकते</string>
+    <!--
+    %1$s is the attribute option combo name
+    %2$s is the organisation unit name
+    -->
+    <string name="attribute_option_combo_not_assigned_to_org_unit">आप %1$s में %2$s के लिए डेटा संपादित नहीं कर सकते</string>
+    <!--
+    %1$s is the period name
+    %2$s is the organisation unit name
+    -->
+    <string name="period_not_in_org_unit_range">आप %1$s में %2$s के लिए डेटा संपादित नहीं कर सकते</string>
+    <!--
+    %1$s is the period name
+    %2$s is the attribute option combo name
+    -->
+    <string name="period_not_in_attribute_option_combo_range">आप %2$s में पीरियड %1$s के लिए डेटा संपादित नहीं कर सकते</string>
+    <string name="dataset_closed">यह डेटा संपादन योग्य नहीं है क्योंकि इसे क्लोज़ मार्क किया गया है</string>
+    <string name="dataset_expired">यह डेटा संपादन योग्य नहीं है क्योंकि संपादन का समय समाप्त हो गया है</string>
+
+</resources>
