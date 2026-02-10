@@ -204,6 +204,7 @@ class CredentialsViewModel(
         _credentialsScreenState.update {
             it.copy(
                 loginState = LoginState.Running,
+                errorMessage = null,
             )
         }
         loginJob =
