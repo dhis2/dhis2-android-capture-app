@@ -2,6 +2,7 @@ package org.dhis2.mobile.login.main.data
 
 import coil3.PlatformContext
 import org.dhis2.mobile.login.main.domain.model.ServerValidationResult
+
 typealias UserPassword = String
 
 interface LoginRepository {
@@ -64,4 +65,16 @@ interface LoginRepository {
     suspend fun getUsername(): String
 
     suspend fun logoutUser(): Result<Unit>
+
+    suspend fun getDeviceEnrollmentUrl(serverUrl: String): String
+
+    suspend fun enrollDevice(
+        iat: String,
+        serverURL: String,
+    ): String
+
+    suspend fun loginUserWithOAuth(
+        serverUrl: String,
+        code: String,
+    ): Result<String?>
 }

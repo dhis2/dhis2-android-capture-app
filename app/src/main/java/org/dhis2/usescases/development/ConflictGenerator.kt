@@ -1,3 +1,5 @@
+@file:OptIn(LegacyDataValueApi::class)
+
 package org.dhis2.usescases.development
 
 import kotlinx.coroutines.runBlocking
@@ -8,6 +10,7 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.datavalue.DataValue
 import org.hisp.dhis.android.core.datavalue.DataValueConflict
+import org.hisp.dhis.android.core.datavalue.LegacyDataValueApi
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.imports.ImportStatus
@@ -423,7 +426,9 @@ class ConflictGenerator(
         try {
             runBlocking {
                 d2.databaseAdapter().upsertObject(conflict, TrackerImportConflict::class)
-                d2.databaseAdapter().execSQL(updateEvent(event.uid(), importStatus.toSyncState().name))
+                d2
+                    .databaseAdapter()
+                    .execSQL(updateEvent(event.uid(), importStatus.toSyncState().name))
             }
         } catch (e: Exception) {
             Timber.e(e)
