@@ -11,13 +11,14 @@ class LoginUserWithOAuth(
         code: String,
     ): LoginResult {
         val result = repository.loginUserWithOAuth(serverUrl, code)
-        when {
+        return when {
             result.isSuccess -> {
                 val username = result.getOrNull()
-                return handleResult(Result.success(Unit), serverUrl, username!!)
+                handleResult(Result.success(Unit), serverUrl, username!!)
             }
+
             else -> {
-                return LoginResult.Error(result.exceptionOrNull()?.message)
+                LoginResult.Error(result.exceptionOrNull()?.message)
             }
         }
     }
