@@ -17,9 +17,13 @@
     <string name="monthly">मासिक</string>
     <string name="yearly">वार्षिक</string>
     <string name="state_error">त्रुटि</string>
+    <string name="state_relationship">संबंध</string>
+    <!-- Status -->
+    <string name="filter_event_status_open">खोलें</string>
     <string name="filter_event_status_overdue">अतिदेय</string>
     <string name="filter_event_status_visited">विज़िट की गई</string>
     <string name="filter_event_status_completed">पूरा हुआ</string>
+    <string name="enrollment_status_active">खोलें</string>
     <string name="enrollment_status_completed">पूरा हुआ</string>
     <!-- Periods -->
     <string name="filter_period_today">आज</string>
@@ -47,6 +51,7 @@
     <string name="review">रिव्यू</string>
     <string name="complete">पूरा हुआ</string>
     <string name="default_table_header_label">वैल्यू</string>
+    <string name="discard_changes">बदलावों को छोड़ना है</string>
     <string name="default_empty_dataset_section_label">डेटा</string>
     <string name="overdue_today">आज</string>
     <plurals name="overdue_days">
@@ -56,6 +61,8 @@
     <string name="file_downloaded">फ़ाइल सफलतापूर्वक डाउनलोड हो गई</string>
 
 
+    <string name="enrollment_data_section_label_V2">%s डेटा</string>
+    <string name="syncing">सिंक हो रहा है…</string>
     <string name="remove">हटाएं</string>
     <string name="period_daily_title">रोज़ाना</string>
     <string name="period_monthly_title">महीना</string>
