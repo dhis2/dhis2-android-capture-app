@@ -172,7 +172,6 @@
     <string name="a_week">1 ҳафта</string>
     <string name="sync_max_parameters">Жорий синхронлаш параметрлари</string>
     <string name="sync_default_parameters">Стандарт ҳолатга қайтиш</string>
-    <string name="wipe_data_meesage">Маълумотлар базаси ўчирилади. Сиздан қайта кириш сўралади.</string>
     <string name="wipe_data_ok">Қабул қилинг</string>
     <string name="wipe_data_no">Бекор қилиш</string>
     <string name="SYNC_DATA">Маълумотларни синхронлаш, ҳозир</string>
@@ -234,7 +233,6 @@
     <string name="title_delete_go_back">Маълумотингиз сақланмади</string>
     <string name="delete_go_back">Агарда ҳозир орқага қайтсангиз, барча киритилган маълумотлар ўчирилади.</string>
     <string name="missing_mandatory_fields_go_back">Ўчириб ташлаш ва орқага қайтиш</string>
-    <string name="error_fields">Баъзи маълумотларда хатоликлар мавжуд: \n%s\. Илтимос, уларни текширинг.</string>
     <string name="missing_mandatory_fields_finish">Баъзи мажбурий майдонлар қолдириб кетилган. Сиз маълумотларни киритишни якунлаб чиқишингиз мумкин. Аммо бу ҳолда ҳодиса/тадбирни якунлаб бўлмайди.</string>
     <string name="tei_coordinates">Учун координаталар</string>
 
@@ -275,7 +273,6 @@
     <string name="search_min_num_attr">Қидирув учун камида %d атрибутни киритиш керак</string>
     <string name="search_attr">Қидирув учун камида 1 та атрибутни киритиш керак</string>
     <string name="search_max_tei_reached">%d дан ортиқ натижалар мавжуд. Илтимос, қўшимча қидирув мезонларини киритинг</string>
-    <string name="search_criteria_not_met">Сиз танланган қидирув мезонлари ҳеч қандай натижа бермади. \n. Критерияларни қайта кўриб чиқинг ёки янги %s ёзинг</string>
     <string name="search_init">Қидирув мезонларини киритинг</string>
 
     <!-- QR -->
@@ -301,7 +298,6 @@
     <string name="empty_program_list">Танланган фильтрлар учун маълумот йўқ. Илтимос, уларни ўзгартириб кўринг.</string>
     <string name="share">Улашиш</string>
     <string name="share_qr">QR ни улашиш</string>
-    <string name="teiType_search_online">Онлайн қидирувда турлар бўйича қидириш мумкин эмас. \n Илтимос, дастурни рўйхатдан танланг.</string>
     <string name="max">Максимум</string>
     <string name="current">Жорий</string>
     <string name="tei">TEI</string>
@@ -458,7 +454,6 @@
     <string name="action_agree">Розиман</string>
     <string name="action_continue">Давом этиш</string>
     <string name="login_server_info_title">Сервер URLи</string>
-    <string name="login_server_info_message">Ташкилотингиз учун тизим маъмури томонидан тақдим этилган DHIS2 сервер URL манзилини киритинг. \n\ Бошқа ҳолда, сиз серверингиз URL манзилини ўз ичига олган QR кодини сканерлашингиз мумкин.</string>
     <string name="forgot_your_code">Кодингизни унутдингизми?</string>
     <string name="event_form_end_options_title">Ушбу ҳодиса/тадбир учун нима қилмоқчисиз?</string>
     <string name="sectionSelectorEnd">ТАМОМ</string>
@@ -580,7 +575,6 @@
     <string name="filter_event_status_completed">бажарилди</string>
     <string name="filter_event_status_skipped">Ўтказиб юборилди</string>
     <string name="event_tei_limits">Ҳодиса/тадбирлар %s максимал : %s %s кетма-кетлик: %s TEI: %s максимал : %s %s кетма-кетлик: %s</string>
-    <string name="event_tei_limits_v2">Созламалар чекланган %s \n  Ҳодиса/тадбирлар: %s / %s TEI: %s / %s</string>
     <string name="enrollment_data_hide">Қайд қилиш маълумотларини беркитиш</string>
     <string name="enrollment_data_show">Қайд қилиш маълумотларини кўрсатиш</string>
     <string name="sms_enabled">СМС модуль ёқиб қўйилган</string>
@@ -641,9 +635,9 @@
     <string name="dataset_overview">Тафсилотлари</string>
     <string name="dataset_comments">Изоҳлар</string>
     <string name="saved">Сақланди!</string>
-    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми\?</string>
+    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
     <string name="validation_success_title">Кўринишидан ҳаммаси яхши!</string>
-    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми\?</string>
+    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
     <string name="dataset_completed">Тугалланган сифатида белгилансин</string>
     <string name="name">Исми</string>
     <string name="formula">Формула</string>
@@ -674,11 +668,9 @@
     <string name="privacy_policy_title">Махфийлик сиёсати</string>
     <string name="open_privacy_policy">Махфийлик сиёсатини текшириш учун шу ерни босинг</string>
     <string name="coordinates_error">Координата қийматлари яроқсиз</string>
-    <string name="break_glass_error">Сиз ушбу дастурда бошқа ташкилий бўлимлар номидан TEI қайд эта олмайсиз, чунки у ҳимояланган. \N тизим маъмури билан боғланинг.</string>
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="security_debugger_message">Хавфсизлик сабабли ушбу версиядан adb форматидан фойдаланишга рухсат берилмаган.Илитмос, машқ версиясидан фойдаланинг.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Афсус! Режалаштирилганидек амалга ошмади. \N Ҳозир сизни ҳаракатга қайтарамиз</string>
     <string name="customactivityoncrash_error_activity_restart_app">Орқага қайтинг</string>
     <string name="customactivityoncrash_error_activity_close_app">Иловани ёпиш</string>
     <string name="customactivityoncrash_error_activity_error_details">Батафсил маълумот</string>
@@ -726,7 +718,6 @@
     <string name="filter_period_last_financial_year">Охирги молиявий йил</string>
     <string name="section_feedback">Фикр-мулоҳаза</string>
     <string name="section_indicators">Кўрсатгичлар</string>
-    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
     <string name="value">Қиймат</string>
     <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
     <string name="take_photo">Суратга олиш</string>

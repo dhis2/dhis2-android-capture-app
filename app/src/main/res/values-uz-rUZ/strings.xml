@@ -159,7 +159,6 @@
     <string name="a_week">1 hafta</string>
     <string name="sync_max_parameters">Joriy sinxronlash parametrlari</string>
     <string name="sync_default_parameters">Standart holatga qaytish</string>
-    <string name="wipe_data_meesage">Maʼlumotlar bazasi oʼchiriladi. Sizdan qayta kirish soʼraladi.</string>
     <string name="wipe_data_ok">Qabul qiling</string>
     <string name="wipe_data_no">Бекор қилиш</string>
     <string name="SYNC_DATA">Maʼlumotlarni sinxronlash, hozir</string>
@@ -218,7 +217,6 @@
     <string name="title_delete_go_back">Maʼlumotingiz saqlanmadi</string>
     <string name="delete_go_back">Аgarda hozir orqaga qaytsangiz, barcha kiritilgan maʼlumotlar oʼchiriladi.</string>
     <string name="missing_mandatory_fields_go_back">Oʼchirib tashlash va orqaga qaytish</string>
-    <string name="error_fields">Baʼzi maʼlumotlarda xatoliklar mavjud: \n%s\. Iltimos, ularni tekshiring.</string>
     <string name="missing_mandatory_fields_finish">Baʼzi majburiy maydonlar qoldirib ketilgan. Siz maʼlumotlarni kiritishni yakunlab chiqishingiz mumkin. Аmmo bu holda hodisa/tadbirni yakunlab boʼlmaydi.</string>
     <string name="tei_coordinates">Uchun koordinatalar</string>
 
@@ -259,7 +257,6 @@
     <string name="search_min_num_attr">Qidiruv uchun kamida %d atributni kiritish kerak</string>
     <string name="search_attr">Qidiruv uchun kamida 1 ta atributni kiritish kerak</string>
     <string name="search_max_tei_reached">%d dan ortiq natijalar mavjud. Iltimos, qoʼshimcha qidiruv mezonlarini kiriting</string>
-    <string name="search_criteria_not_met">Siz tanlangan qidiruv mezonlari hech qanday natija bermadi. \n. Kriteriyalarni qayta koʼrib chiqing yoki yangi %s yozing</string>
     <string name="search_init">Qidiruv mezonlarini kiriting</string>
 
     <!-- QR -->
@@ -285,7 +282,6 @@
     <string name="empty_program_list">Tanlangan filtrlar uchun maʼlumot yoʼq. Iltimos, ularni oʼzgartirib koʼring.</string>
     <string name="share">Улашиш</string>
     <string name="share_qr">QR ni ulashish</string>
-    <string name="teiType_search_online">Onlayn qidiruvda turlar boʼyicha qidirish mumkin emas. \n Iltimos, dasturni roʼyxatdan tanlang.</string>
     <string name="max">Максимум</string>
     <string name="current">Joriy</string>
     <string name="tei">TEI</string>
@@ -439,7 +435,6 @@
     <string name="action_agree">Roziman</string>
     <string name="action_continue">Davom etish</string>
     <string name="login_server_info_title">Server URLi</string>
-    <string name="login_server_info_message">Tashkilotingiz uchun tizim maʼmuri tomonidan taqdim etilgan DHIS2 server URL manzilini kiriting. \n\ Boshqa holda, siz serveringiz URL manzilini oʼz ichiga olgan QR kodini skanerlashingiz mumkin.</string>
     <string name="forgot_your_code">Kodingizni unutdingizmi?</string>
     <string name="event_form_end_options_title">Ushbu hodisa/tadbir uchun nima qilmoqchisiz?</string>
     <string name="sectionSelectorEnd">TАMOM</string>
@@ -558,7 +553,6 @@
     <string name="filter_event_status_completed">bajarildi</string>
     <string name="filter_event_status_skipped">Oʼtkazib yuborildi</string>
     <string name="event_tei_limits">Hodisa/tadbirlar %s maksimal : %s %s ketma-ketlik: %s TEI: %s maksimal : %s %s ketma-ketlik: %s</string>
-    <string name="event_tei_limits_v2">Sozlamalar cheklangan %s \n Hodisa/tadbirlar: %s / %s TEI: %s / %s</string>
     <string name="enrollment_data_hide">Qayd qilish maʼlumotlarini berkitish</string>
     <string name="enrollment_data_show">Qayd qilish maʼlumotlarini koʼrsatish</string>
     <string name="sms_enabled">SMS modul yoqib qoʼyilgan</string>
@@ -618,9 +612,9 @@
     <string name="dataset_overview">Тафсилотлари</string>
     <string name="dataset_comments">Izohlar</string>
     <string name="saved">Saqlandi!</string>
-    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi\?</string>
+    <string name="run_validation_rules">Maʼlumotlar sifatini tekshirishni xoxlaysizmi?</string>
     <string name="validation_success_title">Koʼrinishidan hammasi yaxshi!</string>
-    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi\?</string>
+    <string name="mark_dataset_complete">Maʼlumotlar toʼplamini toʼldirishni xoxlaysizmi?</string>
     <string name="dataset_completed">Tugallangan deb belgilang</string>
     <string name="name">Исми</string>
     <string name="formula">Formula</string>
@@ -649,11 +643,9 @@
     <string name="tei_type_has_no_attributes">%s umumiy xususiyatlarga ega emas. Iltimos, dasturni tanlang</string>
     <string name="privacy_policy_title">Maxfiylik siyosati</string>
     <string name="coordinates_error">Koordinata qiymatlari yaroqsiz</string>
-    <string name="break_glass_error">Siz ushbu dasturda boshqa tashkiliy boʼlimlar nomidan TEI qayd eta olmaysiz, chunki u himoyalangan. \N tizim maʼmuri bilan bogʼlaning.</string>
     <string name="field_is_mandatory">Maydon toʼldirilishi majburiy</string>
     <string name="security_debugger_message">Xavfsizlik sababli ushbu versiyadan adb formatidan foydalanishga ruxsat berilmagan.Ilitmos, mashq versiyasidan foydalaning.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Аfsus! Rejalashtirilganidek amalga oshmadi. \N Hozir sizni harakatga qaytaramiz</string>
     <string name="customactivityoncrash_error_activity_restart_app">Orqaga qayting</string>
     <string name="customactivityoncrash_error_activity_close_app">Ilovani yopish</string>
     <string name="customactivityoncrash_error_activity_error_details">Batafsil maʼlumot</string>

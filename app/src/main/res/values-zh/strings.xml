@@ -192,7 +192,6 @@
     <string name="a_week">1周</string>
     <string name="sync_max_parameters">当前同步参数</string>
     <string name="sync_default_parameters">复位缺省值</string>
-    <string name="wipe_data_meesage">数据库将被删除，\n 你将被要求再次登录。</string>
     <string name="wipe_data_ok">接受</string>
     <string name="wipe_data_no">取消</string>
     <string name="SYNC_DATA">现在同步数据</string>
@@ -264,7 +263,6 @@
     <string name="title_delete_go_back">你的数据已经被保存</string>
     <string name="delete_go_back">如果退回，所有输入信息将被删除</string>
     <string name="missing_mandatory_fields_go_back">删除并后退</string>
-    <string name="error_fields">有些字段有错误：%s。 \n 请检查。</string>
     <string name="missing_mandatory_fields_finish">有些强制字段缺失。你可以完成数据录入并退出，但不能完成该事件。</string>
     <string name="tei_coordinates">坐标</string>
 
@@ -305,7 +303,6 @@
     <string name="search_min_num_attr">你至少需要输入 %d个属性便于搜索</string>
     <string name="search_attr">你至少需要输入 一个属性便于搜索</string>
     <string name="search_max_tei_reached">有多余%d个结果，请再细化搜索条件</string>
-    <string name="search_criteria_not_met">你的搜索没有返回任何结果，修改你的条件或者加入一个新的 %s</string>
     <string name="search_init">输入你的搜索条件</string>
 
     <!-- QR -->
@@ -331,7 +328,6 @@
     <string name="empty_program_list">选择的过滤器没有相关信息，请尝试改变</string>
     <string name="share">分享</string>
     <string name="share_qr">共享二维码</string>
-    <string name="teiType_search_online">按类型搜索对在线搜索不可能。\n 请从清单中选择一个项目。</string>
     <string name="max">最大</string>
     <string name="current">当前</string>
     <string name="tei">跟踪实体</string>
@@ -620,7 +616,6 @@
     <string name="filter_event_status_completed">已完成</string>
     <string name="filter_event_status_skipped">跳过的</string>
     <string name="event_tei_limits">事件：%s 最大：%s%s 当前：%s ，实体：%s 最大：%s%s 当前：%s</string>
-    <string name="event_tei_limits_v2">设置限制：%s。\n 事件：%s/%s  实体：%s/%s</string>
     <string name="limit_setting">设置限制%s</string>
     <string name="enrollment_data_hide">隐藏加入数据</string>
     <string name="enrollment_data_show">显示加入数据</string>
@@ -715,12 +710,9 @@
     <string name="privacy_policy_title">私有策略</string>
     <string name="open_privacy_policy">点击这里检查<a href="">隐私策略</a></string>
     <string name="coordinates_error">坐标值无效</string>
-    <string name="break_glass_error">你不能从该项目的其它机构注册TEI（跟踪实体），因为被保护。联系你的管理员。</string>
-    <string name="break_glass_error_v2">您无法在此项目中加入来自其他组织单位的 %s，因为它受到保护。\n请与您的管理员联系。</string>
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">糟糕！某些事情并没有按计划进行。\ n 让我们返回想办法。</string>
     <string name="customactivityoncrash_error_activity_restart_app">后退</string>
     <string name="customactivityoncrash_error_activity_close_app">关闭应用</string>
     <string name="customactivityoncrash_error_activity_error_details">更多细节</string>
@@ -780,7 +772,7 @@
     <string name="filter_period_last_n_biweeks">最近%d双周</string>
     <string name="section_feedback">反馈</string>
     <string name="section_indicators">指标</string>
-    <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
+    <string name="camera_permission_denied">相机权限被拒绝。\n您需要启用它才能使用此功能。</string>
     <string name="value">值</string>
     <string name="section_charts_indicators">图表和指标</string>
     <string name="take_photo">拍照</string>
@@ -831,7 +823,7 @@
     <string name="troubleshooting_pass_rule_validation">未发现任何警告</string>
     <string name="troobleshooting_pass_rule_validation_title">一切看起来都很棒</string>
     <string name="not_saved">未保存</string>
-    <string name="review_message">有些字段需要您注意。\n您要复查表单吗？</string>
+    <string name="review_message">某些字段需要您注意。\n您要查看表单吗？</string>
     <string name="search_loading_more">加载更多结果</string>
     <string name="search_no_results_in_program">%s 没有更多结果</string>
     <string name="search_outside_action">在此项目之外搜索</string>
@@ -958,7 +950,6 @@
     <string name="optional">可选项描述</string>
     <string name="database_export_downloaded">数据库已下载</string>
     <string name="importing_database">导入数据库</string>
-    <string name="empty_search_attributes_message">没有配置可用的搜索字段，请联系您的管理员。</string>
     <string name="show_more">更多</string>
     <string name="show_less">显示较少</string>
     <string name="sync">同步</string>

@@ -170,7 +170,6 @@
     <string name="a_week">1 Minggu</string>
     <string name="sync_max_parameters">Parameter sinkronisasi saat ini:</string>
     <string name="sync_default_parameters">Kembalikan ke default</string>
-    <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
     <string name="wipe_data_ok">Terima</string>
     <string name="wipe_data_no">batal</string>
     <string name="SYNC_DATA">Sinkronkan Data Sekarang</string>
@@ -232,7 +231,6 @@
     <string name="title_delete_go_back">Data Anda tidak disimpan</string>
     <string name="delete_go_back">Jika Anda kembali sekarang, semua informasi yang dimasukkan akan dihapus.</string>
     <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
-    <string name="error_fields">Beberapa parameter terjadi kesalahan:\n 1 %s \n Mohon, diperiksa</string>
     <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
@@ -455,7 +453,6 @@
     <string name="action_agree">Setuju</string>
     <string name="action_continue">Terus</string>
     <string name="login_server_info_title">URL server</string>
-    <string name="login_server_info_message">Masukkan url server DHIS 2 untuk organisasi Anda seperti yang disediakan oleh administrator sistem Anda.\n\nAtau, Anda dapat memindai kode QR yang berisi URL server Anda</string>
     <string name="forgot_your_code">Lupa kode Anda?</string>
     <string name="event_form_end_options_title">Apa yang ingin Anda lakukan untuk even ini?</string>
     <string name="sectionSelectorEnd">AKHIR</string>
@@ -748,9 +745,9 @@
     <string name="dataset_overview">Rincian</string>
     <string name="dataset_comments">Komentar</string>
     <string name="saved">Tersimpan!</string>
-    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data\?</string>
+    <string name="run_validation_rules">Apakah Anda ingin memeriksa kualitas data?</string>
     <string name="validation_success_title">Semuanya terlihat bagus!</string>
-    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set\?</string>
+    <string name="mark_dataset_complete">Apakah Anda juga ingin melengkapi data set?</string>
     <string name="dataset_completed">Tandai sebagai selesai</string>
     <string name="name">Nama</string>
     <string name="formula">Formula</string>
@@ -785,7 +782,6 @@
     <string name="field_is_mandatory">Bidang ini wajib</string>
     <string name="security_debugger_message">Untuk alasan keamanan, versi aplikasi ini tidak diizinkan untuk digunakan dengan adb. Silakan gunakan versi pelatihan.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ups! Sesuatu tidak berjalan sesuai rencana.\nIzinkan kami mengembalikan Anda ke tindakan.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Kembali</string>
     <string name="customactivityoncrash_error_activity_close_app">Tutup aplikasi</string>
     <string name="customactivityoncrash_error_activity_error_details">Keterangan lebih lanjut</string>

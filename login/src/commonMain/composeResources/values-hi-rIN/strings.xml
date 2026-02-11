@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="two_fa_authentication_code">ऑथेंटिकेशन कोड</string>
     <string name="action_next">आगे</string>
+    <string name="two_fa_code">ऑथेंटिकेशन कोड</string>
+    <string name="username_hint">यूज़रनेम</string>
+    <string name="password_hint">पासवर्ड</string>
+    <string name="logging_in">लॉग इन हो रहा है…</string>
+    <string name="action_log_in">लॉग इन</string>
     <string name="openid_or">या</string>
     <string name="action_no_now">अभी नहीं</string>
     <string name="action_yes">हाँ</string>
