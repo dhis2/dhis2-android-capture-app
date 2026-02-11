@@ -13,7 +13,7 @@
     <string name="input_coordinate_longitude">Узунлик</string>
     <string name="input_coordinate_add_location">Локация қўшинг</string>
     <string name="input_not_supported">Қўллаб қувватланмайди</string>
-    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми\?</string>
+    <string name="mark_dataset_complete">Маълумотлар тўпламини тўлдиришни хохлайсизми?</string>
     <string name="not_now">Hozir emas</string>
     <string name="complete">Тўлдириш</string>
     <string name="saved">Сақланди!</string>
@@ -21,7 +21,7 @@
     <string name="field_required">Агар сиз қийматни ўрнатган бўлсангиз, маълумотлар тўпламини тўлдириш учун қатордаги барча қийматлар бўлиши лозим.</string>
     <string name="ok">ЯХШИ</string>
     <string name="dataset_saved_completed">Якунланди ва сақланди!</string>
-    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми\?</string>
+    <string name="run_validation_rules">Маълумотлар сифатини текширишни хохлайсизми?</string>
     <string name="no">Йўқ</string>
     <string name="yes">Ҳа</string>
     <string name="error">Хатолик</string>

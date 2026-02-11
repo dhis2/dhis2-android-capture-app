@@ -14,14 +14,14 @@
     <string name="input_not_supported">Ikke støttet</string>
     <string name="completion_dialog_title">Alt ser bra ut</string>
     <string name="validation_success_title">Alt ser bra ut</string>
-    <string name="mark_dataset_complete">Vil du også fullføre datasettet\?</string>
+    <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
     <string name="complete">Fullfør</string>
     <string name="saved">Lagret!</string>
     <string name="field_mandatory">Det mangler obligatoriske felt. Vennligst fyll dem for å fullføre datasettet.</string>
     <string name="field_required">Hvis du setter en verdi, så trenger hele raden alle verdier for å fullføre datasettet.</string>
     <string name="ok">OK</string>
     <string name="dataset_saved_completed">Lagret og fullført!</string>
-    <string name="run_validation_rules">Vil du sjekke datakvaliteten\?</string>
+    <string name="run_validation_rules">Vil du sjekke datakvaliteten?</string>
     <string name="no">Nei</string>
     <string name="yes">Ja</string>
     <string name="error">Feil</string>
