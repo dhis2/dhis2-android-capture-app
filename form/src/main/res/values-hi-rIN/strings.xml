@@ -8,6 +8,8 @@
     <string name="hint_year">वर्ष</string>
     <string name="hint_month">महीने</string>
     <string name="hint_day">दिन</string>
+    <string name="latitude">अक्षांश</string>
+    <string name="longitude">देशांतर</string>
     <string name="review">रिव्यू</string>
     <string name="complete">पूरा हुआ</string>
     <string name="saved">सेव</string>
@@ -16,6 +18,7 @@
     <string name="keep_editing">संपादन करते रहें</string>
     <string name="share">साझा करें</string>
     <string name="action_close">बंद करें</string>
+    <string name="take_photo">फ़ोटो लें</string>
     <string name="download">डाउनलोड</string>
     <string name="add_location">लोकेशन</string>
     </resources>
