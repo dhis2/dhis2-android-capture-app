@@ -7,7 +7,6 @@ import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.program
 import org.dhis2.commons.bindings.programStage
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
@@ -168,8 +167,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
         } else {
             d2
                 .eventModule()
@@ -187,8 +186,8 @@ class RulesRepository(
                 .byDeleted()
                 .isFalse
                 .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
                 .blockingGet()
+                .sortForRuleEngine()
                 .let { list ->
                     val currentEventIndex = list.indexOfFirst { it.uid() == eventToEvaluate.uid() }
 
