@@ -58,6 +58,7 @@ fun teiDashboardRobot(
     }
 }
 
+@OptIn(ExperimentalTestApi::class)
 class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun goToNotes() {
@@ -184,6 +185,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnMenuComplete() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
+            composeTestRule.waitUntilExactlyOneExists(
+                hasText(getString(R.string.complete)),
+                TIMEOUT
+            )
             composeTestRule.onNodeWithText(getString(R.string.complete)).performClick()
         }
     }
@@ -270,6 +275,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnMenuProgramEnrollments() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val programSelectorLabel = getString(R.string.more_enrollments)
+            composeTestRule.waitUntilExactlyOneExists(
+                hasText(programSelectorLabel),
+                TIMEOUT
+            )
             composeTestRule.onNodeWithText(programSelectorLabel).performClick()
         }
     }
@@ -292,6 +301,10 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val timelineLabel = getString(R.string.view_timeline)
             try {
+                composeTestRule.waitUntilExactlyOneExists(
+                    hasText(timelineLabel),
+                    TIMEOUT
+                )
                 composeTestRule.onNodeWithText(timelineLabel).performClick()
             } catch (e: NoMatchingViewException) {
                 checkIfGroupedEventsIsVisible()
