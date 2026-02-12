@@ -14,9 +14,13 @@
     <string name="cancel">रद्द करें</string>
     <string name="from">से</string>
     <string name="language">भाषा</string>
+    <string name="logout">लॉग आउट</string>
+
+
     <string name="prompt_email">ईमेल</string>
     <string name="prompt_password">पासवर्ड</string>
     <string name="content_desc_search">सर्च करें / खोजें</string>
     <string name="back">वापस जाएँ</string>
+    <string name="not_saved">सेव नहीं</string>
     <string name="invalid_possitive_zero">केवल शून्य या पॉजिटिव संख्या ही अनुमति है</string>
     </resources>
