@@ -15,17 +15,29 @@ updates:
     commit-message:
       prefix: "deps"
     ignore:
+      # Allow security updates for all dependencies
       - dependency-name: "*"
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
+        # But allow security updates even for major/minor
+        except:
+          - update-types: ["version-update:semver:security"]
+
+      # Specific dependencies to exclude from automatic updates
+      # (These are managed manually due to breaking changes)
       - dependency-name: "com.squareup.okhttp3:*"
       - dependency-name: "org.hisp.dhis.mobile:designsystem"
-      - dependency-name: "org.hisp.dhis:android-core"
+      - dependency-name: "org.hisp.dhis.rules:rule-engine-jvm"
+      - dependency-name: "org.hisp.dhis.lib.expression:expression-parser-jvm"
+
+    # Group DHIS2 core updates together
     groups:
-      gradle-updates:
+      dhis2-android-core:
         patterns:
-          - "*"                       # Group all Gradle updates into one PR
+          - "org.hisp.dhis:android-core"
         update-types:
-          - "patch"                   # Only include patch updates (no major or minor versions)
+          - "patch"
+          - "minor"
+          - "major"
 
   # GitHub Actions updates (optional)
   - package-ecosystem: "github-actions"
