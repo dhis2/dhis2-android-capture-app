@@ -223,7 +223,6 @@ fun LoginScreen(
                     val args = it.toRoute<LoginScreenState.OauthAuthentication>()
                     WebAuthenticator(
                         url = args.selectedServer,
-                        clearCache = args.clearCache,
                         onDismiss = {
                             viewModel.onOauthLoginCancelled()
                         },

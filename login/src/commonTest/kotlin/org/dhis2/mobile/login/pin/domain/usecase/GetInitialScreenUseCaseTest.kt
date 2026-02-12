@@ -54,7 +54,7 @@ class GetInitialScreenUseCaseTest {
         }
 
     @Test
-    fun `go to login screen (legacy) if there is 1 logged account with oauth`() =
+    fun `go to credentials screen with logout if there is 1 logged account with oauth`() =
         runTest {
             // Given
             whenever(accountRepository.getLoggedInAccounts()) doReturn

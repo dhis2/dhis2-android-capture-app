@@ -174,7 +174,6 @@ class CredentialsViewModel(
                     navigator.navigate(
                         LoginScreenState.OauthAuthentication(
                             selectedServer = enrollmentURL,
-                            clearCache = true,
                         ),
                     )
                 },
@@ -219,7 +218,6 @@ class CredentialsViewModel(
 
         _credentialsScreenState.update {
             it.copy(
-                errorMessage = "Unknown error",
                 loginState = LoginState.Enabled,
             )
         }
@@ -251,7 +249,6 @@ class CredentialsViewModel(
                     navigator.navigate(
                         LoginScreenState.OauthAuthentication(
                             selectedServer = consentUrl,
-                            clearCache = false,
                         ),
                     )
                 },

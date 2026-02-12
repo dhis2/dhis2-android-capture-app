@@ -139,7 +139,7 @@ class LoginScreenIntegrationTest {
             // When opening the app
             initViewModel()
 
-            // Then goes to OAuth login screen (LegacyLogin with oAuthEnabled = true)
+            // Then goes to login screen with OAuth
             verify(navigator).navigate(
                 eq(
                     LoginScreenState.LoginCredentials(
