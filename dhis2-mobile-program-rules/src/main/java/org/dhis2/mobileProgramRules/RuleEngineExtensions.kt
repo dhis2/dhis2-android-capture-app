@@ -1,11 +1,7 @@
 package org.dhis2.mobileProgramRules
 
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toDeprecatedInstant
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
@@ -25,6 +21,8 @@ import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleAttributeValue
 import org.hisp.dhis.rules.models.RuleDataValue
+import org.hisp.dhis.rules.models.RuleInstant
+import org.hisp.dhis.rules.models.RuleLocalDate
 import org.hisp.dhis.rules.models.RuleValueType
 import org.hisp.dhis.rules.models.RuleVariable
 import org.hisp.dhis.rules.models.RuleVariableAttribute
@@ -36,22 +34,28 @@ import org.hisp.dhis.rules.models.RuleVariablePreviousEvent
 import timber.log.Timber
 import java.util.Date
 import kotlin.time.ExperimentalTime
-
-fun Date.toRuleEngineInstant() = Instant.fromEpochMilliseconds(this.time)
-
-fun Date.toRuleEngineLocalDate() = toRuleEngineInstant().toLocalDateTime(TimeZone.currentSystemDefault()).date
+import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
-fun Date.toRuleEngineInstantWithNoTime() =
-    LocalDateTime(toRuleEngineLocalDate(), LocalTime(0, 0, 0, 0))
-        .toInstant(TimeZone.currentSystemDefault())
-        .toDeprecatedInstant()
+private fun Date.toKtInstant() = Instant.fromEpochMilliseconds(this.time)
+
+@OptIn(ExperimentalTime::class)
+private fun Date.toKtLocalDateTime() = toKtInstant().toLocalDateTime(TimeZone.currentSystemDefault())
+
+fun Date.toRuleEngineInstant() = RuleInstant(this.time)
+
+fun Date?.toRuleEngineInstantOrNow() = this?.toRuleEngineInstant() ?: RuleInstant.now()
+
+fun Date.toRuleEngineLocalDate() =
+    this.toKtLocalDateTime().let {
+        RuleLocalDate(it.year, it.month.number, it.day)
+    }
 
 fun List<Event>.sortForRuleEngine(): List<Event> =
     sortedWith(
         compareBy<Event>(
-            { it.eventDate()?.toRuleEngineInstantWithNoTime() },
-            { it.created() },
+            { it.eventDate()?.toRuleEngineLocalDate() },
+            { it.createdAtClient() ?: it.created() },
         ).reversed(),
     )
 
@@ -133,6 +137,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.DISPLAYTEXT ->
@@ -145,6 +150,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.DISPLAYKEYVALUEPAIR ->
@@ -157,6 +163,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.HIDESECTION ->
@@ -168,6 +175,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         mutableMapOf(
                             Pair("programStageSection", it.uid()),
                         ),
+                    priority = priority(),
                 )
             } ?: RuleAction(
                 "HIDE SECTION RULE IS MISSING PROGRAM STAGE SECTION",
@@ -183,6 +191,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         mutableMapOf(
                             Pair("programStage", it.uid()),
                         ),
+                    priority = priority(),
                 )
             } ?: RuleAction(
                 "HIDE STAGE RULE IS MISSING PROGRAM STAGE",
@@ -213,6 +222,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                                 )
                             } ?: emptyMap()
                         },
+                    priority = priority(),
                 )
             }
         }
@@ -227,6 +237,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.WARNINGONCOMPLETE ->
@@ -239,6 +250,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.SHOWERROR ->
@@ -251,6 +263,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.ERRORONCOMPLETE ->
@@ -263,6 +276,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.CREATEEVENT ->
@@ -276,6 +290,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         ).also { map ->
                             contentToDisplay?.let { map["content"] = it }
                         },
+                    priority = priority(),
                 )
             } ?: RuleAction(
                 "CREATE EVENT RULE IS MISSING PROGRAM STAGE SECTION",
@@ -292,6 +307,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
                     },
+                priority = priority(),
             )
 
         ProgramRuleActionType.HIDEOPTION ->
@@ -306,6 +322,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         ).also { map ->
                             contentToDisplay?.let { map["content"] = it }
                         },
+                    priority = priority(),
                 )
             } ?: RuleAction(
                 "HIDE OPTION RULE IS MISSING OPTION",
@@ -324,6 +341,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         ).also { map ->
                             contentToDisplay?.let { map["content"] = it }
                         },
+                    priority = priority(),
                 )
             } ?: RuleAction(
                 "SHOW OPTION GROUP RULE IS MISSING OPTION GROUP",
@@ -342,6 +360,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         ).also { map ->
                             contentToDisplay?.let { map["content"] = it }
                         },
+                    priority = priority(),
                 )
             } ?: RuleAction(
                 "HIDE OPTION GROUP RULE IS MISSING OPTION GROUP",

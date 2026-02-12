@@ -2,6 +2,7 @@ package org.dhis2.mobileProgramRules
 
 import kotlinx.coroutines.test.runTest
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
+import org.hisp.dhis.rules.api.RuleSupplementaryData
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEnrollment
@@ -76,7 +77,7 @@ class RuleEngineHelperTest {
 
             whenever(rulesRepository.rules(any(), anyOrNull())) doReturn rules
             whenever(rulesRepository.ruleVariables(any())) doReturn emptyList()
-            whenever(rulesRepository.supplementaryData(any())) doReturn emptyMap()
+            whenever(rulesRepository.supplementaryData(any())) doReturn RuleSupplementaryData()
             whenever(rulesRepository.constants()) doReturn emptyMap()
             whenever(rulesRepository.enrollmentEvents(any())) doReturn emptyList()
             whenever(rulesRepository.getRuleEnrollment(any())) doReturn createEnrollment()
