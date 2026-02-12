@@ -31,12 +31,11 @@ class NoteDetailPresenter(
         val noteType = data.first
         val uid = data.second
         val message = data.third
-        NotesIdlingResource.increment()
         disposable.add(
             repository
                 .saveNote(noteType, uid, message)
-                .doOnSuccess { NotesIdlingResource.decrement() }
-                .doOnError { NotesIdlingResource.decrement() }
+                .doOnSubscribe { NotesIdlingResource.increment() }
+                .doFinally { NotesIdlingResource.decrement() }
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(
