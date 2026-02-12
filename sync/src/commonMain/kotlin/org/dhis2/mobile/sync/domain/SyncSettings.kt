@@ -1,6 +1,7 @@
 package org.dhis2.mobile.sync.domain
 
 import org.dhis2.mobile.commons.domain.UseCase
+import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.SyncRepository
 import org.dhis2.mobile.sync.model.SyncPeriod
@@ -25,7 +26,7 @@ class SyncSettings(
             }
 
             Result.success(Unit)
-        } catch (e: Exception) {
+        } catch (e: DomainError) {
             Result.failure(e)
         }
 }
