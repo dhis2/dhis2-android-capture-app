@@ -60,6 +60,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val deleteLabel = getString(R.string.delete)
             composeTestRule.onNodeWithText(deleteLabel).performClick()
+            composeTestRule.waitForIdle()
         }
     }
 
