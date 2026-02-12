@@ -115,8 +115,19 @@ internal class DataSetTableRobot(
         composeTestRule.onNodeWithTag(SYNC_BUTTON_TAG)
             .assertIsDisplayed()
             .performClick()
+
+        // Wait for the dialog to appear before interacting with it
+        composeTestRule.waitUntilExactlyOneExists(
+            hasText("Refresh"),
+            TIMEOUT,
+        )
         composeTestRule.onNodeWithText("Refresh")
             .assertIsDisplayed()
+
+        composeTestRule.waitUntilExactlyOneExists(
+            hasText("Not now"),
+            TIMEOUT,
+        )
         composeTestRule.onNodeWithText("Not now")
             .assertIsDisplayed()
             .performClick()
