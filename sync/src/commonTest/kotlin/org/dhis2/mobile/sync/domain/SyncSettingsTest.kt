@@ -6,9 +6,10 @@ import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.data.SyncRepository
 import org.dhis2.mobile.sync.model.SyncPeriod
 import org.junit.Test
-import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -19,46 +20,38 @@ class SyncSettingsTest {
     private val syncSettings = SyncSettings(syncRepository, syncBackgroundJobAction)
 
     @Test
-    fun `Should cancel sync settings job if both metadata and data sync are manual`() =
+    fun `Should not cancel sync settings if period does not change to manual`() =
         runBlocking {
-            whenever(syncRepository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
-            whenever(syncRepository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
+            whenever(syncRepository.currentMetadataSyncPeriod()) doReturnConsecutively
+                listOf(
+                    SyncPeriod.Every24Hour,
+                    SyncPeriod.Every12Hour,
+                )
 
             syncSettings.invoke()
 
-            verify(syncBackgroundJobAction).cancelSyncSettings()
-        }
-
-    @Test
-    fun `Should not cancel sync settings if metadata is not manual`() =
-        runBlocking {
-            whenever(syncRepository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Every24Hour
-            whenever(syncRepository.currentDataSyncPeriod()) doReturn SyncPeriod.Manual
-
-            syncSettings.invoke()
-
+            verify(
+                syncBackgroundJobAction,
+                never(),
+            ).launchMetadataSync(SyncPeriod.Every12Hour.toSeconds())
             verify(syncBackgroundJobAction, never()).cancelSyncSettings()
         }
 
     @Test
-    fun `Should not cancel sync settings if data is not manual`() =
+    fun `Should cancel sync settings if period changes from manual`() =
         runBlocking {
-            whenever(syncRepository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Manual
-            whenever(syncRepository.currentDataSyncPeriod()) doReturn SyncPeriod.Every24Hour
+            whenever(syncRepository.currentMetadataSyncPeriod()) doReturnConsecutively
+                listOf(
+                    SyncPeriod.Manual,
+                    SyncPeriod.Every12Hour,
+                )
 
             syncSettings.invoke()
 
-            verify(syncBackgroundJobAction, never()).cancelSyncSettings()
-        }
-
-    @Test
-    fun `Should not cancel sync settings if both are not manual`() =
-        runBlocking {
-            whenever(syncRepository.currentMetadataSyncPeriod()) doReturn SyncPeriod.Every24Hour
-            whenever(syncRepository.currentDataSyncPeriod()) doReturn SyncPeriod.Every24Hour
-
-            syncSettings.invoke()
-
-            verify(syncBackgroundJobAction, never()).cancelSyncSettings()
+            verify(
+                syncBackgroundJobAction,
+                times(1),
+            ).launchMetadataSync(SyncPeriod.Every12Hour.toSeconds())
+            verify(syncBackgroundJobAction, times(1)).cancelSyncSettings()
         }
 }
