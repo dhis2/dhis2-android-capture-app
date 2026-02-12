@@ -38,7 +38,6 @@
     <string name="save_anyway">Нима бўлганда ҳам сақлаш</string>
     <string name="keep_editing">Таҳрирни давом этинг</string>
     <string name="share">Улашиш</string>
-    <string name="camera_permission_denied">Камерада фойдаланишга рухсат берилмаган. Ушбу функциядан фойдаланиш учун уни ёқишингиз керак.</string>
     <string name="action_close">Ёпиш</string>
     <string name="copied_text">Нусха олинди</string>
     <string name="empty_description">Ушбу майдон учун маълумот йўқ</string>

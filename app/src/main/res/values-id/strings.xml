@@ -170,7 +170,6 @@
     <string name="a_week">1 Minggu</string>
     <string name="sync_max_parameters">Parameter sinkronisasi saat ini:</string>
     <string name="sync_default_parameters">Kembalikan ke default</string>
-    <string name="wipe_data_meesage">Database akan dihapus. Anda akan diminta masuk lagi</string>
     <string name="wipe_data_ok">Terima</string>
     <string name="wipe_data_no">batal</string>
     <string name="SYNC_DATA">Sinkronkan Data Sekarang</string>
@@ -232,7 +231,6 @@
     <string name="title_delete_go_back">Data Anda tidak disimpan</string>
     <string name="delete_go_back">Jika Anda kembali sekarang, semua informasi yang dimasukkan akan dihapus.</string>
     <string name="missing_mandatory_fields_go_back">Hapus dan kembali</string>
-    <string name="error_fields">Beberapa parameter terjadi kesalahan:\n 1 %s \n Mohon, diperiksa</string>
     <string name="missing_mandatory_fields_finish">Beberapa bidang wajib tidak ada. Anda dapat menyelesaikan entri data dan keluar, tetapi even tidak dapat diselesaikan.</string>
     <string name="tei_coordinates">Koordinat untuk</string>
 
@@ -784,7 +782,6 @@
     <string name="field_is_mandatory">Bidang ini wajib</string>
     <string name="security_debugger_message">Untuk alasan keamanan, versi aplikasi ini tidak diizinkan untuk digunakan dengan adb. Silakan gunakan versi pelatihan.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ups! Sesuatu tidak berjalan sesuai rencana.\nIzinkan kami mengembalikan Anda ke tindakan.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Kembali</string>
     <string name="customactivityoncrash_error_activity_close_app">Tutup aplikasi</string>
     <string name="customactivityoncrash_error_activity_error_details">Keterangan lebih lanjut</string>

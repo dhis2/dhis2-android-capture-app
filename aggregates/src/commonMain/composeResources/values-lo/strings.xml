@@ -12,6 +12,7 @@
     <string name="input_coordinate_latitude">ເສັ້ນຂະໜານ</string>
     <string name="input_coordinate_longitude">ເສັ້ນແວງ</string>
     <string name="input_coordinate_add_location">ເພີ່ມທີ່ຕັ້ງ</string>
+    <string name="input_not_supported">ບໍ່ຮອງຮັບ</string>
     <string name="mark_dataset_complete">ທ່ານຕ້ອງການເຮັດຊຸດຂໍ້ມູນໃຫ້ຄົບຖ້ວນບໍ?</string>
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>

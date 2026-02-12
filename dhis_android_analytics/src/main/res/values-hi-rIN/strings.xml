@@ -9,5 +9,6 @@
     <string name="weekly">साप्ताहिक</string>
     <string name="monthly">मासिक</string>
     <string name="yearly">वार्षिक</string>
+    <string name="all">सभी</string>
     <string name="reset">रीसेट करें</string>
     </resources>

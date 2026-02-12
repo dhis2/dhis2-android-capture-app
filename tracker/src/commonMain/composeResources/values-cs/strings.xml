@@ -14,7 +14,9 @@
     <string name="show_less">Zobrazit méně</string>
     <string name="cancel">Zrušit</string>
     <string name="remove">Odstranit</string>
+    <string name="empty_search_attributes_message">Nejsou nakonfigurována žádná pole pro vyhledávání.\nObraťte se na správce.</string>
     <string name="clear_search">Vymazat hledání</string>
     <string name="search">Hledat</string>
     <string name="optional">Volitelný</string>
+
 </resources>
