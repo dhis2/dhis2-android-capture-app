@@ -13,19 +13,21 @@ class SyncSettings(
     override suspend fun invoke(input: Unit): Result<Unit> =
         try {
             val previousMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
-            repository.refreshSyncSettings()
-            val currentMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
+            val result = repository.refreshSyncSettings()
+            if (result.isSuccess) {
+                val currentMetadataSyncPeriod = repository.currentMetadataSyncPeriod()
 
-            val metadataPeriodChangedFromManual =
-                previousMetadataSyncPeriod is SyncPeriod.Manual &&
-                    currentMetadataSyncPeriod !is SyncPeriod.Manual
+                val metadataPeriodChangedFromManual =
+                    previousMetadataSyncPeriod is SyncPeriod.Manual &&
+                        currentMetadataSyncPeriod !is SyncPeriod.Manual
 
-            if (metadataPeriodChangedFromManual) {
-                syncBackgroundJobAction.launchMetadataSync(currentMetadataSyncPeriod.toSeconds())
-                syncBackgroundJobAction.cancelSyncSettings()
+                if (metadataPeriodChangedFromManual) {
+                    syncBackgroundJobAction.launchMetadataSync(currentMetadataSyncPeriod.toSeconds())
+                    syncBackgroundJobAction.cancelSyncSettings()
+                }
             }
 
-            Result.success(Unit)
+            result
         } catch (e: DomainError) {
             Result.failure(e)
         }

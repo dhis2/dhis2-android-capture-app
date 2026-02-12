@@ -36,28 +36,32 @@ class AndroidSyncRepository(
         }
 
     override suspend fun currentMetadataSyncPeriod() =
-        d2
-            .settingModule()
-            .synchronizationSettings()
-            .blockingGet()
-            ?.metadataSync()
-            ?.toSyncPeriod()
-            ?: preferences
-                .getMetadataSyncPeriod()
-                .toLong()
-                .toSyncPeriod()
+        withContext(dispatcher.io) {
+            d2
+                .settingModule()
+                .synchronizationSettings()
+                .blockingGet()
+                ?.metadataSync()
+                ?.toSyncPeriod()
+                ?: preferences
+                    .getMetadataSyncPeriod()
+                    .toLong()
+                    .toSyncPeriod()
+        }
 
     override suspend fun currentDataSyncPeriod() =
-        d2
-            .settingModule()
-            .synchronizationSettings()
-            .blockingGet()
-            ?.dataSync()
-            ?.toSyncPeriod()
-            ?: preferences
-                .getDataSyncPeriod()
-                .toLong()
-                .toSyncPeriod()
+        withContext(dispatcher.io) {
+            d2
+                .settingModule()
+                .synchronizationSettings()
+                .blockingGet()
+                ?.dataSync()
+                ?.toSyncPeriod()
+                ?: preferences
+                    .getDataSyncPeriod()
+                    .toLong()
+                    .toSyncPeriod()
+        }
 
     override suspend fun downloadFileResources(): Result<Unit> =
         execute {
@@ -113,6 +117,7 @@ class AndroidSyncRepository(
                     analyticsHelper.updateMatomoSecondaryTracker(
                         globalSettings.matomoURL()!!,
                         globalSettings.matomoID()!!,
+                        "secondaryTracker",
                     )
                 }
             } ?: analyticsHelper.clearMatomoSecondaryTracker()
