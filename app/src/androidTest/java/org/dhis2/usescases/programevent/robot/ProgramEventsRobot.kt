@@ -9,12 +9,6 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import org.dhis2.R
 import org.dhis2.common.BaseRobot
 
 fun programEventsRobot(
@@ -68,6 +62,7 @@ class ProgramEventsRobot(val composeTestRule: ComposeContentTestRule) : BaseRobo
     }
 
     fun checkEventWasDeleted(eventDate: String) {
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithText(eventDate).assertDoesNotExist()
     }
 

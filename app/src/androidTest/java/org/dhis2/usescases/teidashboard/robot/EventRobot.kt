@@ -64,7 +64,7 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickOnDeleteDialog() {
-        onView(withId(R.id.possitive)).perform(click())
+        waitForView(withId(R.id.possitive)).perform(click())
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String) {
