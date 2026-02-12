@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.login.pin.domain.model.PinError
@@ -17,6 +18,7 @@ import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -34,6 +36,11 @@ class PinViewModelTest {
     @BeforeTest
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
