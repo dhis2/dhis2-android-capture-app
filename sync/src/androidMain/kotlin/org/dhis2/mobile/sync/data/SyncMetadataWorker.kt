@@ -27,6 +27,8 @@ class SyncMetadataWorker(
     private val notificationManager: NotificationManager by inject()
 
     override suspend fun doWork(): Result {
+        setForegroundAsync(getForegroundInfo())
+
         val notificationTitle = getString(Res.string.app_name)
         val notificationText = getString(Res.string.syncing_configuration)
 
