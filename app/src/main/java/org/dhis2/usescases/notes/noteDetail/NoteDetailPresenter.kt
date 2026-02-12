@@ -2,6 +2,7 @@ package org.dhis2.usescases.notes.noteDetail
 
 import io.reactivex.disposables.CompositeDisposable
 import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.usescases.notes.NotesIdlingResource
 import timber.log.Timber
 
 class NoteDetailPresenter(
@@ -30,9 +31,12 @@ class NoteDetailPresenter(
         val noteType = data.first
         val uid = data.second
         val message = data.third
+        NotesIdlingResource.increment()
         disposable.add(
             repository
                 .saveNote(noteType, uid, message)
+                .doOnSuccess { NotesIdlingResource.decrement() }
+                .doOnError { NotesIdlingResource.decrement() }
                 .subscribeOn(scheduler.io())
                 .observeOn(scheduler.ui())
                 .subscribe(
