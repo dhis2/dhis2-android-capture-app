@@ -41,6 +41,7 @@ import org.dhis2.form.ui.provider.DisplayNameProviderImpl;
 import org.dhis2.form.ui.provider.HintProviderImpl;
 import org.dhis2.form.ui.provider.KeyboardActionProviderImpl;
 import org.dhis2.form.ui.provider.LegendValueProviderImpl;
+import org.dhis2.form.ui.provider.UiEventTypesProvider;
 import org.dhis2.form.ui.provider.UiEventTypesProviderImpl;
 import org.dhis2.maps.geometry.bound.BoundsGeometry;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
@@ -192,6 +193,13 @@ public class SearchTEModule {
                 customIntentRepository);
     }
 
+    //TODO inject this in koin
+    @Provides
+    @PerActivity
+    UiEventTypesProvider uiEventTypesProvider(){
+        return new UiEventTypesProviderImpl();
+    }
+
     @Provides
     @PerActivity
     SearchRepositoryKt searchRepositoryKt(
@@ -201,7 +209,8 @@ public class SearchTEModule {
             MetadataIconProvider metadataIconProvider,
             ColorUtils colorUtils,
             DateUtils dateUtils,
-            CustomIntentRepository customIntentRepository
+            CustomIntentRepository customIntentRepository,
+            UiEventTypesProvider uiEventTypesProvider
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -225,7 +234,8 @@ public class SearchTEModule {
                         profilePictureProvider,
                         dateUtils
                 ),
-                customIntentRepository
+                customIntentRepository,
+                uiEventTypesProvider
         );
     }
 
