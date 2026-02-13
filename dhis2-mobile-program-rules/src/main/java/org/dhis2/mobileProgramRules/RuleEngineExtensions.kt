@@ -3,6 +3,7 @@ package org.dhis2.mobileProgramRules
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
+import org.dhis2.mobileProgramRules.RuleConstants.LEGENDSET_LABEL
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.dataelement.DataElementCollectionRepository
@@ -149,6 +150,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("location", location() ?: "indicators"),
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
+                        legendSet()?.let { map[LEGENDSET_LABEL] = it.uid() }
                     },
                 priority = priority(),
             )
@@ -162,6 +164,7 @@ fun ProgramRuleAction.toRuleEngineObject(): RuleAction {
                         Pair("location", location()!!),
                     ).also { map ->
                         contentToDisplay?.let { map["content"] = it }
+                        legendSet()?.let { map[LEGENDSET_LABEL] = it.uid() }
                     },
                 priority = priority(),
             )

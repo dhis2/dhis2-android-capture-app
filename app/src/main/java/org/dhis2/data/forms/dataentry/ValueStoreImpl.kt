@@ -1,5 +1,3 @@
-@file:OptIn(LegacyDataValueApi::class)
-
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable

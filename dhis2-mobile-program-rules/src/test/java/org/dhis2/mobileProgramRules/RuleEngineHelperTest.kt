@@ -1,6 +1,7 @@
 package org.dhis2.mobileProgramRules
 
 import kotlinx.coroutines.test.runTest
+import org.dhis2.mobileProgramRules.RuleConstants.LEGENDSET_LABEL
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.api.RuleSupplementaryData
 import org.hisp.dhis.rules.models.Rule
@@ -23,12 +24,13 @@ class RuleEngineHelperTest {
         data: String,
         actionType: String,
         priority: Int?,
+        values: Map<String, String> = emptyMap(),
     ): Rule =
         Rule(
             condition = "true",
             actions =
                 listOf(
-                    RuleAction(data = "'$data'", type = actionType),
+                    RuleAction(data = "'$data'", type = actionType, values = values),
                 ),
             uid = data,
             name = "Rule 1",
@@ -93,5 +95,36 @@ class RuleEngineHelperTest {
                 ruleEffects.map { it.data },
                 listOf("Rule1", "Rule4", "Rule2", "Rule3"),
             )
+        }
+
+    @Test
+    fun `Should return values passed to ruleActions`() =
+        runTest {
+            val rules =
+                listOf(
+                    createFeedbackRule(
+                        data = "Rule1",
+                        actionType = ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name,
+                        priority = 1,
+                        values = mapOf(LEGENDSET_LABEL to "test_legend_set"),
+                    ),
+                )
+
+            whenever(rulesRepository.rules(any(), anyOrNull())) doReturn rules
+            whenever(rulesRepository.ruleVariables(any())) doReturn emptyList()
+            whenever(rulesRepository.supplementaryData(any())) doReturn RuleSupplementaryData()
+            whenever(rulesRepository.constants()) doReturn emptyMap()
+            whenever(rulesRepository.enrollmentEvents(any())) doReturn emptyList()
+            whenever(rulesRepository.getRuleEnrollment(any())) doReturn createEnrollment()
+            whenever(rulesRepository.queryAttributeValues(any())) doReturn emptyList()
+            whenever(rulesRepository.enrollmentProgram(any())) doReturn Pair("program", "orgunit")
+
+            val engineHelper =
+                RuleEngineHelper(EvaluationType.Enrollment("enrollment"), rulesRepository)
+
+            val ruleEffects = engineHelper.evaluate()
+
+            assertEquals(ruleEffects.size, 1)
+            assertEquals(ruleEffects.first().ruleAction.values, mapOf(LEGENDSET_LABEL to "test_legend_set"))
         }
 }
