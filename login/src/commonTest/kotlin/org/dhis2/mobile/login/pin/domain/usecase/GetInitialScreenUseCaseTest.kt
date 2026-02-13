@@ -50,11 +50,11 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertTrue(result is LoginScreenState.LegacyLogin)
+            assertTrue(result is LoginScreenState.LoginCredentials)
         }
 
     @Test
-    fun `go to oauth if there is 1 logged account with oauth`() =
+    fun `go to credentials screen with logout if there is 1 logged account with oauth`() =
         runTest {
             // Given
             whenever(accountRepository.getLoggedInAccounts()) doReturn
@@ -64,7 +64,8 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertTrue(result is LoginScreenState.OauthLogin)
+            assertTrue(result is LoginScreenState.LoginCredentials)
+            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
         }
 
     @Test
@@ -83,7 +84,7 @@ class GetInitialScreenUseCaseTest {
         }
 
     @Test
-    fun `invoke returns OauthLogin when multiple accounts and session locked with OAuth account`() =
+    fun `invoke returns LegacyLogin when multiple accounts and session locked with OAuth account`() =
         runTest {
             // Given
             val activeAccount =
@@ -105,8 +106,10 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertIs<LoginScreenState.OauthLogin>(result)
+            assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("https://active.com", result.selectedServer)
+            assertEquals("active_user", result.selectedUsername)
+            assertEquals(true, result.oAuthEnabled) // OAuth enabled, enrollment URL will be fetched by CredentialsViewModel
         }
 
     @Test
@@ -133,7 +136,7 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertIs<LoginScreenState.LegacyLogin>(result)
+            assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("https://active.com", result.selectedServer)
             assertEquals("active_user", result.selectedUsername)
         }
@@ -182,7 +185,7 @@ class GetInitialScreenUseCaseTest {
             val result = useCase()
 
             // Then
-            assertIs<LoginScreenState.LegacyLogin>(result)
+            assertIs<LoginScreenState.LoginCredentials>(result)
             assertEquals("locked_user", result.selectedUsername)
         }
 

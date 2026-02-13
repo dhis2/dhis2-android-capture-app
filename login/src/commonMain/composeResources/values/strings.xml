@@ -67,4 +67,6 @@
     <string name="importing_successful">Import successful</string>
     <string name="openid_process_cancelled">The login was cancelled</string>
     <string name="openid_invalid_auth_result">Invalid authorization result</string>
+    <string name="error_device_not_registered">Device not registered</string>
+    <string name="missing_username_from_oauth_login_response">Missing username from OAuth login response</string>
 </resources>

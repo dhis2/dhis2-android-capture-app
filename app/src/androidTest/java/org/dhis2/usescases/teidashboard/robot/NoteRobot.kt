@@ -74,13 +74,12 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNewNoteWasCreated(text: String) {
-        waitForView(withId(R.id.notes_recycler)).check(
-            matches(
-                allOf(
-                    isDisplayed(),
-                    isNotEmpty(),
-                    atPosition(0, hasDescendant(withText(text)))
-                )
+        waitForView(
+            allOf(
+                withId(R.id.notes_recycler),
+                isDisplayed(),
+                isNotEmpty(),
+                atPosition(0, hasDescendant(withText(text)))
             )
         )
     }

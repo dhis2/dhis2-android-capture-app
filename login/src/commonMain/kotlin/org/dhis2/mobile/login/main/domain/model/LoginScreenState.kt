@@ -16,16 +16,17 @@ sealed interface LoginScreenState {
     ) : LoginScreenState
 
     @Serializable
-    data class LegacyLogin(
+    data class LoginCredentials(
         val selectedServer: String,
         val selectedUsername: String?,
         val serverName: String?,
         val selectedServerFlag: String?,
         val allowRecovery: Boolean,
+        val oAuthEnabled: Boolean,
     ) : LoginScreenState
 
     @Serializable
-    data class OauthLogin(
+    data class OauthAuthentication(
         val selectedServer: String,
     ) : LoginScreenState
 

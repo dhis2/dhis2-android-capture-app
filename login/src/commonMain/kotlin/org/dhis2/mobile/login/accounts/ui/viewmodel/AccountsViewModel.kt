@@ -36,12 +36,13 @@ class AccountsViewModel(
     fun onAccountClicked(account: AccountModel) {
         viewModelScope.launch {
             navigator.navigate(
-                LoginScreenState.LegacyLogin(
+                LoginScreenState.LoginCredentials(
                     selectedServer = account.serverUrl,
                     selectedUsername = account.name,
                     serverName = account.serverName,
                     selectedServerFlag = account.serverFlag,
                     allowRecovery = account.allowRecovery,
+                    oAuthEnabled = account.isOauthEnabled,
                 ),
             )
         }

@@ -3,6 +3,7 @@ package org.dhis2.mobile.login.main.ui.screen
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Login
 import androidx.compose.material.icons.automirrored.outlined.ShowChart
@@ -98,6 +100,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellUISt
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberAdditionalInfoColumnState
 import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberListCardState
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -120,6 +123,7 @@ fun CredentialsScreen(
     allowRecovery: Boolean,
     oidcInfo: OidcInfo?,
     fromHome: Boolean,
+    oAuthEnable: Boolean,
 ) {
     val context = LocalPlatformContext.current
 
@@ -133,6 +137,7 @@ fun CredentialsScreen(
                 oidcInfo,
                 context,
                 fromHome,
+                oAuthEnable,
             )
         }
 
@@ -190,25 +195,28 @@ fun CredentialsScreen(
                 serverImageUrl = selectedServerFlag,
             )
         }
-        CredentialsContainer(
-            availableUsernames = screenState.credentialsInfo.availableUsernames,
-            username = screenState.credentialsInfo.username,
-            password = screenState.credentialsInfo.password,
-            isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
-            isLoggingIn = isLoggingIn,
-            onCredentialsUpdate = { credentialsUpdate ->
-                when (credentialsUpdate) {
-                    CredentialsUpdate.Complete ->
-                        viewModel.onLoginClicked()
 
-                    is CredentialsUpdate.Password ->
-                        viewModel.updatePassword(credentialsUpdate.password)
+        if (!oAuthEnable) {
+            CredentialsContainer(
+                availableUsernames = screenState.credentialsInfo.availableUsernames,
+                username = screenState.credentialsInfo.username,
+                password = screenState.credentialsInfo.password,
+                isUsernameEditable = screenState.credentialsInfo.usernameCanBeEdited,
+                isLoggingIn = isLoggingIn,
+                onCredentialsUpdate = { credentialsUpdate ->
+                    when (credentialsUpdate) {
+                        CredentialsUpdate.Complete ->
+                            viewModel.onLoginClicked()
 
-                    is CredentialsUpdate.Username ->
-                        viewModel.updateUsername(credentialsUpdate.username)
-                }
-            },
-        )
+                        is CredentialsUpdate.Password ->
+                            viewModel.updatePassword(credentialsUpdate.password)
+
+                        is CredentialsUpdate.Username ->
+                            viewModel.updateUsername(credentialsUpdate.username)
+                    }
+                },
+            )
+        }
         LoginStatus(
             isLoggingIn = isLoggingIn,
             loginErrorMessage = screenState.errorMessage,
@@ -269,11 +277,13 @@ private fun handleCredentialAction(
 
         CredentialsAction.OnLoginClicked ->
             viewModel.onLoginClicked()
+
         CredentialsAction.OnManageAccounts ->
             viewModel.onManageAccountsClicked()
 
         CredentialsAction.OnOpenIdLogin ->
             viewModel.onOpenIdLogin()
+
         CredentialsAction.OnRecoverAccount ->
             viewModel.onRecoverAccountClicked()
     }
@@ -326,6 +336,11 @@ private fun ServerInfo(
             ),
         listAvatar = {
             Avatar(
+                modifier =
+                    Modifier.background(
+                        color = SurfaceColor.PrimaryContainer,
+                        shape = CircleShape,
+                    ),
                 style =
                     flag?.let { painter ->
                         AvatarStyleData.Image(painter)
@@ -598,7 +613,10 @@ private fun CredentialActions(
                 contentAlignment = Alignment.BottomCenter,
             ) {
                 Button(
-                    modifier = Modifier.fillMaxWidth().testTag(CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .testTag(CREDENTIALS_MANAGE_ACCOUNTS_BUTTON_TAG),
                     text = stringResource(Res.string.action_manage_account),
                     style = ButtonStyle.OUTLINED,
                     onClick = {

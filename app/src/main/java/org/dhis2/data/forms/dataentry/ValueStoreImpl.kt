@@ -17,9 +17,11 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.FileResizerHelper
 import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.common.ValueType
+import org.hisp.dhis.android.core.datavalue.LegacyDataValueApi
 import org.hisp.dhis.android.core.enrollment.EnrollmentObjectRepository
 import java.io.File
 
+@OptIn(LegacyDataValueApi::class)
 class ValueStoreImpl(
     private val d2: D2,
     private val recordUid: String,
@@ -108,10 +110,12 @@ class ValueStoreImpl(
                                         .getFriendlyErrorMessage(validation.failure),
                             ),
                         )
+
                     is Result.Success ->
                         dataValueObject
                             .set(value)
                             .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
+
                     else ->
                         Flowable.just(
                             StoreResult(
@@ -146,12 +150,14 @@ class ValueStoreImpl(
                 .uid(uid)
                 .blockingExists() ->
                 saveDataElement(uid, value)
+
             d2
                 .trackedEntityModule()
                 .trackedEntityAttributes()
                 .uid(uid)
                 .blockingExists() ->
                 saveAttribute(uid, value)
+
             else -> Flowable.just(StoreResult(uid, ValueStoreResult.UID_IS_NOT_DE_OR_ATTR))
         }
 
@@ -176,6 +182,7 @@ class ValueStoreImpl(
                             .blockingGet()
                     enrollment?.trackedEntityInstance()
                 }
+
                 EntryMode.ATTR -> recordUid
                 EntryMode.DV -> null
             }
@@ -381,6 +388,7 @@ class ValueStoreImpl(
                 deleteOptionValuesForEnrollment(
                     optionCodeValuesToDelete,
                 )
+
             EntryMode.DV,
             -> throw IllegalArgumentException(
                 "DataValues can't be saved using these arguments. Use the other one.",
