@@ -60,11 +60,12 @@ class EventRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         with(InstrumentationRegistry.getInstrumentation().targetContext) {
             val deleteLabel = getString(R.string.delete)
             composeTestRule.onNodeWithText(deleteLabel).performClick()
+            composeTestRule.waitForIdle()
         }
     }
 
     fun clickOnDeleteDialog() {
-        onView(withId(R.id.possitive)).perform(click())
+        waitForView(withId(R.id.possitive)).perform(click())
     }
 
     fun checkEventDetails(eventDate: String, eventOrgUnit: String) {

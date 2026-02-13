@@ -80,13 +80,11 @@ class ProgramEventTest : BaseTest() {
 
         programEventsRobot(composeTestRule) {
             clickOnEvent(eventDate)
-        }
-        eventRobot(composeTestRule) {
-            openMenuMoreOptions()
-            clickOnDelete()
-            clickOnDeleteDialog()
-        }
-        programEventsRobot(composeTestRule) {
+            eventRobot(composeTestRule) {
+                openMenuMoreOptions()
+                clickOnDelete()
+                clickOnDeleteDialog()
+            }
             checkEventWasDeleted(eventDate)
         }
     }

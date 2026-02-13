@@ -61,7 +61,7 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNoteWasNotCreated(text: String) {
-        onView(withId(R.id.notes_recycler)).check(
+        waitForView(withId(R.id.notes_recycler)).check(
             matches(
                 not(
                     atPosition(
