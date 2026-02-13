@@ -25,7 +25,7 @@ class SyncSettingsWorker(
     private val notificationManager: NotificationManager by inject()
 
     override suspend fun doWork(): Result {
-        context.getString(R.string.app_name)
+        setForegroundAsync(getForegroundInfo())
         notificationManager.displaySyncSettingsNotification(
             smallIcon = R.drawable.ic_sync,
             contentTitle = getString(Res.string.app_name),
@@ -40,12 +40,17 @@ class SyncSettingsWorker(
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notificationInfo =
+        val notificationModel =
             notificationManager.getSyncSettingsNotificationModel(
                 smallIcon = R.drawable.ic_sync,
                 contentTitle = getString(Res.string.app_name),
                 contentText = getString(Res.string.syncing_settings),
-            ) as WorkerNotificationInfo
+            )
+        val notificationInfo =
+            notificationModel as? WorkerNotificationInfo
+                ?: throw IllegalStateException(
+                    "Expected WorkerNotificationInfo but got ${notificationModel::class.qualifiedName}",
+                )
         return notificationInfo.foregroundInfo
     }
 }
