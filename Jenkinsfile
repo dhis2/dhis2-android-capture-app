@@ -66,6 +66,11 @@ pipeline {
             }
         }
         stage('Unit tests') {
+            when {
+                expression {
+                    return !isSkipUnitTest()
+                }
+            }
             environment {
                 ANDROID_HOME = '/opt/android-sdk'
             }
@@ -201,4 +206,10 @@ def isSkipSizeCheck() {
     def prTitle = env.CHANGE_TITLE ?: ""
     def prDescription = env.CHANGE_DESCRIPTION ?: ""
     return (prTitle.contains("[skip size]") || prDescription.contains("[skip size]"))
+}
+
+def isSkipUnitTest() {
+    def prTitle = env.CHANGE_TITLE ?: ""
+    def prDescription = env.CHANGE_DESCRIPTION ?: ""
+    return (prTitle.contains("[skip unitTest]") || prDescription.contains("[skip unitTest]"))
 }
