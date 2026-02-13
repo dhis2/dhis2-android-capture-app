@@ -23,6 +23,7 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
@@ -33,6 +34,7 @@ import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getOrientat
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
+import org.hisp.dhis.android.core.arch.repositories.scope.internal.TrackerSearchOperator
 import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
@@ -589,6 +591,8 @@ class SearchRepositoryImplKt(
 
         // TODO pass optionSetConfiguration
 
+        val searchOperator = getSearchOperator(trackedEntityAttribute)
+
         return TrackerInputModel(
             uid = trackedEntityAttribute.uid(),
             label = trackedEntityAttribute.displayFormName() ?: "",
@@ -607,6 +611,73 @@ class SearchRepositoryImplKt(
             customIntentUid = customIntent?.uid,
             displayName = trackedEntityAttribute.displayFormName() ?: "",
             orgUnitSelectorScope = null,
+            searchOperator = searchOperator,
         )
     }
+
+    private fun getSearchOperator(attribute: TrackedEntityAttribute): SearchOperator? {
+        val mainOperators = listOf(SearchOperator.LIKE, SearchOperator.SW, SearchOperator.EQ)
+        val blockedOperators =
+            attribute
+                .blockedSearchOperators()
+                ?.mapNotNull { sdkOperator ->
+                    sdkOperator.toSearchOperator()
+                } ?: emptyList()
+        val preferredOperator: SearchOperator? = attribute.preferredSearchOperator()?.toSearchOperator()
+        val valueType = attribute.valueType()
+        val hasOptionSet = attribute.optionSet() != null
+        val isUnique = attribute.unique() == true
+
+        val alwaysEqValueTypes =
+            listOf(
+                ValueType.BOOLEAN,
+                ValueType.TRUE_ONLY,
+                ValueType.AGE,
+                ValueType.ORGANISATION_UNIT,
+            )
+
+        val preferredOperatorValueTypes =
+            listOf(
+                ValueType.NUMBER,
+                ValueType.INTEGER,
+                ValueType.INTEGER_POSITIVE,
+                ValueType.INTEGER_NEGATIVE,
+                ValueType.INTEGER_ZERO_OR_POSITIVE,
+                ValueType.DATE,
+                ValueType.DATETIME,
+                ValueType.TIME,
+                ValueType.TEXT,
+                ValueType.LONG_TEXT,
+                ValueType.EMAIL,
+                ValueType.PHONE_NUMBER,
+                ValueType.PERCENTAGE,
+            )
+
+        return when {
+            isUnique ||
+                (hasOptionSet && valueType != ValueType.MULTI_TEXT) ||
+                valueType in alwaysEqValueTypes -> {
+                SearchOperator.EQ
+            }
+            valueType == ValueType.MULTI_TEXT -> {
+                mainOperators.firstOrNull { it !in blockedOperators }
+            }
+            valueType in preferredOperatorValueTypes -> {
+                if (preferredOperator != null && preferredOperator !in blockedOperators) {
+                    preferredOperator
+                } else {
+                    mainOperators.firstOrNull { it !in blockedOperators }
+                }
+            }
+            else -> null
+        }
+    }
+
+    private fun TrackerSearchOperator.toSearchOperator() =
+        when (this) {
+            TrackerSearchOperator.LIKE -> SearchOperator.LIKE
+            TrackerSearchOperator.SW -> SearchOperator.SW
+            TrackerSearchOperator.EW -> SearchOperator.EW
+            TrackerSearchOperator.EQ -> SearchOperator.EQ
+        }
 }
