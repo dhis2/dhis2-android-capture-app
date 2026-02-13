@@ -43,7 +43,6 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.customintent.CustomIntentResult
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
@@ -60,13 +59,13 @@ import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
+import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.hisp.dhis.android.core.arch.helpers.Result
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.maplibre.geojson.Feature
@@ -408,14 +407,14 @@ class SearchTEIViewModel(
         val updatedItems =
             searchParametersUiState.items.map {
                 if (it.uid == uid) {
-                    (it as FieldUiModelImpl).copy(
+                    it.copy(
                         value = values?.joinToString(","),
                         displayName =
                             displayNameProvider.provideDisplayName(
-                                valueType = it.valueType,
+                                valueType = searchRepositoryKt.trackerValueTypeToSDKValueType(it.valueType),
                                 value = values?.joinToString(","),
                                 optionSet = it.optionSet,
-                                periodType = it.periodSelector?.type,
+                                periodType = null,
                             ),
                         error = errorMessage,
                     )
@@ -436,7 +435,7 @@ class SearchTEIViewModel(
     private fun clearSearchParameters() {
         val updatedItems =
             searchParametersUiState.items.map {
-                (it as FieldUiModelImpl).copy(value = null, displayName = null)
+                it.copy(value = null, displayName = null)
             }
         searchParametersUiState =
             searchParametersUiState.copy(
@@ -1035,23 +1034,24 @@ class SearchTEIViewModel(
                                     ?.takeIf {
                                         field.valueType in
                                             listOf(
-                                                ValueType.DATE,
-                                                ValueType.DATETIME,
-                                                ValueType.AGE,
-                                                ValueType.TIME,
+                                                TrackerInputType.DATE,
+                                                TrackerInputType.DATE_TIME,
+                                                TrackerInputType.AGE,
+                                                TrackerInputType.TIME,
                                             )
-                                    }?.let { value -> field.valueType?.validator?.validate(value) }
-
-                            (field as FieldUiModelImpl).copy(
+                                    }?.let { value ->
+                                        searchRepositoryKt.validateValue(field.valueType, value)
+                                    }
+                            field.copy(
                                 focused = false,
                                 error =
                                     when (validation) {
-                                        is Result.Failure -> resourceManager.getString(R.string.formatting_error)
+                                        is Result.Failure<*, *> -> resourceManager.getString(R.string.formatting_error)
                                         else -> null
                                     },
                             )
                         } else if (field.uid == formIntent.uid) {
-                            (field as FieldUiModelImpl).copy(focused = true)
+                            field.copy(focused = true)
                         } else {
                             field
                         }
@@ -1144,7 +1144,7 @@ class SearchTEIViewModel(
         val updatedItems =
             searchParametersUiState.items.map {
                 if (it.focused) {
-                    (it as FieldUiModelImpl).copy(focused = false)
+                    it.copy(focused = false)
                 } else {
                     it
                 }
@@ -1159,27 +1159,22 @@ class SearchTEIViewModel(
             .forEach { item ->
 
                 when (item.valueType) {
-                    ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
+                    TrackerInputType.ORGANISATION_UNIT, TrackerInputType.MULTI_SELECTION -> {
                         map[item.uid] = (item.displayName ?: "")
                     }
 
-                    ValueType.DATE, ValueType.AGE -> {
+                    TrackerInputType.DATE, TrackerInputType.AGE -> {
                         item.value?.let {
                             map[item.uid] = it.toFriendlyDate()
                         }
                     }
 
-                    ValueType.DATETIME -> {
+                    TrackerInputType.DATE_TIME -> {
                         item.value?.let {
                             map[item.uid] = it.toFriendlyDateTime()
                         }
                     }
-
-                    ValueType.BOOLEAN -> {
-                        map[item.uid] = "${item.label}: ${item.value}"
-                    }
-
-                    ValueType.TRUE_ONLY -> {
+                    TrackerInputType.YES_ONLY_SWITCH, TrackerInputType.YES_ONLY_CHECKBOX, TrackerInputType.RADIO_BUTTON -> {
                         item.value?.let {
                             if (it == "true") {
                                 map[item.uid] = item.label
@@ -1187,7 +1182,7 @@ class SearchTEIViewModel(
                         }
                     }
 
-                    ValueType.PERCENTAGE -> {
+                    TrackerInputType.PERCENTAGE -> {
                         item.value?.let {
                             map[item.uid] = it.toPercentage()
                         }
@@ -1228,6 +1223,22 @@ class SearchTEIViewModel(
                 )
             }
         }
+    }
+
+    fun onItemClick(fieldUid: FieldUid) {
+        searchParametersUiState
+            .copy(
+                items =
+                    searchParametersUiState.items.map {
+                        if (it.uid == fieldUid) {
+                            it.copy(focused = true)
+                        } else {
+                            it
+                        }
+                    },
+            ).let {
+                searchParametersUiState = it
+            }
     }
 
     fun handleCustomIntentResult(customIntentResult: CustomIntentResult) {

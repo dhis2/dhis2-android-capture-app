@@ -1,22 +1,29 @@
 package org.dhis2.usescases.searchTrackEntity
 
 import org.dhis2.data.search.SearchParametersModel
-import org.dhis2.form.model.FieldUiModel
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 
 interface SearchRepositoryKt {
     suspend fun searchParameters(
         programUid: String?,
         teiTypeUid: String,
-    ): List<FieldUiModel>
+    ): List<TrackerInputModel>
 
     fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
     ): List<MapItemModel>
+
+    fun validateValue(
+        valueType: TrackerInputType,
+        value: String,
+    ): Any
 
     fun searchEventForMap(
         teiUids: List<String>,
@@ -36,4 +43,6 @@ interface SearchRepositoryKt {
     ): Boolean
 
     fun getExcludeValues(): HashSet<String>?
+
+    fun trackerValueTypeToSDKValueType(trackerInputType: TrackerInputType): ValueType?
 }

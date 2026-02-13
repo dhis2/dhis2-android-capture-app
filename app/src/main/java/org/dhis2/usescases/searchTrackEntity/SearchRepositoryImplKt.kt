@@ -17,13 +17,19 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.ui.FieldViewModelFactory
+import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.usescases.events.EventInfoProvider
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getInputTypeByValueType
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getInputTypeForOptionSetByRenderingType
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getOrientation
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -52,6 +58,7 @@ class SearchRepositoryImplKt(
     private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
     private val customIntentRepository: CustomIntentRepository,
+    private val uiEventTypesProvider: UiEventTypesProvider,
 ) : SearchRepositoryKt {
     private lateinit var savedSearchParameters: SearchParametersModel
 
@@ -90,7 +97,7 @@ class SearchRepositoryImplKt(
     override suspend fun searchParameters(
         programUid: String?,
         teiTypeUid: String,
-    ): List<FieldUiModel> =
+    ): List<TrackerInputModel> =
         withContext(dispatcher.io()) {
             val searchParameters =
                 programUid?.let {
@@ -100,14 +107,17 @@ class SearchRepositoryImplKt(
             sortSearchParameters(searchParameters)
         }
 
-    fun sortSearchParameters(parameters: List<FieldUiModel>): List<FieldUiModel> =
+    fun sortSearchParameters(parameters: List<TrackerInputModel>): List<TrackerInputModel> =
         parameters.sortedWith(
-            compareByDescending<FieldUiModel> {
-                it.renderingType?.isQROrBarcode() == true && isUnique(it.uid)
+            compareByDescending<TrackerInputModel> {
+                isQrCodeOrBarCode(it.valueType) && isUnique(it.uid)
             }.thenByDescending {
-                it.renderingType?.isQROrBarcode() == true
+                isQrCodeOrBarCode(it.valueType)
             }.thenByDescending { isUnique(it.uid) },
         )
+
+    fun isQrCodeOrBarCode(renderingType: TrackerInputType?): Boolean =
+        renderingType == TrackerInputType.QR_CODE || renderingType == TrackerInputType.BAR_CODE
 
     private fun isUnique(teaUid: String): Boolean =
         d2
@@ -209,6 +219,45 @@ class SearchRepositoryImplKt(
         )
     }
 
+    override fun trackerValueTypeToSDKValueType(trackerInputType: TrackerInputType): ValueType? =
+        when (trackerInputType) {
+            TrackerInputType.TEXT -> ValueType.TEXT
+            TrackerInputType.LONG_TEXT -> ValueType.LONG_TEXT
+            TrackerInputType.LETTER -> ValueType.LETTER
+            TrackerInputType.PHONE_NUMBER -> ValueType.PHONE_NUMBER
+            TrackerInputType.EMAIL -> ValueType.EMAIL
+            TrackerInputType.URL -> ValueType.URL
+            TrackerInputType.NUMBER -> ValueType.NUMBER
+            TrackerInputType.INTEGER -> ValueType.INTEGER
+            TrackerInputType.INTEGER_POSITIVE -> ValueType.INTEGER_POSITIVE
+            TrackerInputType.INTEGER_NEGATIVE -> ValueType.INTEGER_NEGATIVE
+            TrackerInputType.INTEGER_ZERO_OR_POSITIVE -> ValueType.INTEGER_ZERO_OR_POSITIVE
+            TrackerInputType.PERCENTAGE -> ValueType.PERCENTAGE
+            TrackerInputType.UNIT_INTERVAL -> ValueType.UNIT_INTERVAL
+            TrackerInputType.AGE -> ValueType.AGE
+            TrackerInputType.ORGANISATION_UNIT -> ValueType.ORGANISATION_UNIT
+            TrackerInputType.DATE_TIME -> ValueType.DATETIME
+            TrackerInputType.DATE -> ValueType.DATE
+            TrackerInputType.TIME -> ValueType.TIME
+            TrackerInputType.CHECKBOX,
+            TrackerInputType.RADIO_BUTTON,
+            -> ValueType.BOOLEAN
+            TrackerInputType.YES_ONLY_SWITCH,
+            TrackerInputType.YES_ONLY_CHECKBOX,
+            -> ValueType.TRUE_ONLY
+            TrackerInputType.QR_CODE,
+            TrackerInputType.BAR_CODE,
+            -> ValueType.TEXT
+            TrackerInputType.MULTI_SELECTION -> ValueType.MULTI_TEXT
+            TrackerInputType.DROPDOWN,
+            TrackerInputType.PERIOD_SELECTOR,
+            TrackerInputType.MATRIX,
+            TrackerInputType.SEQUENTIAL,
+            TrackerInputType.NOT_SUPPORTED,
+            TrackerInputType.CUSTOM_INTENT,
+            -> ValueType.TEXT
+        }
+
     override fun searchRelationshipsForMap(
         teis: List<MapItemModel>,
         selectedProgram: Program?,
@@ -288,6 +337,22 @@ class SearchRepositoryImplKt(
             }
         }
 
+    override fun validateValue(
+        inputType: TrackerInputType,
+        value: String,
+    ): Any =
+        {
+            when (inputType) {
+                TrackerInputType.DATE -> {
+                    ValueType.DATE.validator.validate(value)
+                }
+
+                else -> {
+                    false
+                }
+            }
+        }
+
     override fun searchEventForMap(
         teiUids: List<String>,
         selectedProgram: Program?,
@@ -320,7 +385,7 @@ class SearchRepositoryImplKt(
                 }
             }
 
-    private fun programTrackedEntityAttributes(programUid: String): List<FieldUiModel> {
+    private fun programTrackedEntityAttributes(programUid: String): List<TrackerInputModel> {
         val searchableAttributes =
             d2
                 .programModule()
@@ -393,17 +458,13 @@ class SearchRepositoryImplKt(
                                 orgUnitUid = null,
                                 actionType = CustomIntentActionTypeModel.SEARCH,
                             )
-                        createField(
+                        mapToTrackerModel(
                             trackedEntityAttribute = attribute,
                             programTrackedEntityAttribute = programAttribute,
                             optionSetConfiguration = optionSetConfiguration,
                             customIntent = customIntentModel,
                         )
                     }
-            }.filter { parameter ->
-                parameter.valueType !== ValueType.IMAGE &&
-                    parameter.valueType !== ValueType.COORDINATE &&
-                    parameter.valueType !== ValueType.FILE_RESOURCE
             }
     }
 
@@ -416,7 +477,7 @@ class SearchRepositoryImplKt(
             )
         }
 
-    private fun trackedEntitySearchFields(teiTypeUid: String): List<FieldUiModel> {
+    private fun trackedEntitySearchFields(teiTypeUid: String): List<TrackerInputModel> {
         val teTypeAttributes =
             d2
                 .trackedEntityModule()
@@ -462,20 +523,18 @@ class SearchRepositoryImplKt(
                                     onSearch = { searchEmitter.value = it },
                                 )
                             }
-
-                        createField(
+                        mapToTrackerModel(
                             trackedEntityAttribute = attribute,
                             programTrackedEntityAttribute = null,
                             optionSetConfiguration = optionSetConfiguration,
                         )
                     }
             }.filter { parameter ->
-                parameter.valueType !== ValueType.IMAGE &&
-                    parameter.valueType !== ValueType.COORDINATE &&
-                    parameter.valueType !== ValueType.FILE_RESOURCE
+                parameter.valueType != TrackerInputType.NOT_SUPPORTED
             }
     }
 
+    // TODO fielviewModelFactory should be removed from the module
     private fun createField(
         trackedEntityAttribute: TrackedEntityAttribute,
         programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
@@ -501,4 +560,53 @@ class SearchRepositoryImplKt(
             featureType = null,
             customIntentModel = customIntent,
         )
+
+    private fun mapToTrackerModel(
+        trackedEntityAttribute: TrackedEntityAttribute,
+        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
+        optionSetConfiguration: OptionSetConfiguration?,
+        customIntent: CustomIntentModel? = null,
+    ): TrackerInputModel {
+        val renderingType =
+            uiEventTypesProvider.provideUiRenderType(
+                featureType = null,
+                valueTypeRenderingType = programTrackedEntityAttribute?.renderType()?.mobile()?.type(),
+                sectionRenderingType = SectionRenderingType.LISTING,
+            )
+
+        val trackerInputType =
+            when {
+                trackedEntityAttribute.optionSet()?.uid() != null && trackedEntityAttribute.valueType() != ValueType.MULTI_TEXT -> {
+                    getInputTypeForOptionSetByRenderingType(renderingType)
+                }
+
+                customIntent != null -> {
+                    TrackerInputType.CUSTOM_INTENT
+                }
+
+                else -> getInputTypeByValueType(trackedEntityAttribute.valueType(), renderingType)
+            }
+
+        // TODO pass optionSetConfiguration
+
+        return TrackerInputModel(
+            uid = trackedEntityAttribute.uid(),
+            label = trackedEntityAttribute.displayFormName() ?: "",
+            value = null,
+            focused = false,
+            valueType = trackerInputType,
+            optionSet = trackedEntityAttribute.optionSet()?.uid(),
+            error = null,
+            warning = null,
+            description = null,
+            mandatory = false,
+            editable = true,
+            legend = null,
+            orientation = renderingType.getOrientation(),
+            optionSetConfiguration = null,
+            customIntentUid = customIntent?.uid,
+            displayName = trackedEntityAttribute.displayFormName() ?: "",
+            orgUnitSelectorScope = null,
+        )
+    }
 }

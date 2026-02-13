@@ -1,5 +1,6 @@
 package org.dhis2.tracker.ui.input.model
 
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
@@ -23,6 +24,7 @@ data class TrackerInputModel(
     val optionSetConfiguration: TrackerOptionSetConfiguration? = null,
     val customIntentUid: String? = null,
     val displayName: String?,
+    val orgUnitSelectorScope: OrgUnitSelectorScope?,
 )
 
 fun TrackerInputModel.supportingText(): List<SupportingTextData>? =

@@ -38,7 +38,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.R
@@ -46,11 +45,8 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.scan.ScanContract
-import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
 import org.dhis2.form.ui.customintent.CustomIntentInput
-import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
@@ -58,15 +54,17 @@ import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
+import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
-import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterSelectorItem
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
@@ -88,6 +86,7 @@ fun SearchParametersScreen(
     onClear: () -> Unit,
     onClose: () -> Unit,
     onLaunchCustomIntent: (FieldUid, CustomIntentUid) -> Unit,
+    onItemClick: (String) -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -107,19 +106,6 @@ fun SearchParametersScreen(
                         valueType = ValueType.TEXT,
                     )
                 intentHandler(intent)
-            }
-        }
-
-    val callback =
-        remember {
-            object : FieldUiModel.Callback {
-                override fun intent(intent: FormIntent) {
-                    intentHandler.invoke(intent)
-                }
-
-                override fun recyclerViewUiEvents(uiEvent: RecyclerViewUiEvents) {
-                    // no - op
-                }
             }
         }
 
@@ -222,8 +208,7 @@ fun SearchParametersScreen(
                         key = { _, fieldUiModel ->
                             fieldUiModel.uid
                         },
-                    ) { index, fieldUiModel ->
-                        fieldUiModel.setCallback(callback)
+                    ) { index, trackerInputModel ->
                         ParameterSelectorItem(
                             modifier =
                                 Modifier
@@ -231,58 +216,48 @@ fun SearchParametersScreen(
                             model =
                                 provideParameterSelectorItem(
                                     inputModel =
-                                        fieldUiModel.toParameterInputModel(
-                                            fetchOptions = {
-                                                fieldUiModel.optionSet?.let { optionSetUid ->
-                                                    intentHandler(
-                                                        FormIntent.FetchOptions(
-                                                            uid = fieldUiModel.uid,
-                                                            optionSetUid = optionSetUid,
-                                                            value = fieldUiModel.value,
-                                                        ),
-                                                    )
-                                                }
-                                            },
-                                            resourceManager = resourceManager,
-                                        ),
+                                    trackerInputModel,
                                     // TODO is this always the same string?, check if it is optional somewhere
                                     helperText = resourceManager.getString(R.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
                                         if (nextIndex < uiState.items.size) {
-                                            uiState.items[nextIndex].onItemClick()
+                                            // TODO implement on next click
+                                            // uiState.items[nextIndex].onItemClick()
                                         }
                                     },
                                     onUiEvent = { uiEvent ->
                                         when (uiEvent) {
                                             is TrackerInputUiEvent.OnScanButtonClicked -> {
-                                                qrScanLauncher.launch(
-                                                    ScanOptions().apply {
-                                                        setDesiredBarcodeFormats()
-                                                        setPrompt("")
-                                                        setBeepEnabled(true)
-                                                        setBarcodeImageEnabled(false)
-                                                        addExtra(Constants.UID, uiEvent.uid)
-                                                        fieldUiModel.optionSet?.let {
-                                                            addExtra(
-                                                                Constants.OPTION_SET,
-                                                                it,
-                                                            )
-                                                        }
-                                                        addExtra(
-                                                            Constants.SCAN_RENDERING_TYPE,
-                                                            fieldUiModel.renderingType,
-                                                        )
-                                                    },
-                                                )
+//                                                // TODO Implement launcher from the outside
+//                                                qrScanLauncher.launch(
+//                                                    ScanOptions().apply {
+//                                                        setDesiredBarcodeFormats()
+//                                                        setPrompt("")
+//                                                        setBeepEnabled(true)
+//                                                        setBarcodeImageEnabled(false)
+//                                                        addExtra(Constants.UID, uiEvent.uid)
+//                                                        fieldUiModel.optionSet?.let {
+//                                                            addExtra(
+//                                                                Constants.OPTION_SET,
+//                                                                it,
+//                                                            )
+//                                                        }
+//                                                        addExtra(
+//                                                            Constants.SCAN_RENDERING_TYPE,
+//                                                            fieldUiModel.renderingType,
+//                                                        )
+//                                                    },
+//                                                )
                                             }
 
                                             is TrackerInputUiEvent.OnOrgUnitButtonClicked -> {
+                                                // TODO recover the orgUnitSelectorScope from the new model
                                                 onShowOrgUnit(
                                                     uiEvent.uid,
                                                     uiEvent.value?.let { listOf(it) }
                                                         ?: emptyList(),
-                                                    fieldUiModel.orgUnitSelectorScope
+                                                    trackerInputModel.orgUnitSelectorScope
                                                         ?: OrgUnitSelectorScope.UserSearchScope(),
                                                     uiEvent.label,
                                                 )
@@ -296,11 +271,18 @@ fun SearchParametersScreen(
                                             }
 
                                             is TrackerInputUiEvent.OnItemClick -> {
-                                                fieldUiModel.onItemClick()
+                                                onItemClick(uiEvent.uid)
                                             }
 
                                             is TrackerInputUiEvent.OnValueChange -> {
-                                                fieldUiModel.onSave(uiEvent.value)
+                                                // TODO handle on save value differently
+                                                intentHandler.invoke(
+                                                    FormIntent.OnSave(
+                                                        uid = uiEvent.uid,
+                                                        value = uiEvent.value,
+                                                        valueType = ValueType.TEXT,
+                                                    ),
+                                                )
                                             }
                                         }
                                     },
@@ -377,12 +359,24 @@ fun SearchFormPreview() {
                     buildList {
                         repeat(times = 20) { index ->
                             add(
-                                FieldUiModelImpl(
+                                TrackerInputModel(
                                     uid = "uid$index",
                                     label = "Label $index",
-                                    autocompleteList = emptyList(),
+                                    value = "test value",
+                                    valueType = TrackerInputType.TEXT,
+                                    focused = false,
+                                    optionSet = null,
+                                    error = null,
+                                    warning = null,
+                                    description = null,
+                                    mandatory = false,
+                                    editable = true,
+                                    legend = null,
+                                    orientation = Orientation.HORIZONTAL,
                                     optionSetConfiguration = null,
-                                    valueType = ValueType.TEXT,
+                                    customIntentUid = null,
+                                    displayName = "display name",
+                                    orgUnitSelectorScope = null,
                                 ),
                             )
                         }
@@ -394,6 +388,7 @@ fun SearchFormPreview() {
         onClear = {},
         onClose = {},
         onLaunchCustomIntent = { _, _ -> },
+        onItemClick = { _ -> },
     )
 }
 
@@ -408,13 +403,24 @@ fun SearchFormPreviewWithClear() {
                     buildList {
                         repeat(times = 20) { index ->
                             add(
-                                FieldUiModelImpl(
+                                TrackerInputModel(
                                     uid = "uid$index",
                                     label = "Label $index",
                                     value = "test value",
-                                    autocompleteList = emptyList(),
+                                    valueType = TrackerInputType.TEXT,
+                                    focused = false,
+                                    optionSet = null,
+                                    error = null,
+                                    warning = null,
+                                    description = null,
+                                    mandatory = false,
+                                    editable = true,
+                                    legend = null,
+                                    orientation = Orientation.HORIZONTAL,
                                     optionSetConfiguration = null,
-                                    valueType = ValueType.TEXT,
+                                    customIntentUid = null,
+                                    displayName = "display name",
+                                    orgUnitSelectorScope = null,
                                 ),
                             )
                         }
@@ -426,6 +432,7 @@ fun SearchFormPreviewWithClear() {
         onClear = {},
         onClose = {},
         onLaunchCustomIntent = { _, _ -> },
+        onItemClick = { _ -> },
     )
 }
 
@@ -487,6 +494,7 @@ fun initSearchScreen(
             },
             onClose = { viewModel.clearFocus() },
             onLaunchCustomIntent = viewModel::onLaunchCustomIntent,
+            onItemClick = viewModel::onItemClick,
         )
     }
 }

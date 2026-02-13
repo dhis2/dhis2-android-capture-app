@@ -10,6 +10,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
+import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
@@ -19,8 +20,9 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 
+// TODO remove Mapper
 @Composable
-fun FieldUiModel.toParameterInputModel(
+fun FieldUiModel.toTrackerInputModel(
     fetchOptions: () -> Unit,
     resourceManager: ResourceManager,
 ): TrackerInputModel {
@@ -40,6 +42,9 @@ fun FieldUiModel.toParameterInputModel(
 
             else -> getInputTypeByValueType(valueType, renderingType)
         }
+    // TODO manage optionSet Flow configuration
+    // TODO pass LEGEND in new mapper
+    // TODO pass resource Manager for yes no text in boolean input types
 
     return TrackerInputModel(
         uid = uid,
@@ -69,13 +74,12 @@ fun FieldUiModel.toParameterInputModel(
             },
         customIntentUid = customIntent?.uid,
         displayName = displayName,
+        orgUnitSelectorScope = null,
     )
 }
 
 @Composable
-private fun org.dhis2.form.model.OptionSetConfiguration.toTrackerOptionSetConfiguration(
-    fetchOptions: () -> Unit,
-): TrackerOptionSetConfiguration {
+private fun OptionSetConfiguration.toTrackerOptionSetConfiguration(fetchOptions: () -> Unit): TrackerOptionSetConfiguration {
     val optionsData =
         optionFlow
             .collectAsLazyPagingItems()
