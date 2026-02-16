@@ -63,6 +63,16 @@ class LoginScreenIntegrationTest {
      *
      * Test case: ANDROAPP-7220
      * Scenario: Manage accounts screen
+     * Given the user is logged out
+     * And has <number_of_accounts> accounts stored
+     * When opens the app
+     * Then goes to <destination_screen>
+     *
+     * Examples:
+     * |number_of_accounts |destination_screen         |
+     * | none              |server configuration screen|
+     * | one               |existing account screen    |
+     * | two or more       |manage accounts screen     |
      *
      */
 
