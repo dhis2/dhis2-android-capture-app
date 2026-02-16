@@ -113,9 +113,11 @@ private fun TrackerInputType.toSDKValueType(): ValueType =
         TrackerInputType.YES_ONLY_SWITCH,
         TrackerInputType.YES_ONLY_CHECKBOX,
         -> ValueType.TRUE_ONLY
+
         TrackerInputType.QR_CODE,
         TrackerInputType.BAR_CODE,
         -> ValueType.TEXT
+
         TrackerInputType.MULTI_SELECTION -> ValueType.MULTI_TEXT
         TrackerInputType.DROPDOWN,
         TrackerInputType.PERIOD_SELECTOR,

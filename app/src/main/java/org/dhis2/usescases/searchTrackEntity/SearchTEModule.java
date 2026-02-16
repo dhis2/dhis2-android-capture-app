@@ -166,7 +166,6 @@ public class SearchTEModule {
                                       FilterPresenter filterPresenter,
                                       ResourceManager resources,
                                       SearchSortingValueSetter searchSortingValueSetter,
-                                      DhisPeriodUtils periodUtils,
                                       Charts charts,
                                       CrashReportController crashReportController,
                                       NetworkUtils networkUtils,
@@ -193,12 +192,7 @@ public class SearchTEModule {
                 customIntentRepository);
     }
 
-    //TODO inject this in koin
-    @Provides
-    @PerActivity
-    UiEventTypesProvider uiEventTypesProvider(){
-        return new UiEventTypesProviderImpl();
-    }
+
 
     @Provides
     @PerActivity
@@ -209,8 +203,7 @@ public class SearchTEModule {
             MetadataIconProvider metadataIconProvider,
             ColorUtils colorUtils,
             DateUtils dateUtils,
-            CustomIntentRepository customIntentRepository,
-            UiEventTypesProvider uiEventTypesProvider
+            CustomIntentRepository customIntentRepository
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -234,8 +227,7 @@ public class SearchTEModule {
                         profilePictureProvider,
                         dateUtils
                 ),
-                customIntentRepository,
-                uiEventTypesProvider
+                customIntentRepository
         );
     }
 
