@@ -4,24 +4,18 @@ import org.dhis2.data.search.SearchParametersModel
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.ui.input.action.FieldUid
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.program.Program
 
 interface SearchRepositoryKt {
-    suspend fun searchParameters(
-        programUid: String?,
-        teiTypeUid: String,
-    ): List<TrackerInputModel>
-
     fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,
         isOnline: Boolean,
     ): List<MapItemModel>
 
     fun validateValue(
-        valueType: TrackerInputType,
+        inputType: TrackerInputType,
         value: String,
     ): Any
 

@@ -44,7 +44,7 @@ class SearchParametersRepositoryImpl(
                         uid = attribute.uid(),
                         label = attribute.displayFormName() ?: "",
                         inputType =
-                            getValueType(
+                            getInputType(
                                 attribute = attribute,
                                 isCustomIntent = customIntent != null,
                                 valueTypeRenderingType = renderingType,
@@ -74,7 +74,7 @@ class SearchParametersRepositoryImpl(
                         uid = attribute.uid(),
                         label = attribute.displayFormName() ?: "",
                         inputType =
-                            getValueType(
+                            getInputType(
                                 attribute = attribute,
                                 isCustomIntent = false,
                                 valueTypeRenderingType = null,
@@ -145,7 +145,7 @@ class SearchParametersRepositoryImpl(
                 isSearchable || isUnique
             }
 
-    private fun getValueType(
+    private fun getInputType(
         attribute: TrackedEntityAttribute,
         isCustomIntent: Boolean,
         valueTypeRenderingType: ValueTypeRenderingType?,
