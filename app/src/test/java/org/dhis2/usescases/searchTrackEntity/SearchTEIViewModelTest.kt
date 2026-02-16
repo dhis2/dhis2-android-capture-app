@@ -31,6 +31,7 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
@@ -77,6 +78,8 @@ class SearchTEIViewModelTest {
             onBlocking { invoke(any()) } doReturn Result.success(flowOf(PagingData.empty()))
         }
 
+    private val fetchSearchParameters: FetchSearchParameters = mock()
+
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
 
@@ -112,6 +115,7 @@ class SearchTEIViewModelTest {
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
+                fetchSearchParameters = fetchSearchParameters,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
     }

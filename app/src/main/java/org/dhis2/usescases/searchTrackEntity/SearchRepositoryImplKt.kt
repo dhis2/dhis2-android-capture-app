@@ -2,65 +2,38 @@
 
 package org.dhis2.usescases.searchTrackEntity
 
-import androidx.paging.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
-import org.dhis2.form.model.FieldUiModel
-import org.dhis2.form.model.OptionSetConfiguration
-import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
-import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
-import org.dhis2.mobile.commons.model.CustomIntentModel
-import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.ui.input.action.FieldUid
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.usescases.events.EventInfoProvider
-import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getInputTypeByValueType
-import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getInputTypeForOptionSetByRenderingType
-import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.getOrientation
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.arch.repositories.scope.internal.TrackerSearchOperator
-import org.hisp.dhis.android.core.common.ObjectStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.program.ProgramTrackedEntityAttribute
-import org.hisp.dhis.android.core.program.SectionRenderingType
 import org.hisp.dhis.android.core.relationship.RelationshipItem
 import org.hisp.dhis.android.core.relationship.RelationshipItemTrackedEntityInstance
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchCollectionRepository
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper.toTrackedEntityInstance
-import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import timber.log.Timber
 
 class SearchRepositoryImplKt(
     private val searchRepositoryJava: SearchRepository,
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
-    private val fieldViewModelFactory: FieldViewModelFactory,
-    private val metadataIconProvider: MetadataIconProvider,
     private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
     private val customIntentRepository: CustomIntentRepository,
-    private val uiEventTypesProvider: UiEventTypesProvider,
 ) : SearchRepositoryKt {
     private lateinit var savedSearchParameters: SearchParametersModel
 
@@ -76,7 +49,10 @@ class SearchRepositoryImplKt(
     ): Boolean {
         if (!this::savedSearchParameters.isInitialized) {
             savedSearchParameters =
-                SearchParametersModel(queryData = queryData, selectedProgram = searchRepositoryJava.getProgram(programUid))
+                SearchParametersModel(
+                    queryData = queryData,
+                    selectedProgram = searchRepositoryJava.getProgram(programUid),
+                )
         }
         if (!this::savedFilters.isInitialized) {
             savedFilters = FilterManager.getInstance().copy()
@@ -95,39 +71,6 @@ class SearchRepositoryImplKt(
         fetchedTeiUids.ifEmpty {
             null
         }
-
-    override suspend fun searchParameters(
-        programUid: String?,
-        teiTypeUid: String,
-    ): List<TrackerInputModel> =
-        withContext(dispatcher.io()) {
-            val searchParameters =
-                programUid?.let {
-                    programTrackedEntityAttributes(programUid)
-                } ?: trackedEntitySearchFields(teiTypeUid)
-
-            sortSearchParameters(searchParameters)
-        }
-
-    fun sortSearchParameters(parameters: List<TrackerInputModel>): List<TrackerInputModel> =
-        parameters.sortedWith(
-            compareByDescending<TrackerInputModel> {
-                isQrCodeOrBarCode(it.valueType) && isUnique(it.uid)
-            }.thenByDescending {
-                isQrCodeOrBarCode(it.valueType)
-            }.thenByDescending { isUnique(it.uid) },
-        )
-
-    fun isQrCodeOrBarCode(renderingType: TrackerInputType?): Boolean =
-        renderingType == TrackerInputType.QR_CODE || renderingType == TrackerInputType.BAR_CODE
-
-    private fun isUnique(teaUid: String): Boolean =
-        d2
-            .trackedEntityModule()
-            .trackedEntityAttributes()
-            .uid(teaUid)
-            .blockingGet()
-            ?.unique() ?: false
 
     override fun searchTeiForMap(
         searchParametersModel: SearchParametersModel,
@@ -241,15 +184,20 @@ class SearchRepositoryImplKt(
             TrackerInputType.DATE_TIME -> ValueType.DATETIME
             TrackerInputType.DATE -> ValueType.DATE
             TrackerInputType.TIME -> ValueType.TIME
-            TrackerInputType.CHECKBOX,
-            TrackerInputType.RADIO_BUTTON,
+            TrackerInputType.HORIZONTAL_CHECKBOXES,
+            TrackerInputType.VERTICAL_CHECKBOXES,
+            TrackerInputType.HORIZONTAL_RADIOBUTTONS,
+            TrackerInputType.VERTICAL_RADIOBUTTONS,
             -> ValueType.BOOLEAN
+
             TrackerInputType.YES_ONLY_SWITCH,
             TrackerInputType.YES_ONLY_CHECKBOX,
             -> ValueType.TRUE_ONLY
+
             TrackerInputType.QR_CODE,
             TrackerInputType.BAR_CODE,
             -> ValueType.TEXT
+
             TrackerInputType.MULTI_SELECTION -> ValueType.MULTI_TEXT
             TrackerInputType.DROPDOWN,
             TrackerInputType.PERIOD_SELECTOR,
@@ -387,89 +335,6 @@ class SearchRepositoryImplKt(
                 }
             }
 
-    private fun programTrackedEntityAttributes(programUid: String): List<TrackerInputModel> {
-        val searchableAttributes =
-            d2
-                .programModule()
-                .programTrackedEntityAttributes()
-                .withRenderType()
-                .byProgram()
-                .eq(programUid)
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                .blockingGet()
-                .filter { programAttribute ->
-                    val isSearchable = programAttribute.searchable()!!
-                    val isUnique =
-                        d2
-                            .trackedEntityModule()
-                            .trackedEntityAttributes()
-                            .uid(programAttribute.trackedEntityAttribute()!!.uid())
-                            .blockingGet()
-                            ?.unique() === java.lang.Boolean.TRUE
-                    isSearchable || isUnique
-                }
-
-        val program =
-            d2
-                .programModule()
-                .programs()
-                .uid(programUid)
-                .blockingGet()
-
-        return searchableAttributes
-            .mapNotNull { programAttribute ->
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityAttributes()
-                    .uid(programAttribute.trackedEntityAttribute()!!.uid())
-                    .blockingGet()
-                    ?.let { attribute ->
-                        val searchFlow = MutableStateFlow("")
-                        val optionSetConfiguration =
-                            attribute.optionSet()?.let {
-                                OptionSetConfiguration(
-                                    searchEmitter = searchFlow,
-                                    optionFlow =
-                                        searchFlow.debounce(300).flatMapLatest {
-                                            d2
-                                                .optionModule()
-                                                .options()
-                                                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                                .byOptionSetUid()
-                                                .eq(attribute.optionSet()!!.uid())
-                                                .getPagingData(10)
-                                                .map { pagingData ->
-                                                    pagingData.map { option ->
-                                                        OptionSetConfiguration.OptionData(
-                                                            option,
-                                                            metadataIconProvider(
-                                                                option.style(),
-                                                                program?.style()?.color()?.toColor()
-                                                                    ?: SurfaceColor.Primary,
-                                                            ),
-                                                        )
-                                                    }
-                                                }
-                                        },
-                                    onSearch = { searchFlow.value = it },
-                                )
-                            }
-                        val customIntentModel =
-                            customIntentRepository.getCustomIntent(
-                                triggerUid = attribute.uid(),
-                                orgUnitUid = null,
-                                actionType = CustomIntentActionTypeModel.SEARCH,
-                            )
-                        mapToTrackerModel(
-                            trackedEntityAttribute = attribute,
-                            programTrackedEntityAttribute = programAttribute,
-                            optionSetConfiguration = optionSetConfiguration,
-                            customIntent = customIntentModel,
-                        )
-                    }
-            }
-    }
-
     override suspend fun getCustomIntent(fieldUid: FieldUid) =
         withContext(dispatcher.io()) {
             customIntentRepository.getCustomIntent(
@@ -477,207 +342,5 @@ class SearchRepositoryImplKt(
                 orgUnitUid = null,
                 actionType = CustomIntentActionTypeModel.SEARCH,
             )
-        }
-
-    private fun trackedEntitySearchFields(teiTypeUid: String): List<TrackerInputModel> {
-        val teTypeAttributes =
-            d2
-                .trackedEntityModule()
-                .trackedEntityTypeAttributes()
-                .byTrackedEntityTypeUid()
-                .eq(teiTypeUid)
-                .bySearchable()
-                .isTrue
-                .blockingGet()
-
-        return teTypeAttributes
-            .mapNotNull { typeAttribute ->
-                d2
-                    .trackedEntityModule()
-                    .trackedEntityAttributes()
-                    .uid(typeAttribute.trackedEntityAttribute()!!.uid())
-                    .blockingGet()
-                    ?.let { attribute ->
-                        val searchEmitter = MutableStateFlow("")
-                        val optionSetConfiguration =
-                            attribute.optionSet()?.let {
-                                OptionSetConfiguration(
-                                    searchEmitter = searchEmitter,
-                                    optionFlow =
-                                        d2
-                                            .optionModule()
-                                            .options()
-                                            .byOptionSetUid()
-                                            .eq(attribute.optionSet()!!.uid())
-                                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-                                            .getPagingData(10)
-                                            .map { pagingData ->
-                                                pagingData.map { option ->
-                                                    OptionSetConfiguration.OptionData(
-                                                        option,
-                                                        metadataIconProvider(
-                                                            option.style(),
-                                                            SurfaceColor.Primary,
-                                                        ),
-                                                    )
-                                                }
-                                            },
-                                    onSearch = { searchEmitter.value = it },
-                                )
-                            }
-                        mapToTrackerModel(
-                            trackedEntityAttribute = attribute,
-                            programTrackedEntityAttribute = null,
-                            optionSetConfiguration = optionSetConfiguration,
-                        )
-                    }
-            }.filter { parameter ->
-                parameter.valueType != TrackerInputType.NOT_SUPPORTED
-            }
-    }
-
-    // TODO fielviewModelFactory should be removed from the module
-    private fun createField(
-        trackedEntityAttribute: TrackedEntityAttribute,
-        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
-        optionSetConfiguration: OptionSetConfiguration?,
-        customIntent: CustomIntentModel? = null,
-    ): FieldUiModel =
-        fieldViewModelFactory.create(
-            id = trackedEntityAttribute.uid(),
-            label = trackedEntityAttribute.displayFormName() ?: "",
-            valueType = trackedEntityAttribute.valueType()!!,
-            mandatory = false,
-            optionSet = trackedEntityAttribute.optionSet()?.uid(),
-            value = null,
-            programStageSection = null,
-            allowFutureDates = programTrackedEntityAttribute?.allowFutureDate() ?: true,
-            editable = true,
-            renderingType = SectionRenderingType.LISTING,
-            description = null,
-            fieldRendering = programTrackedEntityAttribute?.renderType()?.mobile(),
-            objectStyle = trackedEntityAttribute.style() ?: ObjectStyle.builder().build(),
-            fieldMask = trackedEntityAttribute.fieldMask(),
-            optionSetConfiguration = optionSetConfiguration,
-            featureType = null,
-            customIntentModel = customIntent,
-        )
-
-    private fun mapToTrackerModel(
-        trackedEntityAttribute: TrackedEntityAttribute,
-        programTrackedEntityAttribute: ProgramTrackedEntityAttribute?,
-        optionSetConfiguration: OptionSetConfiguration?,
-        customIntent: CustomIntentModel? = null,
-    ): TrackerInputModel {
-        val renderingType =
-            uiEventTypesProvider.provideUiRenderType(
-                featureType = null,
-                valueTypeRenderingType = programTrackedEntityAttribute?.renderType()?.mobile()?.type(),
-                sectionRenderingType = SectionRenderingType.LISTING,
-            )
-
-        val trackerInputType =
-            when {
-                trackedEntityAttribute.optionSet()?.uid() != null && trackedEntityAttribute.valueType() != ValueType.MULTI_TEXT -> {
-                    getInputTypeForOptionSetByRenderingType(renderingType)
-                }
-
-                customIntent != null -> {
-                    TrackerInputType.CUSTOM_INTENT
-                }
-
-                else -> getInputTypeByValueType(trackedEntityAttribute.valueType(), renderingType)
-            }
-
-        // TODO pass optionSetConfiguration
-
-        val searchOperator = getSearchOperator(trackedEntityAttribute)
-
-        return TrackerInputModel(
-            uid = trackedEntityAttribute.uid(),
-            label = trackedEntityAttribute.displayFormName() ?: "",
-            value = null,
-            focused = false,
-            valueType = trackerInputType,
-            optionSet = trackedEntityAttribute.optionSet()?.uid(),
-            error = null,
-            warning = null,
-            description = null,
-            mandatory = false,
-            editable = true,
-            legend = null,
-            orientation = renderingType.getOrientation(),
-            optionSetConfiguration = null,
-            customIntentUid = customIntent?.uid,
-            displayName = trackedEntityAttribute.displayFormName() ?: "",
-            orgUnitSelectorScope = null,
-            searchOperator = searchOperator,
-        )
-    }
-
-    private fun getSearchOperator(attribute: TrackedEntityAttribute): SearchOperator? {
-        val mainOperators = listOf(SearchOperator.LIKE, SearchOperator.SW, SearchOperator.EQ)
-        val blockedOperators =
-            attribute
-                .blockedSearchOperators()
-                ?.mapNotNull { sdkOperator ->
-                    sdkOperator.toSearchOperator()
-                } ?: emptyList()
-        val preferredOperator: SearchOperator? = attribute.preferredSearchOperator()?.toSearchOperator()
-        val valueType = attribute.valueType()
-        val hasOptionSet = attribute.optionSet() != null
-        val isUnique = attribute.unique() == true
-
-        val alwaysEqValueTypes =
-            listOf(
-                ValueType.BOOLEAN,
-                ValueType.TRUE_ONLY,
-                ValueType.AGE,
-                ValueType.ORGANISATION_UNIT,
-            )
-
-        val preferredOperatorValueTypes =
-            listOf(
-                ValueType.NUMBER,
-                ValueType.INTEGER,
-                ValueType.INTEGER_POSITIVE,
-                ValueType.INTEGER_NEGATIVE,
-                ValueType.INTEGER_ZERO_OR_POSITIVE,
-                ValueType.DATE,
-                ValueType.DATETIME,
-                ValueType.TIME,
-                ValueType.TEXT,
-                ValueType.LONG_TEXT,
-                ValueType.EMAIL,
-                ValueType.PHONE_NUMBER,
-                ValueType.PERCENTAGE,
-            )
-
-        return when {
-            isUnique ||
-                (hasOptionSet && valueType != ValueType.MULTI_TEXT) ||
-                valueType in alwaysEqValueTypes -> {
-                SearchOperator.EQ
-            }
-            valueType == ValueType.MULTI_TEXT -> {
-                mainOperators.firstOrNull { it !in blockedOperators }
-            }
-            valueType in preferredOperatorValueTypes -> {
-                if (preferredOperator != null && preferredOperator !in blockedOperators) {
-                    preferredOperator
-                } else {
-                    mainOperators.firstOrNull { it !in blockedOperators }
-                }
-            }
-            else -> null
-        }
-    }
-
-    private fun TrackerSearchOperator.toSearchOperator() =
-        when (this) {
-            TrackerSearchOperator.LIKE -> SearchOperator.LIKE
-            TrackerSearchOperator.SW -> SearchOperator.SW
-            TrackerSearchOperator.EW -> SearchOperator.EW
-            TrackerSearchOperator.EQ -> SearchOperator.EQ
         }
 }

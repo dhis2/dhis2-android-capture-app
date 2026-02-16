@@ -28,11 +28,12 @@ data class TrackerInputModel(
     val editable: Boolean,
     val legend: LegendData?,
     val orientation: Orientation,
-    val optionSetConfiguration: TrackerOptionSetConfiguration? = null,
-    val customIntentUid: String? = null,
+    val optionSetConfiguration: TrackerOptionSetConfiguration?, // TODO (Maybe remove when migrated)
+    val customIntentUid: String?,
     val displayName: String?,
     val orgUnitSelectorScope: OrgUnitSelectorScope?,
-    val searchOperator: SearchOperator? = null,
+    val searchOperator: SearchOperator?,
+    val minCharactersToSearch: Int?,
 )
 
 @Composable
