@@ -618,7 +618,9 @@ fun TrackerInputProvider(
             )
         }
 
-        TrackerInputType.CHECKBOX -> {
+        TrackerInputType.HORIZONTAL_CHECKBOXES,
+        TrackerInputType.VERTICAL_CHECKBOXES,
+        -> {
             TrackerCheckboxInputProvider(
                 model = inputModel,
                 inputStyle = inputStyle,
@@ -634,7 +636,9 @@ fun TrackerInputProvider(
             )
         }
 
-        TrackerInputType.RADIO_BUTTON -> {
+        TrackerInputType.HORIZONTAL_RADIOBUTTONS,
+        TrackerInputType.VERTICAL_RADIOBUTTONS,
+        -> {
             TrackerRadioButtonInputProvider(
                 model = inputModel,
                 inputStyle = inputStyle,
