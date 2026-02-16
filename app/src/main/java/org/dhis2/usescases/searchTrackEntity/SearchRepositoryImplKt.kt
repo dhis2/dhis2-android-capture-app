@@ -6,11 +6,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.withContext
 import org.dhis2.commons.filters.FilterManager
-import org.dhis2.commons.resources.MetadataIconProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.search.SearchParametersModel
-import org.dhis2.form.ui.FieldViewModelFactory
-import org.dhis2.form.ui.provider.UiEventTypesProvider
 import org.dhis2.maps.model.MapItemModel
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
@@ -34,12 +31,9 @@ class SearchRepositoryImplKt(
     private val searchRepositoryJava: SearchRepository,
     private val d2: D2,
     private val dispatcher: DispatcherProvider,
-    private val fieldViewModelFactory: FieldViewModelFactory,
-    private val metadataIconProvider: MetadataIconProvider,
     private val trackedEntityInstanceInfoProvider: TrackedEntityInstanceInfoProvider,
     private val eventInfoProvider: EventInfoProvider,
     private val customIntentRepository: CustomIntentRepository,
-    private val uiEventTypesProvider: UiEventTypesProvider,
 ) : SearchRepositoryKt {
     private lateinit var savedSearchParameters: SearchParametersModel
 

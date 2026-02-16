@@ -377,6 +377,8 @@ fun SearchFormPreview() {
                                     customIntentUid = null,
                                     displayName = "display name",
                                     orgUnitSelectorScope = null,
+                                    searchOperator = null,
+                                    minCharactersToSearch = null,
                                 ),
                             )
                         }
@@ -421,6 +423,8 @@ fun SearchFormPreviewWithClear() {
                                     customIntentUid = null,
                                     displayName = "display name",
                                     orgUnitSelectorScope = null,
+                                    searchOperator = null,
+                                    minCharactersToSearch = null,
                                 ),
                             )
                         }

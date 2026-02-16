@@ -54,13 +54,16 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
+import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
+import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
+import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toTrackerInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
@@ -87,6 +90,7 @@ class SearchTEIViewModel(
     private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
+    private val fetchSearchParameters: FetchSearchParameters,
 ) : ViewModel() {
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
 
@@ -999,9 +1003,27 @@ class SearchTEIViewModel(
         fetchJob?.cancel()
         fetchJob =
             viewModelScope.launch {
-                val fieldUiModels =
-                    searchRepositoryKt.searchParameters(programUid, teiTypeUid)
-                searchParametersUiState = searchParametersUiState.copy(items = fieldUiModels)
+                fetchSearchParameters
+                    .invoke(
+                        input =
+                            FetchSearchParametersData(
+                                teiTypeUid = teiTypeUid,
+                                programUid = programUid,
+                            ),
+                    ).fold(
+                        onSuccess = { searchParameters ->
+                            searchParametersUiState =
+                                searchParametersUiState.copy(
+                                    items =
+                                        searchParameters.map { searchParameter ->
+                                            searchParameter.toTrackerInputModel()
+                                        },
+                                )
+                        },
+                        onFailure = {
+                            // TODO(Implement error)
+                        },
+                    )
             }
     }
 
@@ -1174,7 +1196,12 @@ class SearchTEIViewModel(
                             map[item.uid] = it.toFriendlyDateTime()
                         }
                     }
-                    TrackerInputType.YES_ONLY_SWITCH, TrackerInputType.YES_ONLY_CHECKBOX, TrackerInputType.RADIO_BUTTON -> {
+
+                    TrackerInputType.YES_ONLY_SWITCH,
+                    TrackerInputType.YES_ONLY_CHECKBOX,
+                    TrackerInputType.HORIZONTAL_RADIOBUTTONS,
+                    TrackerInputType.VERTICAL_RADIOBUTTONS,
+                    -> {
                         item.value?.let {
                             if (it == "true") {
                                 map[item.uid] = item.label
