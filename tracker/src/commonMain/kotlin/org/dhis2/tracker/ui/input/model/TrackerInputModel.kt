@@ -1,11 +1,18 @@
 package org.dhis2.tracker.ui.input.model
 
+import androidx.compose.runtime.Composable
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.mobile.tracker.resources.Res
+import org.dhis2.mobile.tracker.resources.end_with_search_operator
+import org.dhis2.mobile.tracker.resources.equal_search_operator
+import org.dhis2.mobile.tracker.resources.starts_with_search_operator
+import org.dhis2.tracker.search.model.SearchOperator
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
+import org.jetbrains.compose.resources.stringResource
 
 data class TrackerInputModel(
     val uid: String,
@@ -25,8 +32,10 @@ data class TrackerInputModel(
     val customIntentUid: String? = null,
     val displayName: String?,
     val orgUnitSelectorScope: OrgUnitSelectorScope?,
+    val searchOperator: SearchOperator? = null,
 )
 
+@Composable
 fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
     listOfNotNull(
         error?.let {
@@ -40,6 +49,14 @@ fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
                 it,
                 SupportingTextState.WARNING,
             )
+        },
+        searchOperator?.let { operator ->
+            operator.supportingTextString()?.let { text ->
+                SupportingTextData(
+                    text,
+                    SupportingTextState.DEFAULT,
+                )
+            }
         },
         description?.let {
             SupportingTextData(
@@ -55,4 +72,16 @@ fun TrackerInputModel.inputState(): InputShellState =
         error != null -> InputShellState.ERROR
         focused -> InputShellState.FOCUSED
         else -> InputShellState.UNFOCUSED
+    }
+
+@Composable
+private fun SearchOperator.supportingTextString() =
+    when (this) {
+        SearchOperator.EQ ->
+            stringResource(Res.string.equal_search_operator)
+        SearchOperator.SW ->
+            stringResource(Res.string.starts_with_search_operator)
+        SearchOperator.EW ->
+            stringResource(Res.string.end_with_search_operator)
+        else -> null
     }
