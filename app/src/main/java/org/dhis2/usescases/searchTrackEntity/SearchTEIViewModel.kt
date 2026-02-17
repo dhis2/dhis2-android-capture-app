@@ -1082,9 +1082,7 @@ class SearchTEIViewModel(
                                 searchParametersUiState.copy(
                                     items =
                                         searchParameters.map { searchParameter ->
-                                            searchParameter.toTrackerInputModel(
-                                                resourceManager = resourceManager,
-                                            )
+                                            searchParameter.toTrackerInputModel()
                                         },
                                 )
                         },

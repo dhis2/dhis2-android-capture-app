@@ -1,11 +1,20 @@
 package org.dhis2.tracker.ui.input.model
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.end_with_search_operator
 import org.dhis2.mobile.tracker.resources.equal_search_operator
+import org.dhis2.mobile.tracker.resources.no
 import org.dhis2.mobile.tracker.resources.starts_with_search_operator
+import org.dhis2.mobile.tracker.resources.yes
 import org.dhis2.tracker.search.model.SearchOperator
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
@@ -29,7 +38,7 @@ data class TrackerInputModel(
     val editable: Boolean,
     val legend: LegendData?,
     val orientation: Orientation,
-    val optionSetConfiguration: TrackerOptionSetConfiguration?, // TODO (Maybe remove when migrated)
+    val optionSetConfiguration: TrackerOptionSetConfiguration?,
     val customIntentUid: String?,
     val displayName: String?,
     val orgUnitSelectorScope: OrgUnitSelectorScope?,
@@ -87,3 +96,81 @@ private fun SearchOperator.supportingTextString() =
             stringResource(Res.string.end_with_search_operator)
         else -> null
     }
+
+@Composable
+fun TrackerInputModel.loadOptionSetConfiguration(
+    getOptionSetFlow: (fieldUid: String, optionSetUid: String) -> Flow<PagingData<TrackerOptionItem>>?,
+    onOptionSetSearch: (fieldUid: String, query: String) -> Unit,
+): TrackerInputModel =
+    when {
+        valueType == TrackerInputType.YES_ONLY_CHECKBOX ||
+            valueType == TrackerInputType.YES_ONLY_SWITCH ->
+            this.getBooleanOptionConfiguration()
+
+        optionSet != null -> {
+            val optionSetFlow =
+                getOptionSetFlow(
+                    uid,
+                    optionSet,
+                )
+            this.loadWithOptionSetFlow(
+                optionSetFlow = optionSetFlow,
+                onSearch = { query ->
+                    onOptionSetSearch(uid, query)
+                },
+            )
+        }
+
+        else -> this
+    }
+
+@Composable
+private fun TrackerInputModel.getBooleanOptionConfiguration(): TrackerInputModel {
+    val booleanConfiguration =
+        TrackerOptionSetConfiguration(
+            options =
+                listOf(
+                    TrackerOptionItem(
+                        code = true.toString(),
+                        displayName = stringResource(Res.string.yes),
+                    ),
+                    TrackerOptionItem(
+                        code = false.toString(),
+                        displayName = stringResource(Res.string.no),
+                    ),
+                ),
+        )
+
+    return copy(optionSetConfiguration = booleanConfiguration)
+}
+
+@Composable
+private fun TrackerInputModel.loadWithOptionSetFlow(
+    optionSetFlow: Flow<PagingData<TrackerOptionItem>>?,
+    onSearch: ((String) -> Unit)?,
+): TrackerInputModel {
+    if (optionSetFlow == null) return this
+
+    val optionsData = optionSetFlow.collectAsLazyPagingItems()
+
+    LaunchedEffect(Unit) {
+        optionsData.refresh()
+    }
+
+    val options by remember {
+        derivedStateOf {
+            (0 until optionsData.itemCount).mapNotNull { index ->
+                optionsData[index]
+            }
+        }
+    }
+
+    return copy(
+        optionSetConfiguration =
+            TrackerOptionSetConfiguration(
+                options = options,
+                onSearch = onSearch,
+                onLoadOptions = { optionsData.refresh() },
+            ),
+    )
+}
