@@ -31,6 +31,7 @@ import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
 import org.dhis2.tracker.input.ui.state.TrackerInputUiState
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
@@ -78,6 +79,7 @@ class SearchTEIViewModelTest {
         }
 
     private val fetchSearchParameters: FetchSearchParameters = mock()
+    private val fetchOptionSetOptions: FetchOptionSetOptions = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -115,6 +117,7 @@ class SearchTEIViewModelTest {
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -783,6 +786,7 @@ class SearchTEIViewModelTest {
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -831,6 +835,7 @@ class SearchTEIViewModelTest {
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 

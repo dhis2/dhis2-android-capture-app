@@ -25,4 +25,5 @@
     <string name="end_with_search_operator">Must match the end of the value</string>
     <string name="yes">yes</string>
     <string name="no">no</string>
+    <string name="min_characters_warning">Enter at least %1$d characters</string>
 </resources>
