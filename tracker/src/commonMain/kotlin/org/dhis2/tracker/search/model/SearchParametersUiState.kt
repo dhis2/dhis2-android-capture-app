@@ -1,4 +1,4 @@
-package org.dhis2.usescases.searchTrackEntity.searchparameters.model
+package org.dhis2.tracker.search.model
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
