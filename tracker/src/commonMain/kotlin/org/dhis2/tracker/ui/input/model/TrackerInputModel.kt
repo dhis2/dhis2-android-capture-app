@@ -14,6 +14,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.jetbrains.compose.resources.stringResource
 
+// TODO (Rename to TrackerInputUiState
 data class TrackerInputModel(
     val uid: String,
     val label: String,
