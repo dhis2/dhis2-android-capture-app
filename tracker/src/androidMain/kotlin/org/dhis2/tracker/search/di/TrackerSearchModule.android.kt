@@ -1,5 +1,8 @@
 package org.dhis2.tracker.search.di
 
+import org.dhis2.tracker.search.data.OptionSetRepository
+import org.dhis2.tracker.search.data.SearchParametersRepository
+import org.dhis2.tracker.search.data.SearchParametersRepositoryImpl
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepository
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepositoryImpl
 import org.koin.core.module.Module
@@ -15,6 +18,23 @@ internal actual val trackerSearchRepositoryModule: Module =
             SearchTrackedEntityRepositoryImpl(
                 d2 = get(),
                 filterPresenter = get(),
+            )
+        }
+
+        // SearchParametersRepository - interface implementation
+        single<SearchParametersRepository> {
+            SearchParametersRepositoryImpl(
+                d2 = get(),
+                customIntentRepository = get(),
+                domainErrorMapper = get(),
+            )
+        }
+
+        // OptionSetRepository - expect/actual pattern
+        single {
+            OptionSetRepository(
+                d2 = get(),
+                domainErrorMapper = get(),
             )
         }
     }

@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import com.journeyapps.barcodescanner.ScanOptions
 import org.dhis2.commons.Constants
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.form.R
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
 import org.dhis2.form.ui.customintent.CustomIntentInput
@@ -70,7 +71,7 @@ fun provideSearchScreen(
                                 customIntent = customIntentModel,
                                 defaultTitle =
                                     customIntentModel.name
-                                        ?: resources.getString(org.dhis2.form.R.string.select_app_intent),
+                                        ?: resources.getString(R.string.select_app_intent),
                             )
                         },
                     )
@@ -99,6 +100,7 @@ fun provideSearchScreen(
                         )
                     }
                 }
+
                 is TrackerInputAction.ValueChanged -> {
                     viewModel.onValueChange(
                         fieldUid = action.fieldUid,
@@ -161,6 +163,12 @@ fun provideSearchScreen(
                             value = it.value,
                         )
                 }
+            },
+            getOptionSetFlow = { fieldUid, optionSetUid ->
+                viewModel.getOptionSetFlow(fieldUid, optionSetUid)
+            },
+            onOptionSetSearch = { fieldUid, query ->
+                viewModel.onOptionSetSearch(fieldUid, query)
             },
         )
     }
