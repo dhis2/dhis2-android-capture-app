@@ -70,10 +70,12 @@ import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider;
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl;
 import org.dhis2.tracker.data.ProfilePictureProvider;
+import org.dhis2.tracker.search.data.OptionSetRepository;
 import org.dhis2.tracker.search.data.SearchParametersRepository;
 import org.dhis2.tracker.search.data.SearchParametersRepositoryImpl;
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepository;
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepositoryImpl;
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions;
 import org.dhis2.tracker.search.domain.FetchSearchParameters;
 import org.dhis2.tracker.search.domain.SearchTrackedEntities;
 import org.dhis2.ui.ThemeManager;
@@ -344,7 +346,8 @@ public class SearchTEModule {
             FilterManager filterManager,
             ProgramConfigurationRepository programConfigurationRepository,
             SearchTrackedEntities searchTrackedEntities,
-            FetchSearchParameters fetchSearchParameters
+            FetchSearchParameters fetchSearchParameters,
+            FetchOptionSetOptions fetchOptionSetOptions
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -365,7 +368,8 @@ public class SearchTEModule {
                 displayNameProvider,
                 filterManager,
                 searchTrackedEntities,
-                fetchSearchParameters
+                fetchSearchParameters,
+                fetchOptionSetOptions
         );
     }
 
@@ -395,6 +399,16 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
+    FetchOptionSetOptions provideFetchOptionSetOptionsUseCase(
+            OptionSetRepository optionSetRepository
+    ) {
+        return new FetchOptionSetOptions(
+                optionSetRepository
+        );
+    }
+
+    @Provides
+    @PerActivity
     SearchParametersRepository provideSearchParametersRepository(
             D2 d2,
             CustomIntentRepository customIntentRepository,
@@ -403,6 +417,18 @@ public class SearchTEModule {
         return new SearchParametersRepositoryImpl(
                 d2,
                 customIntentRepository,
+                domainErrorMapper
+        );
+    }
+
+    @Provides
+    @PerActivity
+    OptionSetRepository provideOptionSetRepository(
+            D2 d2,
+            DomainErrorMapper domainErrorMapper
+    ) {
+        return new OptionSetRepository(
+                d2,
                 domainErrorMapper
         );
     }

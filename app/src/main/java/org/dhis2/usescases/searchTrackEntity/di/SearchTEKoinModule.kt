@@ -40,6 +40,7 @@ val searchTEKoinModule =
                 filterManager = get(),
                 searchTrackedEntities = get { parametersOf(teType) },
                 fetchSearchParameters = get(),
+                fetchOptionSetOptions = get(),
             )
         }
 
@@ -69,6 +70,7 @@ val searchTEKoinModule =
                 filterManager = get(),
                 searchTrackedEntities = get { parametersOf(teType) },
                 fetchSearchParameters = get(),
+                fetchOptionSetOptions = get(),
             )
         }
     }
