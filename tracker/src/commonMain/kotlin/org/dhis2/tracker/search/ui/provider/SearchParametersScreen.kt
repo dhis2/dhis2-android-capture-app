@@ -32,6 +32,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.tracker.resources.Res
@@ -41,6 +43,8 @@ import org.dhis2.mobile.tracker.resources.optional
 import org.dhis2.mobile.tracker.resources.search
 import org.dhis2.tracker.search.model.SearchParametersUiState
 import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
+import org.dhis2.tracker.ui.input.model.TrackerOptionItem
+import org.dhis2.tracker.ui.input.model.loadOptionSetConfiguration
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -58,6 +62,8 @@ fun SearchParametersScreen(
     onSearchScreenUiEvent: (SearchScreenUiEvent) -> Unit,
     onTrackerInputUiEvent: (TrackerInputUiEvent) -> Unit,
     isLandscape: Boolean,
+    getOptionSetFlow: (fieldUid: String, optionSetUid: String) -> Flow<PagingData<TrackerOptionItem>>?,
+    onOptionSetSearch: (fieldUid: String, query: String) -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -169,12 +175,19 @@ fun SearchParametersScreen(
                             model =
                                 provideParameterSelectorItem(
                                     inputModel =
-                                    trackerInputModel,
+                                        trackerInputModel.loadOptionSetConfiguration(
+                                            getOptionSetFlow = getOptionSetFlow,
+                                            onOptionSetSearch = onOptionSetSearch,
+                                        ),
                                     helperText = stringResource(Res.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
                                         if (nextIndex < uiState.items.size) {
-                                            onTrackerInputUiEvent(TrackerInputUiEvent.OnItemClick(uiState.items[nextIndex].uid))
+                                            onTrackerInputUiEvent(
+                                                TrackerInputUiEvent.OnItemClick(
+                                                    uiState.items[nextIndex].uid,
+                                                ),
+                                            )
                                         }
                                     },
                                     onUiEvent = onTrackerInputUiEvent,
