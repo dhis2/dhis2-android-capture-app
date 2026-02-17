@@ -51,7 +51,9 @@ fun provideParameterSelectorItem(
                 TrackerInputType.QR_CODE,
                 TrackerInputType.BAR_CODE,
                 ->
-                    onUiEvent(TrackerInputUiEvent.OnScanButtonClicked(inputModel.uid))
+                    onUiEvent(
+                        TrackerInputUiEvent.OnScanButtonClicked(inputModel.uid, inputModel.optionSet, inputModel.valueType),
+                    )
 
                 else -> {
                     // no-op

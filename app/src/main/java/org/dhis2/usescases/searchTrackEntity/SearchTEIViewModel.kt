@@ -44,7 +44,6 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.ui.customintent.CustomIntentResult
-import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
@@ -57,6 +56,7 @@ import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.FetchSearchParametersData
+import org.dhis2.tracker.search.model.SearchParametersUiState
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
@@ -64,11 +64,9 @@ import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toTrackerInputModel
-import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.hisp.dhis.android.core.arch.helpers.Result
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.maplibre.geojson.Feature
@@ -473,7 +471,11 @@ class SearchTEIViewModel(
             val isOnline = searching && networkUtils.isOnline()
             val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-            val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+            val allowCache =
+                searchRepositoryKt.saveSearchValuesAndGetAllowCache(
+                    queryData,
+                    selectedProgram?.uid(),
+                )
             val newTrackerSearchModel =
                 SearchTrackedEntitiesInput(
                     selectedProgram = selectedProgram?.uid(),
@@ -512,7 +514,11 @@ class SearchTEIViewModel(
             val excludeValues = searchRepositoryKt.getExcludeValues()
             val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-            val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+            val allowCache =
+                searchRepositoryKt.saveSearchValuesAndGetAllowCache(
+                    queryData,
+                    selectedProgram?.uid(),
+                )
             val newTrackerSearchModel =
                 SearchTrackedEntitiesInput(
                     selectedProgram = selectedProgram?.uid(),
@@ -552,7 +558,11 @@ class SearchTEIViewModel(
                 val isOnline = searching && networkUtils.isOnline()
                 val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-                val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+                val allowCache =
+                    searchRepositoryKt.saveSearchValuesAndGetAllowCache(
+                        queryData,
+                        selectedProgram?.uid(),
+                    )
                 val newTrackerSearchModel =
                     SearchTrackedEntitiesInput(
                         selectedProgram = null,
@@ -1027,77 +1037,14 @@ class SearchTEIViewModel(
             }
     }
 
-    fun onParameterIntent(formIntent: FormIntent) =
-        when (formIntent) {
-            is FormIntent.OnTextChange -> {
-                updateQuery(
-                    formIntent.uid,
-                    formIntent.value?.split(","),
-                )
-            }
-
-            is FormIntent.OnSave -> {
-                updateQuery(
-                    formIntent.uid,
-                    formIntent.value?.split(","),
-                )
-            }
-
-            is FormIntent.OnQrCodeScanned -> {
-                onQrCodeScanned(formIntent)
-            }
-
-            is FormIntent.OnFocus -> {
-                val updatedItems =
-                    searchParametersUiState.items.map { field ->
-                        if (field.focused && field.uid != formIntent.uid) {
-                            val validation =
-                                field.value
-                                    ?.takeIf {
-                                        field.valueType in
-                                            listOf(
-                                                TrackerInputType.DATE,
-                                                TrackerInputType.DATE_TIME,
-                                                TrackerInputType.AGE,
-                                                TrackerInputType.TIME,
-                                            )
-                                    }?.let { value ->
-                                        searchRepositoryKt.validateValue(field.valueType, value)
-                                    }
-                            field.copy(
-                                focused = false,
-                                error =
-                                    when (validation) {
-                                        is Result.Failure<*, *> -> resourceManager.getString(R.string.formatting_error)
-                                        else -> null
-                                    },
-                            )
-                        } else if (field.uid == formIntent.uid) {
-                            field.copy(focused = true)
-                        } else {
-                            field
-                        }
-                    }
-                searchParametersUiState = searchParametersUiState.copy(items = updatedItems)
-            }
-
-            is FormIntent.ClearValue -> {
-                updateQuery(
-                    formIntent.uid,
-                    null,
-                )
-            }
-
-            else -> {
-                // no-op
-            }
-        }
-
-    private fun onQrCodeScanned(formIntent: FormIntent.OnQrCodeScanned) {
+    private fun onQrCodeScanned(
+        uid: String,
+        value: String?,
+    ) {
         viewModelScope.launch {
             updateQuery(
-                formIntent.uid,
-                formIntent.value?.let { listOf(it) },
+                uid,
+                value?.let { listOf(it) },
             )
 
             searching = queryData.isNotEmpty()
@@ -1236,7 +1183,7 @@ class SearchTEIViewModel(
         fetchMapResults()
     }
 
-    fun onLaunchCustomIntent(
+    fun launchCustomIntent(
         fieldUid: FieldUid,
         customIntentUid: CustomIntentUid,
     ) {
@@ -1250,6 +1197,39 @@ class SearchTEIViewModel(
                 )
             }
         }
+    }
+
+    fun launchScan(
+        fieldUid: String,
+        optionSet: String?,
+        renderType: TrackerInputType,
+    ) {
+        val scanType =
+            if (renderType == TrackerInputType.QR_CODE) {
+                TrackerInputType.QR_CODE
+            } else {
+                TrackerInputType.BAR_CODE
+            }
+
+        viewModelScope.launch {
+            _searchActions.send(
+                TrackerInputAction.Scan(
+                    fieldUid = fieldUid,
+                    optionSet = optionSet,
+                    renderType = scanType,
+                ),
+            )
+        }
+    }
+
+    fun onValueChange(
+        fieldUid: String,
+        value: String?,
+    ) {
+        updateQuery(
+            fieldUid,
+            value?.let { listOf(value) },
+        )
     }
 
     fun onItemClick(fieldUid: FieldUid) {
@@ -1284,6 +1264,22 @@ class SearchTEIViewModel(
                     listOf(customIntentResult.value),
                 )
             }
+        }
+    }
+
+    fun handleScanResult(
+        fieldUid: String,
+        value: String?,
+    ) {
+        onQrCodeScanned(
+            uid = fieldUid,
+            value = value,
+        )
+        value?.let {
+            updateSearchParameters(
+                uid = fieldUid,
+                values = listOf(value),
+            )
         }
     }
 }

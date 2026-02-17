@@ -296,6 +296,16 @@ class SearchRepositoryImplKt(
                 TrackerInputType.DATE -> {
                     ValueType.DATE.validator.validate(value)
                 }
+                TrackerInputType.DATE_TIME -> {
+                    ValueType.DATETIME.validator.validate(value)
+                }
+                TrackerInputType.TIME -> {
+                    ValueType.TIME.validator.validate(value)
+                }
+
+                TrackerInputType.AGE -> {
+                    ValueType.AGE.validator.validate(value)
+                }
 
                 else -> {
                     false
