@@ -2,7 +2,7 @@ package org.dhis2.tracker.search.data
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import org.dhis2.tracker.ui.input.model.TrackerOptionItem
+import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 
 /**
  * Repository for fetching option set data.

@@ -2,10 +2,10 @@ package org.dhis2.tracker.search.model
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 
 data class SearchParametersUiState(
-    val items: List<TrackerInputModel> = listOf(),
+    val items: List<TrackerInputUiState> = listOf(),
     val minAttributesMessage: String? = null,
     private val _shouldShowMinAttributeWarning: MutableSharedFlow<Boolean> =
         MutableSharedFlow(

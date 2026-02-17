@@ -1,7 +1,7 @@
-package org.dhis2.tracker.ui.input.action
+package org.dhis2.tracker.input.ui.action
 
 import org.dhis2.mobile.commons.model.CustomIntentModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.input.model.TrackerInputType
 
 typealias CustomIntentUid = String
 typealias FieldUid = String

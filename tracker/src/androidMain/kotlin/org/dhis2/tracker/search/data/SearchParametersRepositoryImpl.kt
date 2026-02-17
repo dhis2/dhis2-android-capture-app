@@ -3,9 +3,9 @@ package org.dhis2.tracker.search.data
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchParameterModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.arch.repositories.scope.internal.TrackerSearchOperator

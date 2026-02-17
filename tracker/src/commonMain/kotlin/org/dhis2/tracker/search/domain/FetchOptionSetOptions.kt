@@ -4,8 +4,8 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.search.data.OptionSetRepository
-import org.dhis2.tracker.ui.input.model.TrackerOptionItem
 
 /**
  * Use case for fetching option set options with pagination.

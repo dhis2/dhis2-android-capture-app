@@ -1,6 +1,6 @@
 package org.dhis2.tracker.search.model
 
-import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.input.model.TrackerInputType
 
 data class SearchParameterModel(
     val uid: String,

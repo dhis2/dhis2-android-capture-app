@@ -1,17 +1,17 @@
-package org.dhis2.tracker.ui.input.provider
+package org.dhis2.tracker.input.ui.provider
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
-import org.dhis2.tracker.ui.input.model.inputState
-import org.dhis2.tracker.ui.input.model.supportingText
-import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
-import org.hisp.dhis.mobile.ui.designsystem.component.InputCheckBox
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
+import org.dhis2.tracker.input.ui.state.inputState
+import org.dhis2.tracker.input.ui.state.supportingText
+import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
-fun TrackerCheckboxInputProvider(
-    model: TrackerInputModel,
+fun TrackerRadioButtonInputProvider(
+    model: TrackerInputUiState,
     inputStyle: InputStyle,
     modifier: Modifier,
     onValueChange: (String?) -> Unit,
@@ -22,10 +22,10 @@ fun TrackerCheckboxInputProvider(
                 optionDataList?.forEach { optionData ->
                     put(
                         optionData.code,
-                        CheckBoxData(
+                        RadioButtonData(
                             uid = optionData.code,
-                            checked = model.value == optionData.code,
-                            enabled = model.editable,
+                            selected = model.value == optionData.code,
+                            enabled = true,
                             textInput = optionData.displayName,
                         ),
                     )
@@ -35,22 +35,24 @@ fun TrackerCheckboxInputProvider(
 
     val (codeList, data) = dataMap.toList().unzip()
 
-    InputCheckBox(
+    InputRadioButton(
         modifier = modifier,
         inputStyle = inputStyle,
         title = model.label,
-        checkBoxData = data,
+        radioButtonData = data,
         orientation = model.orientation,
         state = model.inputState(),
         supportingText = model.supportingText(),
         legendData = model.legend,
         isRequired = model.mandatory,
+        itemSelected = data.find { it.selected },
         onItemChange = { item ->
-            val selectedIndex = data.indexOf(item)
-            onValueChange(if (item.checked) null else codeList[selectedIndex])
-        },
-        onClearSelection = {
-            onValueChange(null)
+            if (item != null) {
+                val selectedIndex = data.indexOf(item)
+                onValueChange(codeList[selectedIndex])
+            } else {
+                onValueChange(null)
+            }
         },
     )
 }

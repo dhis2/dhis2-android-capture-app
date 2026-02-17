@@ -1,4 +1,4 @@
-package org.dhis2.tracker.ui.input.model
+package org.dhis2.tracker.input.ui.state
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,6 +15,7 @@ import org.dhis2.mobile.tracker.resources.equal_search_operator
 import org.dhis2.mobile.tracker.resources.no
 import org.dhis2.mobile.tracker.resources.starts_with_search_operator
 import org.dhis2.mobile.tracker.resources.yes
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.model.SearchOperator
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
@@ -23,8 +24,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.jetbrains.compose.resources.stringResource
 
-// TODO (Rename to TrackerInputUiState
-data class TrackerInputModel(
+data class TrackerInputUiState(
     val uid: String,
     val label: String,
     val value: String?,
@@ -47,7 +47,7 @@ data class TrackerInputModel(
 )
 
 @Composable
-fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
+fun TrackerInputUiState.supportingText(): List<SupportingTextData>? =
     listOfNotNull(
         error?.let {
             SupportingTextData(
@@ -77,7 +77,7 @@ fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
         },
     ).ifEmpty { null }
 
-fun TrackerInputModel.inputState(): InputShellState =
+fun TrackerInputUiState.inputState(): InputShellState =
     when {
         !editable -> InputShellState.DISABLED
         error != null -> InputShellState.ERROR
@@ -98,10 +98,10 @@ private fun SearchOperator.supportingTextString() =
     }
 
 @Composable
-fun TrackerInputModel.loadOptionSetConfiguration(
+fun TrackerInputUiState.loadOptionSetConfiguration(
     getOptionSetFlow: (fieldUid: String, optionSetUid: String) -> Flow<PagingData<TrackerOptionItem>>?,
     onOptionSetSearch: (fieldUid: String, query: String) -> Unit,
-): TrackerInputModel =
+): TrackerInputUiState =
     when {
         valueType == TrackerInputType.YES_ONLY_CHECKBOX ||
             valueType == TrackerInputType.YES_ONLY_SWITCH ->
@@ -125,7 +125,7 @@ fun TrackerInputModel.loadOptionSetConfiguration(
     }
 
 @Composable
-private fun TrackerInputModel.getBooleanOptionConfiguration(): TrackerInputModel {
+private fun TrackerInputUiState.getBooleanOptionConfiguration(): TrackerInputUiState {
     val booleanConfiguration =
         TrackerOptionSetConfiguration(
             options =
@@ -145,10 +145,10 @@ private fun TrackerInputModel.getBooleanOptionConfiguration(): TrackerInputModel
 }
 
 @Composable
-private fun TrackerInputModel.loadWithOptionSetFlow(
+private fun TrackerInputUiState.loadWithOptionSetFlow(
     optionSetFlow: Flow<PagingData<TrackerOptionItem>>?,
     onSearch: ((String) -> Unit)?,
-): TrackerInputModel {
+): TrackerInputUiState {
     if (optionSetFlow == null) return this
 
     val optionsData = optionSetFlow.collectAsLazyPagingItems()

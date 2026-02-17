@@ -53,6 +53,12 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.ui.action.CustomIntentUid
+import org.dhis2.tracker.input.ui.action.FieldUid
+import org.dhis2.tracker.input.ui.action.TrackerInputAction
+import org.dhis2.tracker.input.ui.mapper.toTrackerInputUiState
+import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
 import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
@@ -60,13 +66,7 @@ import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.SearchParametersUiState
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
-import org.dhis2.tracker.ui.input.action.CustomIntentUid
-import org.dhis2.tracker.ui.input.action.FieldUid
-import org.dhis2.tracker.ui.input.action.TrackerInputAction
-import org.dhis2.tracker.ui.input.model.TrackerInputType
-import org.dhis2.tracker.ui.input.model.TrackerOptionItem
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toTrackerInputModel
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
@@ -1082,7 +1082,7 @@ class SearchTEIViewModel(
                                 searchParametersUiState.copy(
                                     items =
                                         searchParameters.map { searchParameter ->
-                                            searchParameter.toTrackerInputModel()
+                                            searchParameter.toTrackerInputUiState()
                                         },
                                 )
                         },

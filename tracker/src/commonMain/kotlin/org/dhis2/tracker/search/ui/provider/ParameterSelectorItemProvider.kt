@@ -6,10 +6,10 @@ import androidx.compose.material.icons.outlined.QrCode2
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
-import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.ui.input.provider.TrackerInputProvider
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
+import org.dhis2.tracker.input.ui.provider.TrackerInputProvider
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
@@ -17,7 +17,7 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 
 @Composable
 fun provideParameterSelectorItem(
-    inputModel: TrackerInputModel,
+    inputModel: TrackerInputUiState,
     helperText: String,
     onNextClicked: () -> Unit,
     onUiEvent: (TrackerInputUiEvent) -> Unit,

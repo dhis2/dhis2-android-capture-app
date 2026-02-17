@@ -1,12 +1,12 @@
-package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
+package org.dhis2.tracker.input.ui.mapper
 
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.search.model.SearchParameterModel
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 
-fun SearchParameterModel.toTrackerInputModel() =
-    TrackerInputModel(
+fun SearchParameterModel.toTrackerInputUiState() =
+    TrackerInputUiState(
         uid = uid,
         label = label,
         value = null,

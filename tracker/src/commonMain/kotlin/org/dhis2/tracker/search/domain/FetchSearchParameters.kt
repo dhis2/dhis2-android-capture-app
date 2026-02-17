@@ -4,10 +4,10 @@ import kotlinx.coroutines.withContext
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.data.SearchParametersRepository
 import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.SearchParameterModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
 
 class FetchSearchParameters(
     val dispatcher: Dispatcher,

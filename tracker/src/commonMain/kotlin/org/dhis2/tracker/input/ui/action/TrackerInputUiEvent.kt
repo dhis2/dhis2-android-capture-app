@@ -1,6 +1,7 @@
-package org.dhis2.tracker.ui.input.model
+package org.dhis2.tracker.input.ui.action
 
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.input.model.TrackerInputType
 
 sealed interface TrackerInputUiEvent {
     data class OnScanButtonClicked(

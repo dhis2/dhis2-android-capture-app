@@ -14,10 +14,10 @@ import org.dhis2.form.ui.customintent.CustomIntentActivityResultContract
 import org.dhis2.form.ui.customintent.CustomIntentInput
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
-import org.dhis2.tracker.search.ui.provider.SearchParametersScreen
-import org.dhis2.tracker.search.ui.provider.SearchScreenUiEvent
-import org.dhis2.tracker.ui.input.action.TrackerInputAction
-import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
+import org.dhis2.tracker.input.ui.action.TrackerInputAction
+import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
+import org.dhis2.tracker.search.ui.action.SearchScreenUiEvent
+import org.dhis2.tracker.search.ui.screen.SearchParametersScreen
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 
 fun provideSearchScreen(

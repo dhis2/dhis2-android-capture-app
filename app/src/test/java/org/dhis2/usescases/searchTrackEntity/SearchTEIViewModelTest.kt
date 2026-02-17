@@ -28,12 +28,12 @@ import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.ui.action.TrackerInputAction
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
-import org.dhis2.tracker.ui.input.action.TrackerInputAction
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -904,7 +904,7 @@ class SearchTEIViewModelTest {
 
     private fun customIntentFieldUIModels() =
         listOf(
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "fieldUid",
                 label = "CustomIntent",
                 value = null,
@@ -927,9 +927,9 @@ class SearchTEIViewModelTest {
             ),
         )
 
-    private fun getMalformedDateFieldUIModels(): List<TrackerInputModel> =
+    private fun getMalformedDateFieldUIModels(): List<TrackerInputUiState> =
         listOf(
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid1",
                 label = "Date",
                 value = "04",
@@ -952,9 +952,9 @@ class SearchTEIViewModelTest {
             ),
         )
 
-    private fun getTrackerInputModels(): List<TrackerInputModel> =
+    private fun getTrackerInputModels(): List<TrackerInputUiState> =
         listOf(
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid1",
                 label = "Org Unit",
                 value = "orgUnitUid",
@@ -975,7 +975,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid",
                 label = "Gender",
                 value = "M",
@@ -996,7 +996,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid3",
                 label = "Date",
                 value = "2024-02-21",
@@ -1017,7 +1017,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid4",
                 label = "Date and Time",
                 value = "2024-02-21T01:00",
@@ -1038,7 +1038,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid5",
                 label = "Boolean",
                 value = "false",
@@ -1059,7 +1059,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid6",
                 label = "Yes Only",
                 value = "true",
@@ -1080,7 +1080,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid7",
                 label = "Text",
                 value = "Text value",
@@ -1101,7 +1101,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid8",
                 label = "Other field",
                 value = null,
@@ -1122,7 +1122,7 @@ class SearchTEIViewModelTest {
                 error = null,
                 warning = null,
             ),
-            TrackerInputModel(
+            TrackerInputUiState(
                 uid = "uid9",
                 label = "Percentage",
                 value = "18",
