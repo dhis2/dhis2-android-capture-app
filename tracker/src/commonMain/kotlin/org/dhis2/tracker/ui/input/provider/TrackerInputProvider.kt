@@ -494,6 +494,7 @@ fun TrackerInputProvider(
                             uid = inputModel.uid,
                             label = inputModel.label,
                             value = inputModel.value,
+                            orgUnitSelectorScope = inputModel.orgUnitSelectorScope,
                         ),
                     )
                 },
@@ -564,6 +565,8 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnScanButtonClicked(
                             uid = inputModel.uid,
+                            optionSet = inputModel.optionSet,
+                            renderType = inputModel.valueType,
                         ),
                     )
                 },
@@ -598,6 +601,8 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnScanButtonClicked(
                             uid = inputModel.uid,
+                            optionSet = inputModel.optionSet,
+                            renderType = inputModel.valueType,
                         ),
                     )
                 },
