@@ -1,5 +1,6 @@
 package org.dhis2.tracker.input.model
 
+// TODO (This should be moved to domain
 enum class TrackerInputType {
     TEXT,
     LONG_TEXT,
