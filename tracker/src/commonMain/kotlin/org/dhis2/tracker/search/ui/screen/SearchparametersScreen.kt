@@ -44,9 +44,9 @@ import org.dhis2.mobile.tracker.resources.search
 import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.input.ui.state.loadOptionSetConfiguration
+import org.dhis2.tracker.search.model.SearchParametersUiState
 import org.dhis2.tracker.search.ui.action.SearchScreenUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
-import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -89,7 +89,7 @@ fun SearchParametersScreen(
         uiState.isOnBackPressed.collectLatest {
             if (it) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked)
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked())
             }
         }
     }
@@ -107,12 +107,12 @@ fun SearchParametersScreen(
         }
 
     Scaffold(
-        containerColor = Color.Transparent,
+        containerColor = Color.Companion.Transparent,
         snackbarHost = {
             SnackbarHost(
                 hostState = snackBarHostState,
                 modifier =
-                    Modifier.padding(
+                    Modifier.Companion.padding(
                         start = 8.dp,
                         top = 8.dp,
                         end = 8.dp,
@@ -124,9 +124,9 @@ fun SearchParametersScreen(
         val layoutDirection = LocalLayoutDirection.current
         Column(
             modifier =
-                Modifier
+                Modifier.Companion
                     .fillMaxSize()
-                    .background(color = Color.White, shape = backgroundShape)
+                    .background(color = Color.Companion.White, shape = backgroundShape)
                     .padding(
                         top = 0.dp,
                         bottom = paddingValues.calculateBottomPadding(),
@@ -136,20 +136,20 @@ fun SearchParametersScreen(
         ) {
             LazyColumn(
                 modifier =
-                    Modifier
+                    Modifier.Companion
                         .weight(1F),
             ) {
                 if (uiState.items.isEmpty()) {
                     item {
                         Box(
                             modifier =
-                                Modifier
+                                Modifier.Companion
                                     .fillMaxWidth()
                                     .padding(16.dp),
-                            contentAlignment = Alignment.Center,
+                            contentAlignment = Alignment.Companion.Center,
                         ) {
                             InfoBar(
-                                modifier = Modifier.testTag("EMPTY_SEARCH_ATTRIBUTES_TEXT_TAG"),
+                                modifier = Modifier.Companion.testTag("EMPTY_SEARCH_ATTRIBUTES_TEXT_TAG"),
                                 text = stringResource(Res.string.empty_search_attributes_message),
                                 icon = {
                                     Icon(
@@ -172,7 +172,7 @@ fun SearchParametersScreen(
                     ) { index, trackerInputModel ->
                         ParameterSelectorItem(
                             modifier =
-                                Modifier
+                                Modifier.Companion
                                     .testTag("SEARCH_PARAM_ITEM"),
                             model =
                                 provideParameterSelectorItem(
@@ -201,11 +201,11 @@ fun SearchParametersScreen(
                 if (uiState.clearSearchEnabled) {
                     item {
                         Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.Companion.fillMaxWidth(),
+                            contentAlignment = Alignment.Companion.Center,
                         ) {
                             Button(
-                                modifier = Modifier.padding(16.dp, 24.dp, 16.dp, 8.dp),
+                                modifier = Modifier.Companion.padding(16.dp, 24.dp, 16.dp, 8.dp),
                                 style = ButtonStyle.TEXT,
                                 text = stringResource(Res.string.clear_search),
                                 icon = {
@@ -217,7 +217,7 @@ fun SearchParametersScreen(
                                 },
                             ) {
                                 focusManager.clearFocus()
-                                onSearchScreenUiEvent(SearchScreenUiEvent.OnClearSearchButtonClicked)
+                                onSearchScreenUiEvent(SearchScreenUiEvent.OnClearSearchButtonClicked())
                             }
                         }
                     }
@@ -227,7 +227,7 @@ fun SearchParametersScreen(
             Button(
                 enabled = uiState.searchEnabled,
                 modifier =
-                    Modifier
+                    Modifier.Companion
                         .fillMaxWidth()
                         .padding(16.dp, 8.dp, 16.dp, 8.dp)
                         .testTag("SEARCH_BUTTON"),
@@ -248,7 +248,7 @@ fun SearchParametersScreen(
                 },
             ) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked)
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked())
             }
         }
     }
