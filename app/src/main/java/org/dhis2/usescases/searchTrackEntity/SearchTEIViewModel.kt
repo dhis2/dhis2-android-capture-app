@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
@@ -53,6 +54,7 @@ import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.FetchSearchParametersData
@@ -62,6 +64,7 @@ import org.dhis2.tracker.ui.input.action.CustomIntentUid
 import org.dhis2.tracker.ui.input.action.FieldUid
 import org.dhis2.tracker.ui.input.action.TrackerInputAction
 import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.ui.input.model.TrackerOptionItem
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
 import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toTrackerInputModel
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
@@ -89,8 +92,15 @@ class SearchTEIViewModel(
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
     private val fetchSearchParameters: FetchSearchParameters,
+    private val fetchOptionSetOptions: FetchOptionSetOptions,
 ) : ViewModel() {
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
+
+    // Store option set flows per field UID
+    private val optionSetFlows = mutableMapOf<String, Flow<PagingData<TrackerOptionItem>>>()
+
+    // Store search query states for option sets
+    private val optionSetSearchQueries = mutableMapOf<String, MutableStateFlow<String?>>()
 
     private val pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
 
@@ -183,6 +193,52 @@ class SearchTEIViewModel(
                 searchRepository.trackedEntityType.displayName(),
             )
         }
+    }
+
+    /**
+     * Get or create option set flow for a given field.
+     */
+    fun getOptionSetFlow(
+        fieldUid: String,
+        optionSetUid: String,
+    ): Flow<PagingData<TrackerOptionItem>> =
+        optionSetFlows.getOrPut(fieldUid) {
+            flow {
+                val searchQuery =
+                    optionSetSearchQueries.getOrPut(fieldUid) {
+                        MutableStateFlow(null)
+                    }
+
+                searchQuery.collect { query ->
+                    val result =
+                        fetchOptionSetOptions(
+                            FetchOptionSetOptions.Params(
+                                optionSetUid = optionSetUid,
+                                pageSize = 10,
+                                searchQuery = query,
+                            ),
+                        )
+
+                    result.fold(
+                        onSuccess = { optionsFlow ->
+                            emitAll(optionsFlow)
+                        },
+                        onFailure = {
+                            emit(PagingData.empty())
+                        },
+                    )
+                }
+            }.cachedIn(viewModelScope)
+        }
+
+    /**
+     * Handle search in option sets.
+     */
+    fun onOptionSetSearch(
+        fieldUid: String,
+        query: String,
+    ) {
+        optionSetSearchQueries[fieldUid]?.value = query.takeIf { it.isNotBlank() }
     }
 
     private fun loadNavigationBarItems() {
@@ -1026,7 +1082,9 @@ class SearchTEIViewModel(
                                 searchParametersUiState.copy(
                                     items =
                                         searchParameters.map { searchParameter ->
-                                            searchParameter.toTrackerInputModel()
+                                            searchParameter.toTrackerInputModel(
+                                                resourceManager = resourceManager,
+                                            )
                                         },
                                 )
                         },

@@ -5,10 +5,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
-import org.dhis2.form.model.OptionSetConfiguration
 import org.dhis2.tracker.search.model.SearchParameterModel
 import org.dhis2.tracker.ui.input.model.TrackerInputModel
 import org.dhis2.tracker.ui.input.model.TrackerInputType
@@ -16,11 +17,13 @@ import org.dhis2.tracker.ui.input.model.TrackerOptionItem
 import org.dhis2.tracker.ui.input.model.TrackerOptionSetConfiguration
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 
-// TODO remove Mapper
-fun SearchParameterModel.toTrackerInputModel(): TrackerInputModel {
-    // TODO manage optionSet Flow configuration
-
-    return TrackerInputModel(
+/**
+ * Converts SearchParameterModel to TrackerInputModel for UI rendering.
+ *
+ * @param resourceManager For resolving string resources
+ */
+fun SearchParameterModel.toTrackerInputModel(resourceManager: ResourceManager): TrackerInputModel =
+    TrackerInputModel(
         uid = uid,
         label = label,
         value = null,
@@ -34,16 +37,52 @@ fun SearchParameterModel.toTrackerInputModel(): TrackerInputModel {
         editable = true,
         legend = null,
         orientation = inputType.getOrientation(),
-        optionSetConfiguration = null, // TODO(Remove when refactored option set configuration)
-//            when (inputType) {
-//                ValueType.BOOLEAN -> getBooleanOptionConfiguration(resourceManager)
-//                else -> optionSetConfiguration?.toTrackerOptionSetConfiguration(fetchOptions)
-//            },
+        optionSetConfiguration =
+            when {
+                inputType == TrackerInputType.YES_ONLY_CHECKBOX ||
+                    inputType == TrackerInputType.YES_ONLY_SWITCH ->
+                    getBooleanOptionConfiguration(resourceManager)
+                else -> null
+            },
         customIntentUid = customIntentUid,
         displayName = null,
         orgUnitSelectorScope = null,
         searchOperator = searchOperator,
         minCharactersToSearch = minCharactersToSearch,
+    )
+
+/**
+ * Composable extension to enrich TrackerInputModel with option set data from a flow.
+ * Use this in the UI layer to dynamically populate option sets.
+ */
+@Composable
+fun TrackerInputModel.enrichWithOptionSetFlow(
+    optionSetFlow: Flow<PagingData<TrackerOptionItem>>?,
+    onSearch: ((String) -> Unit)?,
+): TrackerInputModel {
+    if (optionSetFlow == null) return this
+
+    val optionsData = optionSetFlow.collectAsLazyPagingItems()
+
+    LaunchedEffect(Unit) {
+        optionsData.refresh()
+    }
+
+    val options by remember {
+        derivedStateOf {
+            (0 until optionsData.itemCount).mapNotNull { index ->
+                optionsData[index]
+            }
+        }
+    }
+
+    return copy(
+        optionSetConfiguration =
+            TrackerOptionSetConfiguration(
+                options = options,
+                onSearch = onSearch,
+                onLoadOptions = { optionsData.refresh() },
+            ),
     )
 }
 
@@ -55,34 +94,6 @@ private fun TrackerInputType.getOrientation(): Orientation =
 
         else -> Orientation.VERTICAL
     }
-
-// TODO(Remove when refactored option set configuration)
-@Composable
-private fun OptionSetConfiguration.toTrackerOptionSetConfiguration(fetchOptions: () -> Unit): TrackerOptionSetConfiguration {
-    val optionsData =
-        optionFlow
-            .collectAsLazyPagingItems()
-            .also { LaunchedEffect(this) { it.refresh() } }
-
-    val options by remember {
-        derivedStateOf {
-            (0 until (optionsData.itemCount)).mapNotNull { index ->
-                optionsData[index]?.let { optionData ->
-                    TrackerOptionItem(
-                        code = optionData.option.code() ?: "",
-                        displayName = optionData.option.displayName() ?: "",
-                    )
-                }
-            }
-        }
-    }
-
-    return TrackerOptionSetConfiguration(
-        options = options,
-        onSearch = onSearch,
-        onLoadOptions = fetchOptions,
-    )
-}
 
 internal fun getBooleanOptionConfiguration(resourceManager: ResourceManager) =
     TrackerOptionSetConfiguration(
