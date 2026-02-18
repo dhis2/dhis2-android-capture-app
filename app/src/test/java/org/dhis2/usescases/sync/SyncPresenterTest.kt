@@ -2,7 +2,6 @@ package org.dhis2.usescases.sync
 
 import io.reactivex.Completable
 import io.reactivex.Single
-import org.dhis2.commons.Constants
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
@@ -98,6 +97,6 @@ class SyncPresenterTest {
     ) = SyncJobStatus(
         status = state,
         message = message,
-        tags = listOf(Constants.META_NOW),
+        tags = listOf("METADATA_SYNC_NOW"),
     )
 }
