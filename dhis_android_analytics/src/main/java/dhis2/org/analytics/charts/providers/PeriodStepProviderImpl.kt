@@ -77,6 +77,7 @@ class PeriodStepProviderImpl(
             PeriodType.Weekly,
             PeriodType.WeeklyWednesday,
             PeriodType.WeeklyThursday,
+            PeriodType.WeeklyFriday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
             -> {
@@ -111,9 +112,13 @@ class PeriodStepProviderImpl(
             PeriodType.QuarterlyNov,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
+            PeriodType.FinancialFeb,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
+            PeriodType.FinancialAug,
+            PeriodType.FinancialSep,
             PeriodType.FinancialOct,
+            PeriodType.FinancialNov,
             ->
                 formattedDate =
                     periodString.format(
@@ -173,6 +178,7 @@ class PeriodStepProviderImpl(
             PeriodType.Weekly,
             PeriodType.WeeklyWednesday,
             PeriodType.WeeklyThursday,
+            PeriodType.WeeklyFriday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
             ->
@@ -223,8 +229,11 @@ class PeriodStepProviderImpl(
                     ).months / 6
 
             PeriodType.Yearly,
+            PeriodType.FinancialFeb,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
+            PeriodType.FinancialAug,
+            PeriodType.FinancialSep,
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
             ->

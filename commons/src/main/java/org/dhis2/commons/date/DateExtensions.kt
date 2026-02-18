@@ -186,10 +186,11 @@ fun Date?.toUi(): String? = this?.let { DateUtils.uiDateFormat().format(this) }
 fun Dhis2PeriodType.toUiStringResource() =
     when (this) {
         Dhis2PeriodType.Weekly,
+        Dhis2PeriodType.WeeklyWednesday,
+        Dhis2PeriodType.WeeklyThursday,
+        Dhis2PeriodType.WeeklyFriday,
         Dhis2PeriodType.WeeklySaturday,
         Dhis2PeriodType.WeeklySunday,
-        Dhis2PeriodType.WeeklyThursday,
-        Dhis2PeriodType.WeeklyWednesday,
         -> R.string.period_weekly_title
 
         Dhis2PeriodType.BiWeekly -> R.string.period_biweekly_title
@@ -205,8 +206,11 @@ fun Dhis2PeriodType.toUiStringResource() =
         -> R.string.period_six_monthly_title
 
         Dhis2PeriodType.Yearly -> R.string.period_yearly_title
+        Dhis2PeriodType.FinancialFeb,
         Dhis2PeriodType.FinancialApril,
         Dhis2PeriodType.FinancialJuly,
+        Dhis2PeriodType.FinancialAug,
+        Dhis2PeriodType.FinancialSep,
         Dhis2PeriodType.FinancialOct,
         Dhis2PeriodType.FinancialNov,
         -> R.string.period_financial_year_title
