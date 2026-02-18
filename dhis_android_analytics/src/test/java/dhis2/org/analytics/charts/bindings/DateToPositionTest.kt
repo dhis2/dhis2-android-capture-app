@@ -32,10 +32,11 @@ class DateToPositionTest {
         listOf(
             PeriodType.Daily,
             PeriodType.Weekly,
+            PeriodType.WeeklyWednesday,
+            PeriodType.WeeklyThursday,
+            PeriodType.WeeklyFriday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
-            PeriodType.WeeklyThursday,
-            PeriodType.WeeklyWednesday,
             PeriodType.BiWeekly,
             PeriodType.Monthly,
             PeriodType.BiMonthly,
@@ -82,12 +83,18 @@ class DateToPositionTest {
                 2f,
                 3f,
                 4f,
+                5f,
+                6f,
+                7f,
             )
 
         listOf(
             PeriodType.Yearly,
+            PeriodType.FinancialFeb,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
+            PeriodType.FinancialAug,
+            PeriodType.FinancialSep,
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
         ).forEach { period ->

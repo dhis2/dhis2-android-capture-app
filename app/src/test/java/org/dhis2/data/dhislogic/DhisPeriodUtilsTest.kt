@@ -155,6 +155,31 @@ class DhisPeriodUtilsTest {
     }
 
     @Test
+    fun `WeeklyFriday period should return expected result`() {
+        whenever(
+            periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                PeriodType.WeeklyFriday,
+                testDate,
+            ),
+        ) doReturn
+            Period
+                .builder()
+                .periodId("2019ThuW2")
+                .startDate(GregorianCalendar(2019, 0, 11).time)
+                .endDate(GregorianCalendar(2019, 0, 17).time)
+                .build()
+
+        Assert.assertEquals(
+            "Week 2 2019-01-10 To 2019-01-16",
+            periodUtils.getPeriodUIString(
+                PeriodType.WeeklyFriday,
+                testDate,
+                Locale.ENGLISH,
+            ),
+        )
+    }
+
+    @Test
     fun `WeeklySaturday period should return expected result`() {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
@@ -431,6 +456,31 @@ class DhisPeriodUtilsTest {
     }
 
     @Test
+    fun `FinancialFeb period should return expected result`() {
+        whenever(
+            periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                PeriodType.FinancialFeb,
+                testDate,
+            ),
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 1, 1).time)
+                .endDate(GregorianCalendar(2019, 0, 31).time)
+                .build()
+
+        Assert.assertEquals(
+            "Feb 2018 - Jan 2019",
+            periodUtils.getPeriodUIString(
+                PeriodType.FinancialFeb,
+                testDate,
+                Locale.ENGLISH,
+            ),
+        )
+    }
+
+    @Test
     fun `FinancialApril period should return expected result`() {
         whenever(
             periodHelper.blockingGetPeriodForPeriodTypeAndDate(
@@ -474,6 +524,56 @@ class DhisPeriodUtilsTest {
             "Jul 2018 - Jun 2019",
             periodUtils.getPeriodUIString(
                 PeriodType.FinancialJuly,
+                testDate,
+                Locale.ENGLISH,
+            ),
+        )
+    }
+
+    @Test
+    fun `FinancialAug period should return expected result`() {
+        whenever(
+            periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                PeriodType.FinancialAug,
+                testDate,
+            ),
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 7, 1).time)
+                .endDate(GregorianCalendar(2019, 6, 31).time)
+                .build()
+
+        Assert.assertEquals(
+            "Aug 2018 - Jul 2019",
+            periodUtils.getPeriodUIString(
+                PeriodType.FinancialAug,
+                testDate,
+                Locale.ENGLISH,
+            ),
+        )
+    }
+
+    @Test
+    fun `FinancialSep period should return expected result`() {
+        whenever(
+            periodHelper.blockingGetPeriodForPeriodTypeAndDate(
+                PeriodType.FinancialSep,
+                testDate,
+            ),
+        ) doReturn
+            Period
+                .builder()
+                .periodId("periodId")
+                .startDate(GregorianCalendar(2018, 8, 1).time)
+                .endDate(GregorianCalendar(2019, 7, 31).time)
+                .build()
+
+        Assert.assertEquals(
+            "Sep 2018 - Aug 2019",
+            periodUtils.getPeriodUIString(
+                PeriodType.FinancialSep,
                 testDate,
                 Locale.ENGLISH,
             ),
