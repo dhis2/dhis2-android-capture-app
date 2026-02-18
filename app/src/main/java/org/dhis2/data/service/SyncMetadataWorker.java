@@ -21,10 +21,10 @@ import androidx.work.WorkerParameters;
 
 import org.dhis2.App;
 import org.dhis2.R;
+import org.dhis2.commons.Constants;
 import org.dhis2.commons.date.DateUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.commons.Constants;
 import org.dhis2.utils.NetworkUtils;
 import org.hisp.dhis.android.core.maintenance.D2Error;
 
@@ -62,7 +62,6 @@ public class SyncMetadataWorker extends Worker {
     public Result doWork() {
         if (((App) getApplicationContext()).userComponent() != null) {
 
-            ((App) getApplicationContext()).userComponent().plus(new SyncMetadataWorkerModule()).inject(this);
 
             triggerNotification(
                     getApplicationContext().getString(R.string.app_name),
@@ -75,10 +74,7 @@ public class SyncMetadataWorker extends Worker {
 
             long init = System.currentTimeMillis();
             try {
-                presenter.syncMetadata(progress -> triggerNotification(
-                        getApplicationContext().getString(R.string.app_name),
-                        getApplicationContext().getString(R.string.syncing_configuration),
-                        progress));
+                /*code removed*/
             } catch (Exception e) {
                 Timber.e(e);
                 isMetaOk = false;
@@ -107,8 +103,6 @@ public class SyncMetadataWorker extends Worker {
 
             if (!isMetaOk)
                 return Result.failure(createOutputData(false, message.toString()));
-
-            presenter.startPeriodicMetaWork();
 
             return Result.success(createOutputData(true, message.toString()));
         } else {

@@ -16,7 +16,6 @@ interface AnalyticActions {
     fun updateMatomoSecondaryTracker(
         matomoUrl: String,
         matomoID: Int,
-        trackerName: String,
     )
 
     fun clearMatomoSecondaryTracker()

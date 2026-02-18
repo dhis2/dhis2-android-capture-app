@@ -286,6 +286,7 @@ dependencies {
     implementation(project(":aggregates"))
     implementation(project(":commonskmm"))
     implementation(project(":login"))
+    implementation(project(":sync"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
@@ -347,6 +348,8 @@ dependencies {
     androidTestImplementation(libs.test.rx2.idler)
     androidTestImplementation(libs.test.compose.ui.test)
     androidTestImplementation(libs.test.hamcrest)
+    androidTestImplementation(libs.koin.test)
+    androidTestImplementation(libs.koin.test.junit4)
 }
 
 sentry {

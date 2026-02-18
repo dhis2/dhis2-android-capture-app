@@ -15,18 +15,15 @@ import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX
 import org.dhis2.commons.prefs.Preference.Companion.EVENT_MAX_DEFAULT
 import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_ORG_UNIT
 import org.dhis2.commons.prefs.Preference.Companion.LIMIT_BY_PROGRAM
-import org.dhis2.commons.prefs.Preference.Companion.META
 import org.dhis2.commons.prefs.Preference.Companion.TEI_MAX
 import org.dhis2.commons.prefs.Preference.Companion.TEI_MAX_DEFAULT
 import org.dhis2.commons.prefs.Preference.Companion.TIME_DAILY
 import org.dhis2.commons.prefs.Preference.Companion.TIME_DATA
-import org.dhis2.commons.prefs.Preference.Companion.TIME_META
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.utils.analytics.AnalyticsHelper
-import org.dhis2.utils.analytics.matomo.DEFAULT_EXTERNAL_TRACKER_NAME
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
@@ -40,7 +37,6 @@ import org.hisp.dhis.android.core.settings.ProgramSettings
 import org.hisp.dhis.android.core.systeminfo.DHISVersion
 import timber.log.Timber
 import java.util.Calendar
-import kotlin.math.ceil
 
 class SyncPresenterImpl(
     private val d2: D2,
@@ -236,63 +232,6 @@ class SyncPresenterImpl(
                             )
                         },
                 ).blockingAwait()
-        }
-    }
-
-    override fun syncMetadata(progressUpdate: SyncMetadataWorker.OnProgressUpdate) {
-        Completable
-            .fromObservable(
-                d2
-                    .metadataModule()
-                    .download()
-                    .doOnNext { data ->
-                        Timber.log(1, data.toString())
-                        progressUpdate.onProgressUpdate(ceil(data.percentage() ?: 0.0).toInt())
-                    }.doOnComplete {
-                        updateProyectAnalytics()
-                        setUpSMS()
-                    },
-            ).doOnError {
-                Timber.d("error while downloading Metadata")
-            }.onErrorComplete()
-            .andThen(
-                d2.mapsModule().mapLayersDownloader().downloadMetadata(),
-            ).andThen(
-                Completable.fromObservable(
-                    d2
-                        .fileResourceModule()
-                        .fileResourceDownloader()
-                        .byDomainType()
-                        .eq(FileResourceDomainType.ICON)
-                        .download(),
-                ),
-            ).blockingAwait()
-    }
-
-    private fun setUpSMS() {
-        val globalSettings = getSettings()
-
-        globalSettings?.let {
-            if (!globalSettings.smsGateway().isNullOrEmpty()) {
-                d2
-                    .smsModule()
-                    .configCase()
-                    .setGatewayNumber(globalSettings.smsGateway())
-                    .andThen(
-                        if (!globalSettings.smsResultSender().isNullOrEmpty()) {
-                            d2
-                                .smsModule()
-                                .configCase()
-                                .setConfirmationSenderNumber(globalSettings.smsResultSender())
-                        } else {
-                            Completable.complete()
-                        },
-                    ).andThen(
-                        d2.smsModule().configCase().setModuleEnabled(true),
-                    ).andThen(
-                        d2.smsModule().configCase().refreshMetadataIds(),
-                    ).blockingAwait()
-            }
         }
     }
 
@@ -766,24 +705,6 @@ class SyncPresenterImpl(
         }
     }
 
-    override fun startPeriodicMetaWork() {
-        val seconds =
-            getSettings()?.metadataSync()?.toSeconds() ?: preferences.getInt(TIME_META, TIME_DAILY)
-        workManagerController.cancelUniqueWork(META)
-
-        if (seconds != 0) {
-            val workerItem =
-                WorkerItem(
-                    META,
-                    WorkerType.METADATA,
-                    seconds.toLong(),
-                    policy = ExistingWorkPolicy.REPLACE,
-                )
-
-            workManagerController.syncDataForWorker(workerItem)
-        }
-    }
-
     private fun getSettings(): GeneralSettings? = d2.settingModule().generalSetting().blockingGet()
 
     private fun getProgramSetting(): ProgramSettings? = d2.settingModule().programSetting().blockingGet()
@@ -805,7 +726,6 @@ class SyncPresenterImpl(
                 analyticsHelper.updateMatomoSecondaryTracker(
                     it.matomoURL()!!,
                     it.matomoID()!!,
-                    DEFAULT_EXTERNAL_TRACKER_NAME,
                 )
             }
         } ?: analyticsHelper.clearMatomoSecondaryTracker()

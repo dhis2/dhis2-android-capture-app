@@ -12,6 +12,7 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
 import org.dhis2.usescases.settings.domain.DeleteLocalData
 import org.dhis2.usescases.settings.domain.ExportDatabase
@@ -27,7 +28,9 @@ import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 
 @Module
-class SyncManagerModule {
+class SyncManagerModule(
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
+) {
     @Provides
     @PerFragment
     fun provideViewModelFactory(
@@ -154,6 +157,7 @@ class SyncManagerModule {
         preferenceProvider: PreferenceProvider,
         analyticsHelper: AnalyticsHelper,
     ) = LaunchSync(
+        syncBackgroundJobAction,
         workManagerController,
         preferenceProvider,
         analyticsHelper,
