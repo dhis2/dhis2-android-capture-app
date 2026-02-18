@@ -83,6 +83,9 @@ class DateToPositionTest {
                 2f,
                 3f,
                 4f,
+                5f,
+                6f,
+                7f,
             )
 
         listOf(
