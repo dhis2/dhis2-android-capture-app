@@ -34,6 +34,7 @@ class DhisPeriodUtils(
             PeriodType.Weekly,
             PeriodType.WeeklyWednesday,
             PeriodType.WeeklyThursday,
+            PeriodType.WeeklyFriday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
             -> {
@@ -73,9 +74,13 @@ class DhisPeriodUtils(
             PeriodType.QuarterlyNov,
             PeriodType.SixMonthly,
             PeriodType.SixMonthlyApril,
+            PeriodType.FinancialFeb,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
+            PeriodType.FinancialAug,
+            PeriodType.FinancialSep,
             PeriodType.FinancialOct,
+            PeriodType.FinancialNov,
             ->
                 formattedDate =
                     periodString.format(
