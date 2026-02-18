@@ -55,20 +55,25 @@ class SyncMetadataWorker(
             else ->
                 Result.failure(
                     createOutputData(
-                        result.exceptionOrNull()?.message.toString(),
+                        result.exceptionOrNull()?.message ?: "Unknown error",
                     ),
                 )
         }
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        val notificationInfo =
+        val notificationModel =
             notificationManager.getMetadataSyncNotification(
                 smallIcon = R.drawable.ic_sync,
                 contentTitle = getString(Res.string.app_name),
                 contentText = getString(Res.string.syncing_configuration),
                 progress = -1,
-            ) as WorkerNotificationInfo
+            )
+        val notificationInfo =
+            notificationModel as? WorkerNotificationInfo
+                ?: throw IllegalStateException(
+                    "Expected WorkerNotificationInfo but got ${notificationModel::class.qualifiedName}",
+                )
         return notificationInfo.foregroundInfo
     }
 
