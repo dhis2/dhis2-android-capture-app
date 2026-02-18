@@ -14,13 +14,13 @@ import org.dhis2.mobile.sync.model.SyncStatus
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
 
-private const val METADATA_SYNC = "METADATA_SYNC"
-private const val METADATA_SYNC_NOW = "METADATA_SYNC_NOW"
-private const val DATA_SYNC = "DATA_SYNC"
-private const val DATA_SYNC_NOW = "DATA_SYNC_NOW"
-private const val SYNC_SETTINGS = "SYNC_SETTINGS"
+const val METADATA_SYNC = "METADATA_SYNC"
+const val METADATA_SYNC_NOW = "METADATA_SYNC_NOW"
+const val DATA_SYNC = "DATA_SYNC"
+const val DATA_SYNC_NOW = "DATA_SYNC_NOW"
+const val SYNC_SETTINGS = "SYNC_SETTINGS"
 
-internal class AndroidSyncBackgroundJobAction(
+class AndroidSyncBackgroundJobAction(
     private val workManager: WorkManager,
 ) : SyncBackgroundJobAction {
     override fun launchMetadataSync(syncingPeriod: Long) {
