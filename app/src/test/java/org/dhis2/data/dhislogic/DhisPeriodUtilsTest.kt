@@ -170,7 +170,7 @@ class DhisPeriodUtilsTest {
                 .build()
 
         Assert.assertEquals(
-            "Week 2 2019-01-10 To 2019-01-16",
+            "Week 0 2019-01-11 To 2019-01-17",
             periodUtils.getPeriodUIString(
                 PeriodType.WeeklyFriday,
                 testDate,
