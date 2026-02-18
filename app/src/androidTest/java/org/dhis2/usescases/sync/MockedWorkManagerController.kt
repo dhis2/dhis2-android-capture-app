@@ -15,9 +15,6 @@ class MockedWorkManagerController(private val workInfoStatuses: LiveData<List<Wo
 
     }
 
-    override fun syncMetaDataForWorker(metadataWorkerTag: String, workName: String) {
-    }
-
     override fun beginUniqueWork(workerItem: WorkerItem) {
     }
 

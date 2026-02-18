@@ -20,7 +20,7 @@ const val DATA_SYNC = "DATA_SYNC"
 const val DATA_SYNC_NOW = "DATA_SYNC_NOW"
 const val SYNC_SETTINGS = "SYNC_SETTINGS"
 
-internal class AndroidSyncBackgroundJobAction(
+class AndroidSyncBackgroundJobAction(
     private val workManager: WorkManager,
 ) : SyncBackgroundJobAction {
     override fun launchMetadataSync(syncingPeriod: Long) {
