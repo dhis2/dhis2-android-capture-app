@@ -1,6 +1,7 @@
 package org.dhis2.mobile.commons.providers
 
 import org.dhis2.mobile.commons.biometrics.CiphertextWrapper
+import kotlin.time.Duration.Companion.days
 
 interface PreferenceProvider {
     fun saveUserCredentials(
@@ -91,4 +92,8 @@ interface PreferenceProvider {
     ): List<String>
 
     fun updateLoginServers(serverUrl: String)
+
+    fun getMetadataSyncPeriod(): Int = getInt(TIME_META, 7.days.inWholeSeconds.toInt())
+
+    fun getDataSyncPeriod(): Int = getInt(TIME_DATA, 1.days.inWholeSeconds.toInt())
 }

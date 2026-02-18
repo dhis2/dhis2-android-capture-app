@@ -40,12 +40,15 @@ fi
 
 echo "Merge base: $MERGE_BASE"
 
+# Define the files to exclude
+EXCLUDE_PATTERN="**/verification-metadata.xml"
+
 # Print the diff statistics from merge base to HEAD (only your changes)
-echo "Diff statistics from merge base to HEAD (PR changes only):"
-git diff --stat "$MERGE_BASE"..HEAD
+echo "Diff statistics from merge base to HEAD (PR changes only), excluding $EXCLUDE_PATTERN:"
+git diff --stat "$MERGE_BASE"..HEAD -- . ":(exclude)$EXCLUDE_PATTERN"
 
 # Get the total number of lines changed in the PR from the merge base
-CHANGED_LINES=$(git diff --stat "$MERGE_BASE"..HEAD | tail -n1 | awk '{print $4 + $6}')
+CHANGED_LINES=$(git diff --numstat "$MERGE_BASE"..HEAD -- . ":(exclude)$EXCLUDE_PATTERN" | awk '{s+=$1; s+=$2} END {print s}')
 
 # Handle cases where no changes are detected
 if [[ -z "$CHANGED_LINES" ]]; then

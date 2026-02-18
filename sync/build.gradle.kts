@@ -36,6 +36,7 @@ kotlin {
             resources.srcDirs("src/commonMain/composeResources")
 
             dependencies {
+                implementation(project(":commonskmm"))
 
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -62,7 +63,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.dhis2.android.sdk)
             api(libs.analytics.timber)
-
+            implementation(libs.androidx.work)
         }
 
         androidUnitTest.dependencies {
