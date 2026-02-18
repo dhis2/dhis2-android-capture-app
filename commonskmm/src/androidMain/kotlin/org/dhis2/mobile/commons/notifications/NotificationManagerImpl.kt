@@ -166,7 +166,12 @@ class NotificationManagerImpl(
     }
 
     private fun notify(foregroundInfo: ForegroundInfo) {
-        if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            context.checkSelfPermission(
+                Manifest.permission.POST_NOTIFICATIONS,
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             notificationManager.notify(foregroundInfo.notificationId, foregroundInfo.notification)
         }
     }
