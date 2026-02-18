@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.View.GONE
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
@@ -16,7 +18,6 @@ import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.MainActivity
-import org.dhis2.usescases.main.navigateTo
 import org.dhis2.utils.OnDialogClickListener
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.extension.share
@@ -43,14 +44,14 @@ class SyncActivity :
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_synchronization)
         binding.presenter = presenter
-        presenter.sync()
-    }
 
-    override fun onResume() {
-        super.onResume()
         lifecycleScope.launch {
-            presenter.observeSyncProcess().collect(presenter::handleSyncInfo)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                presenter.observeSyncProcess().collect(presenter::handleSyncInfo)
+            }
         }
+
+        presenter.sync()
     }
 
     override fun setMetadataSyncStarted() {

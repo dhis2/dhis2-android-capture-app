@@ -15,6 +15,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
+import org.dhis2.mobile.commons.providers.TIME_DATA
 import org.dhis2.mobile.commons.providers.TIME_META
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.utils.analytics.AnalyticsHelper
@@ -172,7 +173,7 @@ class LaunchSync(
         if (seconds != Constants.TIME_MANUAL) {
             syncData(seconds)
         } else {
-            preferenceProvider.setValue(Constants.TIME_DATA, 0)
+            preferenceProvider.setValue(TIME_DATA, 0)
             workManagerController.cancelUniqueWork(Constants.DATA)
         }
     }
@@ -188,12 +189,12 @@ class LaunchSync(
 
     private fun syncMeta(seconds: Int) {
         analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_DATA, CLICK)
-        preferenceProvider.setValue(Constants.TIME_META, seconds)
+        preferenceProvider.setValue(TIME_META, seconds)
         syncBackgroundJobAction.launchMetadataSync(seconds.toLong())
     }
 
     private fun syncData(seconds: Int) {
-        preferenceProvider.setValue(Constants.TIME_DATA, seconds)
+        preferenceProvider.setValue(TIME_DATA, seconds)
         workManagerController.cancelUniqueWork(Constants.DATA)
         val workerItem =
             WorkerItem(

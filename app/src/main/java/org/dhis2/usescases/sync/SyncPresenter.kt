@@ -5,6 +5,7 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.data.server.UserManager
+import org.dhis2.mobile.sync.data.METADATA_SYNC_NOW
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
@@ -29,7 +30,7 @@ class SyncPresenter internal constructor(
 
     fun handleSyncInfo(workInfoList: List<SyncJobStatus>) {
         workInfoList.forEach { workInfo ->
-            if (workInfo.tags.contains("METADATA_SYNC_NOW")) {
+            if (workInfo.tags.contains(METADATA_SYNC_NOW)) {
                 handleMetaState(workInfo.status, workInfo.message)
             }
         }
