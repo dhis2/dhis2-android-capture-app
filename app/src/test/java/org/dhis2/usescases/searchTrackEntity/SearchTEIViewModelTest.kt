@@ -31,6 +31,7 @@ import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
 import org.dhis2.tracker.input.ui.state.TrackerInputUiState
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
@@ -78,6 +79,7 @@ class SearchTEIViewModelTest {
         }
 
     private val fetchSearchParameters: FetchSearchParameters = mock()
+    private val fetchOptionSetOptions: FetchOptionSetOptions = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -115,6 +117,7 @@ class SearchTEIViewModelTest {
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -712,7 +715,7 @@ class SearchTEIViewModelTest {
                 "uid3" to "21/02/2024",
                 "uid4" to "21/02/2024 - 01:00",
                 "uid5" to "Boolean: false",
-                "uid6" to "Yes Only",
+                "uid6" to "Yes Only: true",
                 "uid7" to "Text value",
                 "uid9" to "18%",
             )
@@ -783,6 +786,7 @@ class SearchTEIViewModelTest {
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -831,6 +835,7 @@ class SearchTEIViewModelTest {
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
                 fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -976,7 +981,7 @@ class SearchTEIViewModelTest {
                 warning = null,
             ),
             TrackerInputUiState(
-                uid = "uid",
+                uid = "uid2",
                 label = "Gender",
                 value = "M",
                 focused = false,
@@ -1009,7 +1014,7 @@ class SearchTEIViewModelTest {
                 orientation = Orientation.HORIZONTAL,
                 optionSetConfiguration = null,
                 customIntentUid = null,
-                displayName = "Male",
+                displayName = "21/02/2024",
                 orgUnitSelectorScope = null,
                 searchOperator = null,
                 minCharactersToSearch = null,
@@ -1030,7 +1035,7 @@ class SearchTEIViewModelTest {
                 orientation = Orientation.HORIZONTAL,
                 optionSetConfiguration = null,
                 customIntentUid = null,
-                displayName = "Male",
+                displayName = "21/02/2024 - 01:00",
                 orgUnitSelectorScope = null,
                 searchOperator = null,
                 minCharactersToSearch = null,
@@ -1051,7 +1056,7 @@ class SearchTEIViewModelTest {
                 orientation = Orientation.HORIZONTAL,
                 optionSetConfiguration = null,
                 customIntentUid = null,
-                displayName = "Male",
+                displayName = "Boolean: false",
                 orgUnitSelectorScope = null,
                 searchOperator = null,
                 minCharactersToSearch = null,
@@ -1072,7 +1077,7 @@ class SearchTEIViewModelTest {
                 orientation = Orientation.HORIZONTAL,
                 optionSetConfiguration = null,
                 customIntentUid = null,
-                displayName = "Male",
+                displayName = "Yes Only; true",
                 orgUnitSelectorScope = null,
                 searchOperator = null,
                 minCharactersToSearch = null,
@@ -1093,7 +1098,7 @@ class SearchTEIViewModelTest {
                 orientation = Orientation.HORIZONTAL,
                 optionSetConfiguration = null,
                 customIntentUid = null,
-                displayName = "Male",
+                displayName = "Text value",
                 orgUnitSelectorScope = null,
                 searchOperator = null,
                 minCharactersToSearch = null,
@@ -1135,7 +1140,7 @@ class SearchTEIViewModelTest {
                 orientation = Orientation.HORIZONTAL,
                 optionSetConfiguration = null,
                 customIntentUid = null,
-                displayName = "Male",
+                displayName = "18%",
                 orgUnitSelectorScope = null,
                 searchOperator = null,
                 minCharactersToSearch = null,

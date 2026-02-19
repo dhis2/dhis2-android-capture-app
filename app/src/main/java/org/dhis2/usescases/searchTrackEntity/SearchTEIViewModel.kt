@@ -1204,10 +1204,12 @@ class SearchTEIViewModel(
                     TrackerInputType.YES_ONLY_CHECKBOX,
                     TrackerInputType.HORIZONTAL_RADIOBUTTONS,
                     TrackerInputType.VERTICAL_RADIOBUTTONS,
+                    TrackerInputType.HORIZONTAL_CHECKBOXES,
+                    TrackerInputType.VERTICAL_CHECKBOXES,
                     -> {
                         item.value?.let {
-                            if (it == "true") {
-                                map[item.uid] = item.label
+                            if (it == "true" || it == "false") {
+                                map[item.uid] = "${item.label}: $it"
                             }
                         }
                     }
@@ -1284,7 +1286,7 @@ class SearchTEIViewModel(
     ) {
         updateQuery(
             fieldUid,
-            value?.let { listOf(value) },
+            value?.split(","),
         )
     }
 

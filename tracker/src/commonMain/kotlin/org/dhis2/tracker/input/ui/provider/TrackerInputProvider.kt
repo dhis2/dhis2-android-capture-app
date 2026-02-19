@@ -673,7 +673,7 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnValueChange(
                             uid = inputModel.uid,
-                            value = if (isChecked) "true" else null,
+                            value = if (!isChecked) "true" else null,
                         ),
                     )
                 },
