@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.SettingItem
 import org.dhis2.usescases.settings.SyncManagerPresenter
 import org.dhis2.usescases.settings.models.DeleteDataState
@@ -34,7 +33,6 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
-import org.koin.compose.koinInject
 import java.io.File
 
 const val TEST_TAG_DATA_PERIOD = "TestTag_DataPeriod"
@@ -55,7 +53,6 @@ fun SettingsScreen(
     val settingsUIModel by viewmodel.settingsState.collectAsState()
     val exportingDatabase by viewmodel.exporting.observeAsState(false)
     val snackbarHostState = remember { SnackbarHostState() }
-    val syncActions = koinInject<SyncBackgroundJobAction>()
 
     LaunchedEffect(viewmodel.messageChannel) {
         viewmodel.messageChannel.collect { message ->
