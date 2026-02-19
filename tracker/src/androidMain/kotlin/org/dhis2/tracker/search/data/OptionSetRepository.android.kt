@@ -3,6 +3,8 @@ package org.dhis2.tracker.search.data
 import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.error.DomainErrorMapper
@@ -14,42 +16,56 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 /**
  * Android implementation of OptionSetRepository using DHIS2 Android SDK.
  */
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class OptionSetRepository(
     private val d2: D2,
     private val domainErrorMapper: DomainErrorMapper,
 ) {
-    actual suspend fun getOptions(
+    /**
+     * Fetches paginated options for a given option set.
+     * @param optionSetUid The unique identifier of the option set
+     * @param pageSize Number of items per page
+     * @param searchQuery Optional search query to filter options
+     * @return Flow of paginated option items. The `flow { }` builder creates a cold (lazy) flow that
+     * will be executed when collected. The code inside runs in the collector's coroutine context.
+     */
+    actual fun getOptions(
         optionSetUid: String,
         pageSize: Int,
         searchQuery: String?,
     ): Flow<PagingData<TrackerOptionItem>> =
-        try {
-            var query =
-                d2
-                    .optionModule()
-                    .options()
-                    .byOptionSetUid()
-                    .eq(optionSetUid)
-                    .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
+        flow {
+            try {
+                var query =
+                    d2
+                        .optionModule()
+                        .options()
+                        .byOptionSetUid()
+                        .eq(optionSetUid)
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
 
-            // Apply search filter if provided
-            searchQuery?.takeIf { it.isNotBlank() }?.let { search ->
-                query = query.byDisplayName().like("%$search%")
-            }
-
-            query
-                .getPagingData(pageSize)
-                .map { pagingData ->
-                    pagingData.map { option ->
-                        TrackerOptionItem(
-                            code = option.code() ?: "",
-                            displayName = option.displayName() ?: "",
-                        )
-                    }
+                // Apply search filter if provided
+                searchQuery?.takeIf { it.isNotBlank() }?.let { search ->
+                    query = query.byDisplayName().like("%$search%")
                 }
-        } catch (d2Error: D2Error) {
-            throw domainErrorMapper.mapToDomainError(d2Error)
-        } catch (e: Exception) {
-            throw DomainError.UnexpectedError(e.message ?: "Unknown error fetching options")
+
+                val pagingFlow =
+                    query
+                        .getPagingData(pageSize)
+                        .map { pagingData ->
+                            pagingData.map { option ->
+                                TrackerOptionItem(
+                                    code = option.code() ?: "",
+                                    displayName = option.displayName() ?: "",
+                                )
+                            }
+                        }
+
+                emitAll(pagingFlow)
+            } catch (d2Error: D2Error) {
+                throw domainErrorMapper.mapToDomainError(d2Error)
+            } catch (e: Exception) {
+                throw DomainError.UnexpectedError(e.message ?: "Unknown error fetching options")
+            }
         }
 }

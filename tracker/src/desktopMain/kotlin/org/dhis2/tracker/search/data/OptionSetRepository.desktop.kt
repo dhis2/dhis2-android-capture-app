@@ -9,8 +9,9 @@ import org.dhis2.tracker.input.ui.state.TrackerOptionItem
  * Desktop stub implementation of OptionSetRepository.
  * TODO: Implement when desktop support is added
  */
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class OptionSetRepository {
-    actual suspend fun getOptions(
+    actual fun getOptions(
         optionSetUid: String,
         pageSize: Int,
         searchQuery: String?,
