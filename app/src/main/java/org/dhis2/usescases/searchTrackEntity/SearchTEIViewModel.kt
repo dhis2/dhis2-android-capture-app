@@ -1298,7 +1298,7 @@ class SearchTEIViewModel(
                         if (it.uid == fieldUid) {
                             it.copy(focused = true)
                         } else {
-                            it
+                            it.copy(focused = false)
                         }
                     },
             ).let {

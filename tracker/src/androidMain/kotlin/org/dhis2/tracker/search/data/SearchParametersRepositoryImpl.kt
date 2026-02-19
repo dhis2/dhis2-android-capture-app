@@ -53,7 +53,7 @@ class SearchParametersRepositoryImpl(
                         customIntentUid = customIntent?.uid,
                         minCharactersToSearch = attribute.minCharactersToSearch(),
                         searchOperator = getSearchOperator(attribute),
-                        isUnique = isUnique(attribute.uid()),
+                        isUnique = attribute.unique() ?: false,
                     )
                 }
             }
@@ -83,7 +83,7 @@ class SearchParametersRepositoryImpl(
                         customIntentUid = null,
                         minCharactersToSearch = attribute.minCharactersToSearch(),
                         searchOperator = getSearchOperator(attribute),
-                        isUnique = isUnique(attribute.uid()),
+                        isUnique = attribute.unique() ?: false,
                     )
                 }
             }
@@ -297,12 +297,4 @@ class SearchParametersRepositoryImpl(
             TrackerSearchOperator.EW -> SearchOperator.EW
             TrackerSearchOperator.EQ -> SearchOperator.EQ
         }
-
-    private fun isUnique(teaUid: String): Boolean =
-        d2
-            .trackedEntityModule()
-            .trackedEntityAttributes()
-            .uid(teaUid)
-            .blockingGet()
-            ?.unique() ?: false
 }

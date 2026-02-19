@@ -1,9 +1,9 @@
 package org.dhis2.tracker.search.ui.action
 
 sealed interface SearchScreenUiEvent {
-    class OnSearchButtonClicked : SearchScreenUiEvent
+    data object OnSearchButtonClicked : SearchScreenUiEvent
 
-    class OnClearSearchButtonClicked : SearchScreenUiEvent
+    data object OnClearSearchButtonClicked : SearchScreenUiEvent
 
-    class OnCloseClicked : SearchScreenUiEvent
+    data object OnCloseClicked : SearchScreenUiEvent
 }
