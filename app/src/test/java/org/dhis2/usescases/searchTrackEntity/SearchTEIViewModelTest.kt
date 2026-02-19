@@ -1046,6 +1046,7 @@ class SearchTEIViewModelTest {
         .minAttributesRequiredToSearch(minAttributesToSearch)
         .trackedEntityType(TrackedEntityType.builder().uid("teTypeUid").build())
         .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+        .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
         .apply {
             maxTeiCountToReturn?.let {
                 maxTeiCountToReturn(maxTeiCountToReturn)

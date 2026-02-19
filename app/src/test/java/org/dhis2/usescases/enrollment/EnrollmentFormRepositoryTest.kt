@@ -37,6 +37,7 @@ class EnrollmentFormRepositoryTest {
                 .uid("programUid")
                 .displayName("programName")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         whenever(enrollmentRepository.blockingGet()) doReturn
             Enrollment

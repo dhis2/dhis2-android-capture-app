@@ -213,6 +213,7 @@ class FilterRepositoryTest {
                 .builder()
                 .uid("random")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .build()
         val catCombo =
@@ -289,6 +290,7 @@ class FilterRepositoryTest {
                 .builder()
                 .uid("random")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .build()
         val catCombo =
@@ -384,6 +386,7 @@ class FilterRepositoryTest {
                 .builder()
                 .uid("random")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .build()
         val catCombo =
@@ -464,6 +467,7 @@ class FilterRepositoryTest {
                 .builder()
                 .uid("random")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .trackedEntityType(
                     TrackedEntityType
@@ -606,6 +610,7 @@ class FilterRepositoryTest {
                 .builder()
                 .uid("random")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .programType(org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION)
                 .trackedEntityType(
                     TrackedEntityType

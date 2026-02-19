@@ -75,6 +75,7 @@ class EnrollmentPresenterImplTest {
                 .builder()
                 .uid("")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(
                     Access
                         .builder()
@@ -97,6 +98,7 @@ class EnrollmentPresenterImplTest {
                 .builder()
                 .uid("")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(
                     Access
                         .builder()
@@ -169,6 +171,7 @@ class EnrollmentPresenterImplTest {
                 .builder()
                 .uid("tUID")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
@@ -206,6 +209,7 @@ class EnrollmentPresenterImplTest {
                 .builder()
                 .uid("tUID")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(teiRepository.blockingGet()) doReturn tei
