@@ -2,6 +2,7 @@ package org.dhis2.data.service;
 
 import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -50,6 +51,8 @@ public class SyncDataWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        setForegroundAsync(getForegroundInfo());
+
         Objects.requireNonNull(((App) getApplicationContext()).userComponent())
                 .plus(new SyncDataWorkerModule())
                 .inject(this);
@@ -178,7 +181,29 @@ public class SyncDataWorker extends Worker {
             NotificationChannel mChannel = new NotificationChannel(DATA_CHANNEL, "DataSync", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(mChannel);
         }
+        notificationManager.notify(SyncDataWorker.SYNC_DATA_ID, notification(title, content, progress));
+    }
 
+    @NonNull
+    @Override
+    public ForegroundInfo getForegroundInfo() {
+        Notification notification = notification(
+                getApplicationContext().getString(R.string.app_name),
+                getApplicationContext().getString(R.string.syncing_data),
+                0
+        );
+        return new ForegroundInfo(
+                SyncDataWorker.SYNC_DATA_ID,
+                notification,
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0
+        );
+    }
+
+    private Notification notification(
+            String title,
+            String content,
+            int progress
+    ) {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), DATA_CHANNEL)
                         .setSmallIcon(R.drawable.ic_sync)
@@ -190,12 +215,7 @@ public class SyncDataWorker extends Worker {
                         .setProgress(100, progress, false)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-        setForegroundAsync(new ForegroundInfo(
-                SyncDataWorker.SYNC_DATA_ID,
-                notificationBuilder.build(),
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ? ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC : 0
-        ));
-
+        return notificationBuilder.build();
     }
 
     private void cancelNotification() {
