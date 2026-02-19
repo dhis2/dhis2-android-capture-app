@@ -7,7 +7,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextReplacement
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -30,23 +29,23 @@ internal class DataSetInitialRobot(
 ) : BaseRobot() {
 
     fun clickOnInputOrgUnit() {
-        onView(withId(R.id.dataSetOrgUnitInputLayout)).perform(click())
+        waitForView(withId(R.id.dataSetOrgUnitInputLayout)).perform(click())
     }
 
     fun clickOnInputPeriod() {
-        onView(withId(R.id.dataSetPeriodInputLayout)).perform(click())
+        waitForView(withId(R.id.dataSetPeriodInputLayout)).perform(click())
     }
 
     fun clickOnActionButton() {
-        onView(withId(R.id.actionButton)).perform(click())
+        waitForView(withId(R.id.actionButton)).perform(click())
     }
 
     fun clickOnInputCatCombo() {
-        onView(withId(R.id.input_layout)).perform(click())
+        waitForView(withId(R.id.input_layout)).perform(click())
     }
 
     fun selectCatCombo(catCombo: String) {
-        onView(withText(catCombo)).perform(click())
+        waitForView(withText(catCombo)).perform(click())
     }
 
     fun chooseDate(date: String) {
@@ -59,6 +58,7 @@ internal class DataSetInitialRobot(
         ).performClick()
         composeTestRule.onNodeWithContentDescription("Date", substring = true).performTextReplacement(date)
         composeTestRule.onNodeWithText("Accept", true).performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun checkActionInputIsNotDisplayed() {
