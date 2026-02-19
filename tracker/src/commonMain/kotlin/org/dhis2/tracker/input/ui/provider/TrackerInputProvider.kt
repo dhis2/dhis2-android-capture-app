@@ -93,16 +93,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -120,16 +115,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -147,16 +137,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -175,16 +160,11 @@ fun TrackerInputProvider(
                 inputTextFieldValue = textValue,
                 onEmailActionCLicked = {},
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -203,16 +183,11 @@ fun TrackerInputProvider(
                 inputTextFieldValue = textValue,
                 onCallActionClicked = {},
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -231,16 +206,11 @@ fun TrackerInputProvider(
                 inputTextFieldValue = textValue,
                 onLinkActionCLicked = {},
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -258,16 +228,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -285,16 +250,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -312,16 +272,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -339,16 +294,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -366,16 +316,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -393,16 +338,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -420,16 +360,11 @@ fun TrackerInputProvider(
                 inputStyle = inputStyle,
                 inputTextFieldValue = textValue,
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -443,11 +378,10 @@ fun TrackerInputProvider(
                 onNextClicked = onNextClicked,
                 modifier = modifierWithFocus,
                 onValueChange = { newValue ->
-                    onUiEvent(
-                        TrackerInputUiEvent.OnValueChange(
-                            uid = inputModel.uid,
-                            value = newValue,
-                        ),
+                    manageOnValueChange(
+                        newValue = newValue,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
                     )
                 },
             )
@@ -568,16 +502,11 @@ fun TrackerInputProvider(
                     )
                 },
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -602,16 +531,11 @@ fun TrackerInputProvider(
                     )
                 },
                 onValueChanged = { newValue ->
-                    newValue?.let {
-                        if (it.text != inputModel.value) {
-                            onUiEvent(
-                                TrackerInputUiEvent.OnValueChange(
-                                    uid = inputModel.uid,
-                                    value = it.text.takeIf { text -> text.isNotEmpty() },
-                                ),
-                            )
-                        }
-                    }
+                    manageOnValueChange(
+                        newValue = newValue?.text,
+                        inputModel = inputModel,
+                        onUiEvent = onUiEvent,
+                    )
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
@@ -664,7 +588,7 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnValueChange(
                             uid = inputModel.uid,
-                            value = if (isChecked) "true" else null,
+                            value = getYesOnlyValue(isChecked),
                         ),
                     )
                 },
@@ -690,7 +614,7 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnValueChange(
                             uid = inputModel.uid,
-                            value = if (isChecked) "true" else null,
+                            value = getYesOnlyValue(isChecked),
                         ),
                     )
                 },
@@ -823,3 +747,22 @@ fun TrackerInputProvider(
         }
     }
 }
+
+fun manageOnValueChange(
+    newValue: String?,
+    inputModel: TrackerInputUIState,
+    onUiEvent: (TrackerInputUiEvent) -> Unit,
+) {
+    newValue?.let {
+        if (it != inputModel.value) {
+            onUiEvent(
+                TrackerInputUiEvent.OnValueChange(
+                    uid = inputModel.uid,
+                    value = it.takeIf { text -> text.isNotEmpty() },
+                ),
+            )
+        }
+    }
+}
+
+private fun getYesOnlyValue(checked: Boolean): String? = if (checked) "true" else null
