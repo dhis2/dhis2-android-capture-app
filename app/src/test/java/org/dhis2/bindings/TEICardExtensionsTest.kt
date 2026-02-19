@@ -129,8 +129,7 @@ class TEICardExtensionsTest {
                     .color("color")
                     .icon("icon")
                     .build(),
-            )
-            .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+            ).categoryCombo(ObjectWithUid.create("categoryComboUid"))
             .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
             .build()
 }
