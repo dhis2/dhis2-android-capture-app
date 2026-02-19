@@ -89,7 +89,7 @@ fun SearchParametersScreen(
         uiState.isOnBackPressed.collectLatest {
             if (it) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked())
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked)
             }
         }
     }
@@ -217,7 +217,7 @@ fun SearchParametersScreen(
                                 },
                             ) {
                                 focusManager.clearFocus()
-                                onSearchScreenUiEvent(SearchScreenUiEvent.OnClearSearchButtonClicked())
+                                onSearchScreenUiEvent(SearchScreenUiEvent.OnClearSearchButtonClicked)
                             }
                         }
                     }
@@ -248,7 +248,7 @@ fun SearchParametersScreen(
                 },
             ) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked())
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked)
             }
         }
     }
