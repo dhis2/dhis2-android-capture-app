@@ -54,11 +54,11 @@ import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.input.ui.action.CustomIntentUid
+import org.dhis2.tracker.input.ui.action.FieldUid
+import org.dhis2.tracker.input.ui.action.TrackerInputAction
+import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
-import org.dhis2.tracker.ui.input.action.CustomIntentUid
-import org.dhis2.tracker.ui.input.action.FieldUid
-import org.dhis2.tracker.ui.input.action.TrackerInputAction
-import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
 import org.dhis2.usescases.searchTrackEntity.SearchTEIViewModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.mapper.toParameterInputModel
 import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState

@@ -22,7 +22,7 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.extensions.toColor
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.mobile.commons.model.CustomIntentModel
-import org.dhis2.tracker.ui.input.action.FieldUid
+import org.dhis2.tracker.input.ui.action.FieldUid
 import org.dhis2.usescases.events.EventInfoProvider
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider
 import org.hisp.dhis.android.core.D2
