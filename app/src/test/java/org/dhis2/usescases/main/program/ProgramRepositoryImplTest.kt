@@ -277,6 +277,7 @@ class ProgramRepositoryImplTest {
                 .programType(ProgramType.WITHOUT_REGISTRATION)
                 .style(ObjectStyle.builder().build())
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build(),
             Program
                 .builder()
@@ -285,6 +286,7 @@ class ProgramRepositoryImplTest {
                 .programType(ProgramType.WITH_REGISTRATION)
                 .style(ObjectStyle.builder().build())
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .trackedEntityType(
                     TrackedEntityType
                         .builder()
