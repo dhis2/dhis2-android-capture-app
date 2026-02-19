@@ -3,7 +3,7 @@ package org.dhis2.usescases.searchTrackEntity.searchparameters.mapper
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.model.UiRenderType
-import org.dhis2.tracker.ui.input.model.TrackerInputType
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.junit.Assert.assertEquals
