@@ -1,12 +1,13 @@
-package org.dhis2.tracker.ui.input.model
+package org.dhis2.tracker.input.ui.state
 
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
 import org.hisp.dhis.mobile.ui.designsystem.component.LegendData
 import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
-data class TrackerInputModel(
+data class TrackerInputUIState(
     val uid: String,
     val label: String,
     val value: String?,
@@ -25,7 +26,7 @@ data class TrackerInputModel(
     val displayName: String?,
 )
 
-fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
+fun TrackerInputUIState.supportingText(): List<SupportingTextData>? =
     listOfNotNull(
         error?.let {
             SupportingTextData(
@@ -47,7 +48,7 @@ fun TrackerInputModel.supportingText(): List<SupportingTextData>? =
         },
     ).ifEmpty { null }
 
-fun TrackerInputModel.inputState(): InputShellState =
+fun TrackerInputUIState.inputState(): InputShellState =
     when {
         !editable -> InputShellState.DISABLED
         error != null -> InputShellState.ERROR

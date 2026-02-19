@@ -1,4 +1,4 @@
-package org.dhis2.tracker.ui.input.model
+package org.dhis2.tracker.input.ui.action
 
 sealed interface TrackerInputUiEvent {
     data class OnScanButtonClicked(

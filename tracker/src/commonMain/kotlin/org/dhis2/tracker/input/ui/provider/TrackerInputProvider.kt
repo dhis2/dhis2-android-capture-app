@@ -1,4 +1,4 @@
-package org.dhis2.tracker.ui.input.provider
+package org.dhis2.tracker.input.ui.provider
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -16,11 +16,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.custom_intent_launch
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
-import org.dhis2.tracker.ui.input.model.TrackerInputType
-import org.dhis2.tracker.ui.input.model.TrackerInputUiEvent
-import org.dhis2.tracker.ui.input.model.inputState
-import org.dhis2.tracker.ui.input.model.supportingText
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
+import org.dhis2.tracker.input.ui.state.TrackerInputUIState
+import org.dhis2.tracker.input.ui.state.inputState
+import org.dhis2.tracker.input.ui.state.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
 import org.hisp.dhis.mobile.ui.designsystem.component.CustomIntentState
 import org.hisp.dhis.mobile.ui.designsystem.component.DropdownItem
@@ -52,7 +52,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TrackerInputProvider(
     modifier: Modifier = Modifier,
-    inputModel: TrackerInputModel,
+    inputModel: TrackerInputUIState,
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     onUiEvent: (TrackerInputUiEvent) -> Unit,
