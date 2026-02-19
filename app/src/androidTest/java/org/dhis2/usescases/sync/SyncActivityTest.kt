@@ -1,18 +1,13 @@
 package org.dhis2.usescases.sync
 
-import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.work.WorkInfo
 import kotlinx.coroutines.flow.MutableStateFlow
-import org.dhis2.AppTest
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.mobile.sync.model.SyncStatus
 import org.dhis2.usescases.BaseTest
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,7 +23,6 @@ import org.mockito.kotlin.whenever
 
 @RunWith(AndroidJUnit4::class)
 class SyncActivityTest : BaseTest(), KoinTest {
-    private lateinit var workInfoStatusLiveData: MutableLiveData<List<WorkInfo>>
     private val metadataSyncJobStatuses = MutableStateFlow<List<SyncJobStatus>>(emptyList())
 
     @get:Rule
@@ -36,13 +30,6 @@ class SyncActivityTest : BaseTest(), KoinTest {
         MockProviderRule.create { clazz ->
             Mockito.mock(clazz.java)
         }
-
-    @Before
-    override fun setUp() {
-        super.setUp()
-        workInfoStatusLiveData =
-            ApplicationProvider.getApplicationContext<AppTest>().mutableWorkInfoStatuses
-    }
 
     @After
     override fun teardown() {
