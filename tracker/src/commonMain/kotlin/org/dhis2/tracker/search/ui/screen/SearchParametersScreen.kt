@@ -44,7 +44,7 @@ import org.dhis2.mobile.tracker.resources.search
 import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.input.ui.state.loadOptionSetConfiguration
-import org.dhis2.tracker.search.model.SearchParametersUiState
+import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.dhis2.tracker.search.ui.action.SearchScreenUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
