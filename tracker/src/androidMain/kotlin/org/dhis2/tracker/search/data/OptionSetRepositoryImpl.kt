@@ -2,6 +2,7 @@ package org.dhis2.tracker.search.data
 
 import androidx.paging.PagingData
 import androidx.paging.map
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -61,6 +62,8 @@ class OptionSetRepositoryImpl(
                         }
 
                 emitAll(pagingFlow)
+            } catch (e: CancellationException) {
+                // Rethrow CancellationException to properly cancel the coroutine
             } catch (d2Error: D2Error) {
                 throw domainErrorMapper.mapToDomainError(d2Error)
             } catch (e: Exception) {

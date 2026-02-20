@@ -104,11 +104,14 @@ fun TrackerInputUiState.loadOptionSetConfiguration(
 ): TrackerInputUiState =
     when {
         valueType == TrackerInputType.YES_ONLY_CHECKBOX ||
-            valueType == TrackerInputType.YES_ONLY_SWITCH ||
-            valueType == TrackerInputType.HORIZONTAL_CHECKBOXES ||
-            valueType == TrackerInputType.HORIZONTAL_RADIOBUTTONS ||
-            valueType == TrackerInputType.VERTICAL_CHECKBOXES ||
-            valueType == TrackerInputType.VERTICAL_RADIOBUTTONS
+            valueType == TrackerInputType.YES_ONLY_SWITCH || (
+                optionSet == null && (
+                    valueType == TrackerInputType.HORIZONTAL_CHECKBOXES ||
+                        valueType == TrackerInputType.HORIZONTAL_RADIOBUTTONS ||
+                        valueType == TrackerInputType.VERTICAL_CHECKBOXES ||
+                        valueType == TrackerInputType.VERTICAL_RADIOBUTTONS
+                )
+            )
         ->
             this.getBooleanOptionConfiguration()
 
