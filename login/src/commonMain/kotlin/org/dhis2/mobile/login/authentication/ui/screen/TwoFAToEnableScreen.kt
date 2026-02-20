@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
@@ -51,8 +50,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
-import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
-import org.hisp.dhis.mobile.ui.designsystem.component.InputText
+import org.hisp.dhis.mobile.ui.designsystem.component.InputSegmentedShell
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -215,8 +213,8 @@ fun TwoFAAuthStepThree(
     enableUiState: TwoFAUiState.Enable,
     onEnableButtonClicked: (String) -> Unit,
 ) {
-    var textValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(""))
+    var textValue by rememberSaveable {
+        mutableStateOf("")
     }
 
     Column(
@@ -247,24 +245,23 @@ fun TwoFAAuthStepThree(
                     .padding(top = 16.dp),
             verticalArrangement = spacedBy(12.dp),
         ) {
-            InputText(
-                title = stringResource(Res.string.two_fa_authentication_code),
-                supportingText =
+            Text(
+                text = stringResource(Res.string.two_fa_authentication_code),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            InputSegmentedShell(
+                segmentCount = 6,
+                supportingTextData =
                     enableUiState.enableErrorMessage?.let {
-                        listOf(
-                            SupportingTextData(
-                                text = stringResource(Res.string.two_fa_failed_to_turn_on),
-                                state = SupportingTextState.ERROR,
-                            ),
+                        SupportingTextData(
+                            text = stringResource(Res.string.two_fa_failed_to_turn_on),
+                            state = SupportingTextState.ERROR,
                         )
                     },
-                inputTextFieldValue = textValue,
+                initialValue = textValue,
                 onValueChanged = {
-                    if (it != null) {
-                        textValue = it
-                    }
+                    textValue = it.replace("-", "")
                 },
-                state = InputShellState.FOCUSED,
             )
 
             Button(
@@ -272,7 +269,7 @@ fun TwoFAAuthStepThree(
                     when (enableUiState.isEnabling) {
                         true -> false
                         else -> {
-                            textValue.text.length == 6
+                            textValue.length == 6
                         }
                     },
                 modifier =
@@ -297,7 +294,7 @@ fun TwoFAAuthStepThree(
                         contentDescription = "Status Icon",
                     )
                 },
-                onClick = { onEnableButtonClicked(textValue.text) },
+                onClick = { onEnableButtonClicked(textValue) },
             )
         }
     }

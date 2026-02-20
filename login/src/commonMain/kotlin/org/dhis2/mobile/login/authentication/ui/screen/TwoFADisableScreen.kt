@@ -19,11 +19,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.login.authentication.ui.state.TwoFAUiState
 import org.dhis2.mobile.login.resources.Res
-import org.dhis2.mobile.login.resources.two_fa_code
+import org.dhis2.mobile.login.resources.two_fa_authentication_code
 import org.dhis2.mobile.login.resources.two_fa_disable_button
 import org.dhis2.mobile.login.resources.two_fa_disable_desc_1
 import org.dhis2.mobile.login.resources.two_fa_disable_desc_2
@@ -35,8 +34,8 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
+import org.hisp.dhis.mobile.ui.designsystem.component.InputSegmentedShell
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
-import org.hisp.dhis.mobile.ui.designsystem.component.InputText
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -49,7 +48,7 @@ fun TwoFADisableScreen(
     onAuthCodeUpdated: (String) -> Unit,
     onDisable: (String) -> Unit,
 ) {
-    var authCode: TextFieldValue by remember(twoFADisableUiState) { mutableStateOf(TextFieldValue("")) }
+    var authCode by remember(twoFADisableUiState) { mutableStateOf("") }
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         InfoBar(
@@ -77,27 +76,26 @@ fun TwoFADisableScreen(
             stepNumber = "2.",
             text = stringResource(Res.string.two_fa_disable_desc_2),
         ) {
-            InputText(
-                inputTextFieldValue = authCode,
-                onValueChanged = {
-                    it?.let {
-                        authCode = it
-                        onAuthCodeUpdated(it.text)
-                    }
-                },
-                title = stringResource(Res.string.two_fa_code),
-                state = twoFADisableUiState.state,
-                supportingText =
+            Text(
+                text = stringResource(Res.string.two_fa_authentication_code),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            InputSegmentedShell(
+                segmentCount = 6,
+                supportingTextData =
                     if (twoFADisableUiState.state == InputShellState.ERROR) {
-                        listOf(
-                            SupportingTextData(
-                                text = stringResource(Res.string.two_fa_disable_error),
-                                state = SupportingTextState.ERROR,
-                            ),
+                        SupportingTextData(
+                            text = stringResource(Res.string.two_fa_disable_error),
+                            state = SupportingTextState.ERROR,
                         )
                     } else {
                         null
                     },
+                initialValue = authCode,
+                onValueChanged = {
+                    authCode = it.replace("-", "")
+                    onAuthCodeUpdated(authCode)
+                },
             )
             Button(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -108,8 +106,8 @@ fun TwoFADisableScreen(
                     },
                 colorStyle = ColorStyle.ERROR,
                 style = ButtonStyle.FILLED,
-                enabled = authCode.text.length >= 6 && twoFADisableUiState.isDisabling.not(),
-                onClick = { onDisable(authCode.text) },
+                enabled = authCode.length >= 6 && twoFADisableUiState.isDisabling.not(),
+                onClick = { onDisable(authCode) },
                 icon = {
                     Icon(
                         imageVector = Icons.Outlined.KeyOff,
