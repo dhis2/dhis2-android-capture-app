@@ -44,9 +44,9 @@ import org.dhis2.mobile.tracker.resources.search
 import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.input.ui.state.loadOptionSetConfiguration
-import org.dhis2.tracker.search.model.SearchParametersUiState
 import org.dhis2.tracker.search.ui.action.SearchScreenUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
+import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -89,7 +89,7 @@ fun SearchParametersScreen(
         uiState.isOnBackPressed.collectLatest {
             if (it) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked())
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked)
             }
         }
     }
@@ -217,7 +217,7 @@ fun SearchParametersScreen(
                                 },
                             ) {
                                 focusManager.clearFocus()
-                                onSearchScreenUiEvent(SearchScreenUiEvent.OnClearSearchButtonClicked())
+                                onSearchScreenUiEvent(SearchScreenUiEvent.OnClearSearchButtonClicked)
                             }
                         }
                     }
@@ -248,7 +248,7 @@ fun SearchParametersScreen(
                 },
             ) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked())
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked)
             }
         }
     }

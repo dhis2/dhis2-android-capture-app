@@ -3,8 +3,6 @@ package org.dhis2.tracker.input.ui.action
 import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.tracker.input.model.TrackerInputType
 
-import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
-
 sealed interface TrackerInputUiEvent {
     data class OnScanButtonClicked(
         val uid: String,
