@@ -7,7 +7,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 
-data class TrackerInputUIState(
+data class TrackerInputUiState(
     val uid: String,
     val label: String,
     val value: String?,
@@ -26,7 +26,7 @@ data class TrackerInputUIState(
     val displayName: String?,
 )
 
-fun TrackerInputUIState.supportingText(): List<SupportingTextData>? =
+fun TrackerInputUiState.supportingText(): List<SupportingTextData>? =
     listOfNotNull(
         error?.let {
             SupportingTextData(
@@ -48,7 +48,7 @@ fun TrackerInputUIState.supportingText(): List<SupportingTextData>? =
         },
     ).ifEmpty { null }
 
-fun TrackerInputUIState.inputState(): InputShellState =
+fun TrackerInputUiState.inputState(): InputShellState =
     when {
         !editable -> InputShellState.DISABLED
         error != null -> InputShellState.ERROR

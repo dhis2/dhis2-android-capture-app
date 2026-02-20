@@ -471,6 +471,9 @@ fun initSearchScreen(
                         },
                     )
                 }
+
+                is TrackerInputAction.Scan -> {} // TODO to be implemented
+                is TrackerInputAction.ValueChanged -> {} // TODO to be implemented
             }
         }
 

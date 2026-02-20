@@ -18,7 +18,7 @@ import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.custom_intent_launch
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
-import org.dhis2.tracker.input.ui.state.TrackerInputUIState
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.inputState
 import org.dhis2.tracker.input.ui.state.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.CheckBoxData
@@ -52,7 +52,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun TrackerInputProvider(
     modifier: Modifier = Modifier,
-    inputModel: TrackerInputUIState,
+    inputModel: TrackerInputUiState,
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     onUiEvent: (TrackerInputUiEvent) -> Unit,
@@ -750,7 +750,7 @@ fun TrackerInputProvider(
 
 fun manageOnValueChange(
     newValue: String?,
-    inputModel: TrackerInputUIState,
+    inputModel: TrackerInputUiState,
     onUiEvent: (TrackerInputUiEvent) -> Unit,
 ) {
     newValue?.let {

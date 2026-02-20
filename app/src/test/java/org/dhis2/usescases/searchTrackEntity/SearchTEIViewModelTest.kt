@@ -32,6 +32,8 @@ import org.dhis2.maps.geometry.mapper.EventsByProgramStage
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.model.CustomIntentModel
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
+import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult.SearchResultType
@@ -76,6 +78,8 @@ class SearchTEIViewModelTest {
         mock {
             onBlocking { invoke(any()) } doReturn Result.success(flowOf(PagingData.empty()))
         }
+    private val fetchSearchParameters: FetchSearchParameters = mock()
+    private val fetchOptionSetOptions: FetchOptionSetOptions = mock()
 
     @ExperimentalCoroutinesApi
     private val testingDispatcher = StandardTestDispatcher()
@@ -112,6 +116,8 @@ class SearchTEIViewModelTest {
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
+                fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
     }
@@ -796,6 +802,8 @@ class SearchTEIViewModelTest {
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
+                fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 
@@ -843,6 +851,8 @@ class SearchTEIViewModelTest {
                 displayNameProvider = displayNameProvider,
                 filterManager = filterManager,
                 searchTrackedEntities = searchTrackedEntities,
+                fetchSearchParameters = fetchSearchParameters,
+                fetchOptionSetOptions = fetchOptionSetOptions,
             )
         testingDispatcher.scheduler.advanceUntilIdle()
 

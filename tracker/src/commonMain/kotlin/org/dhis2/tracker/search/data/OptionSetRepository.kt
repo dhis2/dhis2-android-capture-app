@@ -8,8 +8,7 @@ import org.dhis2.tracker.input.ui.state.TrackerOptionItem
  * Repository for fetching option set data.
  * Handles pagination and search of options for dropdown/selection inputs.
  */
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-expect class OptionSetRepository {
+interface OptionSetRepository {
     /**
      * Fetches paginated options for a given option set.
      *
