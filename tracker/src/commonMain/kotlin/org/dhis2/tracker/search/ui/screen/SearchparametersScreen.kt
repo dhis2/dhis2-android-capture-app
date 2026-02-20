@@ -60,7 +60,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SearchParametersScreen(
-    uiState: SearchParametersUiState,  
+    uiState: SearchParametersUiState,
     onSearchScreenUiEvent: (SearchScreenUiEvent) -> Unit,
     onTrackerInputUiEvent: (TrackerInputUiEvent) -> Unit,
     isLandscape: Boolean,
