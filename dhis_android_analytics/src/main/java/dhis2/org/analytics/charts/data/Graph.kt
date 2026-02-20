@@ -48,10 +48,11 @@ data class Graph(
             return when (eventPeriodType) {
                 PeriodType.Daily,
                 PeriodType.Weekly,
+                PeriodType.WeeklyWednesday,
+                PeriodType.WeeklyThursday,
+                PeriodType.WeeklyFriday,
                 PeriodType.WeeklySaturday,
                 PeriodType.WeeklySunday,
-                PeriodType.WeeklyThursday,
-                PeriodType.WeeklyWednesday,
                 PeriodType.BiWeekly,
                 PeriodType.Monthly,
                 PeriodType.BiMonthly,
@@ -65,8 +66,11 @@ data class Graph(
                 }
 
                 PeriodType.Yearly,
+                PeriodType.FinancialFeb,
                 PeriodType.FinancialApril,
                 PeriodType.FinancialJuly,
+                PeriodType.FinancialAug,
+                PeriodType.FinancialSep,
                 PeriodType.FinancialOct,
                 PeriodType.FinancialNov,
                 -> {
@@ -126,10 +130,11 @@ data class Graph(
         when (eventPeriodType) {
             PeriodType.Daily,
             PeriodType.Weekly,
+            PeriodType.WeeklyWednesday,
+            PeriodType.WeeklyThursday,
+            PeriodType.WeeklyFriday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
-            PeriodType.WeeklyThursday,
-            PeriodType.WeeklyWednesday,
             PeriodType.BiWeekly,
             PeriodType.Monthly,
             PeriodType.BiMonthly,
@@ -144,8 +149,11 @@ data class Graph(
             }
 
             PeriodType.Yearly,
+            PeriodType.FinancialFeb,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
+            PeriodType.FinancialAug,
+            PeriodType.FinancialSep,
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
             -> {

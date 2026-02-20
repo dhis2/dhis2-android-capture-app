@@ -57,10 +57,11 @@ class GraphToBarData {
             PeriodType.Daily ->
                 DAILY_BAR_WIDTH
             PeriodType.Weekly,
+            PeriodType.WeeklyWednesday,
+            PeriodType.WeeklyThursday,
+            PeriodType.WeeklyFriday,
             PeriodType.WeeklySaturday,
             PeriodType.WeeklySunday,
-            PeriodType.WeeklyThursday,
-            PeriodType.WeeklyWednesday,
             ->
                 WEEKLY_BAR_WIDTH
             PeriodType.BiWeekly,
@@ -77,8 +78,11 @@ class GraphToBarData {
                 SIX_MONTHLY_BAR_WIDTH
             }
             PeriodType.Yearly,
+            PeriodType.FinancialFeb,
             PeriodType.FinancialApril,
             PeriodType.FinancialJuly,
+            PeriodType.FinancialAug,
+            PeriodType.FinancialSep,
             PeriodType.FinancialOct,
             PeriodType.FinancialNov,
             -> {
