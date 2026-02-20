@@ -198,7 +198,6 @@ public class SearchTEModule {
             SearchRepository searchRepository,
             D2 d2,
             DispatcherProvider dispatcherProvider,
-            FieldViewModelFactory fieldViewModelFactory,
             MetadataIconProvider metadataIconProvider,
             ColorUtils colorUtils,
             DateUtils dateUtils,
@@ -212,8 +211,6 @@ public class SearchTEModule {
                 searchRepository,
                 d2,
                 dispatcherProvider,
-                fieldViewModelFactory,
-                metadataIconProvider,
                 new TrackedEntityInstanceInfoProvider(
                         d2,
                         profilePictureProvider,
