@@ -11,7 +11,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import org.dhis2.tracker.input.model.TrackerInputType
-import org.dhis2.tracker.input.ui.state.TrackerInputUIState
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.inputState
 import org.dhis2.tracker.input.ui.state.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.DateTimeActionType
@@ -26,7 +26,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.state.rememberInputDateTim
 
 @Composable
 fun ProvideTrackerDateTimeInput(
-    model: TrackerInputUIState,
+    model: TrackerInputUiState,
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     modifier: Modifier,

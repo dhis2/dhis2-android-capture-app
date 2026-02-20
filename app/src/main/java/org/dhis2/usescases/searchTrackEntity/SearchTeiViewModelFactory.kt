@@ -8,6 +8,8 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.usecases.MapStyleConfiguration
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
+import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 
 class SearchTeiViewModelFactory(
@@ -24,6 +26,8 @@ class SearchTeiViewModelFactory(
     private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
+    private val fetchSearchParameters: FetchSearchParameters,
+    private val fetchOptionSetOptions: FetchOptionSetOptions,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         SearchTEIViewModel(
@@ -40,5 +44,7 @@ class SearchTeiViewModelFactory(
             displayNameProvider,
             filterManager,
             searchTrackedEntities,
+            fetchSearchParameters,
+            fetchOptionSetOptions,
         ) as T
 }

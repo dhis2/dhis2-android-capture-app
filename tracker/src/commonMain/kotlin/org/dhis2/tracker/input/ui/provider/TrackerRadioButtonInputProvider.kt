@@ -2,7 +2,7 @@ package org.dhis2.tracker.input.ui.provider
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.dhis2.tracker.input.ui.state.TrackerInputUIState
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.inputState
 import org.dhis2.tracker.input.ui.state.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.InputRadioButton
@@ -11,7 +11,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.RadioButtonData
 
 @Composable
 fun TrackerRadioButtonInputProvider(
-    model: TrackerInputUIState,
+    model: TrackerInputUiState,
     inputStyle: InputStyle,
     modifier: Modifier,
     onValueChange: (String?) -> Unit,

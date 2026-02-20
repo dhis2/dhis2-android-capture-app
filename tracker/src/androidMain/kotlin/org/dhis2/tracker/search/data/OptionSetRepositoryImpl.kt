@@ -16,11 +16,10 @@ import org.hisp.dhis.android.core.maintenance.D2Error
 /**
  * Android implementation of OptionSetRepository using DHIS2 Android SDK.
  */
-@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual class OptionSetRepository(
+class OptionSetRepositoryImpl(
     private val d2: D2,
     private val domainErrorMapper: DomainErrorMapper,
-) {
+) : OptionSetRepository {
     /**
      * Fetches paginated options for a given option set.
      * @param optionSetUid The unique identifier of the option set
@@ -29,7 +28,7 @@ actual class OptionSetRepository(
      * @return Flow of paginated option items. The `flow { }` builder creates a cold (lazy) flow that
      * will be executed when collected. The code inside runs in the collector's coroutine context.
      */
-    actual fun getOptions(
+    override fun getOptions(
         optionSetUid: String,
         pageSize: Int,
         searchQuery: String?,

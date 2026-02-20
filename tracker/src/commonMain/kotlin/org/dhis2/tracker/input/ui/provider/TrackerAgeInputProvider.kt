@@ -17,7 +17,7 @@ import org.dhis2.mobile.commons.resources.age_or
 import org.dhis2.mobile.commons.resources.cancel
 import org.dhis2.mobile.commons.resources.date_of_birth
 import org.dhis2.mobile.commons.resources.ok
-import org.dhis2.tracker.input.ui.state.TrackerInputUIState
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.inputState
 import org.dhis2.tracker.input.ui.state.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProvideTrackerAgeInput(
-    model: TrackerInputUIState,
+    model: TrackerInputUiState,
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     modifier: Modifier,
