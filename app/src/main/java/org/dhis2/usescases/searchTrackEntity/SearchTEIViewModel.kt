@@ -58,12 +58,14 @@ import org.dhis2.tracker.input.ui.action.CustomIntentUid
 import org.dhis2.tracker.input.ui.action.FieldUid
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
 import org.dhis2.tracker.input.ui.mapper.toTrackerInputUiState
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
 import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.FetchSearchParametersData
+import org.dhis2.tracker.search.model.QueryData
 import org.dhis2.tracker.search.model.SearchParametersUiState
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -111,11 +113,6 @@ class SearchTEIViewModel(
     val navigationBarUIState: MutableState<NavigationBarUIState<NavigationPage>> =
         _navigationBarUIState
 
-    val queryData =
-        mutableMapOf<String, List<String>?>().apply {
-            initialQuery?.let { putAll(it) }
-        }
-
     private val _legacyInteraction = MutableLiveData<LegacyInteraction?>()
     val legacyInteraction: LiveData<LegacyInteraction?> = _legacyInteraction
 
@@ -153,6 +150,11 @@ class SearchTEIViewModel(
     val teTypeName: LiveData<String> = _teTypeName
 
     var searchParametersUiState by mutableStateOf(SearchParametersUiState())
+
+    val queryDataList =
+        mutableListOf<QueryData>().apply {
+            initialQuery?.let { addAll(it.toQueryDataList(searchParametersUiState.items)) }
+        }
 
     var mapManager: MapManager? = null
 
@@ -328,7 +330,7 @@ class SearchTEIViewModel(
                 isSearching = searching,
                 searchForm =
                     SearchForm(
-                        queryHasData = queryData.isNotEmpty(),
+                        queryHasData = queryDataList.isNotEmpty(),
                         minAttributesToSearch =
                             searchRepository
                                 .getProgram(initialProgramUid)
@@ -365,7 +367,7 @@ class SearchTEIViewModel(
                 isSearching = searching,
                 searchForm =
                     SearchForm(
-                        queryHasData = queryData.isNotEmpty(),
+                        queryHasData = queryDataList.isNotEmpty(),
                         minAttributesToSearch =
                             searchRepository
                                 .getProgram(initialProgramUid)
@@ -405,7 +407,7 @@ class SearchTEIViewModel(
                 isSearching = searching,
                 searchForm =
                     SearchForm(
-                        queryHasData = queryData.isNotEmpty(),
+                        queryHasData = queryDataList.isNotEmpty(),
                         minAttributesToSearch =
                             searchRepository
                                 .getProgram(initialProgramUid)
@@ -448,9 +450,21 @@ class SearchTEIViewModel(
         values: List<String>?,
     ) {
         if (values.isNullOrEmpty()) {
-            queryData.remove(uid)
+            queryDataList.removeIf { it.attributeId == uid }
         } else {
-            queryData[uid] = values
+            if (queryDataList.none { it.attributeId == uid }) {
+                queryDataList.add(
+                    QueryData(
+                        attributeId = uid,
+                        values = values,
+                        searchOperator = searchParametersUiState.items.firstOrNull { it.uid == uid }?.searchOperator,
+                    ),
+                )
+            } else {
+                queryDataList.firstOrNull { it.attributeId == uid }?.copy(
+                    values = values,
+                )
+            }
         }
 
         updateSearchParameters(uid, values)
@@ -484,7 +498,7 @@ class SearchTEIViewModel(
     }
 
     fun clearQueryData() {
-        queryData.clear()
+        queryDataList.clear()
         clearSearchParameters()
         updateSearch()
         performSearch()
@@ -510,13 +524,13 @@ class SearchTEIViewModel(
                 currentSearchList.copy(
                     searchForm =
                         currentSearchList.searchForm.copy(
-                            queryHasData = queryData.isNotEmpty(),
+                            queryHasData = queryDataList.isNotEmpty(),
                         ),
                 ),
             )
         }
         searchParametersUiState =
-            searchParametersUiState.copy(searchEnabled = queryData.isNotEmpty())
+            searchParametersUiState.copy(searchEnabled = queryDataList.isNotEmpty())
     }
 
     private fun loadSearchResults(): Flow<PagingData<SearchTeiModel>> =
@@ -529,7 +543,7 @@ class SearchTEIViewModel(
 
             val allowCache =
                 searchRepositoryKt.saveSearchValuesAndGetAllowCache(
-                    queryData,
+                    queryDataAsMap(),
                     selectedProgram?.uid(),
                 )
             val newTrackerSearchModel =
@@ -539,7 +553,7 @@ class SearchTEIViewModel(
                     excludeValues = excludeValues,
                     hasStateFilters = filterManager.stateFilters.isNotEmpty(),
                     isOnline = isOnline,
-                    queryData = queryData,
+                    queryDataList = queryDataList,
                 )
             val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
@@ -572,7 +586,7 @@ class SearchTEIViewModel(
 
             val allowCache =
                 searchRepositoryKt.saveSearchValuesAndGetAllowCache(
-                    queryData,
+                    queryDataAsMap(),
                     selectedProgram?.uid(),
                 )
             val newTrackerSearchModel =
@@ -582,7 +596,7 @@ class SearchTEIViewModel(
                     excludeValues = excludeValues,
                     hasStateFilters = filterManager.stateFilters.isNotEmpty(),
                     isOnline = false,
-                    queryData = queryData,
+                    queryDataList = queryDataList,
                 )
             val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
@@ -616,7 +630,7 @@ class SearchTEIViewModel(
 
                 val allowCache =
                     searchRepositoryKt.saveSearchValuesAndGetAllowCache(
-                        queryData,
+                        queryDataAsMap(),
                         selectedProgram?.uid(),
                     )
                 val newTrackerSearchModel =
@@ -626,7 +640,7 @@ class SearchTEIViewModel(
                         excludeValues = excludeValues,
                         hasStateFilters = filterManager.stateFilters.isNotEmpty(),
                         isOnline = isOnline,
-                        queryData = queryData,
+                        queryDataList = queryDataList,
                     )
                 val results = searchTrackedEntities.invoke(newTrackerSearchModel)
 
@@ -663,7 +677,7 @@ class SearchTEIViewModel(
                 val data =
                     mapDataRepository.getTrackerMapData(
                         searchRepository.getProgram(initialProgramUid),
-                        queryData,
+                        queryDataAsMap(),
                         layersVisibility,
                     )
                 _mapResults.send(data)
@@ -685,10 +699,10 @@ class SearchTEIViewModel(
         viewModelScope.launch(dispatchers.io()) {
             try {
                 if (canPerformSearch()) {
-                    searching = queryData.isNotEmpty()
+                    searching = queryDataList.isNotEmpty()
                     searchParametersUiState =
                         searchParametersUiState.copy(
-                            clearSearchEnabled = queryData.isNotEmpty(),
+                            clearSearchEnabled = queryDataList.isNotEmpty(),
                             searchedItems = getFriendlyQueryData(),
                         )
 
@@ -734,12 +748,12 @@ class SearchTEIViewModel(
 
     private fun minAttributesToSearchCheck(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
-            (program.minAttributesRequiredToSearch() ?: 0) <= queryData.size
+            (program.minAttributesRequiredToSearch() ?: 0) <= queryDataList.size
         } ?: true
 
     private fun displayFrontPageList(): Boolean =
         searchRepository.getProgram(initialProgramUid)?.let { program ->
-            program.displayFrontPageList() == true && queryData.isEmpty()
+            program.displayFrontPageList() == true && queryDataList.isEmpty()
         } ?: false
 
     private fun canDisplayResult(
@@ -760,10 +774,10 @@ class SearchTEIViewModel(
             }
 
     fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> =
-        searchRepository.filterQueryForProgram(queryData, programUid)
+        searchRepository.filterQueryForProgram(queryDataAsMap(), programUid)
 
     fun onEnrollClick() {
-        _legacyInteraction.postValue(LegacyInteraction.OnEnrollClick(queryData))
+        _legacyInteraction.postValue(LegacyInteraction.OnEnrollClick(queryDataAsMap()))
     }
 
     fun onAddRelationship(
@@ -801,7 +815,7 @@ class SearchTEIViewModel(
                         LegacyInteraction.OnEnroll(
                             initialProgramUid,
                             downloadResult.teiUid,
-                            queryData,
+                            queryDataAsMap(),
                         ),
                     )
                 } else {
@@ -888,7 +902,7 @@ class SearchTEIViewModel(
 
                 hasGlobalResults == null &&
                     searchRepository.getProgram(initialProgramUid) != null &&
-                    searchRepository.filterQueryForProgram(queryData, null).isNotEmpty() &&
+                    searchRepository.filterQueryForProgram(queryDataAsMap(), null).isNotEmpty() &&
                     searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
@@ -1103,10 +1117,10 @@ class SearchTEIViewModel(
                 value?.let { listOf(it) },
             )
 
-            searching = queryData.isNotEmpty()
+            searching = queryDataList.isNotEmpty()
             searchParametersUiState =
                 searchParametersUiState.copy(
-                    clearSearchEnabled = queryData.isNotEmpty(),
+                    clearSearchEnabled = queryDataList.isNotEmpty(),
                     searchedItems = getFriendlyQueryData(),
                 )
 
@@ -1123,7 +1137,7 @@ class SearchTEIViewModel(
                     excludeValues = excludeValues,
                     hasStateFilters = filterManager.stateFilters.isNotEmpty(),
                     isOnline = isOnline,
-                    queryData = queryData,
+                    queryDataList = queryDataList,
                 )
 
             // Use invokeImmediate for QR code scanning to get immediate non-paginated results
@@ -1340,4 +1354,27 @@ class SearchTEIViewModel(
             )
         }
     }
+
+    // The following 3 function are temporary until QueryData is fully refactored for usage in
+    // other places in the search feature
+    fun queryDataAsMap() = queryDataList.toMap()
+
+    private fun MutableList<QueryData>.toMap(): MutableMap<String, List<String>?> =
+        this
+            .associate { queryData ->
+                val valueList = queryData.values
+                queryData.attributeId to valueList
+            }.toMutableMap()
+
+    private fun MutableMap<String, List<String>?>.toQueryDataList(items: List<TrackerInputUiState>) =
+        this
+            .map { (attributeId, valuesList) ->
+                QueryData(
+                    attributeId = attributeId,
+                    values = valuesList,
+                    searchOperator = items.firstOrNull { it.uid == attributeId }?.searchOperator,
+                )
+            }.toMutableList()
+
+    //
 }
