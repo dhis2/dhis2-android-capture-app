@@ -28,7 +28,7 @@ class FetchSearchParameters(
         }
 
     // Sort parameters to list first QR or BarCode uniques, then QR or BarCode and then remaining uniques
-    private fun sortSearchParameters(parameters: List<SearchParameterModel>): List<SearchParameterModel> =
+    internal fun sortSearchParameters(parameters: List<SearchParameterModel>): List<SearchParameterModel> =
         parameters.sortedWith(
             compareByDescending<SearchParameterModel> {
                 isQrCodeOrBarCode(it.inputType) && it.isUnique
@@ -37,6 +37,6 @@ class FetchSearchParameters(
             }.thenByDescending { it.isUnique },
         )
 
-    private fun isQrCodeOrBarCode(inputType: TrackerInputType?): Boolean =
+    internal fun isQrCodeOrBarCode(inputType: TrackerInputType?): Boolean =
         inputType == TrackerInputType.QR_CODE || inputType == TrackerInputType.BAR_CODE
 }
