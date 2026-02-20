@@ -60,6 +60,7 @@ class SearchTEPresenterTest {
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(0)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(
@@ -101,6 +102,7 @@ class SearchTEPresenterTest {
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(1)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         presenter.setProgramForTesting(program)
@@ -119,6 +121,7 @@ class SearchTEPresenterTest {
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(1)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         val newSelectedProgram =
@@ -128,6 +131,7 @@ class SearchTEPresenterTest {
                 .displayFrontPageList(true)
                 .minAttributesRequiredToSearch(1)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(

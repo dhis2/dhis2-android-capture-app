@@ -228,6 +228,7 @@ class ProgramEventMapperTest {
             .completeEventsExpiryDays(0)
             .expiryDays(0)
             .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+            .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
             .build()
 
     private fun dummyCategoryOptionCombo() =

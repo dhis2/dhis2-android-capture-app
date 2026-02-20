@@ -63,6 +63,7 @@ class TeiProgramListRepositoryImplTest {
                 .uid("programUid")
                 .displayIncidentDate(true)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(
@@ -128,6 +129,7 @@ class TeiProgramListRepositoryImplTest {
                 .uid("programUid")
                 .displayIncidentDate(false)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(

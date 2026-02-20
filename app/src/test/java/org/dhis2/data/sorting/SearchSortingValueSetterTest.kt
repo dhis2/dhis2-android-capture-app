@@ -449,6 +449,7 @@ class SearchSortingValueSetterTest {
                 .builder()
                 .uid("programUid")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .enrollmentDateLabel("programEnrollmentDateLabel")
                 .build()
 
@@ -484,6 +485,7 @@ class SearchSortingValueSetterTest {
                 .builder()
                 .uid("programUid")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         val result =

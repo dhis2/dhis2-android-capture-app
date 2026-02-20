@@ -75,6 +75,7 @@ class ProgramEventDetailPresenterTest {
                 .builder()
                 .uid("programUid")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(repository.getAccessDataWrite()) doReturn true

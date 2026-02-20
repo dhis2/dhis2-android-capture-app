@@ -260,6 +260,7 @@ class EventInitialRepositoryImplTest {
                 .builder()
                 .uid("programUid")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(Access.create(true, true, DataAccess.create(true, hasAccess)))
                 .build()
     }

@@ -370,6 +370,7 @@ class EventInitialPresenterTest {
                 .builder()
                 .uid(uid)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         val orgUnits =
             mutableListOf(
