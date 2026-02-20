@@ -32,7 +32,7 @@ private fun TrackerInputType.getOrientation(): Orientation =
     when (this) {
         TrackerInputType.HORIZONTAL_CHECKBOXES,
         TrackerInputType.HORIZONTAL_RADIOBUTTONS,
-            -> Orientation.HORIZONTAL
+        -> Orientation.HORIZONTAL
 
         else -> Orientation.VERTICAL
     }
