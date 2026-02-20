@@ -129,9 +129,6 @@ class SearchParametersRepositoryImpl(
             .byProgram()
             .eq(programUid)
             .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
-            // TODO CHECK WITH VICTOR: if is possible because we need to check if searchable or unique
-//            .bySearchable()
-//            .eq(true)
             .blockingGet()
             .filter { programAttribute ->
                 val isSearchable = programAttribute.searchable()!!
