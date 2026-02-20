@@ -67,40 +67,29 @@ class SearchTrackedEntities(
         // Add filters from FilterManager
         repository.addFiltersToQuery(input.selectedProgram, teType)
 
-        input.queryData?.let { queryData ->
-            // iterate through the query data and add to the repository query
-            for ((dataId, dataValues) in queryData) {
-                // checks if the dataId is an attribute of the teType
-                val isTETypeAttribute = getIsTETypeAttribute(input.selectedProgram, dataId, teType)
+        input.queryDataList?.forEach { data ->
+            val isTETypeAttribute = getIsTETypeAttribute(input.selectedProgram, data.attributeId, teType)
 
-                if (input.selectedProgram != null || isTETypeAttribute) {
-                    // fetches the teAttribute details (isUnique, isOptionSet)
-
-                    dataValues?.let { values ->
-                        // normalize values: if the attribute doesn't have custom intent that returns multiple values
-                        // and there are multiple values, join them into a single comma-separated value
-                        val normalizedValues =
-                            if (values.size > 1 &&
-                                !customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(
-                                    dataId,
-                                    CustomIntentActionTypeModel.SEARCH,
-                                )
-                            ) {
-                                mutableListOf(values.joinToString(","))
-                            } else {
-                                values
-                            }
-
-                        val teAttribute = repository.getTEAttribute(dataId)
-
-                        repository.addToQuery(
-                            dataId,
-                            normalizedValues,
-                            teAttribute.isUnique,
-                            teAttribute.isOptionSet,
-                        )
+            if (input.selectedProgram != null || isTETypeAttribute) {
+                val normalizedValues =
+                    data.values?.let {
+                        if (it.size > 1 &&
+                            !customIntentRepository.attributeHasCustomIntentAndReturnsAListOfValues(
+                                data.attributeId,
+                                CustomIntentActionTypeModel.SEARCH,
+                            )
+                        ) {
+                            mutableListOf(it.joinToString(","))
+                        } else {
+                            it
+                        }
                     }
-                }
+
+                repository.addToQuery(
+                    data.attributeId,
+                    normalizedValues,
+                    data.searchOperator,
+                )
             }
         }
     }

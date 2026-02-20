@@ -6,5 +6,5 @@ data class SearchTrackedEntitiesInput(
     val excludeValues: Set<String>?,
     val hasStateFilters: Boolean,
     val isOnline: Boolean,
-    val queryData: Map<String, List<String>?>?,
+    val queryDataList: List<QueryData>? = null,
 )
