@@ -10,7 +10,6 @@ import org.dhis2.form.model.EventMode
 import org.dhis2.form.ui.FieldViewModelFactory
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.event.Event
@@ -259,16 +258,6 @@ class EventRepositoryTest {
                 .byProgramStageUid()
                 .eq(anyOrNull())
                 .withDataElements()
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC),
-        ) doReturn mock()
-        whenever(
-            d2
-                .programModule()
-                .programStageSections()
-                .byProgramStageUid()
-                .eq(anyOrNull())
-                .withDataElements()
-                .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                 .blockingGet(),
         ) doReturn listOf(mockedFirstSection, mockedSecondSection)
     }
