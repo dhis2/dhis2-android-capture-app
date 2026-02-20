@@ -43,6 +43,7 @@ import org.dhis2.mobile.tracker.resources.empty_search_attributes_message
 import org.dhis2.mobile.tracker.resources.optional
 import org.dhis2.mobile.tracker.resources.search
 import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.input.ui.state.loadOptionSetConfiguration
 import org.dhis2.tracker.search.ui.action.SearchScreenUiEvent
@@ -171,11 +172,9 @@ fun SearchParametersScreen(
                                         ),
                                     helperText = stringResource(Res.string.optional),
                                     onNextClicked = {
-                                        val nextIndex = index + 1
                                         manageOnNextClick(
                                             index,
-                                            uiState.items.size,
-                                            uiState.items[nextIndex].uid,
+                                            uiState.items,
                                             onTrackerInputUiEvent,
                                         )
                                     },
@@ -249,12 +248,12 @@ private fun manageOnBackPressed(
 
 private fun manageOnNextClick(
     index: Int,
-    size: Int,
-    nexItemUid: String,
+    items: List<TrackerInputUiState>,
     onTrackerInputUiEvent: (TrackerInputUiEvent) -> Unit,
 ) {
     val nextIndex = index + 1
-    if (nextIndex < size) {
+    if (index + 1 < items.size && nextIndex < items.size) {
+        val nexItemUid = items[nextIndex].uid
         onTrackerInputUiEvent(
             TrackerInputUiEvent.OnItemClick(
                 nexItemUid,
@@ -263,8 +262,8 @@ private fun manageOnNextClick(
     }
 }
 
-fun getBackgroundShape(isLandscape: Boolean): RoundedCornerShape {
-    return if (isLandscape) {
+fun getBackgroundShape(isLandscape: Boolean): RoundedCornerShape =
+    if (isLandscape) {
         RoundedCornerShape(
             topStart = CornerSize(Radius.L),
             topEnd = CornerSize(Radius.NoRounding),
@@ -274,7 +273,6 @@ fun getBackgroundShape(isLandscape: Boolean): RoundedCornerShape {
     } else {
         Shape.LargeTop
     }
-}
 
 fun getButtonColour(enabled: Boolean): Color =
     if (enabled) {
