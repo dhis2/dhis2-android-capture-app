@@ -58,6 +58,8 @@ import org.dhis2.tracker.input.ui.action.CustomIntentUid
 import org.dhis2.tracker.input.ui.action.FieldUid
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
+import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
@@ -88,6 +90,8 @@ class SearchTEIViewModel(
     private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
+    private val fetchSearchParameters: FetchSearchParameters,
+    private val fetchOptionSetOptions: FetchOptionSetOptions,
 ) : ViewModel() {
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
 

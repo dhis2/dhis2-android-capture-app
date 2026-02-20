@@ -59,12 +59,24 @@ import org.dhis2.maps.geometry.polygon.MapPolygonToFeature;
 import org.dhis2.maps.model.MapScope;
 import org.dhis2.maps.usecases.MapStyleConfiguration;
 import org.dhis2.maps.utils.DhisMapUtils;
+import org.dhis2.mobile.commons.coroutine.Dispatcher;
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository;
 import org.dhis2.mobile.commons.customintents.CustomIntentRepositoryImpl;
+import org.dhis2.mobile.commons.error.DomainErrorMapper;
+import org.dhis2.mobile.commons.network.NetworkStatusProvider;
+import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider;
+import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl;
 import org.dhis2.tracker.data.ProfilePictureProvider;
+import org.dhis2.tracker.search.data.OptionSetRepository;
+import org.dhis2.tracker.search.data.OptionSetRepositoryImpl;
+import org.dhis2.tracker.search.data.SearchParametersRepository;
+import org.dhis2.tracker.search.data.SearchParametersRepositoryImpl;
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepository;
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepositoryImpl;
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions;
+import org.dhis2.tracker.search.domain.FetchSearchParameters;
 import org.dhis2.tracker.search.domain.SearchTrackedEntities;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.events.EventInfoProvider;
@@ -330,7 +342,9 @@ public class SearchTEModule {
             DisplayNameProvider displayNameProvider,
             FilterManager filterManager,
             ProgramConfigurationRepository programConfigurationRepository,
-            SearchTrackedEntities searchTrackedEntities
+            SearchTrackedEntities searchTrackedEntities,
+            FetchSearchParameters fetchSearchParameters,
+            FetchOptionSetOptions fetchOptionSetOptions
     ) {
         return new SearchTeiViewModelFactory(
                 searchRepository,
@@ -350,9 +364,60 @@ public class SearchTEModule {
                 resourceManager,
                 displayNameProvider,
                 filterManager,
-                searchTrackedEntities
+                searchTrackedEntities,
+                fetchSearchParameters,
+                fetchOptionSetOptions
         );
     }
+
+    @Provides
+    @PerActivity
+    FetchSearchParameters provideFetchSearchParametersUseCase(
+            SearchParametersRepository searchParametersRepository
+    ) {
+        return new FetchSearchParameters(
+                new Dispatcher(),
+                searchParametersRepository
+        );
+    }
+
+    @Provides
+    @PerActivity
+    FetchOptionSetOptions provideFetchOptionSetOptionsUseCase(
+            OptionSetRepository optionSetRepository
+    ) {
+        return new FetchOptionSetOptions(
+                optionSetRepository
+        );
+    }
+
+    @Provides
+    @PerActivity
+    SearchParametersRepository provideSearchParametersRepository(
+            D2 d2,
+            CustomIntentRepository customIntentRepository,
+            DomainErrorMapper domainErrorMapper
+    ) {
+        return new SearchParametersRepositoryImpl(
+                d2,
+                customIntentRepository,
+                domainErrorMapper
+        );
+    }
+
+    @Provides
+    @PerActivity
+    OptionSetRepository provideOptionSetRepository(
+            D2 d2,
+            DomainErrorMapper domainErrorMapper
+    ) {
+        return new OptionSetRepositoryImpl(
+                d2,
+                domainErrorMapper
+        );
+    }
+
+
 
     @Provides
     @PerActivity
@@ -446,5 +511,30 @@ public class SearchTEModule {
             FilterRepository filterRepository
     ) {
         return new WorkingListViewModelFactory(initialProgram, filterRepository);
+    }
+
+    @Provides
+    @PerActivity
+    DomainErrorMapper provideDomainErrorMapper(
+            D2ErrorMessageProvider d2ErrorMessageProvider,
+            NetworkStatusProvider networkStatusProvider
+    ) {
+        return new DomainErrorMapper(
+                d2ErrorMessageProvider,
+                networkStatusProvider
+        );
+    }
+
+    @Provides
+    @PerActivity
+    D2ErrorMessageProvider provideD2ErrorMessageProvider() {
+        return new D2ErrorMessageProviderImpl();
+    }
+
+    @Provides
+    @PerActivity
+    NetworkStatusProvider provideNetworkStatusProvider() {
+
+        return new NetworkStatusProviderImpl(moduleContext);
     }
 }

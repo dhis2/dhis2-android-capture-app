@@ -12,7 +12,7 @@ import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.tracker.input.model.TrackerInputType
-import org.dhis2.tracker.input.ui.state.TrackerInputUIState
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.input.ui.state.TrackerOptionSetConfiguration
 import org.hisp.dhis.android.core.common.ValueType
@@ -23,7 +23,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.Orientation
 fun FieldUiModel.toParameterInputModel(
     fetchOptions: () -> Unit,
     resourceManager: ResourceManager,
-): TrackerInputUIState {
+): TrackerInputUiState {
     val trackerInputType =
         when {
             optionSet != null && valueType != ValueType.MULTI_TEXT -> {
@@ -41,7 +41,7 @@ fun FieldUiModel.toParameterInputModel(
             else -> getInputTypeByValueType(valueType, renderingType)
         }
 
-    return TrackerInputUIState(
+    return TrackerInputUiState(
         uid = uid,
         label = label,
         value = value,
