@@ -26,25 +26,25 @@ class ParameterInputModelMapperTest {
     @Test
     fun `should return RADIO_BUTTON for horizontal radio buttons rendering type`() {
         val result = getInputTypeForOptionSetByRenderingType(UiRenderType.HORIZONTAL_RADIOBUTTONS)
-        assertEquals(TrackerInputType.RADIO_BUTTON, result)
+        assertEquals(TrackerInputType.HORIZONTAL_RADIOBUTTONS, result)
     }
 
     @Test
     fun `should return RADIO_BUTTON for vertical radio buttons rendering type`() {
         val result = getInputTypeForOptionSetByRenderingType(UiRenderType.VERTICAL_RADIOBUTTONS)
-        assertEquals(TrackerInputType.RADIO_BUTTON, result)
+        assertEquals(TrackerInputType.VERTICAL_RADIOBUTTONS, result)
     }
 
     @Test
     fun `should return CHECKBOX for horizontal checkboxes rendering type`() {
         val result = getInputTypeForOptionSetByRenderingType(UiRenderType.HORIZONTAL_CHECKBOXES)
-        assertEquals(TrackerInputType.CHECKBOX, result)
+        assertEquals(TrackerInputType.HORIZONTAL_CHECKBOXES, result)
     }
 
     @Test
     fun `should return CHECKBOX for vertical checkboxes rendering type`() {
         val result = getInputTypeForOptionSetByRenderingType(UiRenderType.VERTICAL_CHECKBOXES)
-        assertEquals(TrackerInputType.CHECKBOX, result)
+        assertEquals(TrackerInputType.VERTICAL_CHECKBOXES, result)
     }
 
     @Test
@@ -156,19 +156,19 @@ class ParameterInputModelMapperTest {
     @Test
     fun `should return RADIO_BUTTON for BOOLEAN value type with default rendering`() {
         val result = getInputTypeByValueType(ValueType.BOOLEAN, null)
-        assertEquals(TrackerInputType.RADIO_BUTTON, result)
+        assertEquals(TrackerInputType.VERTICAL_RADIOBUTTONS, result)
     }
 
     @Test
     fun `should return CHECKBOX for BOOLEAN value type with horizontal checkboxes rendering`() {
         val result = getInputTypeByValueType(ValueType.BOOLEAN, UiRenderType.HORIZONTAL_CHECKBOXES)
-        assertEquals(TrackerInputType.CHECKBOX, result)
+        assertEquals(TrackerInputType.HORIZONTAL_CHECKBOXES, result)
     }
 
     @Test
     fun `should return CHECKBOX for BOOLEAN value type with vertical checkboxes rendering`() {
         val result = getInputTypeByValueType(ValueType.BOOLEAN, UiRenderType.VERTICAL_CHECKBOXES)
-        assertEquals(TrackerInputType.CHECKBOX, result)
+        assertEquals(TrackerInputType.VERTICAL_CHECKBOXES, result)
     }
 
     // Test getInputTypeByValueType for TRUE_ONLY

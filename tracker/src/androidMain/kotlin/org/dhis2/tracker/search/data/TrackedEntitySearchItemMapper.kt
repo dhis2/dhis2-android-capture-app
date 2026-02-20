@@ -108,7 +108,7 @@ private fun ValueType.toTrackerInputType(): TrackerInputType =
         ValueType.INTEGER_POSITIVE -> TrackerInputType.INTEGER_POSITIVE
         ValueType.INTEGER_NEGATIVE -> TrackerInputType.INTEGER_NEGATIVE
         ValueType.INTEGER_ZERO_OR_POSITIVE -> TrackerInputType.INTEGER_ZERO_OR_POSITIVE
-        ValueType.BOOLEAN -> TrackerInputType.CHECKBOX
+        ValueType.BOOLEAN -> TrackerInputType.HORIZONTAL_RADIOBUTTONS
         ValueType.TRUE_ONLY -> TrackerInputType.YES_ONLY_CHECKBOX
         ValueType.DATE -> TrackerInputType.DATE
         ValueType.DATETIME -> TrackerInputType.DATE_TIME

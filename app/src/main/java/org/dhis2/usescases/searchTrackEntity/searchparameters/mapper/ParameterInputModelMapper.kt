@@ -103,13 +103,10 @@ private fun org.dhis2.form.model.OptionSetConfiguration.toTrackerOptionSetConfig
 
 internal fun getInputTypeForOptionSetByRenderingType(renderingType: UiRenderType?): TrackerInputType =
     when (renderingType) {
-        UiRenderType.HORIZONTAL_RADIOBUTTONS,
-        UiRenderType.VERTICAL_RADIOBUTTONS,
-        -> TrackerInputType.RADIO_BUTTON
-
-        UiRenderType.HORIZONTAL_CHECKBOXES,
-        UiRenderType.VERTICAL_CHECKBOXES,
-        -> TrackerInputType.CHECKBOX
+        UiRenderType.HORIZONTAL_CHECKBOXES -> TrackerInputType.HORIZONTAL_CHECKBOXES
+        UiRenderType.VERTICAL_CHECKBOXES -> TrackerInputType.VERTICAL_CHECKBOXES
+        UiRenderType.HORIZONTAL_RADIOBUTTONS -> TrackerInputType.HORIZONTAL_RADIOBUTTONS
+        UiRenderType.VERTICAL_RADIOBUTTONS -> TrackerInputType.VERTICAL_RADIOBUTTONS
 
         UiRenderType.MATRIX -> TrackerInputType.MATRIX
 
@@ -142,11 +139,12 @@ internal fun getInputTypeByValueType(
         ValueType.EMAIL -> TrackerInputType.EMAIL
         ValueType.BOOLEAN -> {
             when (renderingType) {
-                UiRenderType.HORIZONTAL_CHECKBOXES,
-                UiRenderType.VERTICAL_CHECKBOXES,
-                -> TrackerInputType.CHECKBOX
+                UiRenderType.HORIZONTAL_CHECKBOXES -> TrackerInputType.HORIZONTAL_CHECKBOXES
+                UiRenderType.VERTICAL_CHECKBOXES -> TrackerInputType.VERTICAL_CHECKBOXES
+                UiRenderType.HORIZONTAL_RADIOBUTTONS -> TrackerInputType.HORIZONTAL_RADIOBUTTONS
+                UiRenderType.VERTICAL_RADIOBUTTONS -> TrackerInputType.VERTICAL_RADIOBUTTONS
 
-                else -> TrackerInputType.RADIO_BUTTON
+                else -> TrackerInputType.VERTICAL_RADIOBUTTONS
             }
         }
 
