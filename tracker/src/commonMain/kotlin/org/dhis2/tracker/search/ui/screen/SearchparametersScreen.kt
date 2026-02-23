@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -87,24 +88,11 @@ fun SearchParametersScreen(
 
     LaunchedEffect(uiState.isOnBackPressed) {
         uiState.isOnBackPressed.collectLatest {
-            if (it) {
-                focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked)
-            }
+            manageOnBackPressed(it, focusManager, onSearchScreenUiEvent)
         }
     }
 
-    val backgroundShape =
-        if (isLandscape) {
-            RoundedCornerShape(
-                topStart = CornerSize(Radius.L),
-                topEnd = CornerSize(Radius.NoRounding),
-                bottomEnd = CornerSize(Radius.NoRounding),
-                bottomStart = CornerSize(Radius.NoRounding),
-            )
-        } else {
-            Shape.LargeTop
-        }
+    val backgroundShape = getBackgroundShape(isLandscape)
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -184,13 +172,12 @@ fun SearchParametersScreen(
                                     helperText = stringResource(Res.string.optional),
                                     onNextClicked = {
                                         val nextIndex = index + 1
-                                        if (nextIndex < uiState.items.size) {
-                                            onTrackerInputUiEvent(
-                                                TrackerInputUiEvent.OnItemClick(
-                                                    uiState.items[nextIndex].uid,
-                                                ),
-                                            )
-                                        }
+                                        manageOnNextClick(
+                                            index,
+                                            uiState.items.size,
+                                            uiState.items[nextIndex].uid,
+                                            onTrackerInputUiEvent,
+                                        )
                                     },
                                     onUiEvent = onTrackerInputUiEvent,
                                 ),
@@ -234,12 +221,7 @@ fun SearchParametersScreen(
                 style = ButtonStyle.FILLED,
                 text = stringResource(Res.string.search),
                 icon = {
-                    val iconTint =
-                        if (uiState.searchEnabled) {
-                            TextColor.OnPrimary
-                        } else {
-                            TextColor.OnDisabledSurface
-                        }
+                    val iconTint = getButtonColour(uiState.searchEnabled)
                     Icon(
                         imageVector = Icons.Outlined.Search,
                         contentDescription = "search",
@@ -253,3 +235,50 @@ fun SearchParametersScreen(
         }
     }
 }
+
+private fun manageOnBackPressed(
+    it: Boolean,
+    focusManager: FocusManager,
+    onSearchScreenUiEvent: (SearchScreenUiEvent) -> Unit,
+) {
+    if (it) {
+        focusManager.clearFocus()
+        onSearchScreenUiEvent(SearchScreenUiEvent.OnCloseClicked)
+    }
+}
+
+private fun manageOnNextClick(
+    index: Int,
+    size: Int,
+    nexItemUid: String,
+    onTrackerInputUiEvent: (TrackerInputUiEvent) -> Unit,
+) {
+    val nextIndex = index + 1
+    if (nextIndex < size) {
+        onTrackerInputUiEvent(
+            TrackerInputUiEvent.OnItemClick(
+                nexItemUid,
+            ),
+        )
+    }
+}
+
+fun getBackgroundShape(isLandscape: Boolean): RoundedCornerShape {
+    return if (isLandscape) {
+        RoundedCornerShape(
+            topStart = CornerSize(Radius.L),
+            topEnd = CornerSize(Radius.NoRounding),
+            bottomEnd = CornerSize(Radius.NoRounding),
+            bottomStart = CornerSize(Radius.NoRounding),
+        )
+    } else {
+        Shape.LargeTop
+    }
+}
+
+fun getButtonColour(enabled: Boolean): Color =
+    if (enabled) {
+        TextColor.OnPrimary
+    } else {
+        TextColor.OnDisabledSurface
+    }
