@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.resources.StringResourceProvider
 import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
+import org.dhis2.tracker.search.ui.viewmodel.SearchParametersViewModel
 import org.junit.Assert
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -19,13 +20,16 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class SearchParametersViewModelTest {
     private val testingDispatcher = StandardTestDispatcher()
     private val resourceProvider = mock<StringResourceProvider>()
+
     private lateinit var viewModel: SearchParametersViewModel
 
     @BeforeTest
