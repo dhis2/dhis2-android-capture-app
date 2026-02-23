@@ -1,20 +1,21 @@
-package org.dhis2.tracker.relationships.org.dhis2.tracker.search.ui.viewmodel
+package org.dhis2.tracker.search.ui.viewmodel
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.resources.StringResourceProvider
 import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
-import org.dhis2.tracker.search.ui.viewmodel.SearchParametersViewModel
 import org.junit.Assert
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -27,7 +28,6 @@ import kotlin.test.assertTrue
 class SearchParametersViewModelTest {
     private val testingDispatcher = StandardTestDispatcher()
     private val resourceProvider = mock<StringResourceProvider>()
-
     private lateinit var viewModel: SearchParametersViewModel
 
     @BeforeTest
@@ -36,9 +36,14 @@ class SearchParametersViewModelTest {
         viewModel = SearchParametersViewModel(resourceProvider)
     }
 
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun `onValidateSearch should set validationResult to true when all items are valid`() =
-        runTest {
+        runTest(testingDispatcher) {
             // Given
             val validItems =
                 listOf(
@@ -64,12 +69,12 @@ class SearchParametersViewModelTest {
 
             // Then
             val validationResult = viewModel.validationResult.first()
-            assertEquals(validationResult, true)
+            assertEquals(true, validationResult)
         }
 
     @Test
     fun `onValidateSearch should set validationResult to false when items have insufficient characters`() =
-        runTest {
+        runTest(testingDispatcher) {
             // Given
             val invalidItems =
                 listOf(
@@ -102,17 +107,16 @@ class SearchParametersViewModelTest {
 
             // Then
             val validationResult = viewModel.validationResult.first()
-            assertNotEquals(validationResult, true)
+            assertNotEquals(true, validationResult)
 
-            // Also check that error is set on the item
-            val uiState = viewModel.uiState.first()
+            val uiState = viewModel.uiState.first() // Also check that error is set on the item
             assertEquals(3, uiState.items.size)
             Assert.assertTrue(uiState.items[0].error?.isNotEmpty() == true) // Error should be set
         }
 
     @Test
     fun `onValidateMinCharacters should return false and set errors when items have insufficient characters`() =
-        runTest {
+        runTest(testingDispatcher) {
             // Given
             val invalidItems =
                 listOf(
@@ -147,17 +151,16 @@ class SearchParametersViewModelTest {
             // Then
             assertFalse(result)
 
-            // Check that errors are set on invalid items
-            val uiState = viewModel.uiState.first()
+            val uiState = viewModel.uiState.first() // Check that errors are set on invalid items
             assertEquals(3, uiState.items.size)
-            assertEquals(uiState.items[0].error?.isNotEmpty(), true) // test1 should have error
+            assertEquals(true, uiState.items[0].error?.isNotEmpty()) // test1 should have error
             assertNull(uiState.items[1].error) // test2 should have no error
-            assertEquals(uiState.items[2].error?.isNotEmpty(), true) // test3 should have error
+            assertEquals(true, uiState.items[2].error?.isNotEmpty()) // test3 should have error
         }
 
     @Test
     fun `onValidateMinCharacters should ignore empty values`() =
-        runTest {
+        runTest(testingDispatcher) {
             // Given
             val itemsWithEmptyValues =
                 listOf(
@@ -189,14 +192,13 @@ class SearchParametersViewModelTest {
             // Then
             assertTrue(result)
 
-            // Check that all errors are cleared
-            val uiState = viewModel.uiState.first()
+            val uiState = viewModel.uiState.first() // Check that all errors are cleared
             assertTrue(uiState.items.all { it.error == null })
         }
 
     @Test
     fun `resetValidationResult should set validationResult to null`() =
-        runTest {
+        runTest(testingDispatcher) {
             // Given
             viewModel.updateFromExternal(SearchParametersUiState(items = listOf()))
             viewModel.onValidateSearch()
@@ -212,7 +214,7 @@ class SearchParametersViewModelTest {
 
     @Test
     fun `onValidateMinCharacters should clear existing errors when validation passes`() =
-        runTest {
+        runTest(testingDispatcher) {
             // Given
             val itemsWithExistingErrors =
                 listOf(
@@ -232,8 +234,7 @@ class SearchParametersViewModelTest {
             // Then
             assertTrue(result)
 
-            // Check that existing error is cleared
-            val uiState = viewModel.uiState.first()
+            val uiState = viewModel.uiState.first() // Check that existing error is cleared
             assertNull(uiState.items[0].error)
         }
 
