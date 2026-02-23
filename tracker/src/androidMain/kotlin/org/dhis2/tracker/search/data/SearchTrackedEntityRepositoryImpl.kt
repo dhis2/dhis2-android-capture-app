@@ -51,7 +51,7 @@ class SearchTrackedEntityRepositoryImpl(
         searchOperator: SearchOperator?,
     ) {
         trackedEntityInstanceQuery =
-            if (!dataValues.isNullOrEmpty()) {
+            if (!dataValues.isNullOrEmpty() && dataValues.size > 1) {
                 // return any tracked entities with attributes that match the values in the list
                 trackedEntityInstanceQuery?.byFilter(dataId)?.`in`(dataValues)
             } else {
