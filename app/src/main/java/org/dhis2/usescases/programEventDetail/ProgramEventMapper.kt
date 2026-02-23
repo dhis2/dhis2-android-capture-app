@@ -275,6 +275,7 @@ class ProgramEventMapper(
             .byProgramStageUid()
             .eq(programStage)
             .withDataElements()
+            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
             .blockingGet()
 
     private fun getCategoryOptionCombo(attributeOptionCombo: String?) =

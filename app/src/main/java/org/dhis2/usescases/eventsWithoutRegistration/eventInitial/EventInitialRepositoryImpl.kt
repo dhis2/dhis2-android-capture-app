@@ -315,6 +315,7 @@ class EventInitialRepositoryImpl internal constructor(
                             .programStageSections()
                             .byProgramStageUid()
                             .eq(stage!!.uid())
+                            .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                             .blockingGet()
 
                     stageSections
@@ -369,6 +370,7 @@ class EventInitialRepositoryImpl internal constructor(
                         .withDataElements()
                         .byProgramStageUid()
                         .eq(event.programStage())
+                        .orderBySortOrder(RepositoryScope.OrderByDirection.ASC)
                         .blockingGet()
                 val stageDataElements =
                     d2
