@@ -2,6 +2,7 @@ package org.dhis2.tracker.search.data
 
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.tracker.search.model.SearchOperator
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
@@ -223,8 +224,7 @@ class SearchTrackedEntityRepositoryImplTest {
             repository.addToQuery(
                 dataId = dataId,
                 dataValues = dataValues,
-                isUnique = false,
-                isOptionSet = false,
+                searchOperator = null,
             )
 
             // Then - verify the filter was applied
@@ -248,8 +248,7 @@ class SearchTrackedEntityRepositoryImplTest {
             repository.addToQuery(
                 dataId = dataId,
                 dataValues = dataValues,
-                isUnique = true,
-                isOptionSet = false,
+                searchOperator = SearchOperator.EQ,
             )
 
             // Then - verify the filter was applied
@@ -273,8 +272,7 @@ class SearchTrackedEntityRepositoryImplTest {
             repository.addToQuery(
                 dataId = dataId,
                 dataValues = dataValues,
-                isUnique = false,
-                isOptionSet = true,
+                searchOperator = SearchOperator.EQ,
             )
 
             // Then - verify the filter was applied
@@ -298,8 +296,7 @@ class SearchTrackedEntityRepositoryImplTest {
             repository.addToQuery(
                 dataId = dataId,
                 dataValues = dataValues,
-                isUnique = false,
-                isOptionSet = false,
+                searchOperator = SearchOperator.LIKE,
             )
 
             // Then - verify the filter was applied

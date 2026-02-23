@@ -8,6 +8,8 @@ import org.dhis2.mobile.commons.customintents.CustomIntentRepository
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel
 import org.dhis2.tracker.search.data.SearchTrackedEntityRepository
+import org.dhis2.tracker.search.model.QueryData
+import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
 import org.dhis2.tracker.search.model.SearchTrackedEntityAttribute
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
@@ -44,7 +46,19 @@ class SearchTrackedEntitiesTest {
     fun `invoke should successfully return flow when query has data`() =
         runTest {
             // Given
-            val queryData = mutableMapOf<String, List<String>?>("attr1" to listOf("value1"), "attr2" to listOf("value2"))
+            val queryDataList =
+                mutableListOf(
+                    QueryData(
+                        attributeId = "attr1",
+                        values = listOf("value1"),
+                        searchOperator = null,
+                    ),
+                    QueryData(
+                        attributeId = "attr2",
+                        values = listOf("value2"),
+                        searchOperator = null,
+                    ),
+                )
             val searchParams =
                 SearchTrackedEntitiesInput(
                     selectedProgram = "programUid",
@@ -52,7 +66,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = true,
-                    queryData = queryData,
+                    queryDataList = queryDataList,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -81,14 +95,12 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1"),
-                isUnique = false,
-                isOptionSet = false,
+                searchOperator = null,
             )
             verify(repository).addToQuery(
                 dataId = "attr2",
                 dataValues = listOf("value2"),
-                isUnique = false,
-                isOptionSet = false,
+                searchOperator = null,
             )
             verify(repository).fetchResults(
                 isOnline = true,
@@ -108,7 +120,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = false,
-                    queryData = null,
+                    queryDataList = null,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -122,7 +134,7 @@ class SearchTrackedEntitiesTest {
             // Then
             assertTrue(result.isSuccess)
             verify(repository).addFiltersToQuery("programUid", teType)
-            verify(repository, never()).addToQuery(any(), any(), any(), any())
+            verify(repository, never()).addToQuery(any(), any(), any())
             verify(repository).fetchResults(
                 isOnline = false,
                 hasStateFilters = false,
@@ -142,7 +154,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = excludedValues,
                     hasStateFilters = false,
                     isOnline = false,
-                    queryData = null,
+                    queryDataList = null,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -170,7 +182,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = excludedValues,
                     hasStateFilters = false,
                     isOnline = false,
-                    queryData = null,
+                    queryDataList = null,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -190,7 +202,14 @@ class SearchTrackedEntitiesTest {
     fun `invoke should add query for unique attributes`() =
         runTest {
             // Given
-            val queryData = mutableMapOf<String, List<String>?>("uniqueAttr" to listOf("exactValue"))
+            val queryData =
+                mutableListOf(
+                    QueryData(
+                        attributeId = "uniqueAttr",
+                        values = listOf("exactValue"),
+                        searchOperator = SearchOperator.EQ,
+                    ),
+                )
             val searchParams =
                 SearchTrackedEntitiesInput(
                     selectedProgram = "programUid",
@@ -198,7 +217,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = true,
-                    queryData = queryData,
+                    queryDataList = queryData,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -226,8 +245,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "uniqueAttr",
                 dataValues = listOf("exactValue"),
-                isUnique = true,
-                isOptionSet = false,
+                searchOperator = SearchOperator.EQ,
             )
         }
 
@@ -235,7 +253,14 @@ class SearchTrackedEntitiesTest {
     fun `invoke should add query for option set attributes`() =
         runTest {
             // Given
-            val queryData = mutableMapOf<String, List<String>?>("optionSetAttr" to listOf("optionValue"))
+            val queryData =
+                mutableListOf(
+                    QueryData(
+                        attributeId = "optionSetAttr",
+                        values = listOf("optionValue"),
+                        searchOperator = SearchOperator.EQ,
+                    ),
+                )
             val searchParams =
                 SearchTrackedEntitiesInput(
                     selectedProgram = "programUid",
@@ -243,7 +268,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = true,
-                    queryData = queryData,
+                    queryDataList = queryData,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -271,8 +296,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "optionSetAttr",
                 dataValues = listOf("optionValue"),
-                isUnique = false,
-                isOptionSet = true,
+                SearchOperator.EQ,
             )
         }
 
@@ -280,7 +304,14 @@ class SearchTrackedEntitiesTest {
     fun `invoke should join multiple values when custom intent does not return list`() =
         runTest {
             // Given
-            val queryData = mutableMapOf<String, List<String>?>("attr1" to listOf("value1", "value2", "value3"))
+            val queryData =
+                mutableListOf(
+                    QueryData(
+                        attributeId = "attr1",
+                        values = listOf("value1", "value2", "value3"),
+                        searchOperator = null,
+                    ),
+                )
             val searchParams =
                 SearchTrackedEntitiesInput(
                     selectedProgram = "programUid",
@@ -288,7 +319,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = true,
-                    queryData = queryData,
+                    queryDataList = queryData,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -316,8 +347,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1,value2,value3"),
-                isUnique = false,
-                isOptionSet = false,
+                null,
             )
         }
 
@@ -325,7 +355,14 @@ class SearchTrackedEntitiesTest {
     fun `invoke should keep multiple values when custom intent returns list`() =
         runTest {
             // Given
-            val queryData = mutableMapOf<String, List<String>?>("attr1" to listOf("value1", "value2", "value3"))
+            val queryData =
+                mutableListOf(
+                    QueryData(
+                        attributeId = "attr1",
+                        values = listOf("value1", "value2", "value3"),
+                        searchOperator = null,
+                    ),
+                )
             val searchParams =
                 SearchTrackedEntitiesInput(
                     selectedProgram = "programUid",
@@ -333,7 +370,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = true,
-                    queryData = queryData,
+                    queryDataList = queryData,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -361,8 +398,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1", "value2", "value3"),
-                isUnique = false,
-                isOptionSet = false,
+                null,
             )
         }
 
@@ -370,7 +406,19 @@ class SearchTrackedEntitiesTest {
     fun `invoke should skip attributes not belonging to teType when no program selected`() =
         runTest {
             // Given
-            val queryData = mutableMapOf<String, List<String>?>("attr1" to listOf("value1"), "attr2" to listOf("value2"))
+            val queryData =
+                mutableListOf(
+                    QueryData(
+                        attributeId = "attr1",
+                        values = listOf("value1"),
+                        searchOperator = SearchOperator.EQ,
+                    ),
+                    QueryData(
+                        attributeId = "attr2",
+                        values = listOf("value2"),
+                        searchOperator = SearchOperator.LIKE,
+                    ),
+                )
             val searchParams =
                 SearchTrackedEntitiesInput(
                     selectedProgram = null,
@@ -378,7 +426,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = false,
-                    queryData = queryData,
+                    queryDataList = queryData,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -407,8 +455,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1"),
-                isUnique = false,
-                isOptionSet = false,
+                SearchOperator.EQ,
             )
             verify(repository, never()).getTEAttribute("attr2")
         }
@@ -424,7 +471,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = true,
-                    queryData = null,
+                    queryDataList = null,
                 )
 
             val domainError = DomainError.UnexpectedError("Test error")
@@ -451,7 +498,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = true,
                     isOnline = true,
-                    queryData = null,
+                    queryDataList = null,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
@@ -482,7 +529,7 @@ class SearchTrackedEntitiesTest {
                     excludeValues = hashSetOf(),
                     hasStateFilters = false,
                     isOnline = false,
-                    queryData = null,
+                    queryDataList = null,
                 )
 
             val mockPagingData: PagingData<TrackedEntitySearchItemResult> = PagingData.empty()
