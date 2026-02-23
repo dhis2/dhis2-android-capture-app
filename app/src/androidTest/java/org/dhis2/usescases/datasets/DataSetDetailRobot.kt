@@ -84,7 +84,7 @@ internal class DataSetDetailRobot(
     }
 
     fun checkDataSetIsNotCompletedAndModified(catCombo: String, orgUnit: String ) {
-        onView(withId(R.id.recycler))
+        waitForView(withId(R.id.recycler))
             .check(
                 matches(
                     hasItem(
