@@ -23,6 +23,8 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -49,6 +51,7 @@ import org.dhis2.tracker.input.ui.state.loadOptionSetConfiguration
 import org.dhis2.tracker.search.ui.action.SearchScreenUiEvent
 import org.dhis2.tracker.search.ui.provider.provideParameterSelectorItem
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
+import org.dhis2.tracker.search.ui.viewmodel.SearchParametersViewModel
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItemColor
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
@@ -59,16 +62,26 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Shape
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SearchParametersScreen(
-    uiState: SearchParametersUiState,
+    externalUiState: SearchParametersUiState,
     onSearchScreenUiEvent: (SearchScreenUiEvent) -> Unit,
     onTrackerInputUiEvent: (TrackerInputUiEvent) -> Unit,
     isLandscape: Boolean,
     getOptionSetFlow: (fieldUid: String, optionSetUid: String) -> Flow<PagingData<TrackerOptionItem>>?,
     onOptionSetSearch: (fieldUid: String, query: String) -> Unit,
 ) {
+    val viewModel = koinViewModel<SearchParametersViewModel>()
+
+    LaunchedEffect(externalUiState) {
+        viewModel.updateFromExternal(externalUiState)
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+    val validationResult by viewModel.validationResult.collectAsState()
+
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
@@ -90,6 +103,16 @@ fun SearchParametersScreen(
     LaunchedEffect(uiState.isOnBackPressed) {
         uiState.isOnBackPressed.collectLatest {
             manageOnBackPressed(it, focusManager, onSearchScreenUiEvent)
+        }
+    }
+
+    LaunchedEffect(validationResult) {
+        validationResult?.let { isValid ->
+            if (isValid) {
+                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked)
+            }
+
+            viewModel.resetValidationResult()
         }
     }
 
@@ -229,7 +252,7 @@ fun SearchParametersScreen(
                 },
             ) {
                 focusManager.clearFocus()
-                onSearchScreenUiEvent(SearchScreenUiEvent.OnSearchButtonClicked)
+                viewModel.onValidateSearch()
             }
         }
     }

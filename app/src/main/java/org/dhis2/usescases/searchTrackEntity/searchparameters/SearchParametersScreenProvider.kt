@@ -114,7 +114,7 @@ fun provideSearchScreen(
 
         val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         SearchParametersScreen(
-            uiState = viewModel.searchParametersUiState,
+            externalUiState = viewModel.searchParametersUiState,
             onSearchScreenUiEvent = {
                 when (it) {
                     is SearchScreenUiEvent.OnSearchButtonClicked ->
