@@ -1,14 +1,20 @@
 package org.dhis2.tracker.input.ui.action
 
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
+import org.dhis2.tracker.input.model.TrackerInputType
+
 sealed interface TrackerInputUiEvent {
     data class OnScanButtonClicked(
         val uid: String,
+        val optionSet: String?,
+        val renderType: TrackerInputType,
     ) : TrackerInputUiEvent
 
     data class OnOrgUnitButtonClicked(
         val uid: String,
         val label: String,
         val value: String?,
+        val orgUnitSelectorScope: OrgUnitSelectorScope?,
     ) : TrackerInputUiEvent
 
     data class OnLaunchCustomIntent(

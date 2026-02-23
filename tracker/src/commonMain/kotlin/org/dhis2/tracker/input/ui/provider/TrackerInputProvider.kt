@@ -14,6 +14,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import org.dhis2.mobile.commons.orgunit.OrgUnitSelectorScope
 import org.dhis2.mobile.tracker.resources.Res
 import org.dhis2.mobile.tracker.resources.custom_intent_launch
 import org.dhis2.tracker.input.model.TrackerInputType
@@ -428,6 +429,9 @@ fun TrackerInputProvider(
                             uid = inputModel.uid,
                             label = inputModel.label,
                             value = inputModel.value,
+                            orgUnitSelectorScope =
+                                inputModel.orgUnitSelectorScope
+                                    ?: OrgUnitSelectorScope.UserSearchScope(),
                         ),
                     )
                 },
@@ -498,6 +502,8 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnScanButtonClicked(
                             uid = inputModel.uid,
+                            optionSet = inputModel.optionSet,
+                            renderType = inputModel.valueType,
                         ),
                     )
                 },
@@ -527,6 +533,8 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnScanButtonClicked(
                             uid = inputModel.uid,
+                            optionSet = inputModel.optionSet,
+                            renderType = inputModel.valueType,
                         ),
                     )
                 },
@@ -765,4 +773,4 @@ fun manageOnValueChange(
     }
 }
 
-private fun getYesOnlyValue(checked: Boolean): String? = if (checked) "true" else null
+private fun getYesOnlyValue(checked: Boolean): String? = if (!checked) "true" else null

@@ -23,6 +23,9 @@ fun SearchParameterModel.toTrackerInputUiState() =
         optionSetConfiguration = null,
         customIntentUid = customIntentUid,
         displayName = null,
+        orgUnitSelectorScope = null,
+        searchOperator = searchOperator,
+        minCharactersToSearch = minCharactersToSearch,
     )
 
 private fun TrackerInputType.getOrientation(): Orientation =
