@@ -1,12 +1,11 @@
 package org.dhis2.data.service;
 
+import androidx.work.ListenableWorker;
+
 import org.hisp.dhis.android.core.arch.call.D2Progress;
 import org.hisp.dhis.android.core.imports.TrackerImportConflict;
-import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress;
 
 import java.util.List;
-
-import androidx.work.ListenableWorker;
 
 import io.reactivex.Observable;
 
@@ -14,8 +13,6 @@ interface SyncPresenter {
     void syncAndDownloadEvents() throws Exception;
 
     void syncAndDownloadTeis() throws Exception;
-
-    void syncMetadata(SyncMetadataWorker.OnProgressUpdate progressUpdate) throws Exception;
 
     void syncAndDownloadDataValues() throws Exception;
 
@@ -58,8 +55,6 @@ interface SyncPresenter {
     List<TrackerImportConflict> messageTrackerImportConflict(String uid);
 
     void startPeriodicDataWork();
-
-    void startPeriodicMetaWork();
 
     void downloadResources();
 

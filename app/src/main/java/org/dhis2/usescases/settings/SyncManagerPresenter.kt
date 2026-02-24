@@ -27,6 +27,7 @@ import org.dhis2.usescases.settings.domain.UpdateSyncSettings
 import org.dhis2.usescases.settings.models.DeleteDataState
 import org.dhis2.usescases.settings.models.ErrorViewModel
 import org.dhis2.usescases.settings.models.SettingsState
+import org.dhis2.usescases.settings.models.SyncStateInput
 import org.hisp.dhis.android.core.settings.LimitScope
 import java.io.File
 
@@ -113,14 +114,21 @@ class SyncManagerPresenter(
     }
 
     private suspend fun loadData() {
-        val settingsState =
-            getSettingsState(
+        getSettingsState(
+            SyncStateInput(
                 openedItem = _settingsState.value?.openedItem,
                 hasConnection = _settingsState.value?.hasConnection == true,
                 metadataSyncInProgress = syncWorkInfo.value.metadataSyncProgress == LaunchSync.SyncStatus.InProgress,
                 dataSyncInProgress = syncWorkInfo.value.dataSyncProgress == LaunchSync.SyncStatus.InProgress,
-            )
-        _settingsState.update { settingsState }
+            ),
+        ).fold(
+            onSuccess = { settingsState ->
+                _settingsState.update { settingsState }
+            },
+            onFailure = {
+                // do nothing
+            },
+        )
     }
 
     fun onItemClick(settingsItem: SettingItem) {

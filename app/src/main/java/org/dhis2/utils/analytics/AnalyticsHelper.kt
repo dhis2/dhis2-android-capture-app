@@ -2,6 +2,7 @@ package org.dhis2.utils.analytics
 
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.mobile.commons.reporting.AnalyticActions
+import org.dhis2.utils.analytics.matomo.DEFAULT_EXTERNAL_TRACKER_NAME
 import javax.inject.Inject
 
 class AnalyticsHelper
@@ -28,12 +29,11 @@ class AnalyticsHelper
         override fun updateMatomoSecondaryTracker(
             matomoUrl: String,
             matomoID: Int,
-            trackerName: String,
         ) {
             matomoAnalyticsController.updateDhisImplementationTracker(
                 matomoUrl,
                 matomoID,
-                trackerName,
+                DEFAULT_EXTERNAL_TRACKER_NAME,
             )
         }
 

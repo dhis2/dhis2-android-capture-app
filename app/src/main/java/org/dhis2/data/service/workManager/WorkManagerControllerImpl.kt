@@ -39,7 +39,6 @@ import androidx.work.await
 import org.dhis2.data.service.CheckVersionWorker
 import org.dhis2.data.service.SyncDataWorker
 import org.dhis2.data.service.SyncGranularWorker
-import org.dhis2.data.service.SyncMetadataWorker
 import java.util.concurrent.TimeUnit
 
 class WorkManagerControllerImpl(
@@ -53,19 +52,6 @@ class WorkManagerControllerImpl(
         } ?: run {
             workManager.enqueue(syncBuilder)
         }
-    }
-
-    override fun syncMetaDataForWorker(
-        metadataWorkerTag: String,
-        workName: String,
-    ) {
-        val workerOneBuilder = OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
-        workerOneBuilder
-            .addTag(metadataWorkerTag)
-
-        workManager
-            .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerOneBuilder.build())
-            .enqueue()
     }
 
     override fun syncDataForWorker(
@@ -132,7 +118,6 @@ class WorkManagerControllerImpl(
     private fun createOneTimeBuilder(workerItem: WorkerItem): OneTimeWorkRequest.Builder {
         val syncBuilder =
             when (workerItem.workerType) {
-                WorkerType.METADATA -> OneTimeWorkRequest.Builder(SyncMetadataWorker::class.java)
                 WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
                 WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
                 WorkerType.NEW_VERSION -> OneTimeWorkRequest.Builder(CheckVersionWorker::class.java)
@@ -155,13 +140,6 @@ class WorkManagerControllerImpl(
 
         val syncBuilder =
             when (workerItem.workerType) {
-                WorkerType.METADATA -> {
-                    PeriodicWorkRequest.Builder(
-                        SyncMetadataWorker::class.java,
-                        seconds,
-                        TimeUnit.SECONDS,
-                    )
-                }
                 WorkerType.DATA -> {
                     PeriodicWorkRequest.Builder(
                         SyncDataWorker::class.java,
