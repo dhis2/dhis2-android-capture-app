@@ -86,6 +86,7 @@
     <string name="event_details_section_title">%s ລາຍລະອຽດ</string>
     <string name="org_unit">ຫົວໜ່ວຍການຈັດຕັ້ງ</string>
     <string name="coordinates">ປະສານງານ</string>
+    <string name="category_combo">ໝວດໝູ່ແບບປະສົມ (Category Combo)</string>
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     <string name="yes">ແມ່ນ</string>
     <string name="no">ບໍ່ແມ່ນ</string>
