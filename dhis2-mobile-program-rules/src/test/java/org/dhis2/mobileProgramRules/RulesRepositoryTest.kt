@@ -38,22 +38,21 @@ class RulesRepositoryTest {
             runBlocking {
                 repository.supplementaryData("org_unit_test")
             }
-        assertTrue(supplData.isNotEmpty())
-        assertTrue(supplData.containsKey("USER_ROLES"))
-        assertTrue(supplData.containsKey("USER_GROUPS"))
-        assertTrue(supplData.containsKey("org_unit_group_test_code"))
-        assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData["USER_ROLES"]?.contains("UtXToHNI0Cb") ?: false)
-        assertTrue(supplData["USER_ROLES"]?.contains("oPNOIj7zJ1m") ?: false)
-        assertTrue(supplData["USER_GROUPS"]?.contains("gVC8vCfNAx8") ?: false)
-        assertTrue(supplData["USER_GROUPS"]?.contains("Kk12LkEWtXp") ?: false)
+        assertTrue(supplData.userRoles.isNotEmpty())
+        assertTrue(supplData.userGroups.isNotEmpty())
+        assertTrue(supplData.orgUnitGroups.containsKey("org_unit_group_test_code"))
+        assertTrue(supplData.orgUnitGroups.containsKey("org_unit_group_test"))
+        assertTrue(supplData.userRoles.contains("UtXToHNI0Cb"))
+        assertTrue(supplData.userRoles.contains("oPNOIj7zJ1m"))
+        assertTrue(supplData.userGroups.contains("gVC8vCfNAx8"))
+        assertTrue(supplData.userGroups.contains("Kk12LkEWtXp"))
         assertTrue(
-            supplData
+            supplData.orgUnitGroups
                 .getOrElse("org_unit_group_test") { arrayListOf() }
                 .contains("org_unit_test"),
         )
         assertTrue(
-            supplData
+            supplData.orgUnitGroups
                 .getOrElse("org_unit_group_test_code") { arrayListOf() }
                 .contains("org_unit_test"),
         )
@@ -77,19 +76,21 @@ class RulesRepositoryTest {
                 repository.supplementaryData("org_unit_test")
             }
 
-        assertTrue(supplData.isNotEmpty())
-
-        assertTrue(supplData.containsKey("USER_ROLES"))
-        assertTrue(!supplData.containsKey("org_unit_group_test_code"))
-        assertTrue(supplData.containsKey("org_unit_group_test"))
-        assertTrue(supplData["USER_ROLES"]?.contains("UtXToHNI0Cb") ?: false)
-        assertTrue(supplData["USER_ROLES"]?.contains("oPNOIj7zJ1m") ?: false)
+        assertTrue(supplData.userRoles.isNotEmpty())
+        assertTrue(!supplData.orgUnitGroups.containsKey("org_unit_group_test_code"))
+        assertTrue(supplData.orgUnitGroups.containsKey("org_unit_group_test"))
+        assertTrue(supplData.userRoles.contains("UtXToHNI0Cb"))
+        assertTrue(supplData.userRoles.contains("oPNOIj7zJ1m"))
         assertTrue(
-            supplData
+            supplData.orgUnitGroups
                 .getOrElse("org_unit_group_test") { arrayListOf() }
                 .contains("org_unit_test"),
         )
-        assertTrue(supplData.getOrElse("org_unit_group_test_code") { arrayListOf() }.isEmpty())
+        assertTrue(
+            supplData.orgUnitGroups
+                .getOrElse("org_unit_group_test_code") { arrayListOf() }
+                .isEmpty(),
+        )
     }
 
     private fun getTestUserRoles(): List<String> = arrayListOf("UtXToHNI0Cb", "oPNOIj7zJ1m")

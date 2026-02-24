@@ -2,8 +2,6 @@ package org.dhis2.android.rtsm.services.rules
 
 import io.reactivex.Flowable
 import io.reactivex.Single
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
 import org.apache.commons.lang3.math.NumberUtils
 import org.dhis2.android.rtsm.data.TransactionType
 import org.dhis2.android.rtsm.data.models.StockEntry
@@ -15,6 +13,7 @@ import org.dhis2.commons.bindings.distributedTo
 import org.dhis2.commons.rules.RuleEngineContextData
 import org.dhis2.mobileProgramRules.toRuleDataValue
 import org.dhis2.mobileProgramRules.toRuleEngineInstant
+import org.dhis2.mobileProgramRules.toRuleEngineInstantOrNow
 import org.dhis2.mobileProgramRules.toRuleEngineLocalDate
 import org.dhis2.mobileProgramRules.toRuleList
 import org.dhis2.mobileProgramRules.toRuleVariableList
@@ -27,6 +26,7 @@ import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.android.core.program.ProgramStage
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.rules.api.RuleEngine
+import org.hisp.dhis.rules.api.RuleSupplementaryData
 import org.hisp.dhis.rules.models.RuleDataValue
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEvent
@@ -131,6 +131,7 @@ class RuleValidationHelperImpl(
         programStage.uid(),
         programStage.name()!!,
         RuleEventStatus.ACTIVE,
+        period.toRuleEngineLocalDate(),
         period.toRuleEngineInstant(),
         period.toRuleEngineInstant(),
         period.toRuleEngineLocalDate(),
@@ -178,7 +179,7 @@ class RuleValidationHelperImpl(
                 constantsMap
             }
 
-    private fun supplementaryData(): Single<Map<String, List<String>>> = Single.just(hashMapOf())
+    private fun supplementaryData(): Single<RuleSupplementaryData> = Single.just(RuleSupplementaryData())
 
     private fun ruleEngineData(
         teiUid: String,
@@ -272,12 +273,9 @@ class RuleValidationHelperImpl(
                         } else {
                             RuleEventStatus.valueOf(event.status()!!.name)
                         },
-                    eventDate = (event.eventDate() ?: Date()).toRuleEngineInstant(),
-                    createdDate =
-                        event
-                            .created()
-                            ?.let { Instant.fromEpochMilliseconds(it.time) }
-                            ?: Clock.System.now(),
+                    eventDate = (event.eventDate() ?: Date()).toRuleEngineLocalDate(),
+                    createdDate = event.created().toRuleEngineInstantOrNow(),
+                    createdAtClientDate = event.createdAtClient()?.toRuleEngineInstant(),
                     dueDate = event.dueDate()?.toRuleEngineLocalDate(),
                     completedDate = event.completedDate()?.toRuleEngineLocalDate(),
                     organisationUnit = event.organisationUnit()!!,
