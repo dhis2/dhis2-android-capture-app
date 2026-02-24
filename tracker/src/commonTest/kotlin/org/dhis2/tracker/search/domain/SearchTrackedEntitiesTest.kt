@@ -296,7 +296,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "optionSetAttr",
                 dataValues = listOf("optionValue"),
-                SearchOperator.EQ,
+                searchOperator = SearchOperator.EQ,
             )
         }
 
@@ -347,7 +347,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1,value2,value3"),
-                null,
+                searchOperator = null,
             )
         }
 
@@ -398,7 +398,7 @@ class SearchTrackedEntitiesTest {
             verify(repository).addToQuery(
                 dataId = "attr1",
                 dataValues = listOf("value1", "value2", "value3"),
-                null,
+                searchOperator = null,
             )
         }
 

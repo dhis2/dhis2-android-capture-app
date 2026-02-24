@@ -304,6 +304,50 @@ class SearchTrackedEntityRepositoryImplTest {
         }
 
     @Test
+    fun `addToQuery should do nothing when dataValues is null`() =
+        runTest {
+            // Given
+            val dataId = "attr1"
+            val mockQuery: TrackedEntitySearchCollectionRepository = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+
+            whenever(filterPresenter.filteredTrackedEntityInstances(any(), any())) doReturn mockQuery
+
+            repository.addFiltersToQuery(programUid, teType)
+
+            // When
+            repository.addToQuery(
+                dataId = dataId,
+                dataValues = null,
+                searchOperator = null,
+            )
+
+            // Then - byFilter should never be called, query remains unchanged
+            verify(mockQuery, Mockito.never()).byFilter(any())
+        }
+
+    @Test
+    fun `addToQuery should do nothing when dataValues is empty`() =
+        runTest {
+            // Given
+            val dataId = "attr1"
+            val mockQuery: TrackedEntitySearchCollectionRepository = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+
+            whenever(filterPresenter.filteredTrackedEntityInstances(any(), any())) doReturn mockQuery
+
+            repository.addFiltersToQuery(programUid, teType)
+
+            // When
+            repository.addToQuery(
+                dataId = dataId,
+                dataValues = emptyList(),
+                searchOperator = null,
+            )
+
+            // Then - byFilter should never be called, query remains unchanged
+            verify(mockQuery, Mockito.never()).byFilter(any())
+        }
+
+    @Test
     fun `addFiltersToQuery should initialize query with filter presenter`() =
         runTest {
             // Given

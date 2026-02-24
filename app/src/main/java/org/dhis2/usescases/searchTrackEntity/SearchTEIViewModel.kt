@@ -58,7 +58,6 @@ import org.dhis2.tracker.input.ui.action.CustomIntentUid
 import org.dhis2.tracker.input.ui.action.FieldUid
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
 import org.dhis2.tracker.input.ui.mapper.toTrackerInputUiState
-import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
 import org.dhis2.tracker.search.domain.FetchOptionSetOptions
@@ -153,7 +152,7 @@ class SearchTEIViewModel(
 
     val queryDataList =
         mutableListOf<QueryData>().apply {
-            initialQuery?.let { addAll(it.toQueryDataList(searchParametersUiState.items)) }
+            initialQuery?.let { addAll(it.toQueryDataList()) }
         }
 
     var mapManager: MapManager? = null
@@ -461,9 +460,12 @@ class SearchTEIViewModel(
                     ),
                 )
             } else {
-                queryDataList.firstOrNull { it.attributeId == uid }?.copy(
-                    values = values,
-                )
+                queryDataList
+                    .indexOfFirst { it.attributeId == uid }
+                    .takeIf { it != -1 }
+                    ?.let { index ->
+                        queryDataList[index] = queryDataList[index].copy(values = values)
+                    }
             }
         }
 
@@ -1092,13 +1094,22 @@ class SearchTEIViewModel(
                             ),
                     ).fold(
                         onSuccess = { searchParameters ->
+                            val newItems =
+                                searchParameters.map { searchParameter ->
+                                    searchParameter.toTrackerInputUiState()
+                                }
                             searchParametersUiState =
                                 searchParametersUiState.copy(
-                                    items =
-                                        searchParameters.map { searchParameter ->
-                                            searchParameter.toTrackerInputUiState()
-                                        },
+                                    items = newItems,
                                 )
+
+                            queryDataList.forEachIndexed { index, entry ->
+                                val searchOperator =
+                                    newItems
+                                        .firstOrNull { it.uid == entry.attributeId }
+                                        ?.searchOperator
+                                queryDataList[index] = entry.copy(searchOperator = searchOperator)
+                            }
                         },
                         onFailure = {
                             // TODO(Implement error)
@@ -1355,10 +1366,32 @@ class SearchTEIViewModel(
         }
     }
 
-    // The following 3 function are temporary until QueryData is fully refactored for usage in
-    // other places in the search feature
+    /**
+     *
+     * Converts the internal queryDataList to a map representation.
+     *
+     * Since the previous map representation of queryData (Map<String, List<String>>) is used outside
+     * of the SearchTEIViewModel, this function helps to represent the new and refactor.
+     *
+     * QueryData list into the Map<String, List<String>> on those places.
+     * We will continue to refactor the map from other places it was used in the future. And these
+     * methods will help us do a smooth refactor without breaking changes.
+     *
+     * After all QueryData maps are refactored, this function will be removed.
+     *
+     * @return A mutableMap with attribute IDs as keys and their corresponding value lists
+     *
+     */
     fun queryDataAsMap() = queryDataList.toMap()
 
+    /**
+     *
+     * Converts the mutableList of [QueryData] to a mutableMap where keys are attribute IDs
+     * and values are lists of strings.
+     *
+     * @return A mutableMap with attribute IDs as keys and their corresponding value lists
+     *
+     */
     private fun MutableList<QueryData>.toMap(): MutableMap<String, List<String>?> =
         this
             .associate { queryData ->
@@ -1366,13 +1399,21 @@ class SearchTEIViewModel(
                 queryData.attributeId to valueList
             }.toMutableMap()
 
-    private fun MutableMap<String, List<String>?>.toQueryDataList(items: List<TrackerInputUiState>) =
+    /**
+     *
+     * Converts a mutableMap to a mutableList of [QueryData] where map keys are attribute IDs
+     * and map values are lists of strings.
+     *
+     * @return A mutableList of [QueryData] objects
+     *
+     */
+    private fun MutableMap<String, List<String>?>.toQueryDataList() =
         this
             .map { (attributeId, valuesList) ->
                 QueryData(
                     attributeId = attributeId,
                     values = valuesList,
-                    searchOperator = items.firstOrNull { it.uid == attributeId }?.searchOperator,
+                    searchOperator = null,
                 )
             }.toMutableList()
 

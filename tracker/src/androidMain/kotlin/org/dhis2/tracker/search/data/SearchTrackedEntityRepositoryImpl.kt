@@ -50,29 +50,27 @@ class SearchTrackedEntityRepositoryImpl(
         dataValues: List<String>?,
         searchOperator: SearchOperator?,
     ) {
+        if (dataValues.isNullOrEmpty()) return
+
         trackedEntityInstanceQuery =
-            if (!dataValues.isNullOrEmpty() && dataValues.size > 1) {
+            if (dataValues.size > 1) {
                 // return any tracked entities with attributes that match the values in the list
                 trackedEntityInstanceQuery?.byFilter(dataId)?.`in`(dataValues)
             } else {
-                dataValues?.let { value ->
-                    when (searchOperator) {
-                        SearchOperator.LIKE -> {
-                            trackedEntityInstanceQuery?.byFilter(dataId)?.like(value[0])
-                        }
-                        SearchOperator.SW -> {
-                            trackedEntityInstanceQuery?.byFilter(dataId)?.sw(value[0])
-                        }
-                        SearchOperator.EW -> {
-                            trackedEntityInstanceQuery?.byFilter(dataId)?.ew(value[0])
-                        }
-                        SearchOperator.EQ -> {
-                            trackedEntityInstanceQuery?.byFilter(dataId)?.eq(value[0])
-                        }
-                        else -> {
-                            trackedEntityInstanceQuery?.byFilter(dataId)?.like(value[0])
-                        }
+                when (searchOperator) {
+                    SearchOperator.LIKE -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValues[0])
                     }
+                    SearchOperator.SW -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.sw(dataValues[0])
+                    }
+                    SearchOperator.EW -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.ew(dataValues[0])
+                    }
+                    SearchOperator.EQ -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValues[0])
+                    }
+                    else -> trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValues[0])
                 }
             }
     }
