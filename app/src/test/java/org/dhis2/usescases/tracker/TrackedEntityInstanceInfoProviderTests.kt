@@ -222,6 +222,7 @@ class TrackedEntityInstanceInfoProviderTests {
                 .builder()
                 .uid("programUid")
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
 
         if (hasStyle) {
             program.style(

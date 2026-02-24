@@ -1,12 +1,12 @@
 package org.dhis2.tracker.search.data
 
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.model.GeometryFeatureType
 import org.dhis2.tracker.search.model.SyncState
 import org.dhis2.tracker.search.model.TrackedEntityGeometry
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemAttributeDomain
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
-import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
@@ -105,8 +105,10 @@ private fun TrackerInputType.toSDKValueType(): ValueType =
         TrackerInputType.DATE_TIME -> ValueType.DATETIME
         TrackerInputType.DATE -> ValueType.DATE
         TrackerInputType.TIME -> ValueType.TIME
-        TrackerInputType.CHECKBOX,
-        TrackerInputType.RADIO_BUTTON,
+        TrackerInputType.HORIZONTAL_CHECKBOXES,
+        TrackerInputType.VERTICAL_CHECKBOXES,
+        TrackerInputType.HORIZONTAL_RADIOBUTTONS,
+        TrackerInputType.VERTICAL_RADIOBUTTONS,
         -> ValueType.BOOLEAN
         TrackerInputType.YES_ONLY_SWITCH,
         TrackerInputType.YES_ONLY_CHECKBOX,

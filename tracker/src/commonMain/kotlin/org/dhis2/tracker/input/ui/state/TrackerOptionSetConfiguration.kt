@@ -1,4 +1,4 @@
-package org.dhis2.tracker.ui.input.model
+package org.dhis2.tracker.input.ui.state
 
 /**
  * Configuration for option set fields in tracker inputs.

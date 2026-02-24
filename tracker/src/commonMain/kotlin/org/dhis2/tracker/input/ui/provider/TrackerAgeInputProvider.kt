@@ -1,4 +1,4 @@
-package org.dhis2.tracker.ui.input.provider
+package org.dhis2.tracker.input.ui.provider
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -17,9 +17,9 @@ import org.dhis2.mobile.commons.resources.age_or
 import org.dhis2.mobile.commons.resources.cancel
 import org.dhis2.mobile.commons.resources.date_of_birth
 import org.dhis2.mobile.commons.resources.ok
-import org.dhis2.tracker.ui.input.model.TrackerInputModel
-import org.dhis2.tracker.ui.input.model.inputState
-import org.dhis2.tracker.ui.input.model.supportingText
+import org.dhis2.tracker.input.ui.state.TrackerInputUiState
+import org.dhis2.tracker.input.ui.state.inputState
+import org.dhis2.tracker.input.ui.state.supportingText
 import org.hisp.dhis.mobile.ui.designsystem.component.AgeInputType
 import org.hisp.dhis.mobile.ui.designsystem.component.InputAge
 import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
@@ -29,7 +29,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProvideTrackerAgeInput(
-    model: TrackerInputModel,
+    model: TrackerInputUiState,
     inputStyle: InputStyle,
     onNextClicked: () -> Unit,
     modifier: Modifier,

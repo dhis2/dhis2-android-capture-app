@@ -1,12 +1,11 @@
 package org.dhis2.usescases.teidashboard.robot
 
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.TypeTextAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
+import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -32,7 +31,7 @@ fun noteRobot(noteRobot: NoteRobot.() -> Unit) {
 class NoteRobot : BaseRobot() {
 
     fun clickOnFabAddNewNote() {
-        onView(withId(R.id.addNoteButton)).check(matches(isDisplayed())).perform(click())
+        waitForView(withId(R.id.addNoteButton)).check(matches(isDisplayed())).perform(click())
     }
 
     fun verifyNoteDetailActivityIsLaunched() {
@@ -40,21 +39,21 @@ class NoteRobot : BaseRobot() {
     }
 
     fun typeNote(text: String) {
-        onView(withId(R.id.noteText)).perform(TypeTextAction(text))
+        waitForView(withId(R.id.noteText)).perform(TypeTextAction(text))
         closeKeyboard()
     }
 
     fun clickOnSaveButton() {
-        waitForView(withText(R.string.save))
+        waitForView(allOf(withId(R.id.saveButton), withText(R.string.save)))
             .check(matches(allOf(isDisplayed(), isEnabled())))
             .perform(click())
     }
 
     fun clickYesOnAlertDialog() {
-        onView(isRoot())
+        waitForView(isRoot())
             .inRoot(isDialog())
             .perform(searchFor(withId(android.R.id.button1)))
-        onView(withId(android.R.id.button1))
+        waitForView(withId(android.R.id.button1))
             .inRoot(isDialog())
             .check(matches(isDisplayed()))
             .perform(click())
@@ -92,9 +91,21 @@ class NoteRobot : BaseRobot() {
 
     fun checkNoteDetails(user: String, noteText: String) {
         waitForView(withId(R.id.notes_recycler)).check(matches(isDisplayed()))
-        waitForView(allOf(withId(R.id.storeBy), withEffectiveVisibility(Visibility.VISIBLE), withText(user)))
+        waitForView(
+            allOf(
+                withId(R.id.storeBy),
+                withEffectiveVisibility(Visibility.VISIBLE),
+                withText(user)
+            )
+        )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
-        waitForView(allOf(withId(R.id.note_text), withEffectiveVisibility(Visibility.VISIBLE), withText(noteText)))
+        waitForView(
+            allOf(
+                withId(R.id.note_text),
+                withEffectiveVisibility(Visibility.VISIBLE),
+                withText(noteText)
+            )
+        )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
     }
 }

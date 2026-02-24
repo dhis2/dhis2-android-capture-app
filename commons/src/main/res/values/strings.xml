@@ -51,6 +51,7 @@
     <string name="bi_weekly">Bi-weekly</string>
     <string name="weekly_start_wednesday">Weekly starting Wednesday</string>
     <string name="weekly_start_thursday">Weekly starting Thursday</string>
+    <string name="weekly_start_friday">Weekly starting Friday</string>
     <string name="weekly_start_saturday">Weekly starting Saturday</string>
     <string name="weekly_start_sunday">Weekly starting Sunday</string>
     <string name="monthly">Monthly</string>
@@ -62,8 +63,11 @@
     <string name="six_monthly_july">Six-monthly starting July</string>
     <string name="six_monthly_nov">Six-monthly starting November</string>
     <string name="yearly">Yearly</string>
+    <string name="financial_year_february">Financial year starting February</string>
     <string name="financial_year_april">Financial year starting April</string>
     <string name="financial_year_july">Financial year starting July</string>
+    <string name="financial_year_august">Financial year starting August</string>
+    <string name="financial_year_september">Financial year starting September</string>
     <string name="financial_year_october">Financial year starting October</string>
     <string name="financial_year_november">Financial year starting November</string>
 

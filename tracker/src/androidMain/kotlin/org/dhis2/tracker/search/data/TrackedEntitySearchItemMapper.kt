@@ -1,5 +1,6 @@
 package org.dhis2.tracker.search.data
 
+import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.search.model.GeometryFeatureType
 import org.dhis2.tracker.search.model.SyncState
 import org.dhis2.tracker.search.model.TrackedEntityGeometry
@@ -8,7 +9,6 @@ import org.dhis2.tracker.search.model.TrackedEntitySearchItemProgramOwnerDomain
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.dhis2.tracker.search.model.TrackedEntityTypeAttributeDomain
 import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
-import org.dhis2.tracker.ui.input.model.TrackerInputType
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.common.Geometry
 import org.hisp.dhis.android.core.common.State
@@ -108,7 +108,7 @@ private fun ValueType.toTrackerInputType(): TrackerInputType =
         ValueType.INTEGER_POSITIVE -> TrackerInputType.INTEGER_POSITIVE
         ValueType.INTEGER_NEGATIVE -> TrackerInputType.INTEGER_NEGATIVE
         ValueType.INTEGER_ZERO_OR_POSITIVE -> TrackerInputType.INTEGER_ZERO_OR_POSITIVE
-        ValueType.BOOLEAN -> TrackerInputType.CHECKBOX
+        ValueType.BOOLEAN -> TrackerInputType.HORIZONTAL_RADIOBUTTONS
         ValueType.TRUE_ONLY -> TrackerInputType.YES_ONLY_CHECKBOX
         ValueType.DATE -> TrackerInputType.DATE
         ValueType.DATETIME -> TrackerInputType.DATE_TIME

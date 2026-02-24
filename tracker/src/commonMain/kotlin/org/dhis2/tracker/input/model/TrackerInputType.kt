@@ -1,4 +1,4 @@
-package org.dhis2.tracker.ui.input.model
+package org.dhis2.tracker.input.model
 
 enum class TrackerInputType {
     TEXT,
@@ -19,8 +19,10 @@ enum class TrackerInputType {
     MULTI_SELECTION,
     QR_CODE,
     BAR_CODE,
-    CHECKBOX,
-    RADIO_BUTTON,
+    HORIZONTAL_CHECKBOXES,
+    VERTICAL_CHECKBOXES,
+    HORIZONTAL_RADIOBUTTONS,
+    VERTICAL_RADIOBUTTONS,
     YES_ONLY_SWITCH,
     YES_ONLY_CHECKBOX,
     DATE_TIME,

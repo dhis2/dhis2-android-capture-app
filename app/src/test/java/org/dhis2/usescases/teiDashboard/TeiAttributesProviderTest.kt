@@ -272,6 +272,7 @@ class TeiAttributesProviderTest {
                 .builder()
                 .uid(program)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
 
         whenever(d2.programModule().programTrackedEntityAttributes()) doReturn mock()

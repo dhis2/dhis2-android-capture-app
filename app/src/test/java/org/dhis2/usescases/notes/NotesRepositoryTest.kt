@@ -96,6 +96,7 @@ class NotesRepositoryTest {
                 .builder()
                 .uid(UUID.randomUUID().toString())
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .access(
                     Access
                         .builder()

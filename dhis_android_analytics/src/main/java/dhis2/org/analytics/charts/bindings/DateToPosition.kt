@@ -26,10 +26,11 @@ class DateToPosition {
             when (eventPeriodType) {
                 PeriodType.Daily,
                 PeriodType.Weekly,
+                PeriodType.WeeklyWednesday,
+                PeriodType.WeeklyThursday,
+                PeriodType.WeeklyFriday,
                 PeriodType.WeeklySaturday,
                 PeriodType.WeeklySunday,
-                PeriodType.WeeklyThursday,
-                PeriodType.WeeklyWednesday,
                 PeriodType.BiWeekly,
                 PeriodType.Monthly,
                 PeriodType.BiMonthly,
@@ -48,8 +49,11 @@ class DateToPosition {
                     monthDiff.toFloat() + (dayInMonth.toFloat() - 1f) / daysInMonth.toFloat()
                 }
                 PeriodType.Yearly,
+                PeriodType.FinancialFeb,
                 PeriodType.FinancialApril,
                 PeriodType.FinancialJuly,
+                PeriodType.FinancialAug,
+                PeriodType.FinancialSep,
                 PeriodType.FinancialOct,
                 PeriodType.FinancialNov,
                 -> {

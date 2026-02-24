@@ -134,6 +134,7 @@ class TEIDetailMapperTest {
                     .uid("Program1Uid")
                     .displayName("Program 1")
                     .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                    .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 MetadataIconData.defaultIcon(),
             ),
@@ -143,6 +144,7 @@ class TEIDetailMapperTest {
                     .uid("Program2Uid")
                     .displayName("Program 2")
                     .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                    .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                     .build(),
                 MetadataIconData.defaultIcon(),
             ),

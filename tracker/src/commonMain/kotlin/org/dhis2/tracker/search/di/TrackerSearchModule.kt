@@ -1,7 +1,9 @@
 package org.dhis2.tracker.search.di
 
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 /**
@@ -26,4 +28,6 @@ val trackerSearchModule =
                 teType = params.get(),
             )
         }
+        // FetchOptionSetOptions use case
+        factoryOf(::FetchOptionSetOptions)
     }

@@ -23,6 +23,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
@@ -43,9 +44,7 @@ import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.ui.customintent.CustomIntentResult
-import org.dhis2.form.ui.intent.FormIntent
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.maps.extensions.toStringProperty
 import org.dhis2.maps.layer.MapLayer
@@ -54,19 +53,23 @@ import org.dhis2.maps.managers.MapManager
 import org.dhis2.maps.usecases.MapStyleConfiguration
 import org.dhis2.mobile.commons.coroutine.CoroutineTracker
 import org.dhis2.tracker.NavigationBarUIState
+import org.dhis2.tracker.input.model.TrackerInputType
+import org.dhis2.tracker.input.ui.action.CustomIntentUid
+import org.dhis2.tracker.input.ui.action.FieldUid
+import org.dhis2.tracker.input.ui.action.TrackerInputAction
+import org.dhis2.tracker.input.ui.mapper.toTrackerInputUiState
+import org.dhis2.tracker.input.ui.state.TrackerOptionItem
 import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
+import org.dhis2.tracker.search.domain.FetchOptionSetOptions
+import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
+import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.SearchTrackedEntitiesInput
-import org.dhis2.tracker.ui.input.action.CustomIntentUid
-import org.dhis2.tracker.ui.input.action.FieldUid
-import org.dhis2.tracker.ui.input.action.TrackerInputAction
+import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.listView.SearchResult
-import org.dhis2.usescases.searchTrackEntity.searchparameters.model.SearchParametersUiState
 import org.dhis2.usescases.searchTrackEntity.ui.UnableToSearchOutsideData
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
-import org.hisp.dhis.android.core.arch.helpers.Result
-import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.android.core.maintenance.D2ErrorCode
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 import org.maplibre.geojson.Feature
@@ -88,8 +91,16 @@ class SearchTEIViewModel(
     private val displayNameProvider: DisplayNameProvider,
     private val filterManager: FilterManager,
     private val searchTrackedEntities: SearchTrackedEntities,
+    private val fetchSearchParameters: FetchSearchParameters,
+    private val fetchOptionSetOptions: FetchOptionSetOptions,
 ) : ViewModel() {
     private var layersVisibility: Map<String, MapLayer> = emptyMap()
+
+    // Store option set flows per field UID
+    private val optionSetFlows = mutableMapOf<String, Flow<PagingData<TrackerOptionItem>>>()
+
+    // Store search query states for option sets
+    private val optionSetSearchQueries = mutableMapOf<String, MutableStateFlow<String?>>()
 
     private val pageConfiguration = MutableLiveData<NavigationPageConfigurator>()
 
@@ -182,6 +193,52 @@ class SearchTEIViewModel(
                 searchRepository.trackedEntityType.displayName(),
             )
         }
+    }
+
+    /**
+     * Get or create option set flow for a given field.
+     */
+    fun getOptionSetFlow(
+        fieldUid: String,
+        optionSetUid: String,
+    ): Flow<PagingData<TrackerOptionItem>> =
+        optionSetFlows.getOrPut(fieldUid) {
+            flow {
+                val searchQuery =
+                    optionSetSearchQueries.getOrPut(fieldUid) {
+                        MutableStateFlow(null)
+                    }
+
+                searchQuery.collect { query ->
+                    val result =
+                        fetchOptionSetOptions(
+                            FetchOptionSetOptions.Params(
+                                optionSetUid = optionSetUid,
+                                pageSize = 10,
+                                searchQuery = query,
+                            ),
+                        )
+
+                    result.fold(
+                        onSuccess = { optionsFlow ->
+                            emitAll(optionsFlow)
+                        },
+                        onFailure = {
+                            emit(PagingData.empty())
+                        },
+                    )
+                }
+            }.cachedIn(viewModelScope)
+        }
+
+    /**
+     * Handle search in option sets.
+     */
+    fun onOptionSetSearch(
+        fieldUid: String,
+        query: String,
+    ) {
+        optionSetSearchQueries[fieldUid]?.value = query.takeIf { it.isNotBlank() }
     }
 
     private fun loadNavigationBarItems() {
@@ -408,14 +465,14 @@ class SearchTEIViewModel(
         val updatedItems =
             searchParametersUiState.items.map {
                 if (it.uid == uid) {
-                    (it as FieldUiModelImpl).copy(
+                    it.copy(
                         value = values?.joinToString(","),
                         displayName =
                             displayNameProvider.provideDisplayName(
-                                valueType = it.valueType,
+                                valueType = searchRepositoryKt.trackerValueTypeToSDKValueType(it.valueType),
                                 value = values?.joinToString(","),
                                 optionSet = it.optionSet,
-                                periodType = it.periodSelector?.type,
+                                periodType = null,
                             ),
                         error = errorMessage,
                     )
@@ -436,7 +493,7 @@ class SearchTEIViewModel(
     private fun clearSearchParameters() {
         val updatedItems =
             searchParametersUiState.items.map {
-                (it as FieldUiModelImpl).copy(value = null, displayName = null)
+                it.copy(value = null, displayName = null)
             }
         searchParametersUiState =
             searchParametersUiState.copy(
@@ -470,7 +527,11 @@ class SearchTEIViewModel(
             val isOnline = searching && networkUtils.isOnline()
             val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-            val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+            val allowCache =
+                searchRepositoryKt.saveSearchValuesAndGetAllowCache(
+                    queryData,
+                    selectedProgram?.uid(),
+                )
             val newTrackerSearchModel =
                 SearchTrackedEntitiesInput(
                     selectedProgram = selectedProgram?.uid(),
@@ -509,7 +570,11 @@ class SearchTEIViewModel(
             val excludeValues = searchRepositoryKt.getExcludeValues()
             val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-            val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+            val allowCache =
+                searchRepositoryKt.saveSearchValuesAndGetAllowCache(
+                    queryData,
+                    selectedProgram?.uid(),
+                )
             val newTrackerSearchModel =
                 SearchTrackedEntitiesInput(
                     selectedProgram = selectedProgram?.uid(),
@@ -549,7 +614,11 @@ class SearchTEIViewModel(
                 val isOnline = searching && networkUtils.isOnline()
                 val selectedProgram = searchRepository.getProgram(initialProgramUid)
 
-                val allowCache = searchRepositoryKt.saveSearchValuesAndGetAllowCache(queryData, selectedProgram?.uid())
+                val allowCache =
+                    searchRepositoryKt.saveSearchValuesAndGetAllowCache(
+                        queryData,
+                        selectedProgram?.uid(),
+                    )
                 val newTrackerSearchModel =
                     SearchTrackedEntitiesInput(
                         selectedProgram = null,
@@ -1000,82 +1069,38 @@ class SearchTEIViewModel(
         fetchJob?.cancel()
         fetchJob =
             viewModelScope.launch {
-                val fieldUiModels =
-                    searchRepositoryKt.searchParameters(programUid, teiTypeUid)
-                searchParametersUiState = searchParametersUiState.copy(items = fieldUiModels)
+                fetchSearchParameters
+                    .invoke(
+                        input =
+                            FetchSearchParametersData(
+                                teiTypeUid = teiTypeUid,
+                                programUid = programUid,
+                            ),
+                    ).fold(
+                        onSuccess = { searchParameters ->
+                            searchParametersUiState =
+                                searchParametersUiState.copy(
+                                    items =
+                                        searchParameters.map { searchParameter ->
+                                            searchParameter.toTrackerInputUiState()
+                                        },
+                                )
+                        },
+                        onFailure = {
+                            // TODO(Implement error)
+                        },
+                    )
             }
     }
 
-    fun onParameterIntent(formIntent: FormIntent) =
-        when (formIntent) {
-            is FormIntent.OnTextChange -> {
-                updateQuery(
-                    formIntent.uid,
-                    formIntent.value?.split(","),
-                )
-            }
-
-            is FormIntent.OnSave -> {
-                updateQuery(
-                    formIntent.uid,
-                    formIntent.value?.split(","),
-                )
-            }
-
-            is FormIntent.OnQrCodeScanned -> {
-                onQrCodeScanned(formIntent)
-            }
-
-            is FormIntent.OnFocus -> {
-                val updatedItems =
-                    searchParametersUiState.items.map { field ->
-                        if (field.focused && field.uid != formIntent.uid) {
-                            val validation =
-                                field.value
-                                    ?.takeIf {
-                                        field.valueType in
-                                            listOf(
-                                                ValueType.DATE,
-                                                ValueType.DATETIME,
-                                                ValueType.AGE,
-                                                ValueType.TIME,
-                                            )
-                                    }?.let { value -> field.valueType?.validator?.validate(value) }
-
-                            (field as FieldUiModelImpl).copy(
-                                focused = false,
-                                error =
-                                    when (validation) {
-                                        is Result.Failure -> resourceManager.getString(R.string.formatting_error)
-                                        else -> null
-                                    },
-                            )
-                        } else if (field.uid == formIntent.uid) {
-                            (field as FieldUiModelImpl).copy(focused = true)
-                        } else {
-                            field
-                        }
-                    }
-                searchParametersUiState = searchParametersUiState.copy(items = updatedItems)
-            }
-
-            is FormIntent.ClearValue -> {
-                updateQuery(
-                    formIntent.uid,
-                    null,
-                )
-            }
-
-            else -> {
-                // no-op
-            }
-        }
-
-    private fun onQrCodeScanned(formIntent: FormIntent.OnQrCodeScanned) {
+    private fun onQrCodeScanned(
+        uid: String,
+        value: String?,
+    ) {
         viewModelScope.launch {
             updateQuery(
-                formIntent.uid,
-                formIntent.value?.let { listOf(it) },
+                uid,
+                value?.let { listOf(it) },
             )
 
             searching = queryData.isNotEmpty()
@@ -1144,7 +1169,7 @@ class SearchTEIViewModel(
         val updatedItems =
             searchParametersUiState.items.map {
                 if (it.focused) {
-                    (it as FieldUiModelImpl).copy(focused = false)
+                    it.copy(focused = false)
                 } else {
                     it
                 }
@@ -1159,35 +1184,37 @@ class SearchTEIViewModel(
             .forEach { item ->
 
                 when (item.valueType) {
-                    ValueType.ORGANISATION_UNIT, ValueType.MULTI_TEXT -> {
+                    TrackerInputType.ORGANISATION_UNIT, TrackerInputType.MULTI_SELECTION -> {
                         map[item.uid] = (item.displayName ?: "")
                     }
 
-                    ValueType.DATE, ValueType.AGE -> {
+                    TrackerInputType.DATE, TrackerInputType.AGE -> {
                         item.value?.let {
                             map[item.uid] = it.toFriendlyDate()
                         }
                     }
 
-                    ValueType.DATETIME -> {
+                    TrackerInputType.DATE_TIME -> {
                         item.value?.let {
                             map[item.uid] = it.toFriendlyDateTime()
                         }
                     }
 
-                    ValueType.BOOLEAN -> {
-                        map[item.uid] = "${item.label}: ${item.value}"
-                    }
-
-                    ValueType.TRUE_ONLY -> {
+                    TrackerInputType.YES_ONLY_SWITCH,
+                    TrackerInputType.YES_ONLY_CHECKBOX,
+                    TrackerInputType.HORIZONTAL_RADIOBUTTONS,
+                    TrackerInputType.VERTICAL_RADIOBUTTONS,
+                    TrackerInputType.HORIZONTAL_CHECKBOXES,
+                    TrackerInputType.VERTICAL_CHECKBOXES,
+                    -> {
                         item.value?.let {
-                            if (it == "true") {
-                                map[item.uid] = item.label
+                            if (it == "true" || it == "false") {
+                                map[item.uid] = "${item.label}: $it"
                             }
                         }
                     }
 
-                    ValueType.PERCENTAGE -> {
+                    TrackerInputType.PERCENTAGE -> {
                         item.value?.let {
                             map[item.uid] = it.toPercentage()
                         }
@@ -1214,7 +1241,7 @@ class SearchTEIViewModel(
         fetchMapResults()
     }
 
-    fun onLaunchCustomIntent(
+    fun launchCustomIntent(
         fieldUid: FieldUid,
         customIntentUid: CustomIntentUid,
     ) {
@@ -1228,6 +1255,55 @@ class SearchTEIViewModel(
                 )
             }
         }
+    }
+
+    fun launchScan(
+        fieldUid: String,
+        optionSet: String?,
+        renderType: TrackerInputType,
+    ) {
+        val scanType =
+            if (renderType == TrackerInputType.QR_CODE) {
+                TrackerInputType.QR_CODE
+            } else {
+                TrackerInputType.BAR_CODE
+            }
+
+        viewModelScope.launch {
+            _searchActions.send(
+                TrackerInputAction.Scan(
+                    fieldUid = fieldUid,
+                    optionSet = optionSet,
+                    renderType = scanType,
+                ),
+            )
+        }
+    }
+
+    fun onValueChange(
+        fieldUid: String,
+        value: String?,
+    ) {
+        updateQuery(
+            fieldUid,
+            value?.split(","),
+        )
+    }
+
+    fun onItemClick(fieldUid: FieldUid) {
+        searchParametersUiState
+            .copy(
+                items =
+                    searchParametersUiState.items.map {
+                        if (it.uid == fieldUid) {
+                            it.copy(focused = true)
+                        } else {
+                            it.copy(focused = false)
+                        }
+                    },
+            ).let {
+                searchParametersUiState = it
+            }
     }
 
     fun handleCustomIntentResult(customIntentResult: CustomIntentResult) {
@@ -1246,6 +1322,22 @@ class SearchTEIViewModel(
                     listOf(customIntentResult.value),
                 )
             }
+        }
+    }
+
+    fun handleScanResult(
+        fieldUid: String,
+        value: String?,
+    ) {
+        onQrCodeScanned(
+            uid = fieldUid,
+            value = value,
+        )
+        value?.let {
+            updateSearchParameters(
+                uid = fieldUid,
+                values = listOf(value),
+            )
         }
     }
 }

@@ -57,6 +57,7 @@ class PeriodLabelProvider(
         PeriodType.Weekly,
         PeriodType.WeeklyWednesday,
         PeriodType.WeeklyThursday,
+        PeriodType.WeeklyFriday,
         PeriodType.WeeklySaturday,
         PeriodType.WeeklySunday,
         PeriodType.BiWeekly,
@@ -80,9 +81,13 @@ class PeriodLabelProvider(
         PeriodType.BiMonthly, PeriodType.SixMonthly, PeriodType.SixMonthlyApril,
         PeriodType.Quarterly,
         PeriodType.QuarterlyNov,
+        PeriodType.FinancialFeb,
         PeriodType.FinancialApril,
         PeriodType.FinancialJuly,
+        PeriodType.FinancialAug,
+        PeriodType.FinancialSep,
         PeriodType.FinancialOct,
+        PeriodType.FinancialNov,
         ->
             if (periodBetweenYears) {
                 FROM_TO_LABEL.format(
@@ -116,6 +121,7 @@ class PeriodLabelProvider(
         PeriodType.Weekly,
         PeriodType.WeeklyWednesday,
         PeriodType.WeeklyThursday,
+        PeriodType.WeeklyFriday,
         PeriodType.WeeklySaturday,
         PeriodType.WeeklySunday,
         -> {
@@ -181,9 +187,13 @@ class PeriodLabelProvider(
             )
         }
 
+        PeriodType.FinancialFeb,
         PeriodType.FinancialApril,
         PeriodType.FinancialJuly,
+        PeriodType.FinancialAug,
+        PeriodType.FinancialSep,
         PeriodType.FinancialOct,
+        PeriodType.FinancialNov,
         ->
             FROM_TO_LABEL.format(
                 SimpleDateFormat(MONTH_YEAR_FULL_FORMAT, locale).format(periodStartDate),

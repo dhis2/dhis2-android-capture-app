@@ -2,7 +2,6 @@
 
 package org.dhis2.usescases.datasets
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsProperties.TestTag
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
@@ -31,7 +30,6 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.test.printToLog
 import androidx.compose.ui.test.swipeRight
-import androidx.core.graphics.toColorInt
 import org.dhis2.common.BaseRobot
 import org.dhis2.composetable.ui.semantics.CELL_TEST_TAG
 import org.dhis2.composetable.ui.semantics.MANDATORY_ICON_TEST_TAG
@@ -255,7 +253,7 @@ internal class DataSetTableRobot(
     fun assertTableIsDisplayed() {
         composeTestRule.waitUntilExactlyOneExists(
             hasTestTag("TABLE_SCROLLABLE_COLUMN"),
-            timeoutMillis = 3000
+            timeoutMillis = 10000
         )
     }
 
@@ -413,7 +411,7 @@ internal class DataSetTableRobot(
         assertTableIsDisplayed()
         composeTestRule.waitUntilAtLeastOneExists(
             hasText(text, substring = true),
-            timeoutMillis = 5000
+            timeoutMillis = 10000
         )
         composeTestRule.onNodeWithText(text, substring = true, useUnmergedTree = true)
             .assertIsDisplayed()

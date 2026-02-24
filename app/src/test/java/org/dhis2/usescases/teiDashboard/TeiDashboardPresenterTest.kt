@@ -71,6 +71,7 @@ class TeiDashboardPresenterTest {
                 .builder()
                 .uid(programUid)
                 .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
         val enrollment = Enrollment.builder().uid("enrollmentUid").build()
@@ -91,6 +92,7 @@ class TeiDashboardPresenterTest {
                         .builder()
                         .uid(programUid)
                         .categoryCombo(ObjectWithUid.create("categoryComboUid"))
+                        .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                         .build(),
                     MetadataIconData.defaultIcon(),
                 ),
