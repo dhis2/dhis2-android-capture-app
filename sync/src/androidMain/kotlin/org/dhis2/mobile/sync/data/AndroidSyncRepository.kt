@@ -117,7 +117,6 @@ class AndroidSyncRepository(
                     analyticsHelper.updateMatomoSecondaryTracker(
                         globalSettings.matomoURL()!!,
                         globalSettings.matomoID()!!,
-                        "secondaryTracker",
                     )
                 }
             } ?: analyticsHelper.clearMatomoSecondaryTracker()
