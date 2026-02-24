@@ -19,10 +19,8 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
 class SearchParametersViewModelTest {
@@ -59,6 +57,12 @@ class SearchParametersViewModelTest {
                         value = "another",
                         minCharactersToSearch = null,
                     ),
+                    provideItem(
+                        uid = "test3",
+                        label = "Test 3",
+                        value = null,
+                        minCharactersToSearch = 3,
+                    ),
                 )
 
             viewModel.updateFromExternal(SearchParametersUiState(items = validItems))
@@ -79,6 +83,7 @@ class SearchParametersViewModelTest {
             val invalidItems =
                 listOf(
                     provideItem(
+                        uid = "test1",
                         value = "ab",
                         minCharactersToSearch = 3,
                     ),
@@ -115,88 +120,6 @@ class SearchParametersViewModelTest {
         }
 
     @Test
-    fun `onValidateMinCharacters should return false and set errors when items have insufficient characters`() =
-        runTest(testingDispatcher) {
-            // Given
-            val invalidItems =
-                listOf(
-                    provideItem(
-                        uid = "test1",
-                        label = "Test 1",
-                        value = "ab",
-                        minCharactersToSearch = 3,
-                    ),
-                    provideItem(
-                        uid = "test2",
-                        label = "Test 2",
-                        value = "abcde",
-                        minCharactersToSearch = 5,
-                    ),
-                    provideItem(
-                        uid = "test3",
-                        label = "Test 3",
-                        value = "a",
-                        minCharactersToSearch = 2,
-                    ),
-                )
-            whenever(
-                resourceProvider.provideString(any(), any()),
-            ).thenReturn("Minimum characters required")
-
-            viewModel.updateFromExternal(SearchParametersUiState(items = invalidItems))
-
-            // When
-            val result = viewModel.onValidateMinCharacters()
-
-            // Then
-            assertFalse(result)
-
-            val uiState = viewModel.uiState.first() // Check that errors are set on invalid items
-            assertEquals(3, uiState.items.size)
-            assertEquals(true, uiState.items[0].error?.isNotEmpty()) // test1 should have error
-            assertNull(uiState.items[1].error) // test2 should have no error
-            assertEquals(true, uiState.items[2].error?.isNotEmpty()) // test3 should have error
-        }
-
-    @Test
-    fun `onValidateMinCharacters should ignore empty values`() =
-        runTest(testingDispatcher) {
-            // Given
-            val itemsWithEmptyValues =
-                listOf(
-                    provideItem(
-                        uid = "test1",
-                        label = "Test 1",
-                        value = "",
-                        minCharactersToSearch = 3,
-                    ),
-                    provideItem(
-                        uid = "test2",
-                        label = "Test 2",
-                        value = null,
-                        minCharactersToSearch = 3,
-                    ),
-                    provideItem(
-                        uid = "test3",
-                        label = "Test 3",
-                        value = "abc",
-                        minCharactersToSearch = 3,
-                    ),
-                )
-
-            viewModel.updateFromExternal(SearchParametersUiState(items = itemsWithEmptyValues))
-
-            // When
-            val result = viewModel.onValidateMinCharacters()
-
-            // Then
-            assertTrue(result)
-
-            val uiState = viewModel.uiState.first() // Check that all errors are cleared
-            assertTrue(uiState.items.all { it.error == null })
-        }
-
-    @Test
     fun `resetValidationResult should set validationResult to null`() =
         runTest(testingDispatcher) {
             // Given
@@ -210,32 +133,6 @@ class SearchParametersViewModelTest {
             // Then
             val validationResult = viewModel.validationResult.first()
             assertNull(validationResult)
-        }
-
-    @Test
-    fun `onValidateMinCharacters should clear existing errors when validation passes`() =
-        runTest(testingDispatcher) {
-            // Given
-            val itemsWithExistingErrors =
-                listOf(
-                    provideItem(
-                        uid = "test1",
-                        label = "Test 1",
-                        value = "abc",
-                        minCharactersToSearch = 3,
-                    ),
-                )
-
-            viewModel.updateFromExternal(SearchParametersUiState(items = itemsWithExistingErrors))
-
-            // When
-            val result = viewModel.onValidateMinCharacters()
-
-            // Then
-            assertTrue(result)
-
-            val uiState = viewModel.uiState.first() // Check that existing error is cleared
-            assertNull(uiState.items[0].error)
         }
 
     private fun provideItem(

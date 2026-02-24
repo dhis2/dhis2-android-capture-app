@@ -27,12 +27,11 @@ class SearchParametersViewModel(
 
     fun onValidateSearch() {
         viewModelScope.launch {
-            val minCharactersToSearch = onValidateMinCharacters()
-            _validationResult.value = minCharactersToSearch
+            _validationResult.value = onValidateMinCharacters()
         }
     }
 
-    suspend fun onValidateMinCharacters(): Boolean {
+    private suspend fun onValidateMinCharacters(): Boolean {
         val items = _uiState.value.items
         // Check if there are invalid items to later check the warning
         val invalidItems =
