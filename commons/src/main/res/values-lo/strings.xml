@@ -227,4 +227,5 @@
     <string name="period_weekly_title">ອາທິດ</string>
     <string name="period_monthly_title">ເດືອນ</string>
     <string name="period_yearly_title">ປີ</string>
-    </resources>
+    <string name="action_clear_all">ລຶບທັງໝົດ</string>
+</resources>
