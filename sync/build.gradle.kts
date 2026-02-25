@@ -115,6 +115,7 @@ android {
 
     dependencies {
         coreLibraryDesugaring(libs.desugar)
+        api(libs.koin.work)
     }
 }
 
