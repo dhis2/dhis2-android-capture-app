@@ -51,6 +51,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.IconButton
 import org.hisp.dhis.mobile.ui.designsystem.component.IconButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSegmentedShell
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
@@ -251,6 +252,7 @@ fun TwoFAAuthStepThree(
             )
             InputSegmentedShell(
                 segmentCount = 6,
+                inputStyle = InputStyle.SegmentedInputStyle(),
                 supportingTextData =
                     enableUiState.enableErrorMessage?.let {
                         SupportingTextData(

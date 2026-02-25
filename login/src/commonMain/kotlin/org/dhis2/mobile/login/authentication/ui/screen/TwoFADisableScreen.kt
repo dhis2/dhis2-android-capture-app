@@ -36,6 +36,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ColorStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.InfoBar
 import org.hisp.dhis.mobile.ui.designsystem.component.InputSegmentedShell
 import org.hisp.dhis.mobile.ui.designsystem.component.InputShellState
+import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -82,6 +83,7 @@ fun TwoFADisableScreen(
             )
             InputSegmentedShell(
                 segmentCount = 6,
+                inputStyle = InputStyle.SegmentedInputStyle(),
                 supportingTextData =
                     if (twoFADisableUiState.state == InputShellState.ERROR) {
                         SupportingTextData(
