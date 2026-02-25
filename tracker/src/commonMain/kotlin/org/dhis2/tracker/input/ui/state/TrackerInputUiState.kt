@@ -62,11 +62,15 @@ fun TrackerInputUiState.supportingText(): List<SupportingTextData>? =
             )
         },
         searchOperator?.let { operator ->
-            operator.supportingTextString()?.let { text ->
-                SupportingTextData(
-                    text,
-                    SupportingTextState.DEFAULT,
-                )
+            if (focused) {
+                operator.supportingTextString()?.let { text ->
+                    SupportingTextData(
+                        text,
+                        SupportingTextState.DEFAULT,
+                    )
+                }
+            } else {
+                null
             }
         },
         description?.let {
