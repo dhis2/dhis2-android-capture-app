@@ -69,6 +69,7 @@ class IndicatorViewHolder(
                                     Modifier
                                 },
                             ),
+                        useMarkdown = true,
                     )
                     Spacer(modifier = Modifier.size(16.dp))
                 }
