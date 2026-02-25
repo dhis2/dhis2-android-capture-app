@@ -50,6 +50,7 @@
     <string name="bi_weekly">两周</string>
     <string name="weekly_start_wednesday">开始于周三的周报</string>
     <string name="weekly_start_thursday">开始于周四的周报</string>
+    <string name="weekly_start_friday">每周从周五开始</string>
     <string name="weekly_start_saturday">开始于周六的周报</string>
     <string name="weekly_start_sunday">开始于周日的周报</string>
     <string name="monthly">每月</string>
@@ -61,8 +62,11 @@
     <string name="six_monthly_july">从 7 月开始，每 6 个月一次</string>
     <string name="six_monthly_nov">开始于11月的半年</string>
     <string name="yearly">每年</string>
+    <string name="financial_year_february">从 2 月开始的财务年度</string>
     <string name="financial_year_april">开始于四月的财政年</string>
     <string name="financial_year_july">开始于六月的财政年</string>
+    <string name="financial_year_august">从 8 月开始的财政年度</string>
+    <string name="financial_year_september">9 月开始的财政年度</string>
     <string name="financial_year_october">开始于十月的财政年</string>
     <string name="financial_year_november">开始于11月的财政年</string>
 
