@@ -62,5 +62,6 @@
     <string name="event_details_section_title">%s ລາຍລະອຽດ</string>
     <string name="org_unit">ສະຖານທີ່</string>
     <string name="coordinates">Coordinates</string>
+    <string name="category_combo">ໝວດໝູ່ແບບປະສົມ (Category Combo)</string>
     <string name="cat_combo">ລາຍການທີ່ໃຫ້ເລືອກ</string>
     </resources>

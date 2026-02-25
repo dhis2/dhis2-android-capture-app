@@ -12,6 +12,7 @@
     <string name="action_cancel">ຍົກເລີກ</string>
     <string name="action_close">ປິດ</string>
     <string name="hint_search">ຄົ້ນຫາ</string>
+    <string name="action_clear_all">ລຶບທັງໝົດ</string>
     <plurals name="error_count">
         <item quantity="other">%s ຂໍ້ຜິດພາດ</item>
     </plurals>
