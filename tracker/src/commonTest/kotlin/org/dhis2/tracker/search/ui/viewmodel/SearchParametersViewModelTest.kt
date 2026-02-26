@@ -11,7 +11,6 @@ import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.resources.StringResourceProvider
 import org.dhis2.tracker.input.ui.state.TrackerInputUiState
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
-import org.dhis2.tracker.search.ui.viewmodel.SearchParametersViewModel
 import org.junit.Assert
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -27,7 +26,6 @@ import kotlin.test.assertNull
 class SearchParametersViewModelTest {
     private val testingDispatcher = StandardTestDispatcher()
     private val resourceProvider = mock<StringResourceProvider>()
-
     private lateinit var viewModel: SearchParametersViewModel
 
     @BeforeTest
