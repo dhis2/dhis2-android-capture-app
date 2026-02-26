@@ -19,6 +19,8 @@ import timber.log.Timber
 
 const val DEFAULT_LOCATION = "feedback"
 
+val NUMBER_REGEX = """\d{1,3}(,\d{3})*([.]\d+)?""".toRegex()
+
 abstract class BaseIndicatorRepository(
     open val d2: D2,
     open val ruleEngineHelper: RuleEngineHelper?,
@@ -111,6 +113,7 @@ abstract class BaseIndicatorRepository(
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
+                    val color = getLegendColor(ruleEffect.data, ruleAction.values["legendSet"])
                     val indicator =
                         IndicatorModel(
                             ProgramIndicator
@@ -119,7 +122,7 @@ abstract class BaseIndicatorRepository(
                                 .displayName((ruleAction).content())
                                 .build(),
                             ruleEffect.data,
-                            null,
+                            color,
                             ruleAction.values["location"] ?: DEFAULT_LOCATION,
                             resourceManager.defaultIndicatorLabel(),
                         )
@@ -145,6 +148,34 @@ abstract class BaseIndicatorRepository(
         }
 
         return indicators
+    }
+
+    private fun getLegendColor(
+        data: String?,
+        legendSet: String?,
+    ): String? {
+        if (data.isNullOrEmpty() || legendSet.isNullOrEmpty()) return null
+
+        val legendValue =
+            NUMBER_REGEX
+                .find(data)
+                ?.value
+                ?.replace(",", "")
+                ?.toDoubleOrNull() ?: return null
+
+        val legends =
+            d2
+                .legendSetModule()
+                .legends()
+                .byStartValue()
+                .smallerThan(legendValue)
+                .byEndValue()
+                .biggerOrEqualTo(legendValue)
+                .byLegendSet()
+                .eq(legendSet)
+                .blockingGet()
+
+        return legends.firstOrNull()?.color()
     }
 
     private fun getLegendColorForIndicator(
