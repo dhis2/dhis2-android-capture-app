@@ -74,8 +74,12 @@ class TeiDashboardPresenterTest {
                 .enrollmentCategoryCombo(ObjectWithUid.create("categoryComboUid"))
                 .build()
         val trackedEntityInstance = TrackedEntityInstance.builder().uid(teiUid).build()
-        val enrollment = Enrollment.builder().uid("enrollmentUid")
-            .attributeOptionCombo("attributeOptionComboUid").build()
+        val enrollment =
+            Enrollment
+                .builder()
+                .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
+                .build()
         val programStages = listOf(ProgramStage.builder().uid("programStageUid").build())
         val trackedEntityAttributes =
             listOf(

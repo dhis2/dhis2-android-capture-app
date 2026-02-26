@@ -76,8 +76,12 @@ class TrackerAnalyticsRepositoryTest {
                 .eq("programUid")
                 .one()
                 .blockingGet(),
-        ) doReturn Enrollment.builder().uid("enrollmentUid")
-            .attributeOptionCombo("attributeOptionComboUid").build()
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
+                .build()
         whenever(
             resourceManager.sectionCharts(),
         ) doReturn "Charts"
@@ -235,10 +239,10 @@ class TrackerAnalyticsRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it.size == 7 &&
-                    it[0] is SectionTitle &&
-                    (it[0] as SectionTitle).title == "Feedback" &&
-                    it[2] is SectionTitle &&
-                    (it[2] as SectionTitle).title == "Charts and indicators"
+                it[0] is SectionTitle &&
+                (it[0] as SectionTitle).title == "Feedback" &&
+                it[2] is SectionTitle &&
+                (it[2] as SectionTitle).title == "Charts and indicators"
         }
     }
 

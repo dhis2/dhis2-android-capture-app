@@ -70,8 +70,12 @@ class EventIndicatorRepositoryTest {
                 .eq("programUid")
                 .one()
                 .blockingGet(),
-        ) doReturn Enrollment.builder().uid("enrollmentUid")
-            .attributeOptionCombo("attributeOptionComboUid").build()
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
+                .build()
         whenever(
             resourceManager.sectionIndicators(),
         ) doReturn "Indicators"
@@ -218,10 +222,10 @@ class EventIndicatorRepositoryTest {
         testObserver.assertNoErrors()
         testObserver.assertValue {
             it.size == 5 &&
-                    it[0] is SectionTitle &&
-                    (it[0] as SectionTitle).title == "Feedback" &&
-                    it[2] is SectionTitle &&
-                    (it[2] as SectionTitle).title == "Indicators"
+                it[0] is SectionTitle &&
+                (it[0] as SectionTitle).title == "Feedback" &&
+                it[2] is SectionTitle &&
+                (it[2] as SectionTitle).title == "Indicators"
         }
     }
 
