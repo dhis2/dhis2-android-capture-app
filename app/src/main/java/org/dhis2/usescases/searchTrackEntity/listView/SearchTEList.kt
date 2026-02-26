@@ -266,7 +266,7 @@ class SearchTEList : FragmentGlobalAbstract() {
                 val teTypeName by viewModel.teTypeName.observeAsState()
                 val hasQueryData =
                     remember(viewModel.searchParametersUiState) {
-                        viewModel.queryData.isNotEmpty()
+                        viewModel.queryDataList.isNotEmpty()
                     }
 
                 updateLayoutParams<CoordinatorLayout.LayoutParams> {

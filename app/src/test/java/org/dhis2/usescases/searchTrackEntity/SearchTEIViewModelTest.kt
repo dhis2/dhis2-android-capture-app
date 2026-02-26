@@ -49,6 +49,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.maplibre.geojson.BoundingBox
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -214,12 +215,12 @@ class SearchTEIViewModelTest {
             value = "testingValue",
         )
 
-        val queryData = viewModel.queryData
+        val queryData = viewModel.queryDataList
 
         assertTrue(queryData.isNotEmpty())
-        assertTrue(queryData["testingUid"]?.size == 1)
-        val values = queryData["testingUid"]
-        assertTrue(values?.contains("testingValue") == true)
+        assertTrue(queryData.size == 1)
+        val data = queryData.first { it.attributeId == "testingUid" }
+        assertTrue(data.values?.get(0) == "testingValue")
     }
 
     @Test
@@ -229,14 +230,14 @@ class SearchTEIViewModelTest {
             value = "testingValue,testingValue2",
         )
 
-        val queryData = viewModel.queryData
+        val queryData = viewModel.queryDataList
 
         assertTrue(queryData.isNotEmpty())
-        assertTrue(queryData.containsKey("testingUid"))
-        val values = queryData["testingUid"]
-        assertTrue(values?.size == 2)
-        assertTrue(values?.contains("testingValue") == true)
-        assertTrue(values?.contains("testingValue2") == true)
+        assertTrue(queryData.any { it.attributeId == "testingUid" })
+        val data = queryData.first { it.attributeId == "testingUid" }
+        assertTrue(data.values?.size == 2)
+        assertTrue(data.values?.contains("testingValue") == true)
+        assertTrue(data.values?.contains("testingValue2") == true)
     }
 
     @Test
@@ -250,20 +251,20 @@ class SearchTEIViewModelTest {
             value = "testingValue,testingValue2",
         )
 
-        val queryData = viewModel.queryData
+        val queryData = viewModel.queryDataList
 
         assertTrue(queryData.isNotEmpty())
-        assertTrue(queryData.containsKey("testingUid"))
-        val values1 = queryData["testingUid"]
-        assertTrue(values1?.size == 2)
-        assertTrue(values1?.contains("testingValue") == true)
-        assertTrue(values1?.contains("testingValue2") == true)
+        assertTrue(queryData.any { it.attributeId == "testingUid" })
+        val data1 = queryData.first { it.attributeId == "testingUid" }
+        assertTrue(data1.values?.size == 2)
+        assertTrue(data1.values?.contains("testingValue") == true)
+        assertTrue(data1.values?.contains("testingValue2") == true)
 
-        assertTrue(queryData.containsKey("testingUid"))
-        val values2 = queryData["testingUid2"]
-        assertTrue(values2?.size == 2)
-        assertTrue(values2?.contains("testingValue") == true)
-        assertTrue(values2?.contains("testingValue2") == true)
+        assertTrue(queryData.any { it.attributeId == "testingUid2" })
+        val data2 = queryData.first { it.attributeId == "testingUid2" }
+        assertTrue(data2.values?.size == 2)
+        assertTrue(data2.values?.contains("testingValue") == true)
+        assertTrue(data2.values?.contains("testingValue2") == true)
     }
 
     @ExperimentalCoroutinesApi
@@ -279,7 +280,7 @@ class SearchTEIViewModelTest {
                 eq(
                     SearchTrackedEntitiesInput(
                         selectedProgram = testingProgram.uid(),
-                        queryData = mutableMapOf(),
+                        queryDataList = mutableListOf(),
                         allowCache = true,
                         excludeValues = emptySet(),
                         hasStateFilters = false,
@@ -326,7 +327,7 @@ class SearchTEIViewModelTest {
         whenever(
             mapDataRepository.getTrackerMapData(
                 testingProgram(),
-                viewModel.queryData,
+                viewModel.queryDataAsMap(),
             ),
         ) doReturn trackerMapData
 
@@ -370,7 +371,7 @@ class SearchTEIViewModelTest {
         whenever(
             mapDataRepository.getTrackerMapData(
                 testingProgram(),
-                viewModel.queryData,
+                viewModel.queryDataAsMap(),
             ),
         ) doReturn
             TrackerMapData(
@@ -400,14 +401,14 @@ class SearchTEIViewModelTest {
         assertTrue(viewModel.refreshData.value != null)
         verify(mapDataRepository).getTrackerMapData(
             testingProgram(),
-            viewModel.queryData,
+            viewModel.queryDataAsMap(),
         )
     }
 
     @Test
     fun `Should filter query data for new program`() {
         viewModel.queryDataByProgram("programUid")
-        verify(repository).filterQueryForProgram(viewModel.queryData, "programUid")
+        verify(repository).filterQueryForProgram(viewModel.queryDataAsMap(), "programUid")
     }
 
     @Test
@@ -499,8 +500,11 @@ class SearchTEIViewModelTest {
         setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
         setAllowCreateBeforeSearch(false)
         whenever(
-            repository.filterQueryForProgram(viewModel.queryData, null),
-        ) doReturn mapOf("field" to listOf("value"))
+            repository.filterQueryForProgram(
+                any(),
+                anyOrNull(),
+            ),
+        ) doReturn mapOf("testingUid" to listOf("testingValue"))
 
         performSearch()
         viewModel.onDataLoaded(1)
@@ -515,7 +519,7 @@ class SearchTEIViewModelTest {
     fun `Should return unable to search outside result for search`() {
         setCurrentProgram(testingProgram(maxTeiCountToReturn = 1))
         setAllowCreateBeforeSearch(false)
-        whenever(repository.filterQueryForProgram(viewModel.queryData, null)) doReturn mapOf()
+        whenever(repository.filterQueryForProgram(viewModel.queryDataAsMap(), null)) doReturn mapOf()
         whenever(repository.trackedEntityTypeFields()) doReturn listOf("Field_1", "Field_2")
 
         performSearch()
@@ -731,7 +735,7 @@ class SearchTEIViewModelTest {
             viewModel.searchParametersUiState.copy(items = getTrackerInputModels())
         performSearch()
         viewModel.clearQueryData()
-        assert(viewModel.queryData.isEmpty())
+        assert(viewModel.queryDataList.isEmpty())
         assert(viewModel.searchParametersUiState.items.all { it.value == null })
         assert(viewModel.searchParametersUiState.searchedItems.isEmpty())
     }

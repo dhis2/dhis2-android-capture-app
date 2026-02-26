@@ -5,6 +5,7 @@ import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.dhis2.commons.filters.data.FilterPresenter
+import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchTrackedEntityAttribute
 import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
 import org.hisp.dhis.android.core.D2
@@ -46,25 +47,30 @@ class SearchTrackedEntityRepositoryImpl(
 
     override suspend fun addToQuery(
         dataId: String,
-        dataValues: List<String>,
-        isUnique: Boolean,
-        isOptionSet: Boolean,
+        dataValues: List<String>?,
+        searchOperator: SearchOperator?,
     ) {
+        if (dataValues.isNullOrEmpty()) return
+
         trackedEntityInstanceQuery =
             if (dataValues.size > 1) {
                 // return any tracked entities with attributes that match the values in the list
                 trackedEntityInstanceQuery?.byFilter(dataId)?.`in`(dataValues)
             } else {
-                if (dataValues.size == 1) {
-                    if (isUnique || isOptionSet) {
-                        // If the attribute is unique or an option set, we want an exact match
-                        trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValues[0])
-                    } else {
-                        // return tracked entities that contain the data value
+                when (searchOperator) {
+                    SearchOperator.LIKE -> {
                         trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValues[0])
                     }
-                } else {
-                    trackedEntityInstanceQuery
+                    SearchOperator.SW -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.sw(dataValues[0])
+                    }
+                    SearchOperator.EW -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.ew(dataValues[0])
+                    }
+                    SearchOperator.EQ -> {
+                        trackedEntityInstanceQuery?.byFilter(dataId)?.eq(dataValues[0])
+                    }
+                    else -> trackedEntityInstanceQuery?.byFilter(dataId)?.like(dataValues[0])
                 }
             }
     }

@@ -299,7 +299,7 @@ class SearchTEActivity :
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putSerializable(Constants.QUERY_DATA, viewModel.queryData as Serializable)
+        outState.putSerializable(Constants.QUERY_DATA, viewModel.queryDataAsMap() as Serializable)
         outState.putString(CURRENT_SCREEN, currentContent?.name)
     }
 
