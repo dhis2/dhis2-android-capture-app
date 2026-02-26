@@ -54,7 +54,7 @@ class IndicatorViewHolder(
                             if (!programIndicatorModel.color.isNullOrEmpty()) {
                                 Color(programIndicatorModel.color())
                             } else {
-                                SurfaceColor.Container
+                                SurfaceColor.ContainerHigh
                             },
                         content = programIndicatorModel.value ?: "",
                         modifier =
@@ -69,6 +69,7 @@ class IndicatorViewHolder(
                                     Modifier
                                 },
                             ),
+                        useMarkdown = true,
                     )
                     Spacer(modifier = Modifier.size(16.dp))
                 }

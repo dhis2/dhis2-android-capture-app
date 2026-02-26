@@ -131,9 +131,9 @@ abstract class BaseIndicatorRepository(
                             ProgramIndicator
                                 .builder()
                                 .uid(UidGeneratorImpl().generate())
-                                .displayName(resourceManager.defaultIndicatorLabel())
+                                .displayName("${ruleAction.content() ?: ""}${ruleEffect.data}")
                                 .build(),
-                            "${ruleAction.content() ?: ""}${ruleEffect.data}",
+                            "",
                             null,
                             ruleAction.values["location"] ?: DEFAULT_LOCATION,
                             resourceManager.defaultIndicatorLabel(),
