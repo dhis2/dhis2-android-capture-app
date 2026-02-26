@@ -126,6 +126,10 @@ class NotificationManagerImpl(
         notificationManager.cancel(SYNC_SETTINGS_NOTIFICATION_ID)
     }
 
+    override fun cancelDataSyncNotification() {
+        TODO("Not yet implemented")
+    }
+
     private fun createForegroundInfo(
         notificationId: Int,
         channelId: String,
