@@ -174,6 +174,9 @@ class NotesRepositoryTest {
                 .eq(teiUid)
                 .one()
                 .blockingGet(),
-        ) doReturn Enrollment.builder().uid(enrollmentUid).build()
+        ) doReturn Enrollment.builder()
+            .uid(enrollmentUid)
+            .attributeOptionCombo("attributeOptionComboUid")
+            .build()
     }
 }

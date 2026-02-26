@@ -130,6 +130,7 @@ class EventCaptureRepositoryImplTest {
                 .builder()
                 .uid(trackerEventEnrollmentUid)
                 .status(EnrollmentStatus.CANCELLED)
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
 
         val repository =

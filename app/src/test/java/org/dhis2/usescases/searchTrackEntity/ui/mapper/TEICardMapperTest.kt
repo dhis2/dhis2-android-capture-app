@@ -135,6 +135,7 @@ class TEICardMapperTest {
                         .uid("EnrollmentUid")
                         .program("programUid")
                         .status(EnrollmentStatus.COMPLETED)
+                        .attributeOptionCombo("attributeOptionComboUid")
                         .build(),
                 )
                 setAttributeValues(attributeValues)
@@ -167,6 +168,7 @@ class TEICardMapperTest {
                         .builder()
                         .uid("EnrollmentUid")
                         .followUp(true)
+                        .attributeOptionCombo("attributeOptionComboUid")
                         .build(),
                 )
             }

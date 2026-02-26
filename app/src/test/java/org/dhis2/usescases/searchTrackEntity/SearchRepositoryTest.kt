@@ -465,6 +465,7 @@ class SearchRepositoryTest {
         .organisationUnit(orgUnitUid)
         .program(programUid)
         .status(status)
+        .attributeOptionCombo("attributeOptionComboUid")
         .build()
 
     private fun createEvent(

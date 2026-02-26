@@ -547,6 +547,7 @@ class SearchSortingValueSetterTest {
                     .status(EnrollmentStatus.ACTIVE)
                     .program("programUid")
                     .enrollmentDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
             )
             tei =

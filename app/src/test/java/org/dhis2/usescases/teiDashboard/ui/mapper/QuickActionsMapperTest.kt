@@ -117,6 +117,7 @@ class QuickActionsMapperTest {
                 .status(status)
                 .followUp(followup)
                 .program("Program1Uid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
         val tei =
             TrackedEntityInstance

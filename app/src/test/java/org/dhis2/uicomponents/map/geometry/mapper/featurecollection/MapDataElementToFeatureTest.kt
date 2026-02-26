@@ -85,6 +85,7 @@ class MapDataElementToFeatureTest {
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()
@@ -113,6 +114,7 @@ class MapDataElementToFeatureTest {
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()
@@ -141,6 +143,7 @@ class MapDataElementToFeatureTest {
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()

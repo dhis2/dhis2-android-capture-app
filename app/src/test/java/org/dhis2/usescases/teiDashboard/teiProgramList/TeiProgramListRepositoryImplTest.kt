@@ -76,6 +76,7 @@ class TeiProgramListRepositoryImplTest {
             Enrollment
                 .builder()
                 .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
 
         val testObservable =
@@ -142,6 +143,7 @@ class TeiProgramListRepositoryImplTest {
             Enrollment
                 .builder()
                 .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
 
         val testObservable =

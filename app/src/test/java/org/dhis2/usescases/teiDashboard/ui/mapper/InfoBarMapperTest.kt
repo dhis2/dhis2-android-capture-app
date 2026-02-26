@@ -165,6 +165,7 @@ class InfoBarMapperTest {
         .status(status)
         .followUp(followup)
         .program("Program1Uid")
+        .attributeOptionCombo("attributeOptionComboUid")
         .build()
 
     private fun setPrograms() =

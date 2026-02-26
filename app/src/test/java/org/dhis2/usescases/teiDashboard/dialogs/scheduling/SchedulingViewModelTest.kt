@@ -33,7 +33,9 @@ class SchedulingViewModelTest {
 
     private val testingDispatcher = UnconfinedTestDispatcher()
 
-    private val enrollment = Enrollment.builder().uid(ENROLLMENT_UID).build()
+    private val enrollment =
+        Enrollment.builder().uid(ENROLLMENT_UID).attributeOptionCombo("attributeOptionComboUid")
+            .build()
     private val programStage = ProgramStage.builder().uid(STAGE).build()
 
     private val enrollmentObjectRepository: EnrollmentObjectRepository =

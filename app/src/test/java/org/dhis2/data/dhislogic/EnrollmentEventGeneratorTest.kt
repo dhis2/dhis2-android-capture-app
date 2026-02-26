@@ -164,6 +164,7 @@ class EnrollmentEventGeneratorTest {
                 GregorianCalendar(2019, 0, 1).time,
             ).program(PROGRAM_UID)
             .organisationUnit(ENROLLMENT_ORG_UNIT)
+            .attributeOptionCombo("attributeOptionComboUid")
             .build()
 
     private fun mockedProgram(useFirstStage: Boolean) =
