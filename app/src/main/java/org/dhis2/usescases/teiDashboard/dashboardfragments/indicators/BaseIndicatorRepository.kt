@@ -136,7 +136,7 @@ abstract class BaseIndicatorRepository(
                             "",
                             null,
                             ruleAction.values["location"] ?: DEFAULT_LOCATION,
-                            "${ruleAction.content() ?: ""}${ruleEffect.data}",
+                            resourceManager.defaultIndicatorLabel(),
                         )
 
                     indicators.add(indicator)
