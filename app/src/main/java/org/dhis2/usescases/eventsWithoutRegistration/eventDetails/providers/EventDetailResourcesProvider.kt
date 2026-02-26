@@ -46,8 +46,8 @@ class EventDetailResourcesProvider(
                     R.string.edition_enrollment_is_no_open_V2,
                     1,
                 )
-            EventNonEditableReason.ORGUNIT_IS_NOT_IN_CAPTURE_SCOPE ->
-                resourceManager.getString(R.string.edition_orgunit_capture_scope)
+            EventNonEditableReason.ORGUNIT_IS_NOT_IN_USER_SCOPE ->
+                resourceManager.getString(R.string.edition_orgunit_user_scope)
         }
 
     fun provideButtonUpdate() = resourceManager.getString(R.string.update)
