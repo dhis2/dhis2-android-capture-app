@@ -7,7 +7,7 @@ minSdk = "23"
 vCode = "151"
 vName = "3.4.0-DEV"
 gradle = "9.0.1"
-kotlin = '2.2.21'
+kotlin = '2.3.10'
 dagger = '2.57.2'
 jacoco = '0.8.14'
 designSystem = "0.7.0-SNAPSHOT"
@@ -89,7 +89,7 @@ ktxml = "1.0.0"
 atomicfu = "0.29.0"
 playservicesauth = "21.4.0"
 playservicesphone = "18.0.2" #Can not be updated to latest due minSDK requirement of 23
-ksp = "2.2.21-2.0.5"
+ksp = "2.3.6"
 commonsText = "1.14.0"
 ktlint = "13.1.0"
 sonarqube = "7.0.1.6134"
@@ -224,11 +224,14 @@ coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = 
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "gradle" }
 kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "kotlinx-serialization" }
 compose = { id = "org.jetbrains.compose", version.ref = "composePluginVersion" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 kotlin-atomicfu = { id = "org.jetbrains.kotlinx.atomicfu", version.ref = "atomicfu" }
+legacy-kapt = { id = "com.android.legacy-kapt", version.ref = "gradle" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqube" }
 sentry = { id = "io.sentry.android.gradle", version.ref = "sentryPlugin" }

@@ -16,7 +16,13 @@ kotlin {
         namespace = "org.dhis2.mobile.login"
         compileSdk = libs.versions.sdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
+        enableCoreLibraryDesugaring = true
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
+        packaging {
+            resources {
+                pickFirsts.add("values*/**")
+            }
+        }
         withHostTestBuilder {}.configure {}
         withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
