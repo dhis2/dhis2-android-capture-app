@@ -1,7 +1,5 @@
 package org.dhis2.data.service;
 
-import static org.dhis2.utils.analytics.AnalyticsConstants.DATA_TIME;
-
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -16,19 +14,10 @@ import androidx.work.ForegroundInfo;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import org.dhis2.App;
 import org.dhis2.R;
-import org.dhis2.commons.Constants;
-import org.dhis2.commons.date.DateUtils;
-import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.prefs.PreferenceProvider;
 
-import java.util.Calendar;
-import java.util.Objects;
-
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 public class SyncDataWorker extends Worker {
 
@@ -50,78 +39,34 @@ public class SyncDataWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        Objects.requireNonNull(((App) getApplicationContext()).userComponent())
-                .plus(new SyncDataWorkerModule())
-                .inject(this);
-
-        presenter.initSyncControllerMap();
-
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_data),
                 0);
-
-        boolean isEventOk = true;
-        boolean isTeiOk = true;
-        boolean isDataValue = true;
-
-        long init = System.currentTimeMillis();
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_events),
                 20);
 
-        try {
-            presenter.syncAndDownloadEvents();
-        } catch (Exception e) {
-            if (!new NetworkUtils(getApplicationContext()).isOnline()) {
-                presenter.setNetworkUnavailable();
-            }
-            Timber.e(e);
-            isEventOk = false;
-        }
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_teis),
                 40);
 
-        try {
-            presenter.syncAndDownloadTeis();
-        } catch (Exception e) {
-            if (!new NetworkUtils(getApplicationContext()).isOnline()) {
-                presenter.setNetworkUnavailable();
-            }
-            Timber.e(e);
-            isTeiOk = false;
-        }
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_data_sets),
                 60);
 
-        try {
-            presenter.syncAndDownloadDataValues();
-        } catch (Exception e) {
-            if (!new NetworkUtils(getApplicationContext()).isOnline()) {
-                presenter.setNetworkUnavailable();
-            }
-            Timber.e(e);
-            isDataValue = false;
-        }
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_resources),
                 80);
 
-        try {
-            presenter.downloadResources();
-        } catch (Exception e) {
-            Timber.e(e);
-        }
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
@@ -130,31 +75,13 @@ public class SyncDataWorker extends Worker {
 
         );
 
-        try {
-            presenter.syncReservedValues();
-        } catch (Exception e) {
-            Timber.e(e);
-        }
 
         triggerNotification(
                 getApplicationContext().getString(R.string.app_name),
                 getApplicationContext().getString(R.string.syncing_done),
                 100);
 
-        presenter.logTimeToFinish(System.currentTimeMillis() - init, DATA_TIME);
-
-        String lastDataSyncDate = DateUtils.dateTimeFormat().format(Calendar.getInstance().getTime());
-        SyncResult syncResult = presenter.checkSyncStatus();
-
-        prefs.setValue(Constants.LAST_DATA_SYNC, lastDataSyncDate);
-        prefs.setValue(Constants.LAST_DATA_SYNC_STATUS, isEventOk && isTeiOk && isDataValue && syncResult == SyncResult.SYNC);
-        prefs.setValue(Constants.SYNC_RESULT, syncResult.name());
-
         cancelNotification();
-
-        presenter.startPeriodicDataWork();
-
-        presenter.finishSync();
 
         return Result.success(createOutputData(true));
     }

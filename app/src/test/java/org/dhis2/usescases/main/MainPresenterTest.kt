@@ -25,10 +25,11 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
@@ -68,6 +69,7 @@ class MainPresenterTest {
     private val deleteUserData: DeleteUserData = mock()
     private val syncIsPerfomedInteractor: SyncIsPerformedInteractor = mock()
     private val syncStatusController: SyncStatusController = mock()
+    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
     private val versionRepository: VersionRepository = mock()
     private val testingDispatcher = UnconfinedTestDispatcher()
     private val dispatcherProvider: DispatcherProvider =
@@ -102,6 +104,7 @@ class MainPresenterTest {
                 deleteUserData,
                 syncIsPerfomedInteractor,
                 syncStatusController,
+                syncBackgroundJobAction,
                 versionRepository,
                 dispatcherProvider,
                 forceToNotSynced,

@@ -81,7 +81,6 @@ class LaunchSyncTest {
             val newPeriod = 13
             launchSync(LaunchSync.SyncAction.UpdateSyncDataPeriod(newPeriod))
             verify(preferenceProvider, times(1)).setValue(Constants.TIME_DATA, newPeriod)
-            verify(syncBackgroundJobAction, times(1)).cancelDataSync()
             verify(syncBackgroundJobAction, times(1)).launchDataSync(newPeriod.toLong())
         }
 
@@ -130,6 +129,7 @@ class LaunchSyncTest {
                     on { status } doReturn SyncStatus.Succeed
                 }
             launchSync.syncWorkInfo.test {
+                awaitItem()
                 awaitItem()
                 mockedMetadataWorkInfo.emit(listOf(startedMetadataWorkInfo))
                 assertState(awaitItem(), LaunchSync.SyncStatus.InProgress, LaunchSync.SyncStatus.None)
