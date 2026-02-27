@@ -34,7 +34,11 @@ class SchedulingDialogUiTest : BaseTest() {
     val composeTestRule = createAndroidComposeRule<TestActivity>()
 
     private val viewModel: SchedulingViewModel = mock()
-    private val enrollment = Enrollment.builder().uid("enrollmentUid").build()
+    private val enrollment = Enrollment
+        .builder()
+        .uid("enrollmentUid")
+        .attributeOptionCombo("attributeOptionComboUid")
+        .build()
     private val overdueSubtitle = "Overdue subtitle"
 
 
