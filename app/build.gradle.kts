@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.text.SimpleDateFormat
@@ -16,48 +14,52 @@ plugins {
 }
 apply(from = "${project.rootDir}/jacoco/jacoco.gradle.kts")
 
+val getBuildDate by extra {
+    fun(): String {
+        return SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+    }
+}
+
+val getCommitHash by extra {
+    fun(): String {
+        return try {
+            val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
+            process.inputStream.bufferedReader().readText().trim()
+        } catch (e: Exception) {
+            "unknown"
+        }
+    }
+}
+
+val getBranchName by extra {
+    fun(): String {
+        val envBranchName = System.getenv("GITHUB_HEAD_REF")
+            ?: System.getenv("GITHUB_REF_NAME")
+
+        return try {
+            if (!envBranchName.isNullOrBlank()) {
+                return envBranchName.replace(Regex("[/\\\\:*?\"<>|]"), "-")
+            }
+            val process = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
+            val branchName = process.inputStream.bufferedReader().readText().trim()
+            branchName.replace(Regex("[/\\\\:*?\"<>|]"), "-")
+        } catch (e: Exception) {
+            "unknown"
+        }
+    }
+}
+
+base {
+    archivesName.set("dhis2-v" + libs.versions.vName.get())
+}
+
 android {
-
-    val getBuildDate by extra {
-        fun(): String {
-            return SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
-        }
-    }
-
-    val getCommitHash by extra {
-        fun(): String {
-            return try {
-                val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD")
-                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                    .redirectError(ProcessBuilder.Redirect.PIPE)
-                    .start()
-                process.inputStream.bufferedReader().readText().trim()
-            } catch (e: Exception) {
-                "unknown"
-            }
-        }
-    }
-
-    val getBranchName by extra {
-        fun(): String {
-            val envBranchName = System.getenv("GITHUB_HEAD_REF")
-                ?: System.getenv("GITHUB_REF_NAME")
-
-            return try {
-                if (!envBranchName.isNullOrBlank()) {
-                    return envBranchName.replace(Regex("[/\\\\:*?\"<>|]"), "-")
-                }
-                val process = ProcessBuilder("git", "rev-parse", "--abbrev-ref", "HEAD")
-                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                    .redirectError(ProcessBuilder.Redirect.PIPE)
-                    .start()
-                val branchName = process.inputStream.bufferedReader().readText().trim()
-                branchName.replace(Regex("[/\\\\:*?\"<>|]"), "-")
-            } catch (e: Exception) {
-                "unknown"
-            }
-        }
-    }
 
     signingConfigs {
         create("release") {
@@ -103,16 +105,12 @@ android {
         }
     }
 
+    compileSdk = libs.versions.sdk.get().toInt()
     namespace = "org.dhis2"
     testNamespace = "org.dhis2.test"
 
-    base {
-        archivesName.set("dhis2-v" + libs.versions.vName.get())
-    }
-
     defaultConfig {
         applicationId = "com.dhis2"
-        compileSdk = libs.versions.sdk.get().toInt()
         targetSdk = libs.versions.sdk.get().toInt()
         minSdk = libs.versions.minSdk.get().toInt()
         versionCode = libs.versions.vCode.get().toInt()
@@ -231,40 +229,40 @@ android {
         abortOnError = false
         checkReleaseBuilds = false
     }
+}
 
-    androidComponents {
-        onVariants { variant ->
-            val buildType = variant.buildType
-            val flavorName = variant.flavorName
+androidComponents {
+    onVariants { variant ->
+        val buildType = variant.buildType
+        val flavorName = variant.flavorName
 
-            // Apply suffix only for training flavor in release buildType
-            if (buildType == "release" && flavorName == "dhis2Training") {
-                variant.applicationId.set("${variant.applicationId.get()}.training")
-            }
-
-            variant.outputs.forEach { output ->
-                if (output is VariantOutputImpl) {
-                    val suffix = when {
-                        buildType == "release" && flavorName == "dhis2Training" -> "-training"
-                        buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
-                        buildType == "debug" -> "-${getBranchName()}"
-                        else -> ""
-                    }
-
-                    output.outputFileName = "dhis2-v${libs.versions.vName.get()}$suffix.apk"
-                }
-            }
-
+        // Apply suffix only for training flavor in release buildType
+        if (buildType == "release" && flavorName == "dhis2Training") {
+            variant.applicationId.set("${variant.applicationId.get()}.training")
         }
-    }
 
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-        arg("room.incremental", "true")
-        arg("room.expandProjection", "true")
-        // Enable debug logs
-        arg("ksp.logging.level", "DEBUG")
+        variant.outputs.forEach { output ->
+            if (output is VariantOutputImpl) {
+                val suffix = when {
+                    buildType == "release" && flavorName == "dhis2Training" -> "-training"
+                    buildType == "release" && flavorName == "dhis2PlayServices" -> "-googlePlay"
+                    buildType == "debug" -> "-${getBranchName()}"
+                    else -> ""
+                }
+
+                output.outputFileName = "dhis2-v${libs.versions.vName.get()}$suffix.apk"
+            }
+        }
+
     }
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.incremental", "true")
+    arg("room.expandProjection", "true")
+    // Enable debug logs
+    arg("ksp.logging.level", "DEBUG")
 }
 
 kotlin {

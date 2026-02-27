@@ -77,7 +77,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running unit tests'
-                    sh './gradlew --dependency-verification lenient testDebugUnitTest testDhis2DebugUnitTest --stacktrace --no-daemon'
+                    sh './gradlew --dependency-verification lenient testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest --stacktrace --no-daemon'
                 }
             }
         }
