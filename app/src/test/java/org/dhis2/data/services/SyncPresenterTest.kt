@@ -7,8 +7,6 @@ import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.SyncRepository
 import org.dhis2.data.service.SyncResult
 import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.utils.analytics.AnalyticsHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
@@ -35,8 +33,6 @@ class SyncPresenterTest {
 
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferences: PreferenceProvider = mock()
-    private val workManagerController: WorkManagerController = mock()
-    private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val syncRepository: SyncRepository = mock()
 
@@ -46,10 +42,8 @@ class SyncPresenterTest {
             SyncPresenterImpl(
                 d2,
                 preferences,
-                workManagerController,
-                analyticsHelper,
-                syncStatusController,
                 syncRepository,
+                syncStatusController,
             )
     }
 
