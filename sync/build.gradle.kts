@@ -1,10 +1,9 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
-    id("com.android.library")
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -13,22 +12,22 @@ kotlin {
 
     compilerOptions {
         freeCompilerArgs.add("-Xcontext-parameters")
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 
-    androidTarget {
-        compilations.all {
-            compileTaskProvider.configure {
-                compilerOptions {
-                    jvmTarget.set(JvmTarget.JVM_17)
-                }
-            }
+    androidLibrary {
+        namespace = "org.dhis2.mobile.sync"
+        compileSdk = libs.versions.sdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
+        compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+        androidResources { enable = true }
+        withHostTestBuilder {}.configure {}
+        withDeviceTestBuilder {}.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
+
     jvm("desktop")
-
-
 
     sourceSets {
 
@@ -64,20 +63,23 @@ kotlin {
             implementation(libs.dhis2.android.sdk)
             api(libs.analytics.timber)
             implementation(libs.androidx.work)
+            implementation(libs.androidx.compose.preview)
+            implementation(libs.androidx.compose.uitooling)
         }
 
-        androidUnitTest.dependencies {
-            implementation(kotlin("test"))
-            implementation(libs.junit.jupiter)
-            implementation(libs.test.turbine)
-            implementation(libs.test.kotlinCoroutines)
-            implementation(libs.test.mockitoKotlin)
+        getByName("androidHostTest") {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.junit.jupiter)
+                implementation(libs.test.turbine)
+                implementation(libs.test.kotlinCoroutines)
+                implementation(libs.test.mockitoKotlin)
+            }
         }
 
-        androidInstrumentedTest.dependencies {
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(libs.test.junit.ext)
-
             }
         }
 
@@ -95,30 +97,6 @@ compose.resources {
     generateResClass = always
 }
 
-android {
-    namespace = "org.dhis2.mobile.sync"
-    compileSdk = libs.versions.sdk.get().toInt()
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-        val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
-        buildConfigField("String", "SENTRY_DSN", "\"${bitriseSentryDSN}\"")
-    }
-    buildFeatures {
-        buildConfig = true
-    }
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    dependencies {
-        coreLibraryDesugaring(libs.desugar)
-    }
-}
-
 dependencies {
-    debugImplementation(libs.androidx.compose.preview)
-    debugImplementation(libs.androidx.compose.uitooling)
+    coreLibraryDesugaring(libs.desugar)
 }

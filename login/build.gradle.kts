@@ -1,10 +1,7 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
-    id("com.android.library")
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
 }
@@ -14,12 +11,16 @@ kotlin {
     compilerOptions {
         freeCompilerArgs.add("-Xcontext-parameters")
     }
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+
+    androidLibrary {
+        namespace = "org.dhis2.mobile.login"
+        compileSdk = libs.versions.sdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
+        compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
+        withHostTestBuilder {}.configure {}
+        withDeviceTestBuilder { sourceSetTreeName = "test" }.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
 
     jvm("desktop")
@@ -74,6 +75,20 @@ kotlin {
                 implementation(libs.koin.androidx.compose)
                 implementation(libs.androidx.activity.compose)
                 implementation(libs.androidx.browser)
+                implementation(libs.androidx.compose.uitooling)
+            }
+        }
+
+        getByName("androidHostTest") {
+            dependencies {
+                implementation(libs.junit.jupiter)
+            }
+        }
+
+        getByName("androidDeviceTest") {
+            dependencies {
+                implementation(libs.test.compose.ui.test.junit4.android)
+                implementation(libs.test.ui.test.manifest)
             }
         }
 
@@ -92,57 +107,6 @@ compose.resources {
     generateResClass = always
 }
 
-android {
-    namespace = "org.dhis2.mobile.login"
-    compileSdk = libs.versions.sdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-    }
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    buildTypes {
-        getByName("debug") {
-
-        }
-        getByName("release") {
-
-        }
-    }
-    buildFeatures.buildConfig = true
-
-    flavorDimensions += listOf("default")
-    productFlavors {
-        create("dhis2") {
-            buildConfigField("String", "LOGIN_TEST", "\"test\"")
-        }
-        create("dhis2PlayServices") {
-            buildConfigField("String", "LOGIN_TEST", "\"test\"")
-
-        }
-        create("dhis2Training") {
-            buildConfigField("String", "LOGIN_TEST", "\"test\"")
-        }
-    }
-}
-
 dependencies {
     coreLibraryDesugaring(libs.desugar)
-}
-
-dependencies {
-    testImplementation(libs.junit.jupiter)
-    debugImplementation(libs.androidx.compose.preview)
-    debugImplementation(libs.androidx.compose.uitooling)
-    androidTestImplementation(libs.test.compose.ui.test.junit4.android)
-    debugImplementation(libs.test.ui.test.manifest)
 }

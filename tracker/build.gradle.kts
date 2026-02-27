@@ -1,14 +1,22 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
-    id("com.android.library")
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    androidLibrary {
+        namespace = "org.dhis2.mobile.tracker"
+        compileSdk = libs.versions.sdk.get().toInt()
+        minSdk = libs.versions.minSdk.get().toInt()
+        compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+        androidResources { enable = true }
+        withHostTestBuilder {}.configure {}
+        withDeviceTestBuilder {}.configure {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
     }
 
@@ -62,14 +70,17 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(project(":commons"))
             implementation(project(":dhis2_android_maps"))
+            implementation(libs.androidx.compose.uitooling)
         }
 
-        androidUnitTest.dependencies {
-            implementation(kotlin("test"))
-            implementation(libs.junit.jupiter)
-            implementation(libs.test.turbine)
-            implementation(libs.test.kotlinCoroutines)
-            implementation(libs.test.mockitoKotlin)
+        getByName("androidHostTest") {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.junit.jupiter)
+                implementation(libs.test.turbine)
+                implementation(libs.test.kotlinCoroutines)
+                implementation(libs.test.mockitoKotlin)
+            }
         }
 
         val desktopMain by getting {
@@ -86,35 +97,6 @@ compose.resources {
     generateResClass = always
 }
 
-android {
-    namespace = "org.dhis2.mobile.tracker"
-    compileSdk = libs.versions.sdk.get().toInt()
-
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
-    sourceSets["main"].res.srcDirs("src/androidMain/res")
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    compileOptions {
-        isCoreLibraryDesugaringEnabled = true
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    dependencies {
-        coreLibraryDesugaring(libs.desugar)
-    }
-}
-
-
-
 dependencies {
-    testImplementation(libs.junit.jupiter)
-    debugImplementation(libs.androidx.compose.preview)
-    debugImplementation(libs.androidx.compose.uitooling)
+    coreLibraryDesugaring(libs.desugar)
 }

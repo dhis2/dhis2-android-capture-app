@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    kotlin("android")
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
 }
@@ -69,9 +68,9 @@ dependencies {
     testImplementation(libs.bundles.form.test)
     testImplementation(libs.test.junit)
     androidTestImplementation(libs.test.compose.ui.test)
-    androidTestApi(libs.test.mockitoCore)
-    androidTestApi(libs.test.mockitoKotlin)
-    androidTestApi(libs.test.dexmaker.mockitoInline)
+    androidTestImplementation(libs.test.mockitoCore)
+    androidTestImplementation(libs.test.mockitoKotlin)
+    androidTestImplementation(libs.test.dexmaker.mockitoInline)
     debugImplementation(libs.androidx.compose.uitooling)
     debugImplementation(libs.test.ui.test.manifest)
 

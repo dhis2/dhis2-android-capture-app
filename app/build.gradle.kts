@@ -7,8 +7,7 @@ import java.util.Date
 
 plugins {
     id("com.android.application")
-    kotlin("android")
-    kotlin("kapt")
+    alias(libs.plugins.legacy.kapt)
     id("com.google.devtools.ksp")
     id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
@@ -153,6 +152,9 @@ android {
                     "META-INF/gradle/incremental.annotation.processors"
                 )
             )
+            // Compose Multiplatform string resources from KMP modules can duplicate
+            // when multiple modules package the same locale strings.xml as Java resources.
+            pickFirsts.addAll(listOf("values*/**"))
         }
     }
 
@@ -271,6 +273,10 @@ kotlin {
         freeCompilerArgs.add("-Xcontext-parameters")
         freeCompilerArgs.add("-Xannotation-default-target=param-property")
     }
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 dependencies {
