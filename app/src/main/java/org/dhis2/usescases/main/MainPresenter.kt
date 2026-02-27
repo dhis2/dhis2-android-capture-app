@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
@@ -34,13 +35,14 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.SyncStatusData
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.data.service.workManager.WorkerItem
 import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.domain.invoke
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
@@ -73,6 +75,7 @@ class MainPresenter(
     private val deleteUserData: DeleteUserData,
     private val syncIsPerformedInteractor: SyncIsPerformedInteractor,
     private val syncStatusController: SyncStatusController,
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
     private val versionRepository: VersionRepository,
     val dispatcherProvider: DispatcherProvider,
     private val forceToNotSynced: Boolean,
@@ -252,8 +255,10 @@ class MainPresenter(
         view.showProgressDeleteNotification()
         try {
             repository.checkDeleteBiometricsPermission()
-            workManagerController.cancelAllWork()
-            syncStatusController.restore()
+            runBlocking {
+                syncBackgroundJobAction.cancelAll()
+                syncStatusController.restore()
+            }
             deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
             userManager.d2?.wipeModule()?.wipeEverything()
             userManager.d2
@@ -309,8 +314,7 @@ class MainPresenter(
 
     fun launchInitialDataSync() {
         checkVersionUpdate()
-        workManagerController
-            .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
+        syncBackgroundJobAction.launchDataSync(0)
     }
 
     fun observeDataSync(): StateFlow<SyncStatusData> = syncStatusController.observeDownloadProcess()

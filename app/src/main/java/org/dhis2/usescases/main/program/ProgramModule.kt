@@ -13,12 +13,13 @@ import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisProgramUtils
-import org.dhis2.data.service.SyncStatusController
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.hisp.dhis.android.core.D2
 
 @Module
 class ProgramModule(
     private val view: ProgramView,
+    private val syncStatusController: SyncStatusController,
 ) {
     @Provides
     @PerFragment
@@ -28,7 +29,6 @@ class ProgramModule(
         featureConfigRepository: FeatureConfigRepository,
         matomoAnalyticsController: MatomoAnalyticsController,
         filterManager: FilterManager,
-        syncStatusController: SyncStatusController,
         schedulerProvider: SchedulerProvider,
     ): ProgramViewModelFactory =
         ProgramViewModelFactory(

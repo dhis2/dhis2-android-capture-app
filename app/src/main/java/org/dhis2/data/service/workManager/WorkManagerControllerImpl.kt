@@ -30,14 +30,12 @@ package org.dhis2.data.service.workManager
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.await
 import org.dhis2.data.service.CheckVersionWorker
-import org.dhis2.data.service.SyncDataWorker
 import org.dhis2.data.service.SyncGranularWorker
 import java.util.concurrent.TimeUnit
 
@@ -52,19 +50,6 @@ class WorkManagerControllerImpl(
         } ?: run {
             workManager.enqueue(syncBuilder)
         }
-    }
-
-    override fun syncDataForWorker(
-        dataWorkerTag: String,
-        workName: String,
-    ) {
-        val workerTwoBuilder = OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
-        workerTwoBuilder
-            .addTag(dataWorkerTag)
-
-        workManager
-            .beginUniqueWork(workName, ExistingWorkPolicy.KEEP, workerTwoBuilder.build())
-            .enqueue()
     }
 
     override fun beginUniqueWork(workerItem: WorkerItem) {
@@ -118,7 +103,6 @@ class WorkManagerControllerImpl(
     private fun createOneTimeBuilder(workerItem: WorkerItem): OneTimeWorkRequest.Builder {
         val syncBuilder =
             when (workerItem.workerType) {
-                WorkerType.DATA -> OneTimeWorkRequest.Builder(SyncDataWorker::class.java)
                 WorkerType.GRANULAR -> OneTimeWorkRequest.Builder(SyncGranularWorker::class.java)
                 WorkerType.NEW_VERSION -> OneTimeWorkRequest.Builder(CheckVersionWorker::class.java)
             }
@@ -140,13 +124,6 @@ class WorkManagerControllerImpl(
 
         val syncBuilder =
             when (workerItem.workerType) {
-                WorkerType.DATA -> {
-                    PeriodicWorkRequest.Builder(
-                        SyncDataWorker::class.java,
-                        seconds,
-                        TimeUnit.SECONDS,
-                    )
-                }
                 WorkerType.GRANULAR -> {
                     PeriodicWorkRequest.Builder(
                         SyncGranularWorker::class.java,
@@ -154,6 +131,7 @@ class WorkManagerControllerImpl(
                         TimeUnit.SECONDS,
                     )
                 }
+
                 WorkerType.NEW_VERSION ->
                     PeriodicWorkRequest.Builder(
                         CheckVersionWorker::class.java,

@@ -4,10 +4,8 @@ import androidx.annotation.NonNull;
 
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.prefs.PreferenceProvider;
-import org.dhis2.commons.resources.ColorUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
-import org.dhis2.commons.resources.ResourceManager;
-import org.dhis2.data.service.SyncStatusController;
+import org.dhis2.mobile.sync.domain.SyncStatusController;
 import org.dhis2.usescases.main.program.ProgramViewModelMapper;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -22,9 +20,12 @@ public class TeiProgramListModule {
     private final TeiProgramListContract.View view;
     private final String teiUid;
 
-    TeiProgramListModule(TeiProgramListContract.View view, String teiUid) {
+    private final SyncStatusController syncStatusController;
+
+    TeiProgramListModule(TeiProgramListContract.View view, String teiUid, SyncStatusController syncStatusController) {
         this.view = view;
         this.teiUid = teiUid;
+        this.syncStatusController = syncStatusController;
     }
 
     @Provides
@@ -45,8 +46,7 @@ public class TeiProgramListModule {
 
     @Provides
     @PerActivity
-    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository,
-                                                        SyncStatusController syncStatusController) {
+    TeiProgramListContract.Interactor provideInteractor(@NonNull TeiProgramListRepository teiProgramListRepository) {
         return new TeiProgramListInteractor(teiProgramListRepository, syncStatusController);
     }
 

@@ -18,7 +18,8 @@ import org.dhis2.commons.matomo.Labels.Companion.CLICK_ON
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
-import org.dhis2.data.service.SyncStatusController
+import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.koin.core.component.KoinComponent
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -31,7 +32,8 @@ class ProgramViewModel internal constructor(
     private val filterManager: FilterManager,
     private val syncStatusController: SyncStatusController,
     private val schedulerProvider: SchedulerProvider,
-) : ViewModel() {
+) : ViewModel(),
+    KoinComponent {
     private val _programs = MutableLiveData<List<ProgramUiModel>>()
     val programs: LiveData<List<ProgramUiModel>> = _programs
     private val refreshData = PublishProcessor.create<Unit>()

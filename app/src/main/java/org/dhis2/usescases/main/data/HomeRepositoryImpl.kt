@@ -2,18 +2,17 @@ package org.dhis2.usescases.main.data
 
 import dhis2.org.analytics.charts.Charts
 import kotlinx.coroutines.withContext
-import org.dhis2.commons.Constants
 import org.dhis2.commons.bindings.dataSet
 import org.dhis2.commons.bindings.dataSetInstanceSummaries
 import org.dhis2.commons.bindings.isStockProgram
 import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.Preference.Companion.PIN
-import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.error.DomainErrorMapper
 import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.main.HomeItemData
 import org.dhis2.usescases.settings.deleteCache
 import org.dhis2.usescases.sync.WAS_INITIAL_SYNC_DONE
@@ -200,10 +199,5 @@ class HomeRepositoryImpl(
 
     override suspend fun restoreSyncStatus() {
         syncStatusController.restore()
-    }
-
-    override suspend fun syncData() {
-        workManagerController
-            .syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
     }
 }

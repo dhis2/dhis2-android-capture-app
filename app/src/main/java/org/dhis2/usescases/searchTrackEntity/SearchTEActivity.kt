@@ -230,6 +230,7 @@ class SearchTEActivity :
                     initialProgram,
                     context,
                     initialQuery,
+                    syncStatusController,
                 ),
             )
         searchComponent?.inject(this)
