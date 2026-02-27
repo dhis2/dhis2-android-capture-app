@@ -1,5 +1,7 @@
 package org.dhis2.mobile.login.main.di
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
 import org.dhis2.mobile.commons.auth.OpenIdController
 import org.dhis2.mobile.commons.auth.OpenIdControllerImpl
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
@@ -14,9 +16,13 @@ import org.koin.dsl.module
 internal actual val accountModule =
     module {
         factory<AccountRepository> {
+            val context = get<Context>()
+            val isDebug = context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
             AccountRepositoryImpl(
                 get(),
                 get(),
+                isDebug = isDebug,
+                isTrainingFlavor = getProperty("isTrainingFlavor", false),
             )
         }
 

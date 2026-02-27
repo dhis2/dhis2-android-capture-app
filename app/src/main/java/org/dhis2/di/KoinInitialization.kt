@@ -1,6 +1,7 @@
 package org.dhis2.di
 
 import android.app.Application
+import org.dhis2.BuildConfig
 import org.dhis2.android.rtsm.di.stockModule
 import org.dhis2.commons.di.filterModule
 import org.dhis2.commons.di.resourceManagerModule
@@ -25,6 +26,12 @@ object KoinInitialization {
         startKoin {
             androidLogger()
             androidContext(this@invoke)
+            properties(
+                mapOf(
+                    "sentryDsn" to BuildConfig.SENTRY_DSN,
+                    "isTrainingFlavor" to (BuildConfig.FLAVOR == "dhis2Training"),
+                ),
+            )
             modules(
                 serverModule(d2Configuration),
                 commonsModule,

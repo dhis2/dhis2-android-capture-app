@@ -1,7 +1,6 @@
 package org.dhis2.mobile.login.accounts.data.repository
 
 import org.dhis2.mobile.commons.providers.PreferenceProvider
-import org.dhis2.mobile.login.BuildConfig
 import org.dhis2.mobile.login.accounts.data.credentials.defaultTestingCredentials
 import org.dhis2.mobile.login.accounts.data.credentials.trainingTestingCredentials
 import org.dhis2.mobile.login.accounts.domain.model.AccountModel
@@ -12,6 +11,8 @@ import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 class AccountRepositoryImpl(
     private val d2: D2,
     private val preferenceProvider: PreferenceProvider,
+    private val isDebug: Boolean,
+    private val isTrainingFlavor: Boolean,
 ) : AccountRepository {
     override suspend fun getLoggedInAccounts(): List<AccountModel> =
         d2.userModule().accountManager().getAccounts().map {
@@ -20,9 +21,9 @@ class AccountRepositoryImpl(
 
     override suspend fun availableServers(): List<String> {
         val providedServers =
-            if (BuildConfig.DEBUG) {
+            if (isDebug) {
                 defaultTestingCredentials
-            } else if (BuildConfig.FLAVOR == "dhis2Training") {
+            } else if (isTrainingFlavor) {
                 trainingTestingCredentials
             } else {
                 emptyList()

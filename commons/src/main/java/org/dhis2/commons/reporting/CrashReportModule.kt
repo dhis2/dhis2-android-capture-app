@@ -11,5 +11,8 @@ import javax.inject.Singleton
 class CrashReportModule internal constructor() {
     @Provides
     @Singleton
-    fun provideCrashReportController(context: Context): CrashReportController = CrashReportControllerImpl(context)
+    fun provideCrashReportController(context: Context): CrashReportController = CrashReportControllerImpl(
+        context = context,
+        sentryDsn = "",
+    )
 }

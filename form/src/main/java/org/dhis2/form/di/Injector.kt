@@ -237,7 +237,7 @@ object Injector {
     private fun provideEnrollmentObjectRepository(enrollmentUid: String): EnrollmentObjectRepository =
         provideD2().enrollmentModule().enrollments().uid(enrollmentUid)
 
-    private fun provideCrashReportController(context: Context) = CrashReportControllerImpl(context)
+    private fun provideCrashReportController(context: Context) = CrashReportControllerImpl(context, sentryDsn = "")
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
