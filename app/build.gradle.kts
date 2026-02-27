@@ -117,7 +117,6 @@ android {
         versionName = libs.versions.vName.get()
         testInstrumentationRunner = "org.dhis2.Dhis2Runner"
         vectorDrawables.useSupportLibrary = true
-        multiDexEnabled = true
 
         val bitriseSentryDSN = System.getenv("SENTRY_DSN") ?: ""
 
@@ -300,7 +299,6 @@ dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.legacy.support.v4)
-    implementation(libs.androidx.multidex)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.work)
     implementation(libs.androidx.workrx)

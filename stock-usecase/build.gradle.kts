@@ -19,7 +19,6 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         testOptions.targetSdk = libs.versions.sdk.get().toInt()
-        multiDexEnabled = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
