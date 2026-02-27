@@ -152,11 +152,6 @@ public class App extends android.app.Application implements Components, Lifecycl
                 .apply();
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-    }
-
     private void setUpAppComponent() {
         appComponent = prepareAppComponent().build();
         appComponent.inject(this);
