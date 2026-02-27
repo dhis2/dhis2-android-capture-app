@@ -4,8 +4,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.dhis2.mobile.commons.coroutine.Dispatcher
@@ -22,6 +22,7 @@ import org.dhis2.tracker.search.ui.viewmodel.SearchParametersViewModel
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,9 +34,9 @@ class SearchParametersIntegrationTest {
     private val testDispatcher = StandardTestDispatcher()
     private val dispatcher =
         Dispatcher(
-            io = UnconfinedTestDispatcher(),
-            main = Dispatchers.Unconfined,
-            default = Dispatchers.Unconfined,
+            io = testDispatcher,
+            main = testDispatcher,
+            default = testDispatcher,
         )
 
     private val repository: SearchParametersRepository = mock()
@@ -51,9 +52,14 @@ class SearchParametersIntegrationTest {
         viewModel = SearchParametersViewModel(resourceProvider)
     }
 
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun `given min character limit is configured, when user enters exactly min characters, then search proceeds successfully`() =
-        runTest {
+        runTest(testDispatcher) {
             // Given
             val min = 2
             val teiTypeUid = "teiType123"
@@ -85,7 +91,7 @@ class SearchParametersIntegrationTest {
 
     @Test
     fun `given min character limit, when user enters fewer than min characters, then search fails and error is shown`() =
-        runTest {
+        runTest(testDispatcher) {
             // Given
             val min = 3
             val teiTypeUid = "teiType123"
