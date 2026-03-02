@@ -121,6 +121,7 @@ internal class DataSetTableViewModel(
                 } else {
                     dataSetInstanceData.dataSetSections.firstOrNull()?.uid ?: NO_SECTION_UID
                 }
+            val initialDimensions = overwrittenWidths(sectionToLoad)
             withContext(dispatcher.main()) {
                 _dataSetScreenState.value =
                     DataSetScreenState.Loaded(
@@ -137,7 +138,7 @@ internal class DataSetTableViewModel(
                             DataSetSectionTable(
                                 sectionToLoad,
                                 emptyList(),
-                                overridingDimensions = overwrittenWidths(sectionToLoad),
+                                overridingDimensions = initialDimensions,
                                 loading = true,
                             ),
                         initialSection = dataSetInstanceData.initialSectionToLoad,
@@ -146,6 +147,7 @@ internal class DataSetTableViewModel(
             }
 
             val sectionTable = async { sectionData(sectionToLoad) }
+            val loadedDimensions = overwrittenWidths(sectionToLoad)
 
             withContext(dispatcher.main()) {
                 _dataSetScreenState.update {
@@ -163,7 +165,7 @@ internal class DataSetTableViewModel(
                                     DataSetSectionTable(
                                         sectionToLoad,
                                         sectionTable.await(),
-                                        overridingDimensions = overwrittenWidths(sectionToLoad),
+                                        overridingDimensions = loadedDimensions,
                                         loading = false,
                                     ),
                             )
@@ -177,7 +179,7 @@ internal class DataSetTableViewModel(
                                     DataSetSectionTable(
                                         sectionToLoad,
                                         sectionTable.await(),
-                                        overridingDimensions = overwrittenWidths(sectionToLoad),
+                                        overridingDimensions = loadedDimensions,
                                         loading = true,
                                     ),
                                 initialSection = initialSection,
@@ -200,6 +202,7 @@ internal class DataSetTableViewModel(
                         ?.indexOfFirst { it.uid == sectionUid }
                 CoroutineTracker.increment()
 
+                val initialDimensions = overwrittenWidths(sectionUid)
                 withContext(dispatcher.main()) {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
@@ -224,7 +227,7 @@ internal class DataSetTableViewModel(
                                     it.dataSetSectionTable.copy(
                                         id = sectionUid,
                                         tableModels = emptyList(),
-                                        overridingDimensions = overwrittenWidths(sectionUid),
+                                        overridingDimensions = initialDimensions,
                                         loading = true,
                                     ),
                                 selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
@@ -237,6 +240,7 @@ internal class DataSetTableViewModel(
                 }
 
                 val sectionData = async { sectionData(sectionUid) }
+                val loadedDimensions = overwrittenWidths(sectionUid)
                 withContext(dispatcher.main()) {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
@@ -245,7 +249,7 @@ internal class DataSetTableViewModel(
                                     it.dataSetSectionTable.copy(
                                         id = sectionUid,
                                         tableModels = sectionData.await(),
-                                        overridingDimensions = overwrittenWidths(sectionUid),
+                                        overridingDimensions = loadedDimensions,
                                         loading = false,
                                     ),
                                 initialSection = selectedSectionIndex ?: 0,
