@@ -688,9 +688,9 @@
     <string name="dataset_overview">Detaily</string>
     <string name="dataset_comments">Komentáře</string>
     <string name="saved">Uloženo!</string>
-    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
+    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat\?</string>
     <string name="validation_success_title">Všechno vypadá dobře!</string>
-    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
+    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat\?</string>
     <string name="dataset_completed">Označit jak dokončené</string>
     <string name="name">Název</string>
     <string name="formula">Vzorec</string>
