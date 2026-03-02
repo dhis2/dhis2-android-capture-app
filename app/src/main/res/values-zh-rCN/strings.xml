@@ -804,7 +804,7 @@
     <string name="edition_no_write_access">您无权编辑此数据</string>
     <string name="event_date_not_in_orgunit_range">此数据不可修改，因为单位部门已关闭</string>
     <string name="edition_no_catcombo_access">您无权编辑此数据</string>
-    <string name="edition_orgunit_capture_scope">您无法编辑此机构的数据</string>
+    <string name="edition_orgunit_user_scope">您无法编辑此机构的数据</string>
     <string name="reload_list">重置搜索</string>
     <string name="error_tei_online_search_title">网上搜索返回如下信息：</string>
     <string name="program_rules_loop_warning_title">项目规则警告</string>
