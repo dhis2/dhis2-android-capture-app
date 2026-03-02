@@ -2,11 +2,17 @@ package org.dhis2.data.server
 
 import io.reactivex.Single
 import org.dhis2.BuildConfig
+import org.dhis2.R
+import org.dhis2.commons.resources.ColorUtils
+import org.dhis2.commons.resources.paletteThemes
+import org.dhis2.mobile.commons.color.ColorMatcher
+import org.dhis2.mobile.commons.color.PaletteColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.SystemSetting
 
 class ServerSettingsRepository(
     private val d2: D2,
+    private val colorUtils: ColorUtils,
 ) {
     fun getTheme(): Single<Pair<String?, Int>> =
         d2
@@ -14,9 +20,10 @@ class ServerSettingsRepository(
             .systemSetting()
             .get()
             .map { systemSettings ->
-                val style =
+                val customColor =
                     systemSettings
                         .firstOrNull {
+                            // TODO replace by SystemSetting.SystemSettingKey.CUSTOM_COLOR
                             it.key() == SystemSetting.SystemSettingKey.STYLE
                         }?.value()
                 val flag =
@@ -24,8 +31,32 @@ class ServerSettingsRepository(
                         .firstOrNull {
                             it.key() == SystemSetting.SystemSettingKey.FLAG
                         }?.value()
-                Pair(flag, SystemStyleMapper(style))
+
+                // TODO CustomColor will be a string with a hexadecimal color like "#007DEB"
+                val customColorPalette = PaletteColor.fromHex("#3A4941")
+                val closestColor =
+                    ColorMatcher.findClosest(
+                        selectedR = customColorPalette.r,
+                        selectedG = customColorPalette.g,
+                        selectedB = customColorPalette.b,
+                        palette =
+                            paletteThemes.map { (color, _) ->
+                                PaletteColor.fromHex(color)
+                            },
+                    )
+
+                Pair(flag, getThemeFromClosestColor(closestColor))
             }
+
+    private fun getThemeFromClosestColor(color: PaletteColor?): Int =
+        color?.let {
+            val serverTheme = colorUtils.getThemeFromColor(it.hex)
+            if (serverTheme != -1) {
+                serverTheme
+            } else {
+                R.style.AppTheme
+            }
+        } ?: R.style.AppTheme
 
     fun allowScreenShare(): Boolean =
         BuildConfig.DEBUG ||
