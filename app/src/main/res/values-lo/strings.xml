@@ -773,7 +773,7 @@
     <string name="edition_no_write_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
     <string name="event_date_not_in_orgunit_range">ຂໍ້ມູນນີ້ບໍ່ສາມາດແກ້ໄຂໄດ້ເນື່ອງຈາກຫົວຫນ່ວຍການຈັດຕັ້ງຖືກປິດໃວ້ຢູ່</string>
     <string name="edition_no_catcombo_access">ທ່ານບໍ່ໄດ້ຮັບອານຸຍາດໃນການແກ້ໄຂຂໍ້ມູນນີ້</string>
-    <string name="edition_orgunit_capture_scope">ທ່ານບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນຈາກຫົວຫນ່ວຍການຈັດຕັ້ງນີ້ໄດ້</string>
+    <string name="edition_orgunit_user_scope">ທ່ານບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນຈາກຫົວຫນ່ວຍການຈັດຕັ້ງນີ້ໄດ້</string>
     <string name="reload_list">ລີເຊັດການຄົ້ນຫາ</string>
     <string name="error_tei_online_search_title">ການຄົ້ນຫາອອນໄລນ໌ສົ່ງຂໍ້ຄວາມຕໍ່ໄປນີ້:</string>
     <string name="program_rules_loop_warning_title">ຂໍ້ຄວນລະວັງກົດຂອງສາຍງານ</string>

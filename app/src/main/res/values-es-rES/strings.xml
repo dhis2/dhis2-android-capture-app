@@ -775,7 +775,7 @@
     <string name="edition_no_write_access">No tiene permisos de edición para estos datos.</string>
     <string name="event_date_not_in_orgunit_range">Los datos no son editables por que la unidad organizativa está cerrada.</string>
     <string name="edition_no_catcombo_access">No tiene permisos de edición para estos datos.</string>
-    <string name="edition_orgunit_capture_scope">No puede editar datos en esta unidad organizativa.</string>
+    <string name="edition_orgunit_user_scope">No puede editar datos en esta unidad organizativa.</string>
     <string name="reload_list">Reiniciar búsqueda</string>
     <string name="error_tei_online_search_title">La búsqueda online a devuelto este mensaje:</string>
     <string name="program_rules_loop_warning_title">Advertencia de reglas del programa</string>

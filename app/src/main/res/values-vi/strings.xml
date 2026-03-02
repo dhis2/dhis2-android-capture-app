@@ -804,7 +804,7 @@
     <string name="edition_no_write_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
     <string name="event_date_not_in_orgunit_range">Dữ liệu này không thể sửa bởi vì đơn vị đã bị đóng</string>
     <string name="edition_no_catcombo_access">Bạn không có quyền chỉnh sửa dữ liệu này</string>
-    <string name="edition_orgunit_capture_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
+    <string name="edition_orgunit_user_scope">Bạn không thể chỉnh sửa dữ liệu từ đơn vị này</string>
     <string name="reload_list">Đặt lại Tìm Kiếm</string>
     <string name="error_tei_online_search_title">Tìm kiếm trực tuyến trả về tin nhắn sau: </string>
     <string name="program_rules_loop_warning_title">Cảnh báo quy tắc chương trình</string>

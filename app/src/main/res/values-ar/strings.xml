@@ -799,7 +799,7 @@
     <string name="edition_no_write_access">ليس لديك إذن لتحرير هذه البيانات</string>
     <string name="event_date_not_in_orgunit_range">هذه البيانات غير قابلة للتعديل لأنه تم اغلاق الوحدة التنظيمية</string>
     <string name="edition_no_catcombo_access">ليس لديك إذن لتحرير هذه البيانات</string>
-    <string name="edition_orgunit_capture_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
+    <string name="edition_orgunit_user_scope">لا يمكنك تحرير البيانات من هذه الوحدة التنظيمية</string>
     <string name="reload_list">إعادة البحث</string>
     <string name="error_tei_online_search_title">البحث عبر الإتصال بالسيرفر عن طريق الإنترنت ارجع الرسالة التالية:</string>
     <string name="program_rules_loop_warning_title">تحذير قواعد البرنامج</string>

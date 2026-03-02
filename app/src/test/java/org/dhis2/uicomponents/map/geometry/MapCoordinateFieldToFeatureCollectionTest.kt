@@ -76,6 +76,7 @@ class MapCoordinateFieldToFeatureCollectionTest {
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()
@@ -104,6 +105,7 @@ class MapCoordinateFieldToFeatureCollectionTest {
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()
@@ -132,6 +134,7 @@ class MapCoordinateFieldToFeatureCollectionTest {
                     .builder()
                     .uid("enrollmentUid")
                     .trackedEntityInstance("teiUid")
+                    .attributeOptionCombo("attributeOptionComboUid")
                     .build(),
                 Geometry
                     .builder()

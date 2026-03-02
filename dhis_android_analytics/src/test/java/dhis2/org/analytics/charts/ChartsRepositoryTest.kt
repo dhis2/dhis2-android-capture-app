@@ -80,6 +80,7 @@ class ChartsRepositoryTest {
                 .uid("enrollmentUid")
                 .program("programUid")
                 .trackedEntityInstance(null)
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
         val result = repository.getAnalyticsForEnrollment("enrollmentUid")
         assertTrue(
@@ -539,6 +540,7 @@ class ChartsRepositoryTest {
                 .uid("enrollmentUid")
                 .program("programUid")
                 .trackedEntityInstance("teiUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
     }
 

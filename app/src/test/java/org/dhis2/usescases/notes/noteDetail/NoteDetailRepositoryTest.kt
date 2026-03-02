@@ -153,6 +153,11 @@ class NoteDetailRepositoryTest {
                 .eq(teiUid)
                 .one()
                 .blockingGet(),
-        ) doReturn Enrollment.builder().uid("EnrollmentUid").build()
+        ) doReturn
+            Enrollment
+                .builder()
+                .uid("EnrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
+                .build()
     }
 }

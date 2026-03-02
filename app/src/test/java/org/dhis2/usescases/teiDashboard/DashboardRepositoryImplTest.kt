@@ -102,6 +102,7 @@ class DashboardRepositoryImplTest {
                 .uid("enrollment_1")
                 .deleted(true)
                 .trackedEntityInstance(teiUid)
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build()
         val enrollment2 =
             getMockingEnrollment()
@@ -588,6 +589,7 @@ class DashboardRepositoryImplTest {
         Enrollment
             .builder()
             .uid("enrollmentUid")
+            .attributeOptionCombo("attributeOptionComboUid")
             .build()
 
     private fun getMockSingleEvent(): Event =

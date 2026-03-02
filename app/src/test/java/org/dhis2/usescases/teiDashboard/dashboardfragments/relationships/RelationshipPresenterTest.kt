@@ -245,6 +245,7 @@ class RelationshipPresenterTest {
             Enrollment
                 .builder()
                 .uid("enrollmentUid")
+                .attributeOptionCombo("attributeOptionComboUid")
                 .build(),
         )
 

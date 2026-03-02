@@ -124,6 +124,7 @@ class TEIDetailMapperTest {
             .status(EnrollmentStatus.COMPLETED)
             .program("Program1Uid")
             .organisationUnit("orgUnitUid")
+            .attributeOptionCombo("attributeOptionComboUid")
             .build()
 
     private fun setPrograms() =
