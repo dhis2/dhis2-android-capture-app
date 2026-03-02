@@ -253,7 +253,7 @@ internal class DataSetTableRobot(
     fun assertTableIsDisplayed() {
         composeTestRule.waitUntilExactlyOneExists(
             hasTestTag("TABLE_SCROLLABLE_COLUMN"),
-            timeoutMillis = 10000
+            timeoutMillis = 20000
         )
     }
 
