@@ -59,7 +59,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.model.RegExValidations
 @Composable
 fun FieldProvider(
     modifier: Modifier,
-    inputStyle: InputStyle = InputStyle.DataInputStyle(),
+    inputStyle: InputStyle = InputStyle.DarkInputStyle(),
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,

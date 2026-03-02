@@ -28,7 +28,7 @@ internal sealed class CellSelectionState(
         val inputType: InputType,
         private val inputExtra: InputExtra,
         val inputShellState: InputShellState,
-        val inputStyle: InputStyle = InputStyle.DataInputStyle(),
+        val inputStyle: InputStyle = InputStyle.DarkInputStyle(),
         val supportingText: List<SupportingTextData>?,
         val legendData: LegendData?,
         val isRequired: Boolean,

@@ -83,7 +83,7 @@ fun TwoFADisableScreen(
             )
             InputSegmentedShell(
                 segmentCount = 6,
-                inputStyle = InputStyle.SegmentedInputStyle(),
+                inputStyle = InputStyle.BrightInputStyle(),
                 supportingTextData =
                     if (twoFADisableUiState.state == InputShellState.ERROR) {
                         SupportingTextData(

@@ -252,7 +252,7 @@ fun TwoFAAuthStepThree(
             )
             InputSegmentedShell(
                 segmentCount = 6,
-                inputStyle = InputStyle.SegmentedInputStyle(),
+                inputStyle = InputStyle.BrightInputStyle(),
                 supportingTextData =
                     enableUiState.enableErrorMessage?.let {
                         SupportingTextData(
