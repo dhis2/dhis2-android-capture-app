@@ -1032,13 +1032,13 @@ internal class DataSetTableViewModelTest : KoinTest {
                     ),
                 )
 
-                // Loaded state emitted after section data is fetched
+                // Resize update arrives before section loading completes (loading still true)
                 with(awaitItem()) {
                     assertTrue(this is DataSetScreenState.Loaded)
-                    assertFalse((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                    assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
                 }
 
-                // State updated by resize — dimensions must not be reverted
+                // Final loaded state — resize dimensions must not be reverted
                 with(awaitItem()) {
                     assertTrue(this is DataSetScreenState.Loaded)
                     val loaded = this as DataSetScreenState.Loaded
