@@ -85,4 +85,5 @@
     <string name="tracked_entity_type_details">%s details</string>
     <string name="sync_dialog_action_not_now">Not now</string>
     <string name="coordinates">Coordinates</string>
+    <string name="show_less">Show less</string>
     </resources>
