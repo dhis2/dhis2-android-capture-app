@@ -971,10 +971,20 @@ internal class DataSetTableViewModelTest : KoinTest {
                     assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
                     assertTrue(this.currentSection() == "section_uid1")
                 }
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                    assertTrue(this.currentSection() == "section_uid1")
+                }
                 viewModel.onSectionSelected("section_uid2")
                 with(awaitItem()) {
                     assertTrue(this is DataSetScreenState.Loaded)
                     assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                    assertTrue(this.currentSection() == "section_uid2")
+                }
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
                     assertTrue(this.currentSection() == "section_uid2")
                 }
                 viewModel.onSectionSelected("section_uid1")
