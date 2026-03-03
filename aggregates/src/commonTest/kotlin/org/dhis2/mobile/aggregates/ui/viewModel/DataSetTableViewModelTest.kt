@@ -44,6 +44,7 @@ import org.dhis2.mobile.aggregates.model.DataSetRenderingConfig
 import org.dhis2.mobile.aggregates.model.DataSetSection
 import org.dhis2.mobile.aggregates.model.NonEditableReason
 import org.dhis2.mobile.aggregates.model.PivoteMode
+import org.dhis2.mobile.aggregates.model.ResizeSaveDimension
 import org.dhis2.mobile.aggregates.model.TableGroup
 import org.dhis2.mobile.aggregates.model.TextAlignment
 import org.dhis2.mobile.aggregates.model.ValidationResultStatus
@@ -53,6 +54,7 @@ import org.dhis2.mobile.aggregates.model.ValidationRulesConfiguration.OPTIONAL
 import org.dhis2.mobile.aggregates.model.ValidationRulesResult
 import org.dhis2.mobile.aggregates.ui.dispatcher.Dispatcher
 import org.dhis2.mobile.aggregates.ui.inputs.CellIdGenerator
+import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.dhis2.mobile.aggregates.ui.inputs.TableId
 import org.dhis2.mobile.aggregates.ui.inputs.TableIdType
 import org.dhis2.mobile.aggregates.ui.provider.DataSetModalDialogProvider
@@ -84,8 +86,6 @@ import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.mock.MockProvider
 import org.koin.test.mock.declareMock
-import org.dhis2.mobile.aggregates.model.ResizeSaveDimension
-import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
