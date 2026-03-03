@@ -575,22 +575,20 @@ internal class DataSetTableViewModel(
     }
 
     private fun updateFileLoadingState(state: UploadFileState) {
-        viewModelScope.launch(dispatcher.main()) {
-            _dataSetScreenState.update {
-                (it as? DataSetScreenState.Loaded)?.copy(
-                    selectedCellInfo =
-                        if (it.selectedCellInfo is CellSelectionState.InputDataUiState) {
-                            it.selectedCellInfo.copy(
-                                inputExtra =
-                                    it.selectedCellInfo.fileExtras().copy(
-                                        fileState = state,
-                                    ),
-                            )
-                        } else {
-                            it.selectedCellInfo
-                        },
-                ) ?: it
-            }
+        _dataSetScreenState.update {
+            (it as? DataSetScreenState.Loaded)?.copy(
+                selectedCellInfo =
+                    if (it.selectedCellInfo is CellSelectionState.InputDataUiState) {
+                        it.selectedCellInfo.copy(
+                            inputExtra =
+                                it.selectedCellInfo.fileExtras().copy(
+                                    fileState = state,
+                                ),
+                        )
+                    } else {
+                        it.selectedCellInfo
+                    },
+            ) ?: it
         }
     }
 
