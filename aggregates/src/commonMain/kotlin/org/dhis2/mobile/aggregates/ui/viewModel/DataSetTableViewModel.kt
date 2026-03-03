@@ -197,12 +197,11 @@ internal class DataSetTableViewModel(
         if (_dataSetScreenState.value.currentSection() == sectionUid) return
         sectionChangeJob?.takeIf { it.isActive }?.cancel()
         sectionChangeJob =
-            viewModelScope.launch(dispatcher.io()) {
+            launchUseCase(dispatcher.io()) {
                 val selectedSectionIndex =
                     (dataSetScreenState.value as? DataSetScreenState.Loaded)
                         ?.dataSetSections
                         ?.indexOfFirst { it.uid == sectionUid }
-                CoroutineTracker.increment()
 
                 val initialDimensions = overwrittenWidths(sectionUid)
                 withContext(dispatcher.main()) {
@@ -261,7 +260,6 @@ internal class DataSetTableViewModel(
                         }
                     }
                 }
-                CoroutineTracker.decrement()
             }
     }
 
