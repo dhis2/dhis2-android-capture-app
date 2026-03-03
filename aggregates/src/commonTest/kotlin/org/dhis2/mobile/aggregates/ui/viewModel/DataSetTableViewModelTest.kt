@@ -84,14 +84,18 @@ import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
 import org.koin.test.mock.MockProvider
 import org.koin.test.mock.declareMock
+import org.dhis2.mobile.aggregates.model.ResizeSaveDimension
+import org.dhis2.mobile.aggregates.ui.inputs.ResizeAction
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doReturnConsecutively
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class DataSetTableViewModelTest : KoinTest {
@@ -987,6 +991,62 @@ internal class DataSetTableViewModelTest : KoinTest {
                     assertTrue(this is DataSetScreenState.Loaded)
                     assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
                     assertTrue(this.currentSection() == "section_uid1")
+                }
+                expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `resize during section loading should not be reverted by final loaded state`() =
+        runTest {
+            val resizedWidth = 150f
+            val tableId = "table_id"
+            val sectionId = "section_uid2"
+
+            var savedRowHeaderWidths: Map<String, Float> = emptyMap()
+            whenever(computeResizeAction(any<ResizeAction.RowHeaderChanged>())) doAnswer {
+                savedRowHeaderWidths = savedRowHeaderWidths + mapOf(tableId to resizedWidth)
+                null
+            }
+            whenever(computeResizeAction(any<ResizeAction.GetRowHeaderSavedWidth>())) doAnswer {
+                ResizeSaveDimension.RowHeader(savedRowHeaderWidths.takeIf { it.isNotEmpty() })
+            }
+
+            viewModel.dataSetScreenState.test {
+                awaitInitialization()
+
+                viewModel.onSectionSelected(sectionId)
+
+                // Intermediate loading state
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                }
+
+                // Perform resize while section is loading
+                viewModel.onTableResize(
+                    ResizeAction.RowHeaderChanged(
+                        tableId = tableId,
+                        sectionId = sectionId,
+                        newValue = resizedWidth,
+                    ),
+                )
+
+                // Loaded state emitted after section data is fetched
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    assertFalse((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                }
+
+                // State updated by resize — dimensions must not be reverted
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    val loaded = this as DataSetScreenState.Loaded
+                    assertFalse(loaded.dataSetSectionTable.loading)
+                    assertEquals(
+                        mapOf(tableId to resizedWidth),
+                        loaded.dataSetSectionTable.overridingDimensions.overwrittenRowHeaderWidth,
+                    )
                 }
                 expectNoEvents()
             }
