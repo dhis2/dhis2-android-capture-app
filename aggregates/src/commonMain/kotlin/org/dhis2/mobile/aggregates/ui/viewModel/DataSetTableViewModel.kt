@@ -147,7 +147,7 @@ internal class DataSetTableViewModel(
             }
 
             val sectionTable = async { sectionData(sectionToLoad) }
-            val loadedDimensions = overwrittenWidths(sectionToLoad)
+            val fallbackDimensions = overwrittenWidths(sectionToLoad)
 
             withContext(dispatcher.main()) {
                 _dataSetScreenState.update {
@@ -165,7 +165,8 @@ internal class DataSetTableViewModel(
                                     DataSetSectionTable(
                                         sectionToLoad,
                                         sectionTable.await(),
-                                        overridingDimensions = loadedDimensions,
+                                        // Preserve any resize the user applied while loading
+                                        overridingDimensions = it.dataSetSectionTable.overridingDimensions,
                                         loading = false,
                                     ),
                             )
@@ -179,7 +180,8 @@ internal class DataSetTableViewModel(
                                     DataSetSectionTable(
                                         sectionToLoad,
                                         sectionTable.await(),
-                                        overridingDimensions = loadedDimensions,
+                                        // No existing state to preserve, use dimensions from storage
+                                        overridingDimensions = fallbackDimensions,
                                         loading = true,
                                     ),
                                 initialSection = initialSection,
@@ -240,7 +242,6 @@ internal class DataSetTableViewModel(
                 }
 
                 val sectionData = async { sectionData(sectionUid) }
-                val loadedDimensions = overwrittenWidths(sectionUid)
                 withContext(dispatcher.main()) {
                     _dataSetScreenState.update {
                         if (it is DataSetScreenState.Loaded) {
@@ -249,7 +250,8 @@ internal class DataSetTableViewModel(
                                     it.dataSetSectionTable.copy(
                                         id = sectionUid,
                                         tableModels = sectionData.await(),
-                                        overridingDimensions = loadedDimensions,
+                                        // Preserve any resize the user applied while loading
+                                        overridingDimensions = it.dataSetSectionTable.overridingDimensions,
                                         loading = false,
                                     ),
                                 initialSection = selectedSectionIndex ?: 0,
