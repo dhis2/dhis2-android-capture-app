@@ -118,6 +118,10 @@ public class App extends android.app.Application implements Components, Lifecycl
 
     public void initCrashController() {
         if (areTrackingPermissionGranted()) {
+            if (BuildConfig.SENTRY_DSN.isEmpty()) {
+                Timber.w("Sentry DSN is empty. Skipping Sentry initialization.");
+                return;
+            }
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
                 options.setAnrReportInDebug(true);

@@ -19,8 +19,13 @@ class CrashReportControllerImpl(
     private val isDebug: Boolean = context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0,
 ) : CrashReportController {
     override fun init() {
+        val resolvedDsn = resolveSentryDsn()
+        if (resolvedDsn.isBlank()) {
+            Timber.w("Sentry DSN is empty. Skipping Sentry initialization.")
+            return
+        }
         SentryAndroid.init(context) { options: SentryAndroidOptions? ->
-            options!!.setDsn(sentryDsn)
+            options!!.setDsn(resolvedDsn)
             options.isAnrReportInDebug = true
             options.beforeSend =
                 BeforeSendCallback { event, _ ->
@@ -99,4 +104,23 @@ class CrashReportControllerImpl(
                 Timber.d("Tracking is disabled")
             }
         }
+
+    private fun resolveSentryDsn(): String {
+        if (sentryDsn.isNotBlank()) {
+            return sentryDsn
+        }
+
+        return try {
+            val buildConfigClass = Class.forName("${context.packageName}.BuildConfig")
+            (buildConfigClass.getField("SENTRY_DSN").get(null) as? String).orEmpty()
+        } catch (_: ClassNotFoundException) {
+            ""
+        } catch (_: NoSuchFieldException) {
+            ""
+        } catch (_: IllegalAccessException) {
+            ""
+        } catch (_: SecurityException) {
+            ""
+        }
+    }
 }
