@@ -147,47 +147,25 @@ internal class DataSetTableViewModel(
             }
 
             val tableModels = sectionData(sectionToLoad)
-            val fallbackDimensions = overwrittenWidths(sectionToLoad)
 
             withContext(dispatcher.main()) {
                 _dataSetScreenState.update {
-                    when (it) {
-                        is DataSetScreenState.Loaded ->
-                            it.copy(
-                                dataSetDetails =
-                                    dataSetInstanceData.dataSetDetails.copy(
-                                        customTitle =
-                                            dataSetInstanceData.dataSetDetails.customTitle.copy(
-                                                header = dataSetSectionTitle,
-                                            ),
+                    (it as? DataSetScreenState.Loaded)?.copy(
+                        dataSetDetails =
+                            dataSetInstanceData.dataSetDetails.copy(
+                                customTitle =
+                                    dataSetInstanceData.dataSetDetails.customTitle.copy(
+                                        header = dataSetSectionTitle,
                                     ),
-                                dataSetSectionTable =
-                                    DataSetSectionTable(
-                                        sectionToLoad,
-                                        tableModels,
-                                        // Preserve any resize the user applied while loading
-                                        overridingDimensions = it.dataSetSectionTable.overridingDimensions,
-                                        loading = false,
-                                    ),
-                            )
-
-                        DataSetScreenState.Loading ->
-                            DataSetScreenState.Loaded(
-                                dataSetDetails = dataSetInstanceData.dataSetDetails,
-                                dataSetSections = dataSetInstanceData.dataSetSections,
-                                renderingConfig = dataSetInstanceData.dataSetRenderingConfig,
-                                dataSetSectionTable =
-                                    DataSetSectionTable(
-                                        sectionToLoad,
-                                        tableModels,
-                                        // No existing state to preserve, use dimensions from storage
-                                        overridingDimensions = fallbackDimensions,
-                                        loading = true,
-                                    ),
-                                initialSection = initialSection,
-                                selectedCellInfo = CellSelectionState.Default(TableSelection.Unselected()),
-                            )
-                    }
+                            ),
+                        dataSetSectionTable =
+                            DataSetSectionTable(
+                                sectionToLoad,
+                                tableModels,
+                                overridingDimensions = it.dataSetSectionTable.overridingDimensions,
+                                loading = false,
+                            ),
+                    ) ?: it
                 }
             }
         }
