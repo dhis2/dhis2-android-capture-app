@@ -63,8 +63,8 @@ kotlin {
             implementation(libs.dhis2.android.sdk)
             api(libs.analytics.timber)
             implementation(libs.androidx.work)
-            implementation(libs.androidx.compose.preview)
-            implementation(libs.androidx.compose.uitooling)
+            compileOnly(libs.androidx.compose.preview)
+            compileOnly(libs.androidx.compose.uitooling)
         }
 
         getByName("androidHostTest") {

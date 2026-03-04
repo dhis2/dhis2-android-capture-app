@@ -70,7 +70,7 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(project(":commons"))
             implementation(project(":dhis2_android_maps"))
-            implementation(libs.androidx.compose.uitooling)
+            compileOnly(libs.androidx.compose.uitooling)
         }
 
         getByName("androidHostTest") {
