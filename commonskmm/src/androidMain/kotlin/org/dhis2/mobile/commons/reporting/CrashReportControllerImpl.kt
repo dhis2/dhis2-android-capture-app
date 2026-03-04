@@ -112,7 +112,7 @@ class CrashReportControllerImpl(
 
         return try {
             val buildConfigClass = Class.forName("${context.packageName}.BuildConfig")
-            (buildConfigClass.getField("SENTRY_DSN").get(null) as? String).orEmpty()
+            (buildConfigClass.getField("SENTRY_DSN")[null] as? String).orEmpty()
         } catch (_: ClassNotFoundException) {
             ""
         } catch (_: NoSuchFieldException) {
