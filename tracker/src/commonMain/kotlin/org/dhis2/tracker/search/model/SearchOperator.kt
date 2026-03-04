@@ -9,6 +9,10 @@ enum class SearchOperator {
     EQ,
 }
 
+/**
+ * Method use explicitly for testing purposes. Simulating that the search operator
+ * has a label assigned.
+ */
 @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
 fun SearchOperator.hasLabel(): Boolean =
     when (this) {

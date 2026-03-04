@@ -63,6 +63,10 @@ fun TrackerInputUiState.inputState(): InputShellState =
         else -> InputShellState.UNFOCUSED
     }
 
+/**
+ * Non-composable function to be used wherever a composable context is not available. For example,
+ * Unit Tests. Should use the [TrackerInputUiState.supportingText] method instead.
+ */
 fun TrackerInputUiState.supportingTextList(searchOperatorLabel: String?): List<SupportingTextData>? =
     listOfNotNull(
         error?.let {
