@@ -9,6 +9,7 @@ import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobileProgramRules.RuleConstants
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
@@ -19,7 +20,7 @@ import timber.log.Timber
 
 const val DEFAULT_LOCATION = "feedback"
 
-val NUMBER_REGEX = """\d{1,3}(,\d{3})*([.]\d+)?""".toRegex()
+val NUMBER_REGEX = """\b(\d{1,3}(,\d{3})*(\.\d+)?|\d+(\.\d+)?)\b""".toRegex()
 
 abstract class BaseIndicatorRepository(
     open val d2: D2,
@@ -113,7 +114,7 @@ abstract class BaseIndicatorRepository(
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
-                    val color = getLegendColor(ruleEffect.data, ruleAction.values["legendSet"])
+                    val color = getLegendColor(ruleEffect.data, ruleAction.values[RuleConstants.LEGENDSET_LABEL])
                     val indicator =
                         IndicatorModel(
                             ProgramIndicator
