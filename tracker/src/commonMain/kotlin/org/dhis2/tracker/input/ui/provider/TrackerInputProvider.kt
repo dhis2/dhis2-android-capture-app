@@ -773,4 +773,4 @@ fun manageOnValueChange(
     }
 }
 
-private fun getYesOnlyValue(checked: Boolean): String? = if (!checked) "true" else null
+private fun getYesOnlyValue(checked: Boolean): String? = if (checked) "true" else null
