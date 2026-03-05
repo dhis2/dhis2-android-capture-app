@@ -26,8 +26,10 @@ import org.dhis2.usescases.main.MainActivity
 import org.dhis2.usescases.qrScanner.ScanActivity
 import org.dhis2.usescases.splash.SplashActivity
 import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
+import org.dhis2.mobile.login.pin.addPinBottomSheet
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.koin.android.ext.android.inject
@@ -50,7 +52,7 @@ abstract class SessionManagerActivity :
     @Inject
     lateinit var analyticsHelper: AnalyticsHelper
 
-    private var pinDialog: PinDialog? = null
+    private var pinComposeView: androidx.compose.ui.platform.ComposeView? = null
 
     private var lifeCycleObservable: BehaviorSubject<Status> =
         BehaviorSubject.create()
@@ -135,23 +137,27 @@ abstract class SessionManagerActivity :
         this.activityResultObserver = activityResultObserver
     }
 
-    private fun initPinDialog() {
-        pinDialog =
-            PinDialog(
-                PinDialog.Mode.ASK,
-                (this is LoginActivity),
-                {
-                    startActivity(MainActivity::class.java, null, true, true, null)
-                    null
-                },
-                {
-                    analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
-                    if (this !is LoginActivity) {
-                        startActivity(LoginActivity::class.java, null, true, true, null)
-                    }
-                    null
-                },
-            )
+    private fun showPinBottomSheet() {
+        if (pinComposeView != null) return
+        pinComposeView = addPinBottomSheet(
+            mode = PinMode.ASK,
+            onSuccess = {
+                startActivity(MainActivity::class.java, null, true, true, null)
+            },
+            onDismiss = {
+                analyticsHelper.setEvent(FORGOT_CODE, CLICK, FORGOT_CODE)
+                if (this !is LoginActivity) {
+                    startActivity(LoginActivity::class.java, null, true, true, null)
+                }
+            },
+        )
+    }
+
+    private fun removePinBottomSheet() {
+        pinComposeView?.let { view ->
+            (window?.decorView as? android.view.ViewGroup)?.removeView(view)
+        }
+        pinComposeView = null
     }
 
     override fun unsubscribe() {
@@ -182,10 +188,6 @@ abstract class SessionManagerActivity :
             startActivity(intent, null)
         }
         if (finishCurrent) finish()
-    }
-
-    private fun showPinDialog() {
-        pinDialog!!.show(supportFragmentManager, PIN_DIALOG_TAG)
     }
 
     @Deprecated("Deprecated in Java")
@@ -219,8 +221,7 @@ abstract class SessionManagerActivity :
 
     override fun onStop() {
         super.onStop()
-        val dialog = pinDialog
-        dialog?.dismissAllowingStateLoss()
+        removePinBottomSheet()
     }
 
     override fun onDestroy() {
@@ -244,11 +245,8 @@ abstract class SessionManagerActivity :
             comesFromImageSource = false
         } else {
             if (this.app().isSessionBlocked && this !is SplashActivity && this !is LoginActivity) {
-                if (pinDialog == null) {
-                    initPinDialog()
-                    showPinDialog()
-                } else if (pinDialog?.isVisible == false) {
-                    showPinDialog()
+                if (pinComposeView == null) {
+                    showPinBottomSheet()
                 }
             } else {
                 if (this !is LoginActivity && this !is SplashActivity) {
@@ -260,9 +258,8 @@ abstract class SessionManagerActivity :
 
     private fun sessionAction(accountsCount: Int) {
         if (this.app().isSessionBlocked && this !is SplashActivity) {
-            if (pinDialog == null) {
-                initPinDialog()
-                showPinDialog()
+            if (pinComposeView == null) {
+                showPinBottomSheet()
             }
         } else {
             navigateToLogin(accountsCount)

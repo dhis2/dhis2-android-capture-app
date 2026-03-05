@@ -36,7 +36,6 @@ viewModelCompose = "2.9.4"
 material = "1.13.0"
 material3 = "1.4.0"
 themeAdapter = "0.36.0"
-pinlock = "2.1.0"
 fancyshowcase = "1.4.0"
 lottie = "6.6.10"
 rxjava = "2.2.21"
@@ -157,7 +156,6 @@ dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", versi
 rx-java = { group = "io.reactivex.rxjava2", name = "rxjava", version.ref = "rxjava" }
 rx-android = { group = "io.reactivex.rxjava2", name = "rxandroid", version.ref = "rxandroid" }
 rx-relay = { group = "com.jakewharton.rxrelay2", name = "rxrelay", version.ref = "rxrelay" }
-github-pinlock = { group = "com.github.aritraroy", name = "PinLockView", version.ref = "pinlock" }
 github-fancyshowcase = { group = "com.github.faruktoptas", name = "FancyShowCaseView", version.ref = "fancyshowcase" }
 github-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 github-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }

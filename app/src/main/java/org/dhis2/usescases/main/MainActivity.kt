@@ -53,13 +53,13 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.ui.NewVersionDialog
 import org.dhis2.utils.analytics.CLICK
+import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.dhis2.utils.session.PIN_DIALOG_TAG
-import org.dhis2.utils.session.PinDialog
+import org.dhis2.mobile.login.pin.addPinBottomSheet
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.koin.android.ext.android.inject
 import java.io.File
@@ -113,8 +113,6 @@ class MainActivity :
                     ).show()
             }
         }
-
-    private var isPinLayoutVisible = false
 
     private lateinit var mainNavigator: MainNavigator
 
@@ -515,13 +513,11 @@ class MainActivity :
     override fun onLockClick() {
         if (!presenter.isPinStored()) {
             binding.mainDrawerLayout.closeDrawers()
-            PinDialog(
-                PinDialog.Mode.SET,
-                true,
-                { presenter.blockSession() },
-                {},
-            ).show(supportFragmentManager, PIN_DIALOG_TAG)
-            isPinLayoutVisible = true
+            addPinBottomSheet(
+                mode = PinMode.SET,
+                onSuccess = { presenter.blockSession() },
+                onDismiss = {},
+            )
         } else {
             presenter.blockSession()
         }
@@ -530,7 +526,6 @@ class MainActivity :
     private fun backPressed() {
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
-            isPinLayoutVisible -> isPinLayoutVisible = false
             else -> back()
         }
     }
