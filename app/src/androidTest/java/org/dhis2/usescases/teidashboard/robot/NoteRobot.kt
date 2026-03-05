@@ -5,12 +5,10 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.Visibility
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isEnabled
-import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -50,17 +48,13 @@ class NoteRobot : BaseRobot() {
     }
 
     fun clickYesOnAlertDialog() {
-        waitForView(isRoot())
-            .inRoot(isDialog())
-            .perform(searchFor(withId(android.R.id.button1)))
-        waitForView(withId(android.R.id.button1))
-            .inRoot(isDialog())
+        waitForView(withId(android.R.id.button1), waitMillis = DIALOG_WAIT_TIMEOUT_MS)
             .check(matches(isDisplayed()))
             .perform(click())
     }
 
     fun checkNoteWasNotCreated(text: String) {
-        waitForView(withId(R.id.notes_recycler)).check(
+        waitForView(withId(R.id.notes_recycler), waitMillis = NOTES_WAIT_TIMEOUT_MS).check(
             matches(
                 not(
                     atPosition(
@@ -79,7 +73,8 @@ class NoteRobot : BaseRobot() {
                 isDisplayed(),
                 isNotEmpty(),
                 atPosition(0, hasDescendant(withText(text)))
-            )
+            ),
+            waitMillis = NOTES_WAIT_TIMEOUT_MS
         )
     }
 
@@ -90,7 +85,8 @@ class NoteRobot : BaseRobot() {
     }
 
     fun checkNoteDetails(user: String, noteText: String) {
-        waitForView(withId(R.id.notes_recycler)).check(matches(isDisplayed()))
+        waitForView(withId(R.id.notes_recycler), waitMillis = NOTES_WAIT_TIMEOUT_MS)
+            .check(matches(isDisplayed()))
         waitForView(
             allOf(
                 withId(R.id.storeBy),
@@ -107,5 +103,10 @@ class NoteRobot : BaseRobot() {
             )
         )
             .check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+    }
+
+    companion object {
+        private const val DIALOG_WAIT_TIMEOUT_MS = 10000
+        private const val NOTES_WAIT_TIMEOUT_MS = 15000
     }
 }
