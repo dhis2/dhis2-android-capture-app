@@ -10,6 +10,7 @@ import android.util.TypedValue
 import androidx.core.graphics.ColorUtils
 import org.dhis2.commons.R
 import java.util.Objects
+import androidx.compose.ui.graphics.Color as ComposeColor
 
 class ColorUtils {
     companion object {
@@ -118,6 +119,14 @@ class ColorUtils {
         context: Context,
         colorType: ColorType,
     ): Int = context.getPrimaryColor(colorType)
+
+    fun getThemePrimaryColor(context: Context): ComposeColor {
+        val typedValue = TypedValue()
+        val a = context.theme.obtainStyledAttributes(typedValue.data, intArrayOf(android.R.attr.colorPrimary))
+        val color = a.getColor(0, 0)
+        a.recycle()
+        return ComposeColor(color)
+    }
 }
 
 enum class ColorType {
