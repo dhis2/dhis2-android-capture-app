@@ -8,8 +8,10 @@ import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.toColorInt
 import org.dhis2.commons.R
 import java.util.Objects
+import kotlin.math.pow
 import androidx.compose.ui.graphics.Color as ComposeColor
 
 class ColorUtils {
@@ -25,16 +27,7 @@ class ColorUtils {
             val b = hexColor[3]
             newHexColor = "#$r$r$g$g$b$b" // formatted to #ffff
         }
-        return Color.parseColor(newHexColor)
-    }
-
-    fun getPrimaryColorWithAlpha(
-        context: Context,
-        primaryLight: ColorType,
-        alpha: Float,
-    ): Int {
-        val primaryColor = getPrimaryColor(context, primaryLight)
-        return ColorUtils.setAlphaComponent(primaryColor, 155)
+        return newHexColor.toColorInt()
     }
 
     fun withAlpha(color: Int): Int = ColorUtils.setAlphaComponent(color, 155)
@@ -68,27 +61,18 @@ class ColorUtils {
         return drawableToTint
     }
 
-    fun tintDrawableWithColor(
-        drawableToTint: Drawable,
-        tintColor: Int,
-    ): Drawable {
-        drawableToTint.setTint(tintColor)
-        drawableToTint.setTintMode(PorterDuff.Mode.SRC_IN)
-        return drawableToTint
-    }
-
     fun getContrastColor(color: Int): Int =
         if (getContrast(color) > 0.179) {
-            Color.parseColor("#b3000000")
+            "#b3000000".toColorInt()
         } else {
-            Color.parseColor("#e6ffffff")
+            "#e6ffffff".toColorInt()
         }
 
     fun getAlphaContrastColor(color: Int): Int =
         if (getContrast(color) > 0.500) {
-            Color.parseColor("#b3000000")
+            "#b3000000".toColorInt()
         } else {
-            Color.parseColor("#e6ffffff")
+            "#e6ffffff".toColorInt()
         }
 
     private fun getContrast(color: Int): Double {
@@ -100,7 +84,7 @@ class ColorUtils {
         var green: Double? = null
         var blue: Double? = null
         rgb.forEach {
-            if (it <= 0.03928) it / 12.92 else Math.pow((it + 0.055) / 1.055, 2.4)
+            if (it <= 0.03928) it / 12.92 else ((it + 0.055) / 1.055).pow(2.4)
             if (red == null) {
                 red = it
             } else if (green == null) {
