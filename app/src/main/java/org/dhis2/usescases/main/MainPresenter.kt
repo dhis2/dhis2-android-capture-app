@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.dhis2.BuildConfig
 import org.dhis2.commons.Constants
 import org.dhis2.commons.filters.FilterManager
@@ -253,23 +253,26 @@ class MainPresenter(
 
     fun onDeleteAccount() {
         view.showProgressDeleteNotification()
-        try {
-            repository.checkDeleteBiometricsPermission()
-            runBlocking {
+        launch(dispatcherProvider.io()) {
+            try {
+                repository.checkDeleteBiometricsPermission()
                 syncBackgroundJobAction.cancelAll()
                 syncStatusController.restore()
-            }
-            deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
-            userManager.d2?.wipeModule()?.wipeEverything()
-            userManager.d2
-                ?.userModule()
-                ?.accountManager()
-                ?.deleteCurrentAccount()
-            view.cancelNotifications()
+                deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+                userManager.d2?.wipeModule()?.wipeEverything()
+                userManager.d2
+                    ?.userModule()
+                    ?.accountManager()
+                    ?.deleteCurrentAccount()
 
-            view.goToLogin(repository.accountsCount(), isDeletion = true)
-        } catch (exception: Exception) {
-            Timber.e(exception)
+                view.cancelNotifications()
+
+                withContext(dispatcherProvider.ui()) {
+                    view.goToLogin(repository.accountsCount(), isDeletion = true)
+                }
+            } catch (exception: Exception) {
+                Timber.e(exception)
+            }
         }
     }
 

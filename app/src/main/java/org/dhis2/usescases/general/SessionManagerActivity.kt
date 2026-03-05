@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.lifecycleScope
 import io.reactivex.subjects.BehaviorSubject
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.bindings.app
@@ -211,7 +211,7 @@ abstract class SessionManagerActivity :
             this !is LoginActivity
         ) {
             workManagerController.cancelAllWork()
-            runBlocking {
+            lifecycleScope.launch {
                 syncStatusController.restore()
             }
         }
