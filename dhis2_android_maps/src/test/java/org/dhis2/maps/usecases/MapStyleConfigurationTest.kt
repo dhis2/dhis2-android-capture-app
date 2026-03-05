@@ -16,7 +16,6 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -46,6 +45,7 @@ class MapStyleConfigurationTest {
     @Test
     fun shouldFetchMapStyles() {
         mockBasemaps(
+            d2,
             listOf(
                 mockMapLayer(
                     displayName = "basemap 1",
@@ -71,7 +71,7 @@ class MapStyleConfigurationTest {
             ),
         )
 
-        mockOverlays(emptyList())
+        mockOverlays(d2, emptyList())
 
         mapStyleConfiguration.fetchMapStyles().let { result ->
             assertTrue(result.size == 2)
@@ -107,6 +107,7 @@ class MapStyleConfigurationTest {
     @Test
     fun shouldFetchCustomMaps() {
         mockBasemaps(
+            d2,
             listOf(
                 mockMapLayer(
                     displayName = "basemap 1",
@@ -132,7 +133,7 @@ class MapStyleConfigurationTest {
             ),
         )
 
-        mockOverlays(emptyList())
+        mockOverlays(d2, emptyList())
 
         mapStyleConfiguration.fetchMapStyles().let { result ->
             assertTrue(result.size == 2)
@@ -168,6 +169,7 @@ class MapStyleConfigurationTest {
     @Test
     fun shouldFetchBasemapWithOverlay() {
         mockBasemaps(
+            d2,
             listOf(
                 mockMapLayer(
                     displayName = "basemap 1",
@@ -183,6 +185,7 @@ class MapStyleConfigurationTest {
         )
 
         mockOverlays(
+            d2,
             listOf(
                 mockMapLayer(
                     displayName = "overlay 1",
@@ -207,44 +210,6 @@ class MapStyleConfigurationTest {
             assertTrue(result[0].sources["overlay 1"]?.tiles[0] == "http://a.overlay.test/x/y/z")
             assertEquals("© Maplibre, © Overlay", result[0].attribution)
         }
-    }
-
-    private fun mockBasemaps(mockedBasemap: List<MapLayer>) {
-        val mockedMapLayerCollectionRepository: MapLayerCollectionRepository = mock()
-
-        whenever(d2.mapsModule().mapLayers()) doReturn mockedMapLayerCollectionRepository
-        whenever(mockedMapLayerCollectionRepository.withImageryProviders()) doReturn mockedMapLayerCollectionRepository
-        whenever(
-            mockedMapLayerCollectionRepository.byMapLayerPosition(),
-        ) doReturn enumFilterConnector
-        whenever(
-            enumFilterConnector.eq(MapLayerPosition.BASEMAP),
-        ) doReturn mockedMapLayerCollectionRepository
-        whenever(
-            mockedMapLayerCollectionRepository.blockingGet(),
-        ) doReturn mockedBasemap
-    }
-
-    private fun mockOverlays(mockedOverlays: List<MapLayer>) {
-        val mockedMapLayerCollectionRepository: MapLayerCollectionRepository = mock()
-
-        whenever(d2.mapsModule().mapLayers()) doReturn mockedMapLayerCollectionRepository
-        whenever(mockedMapLayerCollectionRepository.withImageryProviders()) doReturn mockedMapLayerCollectionRepository
-        whenever(
-            mockedMapLayerCollectionRepository.byLinkedLayerUid(),
-        ) doReturn stringFilterConnector
-        whenever(
-            stringFilterConnector.eq(any()),
-        ) doReturn mockedMapLayerCollectionRepository
-        whenever(
-            mockedMapLayerCollectionRepository.byMapLayerPosition(),
-        ) doReturn enumFilterConnector
-        whenever(
-            enumFilterConnector.eq(MapLayerPosition.OVERLAY),
-        ) doReturn mockedMapLayerCollectionRepository
-        whenever(
-            mockedMapLayerCollectionRepository.blockingGet(),
-        ) doReturn mockedOverlays
     }
 
     @Test
