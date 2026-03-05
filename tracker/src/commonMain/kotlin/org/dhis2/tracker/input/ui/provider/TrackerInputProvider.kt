@@ -622,7 +622,7 @@ fun TrackerInputProvider(
                     onUiEvent(
                         TrackerInputUiEvent.OnValueChange(
                             uid = inputModel.uid,
-                            value = getYesOnlyValue(isChecked),
+                            value = if (isChecked) "true" else null,
                         ),
                     )
                 },
@@ -773,4 +773,4 @@ fun manageOnValueChange(
     }
 }
 
-private fun getYesOnlyValue(checked: Boolean): String? = if (checked) "true" else null
+private fun getYesOnlyValue(checked: Boolean): String? = if (!checked) "true" else null
