@@ -23,29 +23,29 @@ class ServerSettingsRepository(
                 val customColor =
                     systemSettings
                         .firstOrNull {
-                            // TODO replace by SystemSetting.SystemSettingKey.CUSTOM_COLOR
-                            it.key() == SystemSetting.SystemSettingKey.STYLE
+                            it.key() == SystemSetting.SystemSettingKey.CUSTOM_COLOR
                         }?.value()
                 val flag =
                     systemSettings
                         .firstOrNull {
                             it.key() == SystemSetting.SystemSettingKey.FLAG
                         }?.value()
-
-                // TODO CustomColor will be a string with a hexadecimal color like "#007DEB"
-                val customColorPalette = PaletteColor.fromHex("#3A4941")
-                val closestColor =
-                    ColorMatcher.findClosest(
-                        selectedR = customColorPalette.r,
-                        selectedG = customColorPalette.g,
-                        selectedB = customColorPalette.b,
-                        palette =
-                            paletteThemes.map { (color, _) ->
-                                PaletteColor.fromHex(color)
-                            },
-                    )
-
-                Pair(flag, getThemeFromClosestColor(closestColor))
+                if (customColor.isNullOrEmpty()) {
+                    Pair(flag, R.style.AppTheme)
+                } else {
+                    val customColorPalette = PaletteColor.fromHex(customColor)
+                    val closestColor =
+                        ColorMatcher.findClosest(
+                            selectedR = customColorPalette.r,
+                            selectedG = customColorPalette.g,
+                            selectedB = customColorPalette.b,
+                            palette =
+                                paletteThemes.map { (color, _) ->
+                                    PaletteColor.fromHex(color)
+                                },
+                        )
+                    Pair(flag, getThemeFromClosestColor(closestColor))
+                }
             }
 
     private fun getThemeFromClosestColor(color: PaletteColor?): Int =
