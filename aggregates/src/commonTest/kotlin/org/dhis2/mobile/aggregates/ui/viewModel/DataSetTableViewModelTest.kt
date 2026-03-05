@@ -182,8 +182,13 @@ internal class DataSetTableViewModelTest : KoinTest {
                     dataSetSections =
                         listOf(
                             DataSetSection(
-                                uid = "sectionUid",
-                                title = "sectionTitle",
+                                uid = "section_uid1",
+                                title = "sectionTitle1",
+                                misconfiguredRows = emptyList(),
+                            ),
+                            DataSetSection(
+                                uid = "section_uid2",
+                                title = "sectionTitle2",
                                 misconfiguredRows = emptyList(),
                             ),
                         ),
@@ -437,8 +442,8 @@ internal class DataSetTableViewModelTest : KoinTest {
                     if (this is DataSetScreenState.Loaded) {
                         assertTrue(this.selectedCellInfo is InputDataUiState)
                         require(this.selectedCellInfo is InputDataUiState)
-                        assertEquals("Legend label 2", this.selectedCellInfo?.legendData?.title)
-                        assertEquals("#CD5C5C".toColor(), this.selectedCellInfo?.legendData?.color)
+                        assertEquals("Legend label 2", this.selectedCellInfo.legendData?.title)
+                        assertEquals("#CD5C5C".toColor(), this.selectedCellInfo.legendData?.color)
                     } else {
                         assertTrue(false)
                     }
@@ -965,16 +970,15 @@ internal class DataSetTableViewModelTest : KoinTest {
         runTest {
             viewModel.dataSetScreenState.test {
                 awaitInitialization()
-                viewModel.onSectionSelected("section_uid1")
-                with(awaitItem()) {
-                    assertTrue(this is DataSetScreenState.Loaded)
-                    assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
-                    assertTrue(this.currentSection() == "section_uid1")
-                }
                 viewModel.onSectionSelected("section_uid2")
                 with(awaitItem()) {
                     assertTrue(this is DataSetScreenState.Loaded)
                     assertTrue((this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
+                    assertTrue(this.currentSection() == "section_uid2")
+                }
+                with(awaitItem()) {
+                    assertTrue(this is DataSetScreenState.Loaded)
+                    assertTrue(!(this as DataSetScreenState.Loaded).dataSetSectionTable.loading)
                     assertTrue(this.currentSection() == "section_uid2")
                 }
                 viewModel.onSectionSelected("section_uid1")
