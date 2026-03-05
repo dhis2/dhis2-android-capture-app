@@ -511,7 +511,6 @@ class GranularSyncPresenterTest {
         val resultLiveData = presenter.initGranularSync()
         resultLiveData.observeForever(workInfoObserver)
 
-//        verify(workManager).syncDataForWorker(Constants.DATA_NOW, Constants.INITIAL_SYNC)
         verify(workInfoObserver).onChanged(anyList())
     }
 
