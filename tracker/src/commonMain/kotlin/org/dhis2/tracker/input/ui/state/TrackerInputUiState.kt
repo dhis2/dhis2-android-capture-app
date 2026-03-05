@@ -47,7 +47,27 @@ data class TrackerInputUiState(
 )
 
 @Composable
-fun TrackerInputUiState.supportingText(): List<SupportingTextData>? =
+fun TrackerInputUiState.supportingText(): List<SupportingTextData>? {
+    val label =
+        searchOperator?.let { operator ->
+            if (focused) operator.supportingTextString() else null
+        }
+    return supportingTextList(searchOperatorLabel = label)
+}
+
+fun TrackerInputUiState.inputState(): InputShellState =
+    when {
+        !editable -> InputShellState.DISABLED
+        error != null -> InputShellState.ERROR
+        focused -> InputShellState.FOCUSED
+        else -> InputShellState.UNFOCUSED
+    }
+
+/**
+ * Non-composable function to be used wherever a composable context is not available. For example,
+ * Unit Tests. Should use the [TrackerInputUiState.supportingText] method instead.
+ */
+fun TrackerInputUiState.supportingTextList(searchOperatorLabel: String?): List<SupportingTextData>? =
     listOfNotNull(
         error?.let {
             SupportingTextData(
@@ -61,17 +81,15 @@ fun TrackerInputUiState.supportingText(): List<SupportingTextData>? =
                 SupportingTextState.WARNING,
             )
         },
-        searchOperator?.let { operator ->
-            if (focused) {
-                operator.supportingTextString()?.let { text ->
-                    SupportingTextData(
-                        text,
-                        SupportingTextState.DEFAULT,
-                    )
-                }
-            } else {
-                null
+        if (focused && searchOperator != null) {
+            searchOperatorLabel?.let { text ->
+                SupportingTextData(
+                    text,
+                    SupportingTextState.DEFAULT,
+                )
             }
+        } else {
+            null
         },
         description?.let {
             SupportingTextData(
@@ -80,14 +98,6 @@ fun TrackerInputUiState.supportingText(): List<SupportingTextData>? =
             )
         },
     ).ifEmpty { null }
-
-fun TrackerInputUiState.inputState(): InputShellState =
-    when {
-        !editable -> InputShellState.DISABLED
-        error != null -> InputShellState.ERROR
-        focused -> InputShellState.FOCUSED
-        else -> InputShellState.UNFOCUSED
-    }
 
 @Composable
 private fun SearchOperator.supportingTextString() =

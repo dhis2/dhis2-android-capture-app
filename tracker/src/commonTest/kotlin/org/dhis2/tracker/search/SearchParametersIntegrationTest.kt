@@ -12,13 +12,16 @@ import org.dhis2.mobile.commons.coroutine.Dispatcher
 import org.dhis2.mobile.commons.resources.StringResourceProvider
 import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.mapper.toTrackerInputUiState
+import org.dhis2.tracker.input.ui.state.supportingTextList
 import org.dhis2.tracker.search.data.SearchParametersRepository
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.model.FetchSearchParametersData
 import org.dhis2.tracker.search.model.SearchOperator
 import org.dhis2.tracker.search.model.SearchParameterModel
+import org.dhis2.tracker.search.model.hasLabel
 import org.dhis2.tracker.search.ui.state.SearchParametersUiState
 import org.dhis2.tracker.search.ui.viewmodel.SearchParametersViewModel
+import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -26,6 +29,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -63,7 +67,11 @@ class SearchParametersIntegrationTest {
             // Given
             val min = 2
             val teiTypeUid = "teiType123"
-            val searchParameter = buildSearchParameter(minCharactersToSearch = min)
+            val searchParameter =
+                buildSearchParameter(
+                    uid = "field1",
+                    minCharactersToSearch = min,
+                )
             whenever(repository.getSearchParametersByTrackedEntityType(teiTypeUid))
                 .thenReturn(listOf(searchParameter))
 
@@ -96,7 +104,11 @@ class SearchParametersIntegrationTest {
             val min = 3
             val teiTypeUid = "teiType123"
             val errorMessage = "Minimum $min characters required"
-            val searchParameter = buildSearchParameter(minCharactersToSearch = min)
+            val searchParameter =
+                buildSearchParameter(
+                    uid = "field1",
+                    minCharactersToSearch = min,
+                )
             whenever(repository.getSearchParametersByTrackedEntityType(teiTypeUid))
                 .thenReturn(listOf(searchParameter))
             whenever(resourceProvider.provideString(any(), any())).thenReturn(errorMessage)
@@ -124,15 +136,155 @@ class SearchParametersIntegrationTest {
             assertEquals(errorMessage, uiState.items.first().error)
         }
 
-    private fun buildSearchParameter(minCharactersToSearch: Int): SearchParameterModel =
+    @Test
+    fun `given a configured search operator, when user clicks field, then search operator message is shown`() =
+        runTest(testDispatcher) {
+            // Given
+            val teiTypeUid = "teiType123"
+            val searchParameters =
+                listOf(
+                    buildSearchParameter(
+                        uid = "field1",
+                        minCharactersToSearch = 0,
+                        searchOperator = SearchOperator.EQ,
+                    ),
+                    buildSearchParameter(
+                        uid = "field2",
+                        minCharactersToSearch = 0,
+                        searchOperator = SearchOperator.LIKE,
+                    ),
+                    buildSearchParameter(
+                        uid = "field3",
+                        minCharactersToSearch = 0,
+                        searchOperator = SearchOperator.SW,
+                    ),
+                    buildSearchParameter(
+                        uid = "field4",
+                        minCharactersToSearch = 0,
+                        searchOperator = SearchOperator.EW,
+                    ),
+                )
+
+            whenever(repository.getSearchParametersByTrackedEntityType(teiTypeUid))
+                .thenReturn(searchParameters)
+
+            val fetchResult =
+                fetchSearchParameters(FetchSearchParametersData(teiTypeUid = teiTypeUid))
+            assertTrue(fetchResult.isSuccess)
+
+            fetchResult
+                .getOrNull()
+                ?.forEach { searchParam ->
+                    // Simulate the user clicking the field (focused = true)
+                    val item = searchParam.toTrackerInputUiState().copy(focused = true)
+                    val operator = searchParam.searchOperator
+
+                    // Mimic what the Composable layer does: resolve a label only when the
+                    // operator has one (stringResource is not available in unit tests).
+                    val operatorLabel = if (operator?.hasLabel() == true) "operator label" else null
+                    val supportingText = item.supportingTextList(searchOperatorLabel = operatorLabel)
+
+                    if (operator?.hasLabel() == true) {
+                        // EQ, SW, EW – a DEFAULT supporting text entry must be present
+                        assertNotNull(supportingText)
+                        assertTrue(supportingText.any { it.state == SupportingTextState.DEFAULT })
+                    } else {
+                        // LIKE – no label, no error/warning/description → null
+                        assertNull(supportingText)
+                    }
+                }
+        }
+
+    @Test
+    fun `given a configured search operator with error, when user clicks field, supporting text color in Red`() =
+        runTest(testDispatcher) {
+            // Given
+            val teiTypeUid = "teiType123"
+            val searchParameters =
+                listOf(
+                    buildSearchParameter(
+                        uid = "field1",
+                        minCharactersToSearch = 0,
+                        searchOperator = SearchOperator.EQ,
+                    ),
+                )
+
+            whenever(repository.getSearchParametersByTrackedEntityType(teiTypeUid))
+                .thenReturn(searchParameters)
+
+            val fetchResult =
+                fetchSearchParameters(FetchSearchParametersData(teiTypeUid = teiTypeUid))
+            assertTrue(fetchResult.isSuccess)
+
+            val itemWithError =
+                fetchResult
+                    .getOrNull()!!
+                    .map { searchParam ->
+                        searchParam.toTrackerInputUiState().copy(error = "any Error", focused = true)
+                    }
+            viewModel.updateFromExternal(SearchParametersUiState(items = itemWithError))
+            val uiState = viewModel.uiState.first()
+            val supportingListData =
+                uiState
+                    .items
+                    .first()
+                    .supportingTextList(null)
+                    ?.firstOrNull()
+            assertNotNull(supportingListData)
+            assertEquals(SupportingTextState.ERROR, supportingListData.state)
+        }
+
+    @Test
+    fun `given a configured search operator with warning, when user clicks field, supporting text color in Orange`() =
+        runTest(testDispatcher) {
+            // Given
+            val teiTypeUid = "teiType123"
+            val searchParameters =
+                listOf(
+                    buildSearchParameter(
+                        uid = "field1",
+                        minCharactersToSearch = 0,
+                        searchOperator = SearchOperator.EQ,
+                    ),
+                )
+
+            whenever(repository.getSearchParametersByTrackedEntityType(teiTypeUid))
+                .thenReturn(searchParameters)
+
+            val fetchResult =
+                fetchSearchParameters(FetchSearchParametersData(teiTypeUid = teiTypeUid))
+            assertTrue(fetchResult.isSuccess)
+
+            val itemWithError =
+                fetchResult
+                    .getOrNull()!!
+                    .map { searchParam ->
+                        searchParam.toTrackerInputUiState().copy(warning = "any Warning", focused = true)
+                    }
+            viewModel.updateFromExternal(SearchParametersUiState(items = itemWithError))
+            val uiState = viewModel.uiState.first()
+            val supportingListData =
+                uiState.items
+                    .first()
+                    .supportingTextList(null)
+                    ?.firstOrNull()
+            assertNotNull(supportingListData)
+            assertEquals(SupportingTextState.WARNING, supportingListData.state)
+        }
+
+    private fun buildSearchParameter(
+        uid: String,
+        minCharactersToSearch: Int,
+        searchOperator: SearchOperator? = null,
+    ): SearchParameterModel =
         SearchParameterModel(
-            uid = "field1",
+            uid = uid,
             label = "First Name",
             inputType = TrackerInputType.TEXT,
             optionSet = null,
             customIntentUid = null,
             minCharactersToSearch = minCharactersToSearch,
-            searchOperator = SearchOperator.LIKE,
+            searchOperator = searchOperator,
             isUnique = false,
         )
 }
