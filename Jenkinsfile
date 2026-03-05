@@ -76,12 +76,17 @@ pipeline {
             }
             steps {
                 script {
-                    echo 'Running unit tests'
-                    sh './gradlew --dependency-verification lenient testDebugUnitTest testDhis2DebugUnitTest --stacktrace --no-daemon'
+                    echo 'Running unit tests and building UI APKs'
+                    sh './gradlew --dependency-verification lenient testDebugUnitTest testDhis2DebugUnitTest :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest :form:assembleAndroidTest --stacktrace --no-daemon'
                 }
             }
         }
         stage('Build Test APKs') {
+            when {
+                expression {
+                    return isSkipUnitTest()
+                }
+            }
             steps {
                 script {
                     echo 'Building UI APKs'
