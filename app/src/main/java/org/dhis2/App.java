@@ -11,8 +11,6 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
-import androidx.multidex.MultiDex;
-import androidx.multidex.MultiDexApplication;
 
 import org.dhis2.commons.di.dagger.PerActivity;
 import org.dhis2.commons.di.dagger.PerServer;
@@ -71,7 +69,7 @@ import io.sentry.SentryLevel;
 import io.sentry.android.core.SentryAndroid;
 import timber.log.Timber;
 
-public class App extends MultiDexApplication implements Components, LifecycleObserver {
+public class App extends android.app.Application implements Components, LifecycleObserver {
 
     @NonNull
     @Singleton
@@ -120,6 +118,10 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
 
     public void initCrashController() {
         if (areTrackingPermissionGranted()) {
+            if (BuildConfig.SENTRY_DSN.isEmpty()) {
+                Timber.w("Sentry DSN is empty. Skipping Sentry initialization.");
+                return;
+            }
             SentryAndroid.init(this, options -> {
                 options.setDsn(BuildConfig.SENTRY_DSN);
                 options.setAnrReportInDebug(true);
@@ -152,12 +154,6 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
         CaocConfig.Builder.create()
                 .errorActivity(CrashActivity.class)
                 .apply();
-    }
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     private void setUpAppComponent() {

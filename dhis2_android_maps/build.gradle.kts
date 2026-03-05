@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.legacy.kapt)
     id("com.google.devtools.ksp")
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
@@ -50,6 +50,10 @@ kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
     }
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 dependencies {

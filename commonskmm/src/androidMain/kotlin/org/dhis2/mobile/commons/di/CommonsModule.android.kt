@@ -41,7 +41,7 @@ actual val commonsModule: Module
                 FileHandlerImpl()
             }
             single<CrashReportController> {
-                CrashReportControllerImpl(get())
+                CrashReportControllerImpl(get(), getProperty("sentryDsn", ""))
             }
 
             single<NetworkStatusProvider> {
