@@ -14,8 +14,8 @@ private data class Lab(
 
 /**
  * Finds the closest color from the palette to the given selected color
- * using the CIEDE2000-simplified (CIE76) Delta E in L*a*b* color space,
- * which is more perceptually accurate than simple RGB euclidean distance.
+ * using the CIE76 Delta E in L*a*b* color space,
+ * which is more perceptually accurate than simple RGB Euclidean distance.
  */
 object ColorMatcher {
     fun findClosest(

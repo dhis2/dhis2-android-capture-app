@@ -9,6 +9,7 @@ import org.dhis2.mobile.commons.color.ColorMatcher
 import org.dhis2.mobile.commons.color.PaletteColor
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.settings.SystemSetting
+import timber.log.Timber
 
 class ServerSettingsRepository(
     private val d2: D2,
@@ -33,18 +34,23 @@ class ServerSettingsRepository(
                 if (customColor.isNullOrEmpty()) {
                     Pair(flag, R.style.AppTheme)
                 } else {
-                    val customColorPalette = PaletteColor.fromHex(customColor)
-                    val closestColor =
-                        ColorMatcher.findClosest(
-                            selectedR = customColorPalette.r,
-                            selectedG = customColorPalette.g,
-                            selectedB = customColorPalette.b,
-                            palette =
-                                paletteThemes.map { (color, _) ->
-                                    PaletteColor.fromHex(color)
-                                },
-                        )
-                    Pair(flag, getThemeFromClosestColor(closestColor))
+                    try {
+                        val customColorPalette = PaletteColor.fromHex(customColor)
+                        val closestColor =
+                            ColorMatcher.findClosest(
+                                selectedR = customColorPalette.r,
+                                selectedG = customColorPalette.g,
+                                selectedB = customColorPalette.b,
+                                palette =
+                                    paletteThemes.map { (color, _) ->
+                                        PaletteColor.fromHex(color)
+                                    },
+                            )
+                        Pair(flag, getThemeFromClosestColor(closestColor))
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error parsing custom color, using default theme")
+                        Pair(flag, R.style.AppTheme)
+                    }
                 }
             }
 
