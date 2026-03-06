@@ -42,6 +42,7 @@ class LaunchSync(
                     -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.InProgress) }
 
                     Status.Cancelled -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Cancelled) }
+                    null -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.None) }
                     else -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Finished) }
                 }
                 syncStatus.value
@@ -59,6 +60,7 @@ class LaunchSync(
                     -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.InProgress) }
 
                     Status.Cancelled -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Cancelled) }
+                    null -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.None) }
                     else -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Finished) }
                 }
                 syncStatus.value
