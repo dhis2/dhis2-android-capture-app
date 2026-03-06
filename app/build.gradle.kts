@@ -352,6 +352,7 @@ dependencies {
     androidTestImplementation(libs.test.hamcrest)
     androidTestImplementation(libs.koin.test)
     androidTestImplementation(libs.koin.test.junit4)
+    debugImplementation(libs.test.ui.test.manifest)
 }
 
 sentry {
