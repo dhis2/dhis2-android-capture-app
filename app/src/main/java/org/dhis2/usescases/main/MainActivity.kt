@@ -47,6 +47,7 @@ import org.dhis2.commons.orgunitselector.OUTreeFragment
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.databinding.ActivityMainBinding
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
@@ -60,6 +61,7 @@ import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.utils.session.PIN_DIALOG_TAG
 import org.dhis2.utils.session.PinDialog
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
+import org.koin.android.ext.android.inject
 import java.io.File
 import javax.inject.Inject
 
@@ -86,6 +88,8 @@ class MainActivity :
 
     @Inject
     lateinit var pageConfigurator: NavigationPageConfigurator
+
+    private val syncBackgroundJobAction: SyncBackgroundJobAction by inject()
 
     private val getDevActivityContent =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -148,6 +152,8 @@ class MainActivity :
                 it.plus(
                     MainModule(
                         view = this,
+                        syncStatusController = syncStatusController,
+                        syncBackgroundJobAction = syncBackgroundJobAction,
                         forceToNotSynced = intent.getBooleanExtra(AVOID_SYNC, false),
                     ),
                 )
