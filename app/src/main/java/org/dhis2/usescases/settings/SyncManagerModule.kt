@@ -10,7 +10,6 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.VersionRepository
-import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.files.FileHandlerImpl
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.settings.domain.CheckVersionUpdate
@@ -153,12 +152,10 @@ class SyncManagerModule(
     @Provides
     @PerFragment
     fun provideLaunchSync(
-        workManagerController: WorkManagerController,
         preferenceProvider: PreferenceProvider,
         analyticsHelper: AnalyticsHelper,
     ) = LaunchSync(
         syncBackgroundJobAction,
-        workManagerController,
         preferenceProvider,
         analyticsHelper,
     )

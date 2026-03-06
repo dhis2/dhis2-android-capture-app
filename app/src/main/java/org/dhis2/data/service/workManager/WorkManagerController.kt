@@ -34,11 +34,6 @@ import androidx.work.WorkInfo
 interface WorkManagerController {
     fun syncDataForWorker(workerItem: WorkerItem)
 
-    fun syncDataForWorker(
-        dataWorkerTag: String,
-        workName: String,
-    )
-
     fun beginUniqueWork(workerItem: WorkerItem)
 
     fun enqueuePeriodicWork(workerItem: WorkerItem)

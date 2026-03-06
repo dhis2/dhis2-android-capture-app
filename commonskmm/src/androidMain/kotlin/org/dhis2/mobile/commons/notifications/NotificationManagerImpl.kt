@@ -34,9 +34,17 @@ class NotificationManagerImpl(
         contentTitle: String,
         contentText: String,
         progress: Int,
-    ): NotificationModel {
-        TODO("Not yet implemented")
-    }
+    ) = WorkerNotificationInfo(
+        createForegroundInfo(
+            notificationId = SYNC_DATA_NOTIFICATION_ID,
+            channelId = SYNC_DATA_CHANNEL_ID,
+            channelName = SYNC_DATA_CHANNEL_NAME,
+            smallIcon = smallIcon,
+            contentTitle = contentTitle,
+            contentText = contentText,
+            progress = progress,
+        ),
+    )
 
     override fun displayDataSyncNotification(
         smallIcon: Int,
@@ -44,7 +52,18 @@ class NotificationManagerImpl(
         contentText: String,
         progress: Int,
     ) {
-        TODO("Not yet implemented")
+        val foregroundInfo =
+            createForegroundInfo(
+                notificationId = SYNC_DATA_NOTIFICATION_ID,
+                channelId = SYNC_DATA_CHANNEL_ID,
+                channelName = SYNC_DATA_CHANNEL_NAME,
+                smallIcon = smallIcon,
+                contentTitle = contentTitle,
+                contentText = contentText,
+                progress = progress,
+            )
+
+        notify(foregroundInfo)
     }
 
     override fun getMetadataSyncNotification(
@@ -127,7 +146,7 @@ class NotificationManagerImpl(
     }
 
     override fun cancelDataSyncNotification() {
-        TODO("Not yet implemented")
+        notificationManager.cancel(SYNC_DATA_NOTIFICATION_ID)
     }
 
     private fun createForegroundInfo(
