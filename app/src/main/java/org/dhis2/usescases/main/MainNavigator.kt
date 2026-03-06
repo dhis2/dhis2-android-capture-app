@@ -11,6 +11,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.dhis2.R
@@ -35,6 +40,7 @@ class MainNavigator(
         @StringRes val title: Int,
         @IdRes val navViewId: Int,
     ) {
+        NONE(-1, -1),
         PROGRAMS(R.string.done_task, R.id.menu_home),
         VISUALIZATIONS(R.string.done_task, R.id.menu_home),
         QR(R.string.QR_SCANNER, R.id.qr_scan),
@@ -45,7 +51,14 @@ class MainNavigator(
 
     private var currentScreen = MutableLiveData<MainScreen?>(null)
     var selectedScreen: LiveData<MainScreen?> = currentScreen
+
+    private var _currentScreen = MutableStateFlow<MainScreen>(MainScreen.NONE)
+    var selectedScreenFlow: StateFlow<MainScreen> = _currentScreen.asStateFlow()
+
     private var currentFragment: Fragment? = null
+
+    private val _transitionChannel = Channel<Unit>()
+    val transitionChannel = _transitionChannel.receiveAsFlow()
 
     fun isHome(): Boolean = isPrograms() || isVisualizations()
 
@@ -90,6 +103,7 @@ class MainNavigator(
         languageSelectorOpened: Boolean = false,
     ) {
         when (MainScreen.valueOf(screenToRestoreName)) {
+            MainScreen.NONE -> return
             MainScreen.PROGRAMS -> openPrograms()
             MainScreen.VISUALIZATIONS -> openVisualizations()
             MainScreen.QR -> openQR()
@@ -144,6 +158,7 @@ class MainNavigator(
             currentFragment = fragment
 
             CoroutineScope(dispatcherProvider.ui()).launch {
+                _transitionChannel.send(Unit)
                 withContext(dispatcherProvider.io()) {
                     val transaction: FragmentTransaction = fragmentManager.beginTransaction()
                     transaction

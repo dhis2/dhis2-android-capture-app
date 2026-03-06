@@ -12,7 +12,6 @@ class ConfigureHomeNavigationBar(
         try {
             val list =
                 buildList {
-                    add(BottomNavigationItem.Program)
                     if (homeRepository.hasHomeAnalytics()) {
                         add(BottomNavigationItem.Analytics)
                     }
