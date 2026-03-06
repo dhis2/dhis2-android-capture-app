@@ -27,7 +27,9 @@ fun FragmentActivity.addPinBottomSheet(
 ): ComposeView? {
     val decorView = window?.decorView as? ViewGroup ?: return null
     return ComposeView(this).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setViewCompositionStrategy(
+            ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool,
+        )
         setContent {
             PinBottomSheet(
                 mode = mode,
