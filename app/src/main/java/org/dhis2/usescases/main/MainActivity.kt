@@ -21,6 +21,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
@@ -97,6 +98,7 @@ class MainActivity :
         }
 
     private var backDropActive = false
+    private var pinComposeView: ComposeView? = null
 
     private val requestWritePermissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -263,6 +265,7 @@ class MainActivity :
 
     override fun onPause() {
         presenter.onDetach()
+        removePinBottomSheet()
         super.onPause()
     }
 
@@ -512,15 +515,26 @@ class MainActivity :
 
     override fun onLockClick() {
         if (!presenter.isPinStored()) {
+            if (pinComposeView != null) return
             binding.mainDrawerLayout.closeDrawers()
-            addPinBottomSheet(
+            pinComposeView = addPinBottomSheet(
                 mode = PinMode.SET,
-                onSuccess = { presenter.blockSession() },
-                onDismiss = {},
+                onSuccess = {
+                    removePinBottomSheet()
+                    presenter.blockSession()
+                },
+                onDismiss = { removePinBottomSheet() },
             )
         } else {
             presenter.blockSession()
         }
+    }
+
+    private fun removePinBottomSheet() {
+        pinComposeView?.let { view ->
+            (window?.decorView as? android.view.ViewGroup)?.removeView(view)
+        }
+        pinComposeView = null
     }
 
     private fun backPressed() {
