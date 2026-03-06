@@ -174,7 +174,9 @@ private fun SettingItemList(
     onSettingsUiAction: (SettingsUiAction) -> Unit,
 ) {
     val context = LocalContext.current
-    val primaryColor = ColorUtils().getThemePrimaryColor(context)
+    val primaryColor = remember(context) {
+        ColorUtils().getThemePrimaryColor(context)
+    }
 
     LazyColumn(
         modifier =
