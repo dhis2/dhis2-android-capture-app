@@ -40,7 +40,7 @@ class DateProviderTest {
             generateFieldUiModel(FIELD_UI_MODEL_UID, DATE_VALUE, DATE_VALUE, ValueType.DATE)
         composeTestRule.setContent {
             ProvideInputDate(
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 modifier = Modifier.testTag(INPUT_DATE_TEST_TAG),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
@@ -65,7 +65,7 @@ class DateProviderTest {
         )
         composeTestRule.setContent {
             ProvideInputDate(
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 modifier = Modifier.testTag(INPUT_DATE_TEST_TAG),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
@@ -88,7 +88,7 @@ class DateProviderTest {
         composeTestRule.setContent {
             ProvideInputDate(
                 modifier = Modifier.testTag(INPUT_DATE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 onNextClicked = {},

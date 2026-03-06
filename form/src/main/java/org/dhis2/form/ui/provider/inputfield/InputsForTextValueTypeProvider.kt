@@ -159,7 +159,7 @@ private fun ProvideQRInput(
 @Composable
 private fun ProvideDefaultTextInput(
     modifier: Modifier,
-    inputStyle: InputStyle = InputStyle.DataInputStyle(),
+    inputStyle: InputStyle = InputStyle.DarkInputStyle(),
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     focusManager: FocusManager,
