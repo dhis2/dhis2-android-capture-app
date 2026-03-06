@@ -60,7 +60,7 @@ const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
 
 @OptIn(ExperimentalAtomicApi::class)
-class MainVIewModel(
+class MainViewModel(
     private val preferences: PreferenceProvider,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
