@@ -10,7 +10,6 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
-import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
@@ -30,7 +29,6 @@ class ValueStoreImpl(
     private val crashReportController: CrashReportController,
     private val networkUtils: NetworkUtils,
     private val searchTEIRepository: SearchTEIRepository,
-    private val fieldErrorMessageProvider: FieldErrorMessageProvider,
     private val resourceManager: ResourceManager,
 ) : ValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
@@ -66,78 +64,6 @@ class ValueStoreImpl(
                     resourceManager.getString(R.string.data_values_save_error),
                 )
         }
-
-    override suspend fun save(
-        orgUnitUid: String,
-        periodId: String,
-        attributeOptionComboUid: String,
-        dataElementUid: String,
-        categoryOptionComboUid: String,
-        value: String?,
-    ): Flowable<StoreResult> {
-        val dataValueObject =
-            d2.dataValueModule().dataValues().value(
-                periodId,
-                orgUnitUid,
-                dataElementUid,
-                categoryOptionComboUid,
-                attributeOptionComboUid,
-            )
-
-        val validator =
-            d2
-                .dataElementModule()
-                .dataElements()
-                .uid(dataElementUid)
-                .blockingGet()
-                ?.valueType()
-                ?.validator
-
-        return if (!value.isNullOrEmpty()) {
-            if (dataValueObject.blockingExists() &&
-                dataValueObject.blockingGet()?.value() == value
-            ) {
-                Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
-            } else {
-                when (val validation = validator?.validate(value)) {
-                    is Result.Failure ->
-                        Flowable.just(
-                            StoreResult(
-                                uid = "",
-                                valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                                valueStoreResultMessage =
-                                    fieldErrorMessageProvider
-                                        .getFriendlyErrorMessage(validation.failure),
-                            ),
-                        )
-
-                    is Result.Success ->
-                        dataValueObject
-                            .set(value)
-                            .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
-
-                    else ->
-                        Flowable.just(
-                            StoreResult(
-                                uid = "",
-                                valueStoreResult = ValueStoreResult.ERROR_UPDATING_VALUE,
-                                valueStoreResultMessage =
-                                    fieldErrorMessageProvider
-                                        .defaultValidationErrorMessage(),
-                            ),
-                        )
-                }
-            }
-        } else {
-            if (dataValueObject.blockingExists()) {
-                dataValueObject
-                    .deleteIfExist()
-                    .andThen(Flowable.just(StoreResult("", ValueStoreResult.VALUE_CHANGED)))
-            } else {
-                Flowable.just(StoreResult("", ValueStoreResult.VALUE_HAS_NOT_CHANGED))
-            }
-        }
-    }
 
     override fun saveWithTypeCheck(
         uid: String,
