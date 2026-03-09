@@ -35,7 +35,7 @@
     <string name="sync_error_title">Ошибка синхронизации</string>
     <string name="sync_error_text">Во время синхронизации произошла ошибка. Пожалуйста, повторите попытку.</string>
     <string name="sync_incomplete_error_text">Синхронизация завершена, но мы не получили подтверждения сервера для всех записей. Эти записи по-прежнему отмечены в приложении как \"оффлайн\". Мы рекомендуем повторить синхронизацию.</string>
-    <string name="data_sync_warning_program">ВНИМАНИЕ: Большая часть данных синхронизирована, но некоторые поля представлены с конфликтами. Синхронизируйте конфигурацию и повторите попытку. Если предупреждение сохраняется, проверьте статус синхронизации: программы, отслеживаемые объекты и события с конфликтами отмечены как @.</string>
+    <string name="data_sync_warning_program">ВНИМАНИЕ: Большая часть данных синхронизирована, но некоторые поля представлены с конфликтами. Синхронизируйте конфигурацию и повторите попытку. Если предупреждение сохраняется, проверьте статус синхронизации: программы, отслеживаемые объекты и события с конфликтами отмечены как \@.</string>
     <string name="server_sync_error">Произошла ошибка, и сервер не ответил. Обратитесь к своему администратору.</string>
 
     <string name="search_result_text">%s результатов найдено</string>
@@ -297,7 +297,6 @@
     <string name="search_min_num_attr">Для поиска необходимо ввести как минимум %d атрибутов.</string>
     <string name="search_attr">Чтобы выполнить поиск, необходимо ввести хотя бы один из атрибутов</string>
     <string name="search_max_tei_reached">Есть больше, чем %d результатов. Пожалуйста, введите дополнительные критерии поиска</string>
-    <string name="search_criteria_not_met">Ваши критерии поиска не дали результатов.Пересмотрите свои критерии или введите новые %s</string>
     <string name="search_init">Введите критерии поиска</string>
 
     <!-- QR -->
@@ -689,7 +688,6 @@
     <string name="field_is_mandatory">Это поле обязательно для заполнения</string>
     <string name="security_debugger_message">По соображениям безопасности эта версия приложения не может быть использована с adb. Пожалуйста, используйте учебную версию.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Упс! Что-то пошло не по плану. Позвольте нам вернуть Вас назад в действии. </string>
     <string name="customactivityoncrash_error_activity_restart_app">Вернуться</string>
     <string name="customactivityoncrash_error_activity_close_app">Закрыть приложение</string>
     <string name="customactivityoncrash_error_activity_error_details">Подробнее</string>

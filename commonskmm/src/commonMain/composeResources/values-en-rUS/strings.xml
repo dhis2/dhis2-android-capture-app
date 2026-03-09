@@ -110,7 +110,7 @@
     <string name="search_to_find_more">Search to find more</string>
     <string name="action_done">Done</string>
     <string name="input_not_supported">Not supported</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Password is missing. Please enter password.</string>
@@ -136,7 +136,6 @@
     <string name="error_create_existing_error">Creation aborted. The object already exists.</string>
     <string name="error_delete_non_existing_object">Deletion aborted. The object does not exist.</string>
     <string name="error_instance_keystore">Unable to instantiate keystore.</string>
-    <string name="error_reserve_value_on_server">We couldn´t reserve values for these record. Please contact your admin.</string>
     <string name="error_export_login">Please login to export the database.</string>
     <string name="error_export_encrypted">Exporting an encrypted database is not supported.</string>
     <string name="error_import_exist">You are importing an already existing database.</string>
@@ -163,7 +162,6 @@
     <string name="error_socket_timeout">The server took too much time to respond. We canceled the request. </string>
     <string name="error_relationship_updated">The relationship can\'t be updated.</string>
     <string name="error_too_many_periods">There are too many periods.</string>
-    <string name="error_url_not_found">We couldn´t find the URL. Please verify it.</string>
     <string name="error_account_disabled">Your user account have been disabled. If this is an error, contact your administrator.</string>
     <string name="error_account_locked">Your user account is locked. If this is an error, contact your administrator.</string>
     <string name="error_set_value">The value could not be set.</string>
@@ -178,8 +176,5 @@
     <string name="database_import_failed">Database import failed</string>
     <string name="invalid_file">Invalid file</string>
     <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
-
-</resources>
+    <string name="cancel">Cancel</string>
+    </resources>

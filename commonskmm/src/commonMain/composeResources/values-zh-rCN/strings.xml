@@ -125,7 +125,7 @@
     <string name="no_results_found">没有结果</string>
     <string name="action_done">完成</string>
     <string name="input_not_supported">不支持</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">密码丢失。请输入密码。</string>
@@ -151,7 +151,6 @@
     <string name="error_create_existing_error">创作中止。对象已经存在。</string>
     <string name="error_delete_non_existing_object">删除已中止。对象不存在。</string>
     <string name="error_instance_keystore">无法实例化密钥库。</string>
-    <string name="error_reserve_value_on_server">我们无法为这些记录保留值。请联系您的管理员。</string>
     <string name="error_export_login">请登录以导出数据库。</string>
     <string name="error_export_encrypted">不支持导出加密数据库。</string>
     <string name="error_import_exist">您正在导入一个已经存在的数据库。</string>
@@ -178,7 +177,6 @@
     <string name="error_socket_timeout">服务器花费了太多时间来响应。我们取消了请求。</string>
     <string name="error_relationship_updated">关系无法更新。</string>
     <string name="error_too_many_periods">期间太多了。</string>
-    <string name="error_url_not_found">我们找不到 URL。请验证一下。</string>
     <string name="error_account_disabled">您的用户帐户已被禁用。如果这是错误，请联系您的管理员。</string>
     <string name="error_account_locked">您的用户帐户被锁定。如果这是错误，请联系您的管理员。</string>
     <string name="error_set_value">无法设置该值。</string>
@@ -190,8 +188,11 @@
     <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
     <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
     <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">OR</string>
+    <string name="cancel">取消</string>
+    <string name="ok">OK</string>
 
 </resources>

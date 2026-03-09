@@ -24,13 +24,13 @@
     <string name="icrc_staff_members">Chỉ dành cho nhân viên ICRC</string>
     <string name="username">Tên đăng nhập</string>
     <string name="password">Mật khẩu</string>
-    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="forgot_password">Quên mật khẩu\?</string>
 
     <string name="recent_activities_loading_message">Đang tải các hoạt động gần đây&#8230;</string>
     <string name="recent_activities_empty_message">Bạn chưa thực hiện bất kỳ hoạt động nào</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230;</string>
+    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&#8230</string>
     <string name="metadata_sync_error">Không thể hoàn thành đồng bộ siêu dữ liệu</string>
     <string name="data_sync_in_progress">Đang đồng bộ dữ liệu&#3230;</string>
     <string name="data_sync_error">Không thể hoàn thành đồng bộ dữ liệu</string>
@@ -88,9 +88,7 @@
     <string name="mandatory_facility_selection">
         Điền đầy đủ các trường dữ liệu cơ sở trước khi bạn có thể tiếp tục
     </string>
-    <string name="mandatory_transaction_date_selection">
-        Trường \"Phân bổ đến\" phải được điền đầy đủ trước khi tiếp tục
-    </string>
+    <string name="mandatory_transaction_date_selection">\n        Điền đầy đủ Trường \"Phân bổ đến\" trước khi tiếp tục\n    </string>
     <string name="transaction_completed">
         Giao dịch vưa được hoàn thành!
     </string>
@@ -187,9 +185,7 @@
     <string name="speech_timeout_error">Không nhận được đầu vào bằng giọng nói</string>
     <string name="unknown_speech_error">Một lỗi không xác định đã xuất hiện.</string>
     <string name="non_numeric_speech_input_error">Không chấp nhận đầu vào không phải là số: \"%s\"</string>
-    <string name="negative_number_speech_input_error">
-        Không chấp nhận đầu vào là số âm: \"%s\"
-    </string>
+    <string name="negative_number_speech_input_error">\n        Không chấp nhận đầu vào là số âm: \"%s\"\n    </string>
 
     <string name="openid_config_load_error">Không thể tải cấu hình OpenID</string>
     <string name="unexpected_openid_authentication_error">

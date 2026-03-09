@@ -23,7 +23,7 @@
     <string name="conf_error_value_option_set">Hodnota pole %s nepatří do možnosti nastavené v položce %s</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
-    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený?</string>
+    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
     <string name="required">Vyžadováno</string>
     <string name="date">datum</string>
     <string name="hint_year">Let</string>
@@ -57,13 +57,13 @@
     <string name="complete">Dokončit</string>
     <string name="discard_changes">Zrušit změny</string>
     <string name="saved">Uloženo!</string>
-    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat?</string>
-    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat?</string>
-    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat?</string>
+    <string name="event_error_on_complete">Máte několik chybových hlášení.\nChcete je zkontrolovat\?</string>
+    <string name="missing_error_fields_events">Některá pole obsahují chyby a neukládají se. \nChcete formulář zkontrolovat\?</string>
+    <string name="review_message">Některé oblasti vyžadují vaši pozornost.\nChcete formulář zkontrolovat\?</string>
     <string name="not_now">Teď ne</string>
     <string name="save_anyway">Přesto uložit</string>
     <string name="keep_editing">Pokračovat v úpravách</string>
-    <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný?</string>
+    <string name="event_can_be_completed">Chcete tento formulář označit jako vyplněný\?</string>
     <string name="discard_go_back">Pokud nyní odejdete, všechny informace ve formuláři budou zahozeny.</string>
     <string name="field_errors_not_saved_discard">Některá pole obsahují chyby a neukládají se. \nPokud je nyní ukončíte, změny budou zrušeny.</string>
     <string name="field_errors_not_saved">Některá pole obsahují chyby a neuloží se.</string>
@@ -138,7 +138,7 @@
     <string name="search_to_find_more">Hledat pro nalezení dalších</string>
     <string name="action_done">Hotovo</string>
     <string name="input_not_supported">Není podporováno</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Chybí heslo. Prosím vložte heslo.</string>
@@ -164,7 +164,6 @@
     <string name="error_create_existing_error">Vytváření přerušeno. Objekt již existuje.</string>
     <string name="error_delete_non_existing_object">Mazání přerušeno. Objekt neexistuje.</string>
     <string name="error_instance_keystore">Nelze vytvořit instanci úložiště klíčů.</string>
-    <string name="error_reserve_value_on_server">Pro tyto záznamy jsme nemohli vyhradit hodnoty. Kontaktujte prosím svého administrátora.</string>
     <string name="error_export_login">Pro export databáze se prosím přihlaste.</string>
     <string name="error_export_encrypted">Export šifrované databáze není podporován.</string>
     <string name="error_import_exist">Importujete již existující databázi.</string>
@@ -191,7 +190,6 @@
     <string name="error_socket_timeout">Serveru trvalo příliš dlouho, než odpověděl. Žádost jsme zrušili.</string>
     <string name="error_relationship_updated">Vztah nelze aktualizovat.</string>
     <string name="error_too_many_periods">Období je příliš mnoho.</string>
-    <string name="error_url_not_found">Adresu URL jsme nenašli. Prosím ověřte to.</string>
     <string name="error_account_disabled">Váš uživatelský účet byl deaktivován. Pokud se jedná o chybu, kontaktujte svého správce.</string>
     <string name="error_account_locked">Váš uživatelský účet je uzamčen. Pokud se jedná o chybu, kontaktujte svého správce.</string>
     <string name="error_set_value">Hodnotu nelze nastavit.</string>
@@ -207,8 +205,13 @@
     <string name="invalid_file">Neplatný soubor</string>
     <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>
     <string name="openid_login_cancelled">Ověřování zrušeno</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">OR</string>
+    <string name="age">VĚK</string>
+    <string name="date_of_birth">DATUM NAROZENÍ</string>
+    <string name="cancel">Zrušit</string>
+    <string name="ok">OK</string>
 
 </resources>

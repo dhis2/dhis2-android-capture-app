@@ -68,8 +68,7 @@
     <string name="search_to_find_more">खोजें और अधिक पाएं</string>
     <string name="action_done">पूरा हुआ</string>
     <string name="input_not_supported">सपोर्टेड नहीं है</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
+    <string name="cancel">रद्द करें</string>
+    <string name="ok">ठीक है</string>
 
 </resources>

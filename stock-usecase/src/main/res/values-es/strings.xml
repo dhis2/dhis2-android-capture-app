@@ -24,7 +24,7 @@
     <string name="icrc_staff_members">Solo para miembros del personal del CICR</string>
     <string name="username">Nombre de usuario</string>
     <string name="password">Contraseña</string>
-    <string name="forgot_password">¿Has olvidado tu contraseña?</string>
+    <string name="forgot_password">¿Has olvidado tu contraseña\?</string>
 
     <string name="recent_activities_loading_message">Cargando actividades recientes&#8230;</string>
     <string name="recent_activities_empty_message">Aún no has realizado ninguna actividad</string>
@@ -88,9 +88,7 @@
     <string name="mandatory_facility_selection">
         Debe seleccionar el establecimiento antes de poder continuar
     </string>
-    <string name="mandatory_transaction_date_selection">
-        Se debe completar el campo \"Distribuido a\" antes de poder continuar
-    </string>
+    <string name="mandatory_transaction_date_selection">\n        Se debe completar el campo \"Distribuido a\" antes de poder continuar\n    </string>
     <string name="transaction_completed">
        ¡La transacción se completó exitosamente!
     </string>
@@ -190,9 +188,7 @@ android.permission.RECORD_AUDIO
     <string name="speech_timeout_error">No se detectó entrada de voz</string>
     <string name="unknown_speech_error">Se ha producido un error desconocido.</string>
     <string name="non_numeric_speech_input_error">No se permiten entradas no numéricas: \"%s\"</string>
-    <string name="negative_number_speech_input_error">
-        No se permite la entrada de números negativos: \"%s\"
-    </string>
+    <string name="negative_number_speech_input_error">\n        No se permite la entrada de números negativos: \"%s\"\n    </string>
 
     <string name="openid_config_load_error">No se puede cargar la configuración de OpenID</string>
     <string name="unexpected_openid_authentication_error">

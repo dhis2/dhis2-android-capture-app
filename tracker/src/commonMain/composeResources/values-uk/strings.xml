@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="empty_relationships">Немає зв’язків, натисніть «+», щоб додати новий.</string>
+    <string name="empty_relationships">Немає зв\'язків, натисніть «+», щоб додати новий.</string>
     <string name="relationship">Зв\'язок</string>
     <string name="no_data">Немає даних</string>
     <string name="syncing">Синхронізація...</string>
@@ -11,4 +11,7 @@
     <string name="clear_search">Очистити пошук</string>
     <string name="search">Пошук</string>
     <string name="optional">Необов\'язково</string>
+    <string name="equal_search_operator">Тільки точне збіги</string>
+    <string name="yes">так</string>
+    <string name="no">ні</string>
     </resources>
