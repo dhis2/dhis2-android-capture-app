@@ -102,6 +102,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -124,6 +131,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -146,6 +160,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -169,6 +190,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -192,6 +220,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -215,6 +250,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -237,6 +279,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -259,6 +308,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -281,6 +337,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -303,6 +366,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -325,6 +395,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -347,6 +424,13 @@ fun TrackerInputProvider(
                 },
                 imeAction = ImeAction.Next,
                 onImeActionClick = onImeActionClick,
+                onFocusChanged = { isFocused ->
+                    handleOnFocusChange(
+                        isFocused = isFocused,
+                        inputModelId = inputModel.uid,
+                        onUiEvent = onUiEvent,
+                    )
+                },
             )
         }
 
@@ -774,3 +858,13 @@ fun manageOnValueChange(
 }
 
 private fun getYesOnlyValue(checked: Boolean): String? = if (!checked) "true" else null
+
+private fun handleOnFocusChange(
+    isFocused: Boolean,
+    inputModelId: String,
+    onUiEvent: (TrackerInputUiEvent) -> Unit,
+) {
+    if (isFocused) {
+        onUiEvent(TrackerInputUiEvent.OnItemClick(inputModelId))
+    }
+}
