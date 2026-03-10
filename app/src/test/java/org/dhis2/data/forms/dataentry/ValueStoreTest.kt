@@ -28,7 +28,6 @@ class ValueStoreTest {
     private lateinit var dvValueStore: ValueStore
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val dhisEnrollmentUtils: DhisEnrollmentUtils = DhisEnrollmentUtils(d2)
-    private val fieldErrorMessageProvider: FieldErrorMessageProvider = mock()
     private val crashReportController: CrashReportController = mock()
     private val networkUtils: NetworkUtils = mock()
     private val searchTEIRepository: SearchTEIRepository = mock()
@@ -45,7 +44,6 @@ class ValueStoreTest {
                 crashReportController,
                 networkUtils,
                 searchTEIRepository,
-                fieldErrorMessageProvider,
                 resourceManager,
             )
         deValueStore =
@@ -57,7 +55,6 @@ class ValueStoreTest {
                 crashReportController,
                 networkUtils,
                 searchTEIRepository,
-                fieldErrorMessageProvider,
                 resourceManager,
             )
         dvValueStore =
@@ -69,7 +66,6 @@ class ValueStoreTest {
                 crashReportController,
                 networkUtils,
                 searchTEIRepository,
-                fieldErrorMessageProvider,
                 resourceManager,
             )
     }

@@ -277,7 +277,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 crashReportController,
                                 networkUtils,
                                 searchTEIRepository,
-                                new FieldErrorMessageProvider(),
                                 resources
                         );
 

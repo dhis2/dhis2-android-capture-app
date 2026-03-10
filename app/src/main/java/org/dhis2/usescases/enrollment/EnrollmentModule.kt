@@ -191,7 +191,6 @@ class EnrollmentModule(
         searchTEIRepository: SearchTEIRepository,
         resourceManager: ResourceManager,
     ): ValueStore {
-        val fieldErrorMessageProvider = FieldErrorMessageProvider()
         return ValueStoreImpl(
             d2,
             enrollmentRepository.blockingGet()?.trackedEntityInstance()!!,
@@ -200,7 +199,6 @@ class EnrollmentModule(
             crashReportController,
             networkUtils,
             searchTEIRepository,
-            fieldErrorMessageProvider,
             resourceManager,
         )
     }
