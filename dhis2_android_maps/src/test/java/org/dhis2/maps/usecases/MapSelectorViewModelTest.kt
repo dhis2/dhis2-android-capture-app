@@ -25,7 +25,6 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.FeatureType
 import org.hisp.dhis.android.core.map.layer.MapLayer
 import org.hisp.dhis.android.core.map.layer.MapLayerPosition
-import org.hisp.dhis.android.core.settings.SystemSetting
 import org.hisp.dhis.mobile.ui.designsystem.component.model.LocationItemModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -133,20 +132,8 @@ class MapSelectorViewModelTest {
     @Test
     fun shouldFetchBaseMaps() =
         runTest {
-            whenever(
-                d2
-                    .settingModule()
-                    .systemSetting()
-                    .defaultBaseMap()
-                    .blockingGet(),
-            ) doReturn SystemSetting.builder().value("defaultBaseMapUid").build()
-            whenever(
-                d2
-                    .mapsModule()
-                    .mapLayers()
-                    .withImageryProviders()
-                    .blockingGet(),
-            ) doReturn
+            mockBasemaps(
+                d2,
                 listOf(
                     MapLayer
                         .builder()
@@ -160,7 +147,9 @@ class MapSelectorViewModelTest {
                         .external(false)
                         .mapLayerPosition(MapLayerPosition.BASEMAP)
                         .build(),
-                )
+                ),
+            )
+            mockOverlays(d2, emptyList())
             val baseMaps = mapSelectorViewModel.fetchMapStyles()
             assertTrue(baseMaps.isNotEmpty())
         }
