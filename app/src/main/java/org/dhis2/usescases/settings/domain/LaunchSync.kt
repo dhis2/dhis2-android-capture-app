@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
@@ -34,36 +35,26 @@ class LaunchSync(
         syncBackgroundJobAction
             .observeMetadataJob()
             .map { workStatuses ->
-                var workState = workStatuses.firstOrNull()?.status
-                when (workState) {
-                    Status.Enqueue,
-                    Status.Running,
-                    Status.Blocked,
-                    -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.InProgress) }
-
-                    Status.Cancelled -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Cancelled) }
-                    null -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.None) }
-                    else -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Finished) }
+                val currentSyncStatus = when {
+                    workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
+                    workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
+                    workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
+                    else -> SyncStatus.Finished
                 }
-                syncStatus.value
+                syncStatus.updateAndGet { it.copy(metadataSyncProgress = currentSyncStatus) }
             }
 
     private val dataWorkInfo =
         syncBackgroundJobAction
             .observeDataJob()
             .map { workStatuses ->
-                var workState = workStatuses.firstOrNull()?.status
-                when (workState) {
-                    Status.Enqueue,
-                    Status.Running,
-                    Status.Blocked,
-                    -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.InProgress) }
-
-                    Status.Cancelled -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Cancelled) }
-                    null -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.None) }
-                    else -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Finished) }
+                val currentSyncStatus = when {
+                    workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
+                    workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
+                    workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
+                    else -> SyncStatus.Finished
                 }
-                syncStatus.value
+                syncStatus.updateAndGet { it.copy(dataSyncProgress = currentSyncStatus) }
             }
 
     val syncWorkInfo = merge(metadataWorkInfo, dataWorkInfo)
