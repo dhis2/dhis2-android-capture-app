@@ -146,6 +146,9 @@ class MainNavigator(
         )
     }
 
+    /***
+     * Replace with _transitionChannel.send(Unit) once the MainViewModel is used
+     * */
     private fun beginTransaction(
         fragment: Fragment,
         screen: MainScreen,
@@ -158,7 +161,6 @@ class MainNavigator(
             currentFragment = fragment
 
             CoroutineScope(dispatcherProvider.ui()).launch {
-                _transitionChannel.send(Unit)
                 withContext(dispatcherProvider.io()) {
                     val transaction: FragmentTransaction = fragmentManager.beginTransaction()
                     transaction
