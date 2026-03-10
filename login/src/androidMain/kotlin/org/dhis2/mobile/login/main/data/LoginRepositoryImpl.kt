@@ -366,46 +366,50 @@ class LoginRepositoryImpl(
                             ),
                         )
                 openIdController.handleIntent(intent) { resultIntent ->
-                    val result =
-                        when {
-                            resultIntent.isFailure -> {
-                                kotlin.Result.failure(
-                                    resultIntent.exceptionOrNull()
-                                        ?: Exception(getString(Res.string.openid_process_cancelled)),
-                                )
-                            }
-
-                            resultIntent.isSuccess and (resultIntent.getOrNull() !is IntentWithRequestCode) -> {
-                                kotlin.Result.failure(Exception(getString(Res.string.openid_invalid_auth_result)))
-                            }
-
-                            else -> {
-                                try {
-                                    val intent = resultIntent.getOrNull() as IntentWithRequestCode
-                                    d2
-                                        .userModule()
-                                        .openIdHandler()
-                                        .blockingHandleLogInResponse(
-                                            serverUrl = serverUrl,
-                                            intent = intent.intent,
-                                            requestCode = intent.requestCode,
-                                        )
-
-                                    kotlin.Result.success(Unit)
-                                } catch (e: Exception) {
+                    withContext(dispatcher.io) {
+                        val result =
+                            when {
+                                resultIntent.isFailure -> {
                                     kotlin.Result.failure(
-                                        Exception(
-                                            d2ErrorMessageProvider.getErrorMessage(
-                                                e,
-                                                isNetworkAvailable,
-                                            ),
-                                        ),
+                                        resultIntent.exceptionOrNull()
+                                            ?: Exception(getString(Res.string.openid_process_cancelled)),
                                     )
                                 }
-                            }
-                        }
 
-                    continuation.resume(value = result) { _, _, _ -> }
+                                resultIntent.isSuccess and (resultIntent.getOrNull() !is IntentWithRequestCode) -> {
+                                    kotlin.Result.failure(Exception(getString(Res.string.openid_invalid_auth_result)))
+                                }
+
+                                else -> {
+                                    try {
+                                        val intent =
+                                            resultIntent.getOrNull() as IntentWithRequestCode
+
+                                        d2
+                                            .userModule()
+                                            .openIdHandler()
+                                            .blockingHandleLogInResponse(
+                                                serverUrl = serverUrl,
+                                                intent = intent.intent,
+                                                requestCode = intent.requestCode,
+                                            )
+
+                                        kotlin.Result.success(Unit)
+                                    } catch (e: Exception) {
+                                        kotlin.Result.failure(
+                                            Exception(
+                                                d2ErrorMessageProvider.getErrorMessage(
+                                                    e,
+                                                    isNetworkAvailable,
+                                                ),
+                                            ),
+                                        )
+                                    }
+                                }
+                            }
+
+                        continuation.resume(value = result) { _, _, _ -> }
+                    }
                 }
                 continuation.invokeOnCancellation {
                     kotlin.Result.failure<Unit>(Exception(""))
