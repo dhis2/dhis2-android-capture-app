@@ -43,7 +43,12 @@ class LoginRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNodeWithTag(SERVER_VALIDATION_CONTENT_BUTTON_TAG).performClick()
     }
 
+    @OptIn(ExperimentalTestApi::class)
     fun typeServerToValidate(server: String) {
+        composeTestRule.waitUntilExactlyOneExists(
+            hasTestTag("INPUT_QR_CODE_FIELD"),
+            TIMEOUT
+        )
         composeTestRule.onNodeWithTag("INPUT_QR_CODE_FIELD").performTextReplacement(server)
     }
 
