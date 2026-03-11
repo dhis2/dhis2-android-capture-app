@@ -2,67 +2,69 @@ package org.dhis2.mobile.sync.data
 
 import android.content.Context
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import org.dhis2.mobile.commons.notifications.NotificationManager
 import org.dhis2.mobile.commons.notifications.WorkerNotificationInfo
 import org.dhis2.mobile.sync.R
-import org.dhis2.mobile.sync.domain.SyncMetadata
+import org.dhis2.mobile.sync.domain.SyncData
+import org.dhis2.mobile.sync.model.DataSyncTask
 import org.dhis2.mobile.sync.resources.Res
 import org.dhis2.mobile.sync.resources.app_name
-import org.dhis2.mobile.sync.resources.syncing_configuration
+import org.dhis2.mobile.sync.resources.syncing_data
 import org.jetbrains.compose.resources.getString
 
-const val METADATA_MESSAGE = "METADATA_MESSAGE"
-
-class SyncMetadataWorker(
+class SyncDataWorker(
     context: Context,
     workerParams: WorkerParameters,
-    private val syncMetadata: SyncMetadata,
+    private val syncData: SyncData,
     private val notificationManager: NotificationManager,
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         setForegroundAsync(getForegroundInfo())
 
         val notificationTitle = getString(Res.string.app_name)
-        val notificationText = getString(Res.string.syncing_configuration)
+        val notificationText = getString(Res.string.syncing_data)
 
-        notificationManager.displayMetadataSyncNotification(
+        notificationManager.displayDataSyncNotification(
             smallIcon = R.drawable.ic_sync,
             contentTitle = notificationTitle,
             contentText = notificationText,
-            progress = 0,
+            0,
         )
 
         val result =
-            syncMetadata { progress ->
-                notificationManager.displayMetadataSyncNotification(
+            syncData { progressData ->
+                notificationManager.displayDataSyncNotification(
                     smallIcon = R.drawable.ic_sync,
                     contentTitle = notificationTitle,
-                    contentText = notificationText,
-                    progress = progress,
+                    contentText =
+                        when (progressData.dataSyncTask) {
+                            DataSyncTask.DownloadDataValue -> "Downloading data values"
+                            DataSyncTask.DownloadEvent -> "Downloading events"
+                            DataSyncTask.DownloadFileResource -> "Downloading file resources"
+                            DataSyncTask.DownloadTEI -> "Downloading TEIs"
+                            DataSyncTask.SyncReservedValues -> "Downloading reserved values"
+                            DataSyncTask.UploadDataValue -> "Uploading data values"
+                            DataSyncTask.UploadEvent -> "Uploading events"
+                            DataSyncTask.UploadTEI -> "Uploading TEIs"
+                        },
+                    progress = progressData.progress?.toInt() ?: -1,
                 )
             }
-
-        notificationManager.cancelMetadataSyncNotification()
+        notificationManager.cancelDataSyncNotification()
         return when {
             result.isSuccess -> Result.success()
-            else ->
-                Result.failure(
-                    createOutputData(
-                        result.exceptionOrNull()?.message ?: "Unknown error",
-                    ),
-                )
+            else -> Result.failure()
         }
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
         val notificationModel =
-            notificationManager.getMetadataSyncNotification(
+            notificationManager.getDataSyncNotification(
                 smallIcon = R.drawable.ic_sync,
                 contentTitle = getString(Res.string.app_name),
-                contentText = getString(Res.string.syncing_configuration),
+                contentText = getString(Res.string.syncing_data),
                 progress = -1,
             )
         val notificationInfo =
@@ -72,10 +74,4 @@ class SyncMetadataWorker(
                 )
         return notificationInfo.foregroundInfo
     }
-
-    private fun createOutputData(message: String) =
-        Data
-            .Builder()
-            .putString(METADATA_MESSAGE, message)
-            .build()
 }

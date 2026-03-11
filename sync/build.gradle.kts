@@ -65,6 +65,7 @@ kotlin {
             implementation(libs.androidx.work)
             compileOnly(libs.androidx.compose.preview)
             compileOnly(libs.androidx.compose.uitooling)
+            api(libs.koin.work)
         }
 
         getByName("androidHostTest") {

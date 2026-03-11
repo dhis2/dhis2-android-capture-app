@@ -21,6 +21,7 @@ import org.dhis2.App
 import org.dhis2.R
 import org.dhis2.commons.sync.OnDismissListener
 import org.dhis2.commons.sync.SyncContext
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.general.FragmentGlobalAbstract
 import org.dhis2.usescases.main.navigateTo
 import org.dhis2.usescases.main.toHomeItemData
@@ -28,12 +29,15 @@ import org.dhis2.utils.HelpManager
 import org.dhis2.utils.analytics.SELECT_PROGRAM
 import org.dhis2.utils.analytics.TYPE_PROGRAM_SELECTED
 import org.dhis2.utils.granularsync.SyncStatusDialog
+import org.koin.android.ext.android.inject
 import timber.log.Timber
 import javax.inject.Inject
 
 class ProgramFragment :
     FragmentGlobalAbstract(),
     ProgramView {
+    private val syncStatusController: SyncStatusController by inject()
+
     @Inject
     lateinit var programViewModelFactory: ProgramViewModelFactory
 
@@ -51,7 +55,10 @@ class ProgramFragment :
     override fun onAttach(context: Context) {
         super.onAttach(context)
         activity?.let {
-            (it.applicationContext as App).userComponent()?.plus(ProgramModule(this))?.inject(this)
+            (it.applicationContext as App)
+                .userComponent()
+                ?.plus(ProgramModule(this, syncStatusController))
+                ?.inject(this)
         }
     }
 

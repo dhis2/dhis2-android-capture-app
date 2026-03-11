@@ -57,9 +57,9 @@ import org.dhis2.R
 import org.dhis2.commons.bindings.addIf
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.ui.icons.toIconData
-import org.dhis2.data.service.SyncStatusData
 import org.dhis2.mobile.commons.extensions.toColorInt
 import org.dhis2.mobile.commons.model.MetadataIconData
+import org.dhis2.mobile.sync.model.SyncStatusData
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
 import org.hisp.dhis.mobile.ui.designsystem.component.Avatar

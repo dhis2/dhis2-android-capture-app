@@ -3,6 +3,7 @@ package org.dhis2.di
 import android.app.Application
 import org.dhis2.BuildConfig
 import org.dhis2.android.rtsm.di.stockModule
+import org.dhis2.appModule
 import org.dhis2.commons.di.filterModule
 import org.dhis2.commons.di.resourceManagerModule
 import org.dhis2.commons.filters.periods.di.filterPeriodsModule
@@ -19,6 +20,7 @@ import org.dhis2.utils.analytics.matomo.matomoModule
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 
 object KoinInitialization {
@@ -32,7 +34,9 @@ object KoinInitialization {
                     "isTrainingFlavor" to (BuildConfig.FLAVOR == "dhis2Training"),
                 ),
             )
+            workManagerFactory()
             modules(
+                appModule,
                 serverModule(d2Configuration),
                 commonsModule,
                 aggregatesModule,

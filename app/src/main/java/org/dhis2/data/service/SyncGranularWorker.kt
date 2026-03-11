@@ -44,6 +44,7 @@ import org.dhis2.commons.Constants.ORG_UNIT
 import org.dhis2.commons.Constants.PERIOD_ID
 import org.dhis2.commons.Constants.UID
 import org.dhis2.commons.sync.ConflictType
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import javax.inject.Inject
 
 private const val GRANULAR_CHANNEL = "sync_granular_notification"
@@ -52,6 +53,7 @@ private const val SYNC_GRANULAR_ID = 8071988
 class SyncGranularWorker(
     context: Context,
     workerParams: WorkerParameters,
+    private val syncStatusController: SyncStatusController,
 ) : Worker(context, workerParams) {
     @Inject
     internal lateinit var presenter: SyncPresenter
@@ -59,7 +61,7 @@ class SyncGranularWorker(
     override fun doWork(): Result {
         (applicationContext as App)
             .userComponent()
-            ?.plus(SyncGranularRxModule())
+            ?.plus(SyncGranularRxModule(syncStatusController))
             ?.inject(this)
 
         val uid = inputData.getString(UID) ?: return Result.failure()
