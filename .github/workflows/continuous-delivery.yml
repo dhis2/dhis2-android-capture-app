@@ -69,7 +69,7 @@ jobs:
 
       # Upload Artifact Build
       - name: Upload Android artifacts
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: ${{ env.repository_name }} - Android APK - ${{ steps.date.outputs.date }}
           path: ${{ steps.apk-path.outputs.apk_path }}
