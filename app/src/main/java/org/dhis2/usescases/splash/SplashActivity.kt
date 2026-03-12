@@ -55,22 +55,37 @@ class SplashActivity :
     override fun onResume() {
         super.onResume()
 
-        if (BuildConfig.DEBUG || !RootBeer(this).isRootedWithoutBusyBoxCheck) {
-            if (!isDebuggerEnable() || !detectDebugger()) {
-                presenter.init()
-            } else {
-                showRootedDialog(
-                    getString(R.string.security_title),
-                    getString(R.string.security_debugger_message),
-                )
-            }
-        } else {
-            showRootedDialog(
+        val isRooted = !BuildConfig.DEBUG && RootBeer(this).isRootedWithBusyBoxCheck
+        val isDebuggerActive = isDebuggerEnable() && detectDebugger()
+
+        when {
+            isRooted -> showRootedDialog(
                 getString(R.string.security_title),
                 getString(R.string.security_rooted_message),
             )
+
+            isDebuggerActive -> showRootedDialog(
+                getString(R.string.security_title),
+                getString(R.string.security_debugger_message),
+            )
+
+            else -> presenter.init()
         }
     }
+
+    private fun isDebuggerEnable(): Boolean =
+        if (!BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhis2Training") {
+            context.applicationContext.applicationInfo.flags and FLAG_DEBUGGABLE != 0
+        } else {
+            false
+        }
+
+    private fun detectDebugger(): Boolean =
+        if (!BuildConfig.DEBUG && BuildConfig.FLAVOR != "dhis2Training") {
+            Debug.isDebuggerConnected()
+        } else {
+            false
+        }
 
     override fun onPause() {
         presenter.destroy()
@@ -153,18 +168,4 @@ class SplashActivity :
             )
         }
     }
-
-    private fun isDebuggerEnable(): Boolean =
-        if (!BuildConfig.DEBUG) {
-            context.applicationContext.applicationInfo.flags and FLAG_DEBUGGABLE != 0
-        } else {
-            false
-        }
-
-    private fun detectDebugger(): Boolean =
-        if (!BuildConfig.DEBUG) {
-            Debug.isDebuggerConnected()
-        } else {
-            false
-        }
 }
