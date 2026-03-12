@@ -102,7 +102,10 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun providesRepository(d2: D2): ServerSettingsRepository = ServerSettingsRepository(d2)
+    fun providesRepository(
+        d2: D2,
+        colorUtils: ColorUtils,
+    ): ServerSettingsRepository = ServerSettingsRepository(d2, colorUtils)
 
     @Provides
     @PerServer
