@@ -34,7 +34,7 @@ public class TeiProgramListActivity extends ActivityGlobalAbstract implements Te
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         String trackedEntityId = getIntent().getStringExtra("TEI_UID");
-        ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule(this, trackedEntityId)).inject(this);
+        ((App) getApplicationContext()).userComponent().plus(new TeiProgramListModule(this, trackedEntityId, getSyncStatusController())).inject(this);
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_tei_program_list);
         binding.setPresenter(presenter);

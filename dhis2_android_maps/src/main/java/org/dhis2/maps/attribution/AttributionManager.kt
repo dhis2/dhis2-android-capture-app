@@ -22,7 +22,7 @@ class AttributionManager(
 ) : AttributionDialogManager(context, maplibreMap) {
     override fun showAttributionDialog(attributionTitles: Array<String>) {
         val attributions: Array<String> =
-            currentBaseMapStyle.sources.attribution
+            currentBaseMapStyle.attribution
                 .split(", ")
                 .map {
                     HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
@@ -34,7 +34,7 @@ class AttributionManager(
         dialog: DialogInterface?,
         which: Int,
     ) {
-        val selectedAttribution = currentBaseMapStyle.sources.attribution.split(", ")[which]
+        val selectedAttribution = currentBaseMapStyle.attribution.split(", ")[which]
         val url =
             HtmlCompat
                 .fromHtml(selectedAttribution, HtmlCompat.FROM_HTML_MODE_LEGACY)

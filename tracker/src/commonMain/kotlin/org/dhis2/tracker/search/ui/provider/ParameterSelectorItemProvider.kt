@@ -10,7 +10,7 @@ import org.dhis2.tracker.input.model.TrackerInputType
 import org.dhis2.tracker.input.ui.action.TrackerInputUiEvent
 import org.dhis2.tracker.input.ui.provider.TrackerInputProvider
 import org.dhis2.tracker.input.ui.state.TrackerInputUiState
-import org.hisp.dhis.mobile.ui.designsystem.component.InputStyle
+import org.hisp.dhis.mobile.ui.designsystem.component.parameter.ParameterInputStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.parameter.model.ParameterSelectorItemModel
 import org.hisp.dhis.mobile.ui.designsystem.resource.provideDHIS2Icon
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
@@ -38,7 +38,7 @@ fun provideParameterSelectorItem(
         inputField = {
             TrackerInputProvider(
                 modifier = Modifier,
-                inputStyle = InputStyle.ParameterInputStyle(),
+                inputStyle = ParameterInputStyle(),
                 inputModel = inputModel,
                 onNextClicked = onNextClicked,
                 onUiEvent = onUiEvent,

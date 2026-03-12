@@ -28,7 +28,6 @@ import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.SearchTEIRepositoryImpl;
-import org.dhis2.data.service.SyncStatusController;
 import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.form.data.metadata.FileResourceConfiguration;
 import org.dhis2.form.data.metadata.OptionSetConfiguration;
@@ -68,6 +67,7 @@ import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider;
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl;
+import org.dhis2.mobile.sync.domain.SyncStatusController;
 import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.tracker.search.data.OptionSetRepository;
 import org.dhis2.tracker.search.data.OptionSetRepositoryImpl;
@@ -100,17 +100,21 @@ public class SearchTEModule {
     private final String initialProgram;
     private final Context moduleContext;
     private final Map<String, List<String>> initialQuery;
+    private final SyncStatusController syncStatusController;
 
     public SearchTEModule(SearchTEContractsModule.View view,
                           String tEType,
                           String initialProgram,
                           Context context,
-                          Map<String, List<String>> initialQuery) {
+                          Map<String, List<String>> initialQuery,
+                          SyncStatusController syncStatusController
+    ) {
         this.view = view;
         this.teiType = tEType;
         this.initialProgram = initialProgram;
         this.moduleContext = context;
         this.initialQuery = initialQuery;
+        this.syncStatusController = syncStatusController;
     }
 
     @Provides
@@ -128,7 +132,6 @@ public class SearchTEModule {
                                                        PreferenceProvider preferenceProvider,
                                                        FilterRepository filterRepository,
                                                        MatomoAnalyticsController matomoAnalyticsController,
-                                                       SyncStatusController syncStatusController,
                                                        ResourceManager resourceManager,
                                                        ColorUtils colorUtils) {
         return new SearchTEPresenter(view, d2, searchRepository, schedulerProvider,

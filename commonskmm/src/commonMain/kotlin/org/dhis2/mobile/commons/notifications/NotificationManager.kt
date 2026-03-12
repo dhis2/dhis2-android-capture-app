@@ -44,4 +44,6 @@ interface NotificationManager {
     fun cancelMetadataSyncNotification()
 
     fun cancelSyncSettingsNotification()
+
+    fun cancelDataSyncNotification()
 }

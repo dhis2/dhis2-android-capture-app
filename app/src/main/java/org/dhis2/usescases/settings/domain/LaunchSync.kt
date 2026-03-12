@@ -1,9 +1,5 @@
 package org.dhis2.usescases.settings.domain
 
-import androidx.lifecycle.asFlow
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.WorkInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -12,9 +8,6 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Actions
 import org.dhis2.commons.matomo.Categories
 import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.data.service.workManager.WorkerItem
-import org.dhis2.data.service.workManager.WorkerType
 import org.dhis2.mobile.commons.providers.TIME_DATA
 import org.dhis2.mobile.commons.providers.TIME_META
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
@@ -26,7 +19,6 @@ import org.dhis2.mobile.sync.model.SyncStatus as Status
 
 class LaunchSync(
     private val syncBackgroundJobAction: SyncBackgroundJobAction,
-    private val workManagerController: WorkManagerController,
     private val preferenceProvider: PreferenceProvider,
     private val analyticsHelper: AnalyticsHelper,
 ) {
@@ -48,19 +40,30 @@ class LaunchSync(
                     Status.Running,
                     Status.Blocked,
                     -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.InProgress) }
+
                     Status.Cancelled -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Cancelled) }
+                    null -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.None) }
                     else -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Finished) }
                 }
                 syncStatus.value
             }
 
     private val dataWorkInfo =
-        workManagerController
-            .getWorkInfosByTagLiveData(Constants.DATA_NOW)
-            .asFlow()
+        syncBackgroundJobAction
+            .observeDataJob()
             .map { workStatuses ->
-                var workState: WorkInfo.State? = workStatuses.getOrNull(0)?.state
-                onWorkStatusesUpdate(workState, Constants.DATA_NOW)
+                var workState = workStatuses.firstOrNull()?.status
+                when (workState) {
+                    Status.Enqueue,
+                    Status.Running,
+                    Status.Blocked,
+                    -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.InProgress) }
+
+                    Status.Cancelled -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Cancelled) }
+                    null -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.None) }
+                    else -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Finished) }
+                }
+                syncStatus.value
             }
 
     val syncWorkInfo = merge(metadataWorkInfo, dataWorkInfo)
@@ -111,57 +114,10 @@ class LaunchSync(
         }
     }
 
-    private fun onWorkStatusesUpdate(
-        workState: WorkInfo.State?,
-        workerTag: String,
-    ): SyncStatusProgress {
-        if (workState != null) {
-            when (workState) {
-                WorkInfo.State.CANCELLED ->
-                    when (workerTag) {
-                        Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Cancelled) }
-                        else -> syncStatus
-                    }
-
-                WorkInfo.State.ENQUEUED,
-                WorkInfo.State.RUNNING,
-                WorkInfo.State.BLOCKED,
-                ->
-                    when (workerTag) {
-                        Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.InProgress) }
-                        else -> syncStatus
-                    }
-
-                else ->
-                    when (workerTag) {
-                        Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Finished) }
-                        else -> syncStatus
-                    }
-            }
-        } else {
-            when (workerTag) {
-                Constants.META_NOW -> syncStatus.update { it.copy(metadataSyncProgress = SyncStatus.Finished) }
-                Constants.DATA_NOW -> syncStatus.update { it.copy(dataSyncProgress = SyncStatus.Finished) }
-                else -> syncStatus
-            }
-        }
-
-        return syncStatus.value
-    }
-
     private fun syncData() {
         analyticsHelper.trackMatomoEvent(Categories.SETTINGS, Actions.SYNC_CONFIG, CLICK)
         analyticsHelper.setEvent(SYNC_DATA_NOW, CLICK, SYNC_DATA_NOW)
-        val workerItem =
-            WorkerItem(
-                Constants.DATA_NOW,
-                WorkerType.DATA,
-                null,
-                null,
-                ExistingWorkPolicy.KEEP,
-                null,
-            )
-        workManagerController.syncDataForWorker(workerItem)
+        syncBackgroundJobAction.launchDataSync(0)
     }
 
     private fun syncMeta() {
@@ -169,12 +125,12 @@ class LaunchSync(
         syncBackgroundJobAction.launchMetadataSync(0)
     }
 
-    private fun updateSyncDataPeriod(seconds: Int) {
+    private suspend fun updateSyncDataPeriod(seconds: Int) {
         if (seconds != Constants.TIME_MANUAL) {
             syncData(seconds)
         } else {
             preferenceProvider.setValue(TIME_DATA, 0)
-            workManagerController.cancelUniqueWork(Constants.DATA)
+            syncBackgroundJobAction.cancelDataSync()
         }
     }
 
@@ -195,16 +151,6 @@ class LaunchSync(
 
     private fun syncData(seconds: Int) {
         preferenceProvider.setValue(TIME_DATA, seconds)
-        workManagerController.cancelUniqueWork(Constants.DATA)
-        val workerItem =
-            WorkerItem(
-                Constants.DATA,
-                WorkerType.DATA,
-                seconds.toLong(),
-                null,
-                null,
-                ExistingPeriodicWorkPolicy.REPLACE,
-            )
-        workManagerController.enqueuePeriodicWork(workerItem)
+        syncBackgroundJobAction.launchDataSync(seconds.toLong())
     }
 }

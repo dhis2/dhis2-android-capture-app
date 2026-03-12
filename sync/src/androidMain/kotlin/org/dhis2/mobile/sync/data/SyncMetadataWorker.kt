@@ -13,19 +13,15 @@ import org.dhis2.mobile.sync.resources.Res
 import org.dhis2.mobile.sync.resources.app_name
 import org.dhis2.mobile.sync.resources.syncing_configuration
 import org.jetbrains.compose.resources.getString
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 const val METADATA_MESSAGE = "METADATA_MESSAGE"
 
 class SyncMetadataWorker(
     context: Context,
     workerParams: WorkerParameters,
-) : CoroutineWorker(context, workerParams),
-    KoinComponent {
-    private val syncMetadata: SyncMetadata by inject()
-    private val notificationManager: NotificationManager by inject()
-
+    private val syncMetadata: SyncMetadata,
+    private val notificationManager: NotificationManager,
+) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         setForegroundAsync(getForegroundInfo())
 

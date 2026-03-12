@@ -18,6 +18,7 @@ kotlin {
         minSdk = libs.versions.minSdk.get().toInt()
         enableCoreLibraryDesugaring = true
         compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) }
+        androidResources { enable = true }
         packaging {
             resources {
                 pickFirsts.add("values*/**")

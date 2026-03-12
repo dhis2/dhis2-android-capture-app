@@ -6,9 +6,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.data.service.SyncPresenterImpl
 import org.dhis2.data.service.SyncRepository
 import org.dhis2.data.service.SyncResult
-import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.workManager.WorkManagerController
-import org.dhis2.utils.analytics.AnalyticsHelper
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.call.D2Progress
 import org.hisp.dhis.android.core.arch.call.D2ProgressStatus
@@ -20,6 +18,7 @@ import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.settings.LimitScope
 import org.hisp.dhis.android.core.settings.ProgramSetting
 import org.hisp.dhis.android.core.settings.ProgramSettings
+import org.hisp.dhis.android.core.settings.SynchronizationSettings
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.tracker.exporter.TrackerD2Progress
 import org.junit.Assert.assertTrue
@@ -35,8 +34,6 @@ class SyncPresenterTest {
 
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val preferences: PreferenceProvider = mock()
-    private val workManagerController: WorkManagerController = mock()
-    private val analyticsHelper: AnalyticsHelper = mock()
     private val syncStatusController: SyncStatusController = mock()
     private val syncRepository: SyncRepository = mock()
 
@@ -46,10 +43,8 @@ class SyncPresenterTest {
             SyncPresenterImpl(
                 d2,
                 preferences,
-                workManagerController,
-                analyticsHelper,
-                syncStatusController,
                 syncRepository,
+                syncStatusController,
             )
     }
 
@@ -61,8 +56,14 @@ class SyncPresenterTest {
                 200,
                 LimitScope.GLOBAL,
             )
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
 
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
@@ -78,8 +79,14 @@ class SyncPresenterTest {
                 LimitScope.PER_OU_AND_PROGRAM,
             )
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && limitByProgram)
@@ -94,8 +101,14 @@ class SyncPresenterTest {
                 LimitScope.PER_PROGRAM,
             )
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && !limitByOU && limitByProgram)
@@ -110,8 +123,14 @@ class SyncPresenterTest {
                 LimitScope.PER_ORG_UNIT,
             )
 
-        whenever(d2.settingModule().programSetting().blockingGet()) doReturn mockedProgramSettings
+        val mockedSyncSettings =
+            mock<SynchronizationSettings> {
+                on { programSettings() } doReturn mockedProgramSettings
+            }
 
+        whenever(
+            d2.settingModule().synchronizationSettings().blockingGet(),
+        ) doReturn mockedSyncSettings
         val (eventLimit, limitByOU, limitByProgram) = presenter.getDownloadLimits()
 
         assertTrue(eventLimit == 200 && limitByOU && !limitByProgram)

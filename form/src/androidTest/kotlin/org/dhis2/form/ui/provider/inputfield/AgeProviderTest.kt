@@ -53,7 +53,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,
@@ -72,7 +72,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,
@@ -91,8 +91,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,
@@ -113,7 +112,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,
@@ -135,7 +134,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,
@@ -162,7 +161,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,
@@ -183,7 +182,7 @@ class AgeProviderTest {
         composeTestRule.setContent {
             ProvideInputAge(
                 modifier = Modifier.testTag(INPUT_AGE_TEST_TAG),
-                inputStyle = InputStyle.DataInputStyle(),
+                inputStyle = InputStyle.DarkInputStyle(),
                 fieldUiModel = dateValueTypeFieldUiModel,
                 intentHandler = {},
                 resources = resourceManager,

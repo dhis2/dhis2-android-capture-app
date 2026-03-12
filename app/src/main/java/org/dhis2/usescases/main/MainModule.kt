@@ -15,7 +15,6 @@ import org.dhis2.commons.schedulers.SchedulerProvider
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.biometric.CryptographyManager
 import org.dhis2.data.server.UserManager
-import org.dhis2.data.service.SyncStatusController
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.data.service.workManager.WorkManagerController
 import org.dhis2.mobile.commons.biometrics.CryptographicActions
@@ -25,6 +24,8 @@ import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.network.NetworkStatusProviderImpl
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProvider
 import org.dhis2.mobile.commons.resources.D2ErrorMessageProviderImpl
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
@@ -35,6 +36,8 @@ import org.hisp.dhis.android.core.D2
 class MainModule(
     val view: MainView,
     private val forceToNotSynced: Boolean,
+    private val syncStatusController: SyncStatusController,
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
 ) {
     @Provides
     @PerActivity
@@ -49,7 +52,6 @@ class MainModule(
         userManager: UserManager,
         deleteUserData: DeleteUserData,
         syncIsPerformedInteractor: SyncIsPerformedInteractor,
-        syncStatusController: SyncStatusController,
         versionRepository: VersionRepository,
         dispatcherProvider: DispatcherProvider,
         logoutUser: LogoutUser,
@@ -67,6 +69,7 @@ class MainModule(
             deleteUserData,
             syncIsPerformedInteractor,
             syncStatusController,
+            syncBackgroundJobAction,
             versionRepository,
             dispatcherProvider,
             forceToNotSynced,
@@ -77,13 +80,11 @@ class MainModule(
     @PerActivity
     fun provideLogoutUser(
         homeRepository: HomeRepository,
-        workManagerController: WorkManagerController,
-        syncStatusController: SyncStatusController,
         filterManager: FilterManager,
     ): LogoutUser =
         LogoutUser(
             homeRepository,
-            workManagerController,
+            syncBackgroundJobAction,
             syncStatusController,
             filterManager,
         )

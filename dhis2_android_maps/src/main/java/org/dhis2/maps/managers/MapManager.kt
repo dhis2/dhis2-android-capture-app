@@ -3,6 +3,7 @@ package org.dhis2.maps.managers
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
+import android.view.Gravity
 import androidx.core.content.ContextCompat
 import androidx.core.location.LocationListenerCompat
 import androidx.lifecycle.Lifecycle
@@ -143,6 +144,7 @@ abstract class MapManager(
                 ),
             )
             uiSettings.isLogoEnabled = false
+            uiSettings.attributionGravity = Gravity.TOP or Gravity.START
             uiSettings.setAttributionMargins(
                 defaultUiIconLeftMargin,
                 uiSettings.attributionMarginTop,
@@ -265,7 +267,9 @@ abstract class MapManager(
                 permissionsManager =
                     PermissionsManager(
                         object : PermissionsListener {
-                            override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+                            override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
+                                // no-op
+                            }
 
                             override fun onPermissionResult(granted: Boolean) {
                                 if (granted) {
@@ -320,7 +324,9 @@ abstract class MapManager(
                 permissionsManager =
                     PermissionsManager(
                         object : PermissionsListener {
-                            override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {}
+                            override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
+                                // no-op
+                            }
 
                             override fun onPermissionResult(granted: Boolean) {
                                 if (granted) {

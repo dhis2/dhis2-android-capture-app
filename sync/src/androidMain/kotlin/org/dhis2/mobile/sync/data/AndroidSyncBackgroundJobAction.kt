@@ -60,7 +60,39 @@ class AndroidSyncBackgroundJobAction(
     }
 
     override fun launchDataSync(syncingPeriod: Long) {
-        // implement later
+        if (syncingPeriod == 0L) {
+            val request =
+                OneTimeWorkRequest
+                    .Builder(
+                        workerClass = SyncDataWorker::class.java,
+                    ).addTag(
+                        DATA_SYNC_NOW,
+                    ).build()
+            workManager.enqueueUniqueWork(
+                uniqueWorkName = DATA_SYNC_NOW,
+                existingWorkPolicy = ExistingWorkPolicy.KEEP,
+                request = request,
+            )
+        } else {
+            val request =
+                PeriodicWorkRequest
+                    .Builder(
+                        workerClass = SyncDataWorker::class.java,
+                        repeatInterval = syncingPeriod,
+                        repeatIntervalTimeUnit = TimeUnit.SECONDS,
+                    ).addTag(
+                        DATA_SYNC,
+                    ).setInitialDelay(
+                        syncingPeriod,
+                        TimeUnit.SECONDS,
+                    ).build()
+
+            workManager.enqueueUniquePeriodicWork(
+                uniqueWorkName = DATA_SYNC,
+                existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+                request = request,
+            )
+        }
     }
 
     override fun launchSyncSettings() {
@@ -107,6 +139,31 @@ class AndroidSyncBackgroundJobAction(
                 }
             }
 
+    override fun observeDataJob() =
+        workManager
+            .getWorkInfosFlow(
+                WorkQuery.fromUniqueWorkNames(
+                    DATA_SYNC,
+                    DATA_SYNC_NOW,
+                ),
+            ).map { workInfos ->
+                workInfos.map { workInfo ->
+                    SyncJobStatus(
+                        tags = workInfo.tags.toList(),
+                        status =
+                            when (workInfo.state) {
+                                WorkInfo.State.ENQUEUED -> SyncStatus.Enqueue
+                                WorkInfo.State.RUNNING -> SyncStatus.Running
+                                WorkInfo.State.SUCCEEDED -> SyncStatus.Succeed
+                                WorkInfo.State.FAILED -> SyncStatus.Failed
+                                WorkInfo.State.BLOCKED -> SyncStatus.Blocked
+                                WorkInfo.State.CANCELLED -> SyncStatus.Cancelled
+                            },
+                        message = null,
+                    )
+                }
+            }
+
     override suspend fun cancelSyncSettings() {
         workManager.cancelUniqueWork(SYNC_SETTINGS).await()
     }
@@ -117,5 +174,10 @@ class AndroidSyncBackgroundJobAction(
 
     override suspend fun cancelDataSync() {
         workManager.cancelUniqueWork(DATA_SYNC).await()
+    }
+
+    override suspend fun cancelAll() {
+        val operation = workManager.cancelAllWork()
+        operation.await()
     }
 }
