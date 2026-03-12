@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Key
 import androidx.compose.material.icons.outlined.Pin
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -94,6 +95,7 @@ fun PinDialog(
 
     PinBottomSheetContent(
         uiState = uiState,
+        mode = mode,
         isLandscape = isLandscape,
         windowSizeClass = windowSizeClass,
         onPinChanged = viewModel::onPinChanged,
@@ -128,6 +130,7 @@ fun PinDialog(
 @Composable
 internal fun PinBottomSheetContent(
     uiState: PinUiState,
+    mode: PinMode,
     isLandscape: Boolean,
     windowSizeClass: WindowSizeClass,
     onPinChanged: (String) -> Unit,
@@ -163,6 +166,7 @@ internal fun PinBottomSheetContent(
                         windowSizeClass = windowSizeClass,
                         primaryButtonIsEnabled = uiState.primaryButtonIsEnabled,
                         primaryButtonText = uiState.primaryButtonText,
+                        showPrimaryButtonIcon = mode == PinMode.SET,
                         secondaryButtonIsEnabled = !uiState.isLoading,
                         secondaryButtonText = uiState.secondaryButtonText,
                         onPinChanged = onPinChanged,
@@ -199,6 +203,7 @@ internal fun PinBottomSheetContent(
                         windowSizeClass = windowSizeClass,
                         primaryButtonIsEnabled = uiState.primaryButtonIsEnabled,
                         primaryButtonText = uiState.primaryButtonText,
+                        showPrimaryButtonIcon = mode == PinMode.SET,
                         secondaryButtonIsEnabled = !uiState.isLoading,
                         secondaryButtonText = uiState.secondaryButtonText,
                         onPinChanged = onPinChanged,
@@ -279,6 +284,7 @@ private fun PinInputBlock(
     windowSizeClass: WindowSizeClass,
     primaryButtonIsEnabled: Boolean,
     primaryButtonText: String,
+    showPrimaryButtonIcon: Boolean,
     secondaryButtonIsEnabled: Boolean,
     secondaryButtonText: String?,
     onPinChanged: (String) -> Unit,
@@ -330,6 +336,7 @@ private fun PinInputBlock(
                             modifier = Modifier.fillMaxWidth(),
                             enabled = primaryButtonIsEnabled,
                             buttonText = primaryButtonText,
+                            showIcon = showPrimaryButtonIcon,
                             onClick = onPrimaryClick,
                         )
                     },
@@ -353,6 +360,7 @@ private fun PinInputBlock(
                             modifier = Modifier.weight(1f),
                             enabled = primaryButtonIsEnabled,
                             buttonText = primaryButtonText,
+                            showIcon = showPrimaryButtonIcon,
                             onClick = onPrimaryClick,
                         )
                     },
@@ -413,6 +421,7 @@ private fun PinPrimaryButton(
     modifier: Modifier,
     enabled: Boolean,
     buttonText: String,
+    showIcon: Boolean,
     onClick: () -> Unit,
 ) {
     Button(
@@ -420,6 +429,17 @@ private fun PinPrimaryButton(
         enabled = enabled,
         style = ButtonStyle.FILLED,
         text = buttonText,
+        icon =
+            if (showIcon) {
+                {
+                    Icon(
+                        imageVector = Icons.Outlined.Key,
+                        contentDescription = null,
+                    )
+                }
+            } else {
+                null
+            },
         onClick = onClick,
     )
 }
@@ -454,6 +474,7 @@ fun PinAskPortraitPreview() {
                     primaryButtonText = "Unlock",
                     secondaryButtonText = "Forgot your PIN?",
                 ),
+            mode = PinMode.ASK,
             isLandscape = false,
             windowSizeClass = windowSizeClass,
             onPinChanged = {},
@@ -478,6 +499,7 @@ fun PinAskLandscapePreview() {
                     primaryButtonText = "Unlock",
                     secondaryButtonText = "Forgot your PIN?",
                 ),
+            mode = PinMode.ASK,
             isLandscape = true,
             windowSizeClass = windowSizeClass,
             onPinChanged = {},
