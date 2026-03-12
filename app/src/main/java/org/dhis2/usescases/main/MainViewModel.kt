@@ -28,11 +28,11 @@ import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.service.SyncStatusController
-import org.dhis2.data.service.SyncStatusData
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.sync.domain.SyncStatusController
+import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.main.domain.CheckSingleNavigation
 import org.dhis2.usescases.main.domain.ConfigureHomeNavigationBar
 import org.dhis2.usescases.main.domain.DeleteAccount
