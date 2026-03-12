@@ -20,8 +20,6 @@ import timber.log.Timber
 
 const val DEFAULT_LOCATION = "feedback"
 
-val NUMBER_REGEX = """\b(\d{1,3}(,\d{3})*(\.\d+)?|\d+(\.\d+)?)\b""".toRegex()
-
 abstract class BaseIndicatorRepository(
     open val d2: D2,
     open val ruleEngineHelper: RuleEngineHelper?,
@@ -114,7 +112,8 @@ abstract class BaseIndicatorRepository(
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
-                    val color = getLegendColor(ruleEffect.data, ruleAction.values[RuleConstants.LEGENDSET_LABEL])
+                    val legendSet = ruleAction.values[RuleConstants.LEGENDSET_LABEL]
+                    val color = getLegendColor(ruleEffect.data, legendSet)
                     val indicator =
                         IndicatorModel(
                             ProgramIndicator
@@ -157,12 +156,7 @@ abstract class BaseIndicatorRepository(
     ): String? {
         if (data.isNullOrEmpty() || legendSet.isNullOrEmpty()) return null
 
-        val legendValue =
-            NUMBER_REGEX
-                .find(data)
-                ?.value
-                ?.replace(",", "")
-                ?.toDoubleOrNull() ?: return null
+        val legendValue = getNumberValue(data) ?: return null
 
         val legends =
             d2
@@ -272,4 +266,16 @@ abstract class BaseIndicatorRepository(
                 }
             }
         }
+
+    companion object {
+        private val NUMBER_REGEX = """-?\b(\d{1,3}(,\d{3})*(\.\d+)?|\d+(\.\d+)?)\b""".toRegex()
+
+        internal fun getNumberValue(data: String): Double? {
+            return NUMBER_REGEX
+                .find(data)
+                ?.value
+                ?.replace(",", "")
+                ?.toDoubleOrNull()
+        }
+    }
 }
