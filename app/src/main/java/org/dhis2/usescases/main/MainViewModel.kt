@@ -29,6 +29,7 @@ import org.dhis2.commons.prefs.Preference
 import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.service.SyncStatusController
+import org.dhis2.data.service.SyncStatusData
 import org.dhis2.data.service.VersionRepository
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
@@ -53,13 +54,11 @@ import org.dhis2.usescases.main.ui.model.defaultHomeScreenState
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 const val DEFAULT = "default"
 const val SERVER_ACTION = "Server"
 const val DHIS2 = "dhis2_server"
 
-@OptIn(ExperimentalAtomicApi::class)
 class MainViewModel(
     private val preferences: PreferenceProvider,
     private val filterManager: FilterManager,
@@ -96,79 +95,24 @@ class MainViewModel(
             )
 
     init {
-        viewModelScope.launch {
+
+        launchUseCase {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         }
 
         syncStatusController
             .observeDownloadProcess()
-            .onEach { syncStatusData ->
-                when (syncStatusData.running) {
-                    true ->
-                        _homeScreenState.update {
-                            it.copy(
-                                filterButtonVisible = false,
-                                bottomNavigationBarVisible = false,
-                                syncButtonVisible = false,
-                            )
-                        }
-
-                    false -> {
-                        _homeScreenState.update {
-                            it.copy(
-                                filterButtonVisible = true,
-                                bottomNavigationBarVisible = true,
-                                syncButtonVisible = true,
-                            )
-                        }
-                        onDataSuccess()
-                        if (syncStatusData.isInitialSync) {
-                            shouldNavigateToSingleProgram()
-                        }
-                    }
-
-                    else -> {
-                        // do nothing
-                    }
-                }
-            }.launchIn(viewModelScope)
+            .onEach(::handleDownloadProcess)
+            .launchIn(viewModelScope)
 
         mainNavigator.selectedScreenFlow
             .filter { it != MainNavigator.MainScreen.NONE }
-            .onEach { selectedScreen ->
-                when (selectedScreen) {
-                    MainNavigator.MainScreen.VISUALIZATIONS ->
-                        trackHomeAnalytics()
-
-                    MainNavigator.MainScreen.QR ->
-                        trackQRScanner()
-
-                    else -> {
-                        // do nothing
-                    }
-                }
-                _homeScreenState.update {
-                    it.copy(
-                        title = resourceManager.getString(selectedScreen.title),
-                        filterButtonVisible = mainNavigator.isPrograms(),
-                        bottomNavigationBarVisible = mainNavigator.isHome(),
-                        syncButtonVisible = mainNavigator.isHome(),
-                    )
-                }
-            }.launchIn(viewModelScope)
+            .onEach(::handleScreen)
+            .launchIn(viewModelScope)
 
         versionRepository.newAppVersion
-            .onEach { version ->
-                _homeScreenState.update {
-                    it.copy(
-                        versionToUpdate =
-                            when {
-                                version.isNullOrEmpty() -> VersionToUpdateState.None
-                                else -> VersionToUpdateState.New(version)
-                            },
-                    )
-                }
-            }.launchIn(viewModelScope)
+            .onEach(::onNewVersionAvailable)
+            .launchIn(viewModelScope)
 
         filterManager
             .asFlow(viewModelScope)
@@ -193,17 +137,53 @@ class MainViewModel(
 
         launchUseCase {
             launchInitialSync().fold(
-                onSuccess = { result ->
-                    when (result) {
-                        InitialSyncAction.Skip -> shouldNavigateToSingleProgram()
-                        InitialSyncAction.Syncing -> {
-                            // Do nothing
-                        }
-                    }
-                },
+                onSuccess = ::handleInitialSyncResult,
                 onFailure = {
                     Timber.e(it)
                 },
+            )
+        }
+    }
+
+    private fun handleInitialSyncResult(result: InitialSyncAction) {
+        when (result) {
+            InitialSyncAction.Skip -> shouldNavigateToSingleProgram()
+            InitialSyncAction.Syncing -> {
+                // Do nothing
+            }
+        }
+    }
+
+    private fun onNewVersionAvailable(version: String?) {
+        _homeScreenState.update {
+            it.copy(
+                versionToUpdate =
+                    when {
+                        version.isNullOrEmpty() -> VersionToUpdateState.None
+                        else -> VersionToUpdateState.New(version)
+                    },
+            )
+        }
+    }
+
+    private fun handleScreen(selectedScreen: MainNavigator.MainScreen) {
+        when (selectedScreen) {
+            MainNavigator.MainScreen.VISUALIZATIONS ->
+                trackHomeAnalytics()
+
+            MainNavigator.MainScreen.QR ->
+                trackQRScanner()
+
+            else -> {
+                // do nothing
+            }
+        }
+        _homeScreenState.update {
+            it.copy(
+                title = resourceManager.getString(selectedScreen.title),
+                filterButtonVisible = mainNavigator.isPrograms(),
+                bottomNavigationBarVisible = mainNavigator.isHome(),
+                syncButtonVisible = mainNavigator.isHome(),
             )
         }
     }
@@ -227,6 +207,37 @@ class MainViewModel(
                     bottomNavigationBarVisible = mainNavigator.isHome(),
                     syncButtonVisible = mainNavigator.isHome(),
                 )
+            }
+        }
+    }
+
+    private fun handleDownloadProcess(syncStatusData: SyncStatusData) {
+        when (syncStatusData.running) {
+            true ->
+                _homeScreenState.update {
+                    it.copy(
+                        filterButtonVisible = false,
+                        bottomNavigationBarVisible = false,
+                        syncButtonVisible = false,
+                    )
+                }
+
+            false -> {
+                _homeScreenState.update {
+                    it.copy(
+                        filterButtonVisible = true,
+                        bottomNavigationBarVisible = true,
+                        syncButtonVisible = true,
+                    )
+                }
+                onDataSuccess()
+                if (syncStatusData.isInitialSync) {
+                    shouldNavigateToSingleProgram()
+                }
+            }
+
+            else -> {
+                // do nothing
             }
         }
     }
