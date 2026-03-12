@@ -1,15 +1,19 @@
 package org.dhis2.data.forms.dataentry
 
 import io.reactivex.Flowable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import org.dhis2.bindings.blockingSetCheck
 import org.dhis2.bindings.withValueTypeCheck
 import org.dhis2.commons.data.EntryMode
-import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils
 import org.dhis2.form.R
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.utils.DhisTextUtils
 import org.hisp.dhis.android.core.D2
@@ -27,12 +31,21 @@ class ValueStoreImpl(
     private val entryMode: EntryMode,
     private val dhisEnrollmentUtils: DhisEnrollmentUtils,
     private val crashReportController: CrashReportController,
-    private val networkUtils: NetworkUtils,
     private val searchTEIRepository: SearchTEIRepository,
     private val resourceManager: ResourceManager,
+    networkStatusProvider: NetworkStatusProvider,
+    dispatcherProvider: DispatcherProvider,
 ) : ValueStore {
     var enrollmentRepository: EnrollmentObjectRepository? = null
     var overrideProgramUid: String? = null
+
+    private val isNetworkOnline =
+        networkStatusProvider.connectionStatus
+            .stateIn(
+                CoroutineScope(dispatcherProvider.io()),
+                SharingStarted.Eagerly,
+                false,
+            )
 
     override fun overrideProgram(programUid: String?) {
         overrideProgramUid = programUid
@@ -230,7 +243,7 @@ class ValueStoreImpl(
         value: String?,
         teiUid: String,
     ): Boolean =
-        if (!networkUtils.isOnline()) {
+        if (!isNetworkOnline.value) {
             dhisEnrollmentUtils.isTrackedEntityAttributeValueUnique(uid, value, teiUid)
         } else {
             val programUid = overrideProgramUid ?: enrollmentRepository?.blockingGet()?.program()

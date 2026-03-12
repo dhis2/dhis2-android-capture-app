@@ -16,6 +16,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FieldUiModelImpl
 import org.dhis2.form.model.UiRenderType
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository
+import org.dhis2.mobile.commons.network.NetworkStatusProvider
 import org.dhis2.mobile.commons.reporting.CrashReportController
 import org.dhis2.tracker.data.ProfilePictureProvider
 import org.dhis2.ui.ThemeManager
@@ -95,7 +96,7 @@ class SearchRepositoryTest {
     private val sortingValueSetter: SearchSortingValueSetter = mock()
     private val charts: Charts = mock()
     private val crashReporterController: CrashReportController = mock()
-    private val networkUtils: NetworkUtils = mock()
+    private val networkUtils: NetworkStatusProvider = mock()
     private val searchTEIRepository: SearchTEIRepository = mock()
     private val themeManager: ThemeManager = mock()
     private val profilePictureProvider: ProfilePictureProvider = mock()
@@ -147,6 +148,7 @@ class SearchRepositoryTest {
                 profilePictureProvider,
                 dateUtils,
                 customIntentRepository,
+                dispatchers
             )
     }
 

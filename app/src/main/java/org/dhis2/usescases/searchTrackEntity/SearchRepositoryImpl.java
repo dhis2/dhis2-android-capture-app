@@ -15,6 +15,7 @@ import org.dhis2.commons.filters.sorting.SortingItem;
 import org.dhis2.commons.network.NetworkUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
+import org.dhis2.commons.viewmodel.DispatcherProvider;
 import org.dhis2.data.dhislogic.DhisEnrollmentUtils;
 import org.dhis2.data.forms.dataentry.SearchTEIRepository;
 import org.dhis2.data.forms.dataentry.ValueStore;
@@ -26,6 +27,7 @@ import org.dhis2.metadata.usecases.ProgramConfiguration;
 import org.dhis2.metadata.usecases.TrackedEntityInstanceConfiguration;
 import org.dhis2.mobile.commons.customintents.CustomIntentRepository;
 import org.dhis2.mobile.commons.model.CustomIntentActionTypeModel;
+import org.dhis2.mobile.commons.network.NetworkStatusProvider;
 import org.dhis2.mobile.commons.providers.FieldErrorMessageProvider;
 import org.dhis2.mobile.commons.reporting.CrashReportController;
 import org.dhis2.tracker.data.ProfilePictureProvider;
@@ -72,6 +74,7 @@ import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItem;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemAttribute;
 import org.hisp.dhis.android.core.trackedentity.search.TrackedEntitySearchItemHelper;
 import org.jetbrains.annotations.NotNull;
+import org.matomo.sdk.dispatcher.Dispatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,13 +97,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final ResourceManager resources;
     private final D2 d2;
     private final SearchSortingValueSetter sortingValueSetter;
+    private final DispatcherProvider dispatcherProvider;
     private TrackedEntitySearchCollectionRepository trackedEntityInstanceQuery;
     private FilterPresenter filterPresenter;
     private String currentProgram;
     private final Charts charts;
     private final CrashReportController crashReportController;
     private DateUtils dateUtils;
-    private final NetworkUtils networkUtils;
+    private final NetworkStatusProvider networkStatusProvider;
     private final SearchTEIRepository searchTEIRepository;
     private TrackedEntityInstanceDownloader downloadRepository = null;
     private ThemeManager themeManager;
@@ -127,13 +131,14 @@ public class SearchRepositoryImpl implements SearchRepository {
                          SearchSortingValueSetter sortingValueSetter,
                          Charts charts,
                          CrashReportController crashReportController,
-                         NetworkUtils networkUtils,
+                         NetworkStatusProvider networkStatusProvider,
                          SearchTEIRepository searchTEIRepository,
                          ThemeManager themeManager,
                          MetadataIconProvider metadataIconProvider,
                          ProfilePictureProvider profilePictureProvider,
                          DateUtils dateUtils,
-                         CustomIntentRepository customIntentRepository
+                         CustomIntentRepository customIntentRepository,
+                         DispatcherProvider dispatcherProvider
     ) {
         this.teiType = teiType;
         this.d2 = d2;
@@ -144,7 +149,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.crashReportController = crashReportController;
         this.dateUtils = dateUtils;
         this.currentProgram = initialProgram;
-        this.networkUtils = networkUtils;
+        this.networkStatusProvider = networkStatusProvider;
         this.searchTEIRepository = searchTEIRepository;
         this.themeManager = themeManager;
         this.teiDownloader = new TeiDownloader(
@@ -156,6 +161,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.metadataIconProvider = metadataIconProvider;
         this.profilePictureProvider = profilePictureProvider;
         this.customIntentRepository = customIntentRepository;
+        this.dispatcherProvider = dispatcherProvider;
     }
 
 
@@ -275,9 +281,10 @@ public class SearchRepositoryImpl implements SearchRepository {
                                 EntryMode.ATTR,
                                 new DhisEnrollmentUtils(d2),
                                 crashReportController,
-                                networkUtils,
                                 searchTEIRepository,
-                                resources
+                                resources,
+                                networkStatusProvider,
+                                dispatcherProvider
                         );
 
                         if (queryData.containsKey(Constants.ENROLLMENT_DATE_UID))
