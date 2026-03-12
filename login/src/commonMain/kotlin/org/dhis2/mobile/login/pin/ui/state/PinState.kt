@@ -1,4 +1,4 @@
-package org.dhis2.mobile.login.pin.domain.model
+package org.dhis2.mobile.login.pin.ui.state
 
 /**
  * Represents the different states of PIN operations in the UI.

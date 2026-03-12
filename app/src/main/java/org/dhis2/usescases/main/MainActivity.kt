@@ -54,13 +54,13 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.ui.NewVersionDialog
 import org.dhis2.utils.analytics.CLICK
-import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
 import org.dhis2.mobile.login.pin.addPinBottomSheet
+import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.koin.android.ext.android.inject
 import java.io.File

@@ -5,15 +5,15 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.FragmentActivity
-import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
-import org.dhis2.mobile.login.pin.ui.components.PinMode
+import org.dhis2.mobile.login.pin.domain.model.PinMode
+import org.dhis2.mobile.login.pin.ui.components.PinDialog
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 /**
- * Adds a [PinBottomSheet] composable as an overlay on the Activity's decor view.
+ * Adds a [PinDialog] composable as an overlay on the Activity's decor view.
  *
  * Returns the [ComposeView] that was added, so the caller can remove it if needed
- * (e.g., on Activity stop). The [PinBottomSheet] is displayed via [FullScreenDialog] internally,
+ * (e.g., on Activity stop). The [PinDialog] is displayed via [FullScreenDialog] internally,
  * which creates its own dialog window on top of the Activity.
  *
  * @param mode PIN mode: SET (create PIN) or ASK (verify PIN).
@@ -33,7 +33,7 @@ fun FragmentActivity.addPinBottomSheet(
         )
         setContent {
             DHIS2Theme {
-                PinBottomSheet(
+                PinDialog(
                     mode = mode,
                     onSuccess = onSuccess,
                     onDismiss = onDismiss,

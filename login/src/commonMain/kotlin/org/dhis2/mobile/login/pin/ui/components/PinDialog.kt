@@ -37,7 +37,8 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.commons.extensions.deviceIsInLandscapeMode
 import org.dhis2.mobile.commons.extensions.getWindowSizeClass
-import org.dhis2.mobile.login.pin.domain.model.PinState
+import org.dhis2.mobile.login.pin.domain.model.PinMode
+import org.dhis2.mobile.login.pin.ui.state.PinState
 import org.dhis2.mobile.login.pin.ui.viewmodel.PinViewModel
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.create_pin
@@ -63,21 +64,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * PIN mode enumeration for different bottom sheet behaviors.
- */
-enum class PinMode {
-    /**
-     * SET mode - Used when creating/setting a new PIN.
-     */
-    SET,
-
-    /**
-     * ASK mode - Used when verifying/entering an existing PIN.
-     */
-    ASK,
-}
-
-/**
  * DHIS2 PIN Bottom Sheet component with integrated ViewModel.
  *
  * A modal bottom sheet that displays a PIN input interface using DHIS2 Mobile UI components.
@@ -95,7 +81,7 @@ enum class PinMode {
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-fun PinBottomSheet(
+fun PinDialog(
     mode: PinMode,
     onSuccess: () -> Unit,
     onDismiss: () -> Unit,

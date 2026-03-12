@@ -60,8 +60,8 @@ import org.dhis2.mobile.login.main.ui.state.CredentialsUpdate
 import org.dhis2.mobile.login.main.ui.state.LoginState
 import org.dhis2.mobile.login.main.ui.state.OidcInfo
 import org.dhis2.mobile.login.main.ui.viewmodel.CredentialsViewModel
-import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
-import org.dhis2.mobile.login.pin.ui.components.PinMode
+import org.dhis2.mobile.login.pin.domain.model.PinMode
+import org.dhis2.mobile.login.pin.ui.components.PinDialog
 import org.dhis2.mobile.login.resources.Res
 import org.dhis2.mobile.login.resources.action_log_in
 import org.dhis2.mobile.login.resources.action_manage_account
@@ -252,7 +252,7 @@ fun CredentialsScreen(
     }
 
     if (screenState.isSessionLocked) {
-        PinBottomSheet(
+        PinDialog(
             mode = PinMode.ASK,
             onSuccess = {
                 viewModel.onPinUnlocked()

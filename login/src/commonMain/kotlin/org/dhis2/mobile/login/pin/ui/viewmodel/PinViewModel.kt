@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.login.pin.domain.model.PinError
-import org.dhis2.mobile.login.pin.domain.model.PinState
+import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
-import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
+import org.dhis2.mobile.login.pin.ui.state.PinState
 
 /**
  * ViewModel for managing PIN operations.
