@@ -25,10 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -38,17 +35,8 @@ import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.commons.extensions.deviceIsInLandscapeMode
 import org.dhis2.mobile.commons.extensions.getWindowSizeClass
 import org.dhis2.mobile.login.pin.domain.model.PinMode
-import org.dhis2.mobile.login.pin.ui.state.PinState
+import org.dhis2.mobile.login.pin.ui.state.PinUiState
 import org.dhis2.mobile.login.pin.ui.viewmodel.PinViewModel
-import org.dhis2.mobile.login.resources.Res
-import org.dhis2.mobile.login.resources.create_pin
-import org.dhis2.mobile.login.resources.create_pin_button
-import org.dhis2.mobile.login.resources.create_pin_description
-import org.dhis2.mobile.login.resources.enter_pin
-import org.dhis2.mobile.login.resources.enter_pin_button
-import org.dhis2.mobile.login.resources.enter_pin_description
-import org.dhis2.mobile.login.resources.forgot_pin_button
-import org.dhis2.mobile.login.resources.pin_error_remaining_attempts
 import org.hisp.dhis.mobile.ui.designsystem.component.Button
 import org.hisp.dhis.mobile.ui.designsystem.component.ButtonStyle
 import org.hisp.dhis.mobile.ui.designsystem.component.FullScreenDialog
@@ -59,9 +47,9 @@ import org.hisp.dhis.mobile.ui.designsystem.component.model.SegmentedShellType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 /**
  * DHIS2 PIN Bottom Sheet component with integrated ViewModel.
@@ -88,119 +76,29 @@ fun PinDialog(
     modifier: Modifier = Modifier,
     windowSizeClass: WindowSizeClass = getWindowSizeClass(),
 ) {
-    val viewModel: PinViewModel = koinViewModel()
+    val viewModel: PinViewModel = koinViewModel { parametersOf(mode) }
     val uiState by viewModel.uiState.collectAsState()
-    var currentPin by remember { mutableStateOf("") }
-
     val isLandscape = deviceIsInLandscapeMode()
-    // Handle state changes from ViewModel
-    LaunchedEffect(uiState) {
-        when (uiState) {
-            is PinState.Success -> {
-                onSuccess()
-            }
 
-            is PinState.TooManyAttempts -> {
-                viewModel.onForgotPin()
-            }
-
-            is PinState.Dismissed -> {
+    LaunchedEffect(uiState.isSuccess, uiState.isDismissed, uiState.isTooManyAttempts) {
+        when {
+            uiState.isSuccess -> onSuccess()
+            uiState.isTooManyAttempts -> viewModel.onForgotPin()
+            uiState.isDismissed -> {
                 viewModel.resetAttempts()
                 viewModel.resetState()
                 onDismiss()
             }
-
-            else -> { // Do nothing for Idle, Loading, Error
-            }
         }
     }
-
-    val (title, subtitle) =
-        when (mode) {
-            PinMode.SET -> stringResource(Res.string.create_pin) to stringResource(Res.string.create_pin_description)
-            PinMode.ASK -> stringResource(Res.string.enter_pin) to stringResource(Res.string.enter_pin_description)
-        }
-
-    val primaryButtonText =
-        when (mode) {
-            PinMode.SET -> stringResource(Res.string.create_pin_button)
-            PinMode.ASK -> stringResource(Res.string.enter_pin_button)
-        }
-
-    val secondaryButtonText =
-        when (mode) {
-            PinMode.SET -> null
-            PinMode.ASK -> stringResource(Res.string.forgot_pin_button)
-        }
-
-    // Get error message from ViewModel state
-    val errorMessage =
-        when (val state = uiState) {
-            is PinState.Error -> {
-                state.remainingAttempts?.let { attempts ->
-                    "${state.message}. ${
-                        stringResource(
-                            Res.string.pin_error_remaining_attempts,
-                            attempts,
-                        )
-                    }"
-                } ?: state.message
-            }
-
-            else -> null
-        }
-
-    val pinLength = 4
-    val isLoading = uiState is PinState.Loading
-
-    fun onPrimaryClick() {
-        viewModel.onPinComplete(
-            pin = currentPin.replace("-", ""),
-            mode = mode,
-        )
-    }
-
-    fun onSecondaryClick() {
-        viewModel.onForgotPin()
-    }
-
-    val primaryButtonIsEnabled =
-        currentPin
-            .replace(
-                "-",
-                "",
-            ).length == pinLength && !isLoading
-
-    val secondaryButtonIsEnabled = !isLoading
-
-    // Capture latest values with rememberUpdatedState to avoid lambda recreation
-    val currentUiState by rememberUpdatedState(uiState)
-    val currentViewModel by rememberUpdatedState(viewModel)
-
-    // Stabilize the onPinChanged callback to prevent InputSegmentedShell recomposition
-    val handlePinChanged =
-        remember<(String) -> Unit> {
-            { newPin ->
-                currentPin = newPin
-                if (currentUiState is PinState.Error) {
-                    currentViewModel.resetState()
-                }
-            }
-        }
 
     PinBottomSheetContent(
-        title = title,
-        subtitle = subtitle,
-        primaryButtonText = primaryButtonText,
-        secondaryButtonText = secondaryButtonText,
-        errorMessage = errorMessage,
-        primaryButtonIsEnabled = primaryButtonIsEnabled,
-        secondaryButtonIsEnabled = secondaryButtonIsEnabled,
+        uiState = uiState,
         isLandscape = isLandscape,
         windowSizeClass = windowSizeClass,
-        onPinChanged = handlePinChanged,
-        onPrimaryClick = ::onPrimaryClick,
-        onSecondaryClick = ::onSecondaryClick,
+        onPinChanged = viewModel::onPinChanged,
+        onPrimaryClick = viewModel::onPinComplete,
+        onSecondaryClick = viewModel::onForgotPin,
         onDismiss = {
             viewModel.resetAttempts()
             viewModel.resetState()
@@ -217,13 +115,7 @@ fun PinDialog(
  * layout depending on [isLandscape]. This composable holds no business logic and is safe
  * to use in Compose Previews.
  *
- * @param title The main heading text.
- * @param subtitle The descriptive text shown below the title.
- * @param primaryButtonText Label for the primary action button.
- * @param secondaryButtonText Optional label for the secondary action button.
- * @param errorMessage Optional error message shown below the PIN input field.
- * @param primaryButtonIsEnabled Whether the primary action button is enabled.
- * @param secondaryButtonIsEnabled Whether the secondary action button is enabled.
+ * @param uiState The current UI state containing display content and button states.
  * @param isLandscape Whether the device is in landscape orientation.
  * @param windowSizeClass Window size class used to choose the button layout.
  * @param onPinChanged Callback invoked on every PIN value change.
@@ -235,13 +127,7 @@ fun PinDialog(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 internal fun PinBottomSheetContent(
-    title: String,
-    subtitle: String,
-    primaryButtonText: String,
-    secondaryButtonText: String?,
-    errorMessage: String?,
-    primaryButtonIsEnabled: Boolean,
-    secondaryButtonIsEnabled: Boolean,
+    uiState: PinUiState,
     isLandscape: Boolean,
     windowSizeClass: WindowSizeClass,
     onPinChanged: (String) -> Unit,
@@ -266,19 +152,19 @@ internal fun PinBottomSheetContent(
                     verticalArrangement = Arrangement.Top,
                 ) {
                     PinHeader(
-                        title = title,
-                        subtitle = subtitle,
+                        title = uiState.title,
+                        subtitle = uiState.subtitle,
                     )
 
                     PinInputBlock(
                         focusRequester = focusRequester,
-                        pinLength = 4,
-                        errorMessage = errorMessage,
+                        pinLength = uiState.pinLength,
+                        errorMessage = uiState.errorMessage,
                         windowSizeClass = windowSizeClass,
-                        primaryButtonIsEnabled = primaryButtonIsEnabled,
-                        primaryButtonText = primaryButtonText,
-                        secondaryButtonIsEnabled = secondaryButtonIsEnabled,
-                        secondaryButtonText = secondaryButtonText,
+                        primaryButtonIsEnabled = uiState.primaryButtonIsEnabled,
+                        primaryButtonText = uiState.primaryButtonText,
+                        secondaryButtonIsEnabled = !uiState.isLoading,
+                        secondaryButtonText = uiState.secondaryButtonText,
                         onPinChanged = onPinChanged,
                         onPrimaryClick = onPrimaryClick,
                         onSecondaryClick = onSecondaryClick,
@@ -296,8 +182,8 @@ internal fun PinBottomSheetContent(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     PinHeader(
-                        title = title,
-                        subtitle = subtitle,
+                        title = uiState.title,
+                        subtitle = uiState.subtitle,
                         modifier = Modifier.weight(1f),
                     )
 
@@ -308,13 +194,13 @@ internal fun PinBottomSheetContent(
 
                     PinInputBlock(
                         focusRequester = focusRequester,
-                        pinLength = 4,
-                        errorMessage = errorMessage,
+                        pinLength = uiState.pinLength,
+                        errorMessage = uiState.errorMessage,
                         windowSizeClass = windowSizeClass,
-                        primaryButtonIsEnabled = primaryButtonIsEnabled,
-                        primaryButtonText = primaryButtonText,
-                        secondaryButtonIsEnabled = secondaryButtonIsEnabled,
-                        secondaryButtonText = secondaryButtonText,
+                        primaryButtonIsEnabled = uiState.primaryButtonIsEnabled,
+                        primaryButtonText = uiState.primaryButtonText,
+                        secondaryButtonIsEnabled = !uiState.isLoading,
+                        secondaryButtonText = uiState.secondaryButtonText,
                         onPinChanged = onPinChanged,
                         onPrimaryClick = onPrimaryClick,
                         onSecondaryClick = onSecondaryClick,
@@ -561,13 +447,13 @@ fun PinAskPortraitPreview() {
     val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(360.dp, 800.dp))
     DHIS2Theme {
         PinBottomSheetContent(
-            title = "Enter PIN",
-            subtitle = "Enter your 4-digit PIN to access the application",
-            primaryButtonText = "Enter",
-            secondaryButtonText = "Forgot PIN?",
-            errorMessage = null,
-            primaryButtonIsEnabled = false,
-            secondaryButtonIsEnabled = true,
+            uiState =
+                PinUiState(
+                    title = "Enter your PIN",
+                    subtitle = "Enter your 4-digit PIN to access your account.",
+                    primaryButtonText = "Unlock",
+                    secondaryButtonText = "Forgot your PIN?",
+                ),
             isLandscape = false,
             windowSizeClass = windowSizeClass,
             onPinChanged = {},
@@ -585,13 +471,13 @@ fun PinAskLandscapePreview() {
     val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(1280.dp, 800.dp))
     DHIS2Theme {
         PinBottomSheetContent(
-            title = "Enter PIN",
-            subtitle = "Enter your 4-digit PIN to access the application",
-            primaryButtonText = "Enter",
-            secondaryButtonText = "Forgot PIN?",
-            errorMessage = null,
-            primaryButtonIsEnabled = false,
-            secondaryButtonIsEnabled = true,
+            uiState =
+                PinUiState(
+                    title = "Enter your PIN",
+                    subtitle = "Enter your 4-digit PIN to access your account.",
+                    primaryButtonText = "Unlock",
+                    secondaryButtonText = "Forgot your PIN?",
+                ),
             isLandscape = true,
             windowSizeClass = windowSizeClass,
             onPinChanged = {},
