@@ -6,4 +6,6 @@
     <string name="remove">Ta bort</string>
     <string name="search">Sök</string>
     <string name="optional">Frivillig</string>
+    <string name="yes">ja</string>
+    <string name="no">nej</string>
     </resources>

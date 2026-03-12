@@ -32,7 +32,7 @@
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
     <string name="sync_incomplete_error_text">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ ແຕ່ພວກເຮົາບໍ່ໄດ້ຮັບການຢືນຢັນຈາກເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ສຳລັບບັນທຶກທັງໝົດ. ເຫຼົ່ານັ້ນຍັງຖືກໝາຍເປັນ \"ອອບລາຍ\" ໃນແອັບ. ພວກເຮົາແນະນຳໃຫ້ລອງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນອີກຄັ້ງ.</string>
-    <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ @.</string>
+    <string name="data_sync_warning_program">ຂໍ້ຄວນລະວັງ: ຂໍ້ມູນຂອງທ່ານໄດ້ຖຶກຊິ້ງແລ້ວ ແຕ່ບາງຂໍ້ມູນມີຂໍ້ຂັດແຍ້ງ. ກົດການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນ ແລະ ລອງໃໝ່ອີກຄັ້ງ. ຖ້າຂໍ້ຄວນລະວັງຍັງຄົງຢູ່ ໃຫ້ກວດເບີ່ງສະຖານະການຊິິ້ງຂອງ: ໂປຣແກຣມ, TEI\'s ແລະ ເຫດການທີ່ມີການຂັດແຍ້ງຈະຖຶກໝາຍເປັນ \@.</string>
     <string name="server_sync_error">ເກີດຂໍ້ຜິດພາດ ແລະເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ບໍ່ຕອບສະໜອງ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
 
     <string name="search_result_text">%sຜົນໄດ້ຮັບທີ່ຖືກພົບເຫັນ</string>
@@ -288,7 +288,6 @@
     <string name="search_min_num_attr">ທ່ານຕ້ອງປ້ອນຢ່າງໜອຍ %d ຂອງ ຄຸນລັກສະນະເຂົ້າເພື່ອຊອກຫາ</string>
     <string name="search_attr">ທ່ານຕ້ອງໃສ່ຢ່າງຫນ້ອຍຫນຶ່ງ ຂອງຄຸນລັກສະນະເພື່ອເຮັດການຄົ້ນຫາ</string>
     <string name="search_max_tei_reached">ມີຫຼາຍກ່ວາ %d ຂອງຜົນໄດ້ຮັບ. ກະລຸນາເພີ່ມເງື່ອນໄຂໃນການຄົ້ນຫາເຂົ້າຕື່ມ</string>
-    <string name="search_criteria_not_met">ເງື່ອນໄຂການຄົ້ນຫາຂອງທ່ານບໍ່ໄດ້ຜົນຫຍັງກັບຄືນມາໃ\nທົບທວນເບີ່ງເງື່ອນໄຂຂອງທ່ານ ຫຼື ຂື້ນທະບຽນໃໝ່ %s</string>
     <string name="search_init">ປ້ອນເງື່ອນໄຂການຊອກຫາຂອງທ່ານ</string>
 
     <!-- QR -->
@@ -688,7 +687,6 @@
     <string name="field_is_mandatory">ຊ່ອງປ້ອນຂໍ້ມູນນີ້ແມ່ນຈໍາເປັນຕ້ອງປ້ອນຂໍ້ມູນໃສ່</string>
     <string name="security_debugger_message">ເຫດຜົນດ້ານຄວາມປອດໄພ, ແອັບເວີຊັ່ນນີ້ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ກັບ adb. ກະລຸນາໃຊ້ເວີຊັ່ນທີ່ໃຊ້ສະເພາະການຝຶກອົບຮົມ.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">ມີບາງຢ່າງບໍ່ເປັນໄປຕາມແຜນທີ່ວາງໄວ້.\nໃຫ້ພວກເຮົານຳທ່ານກັບມາເພື່ອດຳເນີນການຄືນ.</string>
     <string name="customactivityoncrash_error_activity_restart_app">ກັບຄືນ</string>
     <string name="customactivityoncrash_error_activity_close_app">ປິດແອັບ</string>
     <string name="customactivityoncrash_error_activity_error_details">ລາຍ​ລະ​ອຽດ​ເພີ່ມ​ເຕີມ</string>

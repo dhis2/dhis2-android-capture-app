@@ -37,7 +37,7 @@
     <string name="sync_incomplete_error_text">Synchronizace dokončena, ale neobdrželi jsme potvrzení serveru pro všechny záznamy. Tyto záznamy jsou v aplikaci stále označeny jako „offline“. Doporučujeme synchronizaci zopakovat.</string>
     <string name="metadata_sync_error">CHYBA: V procesu synchronizace se něco pokazilo. Pokud máte připojení, zkuste to prosím znovu. Pokud chyba přetrvává, obraťte se na správce.</string>
     <string name="data_sync_warning_v2">Ve vašich datech jsou rozpory. Synchronizujte prosím svou konfiguraci, zkontrolujte svá data a zkuste synchronizaci provést znovu.</string>
-    <string name="data_sync_warning_program">UPOZORNĚNÍ: Většina vašich dat je synchronizována, ale některá pole vykazovala konflikty. Synchronizujte svou konfiguraci a zkuste to znovu. Pokud varování přetrvává, zkontrolujte jejich stav synchronizace: programy, TEI a události s konflikty jsou označeny jako @.</string>
+    <string name="data_sync_warning_program">UPOZORNĚNÍ: Většina vašich dat je synchronizována, ale některá pole vykazovala konflikty. Synchronizujte svou konfiguraci a zkuste to znovu. Pokud varování přetrvává, zkontrolujte jejich stav synchronizace: programy, TEI a události s konflikty jsou označeny jako \@.</string>
     <string name="data_sync_error_v2">Některá vaše data se nepodařilo synchronizovat.</string>
     <string name="server_sync_error">Došlo k chybě a server neodpovídá. Kontaktujte svého správce.</string>
 
@@ -311,7 +311,6 @@
     <string name="search_min_num_attr">Chcete-li provést vyhledávání, musíte zadat alespoň %d atributy</string>
     <string name="search_attr">Chcete-li provést vyhledávání, musíte zadat alespoň jeden z atributů</string>
     <string name="search_max_tei_reached">Je toho víc než %d výsledků. Zadejte prosím další kritéria hledání</string>
-    <string name="search_criteria_not_met">Vaše vyhledávací kritéria nevrátila žádný výsledek.\nOpravte svá kritéria nebo zapište nová %s</string>
     <string name="search_init">Zadejte kritéria hledání</string>
 
     <!-- QR -->
@@ -688,9 +687,9 @@
     <string name="dataset_overview">Detaily</string>
     <string name="dataset_comments">Komentáře</string>
     <string name="saved">Uloženo!</string>
-    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat?</string>
+    <string name="run_validation_rules">Chcete zkontrolovat kvalitu dat\?</string>
     <string name="validation_success_title">Všechno vypadá dobře!</string>
-    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat?</string>
+    <string name="mark_dataset_complete">Chcete také vyplnit soubor dat\?</string>
     <string name="dataset_completed">Označit jak dokončené</string>
     <string name="name">Název</string>
     <string name="formula">Vzorec</string>
@@ -726,7 +725,6 @@
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="security_debugger_message">Z bezpečnostních důvodů není možné tuto verzi aplikace používat s adb. Použijte tréninkovou verzi.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Jejda! Něco nevyšlo podle plánu. \nDáme vás zpět do akce.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Zpět</string>
     <string name="customactivityoncrash_error_activity_close_app">Zavřít aplikaci</string>
     <string name="customactivityoncrash_error_activity_error_details">Více detailů</string>

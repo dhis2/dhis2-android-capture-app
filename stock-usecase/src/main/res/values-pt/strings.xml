@@ -24,7 +24,7 @@
     <string name="icrc_staff_members"> Apenas para membros do ICRC </string>
     <string name="username">Nome de utilizador</string>
     <string name="password">Senha</string>
-    <string name="forgot_password">Esqueceu a password?</string>
+    <string name="forgot_password">Esqueceu a password\?</string>
 
     <string name="recent_activities_loading_message"> Carregar actividades recentes&#8230;</string>
     <string name="recent_activities_empty_message"> Ainda não realizou nenhuma atividade</string>
@@ -87,9 +87,7 @@
     <string name="mandatory_facility_selection">
         O campo da instalação deve ser preenchido antes de prosseguir
     </string>
-    <string name="mandatory_transaction_date_selection">
-        The ‘Distributed to’ field must be filled in before proceeding
-    </string>
+    <string name="mandatory_transaction_date_selection">\n        The ‘Distributed to’ field must be filled in before proceeding\n    </string>
     <string name="transaction_completed">
        A transação foi concluída com êxito!
     </string>
@@ -186,9 +184,7 @@
     <string name="speech_timeout_error"> Não foi detectada qualquer entrada de voz</string>
     <string name="unknown_speech_error"> Ocorreu um erro desconhecido.</string>
     <string name="non_numeric_speech_input_error"> Não é permitida a introdução de dados não numéricos: \"%s\"</string>
-    <string name="negative_number_speech_input_error">
-       A introdução de números negativos não é permitida:\"%s\"
-    </string>
+    <string name="negative_number_speech_input_error">\n       A introdução de números negativos não é permitida:\"%s\"\n    </string>
 
     <string name="openid_config_load_error"> Não é possível carregar a configuração do OpenID</string>
     <string name="unexpected_openid_authentication_error">

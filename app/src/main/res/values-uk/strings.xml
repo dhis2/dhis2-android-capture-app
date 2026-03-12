@@ -35,7 +35,7 @@
     <string name="sync_error_title">Помилка синхронізації</string>
     <string name="sync_error_text">Під час синхронізації сталася помилка. Будь ласка, повторіть спробу.</string>
     <string name="sync_incomplete_error_text">Синхронізацію завершено, але ми не отримали підтвердження від серверу для усіх записів. Ці записи все ще позначено як \"офлайн\" у програмі. Рекомендуємо повторити спробу синхронізації.</string>
-    <string name="data_sync_warning_program">ПОПЕРЕДЖЕННЯ: Більшість Ваших даних синхронізовано, але виникли конфлікти в деяких полях.  Синхронізуйте конфігурацію та повторіть спробу. Якщо попередження не зникає, перевірте стан синхронізації: програм, об’єктів, які відстежуються та випадків з конфліктами позначені як @.</string>
+    <string name="data_sync_warning_program">ПОПЕРЕДЖЕННЯ: Більшість Ваших даних синхронізовано, але виникли конфлікти в деяких полях.  Синхронізуйте конфігурацію та повторіть спробу. Якщо попередження не зникає, перевірте стан синхронізації: програм, об’єктів, які відстежуються та випадків з конфліктами позначені як \@.</string>
     <string name="server_sync_error">Сталася помилка, і сервер не відповідає. Зверніться до свого адміністратора.</string>
 
     <string name="search_result_text">%s результатів знайдено</string>
@@ -296,7 +296,6 @@
     <string name="search_min_num_attr">Для пошуку потрібно ввести принаймні %d атрибутів</string>
     <string name="search_attr">Для пошуку потрібно ввести принаймні один із атрибутів</string>
     <string name="search_max_tei_reached">Є більше ніж %d результатів. Будь ласка, введіть додаткові критерії пошуку</string>
-    <string name="search_criteria_not_met">Ваші критерії пошуку не дали результатів.Перегляньте свої критерії або зареєструйте новий %s</string>
     <string name="search_init">Введіть критерії пошуку</string>
 
     <!-- QR -->
@@ -706,7 +705,6 @@
     <string name="field_is_mandatory">Це поле обов\'язкове для заповнення</string>
     <string name="security_debugger_message">З міркувань безпеки цю версію додатку не можна використовувати з adb. Будь ласка, використовуйте навчальну версію.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ой! Щось пішло не так, як планувалося. Дозвольте нам повернути Вас у попередню дію.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Повернутися</string>
     <string name="customactivityoncrash_error_activity_close_app">Закрити додаток</string>
     <string name="customactivityoncrash_error_activity_error_details">Детальніше</string>

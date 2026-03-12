@@ -23,7 +23,7 @@
     <string name="conf_error_value_option_set">Giá trị của trường %s không thuộc tùy chọn trong %s</string>
     <string name="field_is_mandatory">Trường dữ liệu này bắt buộc</string>
     <string name="missing_warning_fields_completed_events">Bạn có một số tin nhắn cảnh báo.</string>
-    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
+    <string name="missing_warning_fields_events">Bạn có một số tin nhắn cảnh báo..\nBạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
     <string name="required">Bắt buộc</string>
     <string name="date">Ngày</string>
     <string name="hint_year">Năm</string>
@@ -57,13 +57,13 @@
     <string name="complete">Hoàn tất</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
     <string name="saved">Đã lưu!</string>
-    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không?</string>
-    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không?</string>
-    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không?</string>
+    <string name="event_error_on_complete">Bạn có một số tin nhắn lỗi.\nBạn có muốn xem không\?</string>
+    <string name="missing_error_fields_events">Một số trường dữ liệu có lỗi và chưa được lưu. \nBạn có muốn xem lại biểu nhập không\?</string>
+    <string name="review_message">Một số trường dữ liệu cần bạn chú ý.\nBạn có muốn xem xét biểu nhập không\?</string>
     <string name="not_now">Không phải bây giờ</string>
     <string name="save_anyway">Tiếp tục Lưu</string>
     <string name="keep_editing">Tiếp tục chỉnh sửa</string>
-    <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không?</string>
+    <string name="event_can_be_completed">Bạn có muốn đánh dấu biểu nhập này là hoàn tất không\?</string>
     <string name="discard_go_back">Nếu bạn tắt bây giờ, tất cả thông tin trong biểu nhập sẽ bị hủy bỏ.</string>
     <string name="field_errors_not_saved_discard">Một số trường dữ liệu có lỗi và chưa được lưu.. \nNếu bạn tắt bây giờ, tất cả thay đổi sẽ bị hủy bỏ.</string>
     <string name="field_errors_not_saved">Một số trường dữ liệu bị lỗi và chưa được lưu</string>
@@ -137,7 +137,7 @@
     <string name="search_to_find_more">Tìm kiếm để tìm thêm</string>
     <string name="action_done">Hoàn thành</string>
     <string name="input_not_supported">Không được hỗ trợ</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Thiếu mật khẩu. Xin vui lòng nhập mật khẩu</string>
@@ -163,7 +163,6 @@
     <string name="error_create_existing_error">Không thể tạo. Đối tượng đang tồn tại.</string>
     <string name="error_delete_non_existing_object">Xóa bị từ chối. Đối tượng không tồn tại</string>
     <string name="error_instance_keystore">Không thể tạo kho khóa</string>
-    <string name="error_reserve_value_on_server">Chúng ta không thể đặt trước giá trị cho các dữ liệu này. Vui lòng liên hệ quản lý của bạn. </string>
     <string name="error_export_login">Vui lòng đăng nhập để xuất cơ sở dữ liệu.</string>
     <string name="error_export_encrypted">Xuất dữ liệu mã hóa không hỗ trợ</string>
     <string name="error_import_exist">Bạn đang nhập cơ sở dữ liệu đang tồn tại</string>
@@ -190,7 +189,6 @@
     <string name="error_socket_timeout">Máy chủ mất quá nhiều thời gian để trả lời. Chúng tôi đã hủy yêu cầu.</string>
     <string name="error_relationship_updated">Mối quan hệ không thể cập nhật.</string>
     <string name="error_too_many_periods">Có quá nhiều thời điểm</string>
-    <string name="error_url_not_found">Chúng tôi không thể tìm thấy đường dẫn liên kết. Vui lòng kiểm tra lại.</string>
     <string name="error_account_disabled">Tài khoảng của bạn đã bị vô hiệu hóa. Nếu đây là lỗi, vui lòng liên hệ quản lý của bạn.</string>
     <string name="error_account_locked">Tài khoảng của bạn đã bị khóa. Nếu đây là lỗi, vui lòng liên hệ quản lý của bạn.</string>
     <string name="error_set_value">Giá trị không thể được thiết lập</string>
@@ -205,8 +203,11 @@
     <string name="database_import_failed">Nhập cơ sở dữ liệu không thành công</string>
     <string name="invalid_file">Tệp không hợp lệ</string>
     <string name="not_in_totp_2fa_enrollment_mode">Không ở chế độ đăng ký TOTP 2FA</string>
-    <!--*******************->
+    <!--*******************
        END OF D2 Error Messages
     **********************-->
+    <string name="age_or">HOẶC</string>
+    <string name="cancel">Hủy</string>
+    <string name="ok">OK</string>
 
 </resources>

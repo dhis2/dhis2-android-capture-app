@@ -32,7 +32,7 @@
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Xảy ra lỗi trong quá trình đồng bộ. Vui lòng thử lại.</string>
     <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận máy chủ cho tất cả dữ liệu. Các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
-    <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy thử đồng bộ cấu hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của chương trình, các Đối Tượng Theo Dõi và các sự kiện với các dấu hiệu xung đột là @.</string>
+    <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy Đồng bộ Cấu Hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của Chương trình, các Đối Tượng Theo Dõi và các Sự kiện với các dấu hiệu xung đột là \@.</string>
     <string name="server_sync_error">Có lỗi và máy chủ không phản hồi. Liên hệ quản trị viên của bạn.</string>
 
     <string name="search_result_text">Tìm thấy %s kết quả</string>
@@ -299,7 +299,6 @@
     <string name="search_min_num_attr">Bạn cần nhập ít nhất %d thuộc tính để thực hiện tìm kiếm</string>
     <string name="search_attr">Bạn cần nhập ít nhất một thuộc tính để tìm kiếm</string>
     <string name="search_max_tei_reached">Có nhiều hơn %d kết quả. Vui lòng nhập thêm thông số tìm kiếm khác</string>
-    <string name="search_criteria_not_met">Thông số tìm kiếm của bạn không trả về kết quả nào. \n Sửa lại thông số tìm kiếm hoặc đăng ký %s mới</string>
     <string name="search_init">Nhập thông số tìm kiếm của bạn</string>
 
     <!-- QR -->
@@ -713,7 +712,6 @@
     <string name="field_is_mandatory">Trường dữ liệu này bắt buộc</string>
     <string name="security_debugger_message">Vì lí do bảo mật, phiên bản ứng dụng này không cho phép sử dụng với adb. Vui lòng sử dụng phiên bản đào tạo.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ồ! Có gì đó không xảy ra như dự kiến.\nHãy quay trở lại hành động trước.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Quay lại</string>
     <string name="customactivityoncrash_error_activity_close_app">Đóng ứng dụng</string>
     <string name="customactivityoncrash_error_activity_error_details">Thêm chi tiết</string>
@@ -795,7 +793,7 @@
     <string name="show_radar_graph">Xem Radar</string>
     <string name="coordinate_feature_type_error">Không thể cài đặt kiểu tọa độ</string>
     <string name="filter_follow_up_label">Đã theo dõi %s</string>
-    <string name="wrong_date_format">%s không thể chuyển đổi thành Ngày</string>
+    <string name="wrong_date_format">%s không thể chuyển đổi dữ liệu Ngày</string>
     <string name="update_field_error">Không thể cập nhật trường dữ liệu này. Xin vui lòng thử lại.</string>
     <string name="edition">Chỉnh sửa</string>
     <string name="available">Hiện có</string>

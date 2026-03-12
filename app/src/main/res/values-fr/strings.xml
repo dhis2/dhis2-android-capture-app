@@ -34,7 +34,7 @@
     <string name="sync_error_title">Problème de synchronisation</string>
     <string name="sync_error_text">Une erreur s´est produite pendant sync. Essayez à nouveau.</string>
     <string name="sync_incomplete_error_text">La synchronisation est terminée, mais nous n\'avons pas reçu de confirmation du serveur pour tous les enregistrements. Ces enregistrements sont toujours marqués comme \"hors ligne\" dans l\'application. Nous vous recommandons de réessayer la synchronisation.</string>
-    <string name="data_sync_warning_program">AVERTISSEMENT: La plupart de vos données ont été syncrhonisées mais certains champs ont eu des conflits. Synchronisez votre configuration et ressayez, Si l\'erreur persiste, vérifiez le statut de synchronisation: les programmes, TEIs et évènements avec conflits sont marqués avec @. </string>
+    <string name="data_sync_warning_program">AVERTISSEMENT: La plupart de vos données ont été syncrhonisées mais certains champs ont eu des conflits. Synchronisez votre configuration et ressayez, Si l\'erreur persiste, vérifiez le statut de synchronisation: les programmes, TEIs et évènements avec conflits sont marqués avec \@. </string>
     <string name="server_sync_error">Une erreur s\'est produite et le serveur n\'a pas répondu. Contactez votre administrateur.</string>
 
     <string name="search_result_text">%s résultats trouvé</string>
@@ -112,7 +112,7 @@
     <string name="update">Mettre à jour</string>
     <string name="date">Date</string>
     <string name="org_unit">Unités d´Organisation</string>
-    <string name="no_org_units">Il n\'y a pas d\'Unité d\'organisation Ouvert pour la date sélectionnée. Merci de sélectionner une autre date ou une autre Unité d\'Organisation.</string>
+    <string name="no_org_units">Il n\'y a pas d\'unité d\'organisation ouverte pour la date sélectionnée. Merci de sélectionner une autre date ou une autre unité d\'organisation.</string>
     <string name="category_option">Options de catégorie</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
@@ -286,7 +286,6 @@
     <string name="search_min_num_attr">Vous devez entrer au moins %d des attributs pour lancer une recherche</string>
     <string name="search_attr">Vous devez renseigner au moins un des attributs afin d\'effectuer la recherche</string>
     <string name="search_max_tei_reached">il y a plus de %d des résultats. Veuillez entrer les autres critères de recherche</string>
-    <string name="search_criteria_not_met">Vos critères de recherche ne renvoient aucun résultat.\nVérifiez-les ou créez une nouvelle inscription %s</string>
     <string name="search_init">Entrez vos critères de recherche</string>
 
     <!-- QR -->
@@ -303,7 +302,7 @@
     <string name="qr_no_data">Aucune donnée</string>
     <string name="qr_error_id">Code QR invalide</string>
     <string name="qr_error_attr">Cet attribut ne peut pas être ajouté</string>
-    <string name="qr_error_enrollment">Cette inscription ne peu pas être ajoutée</string>
+    <string name="qr_error_enrollment">Cette entité ne peut pas être enrôlée</string>
 
     <string name="about">À propos</string>
     <string name="programs_to_enroll">Programmes disponibles pour l´admission</string>
@@ -493,7 +492,7 @@
     <string name="tuto_main_11">Maintenant vous pouvez vérifier l\'information de synchronisation en cliquant ici</string>
     <string name="no_conflicts_update_message">Cette donnée est enregistrée seulement sur votre appareil et n\'a pas été synchronisée avec le serveur. </string>
     <string name="no_conflicts_synced_message">Vous êtes à jour! Toutes vos données ont été envoyées au serveur. </string>
-    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation une donnée avec elle-même</string>
+    <string name="relationship_error_recursive">Vous ne pouvez pas établir de relation entre une donnée et elle-même</string>
     <string name="unblock_session">Dévérouiller la session</string>
     <string name="data_set_complete">Terminer</string>
     <string name="data_set_open">Ouvrir</string>
@@ -505,7 +504,7 @@
     <string name="data_every_week">Hebdomadaire</string>
     <string name="period_week">Semaine</string>
     <string name="sync_setting">Paramètre de synchronisation: %s</string>
-    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'acceéer n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
+    <string name="relationship_without_enrollment">La donnée à laquelle vous essayer d\'accéder n\'a pas d\'enrôlement. Vous ne pouvez pas accéder au tableau de bord.</string>
     <string name="formatting_error">Erreur de formattage</string>
     <string name="dashboard_menu_delete_tei_v2">Supprimer 1%s</string>
     <string name="delete_authority_error">Vous n\'avez pas l\'autorité pour supprimer cette donnée</string>
@@ -696,7 +695,6 @@
     <string name="field_is_mandatory">Ce champ est obligatoire</string>
     <string name="security_debugger_message">Pour des raisons de sécurité, cette version de l\'application ne peut pas être utilisée avec adb. Veuillez utiliser la version de formation.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Oups! Quelque chose ne s\'est pas déroulé comme prévu.\nLaissez-nous vous remettre en action. </string>
     <string name="customactivityoncrash_error_activity_restart_app">Précédent</string>
     <string name="customactivityoncrash_error_activity_close_app">Fermer l\'application</string>
     <string name="customactivityoncrash_error_activity_error_details">Plus de détails</string>
@@ -772,7 +770,7 @@
     <string name="dataset_column_default">Valeurs</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
     <string name="action_do_not_show_again">Ne pas montrer de nouveau</string>
-    <string name="wrong_date_format"> 1%s ne peut pas être analysé comme une date</string>
+    <string name="wrong_date_format"> %s ne peut pas être analysé comme une date</string>
     <string name="update_field_error">Ce champ n\'a pas pu être mis à jour. Veuillez réessayer</string>
     <string name="available">Disponible</string>
     <string name="blocked_by_completion">Ces données ne sont pas modifiables car elles sont marquées comme terminées</string>
