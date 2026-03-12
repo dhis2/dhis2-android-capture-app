@@ -34,7 +34,8 @@ json=$(jq -n \
                 --argjson shards "$shards" \
                 --arg singleRunnerInvocation "$browserstack_singleRunnerInvocation" \
                 --arg buildTag "$buildTag" \
-                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards,singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag}')
+                --arg retryTestsOnFailure "$browserstack_retryTestsOnFailure" \
+                '{devices: $devices, app: $app_url, testSuite: $test_url, class: $class, logs: $logs, video: $video, local: $loc, localIdentifier: $locId, gpsLocation: $gpsLocation, language: $language, locale: $locale, deviceLogs: $deviceLogs, allowDeviceMockServer: $allowDeviceMockServer, shards: $shards,singleRunnerInvocation: $singleRunnerInvocation, buildTag: $buildTag, retryTestsOnFailure : $retryTestsOnFailure}')
 
 test_execution_response="$(curl -X POST https://api-cloud.browserstack.com/app-automate/espresso/v2/build -d \ "$json" -H "Content-Type: application/json" -u "$BROWSERSTACK_USR:$BROWSERSTACK_PSW")"
 
