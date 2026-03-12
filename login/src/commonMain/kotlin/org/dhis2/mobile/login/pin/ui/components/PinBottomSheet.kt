@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.commons.extensions.deviceIsInLandscapeMode
 import org.dhis2.mobile.commons.extensions.getWindowSizeClass
 import org.dhis2.mobile.login.pin.domain.model.PinState
@@ -52,8 +56,10 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.SegmentedShellType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -99,7 +105,6 @@ fun PinBottomSheet(
     val viewModel: PinViewModel = koinViewModel()
     val uiState by viewModel.uiState.collectAsState()
     var currentPin by remember { mutableStateOf("") }
-    val focusRequester = remember { FocusRequester() }
 
     val isLandscape = deviceIsInLandscapeMode()
     // Handle state changes from ViewModel
@@ -197,18 +202,80 @@ fun PinBottomSheet(
             }
         }
 
-    FullScreenDialog(
+    PinBottomSheetContent(
+        title = title,
+        subtitle = subtitle,
+        primaryButtonText = primaryButtonText,
+        secondaryButtonText = secondaryButtonText,
+        errorMessage = errorMessage,
+        primaryButtonIsEnabled = primaryButtonIsEnabled,
+        secondaryButtonIsEnabled = secondaryButtonIsEnabled,
+        isLandscape = isLandscape,
+        windowSizeClass = windowSizeClass,
+        onPinChanged = handlePinChanged,
+        onPrimaryClick = ::onPrimaryClick,
+        onSecondaryClick = ::onSecondaryClick,
         onDismiss = {
             viewModel.resetAttempts()
             viewModel.resetState()
             onDismiss()
         },
+        modifier = modifier,
+    )
+}
+
+/**
+ * Stateless UI content for the PIN bottom sheet.
+ *
+ * Renders the [FullScreenDialog] with either a portrait (stacked) or landscape (side-by-side)
+ * layout depending on [isLandscape]. This composable holds no business logic and is safe
+ * to use in Compose Previews.
+ *
+ * @param title The main heading text.
+ * @param subtitle The descriptive text shown below the title.
+ * @param primaryButtonText Label for the primary action button.
+ * @param secondaryButtonText Optional label for the secondary action button.
+ * @param errorMessage Optional error message shown below the PIN input field.
+ * @param primaryButtonIsEnabled Whether the primary action button is enabled.
+ * @param secondaryButtonIsEnabled Whether the secondary action button is enabled.
+ * @param isLandscape Whether the device is in landscape orientation.
+ * @param windowSizeClass Window size class used to choose the button layout.
+ * @param onPinChanged Callback invoked on every PIN value change.
+ * @param onPrimaryClick Callback for the primary button click.
+ * @param onSecondaryClick Callback for the secondary button click.
+ * @param onDismiss Callback invoked when the dialog is dismissed.
+ * @param modifier Optional modifier for customization.
+ */
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Composable
+internal fun PinBottomSheetContent(
+    title: String,
+    subtitle: String,
+    primaryButtonText: String,
+    secondaryButtonText: String?,
+    errorMessage: String?,
+    primaryButtonIsEnabled: Boolean,
+    secondaryButtonIsEnabled: Boolean,
+    isLandscape: Boolean,
+    windowSizeClass: WindowSizeClass,
+    onPinChanged: (String) -> Unit,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val focusRequester = remember { FocusRequester() }
+
+    FullScreenDialog(
+        onDismiss = onDismiss,
         content = {
             if (!isLandscape) {
                 Column(
                     modifier =
                         Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .imePadding()
+                            .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top,
                 ) {
@@ -219,58 +286,54 @@ fun PinBottomSheet(
 
                     PinInputBlock(
                         focusRequester = focusRequester,
-                        pinLength = pinLength,
+                        pinLength = 4,
                         errorMessage = errorMessage,
                         windowSizeClass = windowSizeClass,
                         primaryButtonIsEnabled = primaryButtonIsEnabled,
                         primaryButtonText = primaryButtonText,
                         secondaryButtonIsEnabled = secondaryButtonIsEnabled,
                         secondaryButtonText = secondaryButtonText,
-                        onPinChanged = handlePinChanged,
-                        onPrimaryClick = ::onPrimaryClick,
-                        onSecondaryClick = ::onSecondaryClick,
+                        onPinChanged = onPinChanged,
+                        onPrimaryClick = onPrimaryClick,
+                        onSecondaryClick = onSecondaryClick,
                     )
                 }
             } else {
-                Column(
+                Row(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                            .padding(Spacing.Spacing16),
-                    verticalArrangement = Arrangement.Center,
+                            .fillMaxSize()
+                            .imePadding()
+                            .padding(horizontal = Spacing.Spacing56)
+                            .padding(bottom = 96.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing56),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        PinHeader(
-                            title = title,
-                            subtitle = subtitle,
-                            modifier = modifier.weight(1f).padding(end = Spacing.Spacing16),
-                        )
+                    PinHeader(
+                        title = title,
+                        subtitle = subtitle,
+                        modifier = Modifier.weight(1f),
+                    )
 
-                        VerticalDivider(
-                            thickness = Spacing.Spacing1,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                        )
+                    VerticalDivider(
+                        thickness = Spacing.Spacing1,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
 
-                        PinInputBlock(
-                            focusRequester = focusRequester,
-                            pinLength = pinLength,
-                            errorMessage = errorMessage,
-                            windowSizeClass = windowSizeClass,
-                            primaryButtonIsEnabled = primaryButtonIsEnabled,
-                            primaryButtonText = primaryButtonText,
-                            secondaryButtonIsEnabled = secondaryButtonIsEnabled,
-                            secondaryButtonText = secondaryButtonText,
-                            onPinChanged = handlePinChanged,
-                            onPrimaryClick = ::onPrimaryClick,
-                            onSecondaryClick = ::onSecondaryClick,
-                            modifier = modifier.weight(1f).padding(start = Spacing.Spacing16),
-                        )
-                    }
+                    PinInputBlock(
+                        focusRequester = focusRequester,
+                        pinLength = 4,
+                        errorMessage = errorMessage,
+                        windowSizeClass = windowSizeClass,
+                        primaryButtonIsEnabled = primaryButtonIsEnabled,
+                        primaryButtonText = primaryButtonText,
+                        secondaryButtonIsEnabled = secondaryButtonIsEnabled,
+                        secondaryButtonText = secondaryButtonText,
+                        onPinChanged = onPinChanged,
+                        onPrimaryClick = onPrimaryClick,
+                        onSecondaryClick = onSecondaryClick,
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         },
@@ -503,4 +566,52 @@ private fun PinSecondaryButton(
         text = buttonText,
         onClick = onClick,
     )
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Preview(showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+fun PinAskPortraitPreview() {
+    val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(360.dp, 800.dp))
+    DHIS2Theme {
+        PinBottomSheetContent(
+            title = "Enter PIN",
+            subtitle = "Enter your 4-digit PIN to access the application",
+            primaryButtonText = "Enter",
+            secondaryButtonText = "Forgot PIN?",
+            errorMessage = null,
+            primaryButtonIsEnabled = false,
+            secondaryButtonIsEnabled = true,
+            isLandscape = false,
+            windowSizeClass = windowSizeClass,
+            onPinChanged = {},
+            onPrimaryClick = {},
+            onSecondaryClick = {},
+            onDismiss = {},
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Preview(showBackground = true, widthDp = 1280, heightDp = 800)
+@Composable
+fun PinAskLandscapePreview() {
+    val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(1280.dp, 800.dp))
+    DHIS2Theme {
+        PinBottomSheetContent(
+            title = "Enter PIN",
+            subtitle = "Enter your 4-digit PIN to access the application",
+            primaryButtonText = "Enter",
+            secondaryButtonText = "Forgot PIN?",
+            errorMessage = null,
+            primaryButtonIsEnabled = false,
+            secondaryButtonIsEnabled = true,
+            isLandscape = true,
+            windowSizeClass = windowSizeClass,
+            onPinChanged = {},
+            onPrimaryClick = {},
+            onSecondaryClick = {},
+            onDismiss = {},
+        )
+    }
 }

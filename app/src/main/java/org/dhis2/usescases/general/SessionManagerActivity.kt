@@ -30,8 +30,6 @@ import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.FORGOT_CODE
 import org.dhis2.mobile.login.pin.addPinBottomSheet
-import org.dhis2.utils.session.PIN_DIALOG_TAG
-import org.dhis2.utils.session.PinDialog
 import org.koin.android.ext.android.inject
 import javax.inject.Inject
 

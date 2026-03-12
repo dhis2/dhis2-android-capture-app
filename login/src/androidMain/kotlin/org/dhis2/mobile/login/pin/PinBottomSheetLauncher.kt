@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.FragmentActivity
 import org.dhis2.mobile.login.pin.ui.components.PinBottomSheet
 import org.dhis2.mobile.login.pin.ui.components.PinMode
+import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 
 /**
  * Adds a [PinBottomSheet] composable as an overlay on the Activity's decor view.
@@ -31,11 +32,13 @@ fun FragmentActivity.addPinBottomSheet(
             ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool,
         )
         setContent {
-            PinBottomSheet(
-                mode = mode,
-                onSuccess = onSuccess,
-                onDismiss = onDismiss,
-            )
+            DHIS2Theme {
+                PinBottomSheet(
+                    mode = mode,
+                    onSuccess = onSuccess,
+                    onDismiss = onDismiss,
+                )
+            }
         }
         decorView.addView(this, MATCH_PARENT, MATCH_PARENT)
     }
