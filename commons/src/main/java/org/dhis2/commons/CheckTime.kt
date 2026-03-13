@@ -6,6 +6,7 @@ object CheckTime {
     var initTimer = 0L
     fun initTimer() {
         initTimer = System.currentTimeMillis()
+        Timber.tag("CHECK_TIMES").d("***** STARTING COUNTER *****")
     }
 
     fun elapsedTime(tag: String = "CHECK_TIMES", message: String) {

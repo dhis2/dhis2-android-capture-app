@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.core.content.ContextCompat
@@ -11,6 +12,7 @@ import org.dhis2.commons.R
 import org.dhis2.commons.network.NetworkUtils
 import org.hisp.dhis.android.core.D2Manager
 
+@Stable
 class ResourceManager(
     val context: Context,
     private val colorUtils: ColorUtils,

@@ -47,7 +47,6 @@ class FormRepositoryImpl(
     private var ruleEffects: List<RuleEffect> = emptyList()
     private var ruleEffectsResult: RuleUtilsProviderResult? = null
     private var runDataIntegrity: Boolean = false
-    private var calculationLoop: Int = 0
     private var backupList: List<FieldUiModel> = emptyList()
     private val fieldsWithOptionEffects = mutableListOf<FieldUiModel>()
 
@@ -75,7 +74,6 @@ class FormRepositoryImpl(
         }
 
     override suspend fun composeList(skipProgramRules: Boolean): List<FieldUiModel> {
-        calculationLoop = 0
         return itemList
             .applyRuleEffects(skipProgramRules)
             .mergeListWithErrorFields(itemsWithError)
@@ -450,7 +448,7 @@ class FormRepositoryImpl(
 
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float = completionPercentage
 
-    override fun calculationLoopOverLimit(): Boolean = calculationLoop == LOOP_THRESHOLD
+    override fun calculationLoopOverLimit(): Boolean = false
 
     override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
@@ -528,14 +526,7 @@ class FormRepositoryImpl(
             }
         }
 
-        return if (ruleEffectsResult?.fieldsToUpdate?.isNotEmpty() == true &&
-            calculationLoop < LOOP_THRESHOLD
-        ) {
-            calculationLoop += 1
-            ArrayList(fieldMap.values).applyRuleEffects(skipProgramRules)
-        } else {
-            ArrayList(fieldMap.values)
-        }
+        return ArrayList(fieldMap.values)
     }
 
     private fun List<FieldUiModel>.setFocusedItem(): List<FieldUiModel> =

@@ -195,11 +195,6 @@ class FormView : Fragment() {
             )
             setContent {
                 val items by viewModel.items.collectAsState(emptyList())
-                LaunchedEffect(items) {
-                    CheckTime.elapsedTime(message = "New items")
-                    render(items)
-                }
-
                 var resultDialogData: FormViewModel.FormActions.ShowResultDialog? by remember {
                     mutableStateOf(null)
                 }
@@ -224,6 +219,10 @@ class FormView : Fragment() {
                     resources = Injector.provideResourcesManager(context),
                 )
 
+                LaunchedEffect(items) {
+                    CheckTime.elapsedTime(message = "New items")
+                    render(items)
+                }
                 resultDialogData?.let {
                     DataEntryBottomSheet(
                         model = it.model,
