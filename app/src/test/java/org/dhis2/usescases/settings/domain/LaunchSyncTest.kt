@@ -132,7 +132,11 @@ class LaunchSyncTest {
                 awaitItem()
                 awaitItem()
                 mockedMetadataWorkInfo.emit(listOf(startedMetadataWorkInfo))
-                assertState(awaitItem(), LaunchSync.SyncStatus.InProgress, LaunchSync.SyncStatus.None)
+                assertState(
+                    awaitItem(),
+                    LaunchSync.SyncStatus.InProgress,
+                    LaunchSync.SyncStatus.None
+                )
                 mockedDataWorkInfo.emit(listOf(startedDataWorkInfo))
                 with(awaitItem()) {
                     assertState(
@@ -140,7 +144,12 @@ class LaunchSyncTest {
                         LaunchSync.SyncStatus.InProgress,
                         LaunchSync.SyncStatus.InProgress,
                     )
-                    assertFalse(this.hasSyncFinished(metadataWasRunning = true, dataWasRunning = false))
+                    assertFalse(
+                        this.hasSyncFinished(
+                            metadataWasRunning = true,
+                            dataWasRunning = false
+                        )
+                    )
                 }
 
                 mockedMetadataWorkInfo.emit(listOf(finishedMetadataWorkInfo))
@@ -150,13 +159,69 @@ class LaunchSyncTest {
                         LaunchSync.SyncStatus.Finished,
                         LaunchSync.SyncStatus.InProgress,
                     )
-                    assertTrue(this.hasSyncFinished(metadataWasRunning = true, dataWasRunning = true))
+                    assertTrue(
+                        this.hasSyncFinished(
+                            metadataWasRunning = true,
+                            dataWasRunning = true
+                        )
+                    )
                 }
                 mockedDataWorkInfo.emit(listOf(finishedDataWorkInfo))
-                assertState(awaitItem(), LaunchSync.SyncStatus.Finished, LaunchSync.SyncStatus.Finished)
+                assertState(
+                    awaitItem(),
+                    LaunchSync.SyncStatus.Finished,
+                    LaunchSync.SyncStatus.Finished
+                )
                 cancelAndIgnoreRemainingEvents()
             }
         }
+
+    @Test
+    fun shouldCombineMetadataProgress() =
+        runTest {
+            launchSync.syncWorkInfo.test {
+                awaitItem()
+                awaitItem()
+                syncStatuses.forEach { metadataSyncStatus ->
+                    syncStatuses.forEach { metadataNowSyncStatus ->
+                        mockedMetadataWorkInfo.emit(
+                            listOf(
+                                metadataSyncStatus,
+                                metadataNowSyncStatus
+                            )
+                        )
+                        val expectedValue = when {
+                            (metadataSyncStatus.status is SyncStatus.Running) or (metadataNowSyncStatus.status is SyncStatus.Running) -> LaunchSync.SyncStatus.InProgress
+                            (metadataSyncStatus.status is SyncStatus.Blocked) or (metadataNowSyncStatus.status is SyncStatus.Blocked) -> LaunchSync.SyncStatus.InProgress
+                            (metadataSyncStatus.status is SyncStatus.Enqueue) and (metadataNowSyncStatus.status is SyncStatus.Enqueue) -> LaunchSync.SyncStatus.None
+                            (metadataSyncStatus.status is SyncStatus.Cancelled) and (metadataNowSyncStatus.status is SyncStatus.Cancelled) -> LaunchSync.SyncStatus.Cancelled
+                            else -> LaunchSync.SyncStatus.Finished
+
+
+                        }
+
+                        assertState(
+                            awaitItem(),
+                            expectedValue,
+                            LaunchSync.SyncStatus.None
+                        )
+                    }
+                }
+            }
+        }
+
+    private val syncStatuses = listOf(
+        mockedMetadataSyncJobStatus(SyncStatus.Enqueue),
+        mockedMetadataSyncJobStatus(SyncStatus.Running),
+        mockedMetadataSyncJobStatus(SyncStatus.Succeed),
+        mockedMetadataSyncJobStatus(SyncStatus.Failed),
+        mockedMetadataSyncJobStatus(SyncStatus.Blocked),
+        mockedMetadataSyncJobStatus(SyncStatus.Cancelled),
+    )
+
+    private fun mockedMetadataSyncJobStatus(mockedStatus: SyncStatus) = mock<SyncJobStatus> {
+        on { status } doReturn mockedStatus
+    }
 
     private fun assertState(
         syncStatusProgress: LaunchSync.SyncStatusProgress,
