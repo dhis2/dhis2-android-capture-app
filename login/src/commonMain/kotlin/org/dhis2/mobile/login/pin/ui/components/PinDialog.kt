@@ -226,7 +226,7 @@ private fun PinHeader(
     ) {
         Icon(
             imageVector = Icons.Outlined.Pin,
-            contentDescription = "Pin Icon",
+            contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
         )
 
