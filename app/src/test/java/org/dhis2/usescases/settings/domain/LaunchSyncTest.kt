@@ -181,6 +181,7 @@ class LaunchSyncTest {
         runTest {
             launchSync.syncWorkInfo.test {
                 awaitItem()
+                awaitItem()
                 syncStatuses.forEach { metadataSyncStatus ->
                     syncStatuses.forEach { metadataNowSyncStatus ->
                         mockedMetadataWorkInfo.emit(
@@ -198,13 +199,12 @@ class LaunchSyncTest {
 
 
                         }
-                        with(awaitItem()) {
-                            assertState(
-                                this,
-                                expectedValue,
-                                LaunchSync.SyncStatus.None
-                            )
-                        }
+
+                        assertState(
+                            awaitItem(),
+                            expectedValue,
+                            LaunchSync.SyncStatus.None
+                        )
                     }
                 }
             }

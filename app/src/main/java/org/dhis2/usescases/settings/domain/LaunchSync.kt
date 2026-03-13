@@ -3,7 +3,6 @@ package org.dhis2.usescases.settings.domain
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import org.dhis2.commons.Constants
 import org.dhis2.commons.matomo.Actions
@@ -12,6 +11,7 @@ import org.dhis2.commons.prefs.PreferenceProvider
 import org.dhis2.mobile.commons.providers.TIME_DATA
 import org.dhis2.mobile.commons.providers.TIME_META
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
+import org.dhis2.mobile.sync.model.SyncJobStatus
 import org.dhis2.utils.analytics.AnalyticsHelper
 import org.dhis2.utils.analytics.CLICK
 import org.dhis2.utils.analytics.SYNC_DATA_NOW
@@ -35,12 +35,7 @@ class LaunchSync(
         syncBackgroundJobAction
             .observeMetadataJob()
             .map { workStatuses ->
-                val currentSyncStatus = when {
-                    workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
-                    workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
-                    workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
-                    else -> SyncStatus.Finished
-                }
+                val currentSyncStatus = combinedStatus(workStatuses)
                 syncStatus.updateAndGet { it.copy(metadataSyncProgress = currentSyncStatus) }
             }
 
@@ -48,12 +43,7 @@ class LaunchSync(
         syncBackgroundJobAction
             .observeDataJob()
             .map { workStatuses ->
-                val currentSyncStatus = when {
-                    workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
-                    workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
-                    workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
-                    else -> SyncStatus.Finished
-                }
+                val currentSyncStatus = combinedStatus(workStatuses)
                 syncStatus.updateAndGet { it.copy(dataSyncProgress = currentSyncStatus) }
             }
 
@@ -91,9 +81,9 @@ class LaunchSync(
             metadataWasRunning: Boolean,
             dataWasRunning: Boolean,
         ) = metadataSyncProgress == SyncStatus.Finished &&
-            metadataWasRunning ||
-            dataSyncProgress == SyncStatus.Finished &&
-            dataWasRunning
+                metadataWasRunning ||
+                dataSyncProgress == SyncStatus.Finished &&
+                dataWasRunning
     }
 
     suspend operator fun invoke(syncAction: SyncAction) {
@@ -143,5 +133,12 @@ class LaunchSync(
     private fun syncData(seconds: Int) {
         preferenceProvider.setValue(TIME_DATA, seconds)
         syncBackgroundJobAction.launchDataSync(seconds.toLong())
+    }
+
+    private fun combinedStatus(workStatuses: List<SyncJobStatus>) = when {
+        workStatuses.any { (it.status is Status.Running) or (it.status is Status.Blocked) } -> SyncStatus.InProgress
+        workStatuses.all { it.status is Status.Enqueue } -> SyncStatus.None
+        workStatuses.all { it.status is Status.Cancelled } -> SyncStatus.Cancelled
+        else -> SyncStatus.Finished
     }
 }
