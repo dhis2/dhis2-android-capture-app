@@ -11,6 +11,7 @@ import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.program.ProgramRule
+import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.api.RuleSupplementaryData
 import org.hisp.dhis.rules.models.Rule
 import org.hisp.dhis.rules.models.RuleAttributeValue
@@ -57,6 +58,7 @@ class RulesRepository(
     suspend fun rules(
         programUid: String,
         eventUid: String? = null,
+        skipDisplayRules: Boolean = false,
     ): List<Rule> {
         val programStage =
             eventUid?.let {
@@ -68,9 +70,23 @@ class RulesRepository(
                     ?.programStage()
             }
 
-        return queryRules(programUid).toRuleList().filter {
-            it.programStage == null || it.programStage == programStage
-        }
+        return queryRules(programUid)
+            .run {
+                if (skipDisplayRules) {
+                    this.filter { rule ->
+                        val allActionsAreDisplayActions = rule.programRuleActions()?.all {
+                            it.programRuleActionType() == ProgramRuleActionType.DISPLAYTEXT || it.programRuleActionType() == ProgramRuleActionType.DISPLAYKEYVALUEPAIR
+                        } ?: false
+                        !allActionsAreDisplayActions
+                    }
+                } else {
+                    this
+                }
+            }
+            .toRuleList()
+            .filter {
+                it.programStage == null || it.programStage == programStage
+            }
     }
 
     suspend fun ruleVariables(programUid: String): List<RuleVariable> =

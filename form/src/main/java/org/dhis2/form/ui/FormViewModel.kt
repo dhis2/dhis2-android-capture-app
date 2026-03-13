@@ -13,12 +13,17 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import org.dhis2.commons.CheckTime
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
@@ -49,6 +54,7 @@ import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.idling.FormCountingIdlingResource
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.dhis2.mobile.commons.providers.CustomIntentFailure
@@ -81,8 +87,13 @@ class FormViewModel(
     val showInfo = MutableLiveData<InfoUiModel>()
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
     var dateFormatConfig: String = "ddMMyyyy"
-    private val _items = MutableLiveData<List<FieldUiModel>>()
-    val items: LiveData<List<FieldUiModel>> = _items
+
+    private val formSectionMapper = FormSectionMapper()
+    private val _items = MutableSharedFlow<List<FieldUiModel>>()
+
+    val items = _items.map { items ->
+        formSectionMapper.mapFromFieldUiModelList(items)
+    }.shareIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     var previousActionItem: RowAction? = null
 
@@ -132,10 +143,13 @@ class FormViewModel(
                     old == new
                 }
             }.onEach { intent ->
+                CheckTime.initTimer()
                 FormCountingIdlingResource.increment()
                 val result = createRowActionStore(intent)
+                CheckTime.elapsedTime(message = "Row action created in ${Thread.currentThread().name}")
                 displayResult(result)
                 FormCountingIdlingResource.decrement()
+                CheckTime.elapsedTime(message = "Result displayed in ${Thread.currentThread().name}")
             }.flowOn(dispatcher.io())
             .launchIn(viewModelScope)
 
@@ -143,7 +157,7 @@ class FormViewModel(
             fieldListChannel.consumeEach { fieldListConfiguration ->
                 FormCountingIdlingResource.increment()
                 val result = repository.composeList(fieldListConfiguration.skipProgramRules)
-                _items.postValue(result)
+                _items.emit(result)
                 if (fieldListConfiguration.finish) {
                     runDataIntegrityCheck()
                 }
@@ -833,7 +847,7 @@ class FormViewModel(
                 Timber.e(e)
             } finally {
                 val list = repository.composeList()
-                _items.postValue(list)
+                _items.emit(list)
                 FormCountingIdlingResource.decrement()
             }
         }
@@ -941,7 +955,9 @@ class FormViewModel(
         viewModelScope.launch {
             val result =
                 async(dispatcher.io()) {
-                    repository.completedFieldsPercentage(_items.value ?: emptyList())
+                    repository.completedFieldsPercentage(
+                        value = _items.firstOrNull() ?: emptyList()
+                    )
                 }
             try {
                 _completionPercentage.postValue(result.await())
@@ -1022,10 +1038,10 @@ class FormViewModel(
                     repository.getDateFormatConfiguration()
                 }.await()
             try {
-                _items.postValue(result)
+                _items.emit(result)
             } catch (e: Exception) {
                 Timber.e(e)
-                _items.postValue(emptyList())
+                _items.emit(emptyList())
             } finally {
                 FormCountingIdlingResource.decrement()
             }

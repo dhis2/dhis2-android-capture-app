@@ -9,6 +9,7 @@ import org.hisp.dhis.rules.api.RuleEngineContext
 import org.hisp.dhis.rules.models.RuleEffect
 import org.hisp.dhis.rules.models.RuleEnrollment
 import org.hisp.dhis.rules.models.RuleEvent
+import timber.log.Timber
 
 class RuleEngineHelper(
     private val evaluationType: EvaluationType,
@@ -21,6 +22,8 @@ class RuleEngineHelper(
     private lateinit var targetEvent: RuleEvent
 
     fun evaluate(): List<RuleEffect> {
+        val initMillist = System.currentTimeMillis()
+
         var ruleEffects = emptyList<RuleEffect>()
         runBlocking {
             async { buildRuleEngineContextData(evaluationType.targetUid) }.await()
@@ -56,6 +59,8 @@ class RuleEngineHelper(
                     }
                 }.await()
         }
+        val finalMillis = System.currentTimeMillis()
+        Timber.tag("PROGRAM RULES").d("Evaluation time: ${finalMillis - initMillist}")
         return ruleEffects
     }
 

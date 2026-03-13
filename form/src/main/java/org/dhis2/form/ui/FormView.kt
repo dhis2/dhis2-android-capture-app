@@ -13,8 +13,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,6 +28,7 @@ import androidx.fragment.app.viewModels
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
+import org.dhis2.commons.CheckTime
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
@@ -46,8 +47,8 @@ import org.dhis2.form.data.RulesUtilsProviderConfigurationError
 import org.dhis2.form.data.scan.ScanContract
 import org.dhis2.form.data.toMessage
 import org.dhis2.form.di.Injector
-import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormRepositoryRecords
+import org.dhis2.form.model.FormSection
 import org.dhis2.form.model.InfoUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.model.UiRenderType
@@ -193,11 +194,11 @@ class FormView : Fragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             setContent {
-                val items by viewModel.items.observeAsState()
-                val sections =
-                    items?.let {
-                        formSectionMapper.mapFromFieldUiModelList(it)
-                    } ?: emptyList()
+                val items by viewModel.items.collectAsState(emptyList())
+                LaunchedEffect(items) {
+                    CheckTime.elapsedTime(message = "New items")
+                    render(items)
+                }
 
                 var resultDialogData: FormViewModel.FormActions.ShowResultDialog? by remember {
                     mutableStateOf(null)
@@ -215,8 +216,9 @@ class FormView : Fragment() {
                     }
                 }
 
+                CheckTime.elapsedTime(message = "Painting items")
                 Form(
-                    sections = sections,
+                    sections = items,
                     intentHandler = ::intentHandler,
                     uiEventHandler = ::uiEventHandler,
                     resources = Injector.provideResourcesManager(context),
@@ -265,12 +267,6 @@ class FormView : Fragment() {
             viewLifecycleOwner,
         ) { rowAction ->
             onItemChangeListener?.let { it(rowAction) }
-        }
-
-        viewModel.items.observe(
-            viewLifecycleOwner,
-        ) { items ->
-            render(items)
         }
 
         viewModel.loading.observe(
@@ -465,7 +461,7 @@ class FormView : Fragment() {
         }
     }
 
-    private fun render(items: List<FieldUiModel>) {
+    private fun render(items: List<FormSection>) {
         viewModel.calculateCompletedFields()
         viewModel.updateConfigurationErrors()
         viewModel.displayLoopWarningIfNeeded()
