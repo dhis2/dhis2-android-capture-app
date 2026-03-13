@@ -128,24 +128,37 @@ class ConflictGenerator(
                     dataValueConflict.categoryOptionCombo() != null &&
                     dataValueConflict.attributeOptionCombo() != null
                 ) {
-                    val dataValue =
-                        d2
-                            .dataValueModule()
-                            .dataValues()
-                            .value(
-                                dataValueConflict.period()!!,
-                                dataValueConflict.orgUnit()!!,
-                                dataValueConflict.dataElement()!!,
-                                dataValueConflict.categoryOptionCombo()!!,
-                                dataValueConflict.attributeOptionCombo()!!,
-                            ).blockingGet()
-                    val dv =
-                        dataValue?.toBuilder()?.syncState(State.SYNCED)?.build()
-                    dv?.let {
-                        runBlocking {
-                            d2.databaseAdapter().upsertObject(it, DataValue::class)
+                    d2
+                        .dataSetModule()
+                        .dataSetCompleteRegistrations()
+                        .byPeriod()
+                        .eq(dataValueConflict.period()!!)
+                        .byOrganisationUnitUid()
+                        .eq(dataValueConflict.orgUnit()!!)
+                        .byAttributeOptionComboUid()
+                        .eq(dataValueConflict.attributeOptionCombo()!!)
+                        .blockingGet()
+                        .forEach {
+                            val dataValue =
+                                d2
+                                    .dataValueModule()
+                                    .dataValues()
+                                    .value(
+                                        dataValueConflict.period()!!,
+                                        dataValueConflict.orgUnit()!!,
+                                        dataValueConflict.dataElement()!!,
+                                        dataValueConflict.categoryOptionCombo()!!,
+                                        dataValueConflict.attributeOptionCombo()!!,
+                                        it.dataSet(),
+                                    ).blockingGet()
+                            val dv =
+                                dataValue?.toBuilder()?.syncState(State.SYNCED)?.build()
+                            dv?.let {
+                                runBlocking {
+                                    d2.databaseAdapter().upsertObject(it, DataValue::class)
+                                }
+                            }
                         }
-                    }
                 }
             }.also {
                 runBlocking {
@@ -534,7 +547,7 @@ class ConflictGenerator(
         syncState: String,
     ): String =
         "UPDATE Enrollment SET syncState = '$syncState'," +
-            " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
+                " aggregatedSyncState = '$syncState' where uid = '$enrollmentUid'"
 
     private fun updateTei(
         teiUid: String,

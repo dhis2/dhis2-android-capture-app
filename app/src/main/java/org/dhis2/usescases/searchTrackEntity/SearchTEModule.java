@@ -170,12 +170,13 @@ public class SearchTEModule {
                                       SearchSortingValueSetter searchSortingValueSetter,
                                       Charts charts,
                                       CrashReportController crashReportController,
-                                      NetworkUtils networkUtils,
+                                      NetworkStatusProvider networkStatusProvider,
                                       SearchTEIRepository searchTEIRepository,
                                       ThemeManager themeManager,
                                       MetadataIconProvider metadataIconProvider,
                                       DateUtils dateUtils,
-                                      CustomIntentRepository customIntentRepository) {
+                                      CustomIntentRepository customIntentRepository,
+                                      DispatcherProvider dispatcherProvider) {
         ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new SearchRepositoryImpl(teiType,
                 initialProgram,
@@ -185,13 +186,14 @@ public class SearchTEModule {
                 searchSortingValueSetter,
                 charts,
                 crashReportController,
-                networkUtils,
+                networkStatusProvider,
                 searchTEIRepository,
                 themeManager,
                 metadataIconProvider,
                 profilePictureProvider,
                 dateUtils,
-                customIntentRepository);
+                customIntentRepository,
+                dispatcherProvider);
     }
 
     @Provides
