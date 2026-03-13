@@ -93,7 +93,7 @@ fun PinDialog(
         }
     }
 
-    PinBottomSheetContent(
+    PinContent(
         uiState = uiState,
         mode = mode,
         isLandscape = isLandscape,
@@ -128,7 +128,7 @@ fun PinDialog(
  */
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
-internal fun PinBottomSheetContent(
+internal fun PinContent(
     uiState: PinUiState,
     mode: PinMode,
     isLandscape: Boolean,
@@ -160,15 +160,10 @@ internal fun PinBottomSheetContent(
                     )
 
                     PinInputBlock(
+                        uiState = uiState,
                         focusRequester = focusRequester,
-                        pinLength = uiState.pinLength,
-                        errorMessage = uiState.errorMessage,
                         windowSizeClass = windowSizeClass,
-                        primaryButtonIsEnabled = uiState.primaryButtonIsEnabled,
-                        primaryButtonText = uiState.primaryButtonText,
                         showPrimaryButtonIcon = mode == PinMode.SET,
-                        secondaryButtonIsEnabled = !uiState.isLoading,
-                        secondaryButtonText = uiState.secondaryButtonText,
                         onPinChanged = onPinChanged,
                         onPrimaryClick = onPrimaryClick,
                         onSecondaryClick = onSecondaryClick,
@@ -197,15 +192,10 @@ internal fun PinBottomSheetContent(
                     )
 
                     PinInputBlock(
+                        uiState = uiState,
                         focusRequester = focusRequester,
-                        pinLength = uiState.pinLength,
-                        errorMessage = uiState.errorMessage,
                         windowSizeClass = windowSizeClass,
-                        primaryButtonIsEnabled = uiState.primaryButtonIsEnabled,
-                        primaryButtonText = uiState.primaryButtonText,
                         showPrimaryButtonIcon = mode == PinMode.SET,
-                        secondaryButtonIsEnabled = !uiState.isLoading,
-                        secondaryButtonText = uiState.secondaryButtonText,
                         onPinChanged = onPinChanged,
                         onPrimaryClick = onPrimaryClick,
                         onSecondaryClick = onSecondaryClick,
@@ -263,13 +253,7 @@ private fun PinHeader(
  * (vertical vs horizontal) based on [windowSizeClass].
  *
  * @param focusRequester Focus requester to autofocus the input field.
- * @param pinLength Number of PIN digits.
- * @param errorMessage Optional error message shown below the input.
  * @param windowSizeClass Window size class used to choose the button layout.
- * @param primaryButtonIsEnabled Whether the primary action button is enabled.
- * @param primaryButtonText Label for the primary action button.
- * @param secondaryButtonIsEnabled Whether the secondary action button is enabled.
- * @param secondaryButtonText Optional label for the secondary action button; omitted when null.
  * @param onPinChanged Callback invoked on every PIN value change.
  * @param onPrimaryClick Callback for the primary button click.
  * @param onSecondaryClick Callback for the secondary button click.
@@ -278,15 +262,10 @@ private fun PinHeader(
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 private fun PinInputBlock(
+    uiState: PinUiState,
     focusRequester: FocusRequester,
-    pinLength: Int,
-    errorMessage: String?,
     windowSizeClass: WindowSizeClass,
-    primaryButtonIsEnabled: Boolean,
-    primaryButtonText: String,
     showPrimaryButtonIcon: Boolean,
-    secondaryButtonIsEnabled: Boolean,
-    secondaryButtonText: String?,
     onPinChanged: (String) -> Unit,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
@@ -294,8 +273,8 @@ private fun PinInputBlock(
 ) {
     // Stabilize supportingTextData to prevent recomposition issues
     val supportingTextData =
-        remember(errorMessage) {
-            errorMessage?.let {
+        remember(uiState.errorMessage) {
+            uiState.errorMessage?.let {
                 SupportingTextData(
                     text = it,
                     state = SupportingTextState.ERROR,
@@ -319,7 +298,7 @@ private fun PinInputBlock(
                     .fillMaxWidth()
                     .padding(horizontal = Spacing.Spacing16)
                     .focusRequester(focusRequester),
-            segmentCount = pinLength,
+            segmentCount = uiState.pinLength,
             initialValue = null,
             supportingTextData = supportingTextData,
             segmentedShellType = SegmentedShellType.Numeric,
@@ -334,18 +313,18 @@ private fun PinInputBlock(
                     primaryButton = {
                         PinPrimaryButton(
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = primaryButtonIsEnabled,
-                            buttonText = primaryButtonText,
+                            enabled = uiState.primaryButtonIsEnabled,
+                            buttonText = uiState.primaryButtonText,
                             showIcon = showPrimaryButtonIcon,
                             onClick = onPrimaryClick,
                         )
                     },
                     secondaryButton =
-                        secondaryButtonText?.let { buttonText ->
+                        uiState.secondaryButtonText?.let { buttonText ->
                             {
                                 PinSecondaryButton(
                                     modifier = Modifier.fillMaxWidth(),
-                                    enabled = secondaryButtonIsEnabled,
+                                    enabled = !uiState.isLoading,
                                     buttonText = buttonText,
                                     onClick = onSecondaryClick,
                                 )
@@ -358,18 +337,18 @@ private fun PinInputBlock(
                     primaryButton = {
                         PinPrimaryButton(
                             modifier = Modifier.weight(1f),
-                            enabled = primaryButtonIsEnabled,
-                            buttonText = primaryButtonText,
+                            enabled = uiState.primaryButtonIsEnabled,
+                            buttonText = uiState.primaryButtonText,
                             showIcon = showPrimaryButtonIcon,
                             onClick = onPrimaryClick,
                         )
                     },
                     secondaryButton =
-                        secondaryButtonText?.let { buttonText ->
+                        uiState.secondaryButtonText?.let { buttonText ->
                             {
                                 PinSecondaryButton(
                                     modifier = Modifier.weight(1f),
-                                    enabled = secondaryButtonIsEnabled,
+                                    enabled = !uiState.isLoading,
                                     buttonText = buttonText,
                                     onClick = onSecondaryClick,
                                 )
@@ -466,7 +445,7 @@ private fun PinSecondaryButton(
 fun PinAskPortraitPreview() {
     val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(360.dp, 800.dp))
     DHIS2Theme {
-        PinBottomSheetContent(
+        PinContent(
             uiState =
                 PinUiState(
                     title = "Enter your PIN",
@@ -491,7 +470,7 @@ fun PinAskPortraitPreview() {
 fun PinAskLandscapePreview() {
     val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(1280.dp, 800.dp))
     DHIS2Theme {
-        PinBottomSheetContent(
+        PinContent(
             uiState =
                 PinUiState(
                     title = "Enter your PIN",
