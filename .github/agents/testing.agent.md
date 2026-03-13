@@ -7,7 +7,7 @@
 name: Testing expert
 description: >
   Expert Kotlin/Android testing engineer for the DHIS2 Android Capture App.
-  Generates, reviews, and fixes unit tests (MockK/JUnit), UI instrumented tests
+  Generates, reviews, and fixes unit tests (Mockito/JUnit), UI instrumented tests
   (Compose Testing + Espresso Robot pattern), and enforces async best practices
   using CoroutineTracker. Targets KMP modules with commonTest, androidHostTest,
   and androidDeviceTest source sets.
@@ -34,7 +34,7 @@ This is a Kotlin Multiplatform (KMP) project migrating to Compose Multiplatform,
 
 ## Testing Stack
 
-- Unit Tests: MockK for mocking, JUnit
+- Unit Tests: Mockito (`org.mockito.kotlin`) for mocking, JUnit
 - UI Tests: Compose Testing, Espresso with Robot pattern
 - Test Locations:
   - `commonTest/` — Platform-agnostic tests
@@ -247,21 +247,21 @@ Mock DHIS2 SDK components and `DomainErrorMapper`:
 
 ```kotlin
 class ExampleRepositoryTest {
-    private val d2: D2 = mockk()
-    private val domainErrorMapper: DomainErrorMapper = mockk()
+    private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
+    private val domainErrorMapper: DomainErrorMapper = mock()
     private val repository = ExampleRepositoryImpl(d2, domainErrorMapper)
 
     @Test
     fun `should map SDK data to domain models`() = runTest {
         // Given
-        val sdkData = mockk<List<Example>>()
-        every { d2.exampleModule().examples().get() } returns sdkData
+        val sdkData: List<Example> = mock()
+        whenever(d2.exampleModule().examples().get()) doReturn sdkData
 
         // When
         val result = repository.getData()
 
         // Then
-        verify { d2.exampleModule().examples().get() }
+        verify(d2.exampleModule().examples()).get()
         // Assert domain mapping
     }
 
@@ -269,14 +269,14 @@ class ExampleRepositoryTest {
     fun `should map D2Error to domain error`() = runTest {
         // Given
         val d2Error = D2Error.builder().errorCode(D2ErrorCode.API_RESPONSE_PROCESS_ERROR).build()
-        every { d2.exampleModule().examples().get() } throws d2Error
-        every { domainErrorMapper.mapToDomainError(d2Error) } returns DomainException("Mapped error")
+        whenever(d2.exampleModule().examples().get()).thenThrow(d2Error)
+        whenever(domainErrorMapper.mapToDomainError(d2Error)) doReturn DomainException("Mapped error")
 
         // When/Then
         assertThrows<DomainException> {
             repository.getData()
         }
-        verify { domainErrorMapper.mapToDomainError(d2Error) }
+        verify(domainErrorMapper).mapToDomainError(d2Error)
     }
 }
 ```
@@ -287,7 +287,7 @@ Test state transitions and use case coordination. Always configure `Dispatchers.
 
 ```kotlin
 class ExampleViewModelTest {
-    private val getDataUseCase: GetDataUseCase = mockk()
+    private val getDataUseCase: GetDataUseCase = mock()
     private lateinit var viewModel: ExampleViewModel
 
     @Before
@@ -306,7 +306,7 @@ class ExampleViewModelTest {
     fun `should emit success state when use case succeeds`() = runTest {
         // Given
         val data = listOf(ExampleData("test"))
-        coEvery { getDataUseCase() } returns Result.success(flowOf(data))
+        whenever(getDataUseCase()) doReturn Result.success(flowOf(data))
 
         // When
         viewModel = ExampleViewModel(getDataUseCase)
@@ -323,7 +323,7 @@ Test business logic and error handling:
 
 ```kotlin
 class GetDataUseCaseTest {
-    private val repository: ExampleRepository = mockk()
+    private val repository: ExampleRepository = mock()
     private val useCase = GetDataUseCase(repository)
 
     @Test
@@ -333,7 +333,7 @@ class GetDataUseCaseTest {
             ExampleData(isValid = true),
             ExampleData(isValid = false)
         )
-        coEvery { repository.getData() } returns flowOf(allData)
+        whenever(repository.getData()) doReturn flowOf(allData)
 
         // When
         val result = useCase(Unit)
@@ -378,7 +378,7 @@ modulekmm/
 
 - Identify test type: Unit (repository, use case, ViewModel) or UI (instrumented)
 - For UI tests: Always use Robot pattern, export test tags, use `CoroutineTracker`
-- For unit tests: Mock dependencies with MockK, test business logic and mappings
+- For unit tests: Mock dependencies with Mockito, test business logic and mappings
 - Mock external dependencies: SDK, network, database
 - Clean up: Database, preferences, mock servers
 - Never delay: Trust `CoroutineTracker` and `IdlingResource`
