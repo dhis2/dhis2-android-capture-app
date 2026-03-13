@@ -148,7 +148,7 @@ class TEICardMapper(
                     ownerOrgUnit = searchTEIModel.ownerOrgUnit,
                 )
             }
-            if (searchTEIModel.displayOrgUnit) {
+            if (searchTEIModel.displayOrgUnit && searchTEIModel.enrolledOrgUnit != null) {
                 checkEnrolledIn(
                     list = list,
                     enrolledOrgUnit = searchTEIModel.enrolledOrgUnit,
