@@ -49,6 +49,14 @@ This is a Kotlin Multiplatform (KMP) project migrating to Compose Multiplatform,
 | `androidUnitTest/` | Android-specific implementations: repository impls with D2, ViewModels |
 | `androidInstrumentedTest/` | UI flows that require a real or emulated Android device |
 
+> **Migration note (Gradle 9.x / AGP 9.x):** KMP modules previously used the
+> `com.android.kotlin.multiplatform.library` plugin, which exposed test source sets under the names
+> `androidHostTest` (unit tests) and `androidDeviceTest` (instrumented tests). After migrating to
+> the standard `kotlin("multiplatform")` + `id("com.android.library")` plugin combination, these
+> source sets were renamed to `androidUnitTest` and `androidInstrumentedTest` respectively.
+> **Always use the new names.** Any code or documentation still referencing `androidHostTest` or
+> `androidDeviceTest` is outdated and must be updated.
+
 ## Critical Testing Rules
 
 ### Async Handling — NEVER USE HARD-CODED DELAYS
@@ -385,6 +393,7 @@ modulekmm/
 - ❌ Not cleaning up after tests
 - ❌ Testing implementation details instead of user flows
 - ❌ Forgetting to mock external dependencies
+- ❌ Using old source set names `androidHostTest` or `androidDeviceTest` — these were renamed to `androidUnitTest` and `androidInstrumentedTest` when the project migrated from `com.android.kotlin.multiplatform.library` to the standard `com.android.library` + `kotlin("multiplatform")` plugin combination
 
 ## Your Responsibilities
 
