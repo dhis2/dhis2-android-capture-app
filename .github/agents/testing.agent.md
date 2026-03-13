@@ -9,8 +9,8 @@ description: >
   Expert Kotlin/Android testing engineer for the DHIS2 Android Capture App.
   Generates, reviews, and fixes unit tests (MockK/JUnit), UI instrumented tests
   (Compose Testing + Espresso Robot pattern), and enforces async best practices
-  using CoroutineTracker. Targets KMP modules with commonTest, androidUnitTest,
-  and androidInstrumentedTest source sets.
+  using CoroutineTracker. Targets KMP modules with commonTest, androidHostTest,
+  and androidDeviceTest source sets.
 tools:
   - githubread
   - lexical-code-search
@@ -38,24 +38,23 @@ This is a Kotlin Multiplatform (KMP) project migrating to Compose Multiplatform,
 - UI Tests: Compose Testing, Espresso with Robot pattern
 - Test Locations:
   - `commonTest/` — Platform-agnostic tests
-  - `androidUnitTest/` — Android unit tests
-  - `androidInstrumentedTest/` — UI/instrumented tests
+  - `androidHostTest/` — Android unit tests (runs on the JVM)
+  - `androidDeviceTest/` — UI/instrumented tests (runs on device/emulator)
 
 ## Choosing the Right Source Set
 
 | Source set | When to use |
 |---|---|
 | `commonTest/` | Pure Kotlin logic with no Android APIs: use cases, domain models, pure mappers |
-| `androidUnitTest/` | Android-specific implementations: repository impls with D2, ViewModels |
-| `androidInstrumentedTest/` | UI flows that require a real or emulated Android device |
+| `androidHostTest/` | Android-specific unit tests running on the JVM: repository impls with D2, ViewModels |
+| `androidDeviceTest/` | UI flows that require a real or emulated Android device |
 
-> **Migration note (Gradle 9.x / AGP 9.x):** KMP modules previously used the
-> `com.android.kotlin.multiplatform.library` plugin, which exposed test source sets under the names
-> `androidHostTest` (unit tests) and `androidDeviceTest` (instrumented tests). After migrating to
-> the standard `kotlin("multiplatform")` + `id("com.android.library")` plugin combination, these
-> source sets were renamed to `androidUnitTest` and `androidInstrumentedTest` respectively.
-> **Always use the new names.** Any code or documentation still referencing `androidHostTest` or
-> `androidDeviceTest` is outdated and must be updated.
+> **AGP 9.x / `com.android.kotlin.multiplatform.library` plugin:** KMP modules use
+> `androidHostTest` for JVM-based unit tests and `androidDeviceTest` for instrumented device tests.
+> These source sets are created on demand via `withHostTest {}` / `withDeviceTest {}` in the
+> `androidLibrary {}` DSL block. The old names `androidUnitTest` and `androidInstrumentedTest`
+> belong to the legacy `com.android.library` + `kotlin("multiplatform")` setup and must **not** be
+> used in modules that have adopted the new plugin.
 
 ## Critical Testing Rules
 
@@ -102,7 +101,7 @@ fun `should load data`() {
 
 ### Location
 
-All UI tests go in `androidInstrumentedTest/`.
+All UI tests go in `androidDeviceTest/`.
 
 ### Pattern
 
@@ -367,10 +366,10 @@ modulekmm/
 │   ├── commonTest/kotlin/           # Shared unit tests
 │   │   ├── domain/                  # Use case tests
 │   │   ├── data/                    # Repository interface tests
-│   ├── androidUnitTest/kotlin/      # Android-specific unit tests
+│   ├── androidHostTest/kotlin/      # Android-specific unit tests
 │   │   ├── data/                    # Repository implementation tests
 │   │   ├── ui/                      # ViewModel tests
-│   ├── androidInstrumentedTest/     # UI tests with Robot pattern
+│   ├── androidDeviceTest/           # UI tests with Robot pattern
 │   │   ├── robots/                  # Robot classes
 │   │   ├── tests/                   # Test classes
 ```
@@ -393,7 +392,7 @@ modulekmm/
 - ❌ Not cleaning up after tests
 - ❌ Testing implementation details instead of user flows
 - ❌ Forgetting to mock external dependencies
-- ❌ Using old source set names `androidHostTest` or `androidDeviceTest` — these were renamed to `androidUnitTest` and `androidInstrumentedTest` when the project migrated from `com.android.kotlin.multiplatform.library` to the standard `com.android.library` + `kotlin("multiplatform")` plugin combination
+- ❌ Using old source set names `androidUnitTest` or `androidInstrumentedTest` in KMP modules that have adopted the `com.android.kotlin.multiplatform.library` plugin — the correct names are `androidHostTest` (JVM unit tests) and `androidDeviceTest` (device/instrumented tests)
 
 ## Your Responsibilities
 
