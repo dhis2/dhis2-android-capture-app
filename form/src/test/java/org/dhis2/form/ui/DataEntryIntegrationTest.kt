@@ -2,8 +2,8 @@ package org.dhis2.form.ui
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.databinding.ObservableField
-import androidx.lifecycle.Observer
 import androidx.paging.PagingData
+import app.cash.turbine.test
 import io.reactivex.Flowable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -170,134 +170,136 @@ class DataEntryIntegrationTest {
     @Test
     fun shouldAllowDataEntryCorrectly() =
         runTest {
-            val observedItems = mutableListOf<List<FieldUiModel>>()
-            val observer =
-                Observer<List<FieldUiModel>> { items ->
-                    observedItems.add(items)
-                }
+            formViewModel.items.test {
 
-            formViewModel.items.observeForever(observer)
+                val focusOnReportDateIntent =
+                    FormIntent.OnFocus(
+                        uid = "EVENT_REPORT_DATE_UID",
+                        value = "",
+                    )
+                formViewModel.submitIntent(focusOnReportDateIntent)
 
-            val focusOnReportDateIntent =
-                FormIntent.OnFocus(
-                    uid = "EVENT_REPORT_DATE_UID",
-                    value = "",
-                )
-            formViewModel.submitIntent(focusOnReportDateIntent)
-
-            assert(
-                observedItems
-                    .last()
-                    .find { it.uid == "EVENT_REPORT_DATE_UID" }
-                    ?.value
-                    .isNullOrEmpty(),
-            )
-
-            val enterReportDateIntent =
-                FormIntent.OnTextChange(
-                    uid = "EVENT_REPORT_DATE_UID",
-                    value = "2024-03-20",
-                    valueType = ValueType.DATE,
-                )
-            formViewModel.submitIntent(enterReportDateIntent)
-
-            val focusOnOrgUnitIntent =
-                FormIntent.OnFocus(
-                    uid = "EVENT_ORG_UNIT_UID",
-                    value = "",
-                )
-            formViewModel.submitIntent(focusOnOrgUnitIntent)
-
-            val enterOrgUnitIntent =
-                FormIntent.OnTextChange(
-                    uid = "EVENT_ORG_UNIT_UID",
-                    value = "g8upMTyEZGZ",
-                    valueType = ValueType.ORGANISATION_UNIT,
-                )
-            formViewModel.submitIntent(enterOrgUnitIntent)
-
-            val focusOnCoordinatesIntent =
-                FormIntent.OnFocus(
-                    uid = "EVENT_COORDINATE_UID",
-                    value = "",
-                )
-            formViewModel.submitIntent(focusOnCoordinatesIntent)
-
-            // Change section
-            formViewModel.submitIntent(FormIntent.OnSection(sectionUid = "EVENT_DATA_SECTION_UID"))
-
-            // Focus on age
-            val focusOnAgeIntent =
-                FormIntent.OnFocus(
-                    uid = "qrur9Dvnyt5",
-                    value = "",
-                )
-            formViewModel.submitIntent(focusOnAgeIntent)
-
-            // Enter age
-            val enterAgeIntent =
-                FormIntent.OnTextChange(
-                    uid = "qrur9Dvnyt5",
-                    value = "20",
-                    valueType = ValueType.AGE,
-                )
-            formViewModel.submitIntent(enterAgeIntent)
-
-            // focus on input field with legend
-            val focusOnLegendFieldIntent =
-                FormIntent.OnFocus(
-                    uid = "INPUT_NUMBER_WITH_LEGEND_UID",
-                    value = "",
-                )
-            formViewModel.submitIntent(focusOnLegendFieldIntent)
-
-            // enter value on input field with legend
-            val enterValueOnLegendFieldIntent =
-                FormIntent.OnTextChange(
-                    uid = "INPUT_NUMBER_WITH_LEGEND_UID",
-                    value = "25",
-                    valueType = ValueType.NUMBER,
+                assert(
+                    awaitItem().first().fields
+                        .find { it.uid == "EVENT_REPORT_DATE_UID" }
+                        ?.value
+                        .isNullOrEmpty(),
                 )
 
-            formViewModel.submitIntent(enterValueOnLegendFieldIntent)
+                val enterReportDateIntent =
+                    FormIntent.OnTextChange(
+                        uid = "EVENT_REPORT_DATE_UID",
+                        value = "2024-03-20",
+                        valueType = ValueType.DATE,
+                    )
+                formViewModel.submitIntent(enterReportDateIntent)
 
-            // Focus on gender
-            val focusOnGenderIntent =
-                FormIntent.OnFocus(
-                    uid = "oZg33kd9taw",
-                    value = "",
+                val focusOnOrgUnitIntent =
+                    FormIntent.OnFocus(
+                        uid = "EVENT_ORG_UNIT_UID",
+                        value = "",
+                    )
+                formViewModel.submitIntent(focusOnOrgUnitIntent)
+
+                assert(
+                    awaitItem().first().fields
+                        .find { it.uid == "EVENT_REPORT_DATE_UID" }?.value == "2024-03-20",
                 )
-            formViewModel.submitIntent(focusOnGenderIntent)
 
-            val enterGenderIntent =
-                FormIntent.OnSave(
-                    uid = "oZg33kd9taw",
-                    value = "Female",
-                    valueType = ValueType.MULTI_TEXT,
+                val enterOrgUnitIntent =
+                    FormIntent.OnTextChange(
+                        uid = "EVENT_ORG_UNIT_UID",
+                        value = "g8upMTyEZGZ",
+                        valueType = ValueType.ORGANISATION_UNIT,
+                    )
+                formViewModel.submitIntent(enterOrgUnitIntent)
+
+                val focusOnCoordinatesIntent =
+                    FormIntent.OnFocus(
+                        uid = "EVENT_COORDINATE_UID",
+                        value = "",
+                    )
+                formViewModel.submitIntent(focusOnCoordinatesIntent)
+
+                assert(
+                    awaitItem().first().fields
+                        .find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
                 )
-            formViewModel.submitIntent(enterGenderIntent)
 
-            assert(
-                observedItems.last().find { it.uid == "EVENT_REPORT_DATE_UID" }?.value == "2024-03-20",
-            )
-            assert(
-                observedItems.last().find { it.uid == "EVENT_ORG_UNIT_UID" }?.value == "g8upMTyEZGZ",
-            )
-            assert(
-                observedItems
-                    .last()
-                    .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }
-                    ?.legend == legendValueItem,
-            )
-            assert(
-                observedItems.last().find { it.uid == "qrur9Dvnyt5" }?.value == "20",
-            )
-            assert(
-                observedItems.last().find { it.uid == "oZg33kd9taw" }?.value == "Female",
-            )
+                // Change section
+                formViewModel.submitIntent(FormIntent.OnSection(sectionUid = "EVENT_DATA_SECTION_UID"))
 
-            // Clean up
-            formViewModel.items.removeObserver(observer)
+                awaitItem()
+
+                // Focus on age
+                val focusOnAgeIntent =
+                    FormIntent.OnFocus(
+                        uid = "qrur9Dvnyt5",
+                        value = "",
+                    )
+                formViewModel.submitIntent(focusOnAgeIntent)
+
+                // Enter age
+                val enterAgeIntent =
+                    FormIntent.OnTextChange(
+                        uid = "qrur9Dvnyt5",
+                        value = "20",
+                        valueType = ValueType.AGE,
+                    )
+                formViewModel.submitIntent(enterAgeIntent)
+
+                awaitItem()
+
+                // focus on input field with legend
+                val focusOnLegendFieldIntent =
+                    FormIntent.OnFocus(
+                        uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+                        value = "",
+                    )
+                formViewModel.submitIntent(focusOnLegendFieldIntent)
+
+                assert(
+                    awaitItem()[1].fields
+                        .find { it.uid == "qrur9Dvnyt5" }?.value == "20",
+                )
+
+                // enter value on input field with legend
+                val enterValueOnLegendFieldIntent =
+                    FormIntent.OnTextChange(
+                        uid = "INPUT_NUMBER_WITH_LEGEND_UID",
+                        value = "25",
+                        valueType = ValueType.NUMBER,
+                    )
+
+                formViewModel.submitIntent(enterValueOnLegendFieldIntent)
+
+                // Focus on gender
+                val focusOnGenderIntent =
+                    FormIntent.OnFocus(
+                        uid = "oZg33kd9taw",
+                        value = "",
+                    )
+                formViewModel.submitIntent(focusOnGenderIntent)
+
+                assert(
+                    awaitItem()[1].fields
+                        .find { it.uid == "INPUT_NUMBER_WITH_LEGEND_UID" }
+                        ?.legend == legendValueItem,
+                )
+
+                val enterGenderIntent =
+                    FormIntent.OnSave(
+                        uid = "oZg33kd9taw",
+                        value = "Female",
+                        valueType = ValueType.MULTI_TEXT,
+                    )
+                formViewModel.submitIntent(enterGenderIntent)
+
+                assert(
+                    awaitItem()[1].fields
+                        .find { it.uid == "oZg33kd9taw" }?.value == "Female",
+                )
+            }
         }
 
     private fun provideMalariaCaseRegistrationEventItems(): List<FieldUiModel> {
