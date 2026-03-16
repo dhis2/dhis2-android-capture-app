@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.FormSection
@@ -47,7 +46,6 @@ fun Form(
     sections: List<FormSection> = emptyList(),
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-    resources: ResourceManager,
 ) {
     val scrollState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -134,7 +132,6 @@ fun Form(
                                     fieldUiModel = fieldUiModel,
                                     uiEventHandler = uiEventHandler,
                                     intentHandler = intentHandler,
-                                    resources = resources,
                                     focusManager = focusManager,
                                     onNextClicked = {
                                         manageOnNextEvent(

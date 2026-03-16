@@ -241,7 +241,7 @@ object Injector {
 
     private fun provideNetworkUtils(context: Context) = NetworkUtils(context)
 
-    fun provideResourcesManager(context: Context) =
+    private fun provideResourcesManager(context: Context) =
         ResourceManager(
             context,
             provideColorUtils(),

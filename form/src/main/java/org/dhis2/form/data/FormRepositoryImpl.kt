@@ -25,8 +25,6 @@ import org.hisp.dhis.android.core.common.ValueType.LONG_TEXT
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.rules.models.RuleEffect
 
-private const val LOOP_THRESHOLD = 5
-
 class FormRepositoryImpl(
     private val formValueStore: FormValueStore,
     private val fieldErrorMessageProvider: FieldErrorMessageProvider,
@@ -447,9 +445,6 @@ class FormRepositoryImpl(
         )
 
     override fun completedFieldsPercentage(value: List<FieldUiModel>): Float = completionPercentage
-
-    override fun calculationLoopOverLimit(): Boolean = false
-
     override fun backupOfChangedItems() = backupList.minus(itemList.applyRuleEffects())
 
     private suspend fun getFieldsWithError() =

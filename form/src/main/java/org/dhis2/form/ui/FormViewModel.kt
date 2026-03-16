@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
-import org.dhis2.commons.CheckTime
 import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.dialogs.bottomsheet.BottomSheetDialogUiModel
 import org.dhis2.commons.dialogs.bottomsheet.FieldWithIssue
@@ -118,9 +117,6 @@ class FormViewModel(
     private val _completionPercentage = MutableLiveData<Float>()
     val completionPercentage = _completionPercentage
 
-    private val _calculationLoop = MutableLiveData(false)
-    val calculationLoop = _calculationLoop
-
     private val pendingIntents = MutableSharedFlow<FormIntent>()
 
     private val fieldListChannel =
@@ -143,13 +139,10 @@ class FormViewModel(
                     old == new
                 }
             }.onEach { intent ->
-                CheckTime.initTimer()
                 FormCountingIdlingResource.increment()
                 val result = createRowActionStore(intent)
-                CheckTime.elapsedTime(message = "Row action created in ${Thread.currentThread().name}")
                 displayResult(result)
                 FormCountingIdlingResource.decrement()
-                CheckTime.elapsedTime(message = "Result displayed in ${Thread.currentThread().name}")
             }.flowOn(dispatcher.io())
             .launchIn(viewModelScope)
 
@@ -450,26 +443,26 @@ class FormViewModel(
             false
         } else {
             valueType.isNumeric ||
-                valueType.isText &&
-                renderType?.isPolygon() != true ||
-                valueType == ValueType.URL ||
-                valueType == ValueType.EMAIL ||
-                valueType == ValueType.PHONE_NUMBER
+                    valueType.isText &&
+                    renderType?.isPolygon() != true ||
+                    valueType == ValueType.URL ||
+                    valueType == ValueType.EMAIL ||
+                    valueType == ValueType.PHONE_NUMBER
         }
 
     private fun getLastFocusedTextItem() =
         repository.currentFocusedItem()?.takeIf {
             it.optionSet == null &&
-                (
-                    valueTypeIsTextField(
-                        it.valueType,
-                        it.renderingType,
-                    ) ||
-                        it.valueType == ValueType.AGE ||
-                        it.valueType == ValueType.DATETIME ||
-                        it.valueType == ValueType.DATE ||
-                        it.valueType == ValueType.TIME
-                )
+                    (
+                            valueTypeIsTextField(
+                                it.valueType,
+                                it.renderingType,
+                            ) ||
+                                    it.valueType == ValueType.AGE ||
+                                    it.valueType == ValueType.DATETIME ||
+                                    it.valueType == ValueType.DATE ||
+                                    it.valueType == ValueType.TIME
+                            )
         }
 
     private fun rowActionFromIntent(intent: FormIntent): RowAction =
@@ -888,7 +881,7 @@ class FormViewModel(
             EventStatus.SCHEDULE,
             EventStatus.VISITED,
             EventStatus.OVERDUE,
-            -> FormActions.OnFinish
+                -> FormActions.OnFinish
         }
 
     private fun provideShowResultDialog(result: DataIntegrityCheckResult): FormActions.ShowResultDialog? =
@@ -982,20 +975,6 @@ class FormViewModel(
     fun activateEvent() {
         viewModelScope.launch(dispatcher.io()) {
             repository.activateEvent()
-        }
-    }
-
-    fun displayLoopWarningIfNeeded() {
-        viewModelScope.launch {
-            val result =
-                async(dispatcher.io()) {
-                    repository.calculationLoopOverLimit()
-                }
-            try {
-                _calculationLoop.postValue(result.await())
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
         }
     }
 

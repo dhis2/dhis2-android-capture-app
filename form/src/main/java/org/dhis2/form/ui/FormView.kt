@@ -28,7 +28,6 @@ import androidx.fragment.app.viewModels
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.journeyapps.barcodescanner.ScanOptions
-import org.dhis2.commons.CheckTime
 import org.dhis2.commons.Constants
 import org.dhis2.commons.data.FormFileProvider
 import org.dhis2.commons.date.DateUtils
@@ -211,16 +210,13 @@ class FormView : Fragment() {
                     }
                 }
 
-                CheckTime.elapsedTime(message = "Painting items")
                 Form(
                     sections = items,
                     intentHandler = ::intentHandler,
                     uiEventHandler = ::uiEventHandler,
-                    resources = Injector.provideResourcesManager(context),
                 )
 
                 LaunchedEffect(items) {
-                    CheckTime.elapsedTime(message = "New items")
                     render(items)
                 }
                 resultDialogData?.let {
@@ -303,14 +299,6 @@ class FormView : Fragment() {
         ) { percentage ->
             completionListener?.invoke(percentage)
         }
-
-        viewModel.calculationLoop.observe(
-            viewLifecycleOwner,
-        ) { displayLoopWarning ->
-            if (displayLoopWarning) {
-                showLoopWarning()
-            }
-        }
     }
 
     private fun showInfoDialog(infoUiModel: InfoUiModel) {
@@ -323,15 +311,6 @@ class FormView : Fragment() {
             Constants.DESCRIPTION_DIALOG,
             null,
         ).show()
-    }
-
-    private fun showLoopWarning() {
-        MaterialAlertDialogBuilder(requireContext(), R.style.DhisMaterialDialog)
-            .setTitle(getString(R.string.program_rules_loop_warning_title))
-            .setMessage(getString(R.string.program_rules_loop_warning_message))
-            .setPositiveButton(R.string.action_accept) { _, _ -> }
-            .setCancelable(false)
-            .show()
     }
 
     private fun uiEventHandler(uiEvent: RecyclerViewUiEvents) {
@@ -463,7 +442,6 @@ class FormView : Fragment() {
     private fun render(items: List<FormSection>) {
         viewModel.calculateCompletedFields()
         viewModel.updateConfigurationErrors()
-        viewModel.displayLoopWarningIfNeeded()
         viewModel.onItemsRendered()
         onFieldItemsRendered?.invoke(items.isEmpty())
     }

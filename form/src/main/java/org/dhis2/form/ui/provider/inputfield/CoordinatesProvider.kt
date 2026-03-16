@@ -2,7 +2,7 @@ package org.dhis2.form.ui.provider.inputfield
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.dhis2.commons.resources.ResourceManager
+import androidx.compose.ui.res.stringResource
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -42,7 +42,6 @@ fun ProvideInputCoordinate(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-    resources: ResourceManager,
 ) {
     InputCoordinate(
         title = fieldUiModel.label,
@@ -50,9 +49,9 @@ fun ProvideInputCoordinate(
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
         coordinates = mapGeometry(fieldUiModel.value, FeatureType.POINT),
-        latitudeText = resources.getString(R.string.latitude),
-        longitudeText = resources.getString(R.string.longitude),
-        addLocationBtnText = resources.getString(R.string.add_location),
+        latitudeText = stringResource(R.string.latitude),
+        longitudeText = stringResource(R.string.longitude),
+        addLocationBtnText = stringResource(R.string.add_location),
         isRequired = fieldUiModel.mandatory,
         modifier = modifier,
         onResetButtonClicked = {

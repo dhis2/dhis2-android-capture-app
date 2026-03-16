@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.data.EventRepository.Companion.EVENT_ORG_UNIT_UID
 import org.dhis2.form.extensions.autocompleteList
 import org.dhis2.form.extensions.inputState
@@ -63,7 +62,6 @@ fun FieldProvider(
     fieldUiModel: FieldUiModel,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     intentHandler: (FormIntent) -> Unit,
-    resources: ResourceManager,
     focusManager: FocusManager,
     onNextClicked: () -> Unit,
     onFileSelected: (String) -> Unit,
@@ -150,7 +148,6 @@ fun FieldProvider(
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
                 uiEventHandler = uiEventHandler,
-                resources = resources,
                 focusRequester = focusRequester,
                 onNextClicked = onNextClicked,
                 focusManager = focusManager,
@@ -166,7 +163,6 @@ fun ProvideByValueType(
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
-    resources: ResourceManager,
     focusRequester: FocusRequester,
     onNextClicked: () -> Unit,
     focusManager: FocusManager,
@@ -309,7 +305,6 @@ fun ProvideByValueType(
             ProvideInputFileResource(
                 modifier = modifier,
                 fieldUiModel = fieldUiModel,
-                resources = resources,
                 onFileSelected = onFileSelected,
                 uiEventHandler = uiEventHandler,
             )
@@ -337,7 +332,6 @@ fun ProvideByValueType(
                         inputStyle = inputStyle,
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
-                        resources = resources,
                     )
                 }
 
@@ -347,7 +341,6 @@ fun ProvideByValueType(
                         inputStyle = inputStyle,
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
-                        resources = resources,
                     )
                 }
             }
@@ -429,7 +422,6 @@ fun ProvideByValueType(
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
                         uiEventHandler = uiEventHandler,
-                        resources = resources,
                         onFileSelected = onFileSelected,
                     )
                 }
@@ -451,7 +443,6 @@ fun ProvideByValueType(
                         fieldUiModel = fieldUiModel,
                         intentHandler = intentHandler,
                         uiEventHandler = uiEventHandler,
-                        resources = resources,
                     )
                 }
             }
@@ -463,7 +454,6 @@ fun ProvideByValueType(
                 inputStyle = inputStyle,
                 fieldUiModel = fieldUiModel,
                 intentHandler = intentHandler,
-                resources = resources,
                 onNextClicked = onNextClicked,
             )
         }
