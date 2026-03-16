@@ -72,7 +72,7 @@ This is a Kotlin Multiplatform (KMP) project migrating to Compose Multiplatform,
 class ExampleViewModel(private val useCase: GetDataUseCase) : ViewModel() {
     fun loadData() {
         launchUseCase {  // Automatically tracked
-            val result = getDataUseCase()
+            val result = useCase()
             // ... handle result
         }
     }
