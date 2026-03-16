@@ -67,14 +67,14 @@ class StockManagerImpl(
 
                 if (!query.name.isNullOrEmpty()) {
                     teiRepository
-                        .byQuery()
+                        .byFilter(config.itemDescription)
                         .like(query.name)
                         .also { teiRepository = it }
                 }
 
                 if (!query.code.isNullOrEmpty()) {
                     teiRepository
-                        .byQuery()
+                        .byFilter(config.itemCode)
                         .eq(query.code)
                         .also { teiRepository = it }
                 }
@@ -134,37 +134,29 @@ class StockManagerImpl(
         tei: TrackedEntityInstance,
         stockOnHandUid: String,
     ): String? {
+
+        val activeEnrollments =
+            d2.enrollmentModule().enrollments().byTrackedEntityInstance().eq(tei.uid()).byStatus()
+                .eq(EnrollmentStatus.ACTIVE)
+                .blockingGetUids()
+
         val events =
             d2
                 .eventModule()
                 .events()
-                .byTrackedEntityInstanceUids(Collections.singletonList(tei.uid()))
-                .byDataValue(stockOnHandUid)
-                .like("")
+                .byEnrollmentUid().`in`(activeEnrollments)
                 .byDeleted()
                 .isFalse
-                .withTrackedEntityDataValues()
                 .blockingGet()
                 .sortForRuleEngine()
 
-        events
-            .filter {
-                d2
-                    .enrollmentModule()
-                    .enrollments()
-                    .uid(it.enrollment())
-                    .blockingGet()
-                    ?.status() == EnrollmentStatus.ACTIVE
-            }.forEach { event ->
-                event.trackedEntityDataValues()?.forEach { dataValue ->
-                    dataValue.dataElement().let { dv ->
-                        if (dv.equals(stockOnHandUid)) {
-                            return dataValue.value()
-                        }
-                    }
-                }
+        events.forEach { event ->
+            val dataValue = d2.trackedEntityModule().trackedEntityDataValues()
+                .value(event.uid(), stockOnHandUid).blockingGet()
+            dataValue?.let {
+                return it.value()
             }
-
+         }
         return null
     }
 
@@ -176,9 +168,9 @@ class StockManagerImpl(
     ): String {
         Timber.tag("EVENT_CREATION").i(
             "Enrollment: ${enrollment.uid()}\n" +
-                "Program: ${programUid}\n" +
-                "Stage: ${programStage.uid()}\n" +
-                "OU: ${facility.uid}\n",
+                    "Program: ${programUid}\n" +
+                    "Stage: ${programStage.uid()}\n" +
+                    "OU: ${facility.uid}\n",
         )
         return d2.eventModule().events().blockingAdd(
             EventCreateProjection
@@ -210,7 +202,14 @@ class StockManagerImpl(
 
         items.forEach { entry ->
             getEnrollment(entry.item.id)?.let { enrollment ->
-                createEvent(entry, programStage, enrollment, transaction, stockUseCase, hasErrorOnComplete)
+                createEvent(
+                    entry,
+                    programStage,
+                    enrollment,
+                    transaction,
+                    stockUseCase,
+                    hasErrorOnComplete
+                )
             }
         }
         return Single.just(Unit)
@@ -310,7 +309,14 @@ class StockManagerImpl(
 
             try {
                 Timber.i("event:$eventUid")
-                Timber.i("de:${getTransactionDataElement(transaction.transactionType, stockUseCase)}")
+                Timber.i(
+                    "de:${
+                        getTransactionDataElement(
+                            transaction.transactionType,
+                            stockUseCase
+                        )
+                    }"
+                )
                 Timber.i("data to save:${item.qty}")
                 d2
                     .trackedEntityModule()
@@ -355,7 +361,13 @@ class StockManagerImpl(
             }
 
             try {
-                updateStockOnHand(item, stockUseCase.programUid, transaction, eventUid, stockUseCase)
+                updateStockOnHand(
+                    item,
+                    stockUseCase.programUid,
+                    transaction,
+                    eventUid,
+                    stockUseCase
+                )
             } catch (e: Exception) {
                 if (e is D2Error) {
                     Timber.e(e.originalException())
