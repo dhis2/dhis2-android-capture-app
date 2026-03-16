@@ -37,10 +37,6 @@ class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         waitToDebounce(FRAGMENT_TRANSITION)
     }
 
-    fun clickOnPin() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.block_button))
-    }
-
     fun clickAbout() = apply {
         onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_about))
         waitToDebounce(FRAGMENT_TRANSITION)

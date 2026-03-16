@@ -21,6 +21,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
@@ -58,8 +59,8 @@ import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.dhis2.utils.customviews.navigationbar.NavigationPageConfigurator
 import org.dhis2.utils.extension.navigateTo
 import org.dhis2.utils.granularsync.SyncStatusDialog
-import org.dhis2.utils.session.PIN_DIALOG_TAG
-import org.dhis2.utils.session.PinDialog
+import org.dhis2.mobile.login.pin.addPinBottomSheet
+import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.koin.android.ext.android.inject
 import java.io.File
@@ -97,6 +98,7 @@ class MainActivity :
         }
 
     private var backDropActive = false
+    private var pinComposeView: ComposeView? = null
 
     private val requestWritePermissions =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -113,8 +115,6 @@ class MainActivity :
                     ).show()
             }
         }
-
-    private var isPinLayoutVisible = false
 
     private lateinit var mainNavigator: MainNavigator
 
@@ -265,6 +265,7 @@ class MainActivity :
 
     override fun onPause() {
         presenter.onDetach()
+        removePinBottomSheet()
         super.onPause()
     }
 
@@ -514,23 +515,31 @@ class MainActivity :
 
     override fun onLockClick() {
         if (!presenter.isPinStored()) {
+            if (pinComposeView != null) return
             binding.mainDrawerLayout.closeDrawers()
-            PinDialog(
-                PinDialog.Mode.SET,
-                true,
-                { presenter.blockSession() },
-                {},
-            ).show(supportFragmentManager, PIN_DIALOG_TAG)
-            isPinLayoutVisible = true
+            pinComposeView = addPinBottomSheet(
+                mode = PinMode.SET,
+                onSuccess = {
+                    removePinBottomSheet()
+                    presenter.blockSession()
+                },
+                onDismiss = { removePinBottomSheet() },
+            )
         } else {
             presenter.blockSession()
         }
     }
 
+    private fun removePinBottomSheet() {
+        pinComposeView?.let { view ->
+            (window?.decorView as? android.view.ViewGroup)?.removeView(view)
+        }
+        pinComposeView = null
+    }
+
     private fun backPressed() {
         when {
             !mainNavigator.isHome() -> presenter.onNavigateBackToHome()
-            isPinLayoutVisible -> isPinLayoutVisible = false
             else -> back()
         }
     }

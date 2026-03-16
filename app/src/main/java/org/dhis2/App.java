@@ -45,8 +45,6 @@ import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
-import org.dhis2.utils.session.PinModule;
-import org.dhis2.utils.session.SessionComponent;
 import org.dhis2.utils.timber.DebugTree;
 import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.datastore.KeyValuePair;
@@ -86,9 +84,6 @@ public class App extends android.app.Application implements Components, Lifecycl
     @Nullable
     @PerActivity
     private TeiDashboardComponent dashboardComponent;
-
-    @Nullable
-    private SessionComponent sessionComponent;
 
     private boolean fromBackGround = false;
     private boolean recreated;
@@ -272,15 +267,6 @@ public class App extends android.app.Application implements Components, Lifecycl
         } else {
             recreated = false;
         }
-    }
-
-    @NotNull
-    public SessionComponent createSessionComponent(PinModule pinModule) {
-        return (sessionComponent = userComponent.plus(pinModule));
-    }
-
-    public void releaseSessionComponent() {
-        sessionComponent = null;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

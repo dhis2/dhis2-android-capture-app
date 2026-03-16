@@ -64,8 +64,6 @@ import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingComponent;
 import org.dhis2.usescases.teiDashboard.dialogs.scheduling.SchedulingModule;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListComponent;
 import org.dhis2.usescases.teiDashboard.teiProgramList.TeiProgramListModule;
-import org.dhis2.utils.session.PinModule;
-import org.dhis2.utils.session.SessionComponent;
 
 import dagger.Subcomponent;
 import dhis2.org.analytics.charts.ui.di.AnalyticsFragmentComponent;
@@ -169,9 +167,6 @@ public interface UserComponent {
 
     @NonNull
     EventDetailsComponent plus(EventDetailsModule eventDetailsModule);
-
-    @NonNull
-    SessionComponent plus(PinModule pinModule);
 
     @NonNull
     SchedulingComponent plus(SchedulingModule schedulingModule);

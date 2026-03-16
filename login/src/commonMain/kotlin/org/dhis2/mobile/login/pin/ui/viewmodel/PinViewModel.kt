@@ -8,101 +8,131 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.login.pin.domain.model.PinError
-import org.dhis2.mobile.login.pin.domain.model.PinState
+import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.domain.model.ValidatePinInput
 import org.dhis2.mobile.login.pin.domain.usecase.ForgotPinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.SavePinUseCase
 import org.dhis2.mobile.login.pin.domain.usecase.ValidatePinUseCase
-import org.dhis2.mobile.login.pin.ui.components.PinMode
 import org.dhis2.mobile.login.pin.ui.provider.PinResourceProvider
+import org.dhis2.mobile.login.pin.ui.state.PinUiState
 
 /**
  * ViewModel for managing PIN operations.
  * Coordinates between the UI and use cases for PIN creation, validation, and recovery.
+ *
+ * @param mode The PIN mode (SET for creation, ASK for verification).
  */
 class PinViewModel(
+    private val mode: PinMode,
     private val savePinUseCase: SavePinUseCase,
     private val validatePinUseCase: ValidatePinUseCase,
     private val forgotPinUseCase: ForgotPinUseCase,
     private val resourceProvider: PinResourceProvider,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<PinState>(PinState.Idle)
-    val uiState: StateFlow<PinState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(PinUiState())
+    val uiState: StateFlow<PinUiState> = _uiState.asStateFlow()
 
     private var pinAttempts = 0
+    private var currentPin = ""
+
+    init {
+        viewModelScope.launch {
+            _uiState.value =
+                _uiState.value.copy(
+                    title = resourceProvider.getPinTitle(mode),
+                    subtitle = resourceProvider.getPinSubtitle(mode),
+                    primaryButtonText = resourceProvider.getPrimaryButtonText(mode),
+                    secondaryButtonText = resourceProvider.getSecondaryButtonText(mode),
+                )
+        }
+    }
+
+    /**
+     * Updates the current PIN value and recomputes button enablement.
+     * Clears any existing error message when the user starts typing.
+     *
+     * @param pin The current PIN value from the input field.
+     */
+    fun onPinChanged(pin: String) {
+        currentPin = pin
+        _uiState.value =
+            _uiState.value.copy(
+                errorMessage = null,
+                primaryButtonIsEnabled = pin.replace("-", "").length == _uiState.value.pinLength,
+            )
+    }
 
     /**
      * Handles PIN completion based on the current mode.
-     * @param pin The PIN entered by the user.
-     * @param mode The current PIN mode (SET or ASK).
      */
-    fun onPinComplete(
-        pin: String,
-        mode: PinMode,
-    ) {
+    fun onPinComplete() {
+        val pin = currentPin.replace("-", "")
         when (mode) {
             PinMode.SET -> savePin(pin)
             PinMode.ASK -> validatePin(pin)
         }
     }
 
-    /**
-     * Saves a new PIN.
-     * @param pin The PIN to save.
-     */
     private fun savePin(pin: String) {
         viewModelScope.launch {
-            _uiState.value = PinState.Loading
+            _uiState.value = _uiState.value.copy(isLoading = true, primaryButtonIsEnabled = false)
             savePinUseCase(pin)
                 .onSuccess {
-                    _uiState.value = PinState.Success
+                    _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
                 }.onFailure { error ->
                     _uiState.value =
-                        PinState.Error(
-                            message = error.message ?: resourceProvider.getPinErrorSaveFailed(),
+                        _uiState.value.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: resourceProvider.getPinErrorSaveFailed(),
+                            primaryButtonIsEnabled = currentPin.replace("-", "").length == _uiState.value.pinLength,
                         )
                 }
         }
     }
 
-    /**
-     * Validates the entered PIN against the stored PIN.
-     * @param pin The PIN to validate.
-     */
     private fun validatePin(pin: String) {
         viewModelScope.launch {
-            _uiState.value = PinState.Loading
+            _uiState.value = _uiState.value.copy(isLoading = true, primaryButtonIsEnabled = false)
             validatePinUseCase(ValidatePinInput(pin, pinAttempts)).fold(
                 onSuccess = {
-                    _uiState.value = PinState.Success
+                    _uiState.value = _uiState.value.copy(isLoading = false, isSuccess = true)
                     pinAttempts = 0
                 },
-                onFailure = { failure: Throwable ->
+                onFailure = { failure ->
                     when (failure) {
                         is PinError.Failed -> {
                             pinAttempts++
+                            val message = resourceProvider.getPinErrorIncorrect()
+                            val fullMessage =
+                                resourceProvider.getPinErrorWithAttempts(message, failure.attemptsLeft)
                             _uiState.value =
-                                PinState.Error(
-                                    message = resourceProvider.getPinErrorIncorrect(),
-                                    remainingAttempts = failure.attemptsLeft,
+                                _uiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = fullMessage,
+                                    primaryButtonIsEnabled = currentPin.replace("-", "").length == _uiState.value.pinLength,
                                 )
                         }
 
                         is PinError.TooManyAttempts -> {
-                            _uiState.value = PinState.TooManyAttempts
+                            _uiState.value =
+                                _uiState.value.copy(isLoading = false, isTooManyAttempts = true)
                         }
 
                         is PinError.NoPinStored -> {
                             _uiState.value =
-                                PinState.Error(
-                                    message = resourceProvider.getPinErrorNoPinStored(),
+                                _uiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = resourceProvider.getPinErrorNoPinStored(),
+                                    primaryButtonIsEnabled = currentPin.replace("-", "").length == _uiState.value.pinLength,
                                 )
                         }
 
                         else -> {
                             _uiState.value =
-                                PinState.Error(
-                                    message = failure.message ?: "Unknown error occurred",
+                                _uiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = failure.message ?: "Unknown error occurred",
+                                    primaryButtonIsEnabled = currentPin.replace("-", "").length == _uiState.value.pinLength,
                                 )
                         }
                     }
@@ -116,26 +146,40 @@ class PinViewModel(
      * This will log out the user and clear the PIN.
      */
     fun onForgotPin() {
+        if (_uiState.value.isLoading) return
         viewModelScope.launch {
-            _uiState.value = PinState.Loading
+            _uiState.value = _uiState.value.copy(isLoading = true, primaryButtonIsEnabled = false)
             forgotPinUseCase()
                 .onSuccess {
-                    _uiState.value = PinState.Dismissed
+                    _uiState.value =
+                        _uiState.value.copy(
+                            isLoading = false,
+                            isDismissed = true,
+                            isTooManyAttempts = false,
+                        )
                 }.onFailure { error ->
                     _uiState.value =
-                        PinState.Error(
-                            message = error.message ?: resourceProvider.getPinErrorResetFailed(),
+                        _uiState.value.copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: resourceProvider.getPinErrorResetFailed(),
+                            primaryButtonIsEnabled = currentPin.replace("-", "").length == _uiState.value.pinLength,
                         )
                 }
         }
     }
 
     /**
-     * Resets the UI state to idle.
-     * Useful for clearing error messages.
+     * Resets transient UI state flags (error, success, dismissed, tooManyAttempts).
+     * Useful when the dialog is dismissed or re-shown.
      */
     fun resetState() {
-        _uiState.value = PinState.Idle
+        _uiState.value =
+            _uiState.value.copy(
+                errorMessage = null,
+                isSuccess = false,
+                isDismissed = false,
+                isTooManyAttempts = false,
+            )
     }
 
     /**

@@ -306,7 +306,6 @@ dependencies {
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.material3)
     implementation(libs.google.guava)
-    implementation(libs.github.pinlock)
     implementation(libs.github.fancyshowcase)
     implementation(libs.lottie)
     implementation(libs.network.okhttp)
