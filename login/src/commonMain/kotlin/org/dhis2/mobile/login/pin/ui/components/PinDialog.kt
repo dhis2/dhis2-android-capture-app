@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -170,35 +171,47 @@ internal fun PinContent(
                     )
                 }
             } else {
-                Column(
+                Row(
                     modifier =
                         Modifier
                             .fillMaxSize()
                             .imePadding()
-                            .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+                            .padding(horizontal = Spacing.Spacing56),
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing56),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
+                    Column(
                         modifier =
                             Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = Spacing.Spacing56)
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
                                 .padding(vertical = Spacing.Spacing32),
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing56),
-                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         PinHeader(
                             title = uiState.title,
                             subtitle = uiState.subtitle,
-                            modifier = Modifier.weight(1f),
                         )
+                    }
 
-                        VerticalDivider(
-                            thickness = Spacing.Spacing1,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                        )
+                    VerticalDivider(
+                        modifier = Modifier.padding(vertical = Spacing.Spacing32),
+                        thickness = Spacing.Spacing1,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                    )
 
+                    Column(
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState())
+                                .padding(vertical = Spacing.Spacing32),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
                         PinInputBlock(
                             uiState = uiState,
                             focusRequester = focusRequester,
@@ -207,7 +220,6 @@ internal fun PinContent(
                             onPinChanged = onPinChanged,
                             onPrimaryClick = onPrimaryClick,
                             onSecondaryClick = onSecondaryClick,
-                            modifier = Modifier.weight(1f),
                         )
                     }
                 }
