@@ -10,7 +10,6 @@ import org.hisp.dhis.android.core.common.ValueType
 import org.hisp.dhis.mobile.ui.designsystem.component.SectionState
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.mock
 
 class FormTest {
 
@@ -75,7 +74,6 @@ class FormTest {
                sections = sections,
                intentHandler = {},
                uiEventHandler = {},
-               resources = mock(),
            )
         }
         composeTestRule.onNodeWithTag(FORM_VIEW).assertIsDisplayed()
