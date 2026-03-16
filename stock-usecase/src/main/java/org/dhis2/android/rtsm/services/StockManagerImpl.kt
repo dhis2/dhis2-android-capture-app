@@ -33,7 +33,6 @@ import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.hisp.dhis.android.core.usecase.stock.StockUseCase
 import org.hisp.dhis.rules.models.RuleEffect
 import timber.log.Timber
-import java.util.Collections
 
 class StockManagerImpl(
     val d2: D2,
