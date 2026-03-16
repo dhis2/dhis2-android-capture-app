@@ -16,6 +16,7 @@ tools:
   - lexical-code-search
   - semantic-code-search
   - github-coding-agent-immersive
+  - run-commands
 ---
 
 # DHIS2 Android Testing Expert Agent
