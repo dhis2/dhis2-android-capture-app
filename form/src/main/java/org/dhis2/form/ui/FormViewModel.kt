@@ -79,6 +79,7 @@ class FormViewModel(
     private val geometryController: GeometryController = GeometryController(GeometryParserImpl()),
     private val openErrorLocation: Boolean = false,
     private val resultDialogUiProvider: FormResultDialogProvider,
+    private val formSectionMapper: FormSectionMapper,
 ) : ViewModel() {
     val loading = MutableLiveData(true)
     val showToast = MutableLiveData<Int>()
@@ -87,7 +88,6 @@ class FormViewModel(
     val confError = MutableLiveData<List<RulesUtilsProviderConfigurationError>>()
     var dateFormatConfig: String = "ddMMyyyy"
 
-    private val formSectionMapper = FormSectionMapper()
     private val _items = MutableSharedFlow<List<FieldUiModel>>()
 
     val items = _items.map { items ->

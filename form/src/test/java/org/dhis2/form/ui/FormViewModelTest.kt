@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -16,6 +17,7 @@ import org.dhis2.form.model.FieldUiModel
 import org.dhis2.form.model.RowAction
 import org.dhis2.form.ui.event.RecyclerViewUiEvents
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobile.commons.model.CustomIntentRequestArgumentModel
 import org.hisp.dhis.android.core.common.ValueType
@@ -37,7 +39,10 @@ class FormViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private val repository: FormRepository = mock()
+    private val repository: FormRepository = mock {
+        on { runBlocking { fetchFormItems(any()) } } doReturn emptyList()
+        on { runBlocking { composeList(any()) } } doReturn emptyList()
+    }
     private val testingDispatcher = StandardTestDispatcher()
     private val dispatcher: DispatcherProvider =
         mock {
@@ -45,6 +50,8 @@ class FormViewModelTest {
         }
     private val geometryController: GeometryController = mock()
     private val resultDialogUiProvider: FormResultDialogProvider = mock()
+
+    private val formSectionMapper = FormSectionMapper()
 
     private lateinit var viewModel: FormViewModel
 
@@ -58,6 +65,7 @@ class FormViewModelTest {
                 dispatcher,
                 geometryController,
                 resultDialogUiProvider = resultDialogUiProvider,
+                formSectionMapper = formSectionMapper,
             )
         whenever(repository.getDateFormatConfiguration()) doReturn "ddMMyyyy"
     }

@@ -32,6 +32,7 @@ import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.FormViewModel
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
@@ -143,6 +144,7 @@ class ProgramRulesTest {
                 },
                 geometryController,
                 resultDialogUiProvider = resultDialogUiProvider,
+                formSectionMapper = FormSectionMapper(),
             )
 
         testingDispatcher.scheduler.advanceUntilIdle()

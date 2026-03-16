@@ -30,6 +30,7 @@ import org.dhis2.form.model.SectionUiModelImpl
 import org.dhis2.form.model.StoreResult
 import org.dhis2.form.model.ValueStoreResult
 import org.dhis2.form.ui.intent.FormIntent
+import org.dhis2.form.ui.mapper.FormSectionMapper
 import org.dhis2.form.ui.provider.DisplayNameProvider
 import org.dhis2.form.ui.provider.FormResultDialogProvider
 import org.dhis2.form.ui.provider.LegendValueProvider
@@ -164,6 +165,7 @@ class DataEntryIntegrationTest {
                 geometryController = geometryController,
                 openErrorLocation = false,
                 resultDialogUiProvider = resultDialogUiProvider,
+                formSectionMapper = FormSectionMapper(),
             )
     }
 
