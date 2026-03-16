@@ -148,7 +148,7 @@ internal fun PinContent(
                 Column(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
+                            .fillMaxSize()
                             .imePadding()
                             .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -170,37 +170,46 @@ internal fun PinContent(
                     )
                 }
             } else {
-                Row(
+                Column(
                     modifier =
                         Modifier
                             .fillMaxSize()
                             .imePadding()
-                            .padding(horizontal = Spacing.Spacing56)
-                            .padding(bottom = 96.dp),
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing56),
-                    verticalAlignment = Alignment.CenterVertically,
+                            .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                 ) {
-                    PinHeader(
-                        title = uiState.title,
-                        subtitle = uiState.subtitle,
-                        modifier = Modifier.weight(1f),
-                    )
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = Spacing.Spacing56)
+                                .padding(vertical = Spacing.Spacing32),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.Spacing56),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        PinHeader(
+                            title = uiState.title,
+                            subtitle = uiState.subtitle,
+                            modifier = Modifier.weight(1f),
+                        )
 
-                    VerticalDivider(
-                        thickness = Spacing.Spacing1,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                    )
+                        VerticalDivider(
+                            thickness = Spacing.Spacing1,
+                            color = MaterialTheme.colorScheme.outlineVariant,
+                        )
 
-                    PinInputBlock(
-                        uiState = uiState,
-                        focusRequester = focusRequester,
-                        windowSizeClass = windowSizeClass,
-                        showPrimaryButtonIcon = mode == PinMode.SET,
-                        onPinChanged = onPinChanged,
-                        onPrimaryClick = onPrimaryClick,
-                        onSecondaryClick = onSecondaryClick,
-                        modifier = Modifier.weight(1f),
-                    )
+                        PinInputBlock(
+                            uiState = uiState,
+                            focusRequester = focusRequester,
+                            windowSizeClass = windowSizeClass,
+                            showPrimaryButtonIcon = mode == PinMode.SET,
+                            onPinChanged = onPinChanged,
+                            onPrimaryClick = onPrimaryClick,
+                            onSecondaryClick = onSecondaryClick,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
             }
         },
