@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import org.dhis2.mobile.commons.extensions.deviceIsInLandscapeMode
 import org.dhis2.mobile.commons.extensions.getWindowSizeClass
@@ -46,9 +45,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextData
 import org.hisp.dhis.mobile.ui.designsystem.component.SupportingTextState
 import org.hisp.dhis.mobile.ui.designsystem.component.model.SegmentedShellType
 import org.hisp.dhis.mobile.ui.designsystem.component.state.BottomSheetShellDefaults
-import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -448,52 +445,3 @@ private fun PinSecondaryButton(
     )
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-@Preview(showBackground = true, widthDp = 360, heightDp = 800)
-@Composable
-fun PinAskPortraitPreview() {
-    val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(360.dp, 800.dp))
-    DHIS2Theme {
-        PinContent(
-            uiState =
-                PinUiState(
-                    title = "Enter your PIN",
-                    subtitle = "Enter your 4-digit PIN to access your account.",
-                    primaryButtonText = "Unlock",
-                    secondaryButtonText = "Forgot your PIN?",
-                ),
-            mode = PinMode.ASK,
-            isLandscape = false,
-            windowSizeClass = windowSizeClass,
-            onPinChanged = {},
-            onPrimaryClick = {},
-            onSecondaryClick = {},
-            onDismiss = {},
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
-@Preview(showBackground = true, widthDp = 1280, heightDp = 800)
-@Composable
-fun PinAskLandscapePreview() {
-    val windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(1280.dp, 800.dp))
-    DHIS2Theme {
-        PinContent(
-            uiState =
-                PinUiState(
-                    title = "Enter your PIN",
-                    subtitle = "Enter your 4-digit PIN to access your account.",
-                    primaryButtonText = "Unlock",
-                    secondaryButtonText = "Forgot your PIN?",
-                ),
-            mode = PinMode.ASK,
-            isLandscape = true,
-            windowSizeClass = windowSizeClass,
-            onPinChanged = {},
-            onPrimaryClick = {},
-            onSecondaryClick = {},
-            onDismiss = {},
-        )
-    }
-}
