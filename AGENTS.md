@@ -289,8 +289,9 @@ modulekmm/
 
 - **Unit Tests**: Place in appropriate test directories
 - **Shared Tests**: Use `commonTest` for platform-agnostic tests
-- **Mocking**: Use MockK for Kotlin-friendly mocking
+- **Mocking**: Use Mockito (`org.mockito.kotlin`) for mocking — `mock()`, `whenever()`, `doReturn`, `verify()`
 - **Repository Tests**: Mock DHIS2 SDK components
+- **Integration Tests**: Test full flows from ViewModel through use cases to a mocked repository (see `TwoFAScreenConfigurationIntegrationTest` for a reference)
 - **UI Tests**: Follow the Robot pattern for instrumented tests (see detailed section below)
 
 ### UI Testing Guidelines
@@ -360,6 +361,61 @@ class ExampleTest : BaseTest() {
         
         cleanDatabase()
     }
+}
+```
+
+### Integration Testing Guidelines
+
+Integration tests wire together the ViewModel, use cases, and a mocked repository to verify
+complete feature flows end-to-end without touching the network or a real database.
+
+- **Location**: Place in `commonTest` (shared across platforms) when the ViewModel and use cases live in `commonMain`
+- **Pattern**: Instantiate real use cases with a mocked repository; inject a `StandardTestDispatcher`; observe the ViewModel's `StateFlow` via [Turbine](https://github.com/cashapp/turbine) (`flow.test { … }`)
+- **Mocking**: Use Mockito (`org.mockito.kotlin`) — `mock()`, `whenever()`, `doReturn`, `doReturnConsecutively`
+- **Async handling**: Use `StandardTestDispatcher` + `Dispatchers.setMain(testDispatcher)` / `Dispatchers.resetMain()` and `runTest { … }`
+- **Best practices**:
+    1. Use `@BeforeTest` / `@AfterTest` (from `kotlin.test`) to set up and tear down the dispatcher
+    2. Follow the Given / When / Then comment structure
+    3. Assert every intermediate state (loading, success, error) not just the final result
+    4. Use `cancelAndIgnoreRemainingEvents()` to cleanly finish a Turbine block
+
+#### Example: Integration Test Structure
+
+```kotlin
+@OptIn(ExperimentalCoroutinesApi::class)
+class ExampleIntegrationTest {
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var repository: ExampleRepository
+    private lateinit var viewModel: ExampleViewModel
+    private val dispatchers = Dispatcher(testDispatcher, testDispatcher, testDispatcher)
+
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        repository = mock()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `Given repository returns data, When ViewModel loads, Then success state is shown`() =
+        runTest {
+            // Given
+            whenever(repository.getData()) doReturn Result.success(listOf("item"))
+
+            // When
+            viewModel = ExampleViewModel(GetDataUseCase(repository), dispatchers)
+
+            // Then
+            viewModel.uiState.test {
+                assertEquals(UiState.Loading, awaitItem())
+                assertTrue(awaitItem() is UiState.Success)
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
 }
 ```
 
