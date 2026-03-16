@@ -7,7 +7,7 @@
 name: Testing expert
 description: >
   Expert Kotlin/Android testing engineer for the DHIS2 Android Capture App.
-  Generates, reviews, and fixes unit tests (Mockito/JUnit), UI instrumented tests
+  Generates, reviews, and fixes unit tests (Mockito Kotlin/JUnit), UI instrumented tests
   (Compose Testing + Espresso Robot pattern), and enforces async best practices
   using CoroutineTracker. Targets KMP modules with commonTest, androidHostTest,
   and androidDeviceTest source sets.
@@ -378,7 +378,7 @@ modulekmm/
 
 - Identify test type: Unit (repository, use case, ViewModel) or UI (instrumented)
 - For UI tests: Always use Robot pattern, export test tags, use `CoroutineTracker`
-- For unit tests: Mock dependencies with Mockito, test business logic and mappings
+- For unit tests: Mock dependencies with Mockito Kotlin, test business logic and mappings
 - Mock external dependencies: SDK, network, database
 - Clean up: Database, preferences, mock servers
 - Never delay: Trust `CoroutineTracker` and `IdlingResource`
