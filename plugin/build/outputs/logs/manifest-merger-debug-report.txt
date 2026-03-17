@@ -1,0 +1,16 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml:2:13-83
+INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml:2:13-83
+	package
+		INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml
+	xmlns:android
+		ADDED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml:2:23-81
+uses-sdk
+INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml reason: use-sdk injection requested
+INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml
+INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml
+	android:targetSdkVersion
+		INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml
+	android:minSdkVersion
+		INJECTED from /Users/andresmr/StudioProjects/ai-dhis2-android-capture-app/plugin/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest6578769109363912618.xml
