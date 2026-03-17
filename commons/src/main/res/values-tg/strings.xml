@@ -8,16 +8,13 @@
     <string name="navigation_programs">Барномаҳо</string>
     <string name="navigation_data_entry">Ворид кардани иттилоот</string>
     <string name="navigation_tei_data">Маълумоти муфассал</string>
-    <string name="event_overview">Маълумоти муфассал</string>
     <string name="search">Ҷустуҷӯ</string>
     <string name="data_sets">Маҷмӯъҳои иттилоот</string>
     <string name="done">Иҷро шуд</string>
 
     <string name="filters_title_period">Давра</string>
-    <string name="filters_title_status">Ҳолат</string>
     <string name="filters_title_date">Сана</string>
     <string name="select_period">Интихоби навъи давра</string>
-    <string name="daily_period">Ҳаррӯза</string>
     <string name="weekly">Ҳафтаина</string>
     <string name="monthly">Моҳона</string>
     <string name="bi_monthly">Ду маротиба дар як моҳ</string>
@@ -55,8 +52,6 @@
     <string name="section_feedback">Изҳори назар</string>
     <string name="section_indicators">Индикаторҳо</string>
     <string name="complete">Анҷом ёфт</string>
-    <string name="default_table_header_label">Қимат</string>
-    <string name="default_empty_dataset_section_label">Иттилоот</string>
     <string name="overdue_today">Имрӯз</string>
     <string name="remove">Тоза кардан</string>
     <string name="period_daily_title">Ҳаррӯза</string>

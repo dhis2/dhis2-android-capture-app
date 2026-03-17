@@ -9,7 +9,6 @@
     <string name="cancel">Hủy</string>
     <string name="yes">Có</string>
     <string name="no">Không</string>
-    <string name="clear_all">Bỏ chọn</string>
     <string name="navigation_list_view">Xem danh sách</string>
     <string name="navigation_table_view">Xem bảng</string>
     <string name="navigation_map_view">Xem bản đồ</string>
@@ -21,7 +20,6 @@
     <string name="navigation_notes">Ghi Chú</string>
     <string name="navigation_data_entry">Nhập dữ liệu</string>
     <string name="navigation_tei_data">Chi tiết</string>
-    <string name="event_overview">Chi tiết</string>
     <string name="select_option">Chọn</string>
     <string name="search">Tìm kiếm</string>
     <string name="events">sự kiện</string>
@@ -35,8 +33,6 @@
     <string name="filters_disabled">Không có bộ lọc nào được áp dụng</string>
     <string name="filters_title_period">Thời điểm</string>
     <string name="filters_title_org_unit">Đơn vị</string>
-    <string name="filters_title_sorting">Sắp xếp thứ tự</string>
-    <string name="filters_title_status">Trạng thái</string>
     <string name="filters_title_state">Đồng bộ</string>
     <string name="filters_title_assigned">Gán cho tôi</string>
     <string name="filters_title_date">Ngày</string>
@@ -45,7 +41,6 @@
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Theo dõi %s</string>
     <string name="select_period">Chọn loại thời điểm</string>
-    <string name="daily_period">Hàng Ngày</string>
     <string name="weekly">Hàng Tuần</string>
     <string name="bi_weekly">Định kỳ 2 tuần</string>
     <string name="weekly_start_wednesday">Hàng tuần bắt đầu từ thứ Tư</string>
@@ -63,7 +58,6 @@
     <string name="state_synced">Đồng bộ</string>
     <string name="state_to_post">Gửi</string>
     <string name="state_to_update">Cập nhật</string>
-    <string name="state_to_delete">Xóa</string>
     <string name="state_error">Lỗi</string>
     <string name="state_warning">Cảnh báo</string>
     <string name="state_uploading">Đang tải lên</string>
@@ -156,7 +150,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Thiếu mật khẩu. Xin vui lòng nhập mật khẩu</string>
     <string name="login_error_null_username">Thiếu tên đăng nhập. Xin vui lòng nhập tên đăng nhập.</string>
-    <string name="login_error_dhis_version">Máy chủ không chạy dhis phiên bản 2.29. Nâng cấp phiên bản máy chủ hoặc sử dụng môi trường thử nghiệm để thực hiện.</string>
     <string name="login_error_dhis_version_v2">Máy chủ này đang chạy phiên bản DHIS2 khác với %s. Vui lòng cập nhật phiên bản máy chủ của bạn hoặc liên hệ quản lý.</string>
     <string name="login_error_unsuccessful_response">Có gì đó không đúng. Vui lòng kiểm tra đường dẫn liên kết đến máy chủ, tên đăng nhập, mật khẩu và thử lại.</string>
     <string name="login_error_error_response">Rất tiếc! Có lỗi gì đó ở phía máy chủ</string>
@@ -216,9 +209,7 @@
     <string name="error_invalid_characters">Có các ký tự không hợp lệ trong yêu cầu. Vui lòng liên hệ quản lý để xác nhận cấu hình máy chủ (relaxQueryChars,...)</string>
     <string name="error_server_unavailable">Không thể truy cập máy chủ. Xin vui lòng thử lại sau.</string>
     <string name="error_no_internet_connection">Bạn đang ngoại tuyến. Vui lòng kết nối mạng và thử lại</string>
-    <string name="unsupported_field_description">Trường này không hiển thị để nhập dữ liệu bằng điện thoại</string>
     <string name="add_image">Thêm hình ảnh</string>
-    <string name="add_signature">Thêm chữ ký</string>
     <string name="add_file">Thêm tập tin</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Tính năng chia sẻ vị trí thiết bị của bạn bị tắt. Vui lòng mở nó để thu thập tọa độ.</string>
@@ -226,9 +217,7 @@
     <string name="not_now">Không phải bây giờ</string>
     <string name="review">Xem xét</string>
     <string name="complete">Hoàn tất</string>
-    <string name="default_table_header_label">Giá trị</string>
     <string name="discard_changes">Hủy bỏ các thay đổi</string>
-    <string name="default_empty_dataset_section_label">Dữ liệu</string>
     <string name="title_network_connection_unavailable">Không có kết nối mạng</string>
     <string name="msg_network_connection_maps">Cần có kết nối mạng để sử dụng bản đồ</string>
 
@@ -247,10 +236,8 @@
 
     <string name="file_downloaded">Tệp đã tải xuống thành công</string>
 
-
     <string name="enrollment_data_section_label_V2">Dữ liệu %s</string>
     <string name="enrollment_date_V2">%s ngày</string>
-    <string name="enrollment_status">%s trạng thái</string>
     <string name="enrollment_cancelled_V2">%s đã hủy</string>
     <string name="new_enrollment">%sMới</string>
     <string name="enrolling_ou">Đã đăng ký vào:</string>
@@ -258,7 +245,6 @@
     <string name="event_label_date">%s ngày</string>
     <string name="delete_event_label">Xóa %s</string>
     <string name="week_period_span_default_label">Tuần %d %s đến %s</string>
-    <string name="enrollment_reopen">mở lại</string>
 
     <string name="sync_retry">Đồng bộ lại</string>
     <string name="syncing">Đang đồng bộ...</string>
@@ -273,4 +259,6 @@
     <string name="not_in_totp_2fa_enrollment_mode">Không ở chế độ đăng ký TOTP 2FA</string>
 
     <string name="action_clear_all">Xóa tất cả</string>
+
+    <string name="enrollment_status">%s trạng thái</string>
 </resources>

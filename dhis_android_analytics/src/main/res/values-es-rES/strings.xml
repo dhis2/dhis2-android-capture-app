@@ -9,7 +9,6 @@
     <string name="action_accept">Aceptar</string>
     <string name="period">Periodo</string>
     <string name="orgUnit">Unid.Org.</string>
-    <string name="none">Ninguno</string>
     <string name="daily">Diario</string>
     <string name="today">Hoy</string>
     <string name="other">Otro</string>
@@ -45,7 +44,6 @@
     <string name="include_this_period_body">Se mostrará el periodo actual en el gráfico.</string>
     <string name="no_data_for_selected_filters">Los filtros que has aplicado no devolvieron datos</string>
     <string name="no_data_to_display">No tienes datos para mostrar</string>
-    <string name="visualization_error">Hay algo erróneo en esta visualización</string>
     <string name="visualization_failure">Hay algo erróneo con las visualizaciones</string>
     <string name="visualization_groups_failure">Hay algo erróneo con los grupos de visualizaciones</string>
     <string name="pie_chart_no_data">Todos los datos tienen valor cero</string>
@@ -61,7 +59,6 @@
     <string name="error_invalid_program_indicator">No tiene acceso indicador del programa %s</string>
     <string name="error_invalid_visualization">La visualización %s no se encuentra disponible</string>
     <string name="error_parsing_visualization">Esta visualización no se encuentra bien configurada, por favor contacte a su administrador.</string>
-    <string name="error_invalid_custom_boundaries">Los límites personalizados de indicadores de programa no son compatibles con los graficos de Android%s</string>
     <string name="error_database">No se puede acceder a la base de datos. Por favor, contacta con tu administrador.</string>
     <string name="error_invalid_program">No tiene permiso para acceder al programa %s</string>
     <string name="error_invalid_attribute">No tiene permiso para acceder al atributo %s</string>

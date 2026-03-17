@@ -12,7 +12,6 @@
     <string name="input_coordinate_latitude">Breddegrad</string>
     <string name="input_coordinate_longitude">Lengdegrad</string>
     <string name="input_not_supported">Ikke støttet</string>
-    <string name="completion_dialog_title">Alt ser bra ut</string>
     <string name="validation_success_title">Alt ser bra ut</string>
     <string name="mark_dataset_complete">Vil du også fullføre datasettet?</string>
     <string name="complete">Fullfør</string>

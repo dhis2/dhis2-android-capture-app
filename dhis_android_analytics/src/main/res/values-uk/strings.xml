@@ -9,7 +9,6 @@
     <string name="action_accept">Прийняти</string>
     <string name="period">Період</string>
     <string name="orgUnit">Організаційний підрозділ</string>
-    <string name="none">Жодного</string>
     <string name="daily">Щодня</string>
     <string name="today">Сьогодні</string>
     <string name="other">Інше</string>
@@ -45,7 +44,6 @@
     <string name="include_this_period_body">Це відобразить поточний період на діаграмі.</string>
     <string name="no_data_for_selected_filters">Фільтри, які Ви застосували, не відповідають жодним даним</string>
     <string name="no_data_to_display">У Вас немає даних для відображення</string>
-    <string name="visualization_error">Помилка із цією візуалізацією</string>
     <string name="visualization_failure">Помилка із цими візуалізаціями</string>
     <string name="visualization_groups_failure">Помилка із групою візуалізацій</string>
     <string name="pie_chart_no_data">Усі значення нульові</string>
@@ -61,7 +59,6 @@
     <string name="error_invalid_program_indicator">Ви не маєте доступу до програмного індикатора %s</string>
     <string name="error_invalid_visualization">Візуалізація %s відсутня</string>
     <string name="error_parsing_visualization">Цю візуалізацію налаштовано неправильно. Зверніться до адміністратора.</string>
-    <string name="error_invalid_custom_boundaries">Спеціальні межі не підтримуються для програмного індикатора %s</string>
     <string name="error_database">Неможливо отримати доступ до бази даних. Будь ласка, зверніться до свого адміністратора.</string>
     <string name="error_invalid_program">Ви не маєте доступу до програми %s</string>
     <string name="error_invalid_attribute">Ви не маєте доступу до атрибуту %s</string>

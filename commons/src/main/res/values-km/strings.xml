@@ -10,7 +10,6 @@
     <string name="navigation_relationships">ទំនាក់ទំនង</string>
     <string name="navigation_notes">ចំណាំ</string>
     <string name="navigation_tei_data">លម្អិត</string>
-    <string name="event_overview">លម្អិត</string>
     <string name="select_option">កំណត់​ជម្រើស</string>
     <string name="search">ស្វែងរក</string>
     <string name="events">ព្រឹត្តិការណ៏</string>
@@ -18,10 +17,8 @@
     <string name="done">Done</string>
 
     <string name="filters_title_period">កំឡុងពេល</string>
-    <string name="filters_title_status">ស្ថានភាព</string>
     <string name="filters_title_state">បញ្ចូន</string>
     <string name="filters_title_date">កាលបរិច្ឆេទ</string>
-    <string name="daily_period">រាល់​ថ្ងៃ</string>
     <string name="weekly">រាល់​សប្ដាហ៍</string>
     <string name="monthly">រាល់​ខែ</string>
     <string name="bi_monthly">រាល់ពីរសប្តាហ៍</string>
@@ -31,7 +28,6 @@
     <!-- State -->
     <string name="state_synced">បញ្ចូន</string>
     <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
-    <string name="state_to_delete">ដើម្បីលុប</string>
     <string name="state_error">កំហុសបច្ចេកទេស</string>
     <!-- Status -->
     <string name="filter_event_status_open">បើក</string>
@@ -73,16 +69,12 @@
     <string name="section_feedback">មតិ​ឆ្លើយតប</string>
     <string name="section_indicators">Indicators</string>
     <string name="section_charts">គំនូសតាង(ក្រាប)</string>
-    <string name="login_error_dhis_version">ម៉ាស៊ីនមេនេះកំពុងដំណើរការខុសពី DHIS ២.២៩។ សូមធ្វើបច្ចុប្បន្នភាពលើម៉ាស៊ីនមេរបស់អ្នក​</string>
     <string name="online_search_parsing_error">កំហុសខណៈពេលញែកលទ្ធផល</string>
     <string name="add_file">បញ្ចូលឯកសារ</string>
     <string name="keep_editing">រក្សាទុកការកែប្រែ</string>
     <string name="complete">បញ្ចប់</string>
-    <string name="default_table_header_label">តម្លៃ</string>
     <string name="discard_changes">លុបការកែប្រែ</string>
-    <string name="default_empty_dataset_section_label">Data</string>
     <string name="overdue_today">ថ្ងៃនេះ</string>
-    <string name="enrollment_reopen">បើកឡើងវិញ</string>
 
     <string name="remove">លុបចេញ</string>
     <string name="period_daily_title">រាល់​ថ្ងៃ</string>

@@ -11,17 +11,13 @@
     <string name="navigation_notes">نوٹس</string>
     <string name="navigation_data_entry">ڈیٹا انٹری</string>
     <string name="navigation_tei_data">تفصیلات</string>
-    <string name="event_overview">تفصیلات</string>
     <string name="search">تلاش کریں</string>
     <string name="data_sets">ڈیٹا سیٹس</string>
     <string name="done">ہو گیا</string>
 
     <string name="filters_title_period">مدت</string>
-    <string name="filters_title_sorting">ترتیب دیں</string>
-    <string name="filters_title_status">حالت</string>
     <string name="filters_title_date">تاریخ</string>
     <string name="select_period">مدت کی قسم منتخب کریں</string>
-    <string name="daily_period">روزانہ</string>
     <string name="weekly">ہفتہ وار</string>
     <string name="weekly_start_wednesday">ہفتہ وار شروع ہونے والا ہفتہ</string>
     <string name="weekly_start_thursday">جمعرات سے شروع ہونے والا ہفتہ</string>
@@ -85,8 +81,6 @@
     <string name="section_charts">چارٹس</string>
     <string name="action_ok">ٹھیک ہے\!</string>
     <string name="complete">مکمل</string>
-    <string name="default_table_header_label">قدر</string>
-    <string name="default_empty_dataset_section_label">ڈیٹا</string>
     <string name="overdue_today">آج</string>
     <string name="remove">حذف</string>
     <string name="period_daily_title">روزانہ</string>

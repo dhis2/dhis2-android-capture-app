@@ -23,15 +23,9 @@
     <string name="missing_warning_fields_completed_events">У вас есть несколько предупреждающих сообщений.</string>
     <string name="missing_warning_fields_events">У Вас есть несколько предупреждающих сообщений.\nХотите ли Вы отметить эту форму как завершенную?</string>
     <string name="required">Обязательный</string>
-    <string name="date">Дата</string>
-    <string name="hint_year">Годы</string>
-    <string name="hint_month">Месяцы</string>
-    <string name="hint_day">Дни</string>
     <string name="polygon">Полигон</string>
     <string name="latitude">Широта</string>
     <string name="longitude">Долгота</string>
-    <string name="coordinates_error">Значения координат не действительны</string>
-    <string name="polygon_captured">Полигон зафиксирован</string>
     <string name="enter_value">Введите значение</string>
     <string name="enter_url">Введите url</string>
     <string name="enter_email">Введите электронную почту</string>
@@ -46,7 +40,6 @@
     <string name="enter_long_text">Ввод длинного текста</string>
     <string name="enter_text">Введите текст</string>
     <string name="due_date">Дата выполнения</string>
-    <string name="mandatory_field">Обязательное поле</string>
     <string name="not_saved">Не сохранено</string>
     <string name="review">Просмотр</string>
     <string name="complete">Завершить</string>
@@ -56,21 +49,14 @@
     <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. \nВы хотите просмотреть форму?</string>
     <string name="review_message">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму?</string>
     <string name="not_now">Не сейчас</string>
-    <string name="save_anyway">Сохранить в любом случае</string>
     <string name="keep_editing">Продолжить редактирование</string>
     <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную?</string>
     <string name="discard_go_back">Если Вы выйдете сейчас, вся информация в форме будет удалена.</string>
     <string name="field_errors_not_saved_discard">Некоторые поля содержат ошибки, и они не сохраняются. \nЕсли Вы выйдете сейчас, изменения будут отменены.</string>
-    <string name="field_errors_not_saved">Некоторые поля содержат ошибки, и они не сохраняются.</string>
-    <string name="fields_mandatory_missing">Некоторые обязательные поля отсутствуют, и форму невозможно сохранить.</string>
-    <string name="fields_mandatory_missing_discard">Некоторые обязательные поля отсутствуют, и форма не может быть сохранена. \nЕсли вы выйдете сейчас, изменения будут отменены.</string>
     <string name="share">Поделиться</string>
     <string name="camera_permission_denied">Разрешение камеры запрещено.\nЧтобы использовать эту функцию, ее необходимо разрешить.</string>
     <string name="action_close">Закрыть</string>
-    <string name="program_rules_loop_warning_title">Предупреждение о правилах программы</string>
-    <string name="program_rules_loop_warning_message">Существует проблема конфигурации, вызывающая зацикливание правил. Обратитесь к администратору.</string>
     <string name="copied_text">Скопировано</string>
-    <string name="empty_description">Нет информации для этого поля</string>
     <string name="take_photo">Сделать фото</string>
     <string name="from_gallery_v2">Из галереи</string>
     <string name="warning_error_on_complete_title">Проверьте это!</string>
@@ -94,13 +80,10 @@
     <string name="tei_coordinates">Координаты для</string>
     <string name="no_reserved_values">Больше нет зарезервированных значений. Обратитесь к системному администратору</string>
     <string name="incident_date">Дата происшествия</string>
-    <string name="location_permission_denied">Для захвата координат необходимо разрешение на определение местоположения. Пожалуйста, включите их в настройках приложения</string>
     <string name="open_with">Открыть с помощью</string>
     <string name="no_option_found">Опции не найдены</string>
     <string name="download">Скачать</string>
     <string name="scan">Сканировать</string>
-    <string name="qr_code">QR-код</string>
-    <string name="bar_code">Штрих-код</string>
     <string name="add_location">Добавить локацию</string>
     <string name="form_without_fields">В этой форме нет настроенных полей</string>
     <string name="event_details_section_title">%s деталей</string>
@@ -133,7 +116,6 @@
     **********************-->
     <string name="login_error_null_pass">Пароль отсутствует. Пожалуйста, введите пароль.</string>
     <string name="login_error_null_username">Имя пользователя отсутствует. Пожалуйста, введите имя пользователя.</string>
-    <string name="login_error_dhis_version">На этом сервере установлена версия dhis, отличная от 2.29. Обновите версию своего сервера или используйте тестовую среду для продолжения работы.</string>
     <string name="login_error_dhis_version_v2">На этом сервере установлена версия DHIS2, отличная от %s. Обновите версию сервера или обратитесь к администратору.</string>
     <string name="login_error_unsuccessful_response">Что-то пошло не так. Пожалуйста, проверьте правильность URL-адреса сервера, имени пользователя и пароля и повторите попытку.</string>
     <string name="login_error_error_response">Извините! Что-то не получилось на стороне сервера.</string>

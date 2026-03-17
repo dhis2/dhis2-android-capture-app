@@ -9,7 +9,6 @@
     <string name="dialog_layer_base_map_bing_aerial">Bing Flyfoto</string>
     <string name="dialog_layer_base_map_bing_aerial_label">Bing Flyfoto Etiketter</string>
     <string name="action_apply">Bruk</string>
-    <string name="dialog_layer_satellite">Vis satelittvisning</string>
     <string name="dialog_layer_event">Vis hendelser</string>
     <string name="dialog_layer_tei_coordinates">Vis tei koordinater</string>
     <string name="dialog_layer_heatmap">Vis varmekartlag</string>

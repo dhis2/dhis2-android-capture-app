@@ -2,10 +2,6 @@
 <resources>
     <string name="error">تېروته</string>
     <string name="required">اړین دي</string>
-    <string name="date">نېټه</string>
-    <string name="hint_year">کلونه</string>
-    <string name="hint_month">میاشت</string>
-    <string name="hint_day">ورځې</string>
     <string name="latitude">لېټېټيوډ</string>
     <string name="longitude">لانګېټيوډ</string>
     <string name="due_date">ټاکلې نېټه</string>

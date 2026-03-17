@@ -1,5 +1,4 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="title_activity_review">Review</string>
     <string name="review">Review</string>
 
     <string name="cancel">Cancel</string>

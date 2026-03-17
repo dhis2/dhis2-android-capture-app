@@ -1,169 +1,57 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Quản lý kho dược phẩm</string>
     <string name="title_activity_home">Trang chủ</string>
-    <string name="title_activity_review">Xem xét</string>
-    <string name="action_settings">Cài đặt</string>
 
     <string name="distribution">Phân bổ</string>
     <string name="discard">Hủy bỏ</string>
     <string name="correction">Điểu chỉnh</string>
-    <string name="select_transaction">Chọn giao dịch</string>
-    <string name="transaction_date">Ngày giao dịch</string>
-    <string name="recent_activity">Hoạt động gần đây</string>
-    <string name="last_synced">Đồng bộ lần cuối :</string>
-    <string name="select_facility">Chọn cơ sở</string>
-    <string name="distributed_to">Phân bổ đến</string>
-    <string name="select_one">Chọn một</string>
 
     <!-- Sign in -->
-    <string name="server">Máy chủ : </string>
-    <string name="sign_in">Đăng nhập</string>
-    <string name="sign_in_to_your_account">Đăng nhập vào tài khoản của bạn</string>
-    <string name="sign_in_to_with_oidc">Đăng nhập với tài khoản ICRC</string>
-    <string name="non_icrc_staff_members">Chỉ dành cho nhân viên ngoài ICRC</string>
-    <string name="icrc_staff_members">Chỉ dành cho nhân viên ICRC</string>
     <string name="username">Tên đăng nhập</string>
-    <string name="password">Mật khẩu</string>
-    <string name="forgot_password">Quên mật khẩu\?</string>
-
-    <string name="recent_activities_loading_message">Đang tải các hoạt động gần đây&#8230;</string>
-    <string name="recent_activities_empty_message">Bạn chưa thực hiện bất kỳ hoạt động nào</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">Đang đồng bộ siêu dữ liệu&amp;#8230</string>
     <string name="metadata_sync_error">Không thể hoàn thành đồng bộ siêu dữ liệu</string>
-    <string name="data_sync_in_progress">Đang đồng bộ dữ liệu&#3230;</string>
-    <string name="data_sync_error">Không thể hoàn thành đồng bộ dữ liệu</string>
-    <string name="metadata_sync_completed">Đồng bộ siêu dữ liệu đã hoàn tất!</string>
-    <string name="sync_completed">Đồng bộ đã hoàn tất!</string>
 
     <!-- FloatingActionButtons -->
-    <string name="proceed">Tiến hành</string>
     <string name="review">Xem xét</string>
 
-    <string name="scan_barcode">Quét mã vạch</string>
-    <string name="scanning">Đang quét&#8230;</string>
     <string name="search">Tìm kiếm</string>
     <string name="search_placeholder">Tìm kiếm...</string>
     <string name="delete">Xóa</string>
     <string name="ok">OK</string>
     <string name="cancel">Hủy</string>
-    <string name="confirmation">Xác nhận</string>
 
     <string name="from">Từ</string>
     <string name="to">Gửi đến...</string>
     <string name="subtitle">%s</string>
-    <string name="to_arg">Đến %s</string>
 
     <!-- Languages -->
-    <string name="language_english">Tiếng Anh</string>
-    <string name="language_french">Tiếng Pháp</string>
-    <string name="language_spanish">Tiếng Tây Ban Nha</string>
-    <string name="language_arabic">Tiếng Ả Rập</string>
-    <string name="language_russian">Tiếng Nga</string>
 
     <!-- Settings -->
-    <string name="use_microphone_for_data_entry">Dùng micro để nhập dữ liệu</string>
-    <string name="language">Ngôn ngữ</string>
-    <string name="force_data_sync">Buộc đồng bộ dữ liệu</string>
-    <string name="logout">Đăng xuất</string>
-
 
     <!-- Stock table -->
-    <string name="item">Mặt hàng</string>
-    <string name="stock_on_hand">Hàng có sẵn</string>
     <string name="quantity">Số lượng</string>
-    <string name="items_available">Các mặt hàng có sẵn</string>
-    <string name="positive_value">
-        <b>Giá trị dương</b>= \"số lượng thiếu\" (<i>số lượng thực tế ít hơn giá trị được tính toán</i>)
-    </string>
-    <string name="negative_value">
-        <b><span style="color: #C81818">Giá trị âm</span></b>= \"đang có trong kho\"     (<i>số lượng thực tế nhiều hơn giá trị được tính toán</i>)
-    </string>
 
     <!-- Messages -->
-    <string name="mandatory_transaction_selection">
-        Chọn Kiểu giao dịch và điền đầy đủ tất cả các trường trước khi bạn có thể tiếp tục
-    </string>
     <string name="mandatory_facility_selection">
         Điền đầy đủ các trường dữ liệu cơ sở trước khi bạn có thể tiếp tục
     </string>
-    <string name="mandatory_transaction_date_selection">\n        Điền đầy đủ Trường \"Phân bổ đến\" trước khi tiếp tục\n    </string>
     <string name="transaction_completed">
         Giao dịch vưa được hoàn thành!
     </string>
-    <string name="transaction_cancelled">
-        Giao dịch đã được hủy bỏ
-    </string>
-    <plurals name="items_found">
-        <item quantity="other">%d mặt hàng</item>
-    </plurals>
-    <string name="no_items_found">Không tìm thấy mặt hàng nào</string>
-    <string name="loading_items_message">Đang tải các mặt hàng trong kho &#8230;</string>
-    <string name="prompt_email">Thư điện tử</string>
-    <string name="prompt_password">Mật khẩu</string>
-    <string name="action_sign_in">Đặng nhập hoặc đăng ký</string>
-    <string name="action_sign_in_short">Đăng nhập</string>
-    <string name="welcome">Xin chào !</string>
-    <string name="invalid_username">Tên đăng nhập không đúng</string>
-    <string name="invalid_password">Mật khẩu phải có >5 ký tự</string>
-    <string name="login_failed">Đăng nhập không thành công</string>
-    <string name="resync">Đồng bộ lại</string>
 
     <!-- Errors -->
-    <string name="login_error">Không thể đăng nhập</string>
-    <string name="config_file_error">Không thể tải tập tin cấu hình</string>
-    <string name="config_file_program_error">
-        Mã chương trình Kho lưu trữ chưa được cài trong tập tin cấu hình
-    </string>
-    <string name="recent_activities_load_error">Không thể tải các hoạt động gần đây của bạn</string>
     <string name="facilities_load_error">Không thể tải danh sách các cơ sở hiện có</string>
     <string name="destinations_load_error">
         Không thể tải danh sách các điểm đến hiện có
     </string>
-    <string name="distribution_data_element_load_error">
-        Không thể tải phần tử dữ liệu phân bổ
-    </string>
-    <string name="correction_data_element_load_error">
-        Không thể tải phần tử dữ liệu chỉnh sửa
-    </string>
-    <string name="discard_data_element_load_error">
-        Không thể tải phần tử dữ liệu loại bỏ
-    </string>
 
     <!-- Content descriptions for accessibility -->
-    <string name="content_desc_sync_info">Thông tin đồng bộ</string>
-    <string name="content_desc_search">Tìm kiếm</string>
-    <string name="content_desc_clear_text">Xóa văn bản</string>
-    <string name="content_desc_transaction_date">Hiển thị bộ chọn ngày</string>
-    <string name="content_desc_distributed_to">Phân bổ đến</string>
-    <string name="content_desc_last_sync">Đồng bộ lần cuối</string>
-    <string name="content_desc_quantity_info">Thêm thông tin về số lượng</string>
-    <string name="content_desc_remove">Bỏ mặt hàng</string>
-    <string name="content_desc_recent_activity">Mũi tên chỉ hướng</string>
-    <string name="content_desc_recent_activity_status">Trạng thái hoạt động gần đây</string>
-    <string name="content_desc_close_info_guide">Đóng thông tin hướng dẫn</string>
 
     <string name="confirm_transaction_label">Xác nhận</string>
-    <string name="missing_configuration">
-        Một hoặc nhiều trường bị thiếu trong tập tinh cấu hình
-    </string>
-    <string name="select_language">Chọn ngôn ngữ yêu thích</string>
 
-    <string name="restart_later">Khởi động lại sau</string>
-    <string name="language_change_dialog_title">Xác nhận Khởi động lại</string>
-    <string name="scan_canceled">Đã hủy quét!</string>
-    <string name="logout_error_message">
-        Có một lỗi xuất hiện trong khi đăng xuất. Xin vui lòng thử lại sau.
-    </string>
-    <string name="logout_success_message">Đăng xuất thành công</string>
-
-    <string name="invalid_quantity">Không hợp lệ</string>
     <string name="stock_on_hand_exceeded_message">
         Số lượng hàng có sẵn không thể vượt quá
-    </string>
-    <string name="reviewed_item_cannot_be_empty_message">
-        Một kho đang được kiểm tra không thể để trống. Bạn có thể gỡ bỏ các mặt hàng nếu không muốn
     </string>
 
     <string name="permission_granted">Đã được cho phép</string>
@@ -187,20 +75,8 @@
     <string name="non_numeric_speech_input_error">Không chấp nhận đầu vào không phải là số: \"%s\"</string>
     <string name="negative_number_speech_input_error">\n        Không chấp nhận đầu vào là số âm: \"%s\"\n    </string>
 
-    <string name="openid_config_load_error">Không thể tải cấu hình OpenID</string>
-    <string name="unexpected_openid_authentication_error">
-        Một lỗi không mong muốn đã xuất hiện trong khi đang xác thực bằng OpenID
-    </string>
-    <string name="no_network_available">Không có kết nối internet</string>
     <string name="unable_to_sync_data_no_network_available">
         Không thể đồng bộ hóa dữ liệu bởi vì không có kết nối internet
-    </string>
-    <string name="openid_authentication_not_successful">
-        Không thể xác thực bằng tài khoảng ICRC của bạn
-    </string>
-
-    <string name="contact_service_desk_message">
-        Trong trường hợp có vấn đề, \nxin vui lòng liên hệ bàn hướng dẫn ICRC
     </string>
 
     <!--SDK error codes-->
@@ -239,8 +115,6 @@
     <string name="error_ssl">Có vấn đề với chứng nhận máy chủ. Vui lòng liên hệ với quản lý của bạn.</string>
     <string name="done_task">Trang chủ</string>
     <string name="back">Quay lại</string>
-    <string name="no_conflicts_message">Không có xung đột trong trường trình này</string>
-    <string name="action_sync">Gửi đi</string>
     <string name="from_facility">Từ cơ sở</string>
     <string name="to_facility">Đến cơ sở</string>
     <string name="stock">Kho</string>

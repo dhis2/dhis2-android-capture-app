@@ -11,7 +11,6 @@
     <string name="done">تةواو كرا</string>
 
     <string name="filters_title_period">ماوة</string>
-    <string name="filters_title_status">پێگە</string>
     <string name="filters_title_date">بەروار</string>
     <string name="state_error">هەڵە</string>
     <string name="filter_event_status_completed">تەواوبوو</string>
@@ -29,7 +28,6 @@
     <string name="section_feedback">ڕاووبۆچون</string>
     <string name="section_indicators">نیشاندەر</string>
     <string name="complete">تەواوبکە</string>
-    <string name="default_table_header_label">بةها</string>
     <string name="overdue_today">ئەمڕۆ</string>
     <string name="remove">لابردن</string>
     </resources>

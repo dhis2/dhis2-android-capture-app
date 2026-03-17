@@ -9,7 +9,6 @@
     <string name="cancel">取消</string>
     <string name="yes">是</string>
     <string name="no">否</string>
-    <string name="clear_all">清除选择</string>
     <string name="navigation_list_view">列表显示</string>
     <string name="navigation_table_view">表格检视</string>
     <string name="navigation_map_view">地图检视</string>
@@ -21,7 +20,6 @@
     <string name="navigation_notes">笔记</string>
     <string name="navigation_data_entry">数据输入</string>
     <string name="navigation_tei_data">详情</string>
-    <string name="event_overview">详情</string>
     <string name="select_option">选择选项</string>
     <string name="search">搜索</string>
     <string name="events">事件</string>
@@ -35,8 +33,6 @@
     <string name="filters_disabled">无过滤器</string>
     <string name="filters_title_period">周期</string>
     <string name="filters_title_org_unit">机构</string>
-    <string name="filters_title_sorting">排序</string>
-    <string name="filters_title_status">状态</string>
     <string name="filters_title_state">同步</string>
     <string name="filters_title_assigned">指派给我</string>
     <string name="filters_title_date">日期</string>
@@ -45,7 +41,6 @@
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">跟进%s</string>
     <string name="select_period">请选择周期类型</string>
-    <string name="daily_period">每日</string>
     <string name="weekly">每周</string>
     <string name="bi_weekly">双周</string>
     <string name="weekly_start_wednesday">开始于周三的周报</string>
@@ -58,7 +53,6 @@
     <string name="quarterly_nov">每季度 11 月</string>
     <string name="six_monthly">六个月</string>
     <string name="six_monthly_april">开始于四月的每六个月</string>
-    <string name="six_monthly_july">从 7 月开始，每 6 个月一次</string>
     <string name="six_monthly_nov">开始于11月的半年</string>
     <string name="yearly">每年</string>
     <string name="financial_year_april">开始于四月的财政年</string>
@@ -66,13 +60,10 @@
     <string name="financial_year_october">开始于十月的财政年</string>
     <string name="financial_year_november">开始于11月的财政年</string>
 
-
-
     <!-- State -->
     <string name="state_synced">同步</string>
     <string name="state_to_post">发送</string>
     <string name="state_to_update">更新</string>
-    <string name="state_to_delete">删除</string>
     <string name="state_error">错误</string>
     <string name="state_warning">警告</string>
     <string name="state_uploading">上传</string>
@@ -165,7 +156,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">密码丢失。请输入密码。</string>
     <string name="login_error_null_username">缺少用户名。请输入用户名。</string>
-    <string name="login_error_dhis_version">服务器运行版本不是2.29，请更新服务器版本或使用测试环境继续</string>
     <string name="login_error_dhis_version_v2">此服务器正在运行与 %s 不同的 DHIS2 版本。更新您的服务器版本或联系您的管理员。</string>
     <string name="login_error_unsuccessful_response">出了些问题。请检查服务器 URL、用户名和密码是否正确，然后重试。</string>
     <string name="login_error_error_response">对不起！服务器端出现问题。</string>
@@ -225,9 +215,7 @@
     <string name="error_invalid_characters">查询中有无效字符。请让管理员验证服务器配置（relaxedQueryChars，...）。</string>
     <string name="error_server_unavailable">服务器当前不可用。稍后再试。</string>
     <string name="error_no_internet_connection">您已离线。连接到互联网并重试。</string>
-    <string name="unsupported_field_description">该字段不可用于移动采集</string>
     <string name="add_image">添加图片</string>
-    <string name="add_signature">添加签名</string>
     <string name="add_file">添加文件</string>
     <string name="action_ok">Ok!</string>
     <string name="enable_location_message">您的设备位置已断开。请启用它以捕获坐标</string>
@@ -235,9 +223,7 @@
     <string name="not_now">现在不要</string>
     <string name="review">审查</string>
     <string name="complete">完成</string>
-    <string name="default_table_header_label">值</string>
     <string name="discard_changes">忽略修改</string>
-    <string name="default_empty_dataset_section_label">数据</string>
     <string name="title_network_connection_unavailable">网络连接不可用</string>
     <string name="msg_network_connection_maps">需要互联网连接才能使用地图。</string>
 
@@ -267,7 +253,6 @@
 
     <string name="file_downloaded">文件下载成功</string>
 
-
     <!--Enrollment labels-->
     <plurals name="enrollment">
         <item quantity="other">注册人数</item>
@@ -276,7 +261,6 @@
     <string name="enrollment_data_section_label_V2">%s 数据</string>
     <string name="enrollment_coordinates_V2">%s 坐标</string>
     <string name="enrollment_date_V2">%s 日期</string>
-    <string name="enrollment_status">%s 地位</string>
     <string name="break_glass_dialog_description_V2">在这个受保护的程序中，您必须提供检查%s 的理由。所有活动都将记录在案。</string>
     <string name="break_glass_reason_V2">检查原因%s</string>
     <string name="edition_enrollment_is_no_open_V2">该数据不可编辑，因为%s 已完成或取消</string>
@@ -284,13 +268,11 @@
     <string name="enrollment_cancelled_V2">%s 已取消</string>
     <string name="new_enrollment">新%s</string>
     <string name="enrolling_ou">加入：</string>
-    <string name="program_selector_V2">计划%s</string>
     <string name="more_enrollments">更多注册人数</string>
     <string name="remove_from">从</string>
     <string name="refresh_this_record">刷新此记录</string>
     <string name="view_timeline">查看时间表</string>
     <string name="group_by_stage">按阶段分组</string>
-
 
     <!-- Event -->
     <plurals name="event_label">
@@ -309,12 +291,9 @@
     <string name="event_label_date_in_future_message">%s 的日期不能是未来。请更改。</string>
     <string name="failed_insert_event_label">插入新%s</string>
     <string name="week_period_span_default_label">星期%d %s到%s</string>
-    <string name="group_event_label_by_stage">按阶段划分的组别%s </string>
-    <string name="show_event_label_timeline">显示%s 时间轴</string>
     <string name="empty_tei_event_label_add">没有注册%s ，点击 \"+\"可添加新的 。</string>
     <string name="empty_tei_event_label_no_add">%s 。</string>
     <string name="enrollment_date_edition_warning_event_label">计划中的%s 不会改期</string>
-    <string name="enrollment_reopen">重新打开</string>
 
     <string name="sync_retry">重试同步</string>
     <string name="syncing">同步</string>
@@ -330,4 +309,6 @@
     <string name="period_financial_year_title">财政年度</string>
     <string name="no_periods">无可用时段</string>
     <string name="action_clear_all">全清除</string>
+
+    <string name="enrollment_status">%s 地位</string>
 </resources>

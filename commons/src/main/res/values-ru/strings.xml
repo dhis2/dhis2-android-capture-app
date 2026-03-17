@@ -8,7 +8,6 @@
     <string name="cancel">Отмена</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-    <string name="clear_all">очистить выбор</string>
     <string name="navigation_list_view">В виде списка</string>
     <string name="navigation_table_view">В виде таблицы</string>
     <string name="navigation_map_view">В виде карты</string>
@@ -20,7 +19,6 @@
     <string name="navigation_notes">Заметки</string>
     <string name="navigation_data_entry">Ввод данных</string>
     <string name="navigation_tei_data">Детали</string>
-    <string name="event_overview">Детали</string>
     <string name="select_option">Выберите опцию</string>
     <string name="search">Поиск</string>
     <string name="events">события/й</string>
@@ -34,8 +32,6 @@
     <string name="filters_disabled">Фильтры не применены</string>
     <string name="filters_title_period">Период</string>
     <string name="filters_title_org_unit">Орг. единица</string>
-    <string name="filters_title_sorting">Сортировка</string>
-    <string name="filters_title_status">Статус</string>
     <string name="filters_title_state">Синхронизация</string>
     <string name="filters_title_assigned">Назначен мне</string>
     <string name="filters_title_date">Дата</string>
@@ -44,7 +40,6 @@
     <string name="filters_title_enrollment_status">Cтатус регистрации</string>
     <string name="filter_follow_up_label">Отмеченные для последующего наблюдения %s</string>
     <string name="select_period">Выбрать тип периода</string>
-    <string name="daily_period">Ежедневно</string>
     <string name="weekly">Еженедельно</string>
     <string name="bi_weekly">Каждые две недели</string>
     <string name="weekly_start_wednesday">Еженедельно со среды</string>
@@ -56,7 +51,6 @@
     <string name="quarterly">Ежеквартально</string>
     <string name="six_monthly">Раз в полугодие</string>
     <string name="six_monthly_april">По шесть месяцев начиная с апреля</string>
-    <string name="six_monthly_july">Раз в полгода, начиная с июля</string>
     <string name="six_monthly_nov">Раз в полгода, начиная с ноября</string>
     <string name="yearly">Ежегодно</string>
     <string name="financial_year_april">Финансовый год начиная с апреля</string>
@@ -64,13 +58,10 @@
     <string name="financial_year_october">Финансовый год начиная с октября</string>
     <string name="financial_year_november">Финансовый год начиная с ноября</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Синхронизация</string>
     <string name="state_to_post">Отправить</string>
     <string name="state_to_update">Обновить</string>
-    <string name="state_to_delete">Удалить</string>
     <string name="state_error">Ошибка</string>
     <string name="state_warning">Предупреждение</string>
     <string name="state_uploading">Загрузка</string>
@@ -162,7 +153,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Пароль отсутствует. Пожалуйста, введите пароль.</string>
     <string name="login_error_null_username">Имя пользователя отсутствует. Пожалуйста, введите имя пользователя.</string>
-    <string name="login_error_dhis_version">На этом сервере установлена версия dhis, отличная от 2.29. Обновите версию своего сервера или используйте тестовую среду для продолжения работы.</string>
     <string name="login_error_dhis_version_v2">На этом сервере установлена версия DHIS2, отличная от %s. Обновите версию сервера или обратитесь к администратору.</string>
     <string name="login_error_unsuccessful_response">Что-то пошло не так. Пожалуйста, проверьте правильность URL-адреса сервера, имени пользователя и пароля и повторите попытку.</string>
     <string name="login_error_error_response">Извините! Что-то не получилось на стороне сервера.</string>
@@ -209,9 +199,7 @@
     <string name="error_org_unit_scope">Онлайн-поиск доступен только для подразделений вашей организации по поиску пользователей.</string>
     <string name="error_server_unavailable">Сервер в настоящее время недоступен. Повторите попытку позже.</string>
     <string name="error_no_internet_connection">Вы находитесь оффлайн. Подключитесь к Интернету и повторите попытку.</string>
-    <string name="unsupported_field_description">Это поле недоступно для мобильного заполнения</string>
     <string name="add_image">Добавить изображение</string>
-    <string name="add_signature">Добавить подпись</string>
     <string name="add_file">Добавить файл</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Местоположение вашего устройства отключено. Пожалуйста, включите его для получения координат</string>
@@ -219,9 +207,7 @@
     <string name="not_now">Не сейчас</string>
     <string name="review">Просмотреть</string>
     <string name="complete">Завершенный</string>
-    <string name="default_table_header_label">Значение</string>
     <string name="discard_changes">Сбросить изменения</string>
-    <string name="default_empty_dataset_section_label">Данные</string>
     <string name="title_network_connection_unavailable">Сетевое подключение недоступно</string>
     <string name="msg_network_connection_maps">Для использования карт необходимо подключение к Интернету.</string>
 
@@ -269,7 +255,6 @@
 
     <string name="file_downloaded">Файл успешно загружен</string>
 
-
     <!--Enrollment labels-->
     <plurals name="enrollment">
         <item quantity="one">зачисление</item>
@@ -279,7 +264,6 @@
     </plurals>
     <string name="enrollment_data_section_label_V2">%s данных</string>
     <string name="enrollment_date_V2">%s дата</string>
-    <string name="enrollment_status">%s статус</string>
     <string name="break_glass_dialog_description_V2">Вы должны указать причину для проверки %s в этой защищенной программе. Все действия будут регистрироваться.</string>
     <string name="break_glass_reason_V2">Причина для проверки %s</string>
     <string name="edition_enrollment_is_no_open_V2">Эти данные нельзя редактировать, поскольку %s завершен или отменен.</string>
@@ -287,13 +271,11 @@
     <string name="enrollment_cancelled_V2">%s отменено</string>
     <string name="new_enrollment">Новый %s</string>
     <string name="enrolling_ou">Зарегистрирован в:</string>
-    <string name="program_selector_V2">Программа %s</string>
     <string name="more_enrollments">Больше регистраций</string>
     <string name="remove_from">Удалить из</string>
     <string name="refresh_this_record">Обновить эту запись</string>
     <string name="view_timeline">Просмотр хронологии</string>
     <string name="group_by_stage">Группировать по этапам</string>
-
 
     <!-- Event -->
     <plurals name="event_label">
@@ -315,12 +297,9 @@
     <string name="event_label_date_in_future_message">У этого %s не может быть даты в будущем. Пожалуйста, измените ее.</string>
     <string name="failed_insert_event_label">Не удалось вставить новый %s</string>
     <string name="week_period_span_default_label">Неделя %d %s до %s</string>
-    <string name="group_event_label_by_stage">Группировать %s по этапам</string>
-    <string name="show_event_label_timeline">Показать хронологию %s </string>
     <string name="empty_tei_event_label_add">Нет зарегистрированных %s, нажмите \"+\", чтобы добавить новый.</string>
     <string name="empty_tei_event_label_no_add">Нет зарегистрированных %s.</string>
     <string name="enrollment_date_edition_warning_event_label">Есть запланированные %s, которые не будут перенесены.</string>
-    <string name="enrollment_reopen">снова открыть</string>
 
     <string name="sync_retry">Повторить синхронизацию</string>
     <string name="syncing">Синхронизация...</string>
@@ -333,4 +312,6 @@
     <string name="period_yearly_title">Год</string>
     <string name="no_periods">Нет доступных периодов </string>
     <string name="action_clear_all">Очистить все</string>
+
+    <string name="enrollment_status">%s статус</string>
 </resources>

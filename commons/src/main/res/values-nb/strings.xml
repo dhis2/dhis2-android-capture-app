@@ -8,7 +8,6 @@
     <string name="cancel">Avbryt</string>
     <string name="yes">Ja</string>
     <string name="no">Nei</string>
-    <string name="clear_all">tøm valg</string>
     <string name="navigation_list_view">Listevisning</string>
     <string name="navigation_table_view">Tabellvisning</string>
     <string name="navigation_map_view">Kartvisning</string>
@@ -19,7 +18,6 @@
     <string name="navigation_notes">Notater</string>
     <string name="navigation_data_entry">Dataregistrering</string>
     <string name="navigation_tei_data">Detaljer</string>
-    <string name="event_overview">Detaljer</string>
     <string name="select_option">Velg et alternativ</string>
     <string name="search">Søk</string>
     <string name="events">hendelser</string>
@@ -33,13 +31,10 @@
     <string name="filters_disabled">Ingen filter brukt</string>
     <string name="filters_title_period">Periode</string>
     <string name="filters_title_org_unit">Org. Enhet</string>
-    <string name="filters_title_sorting">Sorterer</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Synk</string>
     <string name="filters_title_assigned">Tildelt til meg</string>
     <string name="filters_title_date">Dato</string>
     <string name="select_period">Velg periodetype</string>
-    <string name="daily_period">Daglig</string>
     <string name="weekly">Ukentlig</string>
     <string name="bi_weekly">Toukentlig</string>
     <string name="weekly_start_wednesday">Ukentlig, startes onsdag</string>
@@ -58,13 +53,10 @@
     <string name="financial_year_october">Regnskapsår med start oktober</string>
     <string name="financial_year_november">Regnskapsår med start november</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Synk</string>
     <string name="state_to_post">Å sende</string>
     <string name="state_to_update">Å oppdatere</string>
-    <string name="state_to_delete">Å slette</string>
     <string name="state_error">Feil</string>
     <string name="state_warning">Advarsel</string>
     <string name="state_relationship">Relasjon</string>
@@ -132,7 +124,6 @@
     <string name="section_feedback">Tilbakemelding</string>
     <string name="section_indicators">Indikatorer</string>
     <string name="section_charts">Diagrammer</string>
-    <string name="login_error_dhis_version">Denne serveren kjører en dhis versjon som er forskjellig fra 2.29. Oppdater din serverversjon eller bruk testmiljøet for å fortsette.</string>
     <string name="online_search_parsing_error">Feil under analyse av resultater</string>
     <string name="add_image">Legg til bilde</string>
     <string name="add_file">Legg til fil</string>
@@ -140,11 +131,8 @@
     <string name="enable_location_message">Enhetsplasseringen din er koblet fra. Aktiver den for å registrere koordinater</string>
     <string name="keep_editing">Fortsett å rediger</string>
     <string name="complete">Fullfør</string>
-    <string name="default_table_header_label">Verdi</string>
     <string name="discard_changes">Forkast endringer</string>
-    <string name="default_empty_dataset_section_label">Data</string>
     <string name="overdue_today">I dag</string>
-    <string name="enrollment_reopen">Åpne igjen</string>
 
     <string name="syncing">Synkroniserer...</string>
     <string name="remove">Fjern</string>

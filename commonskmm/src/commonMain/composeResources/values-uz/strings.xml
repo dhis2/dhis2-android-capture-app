@@ -18,15 +18,9 @@
     <string name="choose_ou">Ташкилий бўлимни танланг</string>
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="required">Мажбурий</string>
-    <string name="date">Сана</string>
-    <string name="hint_year">Йиллар</string>
-    <string name="hint_month">Ойлар</string>
-    <string name="hint_day">Кунлар</string>
     <string name="polygon">Полигон</string>
     <string name="latitude">Кенглик</string>
     <string name="longitude">Узунлик</string>
-    <string name="coordinates_error">Координата қийматлари яроқсиз</string>
-    <string name="polygon_captured">Полигон белгиланди</string>
     <string name="enter_value">Қийматни танланг</string>
     <string name="enter_url">URL ни танланг</string>
     <string name="enter_email">е-почта манзилини киритинг</string>
@@ -46,12 +40,10 @@
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
     <string name="saved">Сақланди!</string>
     <string name="not_now">Hozir emas</string>
-    <string name="save_anyway">Нима бўлганда ҳам сақлаш</string>
     <string name="keep_editing">Таҳрирни давом этинг</string>
     <string name="share">Улашиш</string>
     <string name="action_close">Ёпмоқ</string>
     <string name="copied_text">Нусха олинди</string>
-    <string name="empty_description">Ушбу майдон учун маълумот йўқ</string>
     <string name="take_photo">Суратга олиш</string>
     <string name="warning_error_on_complete_title">Буни текширинг!</string>
     <string name="enrollment_single_section_label">Атрибатлар - %s</string>
@@ -59,7 +51,6 @@
     <string name="no_reserved_values">Сақланган бошқа қийматлар йўқ. Тизим администраторига мурожаат қилинг.</string>
     <string name="incident_date">Ҳодиса санаси</string>
     <string name="download">Юклаш</string>
-    <string name="qr_code">QR код</string>
     <string name="add_location">Локация қўшинг</string>
     <string name="org_unit">Ташкилий бўлим</string>
     <string name="coordinates">Координаталар</string>
@@ -81,7 +72,6 @@
     <string name="no_results_found">Натижа йўқ</string>
     <string name="action_done">Бўлди</string>
     <string name="input_not_supported">Қўллаб қувватланмайди</string>
-    <string name="login_error_dhis_version">Ушбу сервер 2.29 дан фарқли версияни ишлатмоқда. Сервер версиясини янгиланг ёки давом этиш учун синов муддатидан фойдаланинг.</string>
     <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
     <!--*******************
        END OF D2 Error Messages

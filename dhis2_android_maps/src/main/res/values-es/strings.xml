@@ -13,7 +13,6 @@
     <string name="dialog_layer_base_map_azure_aerial">Azure Vista Aérea</string>
     <string name="dialog_layer_base_map_azure_aerial_label">Azure Vista Aérea con Etiquetas</string>
     <string name="action_apply">Aplicar</string>
-    <string name="dialog_layer_satellite">Mostrar vista satélite</string>
     <string name="dialog_layer_event">Mostrar eventos</string>
     <string name="dialog_layer_tei_coordinates">Mostrar coordenadas de la entidad</string>
     <string name="dialog_layer_heatmap">Mostrar mapa de calor</string>

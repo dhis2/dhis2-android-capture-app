@@ -10,16 +10,13 @@
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Entrada de dados</string>
     <string name="navigation_tei_data">Detalhes</string>
-    <string name="event_overview">Detalhes</string>
     <string name="search">Pesquisar</string>
     <string name="data_sets">Agregação de Dados</string>
     <string name="done">Concluído</string>
 
     <string name="filters_title_period">Período</string>
-    <string name="filters_title_status">Estado</string>
     <string name="filters_title_date">Data</string>
     <string name="select_period">Seleccione o tipo de período</string>
-    <string name="daily_period">Diário</string>
     <string name="weekly">Semanal</string>
     <string name="monthly">Mensal</string>
     <string name="bi_monthly">Bimensal</string>
@@ -66,8 +63,6 @@
     <string name="section_indicators">Indicadores</string>
     <string name="action_ok">Esta bem</string>
     <string name="complete">Completo</string>
-    <string name="default_table_header_label">Valor</string>
-    <string name="default_empty_dataset_section_label">Dados</string>
     <string name="overdue_today">Hoje</string>
     <string name="remove">Remover</string>
     <string name="period_daily_title">Diário</string>

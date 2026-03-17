@@ -16,8 +16,6 @@
     <string name="input_date_out_of_range">Fuera de rango</string>
     <string name="format_error">Formato incorrecto</string>
     <string name="input_not_supported">No soportado</string>
-    <string name="completion_dialog_title">Todo se ve bien</string>
-    <string name="completion_dialog_description">¿También deseas completar el conjunto de datos?</string>
     <string name="validation_success_title">Todo se ve bien</string>
     <string name="mark_dataset_complete">¿Quiere completar también el set de datos?</string>
     <string name="not_now">Ahora no</string>
