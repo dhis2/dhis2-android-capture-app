@@ -6,7 +6,11 @@ plugins {
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    `maven-publish`
 }
+
+group = "org.dhis2.mobile"
+version = "0.1.0-SNAPSHOT"
 
 kotlin {
     androidLibrary {
