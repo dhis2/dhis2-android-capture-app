@@ -3,8 +3,10 @@ package org.dhis2.usescases.main
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
@@ -33,6 +35,7 @@ import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
 import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.domain.model.LockAction
 import org.dhis2.usescases.main.ui.model.HomeEvent
+import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -46,10 +49,15 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.io.File
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModelTest {
 
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
+
+    @get:Rule
+    val coroutineScopeRule = MainCoroutineScopeRule()
+
     private val preferences: PreferenceProvider = mock()
     private val filterManager: FilterManager = mock()
     private val matomoAnalyticsController: MatomoAnalyticsController = mock()
@@ -130,11 +138,10 @@ class MainViewModelTest {
     @Test
     fun `Should log out`() =
         runTest {
-
             whenever(logOutUser()) doReturn Result.success(1)
-
             viewModel.homeEvents.test {
                 viewModel.logOut()
+                advanceUntilIdle()
                 verify(matomoAnalyticsController).trackEvent(HOME, CLOSE_SESSION, CLICK)
                 assertTrue(awaitItem() == HomeEvent.GoToLogin(1, false))
             }
@@ -164,6 +171,14 @@ class MainViewModelTest {
 
     @Test
     fun `should return to home section when user taps back in a different section`() = runTest {
+        whenever(mainNavigator.isHome()) doReturn false
+        viewModel.onBackPressed()
+        advanceUntilIdle()
+        verify(mainNavigator, times(1)).openHome()
+    }
+
+    @Test
+    fun `should close app when user taps back in a home section`() = runTest {
         whenever(mainNavigator.isHome()) doReturn true
         viewModel.homeEvents.test {
             viewModel.onBackPressed()
@@ -172,15 +187,9 @@ class MainViewModelTest {
     }
 
     @Test
-    fun `should close app when user taps back in a home section`() = runTest {
-        whenever(mainNavigator.isHome()) doReturn false
-        viewModel.onBackPressed()
-        verify(mainNavigator, times(1)).openHome()
-    }
-
-    @Test
-    fun `Should track event when clicking on SyncManager`() {
+    fun `Should track event when clicking on SyncManager`() = runTest {
         viewModel.onClickSyncManager()
+        advanceUntilIdle()
         verify(matomoAnalyticsController).trackEvent(HOME, SETTINGS, CLICK)
     }
 
