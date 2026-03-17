@@ -34,7 +34,6 @@
     <string name="sync_incomplete_error_text">同步完成，但我们没有收到所有记录的服务器确认。这些记录在应用程序中仍被标记为“离线”状态。我们建议重试同步。</string>
     <string name="metadata_sync_error">失败：同步过程中出了问题。如果有连接，请重试。如果错误仍然存在，请联系您的管理员。</string>
     <string name="data_sync_warning_v2">您的数据存在冲突。请同步您的配置，查看数据并尝试再次同步。</string>
-    <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为@。</string>
     <string name="data_sync_error_v2">您的部分数据未能同步。</string>
     <string name="server_sync_error">发生错误，服务器未响应。与您的管理员联系。</string>
 
@@ -305,7 +304,6 @@
     <string name="search_min_num_attr">你至少需要输入 %d个属性便于搜索</string>
     <string name="search_attr">你至少需要输入 一个属性便于搜索</string>
     <string name="search_max_tei_reached">有多余%d个结果，请再细化搜索条件</string>
-    <string name="search_criteria_not_met">你的搜索没有返回任何结果，修改你的条件或者加入一个新的 %s</string>
     <string name="search_init">输入你的搜索条件</string>
 
     <!-- QR -->
@@ -720,7 +718,6 @@
     <string name="field_is_mandatory">此字段是必填字段</string>
     <string name="security_debugger_message">出于安全原因，此版本的应用程序不允许与adb一起使用。请使用培训版本。</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">糟糕！某些事情并没有按计划进行。\ n 让我们返回想办法。</string>
     <string name="customactivityoncrash_error_activity_restart_app">后退</string>
     <string name="customactivityoncrash_error_activity_close_app">关闭应用</string>
     <string name="customactivityoncrash_error_activity_error_details">更多细节</string>

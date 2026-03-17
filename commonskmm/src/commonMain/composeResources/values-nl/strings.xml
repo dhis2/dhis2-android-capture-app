@@ -109,7 +109,7 @@
     <string name="no_results_found">Geen resultaten gevonden</string>
     <string name="action_done">Klaar</string>
     <string name="input_not_supported">Niet ondersteund</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">Wachtwoord ontbreekt. Voer wachtwoord in alstublieft.</string>
@@ -135,7 +135,6 @@
     <string name="error_create_existing_error">Creatie afgebroken. Het object bestaat al.</string>
     <string name="error_delete_non_existing_object">Verwijdering afgebroken. Het voorwerp bestaat niet.</string>
     <string name="error_instance_keystore">Kan sleutelarchief niet instantiëren.</string>
-    <string name="error_reserve_value_on_server">We konden geen waarden voor deze plaat reserveren. Neem contact op met uw beheerder.</string>
     <string name="error_export_login">Log in om de database te exporteren.</string>
     <string name="error_export_encrypted">Het exporteren van een versleutelde database wordt niet ondersteund.</string>
     <string name="error_import_exist">U importeert een reeds bestaande database.</string>
@@ -162,7 +161,6 @@
     <string name="error_socket_timeout">De server nam te veel tijd om te reageren. We hebben het verzoek geannuleerd.</string>
     <string name="error_relationship_updated">De relatie kan niet worden bijgewerkt.</string>
     <string name="error_too_many_periods">Er zijn te veel periodes.</string>
-    <string name="error_url_not_found">We konden de URL niet vinden. Controleer het alstublieft.</string>
     <string name="error_account_disabled">Uw gebruikersaccount is uitgeschakeld. Neem contact op met uw beheerder als dit een fout is.</string>
     <string name="error_account_locked">Uw gebruikersaccount is vergrendeld. Neem contact op met uw beheerder als dit een fout is.</string>
     <string name="error_set_value">De waarde kon niet worden ingesteld.</string>
@@ -172,8 +170,7 @@
     <string name="error_min_attributes">Er zijn niet genoeg attributen om de zoekopdracht uit te voeren. Verfijn uw zoekopdracht met meer attributen.</string>
     <string name="error_org_unit_scope">Online zoeken is alleen beschikbaar voor uw organisatie-eenheden voor het zoeken van gebruikers.</string>
     <string name="error_invalid_characters">Er zijn ongeldige tekens in de vraag. Vraag de beheerder om de serverconfiguratie te verifiëren (relaxedQueryChars,...).</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
+    <string name="cancel">Annuleren</string>
+    <string name="ok">OK</string>
 
 </resources>

@@ -19,5 +19,9 @@
     <string name="search">搜索</string>
     <string name="optional">可选项描述</string>
     <string name="custom_intent_launch">启动</string>
-
-</resources>
+    <string name="equal_search_operator">仅限完全匹配</string>
+    <string name="starts_with_search_operator">必须与值的起始部分相匹配</string>
+    <string name="end_with_search_operator">必须与数值的末尾一致</string>
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    </resources>

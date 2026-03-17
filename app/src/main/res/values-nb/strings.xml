@@ -32,7 +32,6 @@
 
     <string name="sync_error_title">Synkroniseringsfeil</string>
     <string name="sync_error_text">En feil har oppstått under synkronisering. Vennligst prøv på nytt</string>
-    <string name="data_sync_warning_program">ADVARSEL: Mesteparten av dine data er synkroniserte men noen felter presenterte konflinkter. Synkroniser din konfigurasjon og prøv igjen. Hvis advarselen vedvarer, sjekk deres synkroniseringsstatus: programmer, TEI\'s og hendelser med konflikter er merket som @.</string>
     <string name="search_result_text">%sresultater funnet</string>
     <string name="add_new">Legg til ny</string>
     <string name="add">Legg til</string>
@@ -275,7 +274,6 @@
     <string name="search_min_num_attr">Du må legge inn minst %dav attributtene for å foreta et søk</string>
     <string name="search_attr">Du må legge inn minst en av attributtene for å foreta et søk</string>
     <string name="search_max_tei_reached">Det er mer enn%dresultater. Vennligst legg inn flere søkekriterier</string>
-    <string name="search_criteria_not_met">Ditt søkekriterie returnerte ingen resultater.\nRevurder dine kriterier eller registrer en ny%s</string>
     <string name="search_init">Skriv inn søkekriterier</string>
 
     <!-- QR -->
@@ -676,7 +674,6 @@
     <string name="field_is_mandatory">Dette feltet er obligatorisk</string>
     <string name="security_debugger_message">Av sikkerhetsgrunner, så er denne versjonen av appen ikke tillatt til å bli brukt med adb. Vennligst bruk treningsversjonen.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Beklager! Noe gikk ikke som planlagt. La oss få deg tilbake i aksjon.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Gå tilbake</string>
     <string name="customactivityoncrash_error_activity_close_app">Lukk app</string>
     <string name="customactivityoncrash_error_activity_error_details">Flere detaljer</string>

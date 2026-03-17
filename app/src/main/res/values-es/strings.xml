@@ -34,7 +34,6 @@
     <string name="sync_error_title">Error en sincronizacion</string>
     <string name="sync_error_text">La sincronizacion ha fallado. Intentelo de nuevo.</string>
     <string name="sync_incomplete_error_text">La sincronización ha terminado pero no se ha recibido confirmación del servidor en algunos rescursos. Éstos estarán marcados como \"no sincronizados\" en la App. Recomendamos reintentar la sincronización.</string>
-    <string name="data_sync_warning_program">WARNING: la mayoría de sus datos se han sincronizado, pero algunos generaron conflictos. Sincronice su configuración y pruebe otra vez. Si el error persiste, revise el estado de sincronización: los programas, TEIs y events con conflictos tienen el icono @</string>
     <string name="server_sync_error">Hubo un error y el serivdor no respondío. Contacte su administrador.</string>
 
     <string name="search_result_text">%s resultados</string>
@@ -305,7 +304,6 @@
     <string name="search_min_num_attr">Es necesario introducir al menos %d de los atributos para iniciar una búsqueda</string>
     <string name="search_attr">Hay que rellenar al menos un atributo para buscar</string>
     <string name="search_max_tei_reached">Hay más de %d resultados. Por favor, especifique más su búsqueda</string>
-    <string name="search_criteria_not_met">Sus criterios de búsqueda no devolvieron ningún resultado. \nModifíquelos o cree una nueva %s</string>
     <string name="search_init">Introduzca algún criterio de búsqueda</string>
 
     <!-- QR -->
@@ -720,7 +718,6 @@
     <string name="field_is_mandatory">El campo es obligatorio</string>
     <string name="security_debugger_message">Por razones de seguridad, esta versión de la app no permite el uso de adb. Por favor use la versión de formación.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">¡Vaya! Algo no ha ido como estaba previsto.\nDéjenos poner todo en marcha de nuevo.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Ir atrás</string>
     <string name="customactivityoncrash_error_activity_close_app">Cerrar app</string>
     <string name="customactivityoncrash_error_activity_error_details">Más detalles</string>

@@ -137,7 +137,7 @@
     <string name="search_to_find_more">Busca para ver más</string>
     <string name="action_done">Hecho</string>
     <string name="input_not_supported">No soportado</string>
-    <!--*******************->
+    <!--*******************
         D2 Error Messages
     **********************-->
     <string name="login_error_null_pass">La contraseña está vacía. Ingrese la contraseña.</string>
@@ -163,7 +163,6 @@
     <string name="error_create_existing_error">No se puede crear un objeto que ya existe.</string>
     <string name="error_delete_non_existing_object">No se puede eliminar un objeto que no existe.</string>
     <string name="error_instance_keystore">No se puede inicializar el almacén de llaves.</string>
-    <string name="error_reserve_value_on_server">No se pudo reservar los valores. Por favor contacte a su administrador</string>
     <string name="error_export_login">Inicie sesión para exportar la base de datos.</string>
     <string name="error_export_encrypted">Exportar una base de datos encriptada no está soportado.</string>
     <string name="error_import_exist">Está intentando importar una base de datos que ya existe.</string>
@@ -190,7 +189,6 @@
     <string name="error_socket_timeout">El servidor ha tardado mucho en responder. Se ha cancelado la petición.</string>
     <string name="error_relationship_updated">La relación no puede actualizarse.</string>
     <string name="error_too_many_periods">Hay demasiados periodos.</string>
-    <string name="error_url_not_found">No pudimos encontrar la URL. Por favor revísela.</string>
     <string name="error_account_disabled">Su cuenta de usuario ha sido desactivada. Si esto es un error, contacte con su administrador.</string>
     <string name="error_account_locked">Su cuenta de usuario ha sido bloqueada. Si es un error, contacte con su administrador.</string>
     <string name="error_set_value">No se ha podido cambiar el valor.</string>
@@ -204,8 +202,9 @@
     <string name="error_no_internet_connection">Estas desconectado. Conéctese a Internet e inténtelo nuevamente.</string>
     <string name="database_import_failed">Importación de la base de datos fallida</string>
     <string name="invalid_file">Archivo no válido</string>
-    <!--*******************->
-       END OF D2 Error Messages
-    **********************-->
+    <string name="age">EDAD</string>
+    <string name="date_of_birth">FECHA DE NACIMIENTO</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">Aceptar</string>
 
 </resources>

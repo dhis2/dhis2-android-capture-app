@@ -31,7 +31,6 @@
 
     <string name="sync_error_title">Sync error</string>
     <string name="sync_error_text">Terjadi kesalahan saat sinkronisasi. Silakan coba kembali.</string>
-    <string name="data_sync_warning_program">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Jika status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai @.</string>
     <string name="server_sync_error">Terjadi kesalahan dan server tidak merespon. Hubungi administrator anda.</string>
 
     <string name="search_result_text">%s hasil ditemukan</string>
@@ -785,7 +784,6 @@
     <string name="field_is_mandatory">Bidang ini wajib</string>
     <string name="security_debugger_message">Untuk alasan keamanan, versi aplikasi ini tidak diizinkan untuk digunakan dengan adb. Silakan gunakan versi pelatihan.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Ups! Sesuatu tidak berjalan sesuai rencana.\nIzinkan kami mengembalikan Anda ke tindakan.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Kembali</string>
     <string name="customactivityoncrash_error_activity_close_app">Tutup aplikasi</string>
     <string name="customactivityoncrash_error_activity_error_details">Keterangan lebih lanjut</string>

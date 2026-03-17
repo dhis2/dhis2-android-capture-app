@@ -31,7 +31,6 @@
 
     <string name="sync_error_title">Синхронлашда хатолик</string>
     <string name="sync_error_text">Синхронлаш пайтида хатолик юз берди. Илтимос, қайта уриниб кўринг</string>
-    <string name="data_sync_warning_program">ОГОҲЛАНТИРИШ: Маълумотларнинг аксарият қисми синхронлаштирилди. Лекин, баъзи зиддиятлар келиб чиқди. Конфигурацияни синхронланг ва қайтадан уриниб кўринг. Агар огоҳлантириш давом этса, уларнинг синхронлаш ҳолатини текширинг: @ сифатида белгиланган дастурлар, TEIни ва ҳодиса/тадбирларни.</string>
     <string name="server_sync_error">Бу ерда хатолик юз берди ва сервер жавоб бермади. Ўз администраторингиз билан алоқа боғланг.</string>
 
     <string name="search_result_text">1 %s натижалар топилди</string>
@@ -275,7 +274,6 @@
     <string name="search_min_num_attr">Қидирув учун камида %d атрибутни киритиш керак</string>
     <string name="search_attr">Қидирув учун камида 1 та атрибутни киритиш керак</string>
     <string name="search_max_tei_reached">%d дан ортиқ натижалар мавжуд. Илтимос, қўшимча қидирув мезонларини киритинг</string>
-    <string name="search_criteria_not_met">Сиз танланган қидирув мезонлари ҳеч қандай натижа бермади. \n. Критерияларни қайта кўриб чиқинг ёки янги %s ёзинг</string>
     <string name="search_init">Қидирув мезонларини киритинг</string>
 
     <!-- QR -->
@@ -678,7 +676,6 @@
     <string name="field_is_mandatory">Майдон тўлдирилиши мажбурий</string>
     <string name="security_debugger_message">Хавфсизлик сабабли ушбу версиядан adb форматидан фойдаланишга рухсат берилмаган.Илитмос, машқ версиясидан фойдаланинг.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Афсус! Режалаштирилганидек амалга ошмади. \N Ҳозир сизни ҳаракатга қайтарамиз</string>
     <string name="customactivityoncrash_error_activity_restart_app">Орқага қайтинг</string>
     <string name="customactivityoncrash_error_activity_close_app">Иловани ёпиш</string>
     <string name="customactivityoncrash_error_activity_error_details">Батафсил маълумот</string>

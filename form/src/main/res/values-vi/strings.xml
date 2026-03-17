@@ -16,7 +16,7 @@
     <string name="hint_year">Năm</string>
     <string name="hint_month">Tháng</string>
     <string name="hint_day">Ngày</string>
-    <string name="wrong_date_format">%s không thể chuyển đổi thành Ngày</string>
+    <string name="wrong_date_format">%s không thể chuyển đổi dữ liệu Ngày</string>
     <string name="polygon">Bản đồ</string>
     <string name="latitude">Vĩ độ</string>
     <string name="longitude">Kinh độ</string>

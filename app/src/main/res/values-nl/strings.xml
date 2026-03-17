@@ -33,7 +33,6 @@
     <string name="sync_error_title">Synchronisatiefout</string>
     <string name="sync_error_text">Er is een fout opgetreden tijdens de synchronisatie. Probeer het opnieuw.</string>
     <string name="sync_incomplete_error_text">De synchronisatie is voltooid, maar we hebben geen serverbevestiging ontvangen voor alle records. Die gegevens zijn nog steeds gemarkeerd als \"offline\" in de app. We raden aan om de synchronisatie opnieuw te proberen.</string>
-    <string name="data_sync_warning_program">WAARSCHUWING: de meeste van uw gegevens zijn gesynchroniseerd, maar sommige velden leverden problemen op. Synchroniseer uw configuratie en probeer het opnieuw. Als de waarschuwing aanhoudt, controleer dan hun synchronisatiestatus: programma\'s, TEI\'s en gebeurtenissen met conflicten zijn gemarkeerd als @.</string>
     <string name="server_sync_error">Er is een fout opgetreden en de server heeft niet gereageerd. Neem contact op met uw beheerder.</string>
 
     <string name="search_result_text">%s resultaten gevonden</string>
@@ -283,7 +282,6 @@
     <string name="search_min_num_attr">U moet minimaal %d van de attributen invoeren om een zoekopdracht uit te voeren</string>
     <string name="search_attr">U moet ten minste één van de kenmerken invoeren om een zoekopdracht uit te voeren</string>
     <string name="search_max_tei_reached">Er zijn meer dan %d resultaten. Vul a.u.b. verdere zoekcriteria in</string>
-    <string name="search_criteria_not_met">Uw zoekcriteria hebben geen resultaat opgeleverd.\nHerzie uw criteria of schrijf een nieuwe %s in</string>
     <string name="search_init">Voer uw zoekcriteria in</string>
 
     <!-- QR -->
@@ -694,7 +692,6 @@
     <string name="field_is_mandatory">Dit veld is verplicht</string>
     <string name="security_debugger_message">Om veiligheidsredenen mag deze versie van de app niet worden gebruikt met adb. Gebruik de trainingsversie.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">Oeps! Er is iets niet gegaan zoals gepland.\nLaat ons je weer aan het werk helpen.</string>
     <string name="customactivityoncrash_error_activity_restart_app">Ga terug</string>
     <string name="customactivityoncrash_error_activity_close_app">App sluiten</string>
     <string name="customactivityoncrash_error_activity_error_details">Meer details</string>

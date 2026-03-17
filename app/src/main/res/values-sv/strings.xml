@@ -196,7 +196,6 @@
     <string name="next">Nästa</string>
     <string name="search_min_num_attr">Du måste ange minst %d av attributen för att göra en sökning</string>
     <string name="search_max_tei_reached">Det finns mer än %d resultat. Vänligen ange ytterligare sökkriterier</string>
-    <string name="search_criteria_not_met">Dina sökvillkor gav inget resultat\nÄndra dina kriterier eller registrera en ny %s</string>
     <string name="search_init">Definiera sökkriterier</string>
 
     <!-- QR -->

@@ -37,7 +37,6 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="sync_incomplete_error_text">انتهت المزامنة ولكن لم نتلق تأكيدًا من الخادم لجميع السجلات. هذه السجلات لا تزال تحمل علامة \"غير مزامن\" في التطبيق. نوصي بإعادة محاولة المزامنة.</string>
-    <string name="data_sync_warning_program">تحذير: تم مزامنة معظم البيانات الخاصة بك ولكن يوجد تعارضات في بعض الحقول. قم بعمل مزامنة للتكوين الخاص بك وحاول مرة أخرى. إذا استمر التحذير ، فتحقق من حالة المزامنة: يتم وضع علامة @ على البرامج و TEI والأحداث المتعارضة.</string>
     <string name="server_sync_error">حدث خطأ ولم يستجب الخادم. تواصل مع مديرك.</string>
 
     <string name="search_result_text">تم العثور على %s نتيجة</string>
@@ -301,7 +300,6 @@
     <string name="search_min_num_attr">تحتاج إلى ادخال %d على الأقل من السمات للقيام بالبحث</string>
     <string name="search_attr">تحتاج إلى ادخال واحدة على الأقل من السمات للقيام بالبحث</string>
     <string name="search_max_tei_reached">هناك أكثر من %d نتيجة. يرجى إدخال معايير بحث أخرى</string>
-    <string name="search_criteria_not_met">لم يتم ايجاد أي نتيجة لمعايير البحث التي ادخلتها.\n راجعها أو قم بتسجيل %s جديد</string>
     <string name="search_init">ادخل معايير البحث التي تريد</string>
 
     <!-- QR -->
@@ -714,7 +712,6 @@
     <string name="field_is_mandatory">هذا الحقل إلزامي</string>
     <string name="security_debugger_message">لأسباب أمنية ، لا يُسمح باستخدام هذه النسخة من التطبيق مع adb. الرجاء استخدام نسخة هذا التطبيق المخصصة للتدريب.</string>
 
-    <string name="customactivityoncrash_error_activity_error_occurred_explanation">للأسف! شيء ما لم يسير كما هو مخطط له.\n دعنا نعيدك إلى العمل.</string>
     <string name="customactivityoncrash_error_activity_restart_app">رجوع</string>
     <string name="customactivityoncrash_error_activity_close_app">إغلاق التطبيق</string>
     <string name="customactivityoncrash_error_activity_error_details">تفاصيل أكثر</string>
