@@ -31,7 +31,6 @@
 
     <string name="sync_error_title">Sync error</string>
     <string name="sync_error_text">Terjadi kesalahan saat sinkronisasi. Silakan coba kembali.</string>
-    <string name="data_sync_warning_program">PERINGATAN: Sebagian besar data telah tersinkronisasi tapi terdapat beberapa konflik. Sinkronisasi konfigurasi Anda dan coba kembali. Jika status sinkronisasi: program, TEI, dan event yang berkonflik ditandai sebagai \@.</string>
     <string name="server_sync_error">Terjadi kesalahan dan server tidak merespon. Hubungi administrator anda.</string>
 
     <string name="search_result_text">%s hasil ditemukan</string>

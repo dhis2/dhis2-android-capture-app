@@ -32,7 +32,6 @@
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Xảy ra lỗi trong quá trình đồng bộ. Vui lòng thử lại.</string>
     <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận máy chủ cho tất cả dữ liệu. Các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
-    <string name="data_sync_warning_program">CẢNH BÁO: Hầu hết dữ liệu của bạn đã được đồng bộ nhưng một vài dữ liệu vẫn bị xung đột. Hãy Đồng bộ Cấu Hình và thử lại. Nếu cảnh báo vẫn tiếp diễn, kiểm tra trạng thái đồng bộ của Chương trình, các Đối Tượng Theo Dõi và các Sự kiện với các dấu hiệu xung đột là \@.</string>
     <string name="server_sync_error">Có lỗi và máy chủ không phản hồi. Liên hệ quản trị viên của bạn.</string>
 
     <string name="search_result_text">Tìm thấy %s kết quả</string>

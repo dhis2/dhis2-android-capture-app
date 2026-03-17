@@ -34,7 +34,6 @@
     <string name="sync_error_title">Problème de synchronisation</string>
     <string name="sync_error_text">Une erreur s´est produite pendant sync. Essayez à nouveau.</string>
     <string name="sync_incomplete_error_text">La synchronisation est terminée, mais nous n\'avons pas reçu de confirmation du serveur pour tous les enregistrements. Ces enregistrements sont toujours marqués comme \"hors ligne\" dans l\'application. Nous vous recommandons de réessayer la synchronisation.</string>
-    <string name="data_sync_warning_program">AVERTISSEMENT: La plupart de vos données ont été syncrhonisées mais certains champs ont eu des conflits. Synchronisez votre configuration et ressayez, Si l\'erreur persiste, vérifiez le statut de synchronisation: les programmes, TEIs et évènements avec conflits sont marqués avec \@. </string>
     <string name="server_sync_error">Une erreur s\'est produite et le serveur n\'a pas répondu. Contactez votre administrateur.</string>
 
     <string name="search_result_text">%s résultats trouvé</string>

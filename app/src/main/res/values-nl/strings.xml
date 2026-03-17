@@ -33,7 +33,6 @@
     <string name="sync_error_title">Synchronisatiefout</string>
     <string name="sync_error_text">Er is een fout opgetreden tijdens de synchronisatie. Probeer het opnieuw.</string>
     <string name="sync_incomplete_error_text">De synchronisatie is voltooid, maar we hebben geen serverbevestiging ontvangen voor alle records. Die gegevens zijn nog steeds gemarkeerd als \"offline\" in de app. We raden aan om de synchronisatie opnieuw te proberen.</string>
-    <string name="data_sync_warning_program">WAARSCHUWING: de meeste van uw gegevens zijn gesynchroniseerd, maar sommige velden leverden problemen op. Synchroniseer uw configuratie en probeer het opnieuw. Als de waarschuwing aanhoudt, controleer dan hun synchronisatiestatus: programma\'s, TEI\'s en gebeurtenissen met conflicten zijn gemarkeerd als \@.</string>
     <string name="server_sync_error">Er is een fout opgetreden en de server heeft niet gereageerd. Neem contact op met uw beheerder.</string>
 
     <string name="search_result_text">%s resultaten gevonden</string>

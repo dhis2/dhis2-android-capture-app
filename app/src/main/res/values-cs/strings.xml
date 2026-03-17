@@ -37,7 +37,6 @@
     <string name="sync_incomplete_error_text">Synchronizace dokončena, ale neobdrželi jsme potvrzení serveru pro všechny záznamy. Tyto záznamy jsou v aplikaci stále označeny jako „offline“. Doporučujeme synchronizaci zopakovat.</string>
     <string name="metadata_sync_error">CHYBA: V procesu synchronizace se něco pokazilo. Pokud máte připojení, zkuste to prosím znovu. Pokud chyba přetrvává, obraťte se na správce.</string>
     <string name="data_sync_warning_v2">Ve vašich datech jsou rozpory. Synchronizujte prosím svou konfiguraci, zkontrolujte svá data a zkuste synchronizaci provést znovu.</string>
-    <string name="data_sync_warning_program">UPOZORNĚNÍ: Většina vašich dat je synchronizována, ale některá pole vykazovala konflikty. Synchronizujte svou konfiguraci a zkuste to znovu. Pokud varování přetrvává, zkontrolujte jejich stav synchronizace: programy, TEI a události s konflikty jsou označeny jako \@.</string>
     <string name="data_sync_error_v2">Některá vaše data se nepodařilo synchronizovat.</string>
     <string name="server_sync_error">Došlo k chybě a server neodpovídá. Kontaktujte svého správce.</string>
 

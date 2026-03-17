@@ -34,7 +34,6 @@
     <string name="sync_error_title">Erro de sincronização</string>
     <string name="sync_error_text">Ocorreu um erro durante a sincronização. Por favor tente novamente.</string>
     <string name="sync_incomplete_error_text">A sincronização foi concluída, mas não recebemos a confirmação do servidor para todos os registos. Esses registos ainda estão marcados como “offline” na aplicação. Recomendamos que tente novamente a sincronização.</string>
-    <string name="data_sync_warning_program">AVISO: A maioria dos seus dados é sincronizada, mas alguns campos apresentaram conflitos. Sincronize sua configuração e tente novamente. Se o aviso persistir, verifique o status de sincronização: programas, TEIs e eventos com conflitos são marcados como \@.</string>
     <string name="server_sync_error"> Ocorreu um erro e o servidor não respondeu. Contacte o seu administrador.</string>
 
     <string name="search_result_text">%s resultados encontrados</string>

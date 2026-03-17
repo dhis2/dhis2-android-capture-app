@@ -32,7 +32,6 @@
     <string name="sync_error_title">同步错误</string>
     <string name="sync_error_text">同步中发生错误，请重试</string>
     <string name="sync_incomplete_error_text">同步完成，但我们没有收到所有记录的服务器确认。这些记录在应用程序中仍被标记为“离线”状态。我们建议重试同步。</string>
-    <string name="data_sync_warning_program">警告：你的大多数数据已经同步，但是有些字段存在冲突，同步你的配置再试。如果警告仍然存在，检查你的同步状态：项目、跟踪实体和事件如果有冲突会标记为\@。</string>
     <string name="server_sync_error">发生错误，服务器未响应。与您的管理员联系。</string>
 
     <string name="search_result_text">发现结果：1%s</string>
