@@ -1,8 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">خطأ</string>
-    <string name="add_new">إضافة جديد</string>
-    <string name="user_hint">اسم المستخدم</string>
     <!--PERIOD-->
     <string name="DAILY">يومي</string>
     <string name="WEEKLY">أسبوعي</string>
@@ -19,10 +17,7 @@
 
     <string name="state_error">خطأ</string>
     <!--Event initial-->
-    <string name="create">إنشاء</string>
     <string name="update">تحديث</string>
-    <string name="date">التاريخ</string>
-    <string name="new_event">حدث جديد</string>
     <!--Event Detail-->
     <string name="due_date">تاريخ الاستحقاق</string>
     <string name="cancel">إلغاء</string>
@@ -34,44 +29,19 @@
     <string name="settingsTwoFAStatus">الحالة</string>
     <!--endregion-->
 
-    <string name="enrollmment_date">تاريخ التسجيل</string>
-
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">البحث</string>
     <!--AGE CUSTOM VIEW-->
-    <string name="hint_day">‏‏الأيام</string>
-    <string name="hint_month">الأشهر</string>
-    <string name="hint_year">السنوات</string>
-    <string name="week">الأسابيع</string>
     <string name="incident_date">تاريخ الواقعة</string>
-    <string name="date_dialog_clear">مسح</string>
     <string name="next">التالي</string>
-    <string name="SAVE">حفظ</string>
     <string name="qr_attributes">السمات</string>
     <string name="qr_relationships">علاقات</string>
     <string name="about">حول</string>
     <string name="share">مشاركة</string>
-    <string name="max">الأعلى</string>
-    <string name="warning_on_complete_title">تحذير</string>
-    <string name="error_on_complete_title">خطأ</string>
     <string name="save">حفظ</string>
     <string name="menu_home">الرئيسية</string>
-    <string name="dashboard_relationships">علاقات</string>
-    <string name="dashboard_indicators">المؤشرات</string>
-    <string name="event_overview">التفاصيل</string>
-    <string name="event_indicators">المؤشرات</string>
-    <string name="finish">إنهاء</string>
-    <string name="event_overdue">متأخر</string>
-    <string name="table">الجدول</string>
-    <string name="local_data_accept">قبول</string>
     <string name="state_warning">تحذير</string>
     <string name="action_close">إغلاق</string>
-    <string name="data_set_complete">مكتمل</string>
-    <string name="data_set_open">فتح</string>
-    <string name="data_every_day">يومي</string>
-    <string name="data_every_week">أسبوعي</string>
-    <string name="sms_completed">مكتمل</string>
-    <string name="filters_title_status">الحالة</string>
     <string name="filter_period_today">اليوم</string>
     <string name="filter_period_yesterday">الأمس</string>
     <string name="filter_period_this_week">الأسبوع الحالي</string>
@@ -84,19 +54,11 @@
     <string name="filter_event_status_skipped">تم التخطي</string>
     <string name="data_sets">حزم البيانات</string>
     <string name="interval_yesterday">الأمس</string>
-    <string name="dataset_overview">التفاصيل</string>
-    <string name="dataset_comments">التعليقات</string>
-    <string name="name">الاسم</string>
     <string name="filters_title_event_status">حالة الحدث</string>
-    <string name="enrollment_date">تاريخ التسجيل</string>
     <string name="enrollment_status_active">فتح</string>
     <string name="enrollment_status_completed">مكتمل</string>
     <string name="enrollment_status_cancelled">تم الإلغاء</string>
-    <string name="event_data">البيانات</string>
-    <string name="are_you_sure">هل أنت متأكد؟</string>
     <string name="filters_title_date">التاريخ</string>
-    <string name="filters_title_event_date">بيانات الحدث</string>
-    <string name="customactivityoncrash_error_activity_error_details_close">إغلاق</string>
     <string name="section_charts">المخططات البيانية</string>
     <string name="navigation_map_view">الخريطة</string>
     <string name="navigation_programs">البرامج</string>
@@ -114,8 +76,6 @@
     <string name="filter_period_last_financial_year">السنة المالية الماضية</string>
     <string name="section_feedback">التغذية الراجعة</string>
     <string name="section_indicators">المؤشرات</string>
-    <string name="value">القيمة</string>
-    <string name="available">متوفر</string>
     <string name="sync_dialog_title_syncing">تزامن</string>
     <string name="skipped">تم التخطي</string>
     <string name="programs">البرامج</string>
