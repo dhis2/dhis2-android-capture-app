@@ -15,6 +15,7 @@ import org.dhis2.android.rtsm.data.models.StockEntry
 import org.dhis2.android.rtsm.data.models.Transaction
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.BooleanFilterConnector
+import org.hisp.dhis.android.core.arch.repositories.filters.internal.EnumFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.filters.internal.StringFilterConnector
 import org.hisp.dhis.android.core.arch.repositories.`object`.ReadOnlyOneObjectRepositoryFinalImpl
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
@@ -22,6 +23,7 @@ import org.hisp.dhis.android.core.common.ObjectWithUid
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentCollectionRepository
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
+import org.hisp.dhis.android.core.event.EventCollectionRepository
 import org.hisp.dhis.android.core.event.EventObjectRepository
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.option.Option
@@ -46,7 +48,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.util.Collections
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StockManagerTest {
@@ -227,19 +228,32 @@ class StockManagerTest {
     }
 
     private fun mockStockOnHand() {
-        whenever(
-            d2
-                .eventModule()
-                .events()
-                .byTrackedEntityInstanceUids(Collections.singletonList(any()))
-                .byDataValue(any())
-                .like("")
-                .byDeleted()
-                .isFalse
-                .withTrackedEntityDataValues()
-                .orderByEventDate(RepositoryScope.OrderByDirection.DESC)
-                .blockingGet(),
-        ) doReturn emptyList()
+        // Mock enrollment chain for getStockOnHand
+        val enrollmentRepo1: EnrollmentCollectionRepository = mock()
+        val enrollmentRepo2: EnrollmentCollectionRepository = mock()
+        val enrollmentStatusFilter: EnumFilterConnector<EnrollmentCollectionRepository, EnrollmentStatus> = mock()
+        val enrollmentTeiFilter: StringFilterConnector<EnrollmentCollectionRepository> = mock()
+
+        whenever(d2.enrollmentModule().enrollments()) doReturn enrollmentRepo1
+        whenever(enrollmentRepo1.byTrackedEntityInstance()) doReturn enrollmentTeiFilter
+        whenever(enrollmentTeiFilter.eq("teiUid")) doReturn enrollmentRepo2
+        whenever(enrollmentRepo2.byStatus()) doReturn enrollmentStatusFilter
+        whenever(enrollmentStatusFilter.eq(EnrollmentStatus.ACTIVE)) doReturn enrollmentRepo2
+        whenever(enrollmentRepo2.blockingGetUids()) doReturn listOf("enrollmentUid")
+
+        // Mock event chain for getStockOnHand
+        val eventRepo1 = mock<EventCollectionRepository>()
+        val eventRepo2 = mock<EventCollectionRepository>()
+        val eventRepo3 = mock<EventCollectionRepository>()
+        val eventUidFilter = mock<StringFilterConnector<EventCollectionRepository>>()
+        val eventDeletedFilter = mock<BooleanFilterConnector<EventCollectionRepository>>()
+
+        whenever(d2.eventModule().events()) doReturn eventRepo1
+        whenever(eventRepo1.byEnrollmentUid()) doReturn eventUidFilter
+        whenever(eventUidFilter.`in`(listOf("enrollmentUid"))) doReturn eventRepo2
+        whenever(eventRepo2.byDeleted()) doReturn eventDeletedFilter
+        whenever(eventDeletedFilter.isFalse) doReturn eventRepo3
+        whenever(eventRepo3.blockingGet()) doReturn emptyList()
     }
 
     @Test
