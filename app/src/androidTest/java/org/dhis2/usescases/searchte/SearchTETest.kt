@@ -111,6 +111,73 @@ class SearchTETest : BaseTest() {
         }
     }
 
+    @Test
+    fun shouldFollowTBProgramSearchFlow() {
+        // Mock the online search to return empty results (only local DB results shown)
+        mockWebServerRobot.addResponse(
+            ResponseController.GET,
+            API_TRACKED_ENTITY_PATH,
+            API_TRACKED_ENTITY_EMPTY_RESPONSE,
+        )
+
+        prepareTBIntentAndLaunchActivity(rule)
+
+        searchTeiRobot(composeTestRule) {
+            waitUntilActivityVisible<SearchTEActivity>()
+
+            // ANDROAPP-5971: Search/Add new [TET] button is visible and enabled
+            checkAddNewTEIButtonIsDisplayedAndEnabled()
+
+            // Open the search parameters panel
+            clickOnOpenSearch()
+
+            // ANDROAPP-5861: Unique attribute (TB identifier) is first after sort ordering
+            checkFirstSearchParamIsBarcodeOrQROrUnique(TB_IDENTIFIER_LABEL)
+
+            // ANDROAPP-2458: Verify count of searchable attributes
+            checkSearchParamCount(TB_PROGRAM_SEARCH_ATTR_COUNT)
+
+            // ANDROAPP-5862: Search button is disabled when no values are entered
+            checkSearchButtonIsDisabled()
+
+            // Enter a value to enable the search button (Part A entry)
+            typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
+
+            // [Part A] ANDROAPP-5862: Search button is now enabled
+            checkSearchButtonIsEnabled()
+
+            // ANDROAPP-5970: Reset search field
+            clickOnClearSearch()
+
+            // Re-enter a short value (1 char) to enable the button
+            typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
+
+            // ANDROAPP-7488: Focus a field with operator to verify operator description as supporting text
+            typeOnSearchParameter(TB_SEARCH_ATTR_ZIP, "")
+            checkFocusedFieldShowsOperatorSupportingText()
+
+            // Click Search – triggers per-field min-character validation
+            clickOnSearch()
+
+            // [Part B] ANDROAPP-7489/7490 & ANDROAPP-1056/7491:
+            // Error is displayed because value is below the minimum character requirement
+            checkMinCharactersErrorIsDisplayed()
+
+            // Update to valid search values and search again
+            typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY)
+            typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_STATE)
+            typeOnSearchParameter(TB_SEARCH_ATTR_ZIP, TB_SEARCH_ZIP)
+            typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_TB_NUMBER)
+
+            // Click Search with valid values
+            clickOnSearch()
+
+            // Verify results: Lynn Dunn and Inés Bebea are displayed
+            checkSearchResultDisplayed(TB_RESULT_DUNN)
+            checkSearchResultDisplayed(TB_RESULT_BEBEA)
+        }
+    }
+
     private fun createRegisterTEI() = RegisterTEIUIModel(
         "Claire",
         "Jones",
@@ -139,5 +206,23 @@ class SearchTETest : BaseTest() {
 
         const val CHILD_TE_TYPE_VALUE = "nEenWmSyUEp"
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
+
+        // TB Program search flow test constants
+        const val TB_PROGRAM_SEARCH_ATTR_COUNT = 8
+        const val TB_IDENTIFIER_LABEL = "TB identifier"
+
+        const val TB_SEARCH_ATTR_CITY = "City"
+        const val TB_SEARCH_ATTR_STATE = "State"
+        const val TB_SEARCH_ATTR_ZIP = "Zip code"
+        const val TB_SEARCH_ATTR_TB_NUMBER = "TB number"
+
+        const val TB_SEARCH_CITY_SHORT = "C"
+        const val TB_SEARCH_CITY = "City"
+        const val TB_SEARCH_STATE = "State"
+        const val TB_SEARCH_ZIP = "404"
+        const val TB_SEARCH_TB_NUMBER = "123456789"
+
+        const val TB_RESULT_DUNN = "Dunn"
+        const val TB_RESULT_BEBEA = "Bebea"
     }
 }
