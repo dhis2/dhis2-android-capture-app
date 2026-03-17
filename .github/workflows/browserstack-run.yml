@@ -1,0 +1,103 @@
+name: BrowserStack - Run UI Tests
+
+# This workflow is designed to be triggered by the testing agent via the GitHub Actions REST API.
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   - BROWSERSTACK_USERNAME  : Your BrowserStack username
+#   - BROWSERSTACK_ACCESS_KEY: Your BrowserStack access key
+#
+# The testing agent can trigger this workflow using the GitHub MCP tool:
+#   github-mcp-server-actions_list / github-mcp-server-actions_get
+# and by dispatching it via the GitHub API:
+#   POST /repos/{owner}/{repo}/actions/workflows/browserstack-run.yml/dispatches
+#
+# After dispatch, the agent can monitor the run with:
+#   github-mcp-server-actions_list (method: list_workflow_runs)
+#   github-mcp-server-actions_get  (method: get_workflow_run)
+#   github-mcp-server-get_job_logs
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: 'Test suite to run'
+        required: true
+        default: 'portrait'
+        type: choice
+        options:
+          - portrait
+          - landscape
+          - form
+      build_tag:
+        description: 'Optional label to identify this build in BrowserStack dashboard'
+        required: false
+        default: ''
+        type: string
+      branch:
+        description: 'Branch to build from (leave blank for the branch that triggered this run)'
+        required: false
+        default: ''
+        type: string
+
+env:
+  main_project_module: app
+
+jobs:
+  browserstack:
+    name: BrowserStack (${{ inputs.suite }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.branch != '' && inputs.branch || github.ref }}
+
+      - name: Set Up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build APKs
+        run: |
+          if [[ "${{ inputs.suite }}" == "form" ]]; then
+            ./gradlew :form:assembleAndroidTest
+          else
+            ./gradlew :app:assembleDhis2Debug :app:assembleDhis2DebugAndroidTest
+          fi
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+      - name: Resolve APK paths
+        id: apk-paths
+        run: |
+          if [[ "${{ inputs.suite }}" == "form" ]]; then
+            form_apk=$(find form/build/outputs -iname "*.apk" | sed -n 1p)
+            [[ -z "$form_apk" ]] && { echo "form APK not found"; exit 1; }
+            echo "form_apk_path=${GITHUB_WORKSPACE}/${form_apk}" >> "$GITHUB_OUTPUT"
+          else
+            app_apk=$(find app/build/outputs/apk/dhis2/debug -iname "*.apk" | head -1)
+            test_apk=$(find app/build/outputs/apk/androidTest -iname "*.apk" | head -1)
+            [[ -z "$app_apk" ]] && { echo "app APK not found"; exit 1; }
+            [[ -z "$test_apk" ]] && { echo "test APK not found"; exit 1; }
+            echo "app_apk_path=${GITHUB_WORKSPACE}/${app_apk}" >> "$GITHUB_OUTPUT"
+            echo "test_apk_path=${GITHUB_WORKSPACE}/${test_apk}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run BrowserStack tests
+        env:
+          BROWSERSTACK_USR: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_PSW: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          app_apk_path: ${{ steps.apk-paths.outputs.app_apk_path }}
+          test_apk_path: ${{ steps.apk-paths.outputs.test_apk_path }}
+          form_apk_path: ${{ steps.apk-paths.outputs.form_apk_path }}
+          buildTag: ${{ inputs.build_tag != '' && inputs.build_tag || github.ref_name }}
+        run: |
+          chmod +x ./scripts/browserstackGitHubActions.sh
+          ./scripts/browserstackGitHubActions.sh "${{ inputs.suite }}"
