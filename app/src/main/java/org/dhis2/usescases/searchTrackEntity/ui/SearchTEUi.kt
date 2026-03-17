@@ -48,6 +48,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -159,6 +160,7 @@ fun AddNewButton(
         modifier =
             Modifier
                 .requiredHeight(44.dp)
+                .testTag("ADD_NEW_BUTTON")
                 .then(modifier),
         colors =
             ButtonDefaults.buttonColors(
