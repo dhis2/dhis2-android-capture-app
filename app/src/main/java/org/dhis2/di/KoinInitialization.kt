@@ -18,6 +18,7 @@ import org.dhis2.usescases.datasets.di.dataSetModules
 import org.dhis2.usescases.searchTrackEntity.di.searchTEKoinModule
 import org.dhis2.usescases.settings.di.settingsModule
 import org.dhis2.usescases.settingsprogram.di.settingsProgramModule
+import org.dhis2.mobile.plugin.di.pluginModule
 import org.dhis2.utils.analytics.matomo.matomoModule
 import org.hisp.dhis.android.core.D2Configuration
 import org.koin.android.ext.koin.androidContext
@@ -65,6 +66,7 @@ object KoinInitialization {
                 matomoModule,
                 syncModule,
                 chartsModule,
+                pluginModule,
             )
         }
     }
