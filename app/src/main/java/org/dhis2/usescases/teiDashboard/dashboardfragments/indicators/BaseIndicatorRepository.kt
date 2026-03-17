@@ -9,6 +9,7 @@ import dhis2.org.analytics.charts.ui.SectionType
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import org.dhis2.commons.resources.ResourceManager
+import org.dhis2.mobileProgramRules.RuleConstants
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.UidGeneratorImpl
@@ -111,6 +112,8 @@ abstract class BaseIndicatorRepository(
             val ruleAction = ruleEffect.ruleAction
             if (ruleEffect.data?.contains("#{") == false) {
                 if (ruleAction.type == ProgramRuleActionType.DISPLAYKEYVALUEPAIR.name) {
+                    val legendSet = ruleAction.values[RuleConstants.LEGENDSET_LABEL]
+                    val color = getLegendColor(ruleEffect.data, legendSet)
                     val indicator =
                         IndicatorModel(
                             ProgramIndicator
@@ -119,7 +122,7 @@ abstract class BaseIndicatorRepository(
                                 .displayName((ruleAction).content())
                                 .build(),
                             ruleEffect.data,
-                            null,
+                            color,
                             ruleAction.values["location"] ?: DEFAULT_LOCATION,
                             resourceManager.defaultIndicatorLabel(),
                         )
@@ -145,6 +148,29 @@ abstract class BaseIndicatorRepository(
         }
 
         return indicators
+    }
+
+    private fun getLegendColor(
+        data: String?,
+        legendSet: String?,
+    ): String? {
+        if (data.isNullOrEmpty() || legendSet.isNullOrEmpty()) return null
+
+        val legendValue = getNumberValue(data) ?: return null
+
+        val legends =
+            d2
+                .legendSetModule()
+                .legends()
+                .byStartValue()
+                .smallerThan(legendValue)
+                .byEndValue()
+                .biggerOrEqualTo(legendValue)
+                .byLegendSet()
+                .eq(legendSet)
+                .blockingGet()
+
+        return legends.firstOrNull()?.color()
     }
 
     private fun getLegendColorForIndicator(
@@ -240,4 +266,16 @@ abstract class BaseIndicatorRepository(
                 }
             }
         }
+
+    companion object {
+        private val NUMBER_REGEX = """-?\b(\d{1,3}(,\d{3})*(\.\d+)?|\d+(\.\d+)?)\b""".toRegex()
+
+        internal fun getNumberValue(data: String): Double? {
+            return NUMBER_REGEX
+                .find(data)
+                ?.value
+                ?.replace(",", "")
+                ?.toDoubleOrNull()
+        }
+    }
 }
