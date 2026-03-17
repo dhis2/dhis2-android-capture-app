@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -34,7 +34,6 @@ fun ProvideInputAge(
     inputStyle: InputStyle,
     fieldUiModel: FieldUiModel,
     intentHandler: (FormIntent) -> Unit,
-    resources: ResourceManager,
     onNextClicked: () -> Unit,
 ) {
     var inputType by remember {
@@ -96,11 +95,11 @@ fun ProvideInputAge(
                         title = fieldUiModel.label,
                         inputStyle = inputStyle,
                         isRequired = fieldUiModel.mandatory,
-                        dateOfBirthLabel = resources.getString(R.string.date_birth),
-                        orLabel = resources.getString(R.string.or),
-                        ageLabel = resources.getString(R.string.age),
-                        cancelText = resources.getString(R.string.cancel),
-                        acceptText = resources.getString(R.string.ok),
+                        dateOfBirthLabel = stringResource(R.string.date_birth),
+                        orLabel = stringResource(R.string.or),
+                        ageLabel = stringResource(R.string.age),
+                        cancelText = stringResource(R.string.cancel),
+                        acceptText = stringResource(R.string.ok),
                         selectableDates = fieldUiModel.selectableDates,
                     ),
                 inputType = inputType,

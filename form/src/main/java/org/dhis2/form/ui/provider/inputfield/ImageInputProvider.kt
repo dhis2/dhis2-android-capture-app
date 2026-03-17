@@ -12,8 +12,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
-import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.form.R
 import org.dhis2.form.extensions.inputState
 import org.dhis2.form.extensions.legend
@@ -32,7 +32,6 @@ import org.hisp.dhis.mobile.ui.designsystem.component.UploadState
 internal fun ProvideInputImage(
     modifier: Modifier,
     fieldUiModel: FieldUiModel,
-    resources: ResourceManager,
     intentHandler: (FormIntent) -> Unit,
     uiEventHandler: (RecyclerViewUiEvents) -> Unit,
     onFileSelected: (filePath: String) -> Unit,
@@ -75,7 +74,7 @@ internal fun ProvideInputImage(
         state = fieldUiModel.inputState(),
         supportingText = fieldUiModel.supportingText(),
         legendData = fieldUiModel.legend(),
-        addImageBtnText = resources.getString(R.string.add_image),
+        addImageBtnText = stringResource(R.string.add_image),
         isRequired = fieldUiModel.mandatory,
         uploadState = uploadState,
         painterFor = { remember { it!! } },
@@ -113,8 +112,8 @@ internal fun ProvideInputImage(
     ImagePickerOptionsDialog(
         title = fieldUiModel.label,
         showImageOptions = showImageOptions,
-        cameraButtonLabel = resources.getString(R.string.take_photo),
-        galleryButtonLabel = resources.getString(R.string.from_gallery_v2),
+        cameraButtonLabel = stringResource(R.string.take_photo),
+        galleryButtonLabel = stringResource(R.string.from_gallery_v2),
         onDismiss = { showImageOptions = false },
         onTakePicture = {
             if (ContextCompat.checkSelfPermission(

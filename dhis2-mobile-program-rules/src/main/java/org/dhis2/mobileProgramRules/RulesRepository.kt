@@ -68,9 +68,9 @@ class RulesRepository(
                     ?.programStage()
             }
 
-        return queryRules(programUid).toRuleList().filter {
-            it.programStage == null || it.programStage == programStage
-        }
+        return queryRules(programUid)
+            .filter { it.programStage() == null || it.programStage()?.uid() == programStage }
+            .toRuleList()
     }
 
     suspend fun ruleVariables(programUid: String): List<RuleVariable> =
