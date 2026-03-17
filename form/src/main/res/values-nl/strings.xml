@@ -59,7 +59,6 @@
     <string name="camera_permission_denied">Cameratoestemming is geweigerd.\Je moet deze inschakelen om deze functie te gebruiken.</string>
     <string name="action_close">Sluit</string>
     <string name="program_rules_loop_warning_title">Waarschuwing programmaregels</string>
-    <string name="program_rules_loop_warning_message">Er is een configuratieprobleem dat een lus in de regels veroorzaakt. Neem contact op met uw beheerder.</string>
     <string name="copied_text">Gekopieerd</string>
     <string name="empty_description">Geen info voor dit veld</string>
     <string name="take_photo">Neem foto</string>

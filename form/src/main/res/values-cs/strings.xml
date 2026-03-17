@@ -60,7 +60,6 @@
     <string name="camera_permission_denied">Povolení fotoaparátu bylo odepřeno.\nPro použití této funkce je nutné ji povolit.</string>
     <string name="action_close">Zavřít</string>
     <string name="program_rules_loop_warning_title">Upozornění na pravidla programu</string>
-    <string name="program_rules_loop_warning_message">Došlo k problému s konfigurací, který způsobuje smyčku v pravidlech. Kontaktujte svého správce.</string>
     <string name="copied_text">Zkopírováno</string>
     <string name="empty_description">Žádné informace pro toto pole</string>
     <string name="take_photo">Vyfotit</string>

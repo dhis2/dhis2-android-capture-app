@@ -58,7 +58,6 @@
     <string name="camera_permission_denied">Відмовлено у використанні камери. Вам потрібно ввімкнути цей дозвіл, щоб використовувати цю функцію.</string>
     <string name="action_close">Закрити</string>
     <string name="program_rules_loop_warning_title">Попередження про правила програми</string>
-    <string name="program_rules_loop_warning_message">Існує проблема конфігурації, яка спричиняє помилку у правилах. Зверніться до адміністратора.</string>
     <string name="copied_text">Скопійовано</string>
     <string name="empty_description">Немає інформації для цього поля</string>
     <string name="take_photo">Зробити фото</string>

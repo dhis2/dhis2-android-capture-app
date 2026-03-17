@@ -60,7 +60,6 @@
     <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebe habilitarlo para usar esta función.</string>
     <string name="action_close">Cerrar</string>
     <string name="program_rules_loop_warning_title">Advertencia de reglas del programa</string>
-    <string name="program_rules_loop_warning_message">Hay un problema de configuración que provoca un bucle en las reglas. Póngase en contacto con su administrador.</string>
     <string name="copied_text">Copiado</string>
     <string name="empty_description">No hay información para este campo</string>
     <string name="take_photo">Tomar foto</string>
