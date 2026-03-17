@@ -59,7 +59,7 @@
     <string name="not_now">Agora não</string>
     <string name="save_anyway">Salve mesmo assim</string>
     <string name="keep_editing">Continue a editar</string>
-    <string name="event_can_be_completed">Deseja marcar este formulário como completo\?</string>
+    <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
     <string name="discard_go_back">Se sair agora, todas as informações do formulário serão descartadas.</string>
     <string name="field_errors_not_saved">Alguns campos apresentam erros e não são guardados.</string>
     <string name="fields_mandatory_missing">Alguns campos obrigatórios estão em falta e o formulário não pode ser guardado.</string>

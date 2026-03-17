@@ -21,7 +21,7 @@
     <string name="conf_error_value_to_assign_option_set">Правило программы %s пытается присвоить значение %s, которое не принадлежит набору опций. %s</string>
     <string name="field_is_mandatory">Это поле обязательно для заполнения</string>
     <string name="missing_warning_fields_completed_events">У вас есть несколько предупреждающих сообщений.</string>
-    <string name="missing_warning_fields_events">У Вас есть несколько предупреждающих сообщений.\nХотите ли Вы отметить эту форму как завершенную\?</string>
+    <string name="missing_warning_fields_events">У Вас есть несколько предупреждающих сообщений.\nХотите ли Вы отметить эту форму как завершенную?</string>
     <string name="required">Обязательный</string>
     <string name="date">Дата</string>
     <string name="hint_year">Годы</string>
@@ -52,13 +52,13 @@
     <string name="complete">Завершить</string>
     <string name="discard_changes">Не сохранять изменения</string>
     <string name="saved">Сохранено!</string>
-    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках.\nХотите просмотреть их\?</string>
-    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. \nВы хотите просмотреть форму\?</string>
-    <string name="review_message">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму\?</string>
+    <string name="event_error_on_complete">У Вас есть несколько сообщений об ошибках.\nХотите просмотреть их?</string>
+    <string name="missing_error_fields_events">В некоторых полях есть ошибки, и они не сохраняются. \nВы хотите просмотреть форму?</string>
+    <string name="review_message">Некоторые поля требуют Вашего внимания.\nХотите просмотреть форму?</string>
     <string name="not_now">Не сейчас</string>
     <string name="save_anyway">Сохранить в любом случае</string>
     <string name="keep_editing">Продолжить редактирование</string>
-    <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную\?</string>
+    <string name="event_can_be_completed">Хотите ли Вы отметить эту форму как завершенную?</string>
     <string name="discard_go_back">Если Вы выйдете сейчас, вся информация в форме будет удалена.</string>
     <string name="field_errors_not_saved_discard">Некоторые поля содержат ошибки, и они не сохраняются. \nЕсли Вы выйдете сейчас, изменения будут отменены.</string>
     <string name="field_errors_not_saved">Некоторые поля содержат ошибки, и они не сохраняются.</string>
