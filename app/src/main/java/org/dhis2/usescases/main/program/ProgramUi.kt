@@ -82,6 +82,8 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.hisp.dhis.mobile.ui.designsystem.theme.TextColor
 import java.util.Date
+import org.dhis2.mobile.plugin.sdk.InjectionPoint
+import org.dhis2.mobile.plugin.ui.PluginSlot
 
 enum class ProgramLayout {
     DEFAULT,
@@ -113,6 +115,7 @@ fun ProgramList(
                     hasPrograms = programs?.isNotEmpty() ?: false
                 },
     ) {
+        PluginSlot(injectionPoint = InjectionPoint.HOME_ABOVE_PROGRAM_LIST)
         DownloadMessage(
             downLoadState = downLoadState,
             isDownloading = programs?.any { it.isDownloading() } ?: false,

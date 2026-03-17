@@ -290,6 +290,7 @@ dependencies {
     implementation(project(":commonskmm"))
     implementation(project(":login"))
     implementation(project(":sync"))
+    implementation(project(":plugin"))
 
     implementation(libs.security.conscrypt)
     implementation(libs.security.rootbeer)
