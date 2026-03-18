@@ -45,7 +45,6 @@
     <string name="share">Sdílet</string>
     <string name="camera_permission_denied">Povolení fotoaparátu bylo odepřeno.\nPro použití této funkce je nutné ji povolit.</string>
     <string name="action_close">Zavřít</string>
-    <string name="program_rules_loop_warning_message">Došlo k problému s konfigurací, který způsobuje smyčku v pravidlech. Kontaktujte svého správce.</string>
     <string name="copied_text">Zkopírováno</string>
     <string name="take_photo">Vyfotit</string>
     <string name="from_gallery_v2">Z galerie</string>

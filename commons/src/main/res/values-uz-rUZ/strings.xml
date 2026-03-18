@@ -120,11 +120,11 @@
     <string name="complete">Bajarildi</string>
     <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
     <string name="overdue_today">бугун</string>
-
     <string name="syncing">Sinxronizatsiyalanmoqda...</string>
     <string name="remove">Олиб ташлаш</string>
     <string name="period_daily_title">Кунлик</string>
     <string name="period_weekly_title">Hafta</string>
     <string name="period_yearly_title">Yil</string>
     <string name="action_clear_all">Barchasini tozalash</string>
-</resources>
+
+    </resources>

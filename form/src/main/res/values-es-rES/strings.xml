@@ -43,7 +43,6 @@
     <string name="share">Compartir</string>
     <string name="camera_permission_denied">El permiso de la cámara está denegado.\nDebe habilitarlo para usar esta función.</string>
     <string name="action_close">Cerrar</string>
-    <string name="program_rules_loop_warning_message">Hay un problema de configuración que provoca un bucle en las reglas. Póngase en contacto con su administrador.</string>
     <string name="copied_text">Copiado</string>
     <string name="take_photo">Tomar foto</string>
     <string name="warning_error_on_complete_title">¡Importante!</string>

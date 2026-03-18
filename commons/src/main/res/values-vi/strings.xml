@@ -245,7 +245,6 @@
     <string name="event_label_date">%s ngày</string>
     <string name="delete_event_label">Xóa %s</string>
     <string name="week_period_span_default_label">Tuần %d %s đến %s</string>
-
     <string name="sync_retry">Đồng bộ lại</string>
     <string name="syncing">Đang đồng bộ...</string>
     <string name="remove">Xóa</string>

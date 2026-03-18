@@ -134,7 +134,6 @@
     <string name="discard_changes">Hapus perubahan</string>
     <string name="overdue_today">Hari ini</string>
     <string name="week_period_span_default_label">Minggu %d %s hingga %s</string>
-
     <string name="syncing">Sedang sinkronisasi...</string>
     <string name="remove">Hapus</string>
     <string name="period_daily_title">Harian</string>

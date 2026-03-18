@@ -145,7 +145,6 @@
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
     <string name="overdue_today">Бугун</string>
     <string name="enrolling_ou">Қайд этилган:</string>
-
     <string name="syncing">Синхронизацияланмоқда...</string>
     <string name="remove">Олиб ташлаш</string>
     <string name="period_daily_title">Кунлик</string>
@@ -155,4 +154,5 @@
     <string name="period_quarter_title">Чорак</string>
     <string name="period_yearly_title">Йил</string>
     <string name="action_clear_all">Барчасини тозалаш</string>
-</resources>
+
+    </resources>

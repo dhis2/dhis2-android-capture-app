@@ -1,8 +1,10 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-
+    <!-- Sign in -->
     <string name="username">Username</string>
+
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+
     <string name="back">Back</string>
     </resources>

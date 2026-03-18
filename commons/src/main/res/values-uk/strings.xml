@@ -246,11 +246,11 @@
     <string name="event_label_was_deleted">%s успішно видалено</string>
     <string name="confirm_delete_event_label">Ви впевнені, що хочете видалити %s?</string>
     <string name="week_period_span_default_label">Тиждень %d %s до %s</string>
-
     <string name="syncing">Синхронізація...</string>
     <string name="remove">Видалити</string>
     <string name="period_daily_title">Щодня</string>
     <string name="period_weekly_title">Тиждень</string>
     <string name="period_yearly_title">Рік</string>
     <string name="action_clear_all">Очистити все</string>
-</resources>
+
+    </resources>

@@ -211,7 +211,6 @@
     <string name="enrolling_ou">Ingeschreven in:</string>
     <string name="delete_event_label">Verwijder %s</string>
     <string name="week_period_span_default_label">Week %d %s tot %s</string>
-
     <string name="syncing">Synchroniseren...</string>
     <string name="remove">Verwijderen</string>
     <string name="period_daily_title">Dagelijks</string>

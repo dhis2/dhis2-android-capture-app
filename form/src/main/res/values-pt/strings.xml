@@ -45,7 +45,6 @@
     <string name="share">Partilha</string>
     <string name="camera_permission_denied">A permissão da câmara foi negada. \Necessita de ativá-la para usar este recurso.</string>
     <string name="action_close">Fechar</string>
-    <string name="program_rules_loop_warning_message">Existe um problema de configuração que está a provocar um ciclo nas regras. Contacte o seu administrador.</string>
     <string name="copied_text">Copiado</string>
     <string name="take_photo"> Tirar fotografia</string>
     <string name="warning_error_on_complete_title">Verifique isso!</string>

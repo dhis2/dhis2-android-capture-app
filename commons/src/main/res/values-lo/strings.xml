@@ -208,7 +208,6 @@
     <string name="enrolling_ou">ລົງທະບຽນໃນ:</string>
     <string name="delete_event_label">ລົບ%s</string>
     <string name="week_period_span_default_label">ອາທິດ%d%sຫາ%s</string>
-
     <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
     <string name="remove">ລົບອອກ</string>
     <string name="period_daily_title">ທຸກໆມື້</string>
@@ -216,4 +215,5 @@
     <string name="period_monthly_title">ເດືອນ</string>
     <string name="period_yearly_title">ປີ</string>
     <string name="action_clear_all">ລຶບທັງໝົດ</string>
-</resources>
+
+    </resources>

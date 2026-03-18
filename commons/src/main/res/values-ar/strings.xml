@@ -224,7 +224,6 @@
     <string name="enrolling_ou">مسجل في:</string>
     <string name="delete_event_label">حذف %s</string>
     <string name="week_period_span_default_label">الأسابيع %d %s إلى %s</string>
-
     <string name="sync_retry">إعادة محاولة المزامنة</string>
     <string name="syncing">مزامنة...</string>
     <string name="remove">إزلة</string>
@@ -237,4 +236,5 @@
     <string name="period_six_monthly_title">ستة أشهر</string>
     <string name="period_yearly_title">سنة</string>
     <string name="action_clear_all">تنظيف الكل</string>
-</resources>
+
+    </resources>

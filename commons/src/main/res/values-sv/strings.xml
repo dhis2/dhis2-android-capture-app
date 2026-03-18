@@ -66,9 +66,9 @@
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="complete">Färdigt</string>
     <string name="discard_changes">Ignorera ändringar</string>
-
     <string name="remove">Ta bort</string>
     <string name="period_daily_title">Dagligen</string>
     <string name="period_yearly_title">År</string>
     <string name="action_clear_all">Rensa alla</string>
-</resources>
+
+    </resources>
