@@ -56,9 +56,6 @@ import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 import kotlin.coroutines.CoroutineContext
 
-const val DEFAULT = "default"
-const val SERVER_ACTION = "Server"
-const val DHIS2 = "dhis2_server"
 const val PLAY_FLAVOR = "dhisPlayServices"
 
 @OptIn(ExperimentalAtomicApi::class)
