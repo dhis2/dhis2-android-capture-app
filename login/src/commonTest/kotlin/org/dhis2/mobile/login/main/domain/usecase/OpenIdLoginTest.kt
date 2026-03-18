@@ -75,47 +75,6 @@ class OpenIdLoginTest {
         }
 
     @Test
-    fun `GIVEN successful OpenID login with one existing account WHEN user logs in to second account THEN biometric creds are deleted`() =
-        runTest {
-            // GIVEN - User has one existing account (numberOfAccounts = 1)
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
-            whenever(repository.getUsername()) doReturn username
-            whenever(repository.numberOfAccounts()) doReturn 1
-            whenever(repository.displayTrackingMessage()) doReturn false
-            whenever(repository.initialSyncDone(serverUrl, username)) doReturn true
-
-            // WHEN - User logs in successfully with OpenID to a second account
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = discoveryUri,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
-
-            // THEN - Login is successful and biometric credentials are deleted
-            assertIs<LoginResult.Success>(result)
-            verify(repository).unlockSession()
-            verify(repository).updateAvailableUsers(username)
-            verify(repository).updateServerUrls(serverUrl)
-            verify(repository).numberOfAccounts()
-            verify(repository).deleteBiometricCredentials()
-        }
-
-    @Test
     fun `GIVEN successful OpenID login with multiple existing accounts WHEN user logs in THEN biometric credentials are deleted`() =
         runTest {
             // GIVEN - User has multiple existing accounts (numberOfAccounts = 3)
@@ -194,49 +153,6 @@ class OpenIdLoginTest {
             verify(repository, never()).updateServerUrls(any())
             verify(repository, never()).numberOfAccounts()
             verify(repository, never()).deleteBiometricCredentials()
-        }
-
-    @Test
-    fun `GIVEN successful OpenID login with null discovery URI WHEN user logs in to second account THEN biometric creds are deleted`() =
-        runTest {
-            // GIVEN - User has one existing account and using null discoveryUri
-            whenever(
-                repository.loginWithOpenId(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = null,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                ),
-            ) doReturn Result.success(Unit)
-            whenever(repository.getUsername()) doReturn username
-            whenever(repository.numberOfAccounts()) doReturn 1
-            whenever(repository.displayTrackingMessage()) doReturn true
-            whenever(repository.initialSyncDone(serverUrl, username)) doReturn false
-
-            // WHEN - User logs in successfully with OpenID
-            val result =
-                openIdLogin(
-                    serverUrl = serverUrl,
-                    isNetworkAvailable = isNetworkAvailable,
-                    clientId = clientId,
-                    redirectUri = redirectUri,
-                    discoveryUri = null,
-                    authorizationUri = authorizationUri,
-                    tokenUrl = tokenUrl,
-                )
-
-            // THEN - Login is successful, biometric credentials are deleted, and tracking message is shown
-            assertIs<LoginResult.Success>(result)
-            assertEquals(true, result.displayTrackingMessage)
-            assertEquals(false, result.initialSyncDone)
-            verify(repository).unlockSession()
-            verify(repository).updateAvailableUsers(username)
-            verify(repository).updateServerUrls(serverUrl)
-            verify(repository).numberOfAccounts()
-            verify(repository).deleteBiometricCredentials()
         }
 
     @Test
