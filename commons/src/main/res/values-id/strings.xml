@@ -8,7 +8,6 @@
     <string name="cancel">Batal</string>
     <string name="yes">Iya</string>
     <string name="no">Tidak</string>
-    <string name="clear_all">hapus pilihan</string>
     <string name="navigation_list_view">Tampilan daftar</string>
     <string name="navigation_table_view">Tampilan tabel</string>
     <string name="navigation_map_view">Tampilan peta</string>
@@ -19,7 +18,6 @@
     <string name="navigation_notes">Catatan</string>
     <string name="navigation_data_entry">Data entri</string>
     <string name="navigation_tei_data">Rincian</string>
-    <string name="event_overview">Rincian</string>
     <string name="select_option">Pilih opsi</string>
     <string name="search">Pencarian</string>
     <string name="events">Even</string>
@@ -33,13 +31,10 @@
     <string name="filters_disabled">Tidak ada filter yang diterapkan</string>
     <string name="filters_title_period">Periode</string>
     <string name="filters_title_org_unit">Organisasi Satuan</string>
-    <string name="filters_title_sorting">Penyortiran</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sinkronkan</string>
     <string name="filters_title_assigned">Ditugaskan kepada saya</string>
     <string name="filters_title_date">Tanggal</string>
     <string name="select_period">Pilih tipe periode</string>
-    <string name="daily_period">Harian</string>
     <string name="weekly">Mingguan</string>
     <string name="bi_weekly">Dwiwulanan</string>
     <string name="monthly">Bulanan</string>
@@ -51,7 +46,6 @@
     <string name="state_synced">Sinkronkan</string>
     <string name="state_to_post">Untuk dikirim</string>
     <string name="state_to_update">Untuk diperbarui</string>
-    <string name="state_to_delete">Untuk dihapus</string>
     <string name="state_error">Kesalahan</string>
     <string name="state_warning">Peringatan</string>
     <string name="state_uploading">Mengunggah</string>
@@ -133,17 +127,13 @@
     <string name="section_charts">Grafik</string>
     <string name="section_charts_indicators">Grafik dan indikator</string>
 
-    <string name="login_error_dhis_version">Server ini menjalankan versi dhis yang berbeda dari 2.29. Perbarui versi server Anda atau gunakan pengujian lingkungan untuk melanjutkan.</string>
     <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
     <string name="add_image">Tambahkan gambar</string>
     <string name="add_file">Tambahkan berkas</string>
     <string name="complete">Lengkap</string>
-    <string name="default_table_header_label">Nilai</string>
     <string name="discard_changes">Hapus perubahan</string>
-    <string name="default_empty_dataset_section_label">Data</string>
     <string name="overdue_today">Hari ini</string>
     <string name="week_period_span_default_label">Minggu %d %s hingga %s</string>
-    <string name="enrollment_reopen">Buka kembali</string>
 
     <string name="syncing">Sedang sinkronisasi...</string>
     <string name="remove">Hapus</string>

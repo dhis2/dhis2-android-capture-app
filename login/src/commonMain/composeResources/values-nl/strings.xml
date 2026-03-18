@@ -4,7 +4,6 @@
     <string name="two_fa_authentication_code">Authenticatiecode</string>
     <string name="action_next">Volgende</string>
     <string name="two_fa_is_on">Twee-factor-authenticatie staat aan.</string>
-    <string name="two_fa_code">Authenticatiecode</string>
     <string name="username_hint">Gebruikersnaam</string>
     <string name="password_hint">Wachtwoord</string>
     <string name="logging_in">Aan het inloggen...</string>

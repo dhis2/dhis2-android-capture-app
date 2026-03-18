@@ -8,7 +8,6 @@
     <string name="cancel">Annuler</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
-    <string name="clear_all">effacer la sélection</string>
     <string name="navigation_list_view">Vue de liste</string>
     <string name="navigation_table_view">Vue de tableau</string>
     <string name="navigation_map_view">Vue de la carte</string>
@@ -19,7 +18,6 @@
     <string name="navigation_notes">Notes</string>
     <string name="navigation_data_entry">Saisie de données</string>
     <string name="navigation_tei_data">Details</string>
-    <string name="event_overview">Details</string>
     <string name="select_option">Sélectionnez une option</string>
     <string name="search">Chercher</string>
     <string name="events">événements</string>
@@ -33,13 +31,10 @@
     <string name="filters_disabled">Aucun flitre n\'est appliqué</string>
     <string name="filters_title_period">Période</string>
     <string name="filters_title_org_unit">Unité d\'org.</string>
-    <string name="filters_title_sorting">Trier</string>
-    <string name="filters_title_status">Statut</string>
     <string name="filters_title_state">Synchronisation</string>
     <string name="filters_title_assigned">Assigné à moi</string>
     <string name="filters_title_date">Date</string>
     <string name="select_period">Sélectionner type de période</string>
-    <string name="daily_period">Quotidien</string>
     <string name="weekly">Hebdomadaire</string>
     <string name="bi_weekly">Bi-hebdomadaire</string>
     <string name="weekly_start_wednesday">Hebdomadaire débutant un mercredi</string>
@@ -58,13 +53,10 @@
     <string name="financial_year_october">Année financière débutant par octobre</string>
     <string name="financial_year_november">Année financière débutant par Novembre</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Synchronisation</string>
     <string name="state_to_post">Envoyer</string>
     <string name="state_to_update">Prêts à actualiser</string>
-    <string name="state_to_delete">A supprimer</string>
     <string name="state_error">Erreur</string>
     <string name="state_warning">Attention</string>
     <string name="state_uploading">Téléchargement en cours</string>
@@ -154,7 +146,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Le mot de passe est manquant. Veuillez entrer le mot de passe.</string>
     <string name="login_error_null_username">Le nom d\'utilisateur est manquant. Veuillez entrer le nom d\'utilisateur.</string>
-    <string name="login_error_dhis_version">Ce serveur a une version différente de 2.29. Mettre à jour la version ou utiliser un environnement d\'essai pour continuer</string>
     <string name="login_error_no_dhis_instance">L\'URL fournie n\'est pas un serveur DHIS2.</string>
     <string name="login_error_bad_credentials">Nom d\'utilisateur ou le mot de passe sont incorrects</string>
     <string name="login_error_unknown_host">Serveur inconnu</string>
@@ -181,9 +172,7 @@
     <string name="error_min_attributes">Il n\'y a pas assez d\'attributs pour effectuer la recherche. Veuillez affiner votre recherche avec plus d\'attributs.</string>
     <string name="error_org_unit_scope">La recherche en ligne n\'est disponible que pour vos unités organisationnelles de recherche d\'utilisateurs.</string>
     <string name="error_no_internet_connection">Vous n\'êtes pas connecté. Veuillez-vous connecter et réssayer.</string>
-    <string name="unsupported_field_description">Ce champ n\'est pas disponible pour la capture mobile</string>
     <string name="add_image">Ajouter une image</string>
-    <string name="add_signature">Ajouter une signature</string>
     <string name="add_file">Ajouter un fichier</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">L\'emplacement de votre appareil est déconnecté. Veuillez l\'activer pour capturer les coordonnées</string>
@@ -191,9 +180,7 @@
     <string name="not_now">Pas maintenant</string>
     <string name="review">Vérifier</string>
     <string name="complete">Terminer</string>
-    <string name="default_table_header_label">Valeur</string>
     <string name="discard_changes">Annuler les modifications</string>
-    <string name="default_empty_dataset_section_label">Données</string>
     <string name="title_network_connection_unavailable">Connexion réseau indisponible</string>
     <string name="msg_network_connection_maps">Une connexion Internet est nécessaire pour utiliser les cartes.</string>
 
@@ -209,7 +196,6 @@
     <string name="enrolling_ou">Inscrire à:</string>
     <string name="delete_event_label">Supprimer 1%s</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
-    <string name="enrollment_reopen">rouvrir</string>
 
     <string name="sync_retry">Réessayer la synchronisation</string>
     <string name="syncing">Synchronisation...</string>

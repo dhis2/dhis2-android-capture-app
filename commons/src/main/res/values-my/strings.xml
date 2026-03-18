@@ -8,14 +8,11 @@
     <string name="navigation_programs">Programs</string>
     <string name="navigation_notes">မှတ်စု</string>
     <string name="navigation_tei_data">အသေးစိတ်များ</string>
-    <string name="event_overview">အသေးစိတ်များ</string>
     <string name="data_sets">စီမံချက်</string>
     <string name="done">Done</string>
 
     <string name="filters_title_period">အချိန်ကာလ</string>
-    <string name="filters_title_status">အခြေအနေ</string>
     <string name="filters_title_date">ရက်စွဲ</string>
-    <string name="daily_period">နေ့စဉ်</string>
     <string name="weekly">အပတ်စဉ်</string>
     <string name="monthly">လစဉ်</string>
     <string name="bi_monthly">နှစ်လတစ်ကြိမ်</string>
@@ -47,8 +44,6 @@
     <string name="section_indicators">အညွှန်းများ</string>
     <string name="section_charts">ဂရပ် ပုံစံများ</string>
     <string name="complete">ပြည့်စုံသည်။</string>
-    <string name="default_table_header_label">တန်ဖိုး</string>
-    <string name="default_empty_dataset_section_label">အချက်အလက်</string>
     <string name="remove">ဖယ်ရှားခြင်း</string>
     <string name="period_daily_title">နေ့စဉ်</string>
     <string name="period_yearly_title">ခုနှစ်</string>

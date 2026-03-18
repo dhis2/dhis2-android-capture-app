@@ -13,7 +13,6 @@
     <string name="dialog_layer_base_map_azure_aerial">Azure Aerial</string>
     <string name="dialog_layer_base_map_azure_aerial_label">Azure Aerial Labels</string>
     <string name="action_apply">Áp dụng</string>
-    <string name="dialog_layer_satellite">Xem Vệ Tinh</string>
     <string name="dialog_layer_event">Hiển thị sự kiện</string>
     <string name="dialog_layer_tei_coordinates">Hiển thị tọa độ đối tượng theo dõi</string>
     <string name="dialog_layer_heatmap">Hiển thị lớp bản đồ nhiệt độ</string>

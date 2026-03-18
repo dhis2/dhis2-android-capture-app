@@ -6,11 +6,8 @@
     <string name="no">No</string>
     <string name="navigation_programs">Programs</string>
     <string name="navigation_tei_data">Details</string>
-    <string name="event_overview">Details</string>
     <string name="data_sets">Data sets</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_date">Date</string>
-    <string name="daily_period">Daily</string>
     <string name="weekly">Weekly</string>
     <string name="monthly">Månedlige</string>
     <string name="bi_monthly">Bi-monthly</string>

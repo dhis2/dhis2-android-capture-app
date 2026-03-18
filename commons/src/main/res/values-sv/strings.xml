@@ -9,17 +9,14 @@
     <string name="navigation_programs">program</string>
     <string name="navigation_relationships">Relationer</string>
     <string name="navigation_tei_data">detaljer</string>
-    <string name="event_overview">detaljer</string>
     <string name="select_option">Välj alternativ</string>
     <string name="search">Sök</string>
     <string name="events">händelser</string>
     <string name="data_sets">dataset</string>
     <string name="tei">TEI</string>
     <string name="filters_title_period">Period</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Synkronisera</string>
     <string name="filters_title_date">Datum</string>
-    <string name="daily_period">Dagligen</string>
     <string name="weekly">Varje vecka</string>
     <string name="monthly">En gång i månaden</string>
     <string name="bi_monthly">varannan månad</string>
@@ -29,7 +26,6 @@
     <!-- State -->
     <string name="state_synced">Synkronisera</string>
     <string name="state_to_update">Att uppdatera</string>
-    <string name="state_to_delete">Att radera</string>
     <string name="state_error">Fel</string>
     <string name="state_warning">Varning</string>
     <!-- Status -->
@@ -65,15 +61,11 @@
     <string name="section_feedback">Återkoppling</string>
     <string name="section_indicators">indikatorer</string>
     <string name="section_charts">diagram</string>
-    <string name="login_error_dhis_version">Den här servern kör en dhis-version som skiljer sig från 2.29. Uppdatera din serverversion eller använd testmiljön för att fortsätta.</string>
     <string name="online_search_parsing_error">Fel vid tolkning av resultat</string>
     <string name="add_file">Lägg till fil</string>
     <string name="keep_editing">Fortsätt redigera</string>
     <string name="complete">Färdigt</string>
-    <string name="default_table_header_label">Värde</string>
     <string name="discard_changes">Ignorera ändringar</string>
-    <string name="default_empty_dataset_section_label">Data</string>
-    <string name="enrollment_reopen">Öppna igen</string>
 
     <string name="remove">Ta bort</string>
     <string name="period_daily_title">Dagligen</string>

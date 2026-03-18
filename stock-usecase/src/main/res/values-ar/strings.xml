@@ -1,38 +1,17 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_activity_home">الرئيسية</string>
-    <string name="title_activity_review">المراجعة</string>
-    <string name="action_settings">الإعدادات</string>
 
     <string name="discard">تجاهل</string>
-    <string name="recent_activity">أحدث الأنشطة</string>
-    <string name="last_synced">آخر مزامنة</string>
-    <string name="select_one">اختر واحدة</string>
 
     <!-- Sign in -->
-    <string name="server">الخادم:</string>
-    <string name="sign_in">تسجيل دخول</string>
-    <string name="sign_in_to_your_account">تسجيل الدخول إلى حسابك</string>
     <string name="username">اسم المستخدم</string>
-    <string name="password">كلمة المرور</string>
-    <string name="forgot_password">نسيت كلمة المرور؟</string>
-
-    <string name="recent_activities_loading_message">تحميل الأنشطة الأخيرة...</string>
-    <string name="recent_activities_empty_message">لم تقم بأي نشاط بعد</string>
 
     <!-- Sync -->
-    <string name="metadata_sync_in_progress">مزامنة البيانات الوصفية...</string>
     <string name="metadata_sync_error">تعذر إكمال مزامنة بيانات التعريف</string>
-    <string name="data_sync_in_progress">مزامنة البيانات...</string>
-    <string name="data_sync_error">تعذر إكمال مزامنة البيانات</string>
-    <string name="metadata_sync_completed">اكتملت مزامنة البيانات الوصفية!</string>
-    <string name="sync_completed">اكتملت المزامنة!</string>
 
     <!-- FloatingActionButtons -->
-    <string name="proceed">متابعة</string>
     <string name="review">المراجعة</string>
 
-    <string name="scan_barcode">مسح الرمز الشريطي ضوئيًا</string>
-    <string name="scanning">المسح الضوئي...</string>
     <string name="search">عنصر البحث</string>
     <string name="search_placeholder">بحث...</string>
     <string name="delete">حذف</string>
@@ -40,48 +19,17 @@
     <string name="cancel">إلغاء</string>
     <string name="from">من</string>
     <!-- Languages -->
-    <string name="language_english">اللغة الإنجليزية</string>
-    <string name="language_french">الفرنسية</string>
-    <string name="language_spanish">الإسبانية</string>
-    <string name="language_arabic">اللغة العربية</string>
-    <string name="language_russian">الروسية</string>
-
-    <string name="language">اللغة</string>
-    <string name="logout">تسجيل الخروج</string>
-
 
     <!-- Stock table -->
-    <string name="item">العنصر</string>
-    <string name="prompt_email">بريد إلكتروني</string>
-    <string name="prompt_password">كلمة المرور</string>
-    <string name="action_sign_in">تسجيل الدخول أو التسجيل</string>
-    <string name="action_sign_in_short">تسجيل دخول</string>
-    <string name="welcome">أهلاً وسهلاً بك!</string>
-    <string name="invalid_username">ليس اسم مستخدم صالحاً</string>
-    <string name="invalid_password">يجب أن تكون كلمة المرور > 5 أحرف</string>
-    <string name="login_failed">فشل تسجيل الدخول</string>
-    <string name="resync">إعادة المزامنة</string>
 
     <!-- Errors -->
-    <string name="login_error">تعذر تسجيل الدخول</string>
     <!-- Content descriptions for accessibility -->
-    <string name="content_desc_sync_info">معلومات المزامنة</string>
-    <string name="content_desc_search">بحث</string>
-    <string name="content_desc_last_sync">آخر مزامنة</string>
     <string name="confirm_transaction_label">تأكيد</string>
-    <string name="language_change_dialog_title">تأكيد إعادة التشغيل</string>
-    <string name="scan_canceled">تم إلغاء الفحص</string>
-    <string name="logout_error_message">
-        حدث خطأ أثناء تسجيل الخروج. يرجى المحاولة مرة أخرى لاحقاً.
-    </string>
-    <string name="logout_success_message">تم تسجيل الخروج بنجاح</string>
 
-    <string name="invalid_quantity">غير صالح</string>
     <string name="speech_network_error">خطأ في الشبكة</string>
     <string name="speech_network_timeout_error">انتهت مهلة تشغيل الشبكة</string>
     <string name="speech_server_error">حدث خطأ في خادم الكلام</string>
     <string name="unknown_speech_error">حدث خطأ غير معروف.</string>
-    <string name="no_network_available">لا يتوفر اتصال بالشبكة</string>
     <string name="unable_to_sync_data_no_network_available">
         غير قادر على مزامنة البيانات لعدم توفر اتصال بالشبكة
     </string>
@@ -121,8 +69,6 @@
     <string name="error_ssl">هناك مشكلة في شهادات الخادم. من فضلك ، اتصل بالمسؤول الخاص بك.</string>
     <string name="done_task">الرئيسية</string>
     <string name="back">الخلف</string>
-    <string name="no_conflicts_message">لا توجد أي تعارضات لهذا البرنامج</string>
-    <string name="action_sync">إرسال</string>
     <string name="not_saved">لم يتم حفظه</string>
     <string name="count">العدد</string>
     <string name="formatting_error">خطأ في التنسيق</string>

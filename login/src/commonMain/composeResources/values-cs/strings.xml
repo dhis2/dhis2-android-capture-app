@@ -28,7 +28,6 @@
     <string name="two_fa_disable_title">Vypnutí dvoufaktorového ověřování</string>
     <string name="two_fa_disable_desc_1">Chcete-li vypnout dvoufaktorové ověřování, otevřete aplikaci Authenticator.</string>
     <string name="two_fa_disable_desc_2">Níže zadejte kód z aplikace autentizátoru.</string>
-    <string name="two_fa_code">Ověřovací kód</string>
     <string name="two_fa_disable_button">Vypnout</string>
     <string name="two_fa_disabling_button">Vypnutí...</string>
     <string name="two_fa_disable_error">Nepodařilo se vypnout dvoufaktorové ověřování.</string>

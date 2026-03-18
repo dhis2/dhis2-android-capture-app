@@ -9,7 +9,6 @@
     <string name="cancel">Zrušit</string>
     <string name="yes">Ano</string>
     <string name="no">Ne</string>
-    <string name="clear_all">vymazat výběr</string>
     <string name="navigation_list_view">Zobrazení seznamu</string>
     <string name="navigation_table_view">Zobrazení tabulky</string>
     <string name="navigation_map_view">Zobrazení mapy</string>
@@ -21,7 +20,6 @@
     <string name="navigation_notes">Poznámky</string>
     <string name="navigation_data_entry">Vstup dat</string>
     <string name="navigation_tei_data">Detaily</string>
-    <string name="event_overview">Detaily</string>
     <string name="select_option">Vybrat možnost</string>
     <string name="search">Hledat</string>
     <string name="events">události</string>
@@ -35,8 +33,6 @@
     <string name="filters_disabled">Nejsou použity žádné filtry</string>
     <string name="filters_title_period">Období</string>
     <string name="filters_title_org_unit">Org. jednotka</string>
-    <string name="filters_title_sorting">Třídění</string>
-    <string name="filters_title_status">Stav</string>
     <string name="filters_title_state">Synchronizace</string>
     <string name="filters_title_assigned">Přiděleno mně</string>
     <string name="filters_title_date">datum</string>
@@ -45,7 +41,6 @@
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Navázalo na %s</string>
     <string name="select_period">Vybrat typ období</string>
-    <string name="daily_period">Denně</string>
     <string name="weekly">Týdně</string>
     <string name="bi_weekly">po 14ti dnech</string>
     <string name="weekly_start_wednesday">Týdně od středy</string>
@@ -58,7 +53,6 @@
     <string name="quarterly_nov">Čtvrtletně od listopadu</string>
     <string name="six_monthly">Šestiměsíční</string>
     <string name="six_monthly_april">Od dubna každých šest měsíců</string>
-    <string name="six_monthly_july">Šestiměsíčně od července</string>
     <string name="six_monthly_nov">Počínaje listopadem šest měsíců</string>
     <string name="yearly">Ročně</string>
     <string name="financial_year_april">Finanční rok začínající v dubnu</string>
@@ -66,13 +60,10 @@
     <string name="financial_year_october">Finanční rok začínající v říjnu</string>
     <string name="financial_year_november">Finanční rok začínající v listopadu</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Synchronizace</string>
     <string name="state_to_post">Poslat</string>
     <string name="state_to_update">Aktualizovat</string>
-    <string name="state_to_delete">Smazat</string>
     <string name="state_error">Chyba</string>
     <string name="state_warning">Varování</string>
     <string name="state_uploading">Nahrávám</string>
@@ -165,7 +156,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Chybí heslo. Prosím vložte heslo.</string>
     <string name="login_error_null_username">Chybí uživatelské jméno. Zadejte uživatelské jméno.</string>
-    <string name="login_error_dhis_version">Tento server používá jinou verzi DHIS než 2.29. Aktualizujte verzi serveru nebo pokračujte testovacím prostředím.</string>
     <string name="login_error_dhis_version_v2">Tento server používá verzi DHIS2 odlišnou od %s. Aktualizujte verzi serveru nebo kontaktujte svého administrátora.</string>
     <string name="login_error_unsuccessful_response">Něco se pokazilo. Zkontrolujte prosím správnost adresy URL serveru, uživatelského jména a hesla a zkuste to znovu.</string>
     <string name="login_error_error_response">Promiňte! Něco selhalo na straně serveru.</string>
@@ -225,9 +215,7 @@
     <string name="error_invalid_characters">V dotazu jsou neplatné znaky. Požádejte správce o ověření konfigurace serveru (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">Server je momentálně nedostupný. Zkuste to později.</string>
     <string name="error_no_internet_connection">Jste offline. Připojte se k internetu a zkuste to znovu.</string>
-    <string name="unsupported_field_description">Toto pole není k dispozici pro mobilní zachycení</string>
     <string name="add_image">Přidat obrázek</string>
-    <string name="add_signature">Přidat podpis</string>
     <string name="add_file">Přidat soubor</string>
     <string name="action_ok">Ok</string>
     <string name="enable_location_message">Poloha vašeho zařízení je odpojena. Povolte jej k zachycení souřadnic</string>
@@ -235,9 +223,7 @@
     <string name="not_now">Teď ne</string>
     <string name="review">Posouzení</string>
     <string name="complete">Dokončit</string>
-    <string name="default_table_header_label">Hodnota</string>
     <string name="discard_changes">Zrušit změny</string>
-    <string name="default_empty_dataset_section_label">Data</string>
     <string name="title_network_connection_unavailable">Síťové připojení není k dispozici</string>
     <string name="msg_network_connection_maps">K používání map je nutné připojení k internetu.</string>
 
@@ -272,12 +258,10 @@
 
     <string name="file_downloaded">Soubor úspěšně stažen</string>
 
-
     <string name="dialog_layer_enrollment_coordinates_v2">Zobrazit souřadnice %s </string>
     <string name="enrollment_data_section_label_V2">%s data</string>
     <string name="enrollment_coordinates_V2">%s souřadnice</string>
     <string name="enrollment_date_V2">%s datum</string>
-    <string name="enrollment_status">%s stav</string>
     <string name="break_glass_dialog_description_V2">V tomto chráněném programu musíte uvést důvod kontroly na %s. Veškerá činnost bude zaznamenána.</string>
     <string name="break_glass_reason_V2">Důvod pro kontrolu %s</string>
     <string name="edition_enrollment_is_no_open_V2">Tyto data nelze upravovat, protože %s je dokončen nebo zrušen</string>
@@ -285,13 +269,11 @@
     <string name="enrollment_cancelled_V2">%s zrušeno</string>
     <string name="new_enrollment">Nový %s</string>
     <string name="enrolling_ou">Zapsáno v:</string>
-    <string name="program_selector_V2">Program %s</string>
     <string name="more_enrollments">Více zápisů</string>
     <string name="remove_from">Odebrat z</string>
     <string name="refresh_this_record">Obnovit tento záznam</string>
     <string name="view_timeline">Zobrazit časovou osu</string>
     <string name="group_by_stage">Skupina podle etapy</string>
-
 
     <string name="event_label_completed">%s dokončeno</string>
     <string name="event_label_created">%s vytvořeno</string>
@@ -306,12 +288,9 @@
     <string name="event_label_date_in_future_message">Tato stránka %s nemůže mít datum v budoucnosti. Změňte ho prosím.</string>
     <string name="failed_insert_event_label">Nepodařilo se vložit nový %s</string>
     <string name="week_period_span_default_label">Týden %d %s až %s</string>
-    <string name="group_event_label_by_stage">Skupina %s podle etapy</string>
-    <string name="show_event_label_timeline">Zobrazit časovou osu %s </string>
     <string name="empty_tei_event_label_add">Nejsou zaregistrovány žádné stránky %s, kliknutím na tlačítko \"+\" přidáte novou.</string>
     <string name="empty_tei_event_label_no_add">Nejsou registrovány žádné stránky %s.</string>
     <string name="enrollment_date_edition_warning_event_label">Na stránkách %s jsou plánovány akce, které nebudou přeplánovány.</string>
-    <string name="enrollment_reopen">znovu otevřít</string>
 
     <string name="sync_retry">Opakování synchronizace</string>
     <string name="syncing">Probíhá synchronizace ...</string>
@@ -331,4 +310,6 @@
     <string name="not_in_totp_2fa_enrollment_mode">Není v režimu registrace TOTP 2FA</string>
 
     <string name="action_clear_all">Vymazat vše</string>
+
+    <string name="enrollment_status">%s stav</string>
 </resources>

@@ -9,7 +9,6 @@
     <string name="cancel">Скасувати</string>
     <string name="yes">Так</string>
     <string name="no">Ні</string>
-    <string name="clear_all">очистити вибір</string>
     <string name="navigation_list_view">У вигляді списку</string>
     <string name="navigation_table_view">У вигляді таблиці</string>
     <string name="navigation_map_view">У вигляді карті</string>
@@ -20,7 +19,6 @@
     <string name="navigation_notes">Примітки</string>
     <string name="navigation_data_entry">Введення даних</string>
     <string name="navigation_tei_data">Деталі</string>
-    <string name="event_overview">Деталі</string>
     <string name="select_option">Обрати опцію</string>
     <string name="search">Пошук</string>
     <string name="events">випадки</string>
@@ -34,15 +32,12 @@
     <string name="filters_disabled">Фільтрів не застосовано</string>
     <string name="filters_title_period">Період</string>
     <string name="filters_title_org_unit">Орг. підрозділ</string>
-    <string name="filters_title_sorting">Сортування</string>
-    <string name="filters_title_status">Статус</string>
     <string name="filters_title_state">Синхронізувати</string>
     <string name="filters_title_assigned">Призначено мені</string>
     <string name="filters_title_date">Дата</string>
     <string name="filters_title_event_label_date">Дата %s </string>
     <string name="filter_follow_up_label">Для подальших дій %s</string>
     <string name="select_period">Обрати тип періоду</string>
-    <string name="daily_period">Щодня</string>
     <string name="weekly">Щотижня</string>
     <string name="bi_weekly">Щодва тижні</string>
     <string name="monthly">Щомісяця</string>
@@ -54,7 +49,6 @@
     <string name="state_synced">Синхронізувати</string>
     <string name="state_to_post">Надіслати</string>
     <string name="state_to_update">Оновити</string>
-    <string name="state_to_delete">Видалити</string>
     <string name="state_error">Помилка</string>
     <string name="state_warning">Попередження</string>
     <string name="state_uploading">Завантаження</string>
@@ -147,7 +141,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">Пароль відсутній. Будь ласка, введіть пароль.</string>
     <string name="login_error_null_username">Ім\'я користувача відсутнє. Будь ласка, введіть ім\'я користувача.</string>
-    <string name="login_error_dhis_version">На цьому сервері працює інша версія dhis, ніж 2.29. Щоб продовжити, оновіть версію серверу або скористайтеся середовищем тестування.</string>
     <string name="login_error_dhis_version_v2">На цьому сервері працює версія DHIS2, що відрізняється від %s. Оновіть версію серверу або сконтактуйте з системним адміністратором.</string>
     <string name="login_error_unsuccessful_response">Сталася помилка. Будь ласка, перевірте правильність URL-адреси серверу, імені користувача та пароля і повторіть спробу.</string>
     <string name="login_error_error_response">Вибачте! На сервері сталася помилка. </string>
@@ -205,9 +198,7 @@
     <string name="error_min_attributes">Недостатньо атрибутів для виконання пошуку. Уточніть пошук за допомогою додаткових атрибутів.</string>
     <string name="error_org_unit_scope">Онлайн-пошук доступний лише для організаційних підрозділів  користувача.</string>
     <string name="error_invalid_characters">У запиті є недійсні символи. Попросіть адміністратора перевірити конфігурацію сервера (relaxedQueryChars,...).</string>
-    <string name="unsupported_field_description">Це поле недоступне в мобільній версії</string>
     <string name="add_image">Додати зображення</string>
-    <string name="add_signature">Додати підпис</string>
     <string name="add_file">Додати файл</string>
     <string name="action_ok">OK</string>
     <string name="enable_location_message">Розташування Вашого пристрою відключено. Будь ласка, увімкніть його для отримання координат</string>
@@ -215,9 +206,7 @@
     <string name="not_now">Не зараз</string>
     <string name="review">Перегляд</string>
     <string name="complete">Завершити</string>
-    <string name="default_table_header_label">Значення</string>
     <string name="discard_changes">Відхилити внесені зміни</string>
-    <string name="default_empty_dataset_section_label">Дані</string>
     <string name="overdue_today">Сьогодні</string>
     <plurals name="overdue_days">
         <item quantity="one">%d день прострочення</item>
@@ -257,7 +246,6 @@
     <string name="event_label_was_deleted">%s успішно видалено</string>
     <string name="confirm_delete_event_label">Ви впевнені, що хочете видалити %s?</string>
     <string name="week_period_span_default_label">Тиждень %d %s до %s</string>
-    <string name="enrollment_reopen">повторно відкрити</string>
 
     <string name="syncing">Синхронізація...</string>
     <string name="remove">Видалити</string>

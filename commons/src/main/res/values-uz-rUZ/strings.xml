@@ -8,7 +8,6 @@
     <string name="cancel">Бекор қилиш</string>
     <string name="yes">Ҳа</string>
     <string name="no">Йўқ</string>
-    <string name="clear_all">aniq tanlov</string>
     <string name="navigation_list_view">Roʼyxat koʼrinishi</string>
     <string name="navigation_table_view">Jadval koʼrinishi</string>
     <string name="navigation_map_view">Xarita koʼrinishi</string>
@@ -19,7 +18,6 @@
     <string name="navigation_notes">Izohlar</string>
     <string name="navigation_data_entry">Maʼlumot kiritish</string>
     <string name="navigation_tei_data">Тафсилотлари</string>
-    <string name="event_overview">Тафсилотлари</string>
     <string name="select_option">Variant tanlang</string>
     <string name="search">Izlash</string>
     <string name="data_sets">Maʼlumotlar toʼplami</string>
@@ -30,13 +28,10 @@
     <string name="filters_disabled">Hech qanday filtr qoʼllanilmagan</string>
     <string name="filters_title_period">davr</string>
     <string name="filters_title_org_unit">Tashkiliy boʼlim</string>
-    <string name="filters_title_sorting">Tartiblash</string>
-    <string name="filters_title_status">Status</string>
     <string name="filters_title_state">Sinxronlash</string>
     <string name="filters_title_assigned">Menga berilgan vakolat</string>
     <string name="filters_title_date">Sana</string>
     <string name="select_period">Davr turini tanlash</string>
-    <string name="daily_period">Кунлик</string>
     <string name="weekly">Ҳафталик</string>
     <string name="bi_weekly">Juft hafta</string>
     <string name="monthly">Ойлик</string>
@@ -48,7 +43,6 @@
     <string name="state_synced">Sinxronlash</string>
     <string name="state_to_post">Yuborish uchun</string>
     <string name="state_to_update">Yangilash uchun</string>
-    <string name="state_to_delete">Oʼchirib tashlash uchun</string>
     <string name="state_error">Xatolik</string>
     <string name="state_warning">Ogohlantirish</string>
     <string name="state_relationship">Oʼzaro aloqa</string>
@@ -116,7 +110,6 @@
     <string name="section_feedback">Fikr-mulohaza</string>
     <string name="section_indicators">Koʼrsatgichlar</string>
     <string name="section_charts">Diagrammalar</string>
-    <string name="login_error_dhis_version">Ushbu server 2.29 dan farqli versiyani ishlatmoqda. Server versiyasini yangilang yoki davom etish uchun sinov muddatidan foydalaning.</string>
     <string name="login_error_unsuccessful_response">Nimadir notoʼgʼri bajarildi. Server URL manzili, foydalanuvchi nomi va parol toʼgʼri ekanligini tekshiring va qaytadan urining.</string>
     <string name="online_search_parsing_error">Natijalarni tahlil qilishda xatolik yuz berdi</string>
     <string name="add_image">Rasm qoʼshish</string>
@@ -125,11 +118,8 @@
     <string name="keep_editing">Tahrirni davom eting</string>
     <string name="review">Ko‘rib chiqish</string>
     <string name="complete">Bajarildi</string>
-    <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Oʼzgartirishlar bekor qilinsin</string>
-    <string name="default_empty_dataset_section_label">Маълумот</string>
     <string name="overdue_today">бугун</string>
-    <string name="enrollment_reopen">qayta ochish</string>
 
     <string name="syncing">Sinxronizatsiyalanmoqda...</string>
     <string name="remove">Олиб ташлаш</string>

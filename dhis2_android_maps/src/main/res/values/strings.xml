@@ -13,7 +13,6 @@
     <string name="dialog_layer_base_map_azure_aerial">Azure Aerial</string>
     <string name="dialog_layer_base_map_azure_aerial_label">Azure Aerial Labels</string>
     <string name="action_apply">Apply</string>
-    <string name="dialog_layer_satellite">Show satellite view</string>
     <string name="dialog_layer_event">Show events</string>
     <string name="dialog_layer_tei_coordinates">Show tei coordinates</string>
     <string name="dialog_layer_heatmap">Show heatmap layer</string>

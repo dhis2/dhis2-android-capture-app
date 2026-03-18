@@ -9,7 +9,6 @@
     <string name="cancel">Cancelar</string>
     <string name="yes">Sí</string>
     <string name="no">No</string>
-    <string name="clear_all">Borrar selección</string>
     <string name="navigation_list_view">Vista de lista</string>
     <string name="navigation_table_view">Vista de tabla</string>
     <string name="navigation_map_view">Vista del mapa</string>
@@ -21,7 +20,6 @@
     <string name="navigation_notes">Notas</string>
     <string name="navigation_data_entry">Introducción de datos</string>
     <string name="navigation_tei_data">Detalles</string>
-    <string name="event_overview">Detalles</string>
     <string name="select_option">Seleccionar opción</string>
     <string name="search">Buscar</string>
     <string name="events">Eventos</string>
@@ -35,8 +33,6 @@
     <string name="filters_disabled">Filtros desactivados</string>
     <string name="filters_title_period">Periodo</string>
     <string name="filters_title_org_unit">Unidad Org.</string>
-    <string name="filters_title_sorting">Orden</string>
-    <string name="filters_title_status">Estado</string>
     <string name="filters_title_state">Sincronizado</string>
     <string name="filters_title_assigned">Asignado a mí</string>
     <string name="filters_title_date">Fecha</string>
@@ -45,7 +41,6 @@
     <string name="filters_title_enrollment_status">@string/enrollment_status</string>
     <string name="filter_follow_up_label">Seguido %s</string>
     <string name="select_period">Seleccionar tipo de periodo</string>
-    <string name="daily_period">Diario</string>
     <string name="weekly">Semanal</string>
     <string name="bi_weekly">Quincenal</string>
     <string name="weekly_start_wednesday">Semanal con inicio el miércoles</string>
@@ -58,7 +53,6 @@
     <string name="quarterly_nov">Trimestral con inicio en noviembre</string>
     <string name="six_monthly">Semestral</string>
     <string name="six_monthly_april">Semestral a partir de abril</string>
-    <string name="six_monthly_july">Semestral con inicio en julio</string>
     <string name="six_monthly_nov">Semestral con inicio en noviembre</string>
     <string name="yearly">Anual</string>
     <string name="financial_year_april">Año fiscal con inicio en abril</string>
@@ -66,13 +60,10 @@
     <string name="financial_year_october">Año fiscal con inicio en octubre</string>
     <string name="financial_year_november">Año fiscal con inicio en noviembre</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Sincronizado</string>
     <string name="state_to_post">Por enviar</string>
     <string name="state_to_update">Para actualizar</string>
-    <string name="state_to_delete">Para borrar</string>
     <string name="state_error">Error</string>
     <string name="state_warning">Advertencia</string>
     <string name="state_uploading">Subiendo</string>
@@ -165,7 +156,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">La contraseña está vacía. Ingrese la contraseña.</string>
     <string name="login_error_null_username">El usuario está vacío. Ingrese el usuario.</string>
-    <string name="login_error_dhis_version">Este servidor trabaja sobre una versión de dhis distinta a 2.29. Actualice el servidor o utilize el entorno de pruebas para continuar.</string>
     <string name="login_error_dhis_version_v2">Este servidor tiene una version de DHIS2 diferente de %s. Actualice su servidor o contacte a su administrador.</string>
     <string name="login_error_unsuccessful_response">Algo ha ido mal. Por favor, compruebe que tanto la url del servidor como el usuario y contraseña son correctos y pruebe otra vez.</string>
     <string name="login_error_error_response">Disculpe, hubo un error del lado del servidor.</string>
@@ -225,9 +215,7 @@
     <string name="error_invalid_characters">La consulta contiene caracteres inválidos. Por favor contacte a su administrador para verificar la configuración del servidor (relaxedQueryChars,...).</string>
     <string name="error_server_unavailable">El servidor no está disponible actualmente. Vuelve a intentarlo más tarde.</string>
     <string name="error_no_internet_connection">Estas desconectado. Conéctese a Internet e inténtelo nuevamente.</string>
-    <string name="unsupported_field_description">Este campo no está disponible para la captura por móvil.</string>
     <string name="add_image">Añadir imagen</string>
-    <string name="add_signature">Añadir firma</string>
     <string name="add_file">Añadir archivo</string>
     <string name="action_ok">De acuerdo</string>
     <string name="enable_location_message">La ubicación de su dispositivo está desconectada. Por favor habilítela para capturar coordenadas. </string>
@@ -235,9 +223,7 @@
     <string name="not_now">Ahora no</string>
     <string name="review">Revisar</string>
     <string name="complete">Completar</string>
-    <string name="default_table_header_label">Valor</string>
     <string name="discard_changes">Descartar los cambios</string>
-    <string name="default_empty_dataset_section_label">Datos</string>
     <string name="title_network_connection_unavailable">Conexión de red no disponible.</string>
     <string name="msg_network_connection_maps">Se requiere una conexión a Internet para poder utilizar los mapas.</string>
 
@@ -279,7 +265,6 @@
 
     <string name="file_downloaded">Archivo descargado correctamente</string>
 
-
     <!--Enrollment labels-->
     <plurals name="enrollment">
         <item quantity="one">Registro</item>
@@ -290,7 +275,6 @@
     <string name="enrollment_data_section_label_V2">%s datos</string>
     <string name="enrollment_coordinates_V2">%s coordenadas</string>
     <string name="enrollment_date_V2">%s fecha</string>
-    <string name="enrollment_status">%s estado</string>
     <string name="break_glass_dialog_description_V2">Debes proporcionar un motivo para consultar %s en este programa protegido. Toda la actividad será registrada.</string>
     <string name="break_glass_reason_V2">Motivo para consultar %s</string>
     <string name="edition_enrollment_is_no_open_V2">Estos datos no se pueden editar porque %s está completado o cancelado.</string>
@@ -298,13 +282,11 @@
     <string name="enrollment_cancelled_V2">%s se ha cancelado</string>
     <string name="new_enrollment">Nuevo %s</string>
     <string name="enrolling_ou">Inscrito en:</string>
-    <string name="program_selector_V2">Programa %s</string>
     <string name="more_enrollments">Más inscripciones</string>
     <string name="remove_from">Eliminar de</string>
     <string name="refresh_this_record">Actualizar este registro</string>
     <string name="view_timeline">Ver como línea de tiempo</string>
     <string name="group_by_stage">Ver por etapa</string>
-
 
     <!-- Event -->
     <plurals name="event_label">
@@ -325,12 +307,9 @@
     <string name="event_label_date_in_future_message">%s no puede tener una fecha en el futuro. Por favor, modifíquela.</string>
     <string name="failed_insert_event_label">No fue posible insertar %s</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
-    <string name="group_event_label_by_stage">Agrupar %s por etapa </string>
-    <string name="show_event_label_timeline">Mostrar línea de tiempo de %s</string>
     <string name="empty_tei_event_label_add">No hay %s registrados. Haz clic en “+” para agregar uno nuevo.</string>
     <string name="empty_tei_event_label_no_add">No hay %s registrados. </string>
     <string name="enrollment_date_edition_warning_event_label">Hay %s programados que no serán reprogramados</string>
-    <string name="enrollment_reopen">Reabrir</string>
 
     <string name="sync_retry">Reintentar sincronización</string>
     <string name="syncing">Sincronizando...</string>
@@ -348,4 +327,6 @@
     <string name="database_import_failed">Importación de la base de datos fallida</string>
     <string name="invalid_file">Archivo no válido</string>
     <string name="action_clear_all">Limpiar todo</string>
+
+    <string name="enrollment_status">%s estado</string>
 </resources>

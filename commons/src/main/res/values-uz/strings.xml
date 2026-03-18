@@ -8,7 +8,6 @@
     <string name="cancel">Бекор қилиш</string>
     <string name="yes">Ҳа</string>
     <string name="no">Йўқ</string>
-    <string name="clear_all">аниқ танлов</string>
     <string name="navigation_list_view">Рўйхат кўриниши</string>
     <string name="navigation_table_view">Жадвал кўриниши</string>
     <string name="navigation_map_view">Харита кўриниши</string>
@@ -19,7 +18,6 @@
     <string name="navigation_notes">Изоҳлар</string>
     <string name="navigation_data_entry">Маълумот киритиш</string>
     <string name="navigation_tei_data">Тафсилотлари</string>
-    <string name="event_overview">Тафсилотлари</string>
     <string name="select_option">Вариант танланг</string>
     <string name="search">Қидириш</string>
     <string name="events">ҳодиса/тадбирлар</string>
@@ -33,13 +31,10 @@
     <string name="filters_disabled">Ҳеч қандай фильтр қўлланилмаган</string>
     <string name="filters_title_period">Давр</string>
     <string name="filters_title_org_unit">Ташкилий бўлим</string>
-    <string name="filters_title_sorting">Тартиблаш</string>
-    <string name="filters_title_status">Статус</string>
     <string name="filters_title_state">Синхронлаш</string>
     <string name="filters_title_assigned">Менга берилган ваколат</string>
     <string name="filters_title_date">Сана</string>
     <string name="select_period">Давр турини танлаш</string>
-    <string name="daily_period">Кунлик</string>
     <string name="weekly">Ҳафталик</string>
     <string name="bi_weekly">Жуфт ҳафталик</string>
     <string name="weekly_start_wednesday">Чоршанба кунидан бошлаб ҳар ҳафта</string>
@@ -58,13 +53,10 @@
     <string name="financial_year_october">Молиявий йил Октябрдан бошлаб</string>
     <string name="financial_year_november">Молиявий йил Ноябрдан бошлаб</string>
 
-
-
     <!-- State -->
     <string name="state_synced">Синхронлаш</string>
     <string name="state_to_post">Юбориш учун</string>
     <string name="state_to_update">Янгилаш учун</string>
-    <string name="state_to_delete">Ўчириб ташлаш учун</string>
     <string name="state_error">Хатолик</string>
     <string name="state_warning">Огоҳлантириш</string>
     <string name="state_uploading">Юкланмоқда</string>
@@ -141,11 +133,8 @@
     <string name="section_charts">Диаграммалар</string>
     <string name="section_charts_indicators">Диаграммалар ва индикаторлар</string>
 
-    <string name="login_error_dhis_version">Ушбу сервер 2.29 дан фарқли версияни ишлатмоқда. Сервер версиясини янгиланг ёки давом этиш учун синов муддатидан фойдаланинг.</string>
     <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
-    <string name="unsupported_field_description">Ушбу сатр мобил назорат учун мавжуд эмас</string>
     <string name="add_image">Расм қўшиш</string>
-    <string name="add_signature">Имзо қўшинг</string>
     <string name="add_file">Файл қўшиш</string>
     <string name="action_ok">Яхши</string>
     <string name="enable_location_message">Сизнинг қўрилмангиз интернет алоқаси узилди. Илтимос, координаталарни олиш учун уни ёқинг</string>
@@ -153,12 +142,9 @@
     <string name="not_now">Hozir emas</string>
     <string name="review">Кўриб чиқиш</string>
     <string name="complete">Тўлдириш</string>
-    <string name="default_table_header_label">Қиймат</string>
     <string name="discard_changes">Ўзгартиришлар бекор қилинсин</string>
-    <string name="default_empty_dataset_section_label">Маълумот</string>
     <string name="overdue_today">Бугун</string>
     <string name="enrolling_ou">Қайд этилган:</string>
-    <string name="enrollment_reopen">қайта очиш</string>
 
     <string name="syncing">Синхронизацияланмоқда...</string>
     <string name="remove">Олиб ташлаш</string>

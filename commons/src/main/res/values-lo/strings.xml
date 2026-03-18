@@ -9,7 +9,6 @@
     <string name="cancel">Cancel</string>
     <string name="yes">ແມ່ນ</string>
     <string name="no">ບໍ່ມີ</string>
-    <string name="clear_all">ລຶບການເລືອກ</string>
     <string name="navigation_list_view">ສະແດງຮູບແບບລາຍການ</string>
     <string name="navigation_table_view">ເບີ່ງຕາຕະລາງ</string>
     <string name="navigation_map_view">ເບີ່ງແຜ່ນທີ່</string>
@@ -20,7 +19,6 @@
     <string name="navigation_notes">ຂໍ້ຄວາມ</string>
     <string name="navigation_data_entry">ປ້ອນຂໍ້ມູນ</string>
     <string name="navigation_tei_data">ລາຍລະອຽດ</string>
-    <string name="event_overview">ລາຍລະອຽດ</string>
     <string name="select_option">ເລືອກທາງເລືອກ</string>
     <string name="search">ຄົນຫາ</string>
     <string name="events">ເຫດການ</string>
@@ -34,14 +32,11 @@
     <string name="filters_disabled">ບໍ່ໄດ້ໃຊ້ຕົວກອງ</string>
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
     <string name="filters_title_org_unit">ຫົວ​ໜ່ວຍ​ການ​ຈັດ​ຕັ້ງ</string>
-    <string name="filters_title_sorting">ການຈັດຮຽງ</string>
-    <string name="filters_title_status">ສະຖານະ</string>
     <string name="filters_title_state">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="filters_title_assigned">ມອບໝາຍໃຫ້ຂ້ອຍ</string>
     <string name="filters_title_date">ວັນທີ່</string>
     <string name="filter_follow_up_label">ຕິດຕາມ%s</string>
     <string name="select_period">​ເລືອກ​ໄລ​ຍະ​ເວ​ລາ​ປະ​ເພດ​ຕ່າງໆ</string>
-    <string name="daily_period">ທຸກໆມື້</string>
     <string name="weekly">ລາຍອາທິດ</string>
     <string name="bi_weekly">ສອງອາທິດຕໍ່ຄັ້ງ</string>
     <string name="monthly">ລາຍເດືອນ</string>
@@ -53,7 +48,6 @@
     <string name="state_synced">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນ</string>
     <string name="state_to_post">ສົ່ງ</string>
     <string name="state_to_update">ຕ້ອງການອັບເດດ</string>
-    <string name="state_to_delete">ເພື່ອລືບອອກ</string>
     <string name="state_error">ເກີດການຜິດພາດ</string>
     <string name="state_warning">ແຈ້ງເຕືອນ</string>
     <string name="state_uploading">ກຳລັງອັບໂຫຼດ</string>
@@ -143,7 +137,6 @@
     <!--SDK error codes-->
     <string name="login_error_null_pass">ບໍ່ມີລະຫັດຜ່ານ. ກະລຸນາໃສ່ລະຫັດຜ່ານ.</string>
     <string name="login_error_null_username">ບໍ່ມີຊື່ຜູ້ໃຊ້. ກະລຸນາປ້ອນຊື່ຜູ້ໃຊ້</string>
-    <string name="login_error_dhis_version">ຄອມພີວເຕີໜ່ວຍແມ່ກໍາລັງທໍາງານກັບລະບົບ DHIS2 ລຸ້ນສູງກ່ວາ 2.29. ກະລຸນາ ນໍາໃຊ້ລຸນທີ່ສູງກ່ວາ ຫຼື ນໍາໃຊ້ລະບົບທົດລອງແທນ</string>
     <string name="login_error_dhis_version_v2">ຄອມພິວເຕີໜ່ວຍແມ່ເຄື່ອງນີ້ກຳລັງໃຊ້ເວີຊັນ DHIS2 ທີ່ແຕກຕ່າງຈາກ%s . ອັບເດດລຸ່ນຂອງຄອມພິວເຕີເຄື່ອງແມ່ຂອງທ່ານ ຫຼື ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="login_error_unsuccessful_response">ມີບາງສິ່ງບາງຢ່າງຜິດພາດ. ກະລຸນາກວດເບິ່ງທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່, ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານວ່າຖືກຕ້ອງແລ້ວ ແລ້ວລອງໃໝ່ອີກຄັ້ງ.</string>
     <string name="login_error_error_response">ຂໍອາໄພ! ມີບາງຢ່າງລົ້ມເຫຼວໃນເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່.</string>
@@ -199,9 +192,7 @@
     <string name="error_min_attributes">ຄຸນລັກສະນະບໍ່ພຽງພໍທີ່ຈະດໍາເນີນການຄົ້ນຫາ. ກະລຸນາປັບປຸງການຄົ້ນຫາຂອງທ່ານດ້ວຍຄຸນລັກສະນະເພີ່ມເຕີມ.</string>
     <string name="error_org_unit_scope">ການຄົ້ນຫາອອນລາຍໃຊ້ໄດ້ກັບຫົວຫນ່ວຍການຈັດຕັ້ງທີ່ຄົ້ນຫາຜູ້ໃຊ້ຂອງທ່ານເທົ່ານັ້ນ.</string>
     <string name="error_no_internet_connection">ທ່ານອອຟລາຍຢູ່. ເຊື່ອມຕໍ່ອິນເຕີເນັດ ແລະ ລອງໃໝ່ອີກຄັ້ງ</string>
-    <string name="unsupported_field_description">ຫ້ອງນີ້ຂໍ້ມູນບໍ່ສາມາດໃຊ້ໄດ້ສໍາລັບການຈັບພາບມືຖື</string>
     <string name="add_image">ເພີ່ມຮູບພາບ</string>
-    <string name="add_signature">ເພີ່ມລາຍເຊັນ</string>
     <string name="add_file">ເອົາຟາຍຂໍ້ມູນເຂົ້າ</string>
     <string name="action_ok">ຕົກລົງ</string>
     <string name="enable_location_message">ສະຖານທີ່ອຸປະກອນຂອງທ່ານຖືກຕັດການເຊື່ອມຕໍ່. ກະລຸນາເປີດໃຊ້ມັນເພື່ອບັນທຶກພິກັດ</string>
@@ -209,9 +200,7 @@
     <string name="not_now">ບໍ່​ແມ່ນ​ຕອນ​ນີ້</string>
     <string name="review">ທົບທວນຄືນ</string>
     <string name="complete">ສຳເລັດແລ້ວ</string>
-    <string name="default_table_header_label">Value</string>
     <string name="discard_changes">ລຶບການປ່ຽນແປງ</string>
-    <string name="default_empty_dataset_section_label">ຂໍ້ມູນ</string>
     <string name="title_network_connection_unavailable">ການເຊື່ອມຕໍ່ເຄືອຂ່າຍບໍ່ສາມາດໃຊ້ໄດ້</string>
     <string name="msg_network_connection_maps">ຈຳເປັນຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດເພື່ອໃຊ້ແຜນທີ່.</string>
 
@@ -219,7 +208,6 @@
     <string name="enrolling_ou">ລົງທະບຽນໃນ:</string>
     <string name="delete_event_label">ລົບ%s</string>
     <string name="week_period_span_default_label">ອາທິດ%d%sຫາ%s</string>
-    <string name="enrollment_reopen">ເປີດຄືນໃໝ່</string>
 
     <string name="syncing">ກຳລັງຊິ້ງຂໍ້ມູນ</string>
     <string name="remove">ລົບອອກ</string>

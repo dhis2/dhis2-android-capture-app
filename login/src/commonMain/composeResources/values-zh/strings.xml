@@ -27,7 +27,6 @@
     <string name="two_fa_disable_title">关闭双因素身份验证</string>
     <string name="two_fa_disable_desc_1">要禁用双因素身份验证，请打开身份验证程序。</string>
     <string name="two_fa_disable_desc_2">在下方输入验证程序中的代码。</string>
-    <string name="two_fa_code">验证码</string>
     <string name="two_fa_disable_button">关闭</string>
     <string name="two_fa_disabling_button">关闭...</string>
     <string name="two_fa_disable_error">未关闭双因素身份验证。</string>
