@@ -2,7 +2,11 @@ package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
@@ -32,7 +36,6 @@ import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
-
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
@@ -208,4 +211,109 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             value = displayListFieldsUIModel.address,
         ),
     )
+
+    // --- Methods for the TB Program search flow test ---
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkAddNewTEIButtonIsDisplayedAndEnabled() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("ADD_NEW_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("ADD_NEW_BUTTON")
+            .assertIsDisplayed()
+            .assertIsEnabled()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkFirstSearchParamIsBarcodeOrQR() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+        composeTestRule
+            .onAllNodesWithTag("SEARCH_PARAM_ITEM")[0]
+            .assert(
+                hasAnyDescendant(
+                    hasContentDescription("QR Code Icon") or
+                        hasContentDescription("Barcode Icon"),
+                ),
+            )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchParamCount(expectedCount: Int) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+        val count = composeTestRule
+            .onAllNodesWithTag("SEARCH_PARAM_ITEM")
+            .fetchSemanticsNodes()
+            .size
+        assert(count == expectedCount) {
+            "Expected $expectedCount search parameters, but found $count"
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchButtonIsDisabled() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("SEARCH_BUTTON").assertIsNotEnabled()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchButtonIsEnabled() {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("SEARCH_BUTTON").assertIsEnabled()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun typeOnSearchParameter(label: String, value: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
+        composeTestRule.onNodeWithText(label).performClick()
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
+        composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun clickOnClearSearch() {
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Clear search"), TIMEOUT)
+        composeTestRule.onNodeWithText("Clear search").performClick()
+        composeTestRule.waitForIdle()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkFocusedFieldShowsOperatorSupportingText() {
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Exact matches only") or
+                hasText("Must match the start of the value") or
+                hasText("Must match the end of the value"),
+            TIMEOUT,
+        )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkMinCharactersErrorIsDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Enter at least", substring = true),
+            TIMEOUT,
+        )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkMinAttributesWarningIsDisplayed() {
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("You need to enter at least", substring = true),
+            TIMEOUT,
+        )
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchResultCount(expectedCount: Int) {
+        composeTestRule.waitForIdle()
+        val nodes = composeTestRule
+            .onAllNodesWithTag("LIST_CARD_ITEM_TAG")
+            .fetchSemanticsNodes()
+        assert(nodes.size == expectedCount) {
+            "Expected $expectedCount search results, but found ${nodes.size}"
+        }
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    fun checkSearchResultDisplayed(teiName: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasText(teiName, substring = true), TIMEOUT)
+        composeTestRule.onNodeWithText(teiName, substring = true).assertIsDisplayed()
+    }
 }
