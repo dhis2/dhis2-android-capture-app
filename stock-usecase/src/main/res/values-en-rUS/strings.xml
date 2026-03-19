@@ -1,7 +1,9 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- FloatingActionButtons -->
     <string name="review">Review</string>
 
     <string name="cancel">Cancel</string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Something went wrong. Please check that server URL, username and password are correct and try again.</string>
     <string name="login_error_unknown_host">Unknown server</string>

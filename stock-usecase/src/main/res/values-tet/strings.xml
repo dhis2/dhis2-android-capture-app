@@ -2,10 +2,13 @@
     <string name="title_activity_home">Pájina inisial</string>
 
     <string name="discard">Soe</string>
+    <!-- Sign in -->
     <string name="username">Utilizador nia Naran</string>
+
     <string name="delete">Soe</string>
     <string name="ok">OK</string>
     <string name="cancel">Kansela</string>
+
     <string name="done_task">Pájina inisial</string>
     <string name="back">Ba kotuk</string>
     <string name="count">Konta</string>

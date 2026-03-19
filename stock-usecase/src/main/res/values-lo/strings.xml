@@ -13,13 +13,19 @@
     <string name="delete">ລົບ</string>
     <string name="ok">​ຕົກ​ລົງ</string>
     <string name="cancel">ຍົກເລີກ</string>
+
     <string name="from">ຈາກ</string>
+    <!-- Languages -->
+
+    <!-- Settings -->
 
     <!-- Stock table -->
     <string name="quantity">ປະລິມານ</string>
 
     <!-- Errors -->
     <string name="facilities_load_error">ບໍ່ສາມາດໂຫຼດລາຍຊື່ສະຖານທີ່ບໍລິການທີ່ມີຢູ່ໄດ້</string>
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">ຢືນຢັນ</string>
 
     <string name="speech_network_error">ຂໍ້ຜິດພາດທາງເຄື່ອຂ່າຍ</string>
@@ -28,6 +34,7 @@
 
     <string name="unable_to_sync_data_no_network_available">
 ບໍ່ສາມາດ ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນຂໍ້ມູນໄດ້ເນື່ອງຈາກບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ</string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">ມີບາງສິ່ງບາງຢ່າງຜິດພາດ. ກະລຸນາກວດເບິ່ງທີ່ຢູ່ຂອງເຄື່ອງຄອມພິວເຕີໜ່ວຍແມ່, ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານວ່າຖືກຕ້ອງແລ້ວ ແລ້ວລອງໃໝ່ອີກຄັ້ງ.</string>
     <string name="login_error_error_response">Oops! ມີບາງສິ່ງບາງຢ່າງຜິດພາດທາງດ້ານຄອມພິວເຕີໜ່ວຍແມ່</string>

@@ -2,6 +2,7 @@
     <string name="title_activity_home">Головна</string>
 
     <string name="discard">Ігнорувати</string>
+    <!-- Sign in -->
     <string name="username">Ім\'я користувача</string>
 
     <!-- FloatingActionButtons -->
@@ -12,10 +13,12 @@
     <string name="delete">Видалити</string>
     <string name="ok">ОК</string>
     <string name="cancel">Скасувати</string>
-    <string name="from">Від</string>
 
-    <!-- Stock table -->
+    <string name="from">Від</string>
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">Підтвердити</string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Сталася помилка. Будь ласка, перевірте правильність URL-адреси серверу, імені користувача та пароля і повторіть спробу.</string>
     <string name="login_error_unknown_host">Невідомий сервер</string>

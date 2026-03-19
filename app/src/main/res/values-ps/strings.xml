@@ -1,10 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">تېروته</string>
+    <!-- SyncService strings: -->
+
     <string name="sync_events">پېښې</string>
+
     <string name="referral">مراجعه</string>
 
     <string name="account_recovery">حساب بېرته ترلاسه کړئ</string>
+
     <!--PERIOD-->
     <string name="DAILY">ورځني [ د مودې ډول ]</string>
     <string name="WEEKLY">اوونیز</string>
@@ -14,6 +18,8 @@
     <string name="action_share_zero_items">شریک یې کړئ</string>
     <!-- Input hints -->
     <string name="search">جستجو</string>
+    <!-- Status -->
+
     <string name="event_open">خلاص یې کړئ</string>
     <string name="read_only">یوازې یې ولولئ</string>
     <string name="completed">بشپړ شوی</string>
@@ -21,10 +27,14 @@
     <string name="active">فعال</string>
 
     <string name="state_error">تېروته</string>
+
+    <!--Completion-->
+
     <!--Event initial-->
     <string name="update">تجدید یا نوي یې کړئ</string>
     <string name="latitude">لېټېټيوډ</string>
     <string name="longitude">لانګېټيوډ</string>
+
     <!--DataSet initial-->
     <string name="report_period">د راپور ورکولو موده</string>
     <!--Event Detail-->
@@ -35,9 +45,10 @@
 
     <string name="active_programs">فعال پروګرامونه</string>
     <string name="enroll">نوم لیکنه یا شمولیت</string>
+
+    <!--TEI DASHBOARD-->
     <string name="edit">درست یې کړئ</string>
     <string name="deactivate">غېرې فعال یې کړئ</string>
-    <!--DONE TASKS-->
     <string name="done_task">کور پاڼه</string>
     <string name="wipe_data_ok">د منلو وړ</string>
     <string name="wipe_data_no">رد یې کړئ [ ژباړه ـ ردول ]</string>
@@ -50,9 +61,12 @@
     <!--FORM FRAGMENT-->
     <string name="report_date">د راپور نېټه</string>
     <string name="add_note">نوټ ور اضافه کړئ</string>
+    <!--EVENT SUMMARY-->
+
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">د پېښې نېټه</string>
     <string name="period">معیاد</string>
+    <!-- RELATIONSHIPS -->
     <string name="next">راتلونکی</string>
     <string name="button_ok">سم دی</string>
     <string name="qr_events">پېښې</string>
@@ -66,7 +80,6 @@
     <string name="state_warning">خبرداری</string>
     <string name="state_relationship">اړیکه</string>
     <string name="action_close">بند یې کړئ</string>
-
     <string name="filters_title_period">معیاد</string>
     <string name="filter_period_today">نن ورځ</string>
     <string name="filter_period_yesterday">پرونۍ ورځ</string>

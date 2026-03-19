@@ -1,10 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">غلطی</string>
+    <!-- SyncService strings: -->
+
     <string name="sync_events">تقریبات</string>
+
     <string name="referral">حوالہ دیتے ہیں</string>
 
     <string name="account_recovery">اکاؤنٹ بحالی</string>
+
     <!--PERIOD-->
     <string name="DAILY">روزانہ</string>
     <string name="WEEKLY">ہفتہ وار</string>
@@ -13,6 +17,8 @@
     <string name="action_share_zero_items">بانٹیں</string>
     <!-- Input hints -->
     <string name="search">تلاش کریں</string>
+    <!-- Status -->
+
     <string name="event_open">کھلا</string>
     <string name="read_only">صرف دیکھنے کی حد تک</string>
     <string name="completed">مکمل</string>
@@ -20,12 +26,14 @@
     <string name="active">فعال</string>
 
     <string name="state_error">غلطی</string>
+
     <!--Completion-->
 
     <!--Event initial-->
     <string name="update">اپڈیٹ</string>
     <string name="latitude">طول</string>
     <string name="longitude">لمبائی</string>
+
     <!--Event Detail-->
     <string name="due_date">اخری تاریخ</string>
     <string name="cancel">منسوخ</string>
@@ -34,9 +42,10 @@
 
     <string name="active_programs">فعال پروگرام</string>
     <string name="enroll">اندراج کریں</string>
+
+    <!--TEI DASHBOARD-->
     <string name="edit">ترمیم</string>
     <string name="deactivate">غیر فعال</string>
-    <!--DONE TASKS-->
     <string name="done_task">گھر</string>
     <string name="wipe_data_no">منسوخ</string>
     <string name="SYNC_MANAGER">ØªØ±ØªÛØ¨Ø§Øª</string>
@@ -48,9 +57,12 @@
     <!--FORM FRAGMENT-->
     <string name="report_date">رپورٹ کی تاریخ</string>
     <string name="add_note">نوٹ شامل</string>
+    <!--EVENT SUMMARY-->
+
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">واقعات کی تاریخ</string>
     <string name="period">مدت</string>
+    <!-- RELATIONSHIPS -->
     <string name="next">اگلہ</string>
     <string name="button_ok">ٹھیک</string>
     <string name="qr_attributes">خصوصیات</string>
@@ -66,7 +78,7 @@
     <string name="state_warning">وارنگ</string>
     <string name="state_relationship">تعلقات</string>
     <string name="action_close">بند</string>
-
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="polygon">کثیر زبان</string>
     <string name="filters_title_period">مدت</string>
     <string name="filter_period_today">آج</string>

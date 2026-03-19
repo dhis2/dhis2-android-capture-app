@@ -1,18 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">Error</string>
+    <!-- SyncService strings: -->
+
     <string name="sync_events">Events</string>
+
     <string name="account_recovery">Account recovery</string>
+
     <!--PERIOD-->
     <string name="DAILY">Daily</string>
     <string name="WEEKLY">Weekly</string>
     <string name="MONTHLY">Monthly</string>
     <string name="YEARLY">Yearly</string>
+    <!-- Status -->
+
     <string name="event_open">Open</string>
     <string name="read_only">Read only</string>
     <string name="active">Active</string>
 
     <string name="state_error">Error</string>
+
+    <!--Completion-->
+
     <!--Event initial-->
     <string name="update">Update</string>
     <!--Event Detail-->
@@ -22,9 +31,11 @@
     <string name="wipe_data_no">Cancel</string>
     <string name="SYNC_MANAGER">Settings</string>
     <string name="settingsTwoFAStatus">Status</string>
-    <!--endregion-->
+    <!--EVENT SUMMARY-->
 
+    <!--AGE CUSTOM VIEW-->
     <string name="incident_date">Incident date</string>
+    <!-- RELATIONSHIPS -->
     <string name="next">Next</string>
     <string name="button_ok">OK</string>
     <string name="qr_events">Events</string>

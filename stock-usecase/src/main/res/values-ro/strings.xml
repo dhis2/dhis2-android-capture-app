@@ -1,9 +1,14 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="title_activity_home">Acasă</string>
+
     <string name="delete">Lichidare</string>
     <string name="cancel">Anulare</string>
+
     <string name="from">Din</string>
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">Confirmare</string>
+
     <string name="done_task">Acasă</string>
     <string name="back">Înapoi</string>
     </resources>

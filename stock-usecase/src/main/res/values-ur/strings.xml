@@ -2,15 +2,18 @@
     <string name="title_activity_home">گھر</string>
 
     <string name="discard">ذائل</string>
+    <!-- Sign in -->
     <string name="username">ØµØ§Ø±Ù Ú©Ø§ ÙØ§Ù</string>
 
-    <!-- FloatingActionButtons -->
     <string name="delete">حذف</string>
     <string name="ok">ٹھیک</string>
     <string name="cancel">منسوخ</string>
+
     <string name="from">سے</string>
-    <!-- Stock table -->
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">تصدیق کریں</string>
+
     <string name="done_task">گھر</string>
     <string name="back">واپس</string>
     <string name="count">شمار</string>

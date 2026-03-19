@@ -4,12 +4,15 @@
     <string name="action_accept">स्वीकार</string>
     <!-- Input hints -->
     <string name="search">खोज</string>
+    <!-- Status -->
+
     <string name="event_open">खोल्नुहोस्</string>
-    <!--Event initial-->
     <string name="cancel">रद्द गर्नुहोस्</string>
     <string name="wipe_data_ok">स्वीकार</string>
     <string name="wipe_data_no">रद्द गर्नुहोस्</string>
     <string name="settingsTwoFAStatus">स्थिती</string>
+    <!--endregion-->
+
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">खोज</string>
     <string name="period">अबधि</string>

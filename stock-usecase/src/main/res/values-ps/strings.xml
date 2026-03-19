@@ -2,14 +2,14 @@
     <string name="title_activity_home">کور پاڼه</string>
 
     <string name="discard">رد یې کړئ</string>
+    <!-- Sign in -->
     <string name="username">کارېدونکی نوم</string>
 
-    <!-- FloatingActionButtons -->
     <string name="delete">خذف یې کړئ</string>
     <string name="ok">سم دی</string>
     <string name="cancel">رد یې کړئ [ ژباړه ـ ردول ]</string>
+
     <string name="from">څخه</string>
-    <!-- Stock table -->
     <string name="done_task">کور پاڼه</string>
     <string name="back">شا ته کېدل</string>
     <string name="count">شمېرل</string>

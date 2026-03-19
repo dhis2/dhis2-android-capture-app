@@ -12,7 +12,6 @@
     <string name="sync_error_title">Lỗi đồng bộ</string>
     <string name="sync_error_text">Xảy ra lỗi trong quá trình đồng bộ. Vui lòng thử lại.</string>
     <string name="sync_incomplete_error_text">Đồng bộ đã hoàn tất nhưng chúng tôi không nhận được xác nhận máy chủ cho tất cả dữ liệu. Các dữ liệu vẫn được đánh dấu là \"Ngoại tuyến\" trong Ứng dụng. Chúng tôi khuyên bạn thử đồng bộ lại.</string>
-
     <string name="enter_event_data">Nhập %s</string>
     <string name="enter_cancel_event_data">Nhập / Bỏ qua %s</string>
     <string name="referral">Giới thiệu đến cơ sở khác</string>
@@ -594,7 +593,6 @@
     <string name="successfully_transferred">Đã chuyển thành công</string>
     <string name="event_cancelled">%1$s đã hủy</string>
     <string name="due_date_updated">Ngày đến hạn đã được cập nhật</string>
-    
     <plurals name="error_count_label">
         <item quantity="other">Các lỗi %s</item>
     </plurals>

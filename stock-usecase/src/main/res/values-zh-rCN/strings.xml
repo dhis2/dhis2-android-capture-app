@@ -2,6 +2,7 @@
     <string name="title_activity_home">Home</string>
 
     <string name="discard">放弃</string>
+    <!-- Sign in -->
     <string name="username">用户名</string>
 
     <!-- FloatingActionButtons -->
@@ -10,10 +11,12 @@
     <string name="delete">删除</string>
     <string name="ok">OK</string>
     <string name="cancel">取消</string>
-    <string name="from">从</string>
 
-    <!-- Stock table -->
+    <string name="from">从</string>
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">确认</string>
+
     <string name="speech_network_error">网络错误</string>
     <string name="unknown_speech_error">出现未知错误。</string>
     <!--SDK error codes-->

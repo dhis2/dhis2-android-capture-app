@@ -2,15 +2,18 @@
     <string name="title_activity_home">صفحه اصلی</string>
 
     <string name="discard">ازبین بردن</string>
+    <!-- Sign in -->
     <string name="username">نام کاربر</string>
 
-    <!-- FloatingActionButtons -->
     <string name="delete">حذف</string>
     <string name="ok">تأیید</string>
     <string name="cancel">انصراف</string>
+
     <string name="from">از جانب</string>
-    <!-- Stock table -->
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">تائید</string>
+
     <string name="done_task">صفحه اصلی</string>
     <string name="back">عقب</string>
     <string name="count">تعداد</string>
