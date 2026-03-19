@@ -29,6 +29,7 @@ import org.dhis2.R
 import org.dhis2.common.BaseRobot
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.atPosition
 import org.dhis2.common.matchers.RecyclerviewMatchers.Companion.isNotEmpty
+import org.dhis2.usescases.enrollment.EnrollmentActivity
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionActivity
 import org.dhis2.usescases.programStageSelection.ProgramStageSelectionViewHolder
 import org.dhis2.usescases.teiDashboard.ui.INFO_BAR_TEST_TAG
@@ -195,6 +196,7 @@ class TeiDashboardRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     fun clickOnSeeDetails() {
         waitForView(withId(R.id.editButton))
             .perform(click())
+        waitUntilActivityVisible<EnrollmentActivity>()
     }
 
     fun checkFullDetails(enrollmentUIModel: EnrollmentUIModel) {
