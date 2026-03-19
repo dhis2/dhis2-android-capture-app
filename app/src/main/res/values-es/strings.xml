@@ -12,7 +12,6 @@
     <string name="sync_error_title">Error en sincronizacion</string>
     <string name="sync_error_text">La sincronizacion ha fallado. Intentelo de nuevo.</string>
     <string name="sync_incomplete_error_text">La sincronización ha terminado pero no se ha recibido confirmación del servidor en algunos rescursos. Éstos estarán marcados como \"no sincronizados\" en la App. Recomendamos reintentar la sincronización.</string>
-
     <string name="enter_event_data">Ingresar %s</string>
     <string name="enter_cancel_event_data">Editar / Omitir %s</string>
     <string name="referral">Remitir</string>

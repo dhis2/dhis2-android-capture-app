@@ -4,6 +4,7 @@
     <string name="referral">Transferência</string>
 
     <string name="account_recovery">Recuperar Conta</string>
+
     <!--PERIOD-->
     <string name="DAILY">Diário</string>
     <string name="WEEKLY">Semanal</string>
@@ -13,6 +14,8 @@
     <string name="action_share_zero_items">Partilhar</string>
     <!-- Input hints -->
     <string name="search">Pesquisar</string>
+    <!-- Status -->
+
     <string name="event_open">Abrir</string>
     <string name="read_only">Apenas leitura</string>
     <string name="completed">Concluído</string>
@@ -20,10 +23,14 @@
     <string name="active">Activo</string>
 
     <string name="state_error">Erro</string>
+
+    <!--Completion-->
+
     <!--Event initial-->
     <string name="update">Actualizar</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+
     <!--DataSet initial-->
     <string name="report_period">Período de relatório</string>
     <!--Event Detail-->
@@ -32,9 +39,10 @@
     <string name="delete">Apagar</string>
     <string name="active_programs">Programas ativos</string>
     <string name="enroll">Registrar</string>
+
+    <!--TEI DASHBOARD-->
     <string name="edit">Editar</string>
     <string name="deactivate">Desativar</string>
-    <!--DONE TASKS-->
     <string name="done_task">Origem</string>
     <string name="wipe_data_no">Cancelar</string>
     <string name="SYNC_MANAGER">Configurações</string>
@@ -47,9 +55,12 @@
     <!--FORM FRAGMENT-->
     <string name="report_date">Data do relatório</string>
     <string name="add_note">Adicionar uma nota</string>
+    <!--EVENT SUMMARY-->
+
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">Data do incidente</string>
     <string name="period">Período</string>
+    <!-- RELATIONSHIPS -->
     <string name="next">Próximo</string>
     <string name="button_ok">Aprovado</string>
     <string name="qr_attributes">Atributos</string>
@@ -65,7 +76,10 @@
     <string name="state_warning">Advertência</string>
     <string name="state_relationship">Relação</string>
     <string name="action_close">Fechar</string>
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="polygon">Poligono</string>
+    <!--endregion-->
+
     <string name="security_title">Segurança</string>
     <string name="filters_title_period">Período</string>
     <string name="filter_period_today">Hoje</string>

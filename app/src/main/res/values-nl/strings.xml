@@ -12,7 +12,6 @@
     <string name="sync_error_title">Synchronisatiefout</string>
     <string name="sync_error_text">Er is een fout opgetreden tijdens de synchronisatie. Probeer het opnieuw.</string>
     <string name="sync_incomplete_error_text">De synchronisatie is voltooid, maar we hebben geen serverbevestiging ontvangen voor alle records. Die gegevens zijn nog steeds gemarkeerd als \"offline\" in de app. We raden aan om de synchronisatie opnieuw te proberen.</string>
-
     <string name="referral">Verwijzing</string>
 
     <!-- Login -->
@@ -536,7 +535,6 @@
     <string name="syncing_something">%s synchroniseren...</string>
     <string name="show_description">Laat beschrijving zien</string>
     <string name="hide_description">Beschrijving verbergen</string>
-    
     <plurals name="error_count_label">
         <item quantity="one">%s-fout</item>
         <item quantity="other">%s fouten</item>

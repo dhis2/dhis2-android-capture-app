@@ -2,12 +2,15 @@
     <string name="title_activity_home">ماڵةوة</string>
 
     <string name="discard">فري دان</string>
-    <!-- FloatingActionButtons -->
     <string name="delete">سڕینەوە</string>
     <string name="ok">تةواو</string>
     <string name="cancel">لابردن</string>
+
     <string name="from">لە</string>
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">دووپاتکردنەوە</string>
+
     <string name="done_task">ماڵةوة</string>
     <string name="back">كةرانةوة</string>
     </resources>

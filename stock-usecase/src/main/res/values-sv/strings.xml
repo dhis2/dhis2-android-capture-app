@@ -2,13 +2,17 @@
     <string name="title_activity_home">Hem</string>
 
     <string name="discard">Kassera</string>
+    <!-- Sign in -->
     <string name="username">Användarnamn</string>
 
-    <!-- FloatingActionButtons -->
     <string name="delete">Radera</string>
     <string name="ok">ok</string>
     <string name="cancel">Avbryt</string>
+
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">Bekräfta</string>
+
     <string name="online_search_parsing_error">Fel vid tolkning av resultat</string>
     <string name="done_task">Hem</string>
     <string name="back">Tillbaka</string>

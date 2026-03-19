@@ -11,10 +11,13 @@
     <string name="enter_positive_integer_or_zero">Enter positive integer or zero</string>
     <string name="enter_positive_integer">Enter positive integer</string>
     <string name="choose_date">Choose date</string>
+
     <string name="state_error">Error</string>
+
     <string name="org_unit">Org unit</string>
     <string name="latitude">Latitude</string>
     <string name="longitude">Longitude</string>
+
     <!--Event Detail-->
     <string name="due_date">Due date</string>
     <string name="cat_combo">Cat combo</string>
@@ -26,6 +29,8 @@
     <string name="add_file">Add file</string>
     <string name="tei_coordinates">Coordinates for the</string>
 
+    <!--EVENT SUMMARY-->
+
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">Incident date</string>
     <string name="share">Share</string>
@@ -36,6 +41,8 @@
     <string name="action_close">Close</string>
     <string name="formatting_error">Formatting error</string>
     <string name="copied_text">Copied</string>
+
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="polygon">Polygon</string>
     <string name="enrollment_single_section_label">Attributes - %s</string>
     <string name="select_time">Select time</string>

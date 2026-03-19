@@ -39,6 +39,7 @@
     <!-- Errors -->
     <string name="facilities_load_error">Kan de lijst met beschikbare faciliteiten niet laden</string>
     <string name="destinations_load_error">        Kan de lijst met beschikbare bestemmingen niet laden    </string>
+
     <!-- Content descriptions for accessibility -->
 
     <string name="confirm_transaction_label">Bevestigen</string>

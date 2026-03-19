@@ -32,10 +32,10 @@
     <!-- Stock table -->
     <string name="quantity">Миқдори</string>
 
-    <!-- Messages -->
+    <!-- Content descriptions for accessibility -->
 
-    <!-- Errors -->
     <string name="confirm_transaction_label">Тасдиқланг</string>
+
     <string name="speech_network_error">Тармоқда хатолик</string>
     <string name="online_search_parsing_error">Натижаларни таҳлил қилишда хатолик юз берди</string>
     <string name="done_task">Бош саҳифа</string>

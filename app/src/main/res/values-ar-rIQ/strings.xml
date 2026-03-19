@@ -10,18 +10,24 @@
     <string name="action_share_zero_items">مشاركة</string>
     <!-- Input hints -->
     <string name="search">البحث</string>
+    <!-- Status -->
+
     <string name="event_open">فتح</string>
     <string name="completed">مكتمل</string>
     <string name="cancelled">تم الإلغاء</string>
     <string name="active">فعال</string>
 
     <string name="state_error">خطأ</string>
+
+    <!--Completion-->
+
     <!--Event initial-->
     <string name="update">تحديث</string>
     <!--Event Detail-->
     <string name="due_date">تاريخ الاستحقاق</string>
     <string name="cancel">إلغاء</string>
     <string name="delete">حذف</string>
+    <!--TEI DASHBOARD-->
     <string name="edit">تعديل</string>
     <string name="done_task">الرئيسية</string>
     <string name="wipe_data_ok">قبول</string>
@@ -31,8 +37,11 @@
 
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">البحث</string>
+    <!--EVENT SUMMARY-->
+
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">تاريخ الواقعة</string>
+    <!-- RELATIONSHIPS -->
     <string name="next">التالي</string>
     <string name="qr_attributes">السمات</string>
     <string name="qr_relationships">علاقات</string>

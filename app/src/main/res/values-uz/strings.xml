@@ -11,7 +11,6 @@
 
     <string name="sync_error_title">Синхронлашда хатолик</string>
     <string name="sync_error_text">Синхронлаш пайтида хатолик юз берди. Илтимос, қайта уриниб кўринг</string>
-
     <string name="referral">Йўналишларга</string>
 
     <!-- Login -->
@@ -21,6 +20,7 @@
     <string name="configuration_ready">Сизнинг янги конфигурациянгиз тайёр</string>
     <string name="data_ready">Маълумотингиз тайёр</string>
     <string name="account_recovery">Аккаунтни тиклаш</string>
+
     <!--PERIOD-->
     <string name="DAILY">Кунлик</string>
     <string name="WEEKLY">Ҳафталик</string>
@@ -452,7 +452,6 @@
     <string name="show_description">Тавсифни кўрсатиш</string>
     <string name="hide_description">Тавсифни беркитиш</string>
     <string name="transfer">Ўтказиш</string>
-    
     <plurals name="error_count_label">
         <item quantity="other">%s da xatoliklar</item>
     </plurals>
