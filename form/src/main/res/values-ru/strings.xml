@@ -44,7 +44,6 @@
     <string name="share">Поделиться</string>
     <string name="camera_permission_denied">Разрешение камеры отклонено. Для использования этой функции необходимо включить ее.</string>
     <string name="action_close">Закрыть</string>
-    <string name="program_rules_loop_warning_message">Существует проблема конфигурации, вызывающая зацикливание правил. Обратитесь к администратору.</string>
     <string name="copied_text">Скопировано</string>
     <string name="take_photo">Сделать фото</string>
     <string name="from_gallery_v2">Из галереи</string>

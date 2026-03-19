@@ -39,7 +39,6 @@
     <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="share">Share</string>
     <string name="action_close">Close</string>
-    <string name="program_rules_loop_warning_message">There is a configuration issue causing a loop in the rules. Contact you administrator.</string>
     <string name="copied_text">Copied</string>
     <string name="take_photo">Take Photo</string>
     <string name="from_gallery_v2">From gallery</string>

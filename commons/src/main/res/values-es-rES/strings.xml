@@ -202,7 +202,6 @@
     <string name="enrolling_ou">Inscrito en:</string>
     <string name="delete_event_label">Eliminar %s</string>
     <string name="week_period_span_default_label">Semana %d %s a %s</string>
-
     <string name="syncing">Sincronizando...</string>
     <string name="remove">Eliminar</string>
     <string name="period_daily_title">Diario</string>

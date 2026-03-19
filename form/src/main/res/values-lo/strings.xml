@@ -42,7 +42,6 @@
     <string name="share">ເຜີຍແຜ່</string>
     <string name="camera_permission_denied">ການ​ອະ​ນຸ​ຍາດ​ໃຊ້ກ້ອງ​ຖ່າຍ​ຮູບ​ຖືກ​ປະ​ຕິ​ເສດ. ທ່ານ​​ຕ້ອງ​ເປີດ​ໃຊ້​ງານເພື່ອ​ໃຊ້​ຄຸນ​ສົມ​ບັດ​ນີ້​.</string>
     <string name="action_close">ປິດ</string>
-    <string name="program_rules_loop_warning_message">ມີບັນຫາການກຳນົດຄ່າທີ່ເຮັດໃຫ້ເກີດມີຊ່ອງຫວ່າງໃນກົດລະບຽບ. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</string>
     <string name="copied_text">ສຳເນົາແລ້ວ</string>
     <string name="take_photo">ຖ່າຍຮູບ</string>
     <string name="warning_error_on_complete_title">ກວດເບີ່ງອັນນີ້</string>

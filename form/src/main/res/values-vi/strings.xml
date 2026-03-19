@@ -45,7 +45,6 @@
     <string name="share">Chia sẻ</string>
     <string name="camera_permission_denied">Quyền mở máy ảnh bị từ chối.\n Bạn cần bật tính năng máy ảnh để sử dụng chức năng này</string>
     <string name="action_close">Đóng</string>
-    <string name="program_rules_loop_warning_message">Có một vấn đề cấu hình gây ra một vòng lặp trong các quy tắc chương trình. Hãy liên lạc với quản lý của bạn.</string>
     <string name="copied_text">Đã sao chép</string>
     <string name="take_photo">Chụp ảnh</string>
     <string name="from_gallery_v2">Từ thư viện ảnh</string>

@@ -196,7 +196,6 @@
     <string name="enrolling_ou">Inscrire à:</string>
     <string name="delete_event_label">Supprimer 1%s</string>
     <string name="week_period_span_default_label">Semaine %d %s à %s</string>
-
     <string name="sync_retry">Réessayer la synchronisation</string>
     <string name="syncing">Synchronisation...</string>
     <string name="remove">Supprimer</string>

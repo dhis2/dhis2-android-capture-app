@@ -45,7 +45,6 @@
     <string name="share">分享</string>
     <string name="camera_permission_denied">相机权限被拒绝。\n 您需要启用它才能使用此功能。</string>
     <string name="action_close">关闭</string>
-    <string name="program_rules_loop_warning_message">存在导致规则循环的配置问题。联系您的管理员。</string>
     <string name="copied_text">副本</string>
     <string name="take_photo">拍照</string>
     <string name="from_gallery_v2">来自画廊</string>

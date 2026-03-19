@@ -70,6 +70,7 @@
     %2$s is the attribute option combo name
     -->
     <string name="period_not_in_attribute_option_combo_range">आप %2$s में पीरियड %1$s के लिए डेटा संपादित नहीं कर सकते</string>
+    <string name="period_not_in_data_input_periods">यह डेटा संपादन योग्य नहीं है क्योंकि चुनी गई अवधि डेटा इनपुट अवधि के बाहर है</string>
     <string name="dataset_closed">यह डेटा संपादन योग्य नहीं है क्योंकि इसे क्लोज़ मार्क किया गया है</string>
     <string name="dataset_expired">यह डेटा संपादन योग्य नहीं है क्योंकि संपादन का समय समाप्त हो गया है</string>
 

@@ -249,7 +249,6 @@
     <string name="new_event_label">Novo %s</string>
     <string name="delete_event_label">Apagar%s</string>
     <string name="week_period_span_default_label">Semana %d %s a%s</string>
-
     <string name="sync_retry">Repetir a sincronização</string>
     <string name="syncing">Sincronizando...</string>
     <string name="remove">Remover</string>
