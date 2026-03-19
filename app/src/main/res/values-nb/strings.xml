@@ -20,6 +20,7 @@
     <string name="configuration_ready">Din konfigurasjon er klar</string>
     <string name="data_ready">Dine data er klare</string>
     <string name="account_recovery">Kontogjenoppretting</string>
+
     <!--PERIOD-->
     <string name="DAILY">Daglig</string>
     <string name="WEEKLY">Ukentlig</string>
@@ -430,7 +431,6 @@
     <string name="show_description">Vis beskrivelse</string>
     <string name="hide_description">Skjul beskrivelse</string>
     <string name="transfer">Overfør </string>
-    
     <plurals name="settings_specific_programs">
         <item quantity="one">Det er  %s program med spesifikke innstillinger</item>
         <item quantity="other">Det er  %s programmer med spesifikke innstillinger</item>

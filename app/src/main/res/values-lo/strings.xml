@@ -12,7 +12,6 @@
     <string name="sync_error_title">ຄໍາຜິດທີ່ເກີດຈາກການທໍາງານຮ່ວມກັນຂອງລະບົບ</string>
     <string name="sync_error_text">ມີຄໍາຜິດເກີດຂື້ນໃນຂະນະທີ່ລະບົບທໍາງານຮ່ວມກັນ. ກະລຸນາ, ທົດລອງເບີ່ງອີກ...</string>
     <string name="sync_incomplete_error_text">ອັບເດດຂໍ້ມູນໃຫ້ຄືກັນສຳເລັດແລ້ວ ແຕ່ພວກເຮົາບໍ່ໄດ້ຮັບການຢືນຢັນຈາກເຄື່ອງຄອມພິວເຕິ້ໜ່ວຍແມ່ສຳລັບບັນທຶກທັງໝົດ. ເຫຼົ່ານັ້ນຍັງຖືກໝາຍເປັນ \"ອອບລາຍ\" ໃນແອັບ. ພວກເຮົາແນະນຳໃຫ້ລອງການຕັ້ງຄ່າການຊິ້ງຂໍ້ມູນອີກຄັ້ງ.</string>
-
     <string name="enter_event_data">ປ້ອນ%s</string>
     <string name="enter_cancel_event_data">ປ້ອນ / ຂ້າມ%s</string>
     <string name="referral">ການສົ່ງຕໍ່</string>
@@ -294,7 +293,6 @@
     <!--endregion-->
 
     <string name="security_title">ຄວາມປອດໄພ</string>
-
     <string name="filters_active">ກຳລັງນຳໃຊ້ຕົວກອງ</string>
     <string name="filters_disabled">ບໍ່ໄດ້ໃຊ້ຕົວກອງ</string>
     <string name="filters_title_period">ຊ່ວງເວລາ</string>
@@ -529,7 +527,6 @@
     <string name="show_description">ສະແດງຄຳອະທິບາຍ</string>
     <string name="hide_description">ເຊື່ອງຄຳອະທິບາຍ</string>
     <string name="transfer">ໂອນ</string>
-    
     <plurals name="error_count_label">
         <item quantity="other">%s ຂໍ້ຜິດພາດ</item>
     </plurals>

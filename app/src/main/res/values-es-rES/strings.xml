@@ -12,7 +12,6 @@
     <string name="sync_error_title">Error en sincronizacion</string>
     <string name="sync_error_text">La sincronizacion ha fallado. Intentelo de nuevo.</string>
     <string name="sync_incomplete_error_text">La sincronización ha terminado pero no se ha recibido confirmación del servidor en algunos rescursos. Éstos estarán marcados como \"no sincronizados\" en la App. Recomendamos reintentar la sincronización.</string>
-
     <string name="referral">Remitir</string>
 
     <!-- Login -->
@@ -79,7 +78,6 @@
     <string name="active_programs">Programas activos</string>
     <string name="enroll">Admitir</string>
 
-    <!--TEI DASHBOARD-->
     <string name="deactivate">Desactivar</string>
     <string name="program_not_allow_events">Este programa no admite más eventos</string>
 
@@ -495,7 +493,6 @@
     <string name="event">evento</string>
     <string name="sync">Sincronizado</string>
     <string name="syncing_something">Sincronizando %s...</string>
-    
     <plurals name="settings_specific_programs">
         <item quantity="one">Hay %s programa con una configuración específica</item>
         <item quantity="many">Hay %s programas con configuraciones específicas</item>

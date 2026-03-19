@@ -19,6 +19,7 @@
     <string name="configuration_ready">ការកំណត់​រចនាសម្ព័ន្ធរបស់អ្នករួចរាល់</string>
     <string name="data_ready">ទិន្នន័យរបស់អ្នករួចរាល់</string>
     <string name="account_recovery">ស្តារគណនីឡើងវិញ</string>
+
     <!--PERIOD-->
     <string name="DAILY">រាល់​ថ្ងៃ</string>
     <string name="WEEKLY">រាល់​សប្ដាហ៍</string>
@@ -36,6 +37,7 @@
     <string name="enter_positive_integer_or_zero">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន រឺ លេខ ០)</string>
     <string name="enter_positive_integer">បញ្ជូលទិន្នន័យជាលេខ (វិជ្ជមាន)</string>
     <string name="choose_date">ជ្រើសរើសថ្ងៃខែឆ្នាំ</string>
+
     <!-- Status -->
 
     <string name="event_open">បើក</string>
@@ -46,6 +48,7 @@
     <string name="state_synced">បញ្ចូន</string>
     <string name="state_to_update">ដើម្បីធ្វើបច្ចុប្បន្នភាព</string>
     <string name="state_error">កំហុសបច្ចេកទេស</string>
+
     <!--Completion-->
 
     <!--Event initial-->
@@ -73,7 +76,6 @@
     <string name="events">ព្រឹត្តិការណ៏</string>
     <string name="done_task">ផ្ទាំងដើម</string>
     <string name="log_out">ចាកចេញ</string>
-    <!-- SYNC -->
     <string name="a_hour">១ម៉ោង</string>
     <string name="a_day">១ថ្ងៃ (លំនាំដើម)</string>
     <string name="Manual">ហត្ថកម្ម</string>
@@ -138,7 +140,6 @@
     <string name="wipe_data">កំណត់កម្មវិធីឡើងវិញ</string>
     <string name="warning_error_on_complete_title">ពិនិត្យទីនេះ​</string>
     <string name="save">រក្សាទុក​</string>
-
     <!--ABOUT-->
     <string name="about_app">កំណែកម្មវិធី %s</string>
     <string name="about_sdk">កំណែរ SDK: %s</string>

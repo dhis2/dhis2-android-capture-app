@@ -2,7 +2,6 @@
     <string name="title_activity_home">Главная</string>
 
     <string name="discard">Отмена</string>
-
     <!-- Sign in -->
     <string name="username">Имя пользователя</string>
 
@@ -19,11 +18,6 @@
 
     <string name="from">От</string>
     <string name="to">Доставка к...</string>
-    <!-- Languages -->
-
-    <!-- Stock table -->
-
-    <!-- Errors -->
     <!-- Content descriptions for accessibility -->
 
     <string name="confirm_transaction_label">Подтвердить</string>
@@ -37,6 +31,7 @@
     <string name="unable_to_sync_data_no_network_available">
         Невозможно синхронизировать данные из-за отсутствия сетевого подключения
     </string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">Что-то пошло не так. Пожалуйста, проверьте правильность URL-адреса сервера, имени пользователя и пароля и повторите попытку.</string>
     <string name="login_error_error_response">Упс! Что-то пошло не так на стороне сервера.</string>

@@ -2,14 +2,18 @@
     <string name="title_activity_home">Beranda</string>
 
     <string name="discard">Buang</string>
+    <!-- Sign in -->
     <string name="username">Nama pengguna</string>
-    <!-- FloatingActionButtons -->
+
     <string name="delete">Hapus</string>
     <string name="ok">OK</string>
     <string name="cancel">Batal</string>
+
     <string name="from">Dari</string>
+    <!-- Content descriptions for accessibility -->
 
     <string name="confirm_transaction_label">Konfirmasi</string>
+
     <string name="online_search_parsing_error">Kesalahan saat penguraian hasil</string>
     <string name="done_task">Beranda</string>
     <string name="back">Kembali</string>

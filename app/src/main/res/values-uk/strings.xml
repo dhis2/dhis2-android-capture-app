@@ -12,7 +12,6 @@
     <string name="sync_error_title">Помилка синхронізації</string>
     <string name="sync_error_text">Під час синхронізації сталася помилка. Будь ласка, повторіть спробу.</string>
     <string name="sync_incomplete_error_text">Синхронізацію завершено, але ми не отримали підтвердження від серверу для усіх записів. Ці записи все ще позначено як \"офлайн\" у програмі. Рекомендуємо повторити спробу синхронізації.</string>
-
     <string name="enter_event_data">Введіть %s</string>
     <string name="enter_cancel_event_data">Ввести / Пропустити %s</string>
     <string name="referral">Направлення</string>
@@ -536,7 +535,6 @@
     <string name="show_description">Показати опис</string>
     <string name="hide_description">Приховати опис</string>
     <string name="transfer">Перевести</string>
-    
     <plurals name="settings_specific_programs">
         <item quantity="one">Є програма %s зі специфічними налаштуваннями</item>
         <item quantity="few">Є програми %s зі спеціальними налаштуваннями</item>

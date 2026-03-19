@@ -19,6 +19,7 @@
     <string name="configuration_ready">Din konfiguration är klar</string>
     <string name="data_ready">Dina data är klara</string>
     <string name="account_recovery">kontoåterställning</string>
+
     <!--PERIOD-->
     <string name="DAILY">Dagligen</string>
     <string name="WEEKLY">Varje vecka</string>
@@ -36,6 +37,7 @@
     <string name="enter_positive_integer_or_zero">Ange ett positivt heltal eller noll.</string>
     <string name="enter_positive_integer">Ange ett positivt heltal</string>
     <string name="choose_date">Välj datum</string>
+
     <!-- Status -->
 
     <string name="event_open">Öppen</string>
@@ -48,6 +50,7 @@
     <string name="state_synced">Synkronisera</string>
     <string name="state_to_update">Att uppdatera</string>
     <string name="state_error">Fel</string>
+
     <!--Completion-->
 
     <!--Event initial-->
@@ -69,10 +72,10 @@
     <string name="deactivate">Inaktivera</string>
     <string name="program_not_allow_events">Det här programmet tillåter inte fler händelser</string>
 
+    <!--DONE TASKS-->
     <string name="events">händelser</string>
     <string name="done_task">Hem</string>
     <string name="log_out">Logga ut</string>
-    <!-- SYNC -->
     <string name="a_hour">1 timme</string>
     <string name="a_day">1 dag (Standard)</string>
     <string name="Manual">Manuell</string>
@@ -137,7 +140,6 @@
     <string name="wipe_data">Återställ app</string>
     <string name="warning_error_on_complete_title">Kolla detta!</string>
     <string name="save">Spara</string>
-
     <!--ABOUT-->
     <string name="about_app">App version: %s</string>
     <string name="about_sdk">SDK Version: %s</string>

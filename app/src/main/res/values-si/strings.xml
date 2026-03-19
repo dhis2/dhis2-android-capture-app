@@ -9,19 +9,23 @@
     <string name="action_accept">පිළිගන්න</string>
     <!-- Input hints -->
     <string name="search">සොයන්න</string>
+    <!-- Status -->
+
     <string name="event_open">විවෘත කරන්න</string>
     <string name="state_error">දෝෂය</string>
+
     <string name="delete">ඉවත් කරන්න</string>
+    <!--TEI DASHBOARD-->
     <string name="edit">වෙනස් කරන්න</string>
     <string name="wipe_data_ok">පිළිගන්න</string>
+    <!--endregion-->
+
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">සොයන්න</string>
-    <!--AGE CUSTOM VIEW-->
     <string name="save">සුරකින්න</string>
     <string name="qr_data_values">දත්ත අගයන්</string>
     <string name="state_warning">අවවාදයයි</string>
     <string name="action_close">වසන්න</string>
-
     <string name="filter_period_today">අද</string>
     <string name="filter_period_yesterday">ඊයේ</string>
     <string name="filter_period_this_week">මෙම සතිය</string>

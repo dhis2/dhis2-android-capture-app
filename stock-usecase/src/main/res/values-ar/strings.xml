@@ -2,7 +2,6 @@
     <string name="title_activity_home">الرئيسية</string>
 
     <string name="discard">تجاهل</string>
-
     <!-- Sign in -->
     <string name="username">اسم المستخدم</string>
 
@@ -17,13 +16,10 @@
     <string name="delete">حذف</string>
     <string name="ok">موافق</string>
     <string name="cancel">إلغاء</string>
+
     <string name="from">من</string>
-    <!-- Languages -->
-
-    <!-- Stock table -->
-
-    <!-- Errors -->
     <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">تأكيد</string>
 
     <string name="speech_network_error">خطأ في الشبكة</string>
@@ -33,6 +29,7 @@
     <string name="unable_to_sync_data_no_network_available">
         غير قادر على مزامنة البيانات لعدم توفر اتصال بالشبكة
     </string>
+
     <!--SDK error codes-->
     <string name="login_error_unsuccessful_response">هناك خطأ ما. يرجى التحقق من صحة عنوان URL الخاص بالخادم واسم المستخدم وكلمة المرور وحاول مرة أخرى.</string>
     <string name="login_error_error_response">عفوًا! حدث خطأ ما على جانب الخادم.</string>
