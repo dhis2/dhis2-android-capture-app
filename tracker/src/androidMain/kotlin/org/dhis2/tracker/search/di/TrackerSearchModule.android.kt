@@ -19,6 +19,7 @@ internal actual val trackerSearchRepositoryModule: Module =
             SearchTrackedEntityRepositoryImpl(
                 d2 = get(),
                 filterPresenter = get(),
+                profilePictureProvider = get(),
             )
         }
 
