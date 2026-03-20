@@ -5,6 +5,7 @@
       <verify-signatures>false</verify-signatures>
       <trusted-artifacts>
          <trust group="org.hisp.dhis.mobile" name="designsystem"/>
+         <trust group="org.jetbrains.intellij.deps.kotlinx"/>
          <trust file=".*-javadoc\.jar" regex="true"/>
          <trust file=".*-sources\.jar" regex="true"/>
          <trust file="gradle-.*-src\.zip" regex="true"/>
@@ -12,7 +13,6 @@
          <trust group="org.hisp.dhis" name="android-core" version=".*" regex="true"/>
          <trust group="org.hisp.dhis" name="android-core" version=".*-SNAPSHOT" regex="true"/>
          <trust group="org.hisp.dhis.mobile" name=".*" version=".*-SNAPSHOT" regex="true"/>
-         <trust group="org.jetbrains.intellij.deps.kotlinx"/>
       </trusted-artifacts>
    </configuration>
    <components>

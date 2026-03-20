@@ -48,9 +48,6 @@ jobs:
         fileName: 'dhis_keystore.jks'
         encodedString: ${{ secrets.KEYSTORE }}
 
-    - name: Generate dependency verification metadata
-      run: ./gradlew --write-verification-metadata sha256 help --no-daemon
-
     - name: Build Release APKs
       run: ./gradlew --dependency-verification strict app:assembleDhis2Release app:assembleDhis2PlayServicesRelease
       env:
