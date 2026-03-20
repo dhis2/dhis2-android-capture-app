@@ -3,15 +3,13 @@ package org.dhis2.usescases.searchTrackEntity.adapters
 import android.view.View
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import org.dhis2.commons.bindings.getEnrollmentIconsData
-import org.dhis2.commons.bindings.hasFollowUp
 import org.dhis2.commons.bindings.paintAllEnrollmentIcons
-import org.dhis2.commons.bindings.setAttributeList
-import org.dhis2.commons.bindings.setStatusText
 import org.dhis2.commons.data.EnrollmentIconData
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.databinding.ItemSearchTrackedEntityBinding
+import org.dhis2.mobile.commons.extensions.toJavaDate
+import org.dhis2.tracker.search.data.toSDKState
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 
 abstract class BaseTeiViewHolder(
@@ -43,32 +41,32 @@ abstract class BaseTeiViewHolder(
         }
 
         binding.apply {
-            overdue = teiModel.isHasOverdue
-            isOnline = teiModel.isOnline
-            orgUnit = teiModel.enrolledOrgUnit
-            teiSyncState = teiModel.tei.state()
+            overdue = teiModel.tei.overDueDate?.toJavaDate() != null
+            isOnline = teiModel.tei.isOnline
+            orgUnit = teiModel.tei.enrollmentOrgUnit
+            teiSyncState = teiModel.tei.aggregatedSyncState?.toSDKState()
             attribute = teiModel.attributeValues.values.toList()
             attributeNames = teiModel.attributeValues.keys
             attributeListOpened = teiModel.isAttributeListOpen
-            lastUpdated.text = teiModel.tei.lastUpdated().toDateSpan(itemView.context)
+            lastUpdated.text = teiModel.tei.lastUpdated?.toJavaDate()?.toDateSpan(itemView.context)
             sortingValue = teiModel.sortingValue
         }
 
         teiModel.apply {
-            binding.setFollowUp(enrollments.hasFollowUp())
-            val enrollmentIconDataList: List<EnrollmentIconData> =
-                programInfo.getEnrollmentIconsData(
-                    if (selectedEnrollment != null) selectedEnrollment.program() else null,
+            binding.setFollowUp(tei.enrollments?.hasFollowUp())
+            val enrollmentIconDataList: List<EnrollmentIconData>? =
+                tei.enrolledPrograms?.getEnrollmentIconsData(
+                    if (selectedEnrollment != null) selectedEnrollment.program else null,
                 ) { programUid -> getMetadataIconData(programUid) }
-            enrollmentIconDataList.paintAllEnrollmentIcons(
+            enrollmentIconDataList?.paintAllEnrollmentIcons(
                 binding.composeProgramList,
             )
             if (selectedEnrollment != null) {
                 selectedEnrollment.setStatusText(
                     itemView.context,
                     binding.enrollmentStatus,
-                    isHasOverdue,
-                    overdueDate,
+                    teiModel.tei.overDueDate != null,
+                    teiModel.tei.overDueDate?.toJavaDate(),
                 )
             }
             setTeiImage(
@@ -85,7 +83,7 @@ abstract class BaseTeiViewHolder(
                 teiModel.isAttributeListOpen,
                 teiModel.sortingKey,
                 teiModel.sortingValue,
-                teiModel.enrolledOrgUnit,
+                teiModel.tei.enrollmentOrgUnit,
             ) {
                 attributeVisibilityCallback()
             }
