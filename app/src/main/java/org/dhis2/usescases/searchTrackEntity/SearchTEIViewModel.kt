@@ -59,7 +59,6 @@ import org.dhis2.tracker.input.ui.action.FieldUid
 import org.dhis2.tracker.input.ui.action.TrackerInputAction
 import org.dhis2.tracker.input.ui.mapper.toTrackerInputUiState
 import org.dhis2.tracker.input.ui.state.TrackerOptionItem
-import org.dhis2.tracker.search.data.transformDomainTeiToSDKTei
 import org.dhis2.tracker.search.domain.FetchOptionSetOptions
 import org.dhis2.tracker.search.domain.FetchSearchParameters
 import org.dhis2.tracker.search.domain.SearchTrackedEntities
@@ -306,9 +305,9 @@ class SearchTEIViewModel(
             searchRepository.getProgram(initialProgramUid)?.displayFrontPageList() ?: true
         val shouldOpenSearch =
             !displayFrontPageList &&
-                !searchRepository.canCreateInProgramWithoutSearch() &&
-                !searching &&
-                filtersActive.value == false
+                    !searchRepository.canCreateInProgramWithoutSearch() &&
+                    !searching &&
+                    filtersActive.value == false
 
         createButtonScrollVisibility.postValue(
             if (searching) {
@@ -548,7 +547,7 @@ class SearchTEIViewModel(
                     queryDataAsMap(),
                     selectedProgram?.uid(),
                 )
-            val newTrackerSearchModel =
+            val trackerSearchModel =
                 SearchTrackedEntitiesInput(
                     selectedProgram = selectedProgram?.uid(),
                     allowCache = allowCache,
@@ -557,23 +556,15 @@ class SearchTEIViewModel(
                     isOnline = isOnline,
                     queryDataList = queryDataList,
                 )
-            val results = searchTrackedEntities.invoke(newTrackerSearchModel)
+            val results = searchTrackedEntities.invoke(trackerSearchModel)
 
             emitAll(
                 results.getOrThrow().map { pagingData ->
                     pagingData.map { item ->
                         withContext(dispatchers.io()) {
-                            // TODO Create a new SearchTeiModel that does not use
-                            // SDK objects and remove this mapping from the domain model back to the SDK one
-                            val sdkTei = transformDomainTeiToSDKTei(item)
-                            val searchOnline =
-                                isOnline &&
-                                    filterManager.stateFilters.isEmpty()
-                            searchRepository.transform(
-                                sdkTei,
-                                selectedProgram,
-                                !searchOnline,
-                                filterManager.sortingItem,
+                            searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                                item,
+                                filterManager.sortingItem
                             )
                         }
                     }
@@ -606,14 +597,9 @@ class SearchTEIViewModel(
                 results.getOrThrow().map { pagingData ->
                     pagingData.map { item ->
                         withContext(dispatchers.io()) {
-                            // TODO Create a new SearchTeiModel that does not use
-                            // SDK objects and remove this mapping from the domain model back to the SDK one
-                            val sdkTei = transformDomainTeiToSDKTei(item)
-                            searchRepository.transform(
-                                sdkTei,
-                                selectedProgram,
-                                true,
-                                filterManager.sortingItem,
+                            searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                                item,
+                                filterManager.sortingItem
                             )
                         }
                     }
@@ -650,17 +636,9 @@ class SearchTEIViewModel(
                     results.getOrThrow().map { pagingData ->
                         pagingData.map { item ->
                             withContext(dispatchers.io()) {
-                                // TODO Create a new SearchTeiModel that does not use
-                                // SDK objects and remove this mapping from the domain model back to the SDK one
-                                val sdkTei = transformDomainTeiToSDKTei(item)
-                                val searchOnline =
-                                    isOnline &&
-                                        filterManager.stateFilters.isEmpty()
-                                searchRepository.transform(
-                                    sdkTei,
-                                    selectedProgram,
-                                    !searchOnline,
-                                    filterManager.sortingItem,
+                                searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                                    item,
+                                    filterManager.sortingItem
                                 )
                             }
                         }
@@ -763,17 +741,17 @@ class SearchTEIViewModel(
         onlineTooManyResults: Boolean,
     ): Boolean =
         !onlineTooManyResults &&
-            when (initialProgramUid) {
-                null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
-                else ->
-                    searchRepository
-                        .getProgram(initialProgramUid)
-                        ?.maxTeiCountToReturn()
-                        ?.takeIf { it != 0 }
-                        ?.let { maxTeiCount ->
-                            itemCount <= maxTeiCount
-                        } ?: true
-            }
+                when (initialProgramUid) {
+                    null -> itemCount <= TEI_TYPE_SEARCH_MAX_RESULTS
+                    else ->
+                        searchRepository
+                            .getProgram(initialProgramUid)
+                            ?.maxTeiCountToReturn()
+                            ?.takeIf { it != 0 }
+                            ?.let { maxTeiCount ->
+                                itemCount <= maxTeiCount
+                            } ?: true
+                }
 
     fun queryDataByProgram(programUid: String?): MutableMap<String, List<String>> =
         searchRepository.filterQueryForProgram(queryDataAsMap(), programUid)
@@ -903,9 +881,10 @@ class SearchTEIViewModel(
                 }
 
                 hasGlobalResults == null &&
-                    searchRepository.getProgram(initialProgramUid) != null &&
-                    searchRepository.filterQueryForProgram(queryDataAsMap(), null).isNotEmpty() &&
-                    searchRepository.filtersApplyOnGlobalSearch() -> {
+                        searchRepository.getProgram(initialProgramUid) != null &&
+                        searchRepository.filterQueryForProgram(queryDataAsMap(), null)
+                            .isNotEmpty() &&
+                        searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
                             SearchResult.SearchResultType.SEARCH_OUTSIDE,
@@ -915,9 +894,9 @@ class SearchTEIViewModel(
                 }
 
                 hasGlobalResults == null &&
-                    searchRepository.getProgram(initialProgramUid) != null &&
-                    searchRepository.trackedEntityTypeFields().isNotEmpty() &&
-                    searchRepository.filtersApplyOnGlobalSearch() -> {
+                        searchRepository.getProgram(initialProgramUid) != null &&
+                        searchRepository.trackedEntityTypeFields().isNotEmpty() &&
+                        searchRepository.filtersApplyOnGlobalSearch() -> {
                     listOf(
                         SearchResult(
                             type = SearchResult.SearchResultType.UNABLE_SEARCH_OUTSIDE,
@@ -1141,7 +1120,7 @@ class SearchTEIViewModel(
             // get uids to exclude for possible duplicates
             val excludeValues = searchRepositoryKt.getExcludeValues()
 
-            val newTrackerSearchModel =
+            val trackerSearchModel =
                 SearchTrackedEntitiesInput(
                     selectedProgram = selectedProgram?.uid(),
                     allowCache = false, // No need for cache in immediate search
@@ -1152,7 +1131,7 @@ class SearchTEIViewModel(
                 )
 
             // Use invokeImmediate for QR code scanning to get immediate non-paginated results
-            val trackedEntitiesResult = searchTrackedEntities.invokeImmediate(newTrackerSearchModel)
+            val trackedEntitiesResult = searchTrackedEntities.invokeImmediate(trackerSearchModel)
 
             val trackedEntities = trackedEntitiesResult.getOrNull() ?: emptyList()
 
@@ -1161,18 +1140,12 @@ class SearchTEIViewModel(
             val tei = trackedEntities.first()
 
             // Transform domain model to SDK model for compatibility with existing code
-            val sdkTei =
-                withContext(dispatchers.io()) {
-                    transformDomainTeiToSDKTei(tei)
-                }
 
             val searchTeiModel =
                 withContext(dispatchers.io()) {
-                    searchRepository.transform(
-                        sdkTei,
-                        selectedProgram,
-                        !(isOnline && filterManager.stateFilters.isEmpty()),
-                        filterManager.sortingItem,
+                    searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
+                        tei,
+                        filterManager.sortingItem
                     )
                 }
 
@@ -1183,9 +1156,9 @@ class SearchTEIViewModel(
 
             // Open TEI dashboard for the found TEI
             onTeiClick(
-                teiUid = searchTeiModel.uid(),
-                enrollmentUid = searchTeiModel.selectedEnrollment.uid(),
-                online = searchTeiModel.isOnline,
+                teiUid = searchTeiModel.tei.uid,
+                enrollmentUid = searchTeiModel.selectedEnrollment.uid,
+                online = searchTeiModel.tei.isOnline,
             )
         }
     }
@@ -1231,7 +1204,7 @@ class SearchTEIViewModel(
                     TrackerInputType.VERTICAL_RADIOBUTTONS,
                     TrackerInputType.HORIZONTAL_CHECKBOXES,
                     TrackerInputType.VERTICAL_CHECKBOXES,
-                    -> {
+                        -> {
                         item.value?.let {
                             if (it == "true" || it == "false") {
                                 map[item.uid] = "${item.label}: $it"
