@@ -1,6 +1,8 @@
 package org.dhis2.mobile.commons.auth
 
 import android.app.Activity.RESULT_OK
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -48,6 +50,8 @@ class OpenIdControllerImpl(
         if (intent !is IntentWithRequestCode) return
         onResultCallback = onResult
         openIDRequestCode = intent.requestCode
+        intent.intent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+        intent.intent.addFlags(FLAG_ACTIVITY_CLEAR_TASK)
         openIdLauncher.launch(intent.intent)
     }
 }
