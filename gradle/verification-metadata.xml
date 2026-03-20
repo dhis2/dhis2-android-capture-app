@@ -12,6 +12,7 @@
          <trust group="org.hisp.dhis" name="android-core" version=".*" regex="true"/>
          <trust group="org.hisp.dhis" name="android-core" version=".*-SNAPSHOT" regex="true"/>
          <trust group="org.hisp.dhis.mobile" name=".*" version=".*-SNAPSHOT" regex="true"/>
+         <trust group="org.jetbrains.intellij.deps.kotlinx"/>
       </trusted-artifacts>
    </configuration>
    <components>
