@@ -49,7 +49,7 @@ jobs:
         encodedString: ${{ secrets.KEYSTORE }}
 
     - name: Generate dependency verification metadata
-      run: ./gradlew --write-verification-metadata sha256 app:compileDhis2ReleaseKotlin app:compileDhis2PlayServicesReleaseKotlin app:compileDhis2TrainingReleaseKotlin --no-daemon
+      run: ./gradlew --write-verification-metadata sha256 help --no-daemon
 
     - name: Build Release APKs
       run: ./gradlew --dependency-verification strict app:assembleDhis2Release app:assembleDhis2PlayServicesRelease

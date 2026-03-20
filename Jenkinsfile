@@ -65,6 +65,15 @@ pipeline {
                 }
             }
         }
+        stage('Check dependency verification metadata') {
+            steps {
+                script {
+                    echo 'Checking dependency verification metadata is up to date'
+                    sh './gradlew --write-verification-metadata sha256 help --no-daemon'
+                    sh 'git diff --exit-code gradle/verification-metadata.xml || (echo "❌ verification-metadata.xml is out of date. Run \'./gradlew --write-verification-metadata sha256 help\' locally and commit the result." && exit 1)'
+                }
+            }
+        }
         stage('Unit tests') {
             when {
                 expression {
