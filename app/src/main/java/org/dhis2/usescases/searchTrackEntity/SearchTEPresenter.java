@@ -337,7 +337,7 @@ public class SearchTEPresenter implements SearchTEContractsModule.Presenter {
 
     @Override
     public void onTEIClick(String TEIuid, String enrollmentUid, boolean isOnline) {
-        if (!isOnline) {
+        if (isOnline) {
             openDashboard(TEIuid, enrollmentUid);
         } else
             downloadTei(TEIuid, enrollmentUid);
