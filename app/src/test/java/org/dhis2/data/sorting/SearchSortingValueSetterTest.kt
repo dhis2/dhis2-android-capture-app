@@ -4,17 +4,23 @@ import org.dhis2.commons.filters.Filters
 import org.dhis2.commons.filters.sorting.SortingItem
 import org.dhis2.commons.filters.sorting.SortingStatus
 import org.dhis2.data.enrollment.EnrollmentUiDataHelper
+import org.dhis2.tracker.search.model.DomainEnrollment
+import org.dhis2.tracker.search.model.DomainObjectStyle
+import org.dhis2.tracker.search.model.DomainProgram
+import org.dhis2.tracker.search.model.EnrollmentStatus
+import org.dhis2.tracker.search.model.GeometryFeatureType
+import org.dhis2.tracker.search.model.SyncState
+import org.dhis2.tracker.search.model.TrackedEntitySearchItemResult
+import org.dhis2.tracker.search.model.TrackedEntityTypeAttributeDomain
+import org.dhis2.tracker.search.model.TrackedEntityTypeDomain
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.common.ObjectWithUid
-import org.hisp.dhis.android.core.enrollment.Enrollment
-import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.Event
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.program.Program
-import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -22,14 +28,32 @@ import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.time.Instant
 import java.util.Date
+import kotlin.time.Instant as KtlInstant
+import java.time.Instant
 
 class SearchSortingValueSetterTest {
     lateinit var searchSortingValueSetter: SearchSortingValueSetter
     private val d2: D2 = Mockito.mock(D2::class.java, Mockito.RETURNS_DEEP_STUBS)
     private val enrollmentUiDataHelper: EnrollmentUiDataHelper = mock()
-
+    private val enrollmentUid = "enrollmentUid"
+    private val programUid = "programUid"
+    private val enrollmentOrgUnit = "enrollmentOrgUnit"
+    private val teiUid = "teiUid"
+    private val selectedEnrollment =      DomainEnrollment(
+        uid = enrollmentUid,
+        orgUnit = enrollmentOrgUnit,
+        program = programUid,
+        enrollmentDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+        incidentDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+        completedDate = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+        followUp = false,
+        status = EnrollmentStatus.ACTIVE,
+        trackedEntityInstance = teiUid,
+    )
+    private val enrollments = listOf(
+           selectedEnrollment
+    )
     @Before
     fun setUp() {
         searchSortingValueSetter =
@@ -51,14 +75,14 @@ class SearchSortingValueSetterTest {
                 .eventModule()
                 .events()
                 .byEnrollmentUid()
-                .eq(""),
+                .eq("enrollmentUid"),
         ) doReturn mock()
         whenever(
             d2
                 .eventModule()
                 .events()
                 .byEnrollmentUid()
-                .eq("")
+                .eq("enrollmentUid")
                 .byDeleted(),
         ) doReturn mock()
         whenever(
@@ -66,7 +90,7 @@ class SearchSortingValueSetterTest {
                 .eventModule()
                 .events()
                 .byEnrollmentUid()
-                .eq("")
+                .eq("enrollmentUid")
                 .byDeleted()
                 .isFalse,
         ) doReturn mock()
@@ -75,7 +99,7 @@ class SearchSortingValueSetterTest {
                 .eventModule()
                 .events()
                 .byEnrollmentUid()
-                .eq("")
+                .eq("enrollmentUid")
                 .byDeleted()
                 .isFalse
                 .orderByTimeline(RepositoryScope.OrderByDirection.ASC),
@@ -85,7 +109,7 @@ class SearchSortingValueSetterTest {
                 .eventModule()
                 .events()
                 .byEnrollmentUid()
-                .eq("")
+                .eq("enrollmentUid")
                 .byDeleted()
                 .isFalse
                 .orderByTimeline(RepositoryScope.OrderByDirection.ASC)
@@ -155,7 +179,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.PERIOD, SortingStatus.ASC),
             )
 
@@ -216,7 +240,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.PERIOD, SortingStatus.ASC),
             )
 
@@ -277,7 +301,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.PERIOD, SortingStatus.ASC),
             )
 
@@ -305,7 +329,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.ORG_UNIT, SortingStatus.ASC),
             )
 
@@ -330,7 +354,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.ORG_UNIT, SortingStatus.ASC),
             )
 
@@ -410,7 +434,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.ENROLLMENT_STATUS, SortingStatus.ASC),
             )
 
@@ -455,7 +479,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC),
             )
 
@@ -490,7 +514,7 @@ class SearchSortingValueSetterTest {
 
         val result =
             searchSortingValueSetter.setSortingItem(
-                searchTeiModel(),
+                generateSearchTeiModel(),
                 SortingItem(Filters.ENROLLMENT_DATE, SortingStatus.ASC),
             )
 
@@ -537,44 +561,66 @@ class SearchSortingValueSetterTest {
                 .build(),
         )
 
-    private fun searchTeiModel(): SearchTeiModel =
-        SearchTeiModel().apply {
-            setCurrentEnrollment(
-                Enrollment
-                    .builder()
-                    .uid("enrollmentUid")
-                    .organisationUnit("enrollmentOrgUnit")
-                    .status(EnrollmentStatus.ACTIVE)
-                    .program("programUid")
-                    .enrollmentDate(Date.from(Instant.parse("2020-01-01T00:00:00.00Z")))
-                    .attributeOptionCombo("attributeOptionComboUid")
-                    .build(),
-            )
-            tei =
-                TrackedEntityInstance
-                    .builder()
-                    .uid("teiUid")
-                    .organisationUnit("teiOrgUnit")
-                    .build()
-        }
+    private fun generateSearchTeiModel(): SearchTeiModel {
+        val tei = TrackedEntitySearchItemResult(
+            uid = "teiUid",
+            created = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            lastUpdated = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            createdAtClient = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            lastUpdatedAtClient = KtlInstant.parse("2020-01-01T00:00:00.00Z"),
+            ownerOrgUnit = "ownerOrgUnit",
+            enrollmentOrgUnit = "enrollmentOrgUnit",
+            shouldDisplayOrgUnit = true,
+            geometry = null,
+            syncState = SyncState.SYNCED,
+            aggregatedSyncState = SyncState.SYNCED,
+            deleted = false,
+            isOnline = true,
+            teTypeName = "teTypeName",
+            type = TrackedEntityTypeDomain(
+                trackedEntityTypeAttributeDomains = listOf(TrackedEntityTypeAttributeDomain(
+                     trackedEntityTypeUid=  "trackedEntityTypeUid",
+                     trackedEntityAttributeUid = "trackedEntityAttributeUid",
+                 displayInList= true,
+                       mandatory = false,
+                 searchable = true,
+                 sortOrder = 1,
+                )),
+                featureType = GeometryFeatureType.POINT,
+            ),
+            header = "teiHeader",
+            overDueDate = null,
+            selectedEnrollment = selectedEnrollment,
+            profilePicture = null,
+            enrolledPrograms = listOf(DomainProgram(
+                uid = "programUid",
+                displayName = "programDisplayName",
+                style = DomainObjectStyle(
+                    icon = "iconUid",
+                    color = "colorUid"
+                )
+            )),
+            enrollments = enrollments,
+            relationships = null,
+            defaultTypeIcon = null,
+            attributeValues = emptyList(),
+        )
+        val searchTeiModel = SearchTeiModel()
+        searchTeiModel.tei = tei
+        return searchTeiModel
+    }
 
-    private fun onlineSearchTeiModel(): SearchTeiModel =
-        SearchTeiModel().apply {
-            tei =
-                TrackedEntityInstance
-                    .builder()
-                    .uid("teiUid")
-                    .organisationUnit("teiOrgUnit")
-                    .build()
-        }
+    private fun onlineSearchTeiModel(): SearchTeiModel  {
+        val searchTeiModel = generateSearchTeiModel()
+        searchTeiModel.tei = searchTeiModel.tei?.copy(isOnline = true)
+        return searchTeiModel
+    }
 
-    private fun searchTeiModelWithoutEnrollment(): SearchTeiModel =
-        SearchTeiModel().apply {
-            tei =
-                TrackedEntityInstance
-                    .builder()
-                    .uid("teiUid")
-                    .organisationUnit("teiOrgUnit")
-                    .build()
-        }
+
+    private fun searchTeiModelWithoutEnrollment(): SearchTeiModel {
+        val searchTeiModel = generateSearchTeiModel()
+        searchTeiModel.tei = searchTeiModel.tei?.copy(selectedEnrollment = null, enrollments = emptyList())
+        return searchTeiModel
+    }
+
 }
