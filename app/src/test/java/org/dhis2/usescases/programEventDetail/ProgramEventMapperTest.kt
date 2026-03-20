@@ -50,7 +50,7 @@ class ProgramEventMapperTest {
         val result = mapper.eventToProgramEvent(event)
 
         assert(!result.isExpired)
-        assert(event.uid() == result.uid())
+        assert(event.uid() == result.uid)
         assert(result.eventState == State.TO_UPDATE)
     }
 
@@ -65,7 +65,7 @@ class ProgramEventMapperTest {
         val result = mapper.eventToProgramEvent(event)
 
         assert(!result.isExpired)
-        assert(event.uid() == result.uid())
+        assert(event.uid() == result.uid)
         assert(result.eventState == State.SYNCED)
     }
 
