@@ -28,7 +28,7 @@ class SearchTeiViewModelFactory(
     private val searchTrackedEntities: SearchTrackedEntities,
     private val fetchSearchParameters: FetchSearchParameters,
     private val fetchOptionSetOptions: FetchOptionSetOptions,
-) : ViewModelProvider.Factory {
+    ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
         SearchTEIViewModel(
             initialProgramUid,
