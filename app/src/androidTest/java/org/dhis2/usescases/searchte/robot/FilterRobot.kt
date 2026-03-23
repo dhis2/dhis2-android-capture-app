@@ -170,6 +170,7 @@ class FilterRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun checkTeiAreCompleted() {
         val nodes = composeTestRule.onAllNodesWithText("Enrollment completed", true)
+        composeTestRule.waitForIdle()
         assert(nodes.fetchSemanticsNodes().size >= 3) {
             "Expected at least 3 nodes, but found ${nodes.fetchSemanticsNodes().size}"
         }
