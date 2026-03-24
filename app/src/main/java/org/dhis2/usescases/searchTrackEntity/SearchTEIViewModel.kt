@@ -564,7 +564,7 @@ class SearchTEIViewModel(
                         withContext(dispatchers.io()) {
                             searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
                                 item,
-                                filterManager.sortingItem
+                                filterManager.sortingItem,
                             )
                         }
                     }
@@ -599,7 +599,7 @@ class SearchTEIViewModel(
                         withContext(dispatchers.io()) {
                             searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
                                 item,
-                                filterManager.sortingItem
+                                filterManager.sortingItem,
                             )
                         }
                     }
@@ -638,7 +638,7 @@ class SearchTEIViewModel(
                             withContext(dispatchers.io()) {
                                 searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
                                     item,
-                                    filterManager.sortingItem
+                                    filterManager.sortingItem,
                                 )
                             }
                         }
@@ -1145,7 +1145,7 @@ class SearchTEIViewModel(
                 withContext(dispatchers.io()) {
                     searchRepositoryKt.mapTrackedEntitySearchItemResultToSearchTeiModel(
                         tei,
-                        filterManager.sortingItem
+                        filterManager.sortingItem,
                     )
                 }
 
