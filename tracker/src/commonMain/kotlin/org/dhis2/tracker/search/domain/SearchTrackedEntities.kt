@@ -29,6 +29,7 @@ class SearchTrackedEntities(
                     isOnline = input.isOnline,
                     hasStateFilters = input.hasStateFilters,
                     allowCache = input.allowCache,
+                    selectedProgram = input.selectedProgram,
                 ),
             )
         } catch (domainError: DomainError) {
@@ -53,6 +54,7 @@ class SearchTrackedEntities(
                 repository.fetchImmediateResults(
                     isOnline = input.isOnline,
                     hasStateFilters = input.hasStateFilters,
+                    selectedProgram = input.selectedProgram,
                 ),
             )
         } catch (domainError: DomainError) {

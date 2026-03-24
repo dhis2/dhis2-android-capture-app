@@ -41,6 +41,7 @@ kotlin {
             implementation("${designSystem.get().group}:${designSystem.get().name}:${designSystem.get().version}") {
                 isChanging = true
             }
+            implementation(libs.kotlinx.datetime)
             implementation(libs.compose.material3.window)
             implementation(compose.components.resources)
             implementation(project(":commonskmm"))
