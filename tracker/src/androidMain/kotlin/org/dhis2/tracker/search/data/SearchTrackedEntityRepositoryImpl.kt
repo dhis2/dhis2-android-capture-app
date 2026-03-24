@@ -166,7 +166,7 @@ class SearchTrackedEntityRepositoryImpl(
     ): TrackedEntitySearchItemResult {
         val dbTei = getDatabaseTei(item)
         val selectedEnrollment = getSelectedEnrollment(dbTei, selectedProgram)
-        val isOnline = !(!item.isOnline && !hasStateFilters && dbTei?.deleted() == false)
+        val isOnline = !(!item.isOnline && !hasStateFilters && dbTei.deleted() == false)
         val enrollments: List<DomainEnrollment> = getTeiEnrollments(item.uid)
         val overDueDate: Instant? = getOverdueDate(enrollments, selectedProgram)
         val relationShips: List<RelationshipModel>? =
