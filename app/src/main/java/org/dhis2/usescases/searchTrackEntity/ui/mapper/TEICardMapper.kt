@@ -69,7 +69,7 @@ class TEICardMapper(
     ) {
         val programUid: String? =
             if (item.selectedEnrollment != null) {
-                item.selectedEnrollment.program.toString()
+                item.selectedEnrollment.program
             } else {
                 null
             }
@@ -141,7 +141,7 @@ class TEICardMapper(
 
         return attributeList.also { list ->
             searchTEIModel.tei.ownerOrgUnit?.let {
-                if (it == searchTEIModel.tei.enrollmentOrgUnit) {
+                if (it != searchTEIModel.tei.enrollmentOrgUnit) {
                     addOwnedBy(
                         list = list,
                         ownerOrgUnit = it,

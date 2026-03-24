@@ -20,7 +20,7 @@ class SearchTEViewHolder(
     override fun itemViewClick() {
         binding.syncState.setOnClickListener {
             if (teiModel.tei.deleted ||
-                teiModel.tei.selectedEnrollment != null
+                teiModel.tei.selectedEnrollment == null
             ) {
                 Toast
                     .makeText(

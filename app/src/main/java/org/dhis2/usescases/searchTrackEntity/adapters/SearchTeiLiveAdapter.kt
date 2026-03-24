@@ -101,7 +101,7 @@ class SearchTeiLiveAdapter(
                                     onSyncIconClick.invoke(it.selectedEnrollment.uid)
                                 },
                                 onCardClick = {
-                                    if (!it.tei.isOnline) {
+                                    if (it.tei.isOnline) {
                                         onDownloadTei.invoke(
                                             it.tei.uid,
                                             it.selectedEnrollment?.uid,
