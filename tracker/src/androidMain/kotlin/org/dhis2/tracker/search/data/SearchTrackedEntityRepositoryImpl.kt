@@ -130,11 +130,11 @@ class SearchTrackedEntityRepositoryImpl(
                 // otherwise we use offline only
                 trackedEntityInstanceQuery?.allowOnlineCache()?.eq(allowCache)?.offlineOnly()
             }
-
+        val displayOrgUnit = shouldDisplayOrgUnit(selectedProgram)
         // map the paging data to TrackedEntitySearchItemResult
         return pagerFlow?.getPagingData(10)?.map { pagingData ->
             pagingData.map { item ->
-                mapItemToDomainResult(item, selectedProgram, hasStateFilters)
+                mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit)
             }
         } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
     }
@@ -152,8 +152,9 @@ class SearchTrackedEntityRepositoryImpl(
                 // otherwise we use offline only
                 trackedEntityInstanceQuery?.offlineOnly()?.blockingGet()
             }
+        val displayOrgUnit = shouldDisplayOrgUnit(selectedProgram)
         return results?.map { item ->
-            mapItemToDomainResult(item, selectedProgram, hasStateFilters)
+            mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit)
         } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
     }
 
@@ -161,6 +162,7 @@ class SearchTrackedEntityRepositoryImpl(
         item: TrackedEntitySearchItem,
         selectedProgram: String?,
         hasStateFilters: Boolean,
+        displayOrgUnit: Boolean,
     ): TrackedEntitySearchItemResult {
         val dbTei = getDatabaseTei(item)
         val selectedEnrollment = getSelectedEnrollment(dbTei, selectedProgram)
@@ -190,15 +192,14 @@ class SearchTrackedEntityRepositoryImpl(
             }
 
         val profilePicture = profilePictureProvider.invoke(dbTei, selectedProgram)
-        val shouldDisplayOrgUnit = shouldDisplayOrgUnit(selectedProgram)
         val enrolledPrograms = getEnrolledPrograms(enrollments)
         return item.toTrackedEntitySearchItemResult(
             selectedEnrollment = selectedEnrollment,
             isOnline = isOnline,
             overDueDate = overDueDate,
             ownerOrgUnit = ownerOrgUnitName,
-            enrollmentOrgUnit = enrolledOrgUnit ?: "no name",
-            shouldDisplayOrgUnit = shouldDisplayOrgUnit,
+            enrollmentOrgUnit = enrolledOrgUnit,
+            shouldDisplayOrgUnit = displayOrgUnit,
             profilePicture = profilePicture,
             enrollments = enrollments,
             enrolledPrograms = enrolledPrograms,
@@ -207,21 +208,39 @@ class SearchTrackedEntityRepositoryImpl(
     }
 
     private fun getEnrolledPrograms(enrollments: List<DomainEnrollment>): List<DomainProgram>? {
+        val programUids =
+            enrollments
+                .mapNotNull { it.program }
+                .distinct()
+        if (programUids.isEmpty()) {
+            return null
+        }
+
+        val programs =
+            d2
+                .programModule()
+                .programs()
+                .byUid()
+                .`in`(programUids)
+                .blockingGet()
+        if (programs.isEmpty()) {
+            return null
+        }
+
+        val programsByUid = programs.associateBy { it.uid() }
         val enrolledPrograms =
             enrollments.mapNotNull { enrollment ->
-                enrollment.program?.let {
-                    d2.programModule().programs().uid(it).blockingGet()?.let { program ->
-                        DomainProgram(
-                            uid = program.uid(),
-                            displayName = program.displayName() ?: "",
-                            style =
-                                DomainObjectStyle(
-                                    icon = program.style()?.icon(),
-                                    color = program.style()?.color(),
-                                ),
-                        )
-                    }
-                }
+                val programUid = enrollment.program ?: return@mapNotNull null
+                val program = programsByUid[programUid] ?: return@mapNotNull null
+                DomainProgram(
+                    uid = program.uid(),
+                    displayName = program.displayName() ?: "",
+                    style =
+                        DomainObjectStyle(
+                            icon = program.style()?.icon(),
+                            color = program.style()?.color(),
+                        ),
+                )
             }
         return enrolledPrograms.ifEmpty { null }
     }
@@ -276,9 +295,8 @@ class SearchTrackedEntityRepositoryImpl(
                         direction = RelationshipDirection.FROM
                     } else {
                         relationshipTeiUid =
-                            relationship.to()!!.trackedEntityInstance()!!.trackedEntityInstance()
-                                ?: "" // ask andrés what to do if this is null
-                        // it is worth talking with Victor to manage null uids
+                            relationship.to()?.trackedEntityInstance()?.trackedEntityInstance()
+                                ?: ""
                         direction = RelationshipDirection.TO
                     }
 
@@ -344,7 +362,7 @@ class SearchTrackedEntityRepositoryImpl(
                         }
                     RelationshipModel(
                         relationshipUid = relationship.uid()!!,
-                        relationshipState = relationship.syncState()?.name!!,
+                        relationshipState = relationship.syncState()?.name ?: State.TO_POST.name,
                         fromGeometry = fromGeometry,
                         toGeometry = toGeometry,
                         direction = direction,
@@ -406,12 +424,12 @@ class SearchTrackedEntityRepositoryImpl(
             .blockingGet()
             .map { it.uid() }
 
-    private fun getTeTypeTrackedEntityAttributeUids(teiUid: String): List<String> =
+    private fun getTeTypeTrackedEntityAttributeUids(teTypeUid: String): List<String> =
         d2
             .trackedEntityModule()
             .trackedEntityTypeAttributes()
             .byTrackedEntityTypeUid()
-            .eq(teiUid)
+            .eq(teTypeUid)
             .byDisplayInList()
             .isTrue
             .blockingGet()
