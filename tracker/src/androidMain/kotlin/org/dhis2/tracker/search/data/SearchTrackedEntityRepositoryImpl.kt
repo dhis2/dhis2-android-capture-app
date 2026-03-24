@@ -134,7 +134,7 @@ class SearchTrackedEntityRepositoryImpl(
         // map the paging data to TrackedEntitySearchItemResult
         return pagerFlow?.getPagingData(10)?.map { pagingData ->
             pagingData.map { item ->
-                mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit)
+                mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit, isOnline)
             }
         } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
     }
@@ -154,7 +154,7 @@ class SearchTrackedEntityRepositoryImpl(
             }
         val displayOrgUnit = shouldDisplayOrgUnit(selectedProgram)
         return results?.map { item ->
-            mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit)
+            mapItemToDomainResult(item, selectedProgram, hasStateFilters, displayOrgUnit, isOnline)
         } ?: throw IllegalStateException("TrackedEntityInstanceQuery is not initialized")
     }
 
@@ -163,13 +163,14 @@ class SearchTrackedEntityRepositoryImpl(
         selectedProgram: String?,
         hasStateFilters: Boolean,
         displayOrgUnit: Boolean,
+        deviceIsOnline: Boolean,
     ): TrackedEntitySearchItemResult {
         val dbTei = getDatabaseTei(item)
         val selectedEnrollment = getSelectedEnrollment(dbTei, selectedProgram)
-        val isOnline = !(!item.isOnline && !hasStateFilters && dbTei.deleted() == false)
-        val enrollments: List<DomainEnrollment> = getTeiEnrollments(item.uid)
+        val isOnline = if (!deviceIsOnline) false else !(!item.isOnline && !hasStateFilters && dbTei.deleted() == false)
+        val enrollments = getTeiEnrollments(item.uid)
         val overDueDate: Instant? = getOverdueDate(enrollments, selectedProgram)
-        val relationShips: List<RelationshipModel>? =
+        val relationships =
             if (dbTei.aggregatedSyncState() != State.RELATIONSHIP && selectedProgram?.isNotEmpty() == true) {
                 getRelationShips(item.uid, selectedProgram, item.type.uid())
             } else {
@@ -183,7 +184,7 @@ class SearchTrackedEntityRepositoryImpl(
                 orgUnitName(item.organisationUnit)
             }
 
-        val ownerOrgUnit = item.programOwners?.get(0)?.ownerOrgUnit
+        val ownerOrgUnit = item.programOwners?.firstOrNull()?.ownerOrgUnit
         val ownerOrgUnitName =
             if (ownerOrgUnit != selectedEnrollment?.orgUnit) {
                 orgUnitName(ownerOrgUnit)
@@ -203,7 +204,7 @@ class SearchTrackedEntityRepositoryImpl(
             profilePicture = profilePicture,
             enrollments = enrollments,
             enrolledPrograms = enrolledPrograms,
-            relationships = relationShips,
+            relationships = relationships,
         )
     }
 
