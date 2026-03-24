@@ -82,7 +82,7 @@ class TrackedEntityInstanceInfoProvider(
     }
 
     fun getMetadataIcon(style: ObjectStyle) : MetadataIconData {
-        return  metadataIconProvider.invoke(style)
+        return metadataIconProvider.invoke(style)
     }
 
     fun getTeiTitle(

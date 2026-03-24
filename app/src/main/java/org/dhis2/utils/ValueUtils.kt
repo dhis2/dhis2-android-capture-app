@@ -78,7 +78,7 @@ class ValueUtils private constructor() {
             return teAttrValue
         }
 
-        @Deprecated ("Use transformValue with TrackerInputType instead of ValueType")
+        @Deprecated("Use transformValue with TrackerInputType instead of ValueType")
         fun transformValueLegacy(
             d2: D2,
             value: String?,
@@ -88,23 +88,16 @@ class ValueUtils private constructor() {
             var teAttrValue = value
             when (valueType) {
                 ValueType.ORGANISATION_UNIT -> {
-                    if (!d2
+                    val orgUnit =
+                        d2
                             .organisationUnitModule()
                             .organisationUnits()
                             .byUid()
                             .eq(value)
-                            .blockingIsEmpty()
-                    ) {
-                        val orgUnitName =
-                            d2
-                                .organisationUnitModule()
-                                .organisationUnits()
-                                .byUid()
-                                .eq(value)
-                                .one()
-                                .blockingGet()!!
-                                .displayName()!!
-                        teAttrValue = orgUnitName
+                            .one()
+                            .blockingGet()
+                    if (orgUnit != null && orgUnit.displayName() != null) {
+                        teAttrValue = orgUnit.displayName()
                     }
                 }
                 ValueType.DATE, ValueType.AGE -> {

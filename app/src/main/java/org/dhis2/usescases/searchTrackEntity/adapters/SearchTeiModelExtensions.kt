@@ -276,7 +276,8 @@ fun List<DomainProgram>.getEnrollmentIconsData(
             filteredList.size.let {
                 if (it <= 4) {
                     enrollmentIconDataList.add(
-                        EnrollmentIconData(0, 0, true, 0, provideMetadataIconData( program.uid)),
+                        EnrollmentIconData(0, 0, true, 0,
+                            provideMetadataIconData(program.uid)),
                     )
                 } else {
                     if (index in 0..2) {

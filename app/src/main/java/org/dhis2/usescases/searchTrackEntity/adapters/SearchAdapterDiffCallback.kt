@@ -13,7 +13,7 @@ class SearchAdapterDiffCallback : DiffUtil.ItemCallback<SearchTeiModel>() {
         oldItem: SearchTeiModel,
         newItem: SearchTeiModel
     ): Boolean {
-        return oldItem.tei.equals(newItem)
+        return oldItem.tei.equals(newItem.tei)
     }
 
 
