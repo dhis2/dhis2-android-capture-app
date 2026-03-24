@@ -31,10 +31,12 @@ interface SearchTrackedEntityRepository {
         isOnline: Boolean,
         hasStateFilters: Boolean,
         allowCache: Boolean,
+        selectedProgram: String?,
     ): Flow<PagingData<TrackedEntitySearchItemResult>>
 
     suspend fun fetchImmediateResults(
         isOnline: Boolean,
         hasStateFilters: Boolean,
+        selectedProgram: String?,
     ): List<TrackedEntitySearchItemResult>
 }
