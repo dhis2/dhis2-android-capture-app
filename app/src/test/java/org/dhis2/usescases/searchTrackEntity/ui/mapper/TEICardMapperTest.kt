@@ -88,22 +88,23 @@ class TEICardMapperTest {
         assertEquals(result.title, model.header)
         assertEquals(result.lastUpdated, model.tei.lastUpdated?.toJavaDate().toDateSpan(context))
         assertEquals(result.additionalInfo[0].value, model.attributeValues["Name"]?.value)
-        assertEquals(result.additionalInfo[1].value, model.tei.enrollmentOrgUnit)
+        assertEquals(result.additionalInfo[1].value, model.tei.ownerOrgUnit)
+        assertEquals(result.additionalInfo[2].value, model.tei.enrollmentOrgUnit)
         assertEquals(
-            result.additionalInfo[2].value,
+            result.additionalInfo[3].value,
             model.tei.enrolledPrograms?.joinToString(", ") { it.displayName },
         )
         assertEquals(
-            result.additionalInfo[3].value,
+            result.additionalInfo[4].value,
             "Enrollment Completed",
         )
 
         assertEquals(
-            result.additionalInfo[4].value,
+            result.additionalInfo[5].value,
             model.tei.overDueDate?.toJavaDate().toOverdueOrScheduledUiText(resourceManager),
         )
         assertEquals(
-            result.additionalInfo[5].value,
+            result.additionalInfo[6].value,
             resourceManager.getString(R.string.marked_follow_up),
         )
     }
@@ -125,7 +126,7 @@ class TEICardMapperTest {
                 onImageClick = {},
             )
         assertEquals(
-            result.additionalInfo[4].value,
+            result.additionalInfo[5].value,
             model.tei.overDueDate?.toJavaDate().toOverdueOrScheduledUiText(resourceManager),
         )
     }
