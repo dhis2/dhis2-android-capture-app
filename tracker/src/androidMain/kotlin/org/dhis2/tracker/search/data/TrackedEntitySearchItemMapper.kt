@@ -30,7 +30,7 @@ fun TrackedEntitySearchItem.toTrackedEntitySearchItemResult(
     isOnline: Boolean,
     overDueDate: Instant?,
     ownerOrgUnit: String?,
-    enrollmentOrgUnit: String,
+    enrollmentOrgUnit: String?,
     shouldDisplayOrgUnit: Boolean,
     profilePicture: String?,
     enrollments: List<DomainEnrollment>?,
