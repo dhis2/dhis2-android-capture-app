@@ -1,12 +1,14 @@
 package org.dhis2.utils.granularsync
 
-import io.reactivex.Single
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import org.dhis2.R
 import org.dhis2.commons.bindings.categoryOptionCombo
 import org.dhis2.commons.bindings.countEventImportConflicts
 import org.dhis2.commons.bindings.countTeiImportConflicts
 import org.dhis2.commons.bindings.dataElement
+import org.dhis2.commons.bindings.dataSet
 import org.dhis2.commons.bindings.dataSetInstanceSummaries
 import org.dhis2.commons.bindings.dataSetInstancesBy
 import org.dhis2.commons.bindings.dataSetSummaryBy
@@ -19,13 +21,10 @@ import org.dhis2.commons.bindings.event
 import org.dhis2.commons.bindings.eventImportConflictsBy
 import org.dhis2.commons.bindings.eventsBy
 import org.dhis2.commons.bindings.isStockProgram
-import org.dhis2.commons.bindings.observeDataSetInstancesBy
-import org.dhis2.commons.bindings.observeEvent
-import org.dhis2.commons.bindings.observeProgram
-import org.dhis2.commons.bindings.observeTei
 import org.dhis2.commons.bindings.organisationUnit
 import org.dhis2.commons.bindings.period
 import org.dhis2.commons.bindings.program
+import org.dhis2.commons.bindings.programStage
 import org.dhis2.commons.bindings.programs
 import org.dhis2.commons.bindings.stockUseCase
 import org.dhis2.commons.bindings.tei
@@ -61,106 +60,119 @@ class GranularSyncRepository(
     private val resourceManager: ResourceManager,
     private val dispatcher: DispatcherProvider,
 ) {
-    fun getUiState(forcedState: State? = null): SyncUiState =
-        Single
-            .zip(
-                getState(),
-                getLastSynced(),
-            ) { state, lastSync ->
-                buildUiState(
-                    forcedState.takeIf { it != null } ?: state,
-                    lastSync,
-                )
-            }.blockingGet()
+    suspend fun getUiState(forcedState: State? = null): SyncUiState =
+        coroutineScope {
+            val lastSync = async { getLastSynced() }
+            buildUiState(
+                state = forcedState ?: getState(),
+                lastSync = lastSync.await(),
+            )
+        }
 
-    private fun getState(): Single<State> =
+    private fun getState(): State =
         when (syncContext.conflictType()) {
             ConflictType.PROGRAM ->
                 d2
-                    .observeProgram(syncContext.recordUid())
-                    .map { dhisProgramUtils.getProgramState(it) }
+                    .program(syncContext.recordUid())
+                    ?.let { dhisProgramUtils.getProgramState(it) }
+                    ?: throw missingSyncTargetException()
 
             ConflictType.TEI -> {
                 val enrollment = d2.enrollment(syncContext.recordUid())
                 d2
-                    .observeTei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
-                    .map { it.aggregatedSyncState() }
+                    .tei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
+                    ?.aggregatedSyncState()
+                    ?: throw missingSyncTargetException()
             }
 
             ConflictType.EVENT ->
-                d2.observeEvent(syncContext.recordUid()).map { it.aggregatedSyncState() }
+                d2.event(syncContext.recordUid())?.aggregatedSyncState() ?: throw missingSyncTargetException()
 
-            ConflictType.DATA_SET ->
-                d2
-                    .observeDataSetInstancesBy(syncContext.recordUid())
-                    .map { dataSetInstances ->
-                        getStateFromCandidates(dataSetInstances.map { it.state() }.toMutableList())
-                    }
+            ConflictType.DATA_SET -> {
+                d2.dataSet(syncContext.recordUid()) ?: throw missingSyncTargetException()
+                getStateFromCandidates(
+                    d2
+                        .dataSetInstancesBy(syncContext.recordUid())
+                        .map { it.state() }
+                        .toMutableList(),
+                )
+            }
 
             ConflictType.DATA_VALUES ->
                 with(syncContext as SyncContext.DataSetInstance) {
-                    d2
-                        .observeDataSetInstancesBy(
-                            dataSetUid = dataSetUid,
-                            orgUnitUid = orgUnitUid,
-                            periodId = periodId,
-                            attrOptionComboUid = attributeOptionComboUid,
-                        ).map { dataSetInstance ->
-                            getStateFromCandidates(dataSetInstance.map { it.state() }.toMutableList())
-                        }
+                    val dataSetInstances =
+                        d2
+                            .dataSetModule()
+                            .dataSetInstances()
+                            .byDataSetUid()
+                            .eq(dataSetUid)
+                            .byOrganisationUnitUid()
+                            .eq(orgUnitUid)
+                            .byPeriod()
+                            .eq(periodId)
+                            .byAttributeOptionComboUid()
+                            .eq(attributeOptionComboUid)
+                            .blockingGet()
+
+                    if (dataSetInstances.isEmpty()) {
+                        throw missingSyncTargetException()
+                    }
+
+                    getStateFromCandidates(
+                        dataSetInstances
+                            .map { it.state() }
+                            .toMutableList(),
+                    )
                 }
 
-            ConflictType.ALL -> Single.just(dhisProgramUtils.getServerState())
+            ConflictType.ALL -> dhisProgramUtils.getServerState()
         }
 
-    private fun getLastSynced(returnEmpty: Boolean = true): Single<SyncDate> =
+    private fun getLastSynced(returnEmpty: Boolean = true): SyncDate =
         if (returnEmpty) {
-            Single.just(SyncDate(null))
+            SyncDate(null)
         } else {
             when (syncContext.conflictType()) {
                 ConflictType.PROGRAM ->
-                    d2.observeProgram(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
+                    SyncDate(d2.program(syncContext.recordUid())?.lastUpdated())
 
                 ConflictType.TEI -> {
                     val enrollment = d2.enrollment(syncContext.recordUid())
-                    d2
-                        .observeTei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
-                        .map { SyncDate(it.lastUpdated()) }
+                    SyncDate(
+                        d2
+                            .tei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
+                            ?.lastUpdated(),
+                    )
                 }
 
                 ConflictType.EVENT ->
-                    d2.observeEvent(syncContext.recordUid()).map { SyncDate(it.lastUpdated()) }
+                    SyncDate(d2.event(syncContext.recordUid())?.lastUpdated())
 
                 ConflictType.DATA_SET ->
-                    d2
-                        .dataSetModule()
-                        .dataSets()
-                        .uid(syncContext.recordUid())
-                        .get()
-                        .map { dataSet -> SyncDate(dataSet.lastUpdated()) }
+                    SyncDate(d2.dataSet(syncContext.recordUid())?.lastUpdated())
 
                 ConflictType.DATA_VALUES ->
                     with(syncContext as SyncContext.DataSetInstance) {
-                        d2
-                            .observeDataSetInstancesBy(
-                                dataSetUid = dataSetUid,
-                                orgUnitUid = orgUnitUid,
-                                periodId = periodId,
-                                attrOptionComboUid = attributeOptionComboUid,
-                            ).map { dataSetInstance ->
-                                dataSetInstance.sortedBy { it.lastUpdated() }
-                                SyncDate(
-                                    dataSetInstance
-                                        .apply {
-                                            sortedBy { it.lastUpdated() }
-                                        }.first()
-                                        .lastUpdated(),
-                                )
-                            }
+                        SyncDate(
+                            d2
+                                .dataSetModule()
+                                .dataSetInstances()
+                                .byDataSetUid()
+                                .eq(dataSetUid)
+                                .byOrganisationUnitUid()
+                                .eq(orgUnitUid)
+                                .byPeriod()
+                                .eq(periodId)
+                                .byAttributeOptionComboUid()
+                                .eq(attributeOptionComboUid)
+                                .blockingGet()
+                                .mapNotNull { it.lastUpdated() }
+                                .minOrNull(),
+                        )
                     }
 
                 ConflictType.ALL ->
-                    Single.just(SyncDate(preferenceProvider.lastSync()))
+                    SyncDate(preferenceProvider.lastSync())
             }
         }
 
@@ -1020,61 +1032,52 @@ class GranularSyncRepository(
         }
     }
 
-    private fun getMessageArgument(): String = getTitle().blockingGet()
+    private fun getMessageArgument(): String = getTitle()
 
-    private fun getTitle(): Single<String> =
+    private fun missingSyncTargetException(): MissingSyncTargetException =
+        MissingSyncTargetException(
+            SyncUiState(
+                syncState = State.ERROR,
+                title = getTitleForState(State.ERROR),
+                lastSyncDate = null,
+                message = resourceManager.getString(R.string.resource_not_found, syncContext.recordUid()),
+                mainActionLabel = getMainActionLabel(State.ERROR),
+                secondaryActionLabel = getSecondaryActionLabel(State.ERROR),
+                content = emptyList(),
+            ),
+        )
+
+    private fun getTitle(): String =
         when (syncContext.conflictType()) {
-            ConflictType.ALL -> Single.just("")
+            ConflictType.ALL -> ""
             ConflictType.PROGRAM ->
                 d2
-                    .programModule()
-                    .programs()
-                    .uid(syncContext.recordUid())
-                    .get()
-                    .map { it.displayName() }
+                    .program(syncContext.recordUid())
+                    ?.displayName()
+                    ?: syncContext.recordUid()
 
             ConflictType.TEI -> {
                 val enrollment =
-                    d2
-                        .enrollmentModule()
-                        .enrollments()
-                        .uid(syncContext.recordUid())
-                        .blockingGet()
+                    d2.enrollment(syncContext.recordUid())
                 d2
-                    .trackedEntityModule()
-                    .trackedEntityTypes()
-                    .uid(
-                        d2
-                            .trackedEntityModule()
-                            .trackedEntityInstances()
-                            .uid(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
-                            .blockingGet()
-                            ?.trackedEntityType(),
-                    ).get()
-                    .map { it.displayName() }
+                    .tei(enrollment?.trackedEntityInstance() ?: syncContext.recordUid())
+                    ?.trackedEntityType()
+                    ?.let { d2.trackedEntityType(it)?.displayName() }
+                    ?: syncContext.recordUid()
             }
 
             ConflictType.EVENT ->
                 d2
-                    .programModule()
-                    .programStages()
-                    .uid(
-                        d2
-                            .eventModule()
-                            .events()
-                            .uid(syncContext.recordUid())
-                            .blockingGet()
-                            ?.programStage(),
-                    ).get()
-                    .map { it.displayName() }
+                    .event(syncContext.recordUid())
+                    ?.programStage()
+                    ?.let { d2.programStage(it)?.displayName() }
+                    ?: syncContext.recordUid()
 
             ConflictType.DATA_SET, ConflictType.DATA_VALUES ->
                 d2
-                    .dataSetModule()
-                    .dataSets()
-                    .uid(syncContext.recordUid())
-                    .get()
-                    .map { it.displayName() }
+                    .dataSet(syncContext.recordUid())
+                    ?.displayName()
+                    ?: syncContext.recordUid()
         }
 
     suspend fun checkServerAvailability() =
