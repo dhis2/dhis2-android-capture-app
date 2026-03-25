@@ -35,6 +35,7 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.anyList
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mock
@@ -66,6 +67,18 @@ class GranularSyncPresenterTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testingDispatcher)
+        runBlocking {
+            whenever(repository.getUiState(anyOrNull())) doReturn
+                SyncUiState(
+                    syncState = State.SYNCED,
+                    title = "Title",
+                    lastSyncDate = null,
+                    message = null,
+                    mainActionLabel = null,
+                    secondaryActionLabel = null,
+                    content = emptyList(),
+                )
+        }
     }
 
     @After
@@ -97,11 +110,48 @@ class GranularSyncPresenterTest {
                 secondaryActionLabel = "action 2",
                 content = emptyList(),
             )
-        whenever(repository.getUiState()) doReturn mockedState
+        runBlocking {
+            whenever(repository.getUiState(anyOrNull())) doReturn mockedState
+        }
 
         presenter.refreshContent()
         val result = presenter.currentState.value
         assertEquals(mockedState, result)
+    }
+
+    @Test
+    fun `should map missing target exception to error ui state`() {
+        val presenter =
+            GranularSyncPresenter(
+                d2,
+                view,
+                repository,
+                trampolineSchedulerProvider,
+                testDispatcher,
+                SyncContext.TrackerProgram("missing_uid"),
+                workManager,
+                smsSyncProvider,
+            )
+
+        val missingTargetUiState =
+            SyncUiState(
+                syncState = State.ERROR,
+                title = "Sync error",
+                lastSyncDate = null,
+                message = "missing_uid not found",
+                mainActionLabel = "Refresh",
+                secondaryActionLabel = "Not now",
+                content = emptyList(),
+            )
+
+        runBlocking {
+            whenever(repository.getUiState(anyOrNull())) doThrow
+                MissingSyncTargetException(missingTargetUiState)
+        }
+
+        presenter.refreshContent()
+
+        assertEquals(missingTargetUiState, presenter.currentState.value)
     }
 
     @Test
@@ -254,7 +304,9 @@ class GranularSyncPresenterTest {
         presenter.onSmsManuallySent(context) {
         }
 
-        verify(repository).getUiState()
+        runBlocking {
+            verify(repository).getUiState(anyOrNull())
+        }
     }
 
     @Test
@@ -275,7 +327,9 @@ class GranularSyncPresenterTest {
         presenter.onSmsManuallySent(context) {
         }
 
-        verify(repository, times(0)).getUiState()
+        runBlocking {
+            verify(repository, times(0)).getUiState(anyOrNull())
+        }
     }
 
     @Test
@@ -297,7 +351,9 @@ class GranularSyncPresenterTest {
 
         presenter.onConfirmationMessageStateChanged(true)
 
-        verify(repository).getUiState()
+        runBlocking {
+            verify(repository).getUiState(anyOrNull())
+        }
     }
 
     @Test
@@ -319,7 +375,9 @@ class GranularSyncPresenterTest {
 
         presenter.onConfirmationMessageStateChanged(false)
 
-        verify(repository).getUiState()
+        runBlocking {
+            verify(repository).getUiState(anyOrNull())
+        }
     }
 
     @Test

@@ -34,7 +34,6 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -97,14 +96,18 @@ class GranularSyncPresenter(
 
     private fun loadSyncInfo(forcedState: State? = null) {
         viewModelScope.launch(dispatcher.io()) {
-            val syncState =
-                async {
-                    repository.getUiState(forcedState)
-                }.await()
-            val dismissOnUpdate = refreshing && syncState.syncState == State.SYNCED
-            refreshing = false
-            _currentState.update {
-                syncState.copy(shouldDismissOnUpdate = dismissOnUpdate)
+            try {
+                val syncState = repository.getUiState(forcedState)
+                val dismissOnUpdate = refreshing && syncState.syncState == State.SYNCED
+                refreshing = false
+                _currentState.update {
+                    syncState.copy(shouldDismissOnUpdate = dismissOnUpdate)
+                }
+            } catch (missingSyncTargetException: MissingSyncTargetException) {
+                refreshing = false
+                _currentState.update {
+                    missingSyncTargetException.uiState
+                }
             }
         }
     }
@@ -398,7 +401,7 @@ class GranularSyncPresenter(
         restartSmsSender()
     }
 
-    private suspend fun getDataSetCatOptCombos(): List<String> {
+    private fun getDataSetCatOptCombos(): List<String> {
         val dataSet =
             d2
                 .dataSetModule()
@@ -460,7 +463,7 @@ class GranularSyncPresenter(
             try {
                 repository.checkServerAvailability()
                 _serverAvailability.value = true
-            } catch (error: RuntimeException) {
+            } catch (_: RuntimeException) {
                 _serverAvailability.value = false
             }
         }
