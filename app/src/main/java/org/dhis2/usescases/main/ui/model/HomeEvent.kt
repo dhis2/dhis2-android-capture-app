@@ -15,8 +15,6 @@ sealed interface HomeEvent {
 
     data object ShowDeleteNotification : HomeEvent
 
-    data object CancelAllNotifications : HomeEvent
-
     data object ShowGranularSync : HomeEvent
 
     data object BlockSession : HomeEvent
