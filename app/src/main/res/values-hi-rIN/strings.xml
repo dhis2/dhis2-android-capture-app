@@ -21,26 +21,36 @@
     <string name="enter_long_text">लंबा अक्षर दर्ज करें</string>
     <string name="enter_number">नंबर दर्ज करें</string>
     <string name="choose_date">दिन चुनें</string>
+
+    <!-- Status -->
+
     <string name="event_open">खोलें</string>
     <string name="event_completed">इवेंट कंप्लीटेड</string>
     <string name="completed">पूरा हुआ</string>
     <string name="state_error">त्रुटि</string>
+
+    <!--Completion-->
+
     <!--Event initial-->
     <string name="update">अपडेट करें</string>
     <string name="latitude">अक्षांश</string>
     <string name="longitude">देशांतर</string>
+
     <string name="cancel">रद्द करें</string>
     <string name="delete">हटाएं</string>
+    <!--TEI DASHBOARD-->
     <string name="edit">संपादन करें</string>
     <!--DONE TASKS-->
     <string name="events">इवेंट्स</string>
     <string name="wipe_data_ok">स्वीकार करें</string>
     <string name="wipe_data_no">रद्द करें</string>
     <string name="SYNC_MANAGER">सेटिंग्स</string>
+    <!--endregion-->
+
     <!-- SEARCH OPTION SET -->
     <string name="search_optionset">सर्च करें / खोजें</string>
     <string name="add_file">फ़ाइल जोड़ें</string>
-    <!--AGE CUSTOM VIEW-->
+    <!-- RELATIONSHIPS -->
     <string name="next">आगे</string>
     <string name="button_ok">ठीक है</string>
     <string name="qr_events">इवेंट्स</string>
@@ -53,6 +63,7 @@
     <string name="state_relationship">संबंध</string>
     <string name="action_close">बंद करें</string>
     <string name="syncing">सिंक हो रहा है…</string>
+
     <string name="filter_period_today">आज</string>
     <string name="filter_period_yesterday">कल (बिता हुआ)</string>
     <string name="filter_period_this_week">इस सप्ताह</string>

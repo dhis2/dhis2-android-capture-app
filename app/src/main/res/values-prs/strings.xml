@@ -1,10 +1,14 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Warnings and error messages -->
     <string name="error">خطا</string>
+    <!-- SyncService strings: -->
+
     <string name="sync_events">پېښې</string>
+
     <string name="referral">مراجعه</string>
 
     <string name="account_recovery">بهبود حساب</string>
+
     <!--PERIOD-->
     <string name="DAILY">روزنه</string>
     <string name="WEEKLY">هفته وار</string>
@@ -14,16 +18,22 @@
     <string name="action_share_zero_items">اشتراک</string>
     <!-- Input hints -->
     <string name="search">جستجو</string>
+    <!-- Status -->
+
     <string name="event_open">باز کردن</string>
     <string name="read_only">تنها قابل مطالعه میباشد</string>
     <string name="completed">تکمیل شد</string>
     <string name="active">فعال</string>
 
     <string name="state_error">خطا</string>
+
+    <!--Completion-->
+
     <!--Event initial-->
     <string name="update">تجدید</string>
     <string name="latitude">عرض البلد</string>
     <string name="longitude">طول البلد</string>
+
     <!--DataSet initial-->
     <string name="report_period">معیاد گزارش</string>
     <!--Event Detail-->
@@ -34,9 +44,10 @@
 
     <string name="active_programs">برنامه های فعال</string>
     <string name="enroll">ثبت نام</string>
+
+    <!--TEI DASHBOARD-->
     <string name="edit">تجدید</string>
     <string name="deactivate">غیر فعال</string>
-    <!--DONE TASKS-->
     <string name="done_task">صفحه اصلی</string>
     <string name="wipe_data_ok">پذیرش</string>
     <string name="wipe_data_no">انصراف</string>
@@ -49,9 +60,12 @@
     <!--FORM FRAGMENT-->
     <string name="report_date">تاریخ گزارش</string>
     <string name="add_note">افزودن یاداشت</string>
+    <!--EVENT SUMMARY-->
+
     <!--AGE CUSTOM VIEW-->
     <string name="incident_date">تاریخ رویداد/ واقعه</string>
     <string name="period">دوره</string>
+    <!-- RELATIONSHIPS -->
     <string name="next">بعدی</string>
     <string name="button_ok">تأیید</string>
     <string name="qr_attributes">مشخصات</string>
@@ -68,7 +82,7 @@
     <string name="state_warning">اخطاریه</string>
     <string name="state_relationship">رابطه/ وابستگی</string>
     <string name="action_close">بستن</string>
-
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="polygon">چند ضلعی</string>
     <string name="filters_title_period">دوره</string>
     <string name="filter_period_today">امروز</string>

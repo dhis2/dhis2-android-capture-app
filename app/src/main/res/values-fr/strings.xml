@@ -12,7 +12,6 @@
     <string name="sync_error_title">Problème de synchronisation</string>
     <string name="sync_error_text">Une erreur s´est produite pendant sync. Essayez à nouveau.</string>
     <string name="sync_incomplete_error_text">La synchronisation est terminée, mais nous n\'avons pas reçu de confirmation du serveur pour tous les enregistrements. Ces enregistrements sont toujours marqués comme \"hors ligne\" dans l\'application. Nous vous recommandons de réessayer la synchronisation.</string>
-
     <string name="referral">référence</string>
 
     <!-- Login -->
@@ -22,6 +21,7 @@
     <string name="configuration_ready">La configuration est prête</string>
     <string name="data_ready">vos données sont prêtes</string>
     <string name="account_recovery">Récupération de compte</string>
+
     <!--PERIOD-->
     <string name="DAILY">Quotidien</string>
     <string name="WEEKLY">Hebdomadaire</string>
@@ -509,7 +509,6 @@
     <string name="show_description">Afficher la description</string>
     <string name="hide_description">Masquer la description</string>
     <string name="transfer">Transférer</string>
-    
     <plurals name="error_count_label">
         <item quantity="one">%s erreur</item>
         <item quantity="many">%s erreurs</item>

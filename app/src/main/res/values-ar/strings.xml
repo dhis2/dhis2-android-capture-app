@@ -12,7 +12,6 @@
     <string name="sync_error_title">خطأ في المزامنة</string>
     <string name="sync_error_text">حدث خطأ أثناء المزامنة. يرجى اعادة المحاولة.</string>
     <string name="sync_incomplete_error_text">انتهت المزامنة ولكن لم نتلق تأكيدًا من الخادم لجميع السجلات. هذه السجلات لا تزال تحمل علامة \"غير مزامن\" في التطبيق. نوصي بإعادة محاولة المزامنة.</string>
-
     <string name="referral">إحالة</string>
 
     <!-- Login -->
@@ -538,7 +537,6 @@
     <string name="show_description">إظهار الوصف</string>
     <string name="hide_description">إخفاء الوصف</string>
     <string name="use_password">استخدام كلمة المرور</string>
-    
     <plurals name="error_count_label">
         <item quantity="zero">%s الأخطاء</item>
         <item quantity="one">%s الخطأ</item>

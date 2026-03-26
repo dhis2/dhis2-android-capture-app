@@ -1,6 +1,9 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="discard">ඉවත ලන්න</string>
     <string name="delete">ඉවත් කරන්න</string>
+    <!-- Content descriptions for accessibility -->
+
     <string name="confirm_transaction_label">තහවුරු කරන්න</string>
+
     <string name="count">ගණන</string>
     </resources>

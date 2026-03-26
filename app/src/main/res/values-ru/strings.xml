@@ -12,7 +12,6 @@
     <string name="sync_error_title">Ошибка синхронизации</string>
     <string name="sync_error_text">Во время синхронизации произошла ошибка. Пожалуйста, повторите попытку.</string>
     <string name="sync_incomplete_error_text">Синхронизация завершена, но мы не получили подтверждения сервера для всех записей. Эти записи по-прежнему отмечены в приложении как \"оффлайн\". Мы рекомендуем повторить синхронизацию.</string>
-
     <string name="enter_event_data">Введено %s</string>
     <string name="enter_cancel_event_data">Введено / пропущено%s</string>
     <string name="referral">Направление</string>
@@ -284,7 +283,6 @@
     <string name="sms_count_error">SMS не принимаются</string>
     <string name="sms_state_started">Запуск отправки смс</string>
     <string name="sms_state_converted">Данные прочитаны и преобразованы. Идентификатор заявки: %d</string>
-
     <string name="syncing">Синхронизация...</string>
 
     <string name="copied_text">Скопировано</string>

@@ -20,6 +20,7 @@
     <string name="configuration_ready">Sizning yangi konfiguratsiyangiz tayyor</string>
     <string name="data_ready">Maʼlumotingiz tayyor</string>
     <string name="account_recovery">Аkkauntni tiklash</string>
+
     <!--PERIOD-->
     <string name="DAILY">Кунлик</string>
     <string name="WEEKLY">Ҳафталик</string>
@@ -76,12 +77,12 @@
 
     <string name="active_programs">Faol dasturlar</string>
     <string name="enroll">Roʼyxatga kiritish</string>
+
     <!--TEI DASHBOARD-->
     <string name="edit">Tahrirlash</string>
     <string name="deactivate">Faolsizlantirish</string>
     <string name="program_not_allow_events">Ushbu dastur yana koʼproq tadbirlarni qabul qilmaydi</string>
 
-    <!--DONE TASKS-->
     <string name="done_task">Бош саҳифа</string>
     <!-- SYNC -->
     <string name="thirty_minutes">30 daqiqa</string>

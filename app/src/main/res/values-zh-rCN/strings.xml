@@ -12,7 +12,6 @@
     <string name="sync_error_title">同步错误</string>
     <string name="sync_error_text">同步中发生错误，请重试</string>
     <string name="sync_incomplete_error_text">同步完成，但我们没有收到所有记录的服务器确认。这些记录在应用程序中仍被标记为“离线”状态。我们建议重试同步。</string>
-
     <string name="enter_event_data">输入%s</string>
     <string name="enter_cancel_event_data">输入/跳过 %s</string>
     <string name="referral">流转</string>

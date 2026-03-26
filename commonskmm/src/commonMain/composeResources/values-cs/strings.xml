@@ -23,7 +23,7 @@
     <string name="conf_error_value_option_set">Hodnota pole %s nepatří do možnosti nastavené v položce %s</string>
     <string name="field_is_mandatory">Toto pole je povinné</string>
     <string name="missing_warning_fields_completed_events">Máte několik varovných hlášení.</string>
-    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený\?</string>
+    <string name="missing_warning_fields_events">Máte několik varovných hlášení.\nChcete tento formulář označit jako dokončený?</string>
     <string name="required">Vyžadováno</string>
     <string name="polygon">Polygon</string>
     <string name="latitude">Zeměpisná šířka</string>

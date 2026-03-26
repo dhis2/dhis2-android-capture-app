@@ -12,7 +12,6 @@
     <string name="sync_error_title">Erro de sincronização</string>
     <string name="sync_error_text">Ocorreu um erro durante a sincronização. Por favor tente novamente.</string>
     <string name="sync_incomplete_error_text">A sincronização foi concluída, mas não recebemos a confirmação do servidor para todos os registos. Esses registos ainda estão marcados como “offline” na aplicação. Recomendamos que tente novamente a sincronização.</string>
-
     <string name="enter_event_data">Entrar %s</string>
     <string name="enter_cancel_event_data">Introduzir / Saltar %s</string>
     <string name="referral">Transferência</string>
@@ -594,7 +593,6 @@
     <string name="successfully_transferred">Transferido com sucesso</string>
     <string name="event_cancelled">%1$s cancelado</string>
     <string name="due_date_updated">Data de vencimento actualizada</string>
-    
     <plurals name="error_count_label">
         <item quantity="one">%s erro</item>
         <item quantity="many">%s erros</item>

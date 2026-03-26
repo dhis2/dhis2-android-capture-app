@@ -6,8 +6,10 @@
     <string name="enter_positive_integer_or_zero">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା କିମ୍ବା ଶୂନ ପ୍ରବେଶ କରନ୍ତୁ</string>
     <string name="enter_positive_integer">ଧନାତ୍ମକ ପୂର୍ଣ୍ଣସଂଖ୍ୟା ପ୍ରବେଶ କରନ୍ତୁ</string>
     <string name="choose_date">ତାରିଖ ବାଛନ୍ତୁ</string>
+
     <string name="latitude">ଅକ୍ଷାଂଶ</string>
     <string name="longitude">ଦ୍ରାଘିମା</string>
+
     <string name="done_task">ଗୃହ</string>
     <!-- SYNC -->
     <string name="thirty_minutes">୩୦ ମିନିଟ୍</string>
@@ -19,6 +21,7 @@
     <string name="invalid_possitive_zero">କେବଳ ଧନାତ୍ମକ ସଂଖ୍ୟା କିମ୍ବା ଶୂନ ଅନୁମୋଦିତ</string>
     <string name="menu_home">ଗୃହ</string>
     <string name="info">ସୂଚନା</string>
+    <!--region TRACKER IMPORT CONFLICT MESSAGES-->
     <string name="polygon">ବହୁଭୂଜ</string>
     <string name="filter_period_today">ଆଜି</string>
     <string name="filter_period_yesterday">ଗତକାଲି</string>
