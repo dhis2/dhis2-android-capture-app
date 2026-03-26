@@ -16,7 +16,7 @@
     <string name="choose_date">दिन चुनें</string>
     <string name="field_is_mandatory">यह फ़ील्ड आवश्यक है</string>
     <string name="missing_warning_fields_completed_events">आपके पास कुछ चेतावनी संदेश हैं</string>
-    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं\?</string>
+    <string name="missing_warning_fields_events">आपके पास कुछ चेतावनी संदेश हैं\nक्या आप इस फ़ॉर्म को कम्प्लीट मार्क करना चाहते हैं?</string>
     <string name="required">आवश्यकता है</string>
     <string name="latitude">अक्षांश</string>
     <string name="longitude">देशांतर</string>

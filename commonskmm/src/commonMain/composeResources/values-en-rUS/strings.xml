@@ -45,7 +45,7 @@
     <string name="saved">Saved!</string>
     <string name="not_now">Not now</string>
     <string name="keep_editing">Keep editing</string>
-    <string name="event_can_be_completed">Do you want to mark this form as complete\?</string>
+    <string name="event_can_be_completed">Do you want to mark this form as complete?</string>
     <string name="discard_go_back">If you exit now all the information in the form will be discarded.</string>
     <string name="share">Share</string>
     <string name="action_close">Close</string>
