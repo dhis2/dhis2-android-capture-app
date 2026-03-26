@@ -6,7 +6,7 @@ import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
-import org.dhis2.usescases.main.HomeRepository
+import org.dhis2.usescases.main.data.HomeRepository
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Before
@@ -45,7 +45,7 @@ class LogoutUserTest {
             verify(syncBackgroundJobAction).cancelAll()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
-            verify(repository).clearSessionLock()
+            verify(repository).clearPin()
             verify(repository).logOut()
             verify(repository).accountsCount()
 
@@ -56,12 +56,12 @@ class LogoutUserTest {
     fun `GIVEN the user logs out WHEN domain error THEN exception is returned`() =
         runTest {
             val testException = DomainError.UnexpectedError("test")
-            whenever(repository.clearSessionLock()) doReturn Result.failure(testException)
+            whenever(repository.clearPin()) doReturn Result.failure(testException)
             val result = logoutUser()
             verify(syncBackgroundJobAction).cancelAll()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
-            verify(repository).clearSessionLock()
+            verify(repository).clearPin()
             verify(repository, never()).logOut()
             verify(repository, never()).accountsCount()
 
@@ -84,7 +84,7 @@ class LogoutUserTest {
             verify(syncBackgroundJobAction).cancelAll()
             verify(syncStatusController).restore()
             verify(filterManager).clearAllFilters()
-            verify(repository).clearSessionLock()
+            verify(repository).clearPin()
             verify(repository).logOut()
             verify(repository, never()).accountsCount()
         }
