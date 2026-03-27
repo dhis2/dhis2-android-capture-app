@@ -84,7 +84,6 @@ class SettingsRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         composeTestRule.onNode(
                     hasText(getString(R.string.manage_reserved_values_button), ignoreCase = true)
         ).performClick()
-        waitUntilActivityVisible<ReservedValueActivity>()
         Intents.intended(IntentMatchers.hasComponent(ReservedValueActivity::class.java.name))
     }
 

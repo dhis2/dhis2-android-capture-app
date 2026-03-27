@@ -4,7 +4,6 @@ import android.transition.ChangeBounds
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -95,8 +94,7 @@ class MainNavigator(
         currentFragment = fragment
         CoroutineScope(dispatcherProvider.ui()).launch {
             withContext(dispatcherProvider.io()) {
-                val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-                transaction
+                fragmentManager.beginTransaction()
                     .apply {
                         if (sharedView == null) {
                             val (enterAnimation, exitAnimation) = getEnterExitAnimation(
