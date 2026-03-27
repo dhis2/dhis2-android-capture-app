@@ -289,6 +289,7 @@ class SearchTrackedEntityRepositoryImpl(
                 ?.trackedEntityInstance()
                 ?.let { trackedEntityInstanceFromRelationship ->
                     var relationshipTeiUid: String
+
                     var direction: RelationshipDirection
                     if (trackedEntityInstanceFromRelationship.trackedEntityInstance() == teiUid) {
                         relationshipTeiUid =
@@ -326,10 +327,10 @@ class SearchTrackedEntityRepositoryImpl(
                         ).mapNotNull { trackedEntityAttributeValue ->
                             val attribute = trackedEntityAttributeValue.trackedEntityAttribute()
                             val value = trackedEntityAttributeValue.value()
-                            if (attribute != null && value != null) {
-                                Pair(attribute, value)
-                            } else {
-                                null
+                            attribute?.let { attribute ->
+                                value?.let { v ->
+                                    Pair(attribute, v)
+                                }
                             }
                         }
                     val toAttributes: List<Pair<String, String>> =

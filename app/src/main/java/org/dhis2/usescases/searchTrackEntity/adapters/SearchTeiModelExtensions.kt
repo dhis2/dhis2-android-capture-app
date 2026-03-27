@@ -286,7 +286,6 @@ fun List<DomainProgram>.getEnrollmentIconsData(
                         )
                     }
                     if (index == 3) {
-                        //TODO check default size
                         enrollmentIconDataList.add(
                             EnrollmentIconData(
                                 0,
