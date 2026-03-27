@@ -7,9 +7,9 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
+import androidx.compose.ui.test.performClick
 import androidx.test.espresso.contrib.NavigationViewActions
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.dhis2.R
@@ -29,7 +29,8 @@ fun homeRobot(
 class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     fun clickOnNavigationDrawerMenu() = apply {
-        waitForView(withId(R.id.menu)).perform(click())
+        composeTestRule.onNodeWithContentDescription("menu").performClick()
+        composeTestRule.waitForIdle()
     }
 
     fun clickOnSettings() = apply {
@@ -38,7 +39,7 @@ class MainRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     fun clickAbout() = apply {
-        onView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_about))
+        waitForView(withId(R.id.nav_view)).perform(NavigationViewActions.navigateTo(R.id.menu_about))
         waitToDebounce(FRAGMENT_TRANSITION)
     }
 
