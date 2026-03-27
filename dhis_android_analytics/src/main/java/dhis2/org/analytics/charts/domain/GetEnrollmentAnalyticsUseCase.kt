@@ -9,10 +9,10 @@ class GetEnrollmentAnalyticsUseCase(
     private val chartsRepository: ChartsRepository,
     private val dispatchers: DispatcherProvider,
 ) {
-    suspend operator fun invoke(input: String): Result<List<Graph>> =
+    suspend operator fun invoke(enrollmentUid: String): Result<List<Graph>> =
         withContext(dispatchers.io()) {
             try {
-                Result.success(chartsRepository.getAnalyticsForEnrollment(input))
+                Result.success(chartsRepository.getAnalyticsForEnrollment(enrollmentUid))
             } catch (e: Exception) {
                 Result.failure(e)
             }
