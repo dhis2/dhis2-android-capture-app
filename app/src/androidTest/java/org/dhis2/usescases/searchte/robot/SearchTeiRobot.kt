@@ -1,6 +1,7 @@
 package org.dhis2.usescases.searchte.robot
 
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -36,6 +37,7 @@ import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import kotlin.test.assertContains
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
@@ -236,6 +238,14 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     @OptIn(ExperimentalTestApi::class)
+    fun checkFirstSearchParamIsBarcodeOrQROrUnique(expectedLabel: String) {
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
+        composeTestRule
+            .onAllNodesWithTag("SEARCH_PARAM_ITEM")[0]
+            .assert(hasText(expectedLabel))
+    }
+
+    @OptIn(ExperimentalTestApi::class)
     fun checkSearchParamCount(expectedCount: Int) {
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SEARCH_PARAM_ITEM"), TIMEOUT)
         val count = composeTestRule
@@ -269,8 +279,9 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnClearSearch() {
-        composeTestRule.waitUntilAtLeastOneExists(hasText("Clear search"), TIMEOUT)
-        composeTestRule.onNodeWithText("Clear search").performClick()
+        // The reset button in InputText has the test tag "INPUT_TEXT_RESET_BUTTON"
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_RESET_BUTTON"), TIMEOUT)
+        composeTestRule.onNodeWithTag("INPUT_TEXT_RESET_BUTTON").performClick()
         composeTestRule.waitForIdle()
     }
 
