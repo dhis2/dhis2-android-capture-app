@@ -16,7 +16,7 @@ interface Charts {
 
     fun getVisualizationGroups(uid: String?): List<AnalyticsDhisVisualizationsGroup>
 
-    fun geEnrollmentCharts(enrollmentUid: String): List<Graph>
+    suspend fun geEnrollmentCharts(enrollmentUid: String): List<Graph>
 
     fun getProgramVisualizations(
         groupUid: String?,

@@ -17,6 +17,7 @@ import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
 import org.junit.Before
 import org.junit.Test
+import kotlinx.coroutines.runBlocking
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -231,9 +232,11 @@ class TrackerAnalyticsRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn mockedEffects()
 
-        whenever(
-            charts.geEnrollmentCharts(any()),
-        ) doReturn mockedCharts()
+        runBlocking {
+            whenever(
+                charts.geEnrollmentCharts(any()),
+            ) doReturn mockedCharts()
+        }
 
         val testObserver = repository.fetchData().test()
         testObserver.assertNoErrors()
@@ -369,9 +372,11 @@ class TrackerAnalyticsRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn emptyList()
 
-        whenever(
-            charts.geEnrollmentCharts(any()),
-        ) doReturn emptyList()
+        runBlocking {
+            whenever(
+                charts.geEnrollmentCharts(any()),
+            ) doReturn emptyList()
+        }
 
         val testObserver = repository.fetchData().test()
         testObserver.assertNoErrors()
@@ -504,9 +509,11 @@ class TrackerAnalyticsRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn emptyList()
 
-        whenever(
-            charts.geEnrollmentCharts(any()),
-        ) doReturn mockedCharts()
+        runBlocking {
+            whenever(
+                charts.geEnrollmentCharts(any()),
+            ) doReturn mockedCharts()
+        }
 
         val testObserver = repository.fetchData().test()
         testObserver.assertNoErrors()

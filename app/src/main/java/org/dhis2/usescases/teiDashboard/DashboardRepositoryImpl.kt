@@ -6,6 +6,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
+import kotlinx.coroutines.runBlocking
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -573,7 +574,7 @@ class DashboardRepositoryImpl(
     override fun getTeiActivePrograms(
         teiUid: String,
         showOnlyActive: Boolean,
-    ): Observable<List<kotlin.Pair<Program, MetadataIconData>>> {
+    ): Observable<List<Pair<Program, MetadataIconData>>> {
         val enrollmentRepo =
             d2
                 .enrollmentModule()
@@ -746,7 +747,7 @@ class DashboardRepositoryImpl(
             } else {
                 Observable.just(StatusChangeResultCode.WRITE_PERMISSION_FAIL)
             }
-        } catch (error: D2Error) {
+        } catch (_: D2Error) {
             Observable.just(StatusChangeResultCode.FAILED)
         }
 
@@ -806,7 +807,7 @@ class DashboardRepositoryImpl(
                     .eq(programUid)
                     .blockingIsEmpty()
             val hasCharts =
-                enrollmentUid?.let { charts.geEnrollmentCharts(enrollmentUid).isNotEmpty() }
+                enrollmentUid?.let { runBlocking { charts.geEnrollmentCharts(enrollmentUid).isNotEmpty() } }
                     ?: false
             hasDisplayRuleActions || hasProgramIndicator || hasCharts
         } else {
@@ -887,12 +888,12 @@ class DashboardRepositoryImpl(
     override fun getAttributesMap(
         programUid: String,
         teiUid: String,
-    ): Observable<List<kotlin.Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>> =
+    ): Observable<List<Pair<TrackedEntityAttribute, TrackedEntityAttributeValue>>> =
         teiAttributesProvider
             .getProgramTrackedEntityAttributesByProgram(programUid, teiUid)
             .toObservable()
-            .flatMapIterable { list: List<kotlin.Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?>>? -> list }
-            .map { (attribute, attributeValue): kotlin.Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?> ->
+            .flatMapIterable { list: List<Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?>>? -> list }
+            .map { (attribute, attributeValue): Pair<TrackedEntityAttribute?, TrackedEntityAttributeValue?> ->
                 val formattedAttributeValue: TrackedEntityAttributeValue =
                     if (attributeValue != null && attribute!!.valueType() != ValueType.IMAGE) {
                         ValueUtils.transform(

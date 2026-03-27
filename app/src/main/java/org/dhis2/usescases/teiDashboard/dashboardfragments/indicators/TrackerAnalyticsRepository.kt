@@ -6,6 +6,7 @@ import dhis2.org.analytics.charts.ui.ChartModel
 import dhis2.org.analytics.charts.ui.OrgUnitFilterType
 import io.reactivex.Flowable
 import io.reactivex.functions.Function3
+import kotlinx.coroutines.runBlocking
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.dhis2.utils.DhisTextUtils
@@ -57,7 +58,7 @@ class TrackerAnalyticsRepository(
             },
             getRulesIndicators(),
             Flowable.just(
-                charts?.geEnrollmentCharts(enrollmentUid)?.map { ChartModel(it) },
+                charts?.let { runBlocking { it.geEnrollmentCharts(enrollmentUid) } }?.map { ChartModel(it) },
             ),
             Function3 { indicators, ruleIndicators, charts ->
                 arrangeSections(indicators, ruleIndicators, charts)
