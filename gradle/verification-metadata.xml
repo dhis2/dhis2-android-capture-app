@@ -5,8 +5,11 @@
       <verify-signatures>false</verify-signatures>
       <trusted-artifacts>
          <trust group="org.hisp.dhis.mobile" name="designsystem"/>
+         <trust group="org.jetbrains.intellij.deps.kotlinx"/>
          <trust file=".*-javadoc\.jar" regex="true"/>
          <trust file=".*-sources\.jar" regex="true"/>
+         <trust file=".*\.module" regex="true"/>
+         <trust file=".*\.pom" regex="true"/>
          <trust file="gradle-.*-src\.zip" regex="true"/>
          <trust group="com.android.tools.build" name="aapt2" regex="true"/>
          <trust group="org.hisp.dhis" name="android-core" version=".*" regex="true"/>
