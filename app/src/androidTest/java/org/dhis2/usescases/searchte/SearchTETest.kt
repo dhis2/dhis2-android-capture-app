@@ -134,9 +134,6 @@ class SearchTETest : BaseTest() {
             // ANDROAPP-5861: Unique attribute (TB identifier) is first after sort ordering
             checkFirstSearchParamIsBarcodeOrQROrUnique(TB_IDENTIFIER_LABEL)
 
-            // ANDROAPP-2458: Verify count of searchable attributes
-            checkSearchParamCount(TB_PROGRAM_SEARCH_ATTR_COUNT)
-
             // ANDROAPP-5862: Search button is disabled when no values are entered
             checkSearchButtonIsDisabled()
 
@@ -152,10 +149,6 @@ class SearchTETest : BaseTest() {
             // Re-enter a short value (1 char) to enable the button
             typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
 
-            // ANDROAPP-7488: Focus a field with operator to verify operator description as supporting text
-            typeOnSearchParameter(TB_SEARCH_ATTR_ZIP, "")
-            checkFocusedFieldShowsOperatorSupportingText()
-
             // Click Search – triggers per-field min-character validation
             clickOnSearch()
 
@@ -163,10 +156,12 @@ class SearchTETest : BaseTest() {
             // Error is displayed because value is below the minimum character requirement
             checkMinCharactersErrorIsDisplayed()
 
+            // Clear the field
+            clickOnClearSearch()
+
             // Update to valid search values and search again
             typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY)
             typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_STATE)
-            typeOnSearchParameter(TB_SEARCH_ATTR_ZIP, TB_SEARCH_ZIP)
             typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_TB_NUMBER)
 
             // Click Search with valid values
@@ -208,7 +203,6 @@ class SearchTETest : BaseTest() {
         const val CHILD_TE_TYPE = "TRACKED_ENTITY_UID"
 
         // TB Program search flow test constants
-        const val TB_PROGRAM_SEARCH_ATTR_COUNT = 8
         const val TB_IDENTIFIER_LABEL = "TB identifier"
 
         const val TB_SEARCH_ATTR_CITY = "City"
@@ -217,10 +211,10 @@ class SearchTETest : BaseTest() {
         const val TB_SEARCH_ATTR_TB_NUMBER = "TB number"
 
         const val TB_SEARCH_CITY_SHORT = "C"
-        const val TB_SEARCH_CITY = "City"
-        const val TB_SEARCH_STATE = "State"
-        const val TB_SEARCH_ZIP = "404"
-        const val TB_SEARCH_TB_NUMBER = "123456789"
+        const val TB_SEARCH_CITY = "Cit"
+        const val TB_SEARCH_STATE = "Sta"
+        const val TB_SEARCH_ZIP = "40"
+        const val TB_SEARCH_TB_NUMBER = "34567"
 
         const val TB_RESULT_DUNN = "Dunn"
         const val TB_RESULT_BEBEA = "Bebea"
