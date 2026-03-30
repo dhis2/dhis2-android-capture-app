@@ -6,6 +6,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
@@ -175,7 +176,9 @@ class MainViewModel(
                     currentScreen = initialScreen,
                 )
             }
-            openScreen(initialScreen)
+            withContext(dispatcher.ui()) {
+                openScreen(initialScreen)
+            }
         }
     }
 
