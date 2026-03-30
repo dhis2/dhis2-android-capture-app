@@ -6,7 +6,6 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
-import kotlinx.coroutines.runBlocking
 import org.dhis2.bindings.profilePicturePath
 import org.dhis2.commons.data.ProgramConfigurationRepository
 import org.dhis2.commons.featureconfig.data.FeatureConfigRepository
@@ -779,7 +778,7 @@ class DashboardRepositoryImpl(
             false
         }
 
-    override fun programHasAnalytics(): Boolean =
+    override suspend fun programHasAnalytics(): Boolean =
         if (!programUid.isNullOrEmpty()) {
             val enrollmentScopeRulesUids =
                 d2
@@ -807,7 +806,7 @@ class DashboardRepositoryImpl(
                     .eq(programUid)
                     .blockingIsEmpty()
             val hasCharts =
-                enrollmentUid?.let { runBlocking { charts.geEnrollmentCharts(enrollmentUid).isNotEmpty() } }
+                enrollmentUid?.let { charts.geEnrollmentCharts(enrollmentUid).isNotEmpty() }
                     ?: false
             hasDisplayRuleActions || hasProgramIndicator || hasCharts
         } else {
