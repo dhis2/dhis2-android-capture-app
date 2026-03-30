@@ -53,6 +53,6 @@ jobs:
         if: steps.check-diff.outputs.changed == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         uses: flex-development/gh-commit@177be4b5bca1b102400ca7220932d9ff7980fddb
         with:
-          message: 'chore: update dependency verification metadata [skip ci]'
+          message: 'chore: update dependency verification metadata'
           ref: ${{ github.head_ref }}
           token: ${{ secrets.DHIS2_BOT_GITHUB_TOKEN }}
