@@ -4,6 +4,7 @@ import dhis2.org.analytics.charts.Charts
 import dhis2.org.analytics.charts.data.Graph
 import dhis2.org.analytics.charts.ui.SectionTitle
 import io.reactivex.Single
+import kotlinx.coroutines.test.runTest
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
@@ -15,9 +16,9 @@ import org.hisp.dhis.android.core.program.ProgramRuleAction
 import org.hisp.dhis.android.core.program.ProgramRuleActionType
 import org.hisp.dhis.rules.models.RuleAction
 import org.hisp.dhis.rules.models.RuleEffect
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import kotlinx.coroutines.runBlocking
 import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -110,7 +111,7 @@ class TrackerAnalyticsRepositoryTest {
     }
 
     @Test
-    fun `Should fetch analytic data for tracker`() {
+    fun `Should fetch analytic data for tracker`() = runTest {
         whenever(
             d2
                 .programModule()
@@ -232,25 +233,22 @@ class TrackerAnalyticsRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn mockedEffects()
 
-        runBlocking {
-            whenever(
-                charts.geEnrollmentCharts(any()),
-            ) doReturn mockedCharts()
-        }
+        whenever(
+            charts.geEnrollmentCharts(any()),
+        ) doReturn mockedCharts()
 
-        val testObserver = repository.fetchData().test()
-        testObserver.assertNoErrors()
-        testObserver.assertValue {
-            it.size == 7 &&
-                it[0] is SectionTitle &&
-                (it[0] as SectionTitle).title == "Feedback" &&
-                it[2] is SectionTitle &&
-                (it[2] as SectionTitle).title == "Charts and indicators"
-        }
+        val result = repository.fetchData()
+        assertTrue(
+            result.size == 7 &&
+                result[0] is SectionTitle &&
+                (result[0] as SectionTitle).title == "Feedback" &&
+                result[2] is SectionTitle &&
+                (result[2] as SectionTitle).title == "Charts and indicators",
+        )
     }
 
     @Test
-    fun `Should fetch analytic data for tracker with only indicator section`() {
+    fun `Should fetch analytic data for tracker with only indicator section`() = runTest {
         whenever(
             d2
                 .programModule()
@@ -372,21 +370,18 @@ class TrackerAnalyticsRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn emptyList()
 
-        runBlocking {
-            whenever(
-                charts.geEnrollmentCharts(any()),
-            ) doReturn emptyList()
-        }
+        whenever(
+            charts.geEnrollmentCharts(any()),
+        ) doReturn emptyList()
 
-        val testObserver = repository.fetchData().test()
-        testObserver.assertNoErrors()
-        testObserver.assertValue {
-            it[0] is SectionTitle && (it[0] as SectionTitle).title == "Indicators"
-        }
+        val result = repository.fetchData()
+        assertTrue(
+            result[0] is SectionTitle && (result[0] as SectionTitle).title == "Indicators",
+        )
     }
 
     @Test
-    fun `Should fetch analytic data for tracker with only charts section`() {
+    fun `Should fetch analytic data for tracker with only charts section`() = runTest {
         whenever(
             d2
                 .programModule()
@@ -509,17 +504,14 @@ class TrackerAnalyticsRepositoryTest {
             ruleEngineHelper.evaluate(),
         ) doReturn emptyList()
 
-        runBlocking {
-            whenever(
-                charts.geEnrollmentCharts(any()),
-            ) doReturn mockedCharts()
-        }
+        whenever(
+            charts.geEnrollmentCharts(any()),
+        ) doReturn mockedCharts()
 
-        val testObserver = repository.fetchData().test()
-        testObserver.assertNoErrors()
-        testObserver.assertValue {
-            it[0] is SectionTitle && (it[0] as SectionTitle).title == "Charts"
-        }
+        val result = repository.fetchData()
+        assertTrue(
+            result[0] is SectionTitle && (result[0] as SectionTitle).title == "Charts",
+        )
     }
 
     private fun mockedProgramIndicatorList(): List<ProgramIndicator> =
