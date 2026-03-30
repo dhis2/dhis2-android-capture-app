@@ -351,20 +351,15 @@ class MainViewModel(
     }
 
     fun onBackPressed() {
-        launchUseCase(dispatcher.io()) {
-            when {
-                !_homeScreenState.value.currentScreen.isHome() ->
-                    onChangeScreen(mainNavigator.openHome())
-
-                else -> _homeEvents.send(HomeEvent.BlockSession)
-            }
+        if (!_homeScreenState.value.currentScreen.isHome()) {
+            navigateToScreen(mainNavigator.openHome())
+        } else {
+            launchUseCase { _homeEvents.send(HomeEvent.BlockSession) }
         }
     }
 
     fun onChangeToHome() {
-        launchUseCase(dispatcher.io()) {
-            onChangeScreen(mainNavigator.openHome())
-        }
+        navigateToScreen(mainNavigator.openHome())
     }
 
     fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
@@ -376,18 +371,20 @@ class MainViewModel(
     }
 
     fun onChangeScreen(screenToOpen: MainScreenType) {
-        launchUseCase(dispatcher.io()) {
-            if (_homeScreenState.value.currentScreen == screenToOpen) return@launchUseCase
-            _homeScreenState.update {
-                it.copy(
-                    filterButtonVisible = screenToOpen.isPrograms(),
-                    bottomNavigationBarVisible = screenToOpen.isHome() && it.navigationBarItems.size > 1,
-                    syncButtonVisible = screenToOpen.isHome(),
-                    currentScreen = screenToOpen,
-                )
-            }
-            openScreen(screenToOpen)
+        navigateToScreen(screenToOpen)
+    }
+
+    private fun navigateToScreen(screenToOpen: MainScreenType) {
+        if (_homeScreenState.value.currentScreen == screenToOpen) return
+        _homeScreenState.update {
+            it.copy(
+                filterButtonVisible = screenToOpen.isPrograms(),
+                bottomNavigationBarVisible = screenToOpen.isHome() && it.navigationBarItems.size > 1,
+                syncButtonVisible = screenToOpen.isHome(),
+                currentScreen = screenToOpen,
+            )
         }
+        openScreen(screenToOpen)
     }
 
     private fun openScreen(screenToOpen: MainScreenType) {
