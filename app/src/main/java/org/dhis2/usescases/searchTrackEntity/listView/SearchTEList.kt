@@ -316,7 +316,7 @@ class SearchTEList : FragmentGlobalAbstract() {
         viewModel.dataResult.observe(viewLifecycleOwner) {
             initLoading(emptyList())
             it.firstOrNull()?.let { searchResult ->
-                if (searchResult.shouldClearProgramData()) {
+                if (searchResult.shouldClearProgramData() && liveAdapter.itemCount > 0) {
                     liveAdapter.refresh()
                 }
                 if (searchResult.shouldClearGlobalData()) {
