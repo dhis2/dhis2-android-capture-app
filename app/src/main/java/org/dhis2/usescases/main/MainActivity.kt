@@ -40,6 +40,7 @@ import org.dhis2.usescases.development.DevelopmentActivity
 import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.ui.NewVersionDialog
+import org.dhis2.usescases.main.ui.TAG
 import org.dhis2.usescases.main.ui.model.HomeEvent
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
@@ -232,7 +233,9 @@ class MainActivity : ActivityGlobalAbstract() {
                 binding.toolbarProgress.show()
 
             is VersionToUpdateState.New ->
-                showNewVersionAlert(versionState.version)
+                if (supportFragmentManager.findFragmentByTag(TAG) == null) {
+                    showNewVersionAlert(versionState.version)
+                }
 
             VersionToUpdateState.None ->
                 binding.toolbarProgress.hide()

@@ -192,7 +192,7 @@ abstract class SessionManagerActivity :
         resultCode: Int,
         data: Intent?,
     ) {
-        if (activityResultObserver != null && sessionManagerServiceImpl.isUserLoggedIn()) {
+        if (activityResultObserver != null && ::sessionManagerServiceImpl.isInitialized && sessionManagerServiceImpl.isUserLoggedIn()) {
             comesFromImageSource = true
             activityResultObserver!!.onActivityResult(requestCode, resultCode, data)
             activityResultObserver = null
@@ -265,7 +265,7 @@ abstract class SessionManagerActivity :
     private fun navigateToLogin(accountsCount: Int) {
         startActivity(
             LoginActivity::class.java,
-            LoginActivity.bundle(
+            bundle(
                 accountsCount = accountsCount,
                 isDeletion = false,
             ),

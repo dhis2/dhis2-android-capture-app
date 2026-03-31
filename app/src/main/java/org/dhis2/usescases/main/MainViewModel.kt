@@ -77,7 +77,7 @@ class MainViewModel(
 ) : ViewModel() {
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
 
-    private val _homeEvents = Channel<HomeEvent>()
+    private val _homeEvents = Channel<HomeEvent>(Channel.BUFFERED)
     val homeEvents = _homeEvents.receiveAsFlow()
 
     val homeScreenState =

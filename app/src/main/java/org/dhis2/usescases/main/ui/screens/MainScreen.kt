@@ -204,7 +204,7 @@ fun HomeTopBar(
                 MainScreenType.Loading -> null
                 MainScreenType.QRScanner -> R.string.QR_SCANNER
                 MainScreenType.Settings -> R.string.SYNC_MANAGER
-                MainScreenType.TroubleShooting -> R.id.menu_troubleshooting
+                MainScreenType.TroubleShooting -> R.string.main_menu_troubleshooting
             }?.let { titleId ->
                 Text(
                     text = stringResource(titleId),

@@ -36,7 +36,7 @@ class MainNavigator(
 
     fun openPrograms() {
         val programFragment = ProgramFragment()
-        lastHomeFragment = ProgramFragment()
+        lastHomeFragment = programFragment
         val sharedView =
             (currentFragment as? GroupAnalyticsFragment)?.sharedView()?.let { sharedView ->
                 programFragment.sharedElementEnterTransition = ChangeBounds()
