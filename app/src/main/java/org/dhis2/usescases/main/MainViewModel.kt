@@ -216,14 +216,9 @@ class MainViewModel(
 
     private fun shouldNavigateToSingleProgram() {
         launchUseCase(dispatcher.io()) {
-            checkSingleNavigation().fold(
-                onSuccess = { homeItemData ->
-                    _homeEffects.send(HomeEffect.SingleProgramNavigation(homeItemData))
-                },
-                onFailure = {
-                    Timber.e(it)
-                },
-            )
+            checkSingleNavigation().getOrNull()?.let {
+                _homeEffects.send(HomeEffect.SingleProgramNavigation(it))
+            }
         }
     }
 
