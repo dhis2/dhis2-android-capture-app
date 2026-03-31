@@ -6,6 +6,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
@@ -175,7 +176,9 @@ class MainViewModel(
                     currentScreen = initialScreen,
                 )
             }
-            openScreen(initialScreen)
+            withContext(dispatcher.ui()) {
+                openScreen(initialScreen)
+            }
         }
     }
 
@@ -351,20 +354,15 @@ class MainViewModel(
     }
 
     fun onBackPressed() {
-        launchUseCase(dispatcher.io()) {
-            when {
-                !_homeScreenState.value.currentScreen.isHome() ->
-                    onChangeScreen(mainNavigator.openHome())
-
-                else -> _homeEvents.send(HomeEvent.BlockSession)
-            }
+        if (!_homeScreenState.value.currentScreen.isHome()) {
+            navigateToScreen(mainNavigator.openHome())
+        } else {
+            launchUseCase { _homeEvents.send(HomeEvent.BlockSession) }
         }
     }
 
     fun onChangeToHome() {
-        launchUseCase(dispatcher.io()) {
-            onChangeScreen(mainNavigator.openHome())
-        }
+        navigateToScreen(mainNavigator.openHome())
     }
 
     fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
@@ -376,18 +374,20 @@ class MainViewModel(
     }
 
     fun onChangeScreen(screenToOpen: MainScreenType) {
-        launchUseCase(dispatcher.io()) {
-            if (_homeScreenState.value.currentScreen == screenToOpen) return@launchUseCase
-            _homeScreenState.update {
-                it.copy(
-                    filterButtonVisible = screenToOpen.isPrograms(),
-                    bottomNavigationBarVisible = screenToOpen.isHome() && it.navigationBarItems.size > 1,
-                    syncButtonVisible = screenToOpen.isHome(),
-                    currentScreen = screenToOpen,
-                )
-            }
-            openScreen(screenToOpen)
+        navigateToScreen(screenToOpen)
+    }
+
+    private fun navigateToScreen(screenToOpen: MainScreenType) {
+        if (_homeScreenState.value.currentScreen == screenToOpen) return
+        _homeScreenState.update {
+            it.copy(
+                filterButtonVisible = screenToOpen.isPrograms(),
+                bottomNavigationBarVisible = screenToOpen.isHome() && it.navigationBarItems.size > 1,
+                syncButtonVisible = screenToOpen.isHome(),
+                currentScreen = screenToOpen,
+            )
         }
+        openScreen(screenToOpen)
     }
 
     private fun openScreen(screenToOpen: MainScreenType) {
