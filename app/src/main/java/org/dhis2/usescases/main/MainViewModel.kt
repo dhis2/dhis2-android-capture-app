@@ -46,7 +46,8 @@ import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
 import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.domain.model.DownloadMethod
 import org.dhis2.usescases.main.domain.model.LockAction
-import org.dhis2.usescases.main.ui.model.HomeEvent
+import org.dhis2.usescases.main.ui.model.HomeAction
+import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
 import org.dhis2.usescases.main.ui.model.defaultHomeScreenState
@@ -77,8 +78,8 @@ class MainViewModel(
 ) : ViewModel() {
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
 
-    private val _homeEvents = Channel<HomeEvent>(Channel.BUFFERED)
-    val homeEvents = _homeEvents.receiveAsFlow()
+    private val _homeEffects = Channel<HomeEffect>(Channel.BUFFERED)
+    val homeEffects = _homeEffects.receiveAsFlow()
 
     val homeScreenState =
         _homeScreenState
@@ -116,14 +117,14 @@ class MainViewModel(
         filterManager.periodRequest
             .asFlow()
             .onEach {
-                _homeEvents.send(HomeEvent.PeriodFilterRequest(it.first))
+                _homeEffects.send(HomeEffect.PeriodFilterRequest(it.first))
             }.launchIn(viewModelScope)
 
         filterManager
             .ouTreeFlowable()
             .asFlow()
             .onEach {
-                _homeEvents.send(HomeEvent.OrgUnitFilterRequest)
+                _homeEffects.send(HomeEffect.OrgUnitFilterRequest)
             }.launchIn(viewModelScope)
 
         launchUseCase(dispatcher.io()) {
@@ -217,7 +218,7 @@ class MainViewModel(
         launchUseCase(dispatcher.io()) {
             checkSingleNavigation().fold(
                 onSuccess = { homeItemData ->
-                    _homeEvents.send(HomeEvent.SingleProgramNavigation(homeItemData))
+                    _homeEffects.send(HomeEffect.SingleProgramNavigation(homeItemData))
                 },
                 onFailure = {
                     Timber.e(it)
@@ -235,7 +236,7 @@ class MainViewModel(
             matomoAnalyticsController.trackEvent(HOME, CLOSE_SESSION, CLICK)
             logOutUser().fold(
                 onSuccess = { accountCount ->
-                    _homeEvents.send(HomeEvent.GoToLogin(accountCount, false))
+                    _homeEffects.send(HomeEffect.GoToLogin(accountCount, false))
                 },
                 onFailure = {
                     Timber.e(it)
@@ -247,11 +248,11 @@ class MainViewModel(
     context(context: Context)
     fun onDeleteAccount() {
         launchUseCase(dispatcher.io()) {
-            _homeEvents.send(HomeEvent.ShowDeleteNotification)
+            _homeEffects.send(HomeEffect.ShowDeleteNotification)
             deleteAccount(context.cacheDir).fold(
                 onSuccess = { accountCount ->
                     syncBackgroundJobAction.cancelAll()
-                    _homeEvents.send(HomeEvent.GoToLogin(accountCount, true))
+                    _homeEffects.send(HomeEffect.GoToLogin(accountCount, true))
                 },
                 onFailure = {
                     Timber.e(it)
@@ -260,15 +261,15 @@ class MainViewModel(
         }
     }
 
-    fun onSyncAllClick() {
+    private fun onSyncAllClick() {
         launchUseCase(dispatcher.io()) {
-            _homeEvents.send(HomeEvent.ShowGranularSync)
+            _homeEffects.send(HomeEffect.ShowGranularSync)
         }
     }
 
-    fun showFilter() {
+    private fun showFilter() {
         launchUseCase(dispatcher.io()) {
-            _homeEvents.send(HomeEvent.ToggleFilters)
+            _homeEffects.send(HomeEffect.ToggleFilters)
             _homeScreenState.update {
                 it.copy(
                     bottomNavigationBarVisible = !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
@@ -277,9 +278,9 @@ class MainViewModel(
         }
     }
 
-    fun onMenuClick() {
+    private fun onMenuClick() {
         launchUseCase(dispatcher.io()) {
-            _homeEvents.send(HomeEvent.ToggleSideMenu)
+            _homeEffects.send(HomeEffect.ToggleSideMenu)
         }
     }
 
@@ -302,10 +303,10 @@ class MainViewModel(
                 onSuccess = { result ->
                     when (result) {
                         LockAction.BlockSession ->
-                            _homeEvents.send(HomeEvent.BlockSession)
+                            _homeEffects.send(HomeEffect.BlockSession)
 
                         LockAction.CreatePin ->
-                            _homeEvents.send(HomeEvent.ShowPinDialog)
+                            _homeEffects.send(HomeEffect.ShowPinDialog)
                     }
                 },
                 onFailure = { Timber.e(it) },
@@ -353,11 +354,11 @@ class MainViewModel(
         }
     }
 
-    fun onBackPressed() {
+    private fun onBackPressed() {
         if (!_homeScreenState.value.currentScreen.isHome()) {
             navigateToScreen(mainNavigator.openHome())
         } else {
-            launchUseCase { _homeEvents.send(HomeEvent.BlockSession) }
+            launchUseCase { _homeEffects.send(HomeEffect.BlockSession) }
         }
     }
 
@@ -433,9 +434,20 @@ class MainViewModel(
         }
     }
 
-    fun onPinSet() {
+    private fun onPinSet() {
         launchUseCase(dispatcher.io()) {
-            _homeEvents.send(HomeEvent.BlockSession)
+            _homeEffects.send(HomeEffect.BlockSession)
+        }
+    }
+
+    fun onAction(action: HomeAction) {
+        when (action) {
+            HomeAction.BackPressed -> onBackPressed()
+            HomeAction.MenuClicked -> onMenuClick()
+            HomeAction.SyncClicked -> onSyncAllClick()
+            HomeAction.FilterClicked -> showFilter()
+            is HomeAction.ScreenChanged -> onChangeScreen(action.screen)
+            HomeAction.PinSet -> onPinSet()
         }
     }
 }

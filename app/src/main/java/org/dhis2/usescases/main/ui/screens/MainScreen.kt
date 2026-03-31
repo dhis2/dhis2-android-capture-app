@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
+import kotlinx.coroutines.flow.Flow
 import org.dhis2.R
 import org.dhis2.databinding.ActivityMainBinding
 import org.dhis2.mobile.commons.extensions.ObserveAsEvents
@@ -36,8 +36,8 @@ import org.dhis2.mobile.login.pin.domain.model.PinMode
 import org.dhis2.mobile.login.pin.ui.components.PinDialog
 import org.dhis2.usescases.main.HomeScreen
 import org.dhis2.usescases.main.MainScreenType
-import org.dhis2.usescases.main.MainViewModel
-import org.dhis2.usescases.main.ui.model.HomeEvent
+import org.dhis2.usescases.main.ui.model.HomeAction
+import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.utils.customviews.navigationbar.NavigationPage
 import org.hisp.dhis.mobile.ui.designsystem.component.Badge
@@ -48,29 +48,25 @@ import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBa
 
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel,
-    onHomeEvent: (HomeEvent) -> Unit,
+    screenState: HomeScreenState,
+    effects: Flow<HomeEffect>,
+    onAction: (HomeAction) -> Unit,
+    onEffect: (HomeEffect) -> Unit,
     onNewState: (HomeScreenState) -> Unit,
     onNewScreen: (MainScreenType) -> Unit,
     onLayoutInflated: (ActivityMainBinding) -> Unit,
 ) {
-    var showPinDialog by remember {
-        mutableStateOf(false)
-    }
+    var showPinDialog by remember { mutableStateOf(false) }
 
-    BackHandler {
-        mainViewModel.onBackPressed()
-    }
+    BackHandler { onAction(HomeAction.BackPressed) }
 
-    ObserveAsEvents(mainViewModel.homeEvents) { event ->
-        if (event is HomeEvent.ShowPinDialog) {
+    ObserveAsEvents(effects) { effect ->
+        if (effect is HomeEffect.ShowPinDialog) {
             showPinDialog = true
         } else {
-            onHomeEvent(event)
+            onEffect(effect)
         }
     }
-
-    val screenState by mainViewModel.homeScreenState.collectAsState()
 
     LaunchedEffect(screenState) {
         onNewState(screenState)
@@ -83,57 +79,42 @@ fun MainScreen(
         topBar = {
             HomeTopBar(
                 screenState = screenState,
-                onMenuClicked = mainViewModel::onMenuClick,
-                onSyncClicked = mainViewModel::onSyncAllClick,
-                onFilterClicked = mainViewModel::showFilter,
+                onMenuClicked = { onAction(HomeAction.MenuClicked) },
+                onSyncClicked = { onAction(HomeAction.SyncClicked) },
+                onFilterClicked = { onAction(HomeAction.FilterClicked) },
             )
         },
         bottomBar = {
             if (screenState.bottomNavigationBarVisible) {
                 HomeBottomBar(screenState) { navigationPage ->
                     when (navigationPage) {
-                        NavigationPage.ANALYTICS -> mainViewModel.onChangeScreen(
-                            MainScreenType.Home(
-                                HomeScreen.Visualizations
-                            )
-                        )
-
-                        NavigationPage.PROGRAMS -> mainViewModel.onChangeScreen(
-                            MainScreenType.Home(
-                                HomeScreen.Programs
-                            )
-                        )
-
-                        else -> {/*no op*/
-                        }
+                        NavigationPage.ANALYTICS -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.Visualizations)))
+                        NavigationPage.PROGRAMS -> onAction(HomeAction.ScreenChanged(MainScreenType.Home(HomeScreen.Programs)))
+                        else -> { /*no op*/ }
                     }
                 }
             }
         },
     ) { paddingValues ->
         AndroidView(
-            modifier =
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
             factory = { context ->
                 ActivityMainBinding
                     .inflate(LayoutInflater.from(context))
-                    .also {
-                        onLayoutInflated(it)
-                    }.root
+                    .also { onLayoutInflated(it) }
+                    .root
             },
         )
         if (showPinDialog) {
             PinDialog(
                 mode = PinMode.SET,
                 onSuccess = {
-                    mainViewModel.onPinSet()
+                    onAction(HomeAction.PinSet)
                     showPinDialog = false
                 },
-                onDismiss = {
-                    showPinDialog = false
-                },
+                onDismiss = { showPinDialog = false },
             )
         }
     }
@@ -156,9 +137,7 @@ fun HomeTopBar(
             )
         },
         actions = {
-            AnimatedVisibility(
-                visible = screenState.syncButtonVisible,
-            ) {
+            AnimatedVisibility(visible = screenState.syncButtonVisible) {
                 IconButton(
                     onClick = onSyncClicked,
                     icon = {
@@ -185,7 +164,7 @@ fun HomeTopBar(
                                         textColor = MaterialTheme.colorScheme.primary,
                                     )
                                 }
-                            }
+                            },
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_filter),
@@ -218,7 +197,7 @@ fun HomeTopBar(
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        )
+        ),
     )
 }
 
@@ -244,8 +223,6 @@ fun HomeBottomBar(
             .wrapContentHeight(),
         items = navigationItems,
         selectedItemIndex = selectedItemIndex ?: 0,
-        onItemClick = { navigationPage ->
-            onNavigationSelected(navigationPage)
-        },
+        onItemClick = { navigationPage -> onNavigationSelected(navigationPage) },
     )
 }

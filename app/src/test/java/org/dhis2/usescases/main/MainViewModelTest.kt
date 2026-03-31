@@ -41,7 +41,8 @@ import org.dhis2.usescases.main.domain.ScheduleNewVersionAlert
 import org.dhis2.usescases.main.domain.UpdateInitialSyncStatus
 import org.dhis2.usescases.main.domain.model.LockAction
 import org.dhis2.usescases.main.ui.Form
-import org.dhis2.usescases.main.ui.model.HomeEvent
+import org.dhis2.usescases.main.ui.model.HomeAction
+import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
 import org.dhis2.utils.MainCoroutineScopeRule
 import org.dhis2.utils.analytics.CLOSE_SESSION
@@ -156,11 +157,11 @@ class MainViewModelTest {
     fun `Should log out`() =
         runTest {
             whenever(logOutUser()) doReturn Result.success(1)
-            viewModel.homeEvents.test {
+            viewModel.homeEffects.test {
                 viewModel.logOut()
                 advanceUntilIdle()
                 verify(matomoAnalyticsController).trackEvent(HOME, CLOSE_SESSION, CLICK)
-                assertTrue(awaitItem() == HomeEvent.GoToLogin(1, false))
+                assertTrue(awaitItem() == HomeEffect.GoToLogin(1, false))
             }
         }
 
@@ -169,9 +170,9 @@ class MainViewModelTest {
 
         whenever(getLockAction()) doReturn Result.success(LockAction.BlockSession)
 
-        viewModel.homeEvents.test {
+        viewModel.homeEffects.test {
             viewModel.onBlockSession()
-            assertTrue(awaitItem() == HomeEvent.BlockSession)
+            assertTrue(awaitItem() == HomeEffect.BlockSession)
             verify(matomoAnalyticsController).trackEvent(
                 HOME, BLOCK_SESSION_PIN, CLICK
             )
@@ -180,9 +181,9 @@ class MainViewModelTest {
 
     @Test
     fun `Should open drawer when menu is clicked`() = runTest {
-        viewModel.homeEvents.test {
-            viewModel.onMenuClick()
-            assertTrue(awaitItem() == HomeEvent.ToggleSideMenu)
+        viewModel.homeEffects.test {
+            viewModel.onAction(HomeAction.MenuClicked)
+            assertTrue(awaitItem() == HomeEffect.ToggleSideMenu)
         }
     }
 
@@ -190,17 +191,17 @@ class MainViewModelTest {
     fun `should return to home section when user taps back in a different section`() = runTest {
         whenever(mainNavigator.openHome()) doReturn MainScreenType.Home(HomeScreen.Programs)
         viewModel.onChangeScreen(MainScreenType.Settings)
-        viewModel.onBackPressed()
+        viewModel.onAction(HomeAction.BackPressed)
         advanceUntilIdle()
         verify(mainNavigator, times(1)).openHome()
     }
 
     @Test
     fun `should close app when user taps back in a home section`() = runTest {
-        viewModel.homeEvents.test {
+        viewModel.homeEffects.test {
             viewModel.onChangeScreen(MainScreenType.Home(HomeScreen.Programs))
-            viewModel.onBackPressed()
-            assertTrue(awaitItem() is HomeEvent.BlockSession)
+            viewModel.onAction(HomeAction.BackPressed)
+            assertTrue(awaitItem() is HomeEffect.BlockSession)
         }
     }
 
@@ -216,16 +217,16 @@ class MainViewModelTest {
 
         whenever(deleteAccount(any())) doReturn Result.success(1)
 
-        viewModel.homeEvents.test {
+        viewModel.homeEffects.test {
             val mockedContext = mock<Context>()
             whenever(mockedContext.cacheDir) doReturn File("random")
             with(mockedContext) {
                 viewModel.onDeleteAccount()
             }
 
-            assertTrue(awaitItem() == HomeEvent.ShowDeleteNotification)
+            assertTrue(awaitItem() == HomeEffect.ShowDeleteNotification)
             verify(syncBackgroundJobAction).cancelAll()
-            assertTrue(awaitItem() == HomeEvent.GoToLogin(1, true))
+            assertTrue(awaitItem() == HomeEffect.GoToLogin(1, true))
 
         }
     }
@@ -249,9 +250,9 @@ class MainViewModelTest {
 
     @Test
     fun shouldSendGranularSyncEvent() = runTest {
-        viewModel.homeEvents.test {
-            viewModel.onSyncAllClick()
-            assertTrue(awaitItem() is HomeEvent.ShowGranularSync)
+        viewModel.homeEffects.test {
+            viewModel.onAction(HomeAction.SyncClicked)
+            assertTrue(awaitItem() is HomeEffect.ShowGranularSync)
         }
     }
 
@@ -276,9 +277,9 @@ class MainViewModelTest {
         whenever(filterManager.totalFilters) doReturn 0
 
         viewModel.homeScreenState.test {
-            viewModel.showFilter()
-            viewModel.homeEvents.test {
-                assertTrue((this).awaitItem() is HomeEvent.ToggleFilters)
+            viewModel.onAction(HomeAction.FilterClicked)
+            viewModel.homeEffects.test {
+                assertTrue((this).awaitItem() is HomeEffect.ToggleFilters)
             }
             assertTrue((this@test).awaitItem().bottomNavigationBarVisible.not())
         }

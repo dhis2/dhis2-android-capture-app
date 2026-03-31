@@ -17,6 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
@@ -41,7 +43,7 @@ import org.dhis2.usescases.general.ActivityGlobalAbstract
 import org.dhis2.usescases.login.LoginActivity
 import org.dhis2.usescases.main.ui.NewVersionDialog
 import org.dhis2.usescases.main.ui.TAG
-import org.dhis2.usescases.main.ui.model.HomeEvent
+import org.dhis2.usescases.main.ui.model.HomeEffect
 import org.dhis2.usescases.main.ui.model.HomeScreenState
 import org.dhis2.usescases.main.ui.model.VersionToUpdateState
 import org.dhis2.usescases.main.ui.screens.MainScreen
@@ -127,40 +129,34 @@ class MainActivity : ActivityGlobalAbstract() {
 
         setContent {
             DHIS2Theme {
+                val screenState by mainViewModel.homeScreenState.collectAsState()
                 MainScreen(
-                    mainViewModel = mainViewModel,
-                    onNewState = { screenState ->
-                        if (::binding.isInitialized) {
-                            updateScreen(screenState)
+                    screenState = screenState,
+                    effects = mainViewModel.homeEffects,
+                    onAction = mainViewModel::onAction,
+                    onEffect = { effect ->
+                        when (effect) {
+                            HomeEffect.BlockSession -> finish()
+                            is HomeEffect.GoToLogin -> goToLogin(
+                                accountsCount = effect.accountsCount,
+                                isDeletion = effect.isDeletion,
+                            )
+                            HomeEffect.OrgUnitFilterRequest -> openOrgUnitTreeSelector()
+                            is HomeEffect.PeriodFilterRequest -> showPeriodRequest(effect.periodRequest)
+                            HomeEffect.ShowDeleteNotification -> showProgressDeleteNotification()
+                            HomeEffect.ShowGranularSync -> showGranularSync()
+                            is HomeEffect.SingleProgramNavigation -> navigationLauncher.navigateTo(
+                                this@MainActivity,
+                                effect.homeItemData,
+                            )
+                            HomeEffect.ShowPinDialog -> { /*handled in composable*/ }
+                            HomeEffect.ToggleSideMenu -> openDrawer()
+                            HomeEffect.ToggleFilters -> showHideFilter()
                         }
                     },
-                    onHomeEvent = { event ->
-                        when (event) {
-                            HomeEvent.BlockSession -> finish()
-                            is HomeEvent.GoToLogin -> goToLogin(
-                                accountsCount = event.accountsCount,
-                                isDeletion = event.isDeletion,
-                            )
-
-                            HomeEvent.OrgUnitFilterRequest -> openOrgUnitTreeSelector()
-
-                            is HomeEvent.PeriodFilterRequest -> showPeriodRequest(event.periodRequest)
-
-                            HomeEvent.ShowDeleteNotification -> showProgressDeleteNotification()
-
-                            HomeEvent.ShowGranularSync -> showGranularSync()
-
-                            is HomeEvent.SingleProgramNavigation -> navigationLauncher.navigateTo(
-                                this@MainActivity,
-                                event.homeItemData
-                            )
-
-                            HomeEvent.ShowPinDialog -> {/*no-op*/
-                            }
-
-                            HomeEvent.ToggleSideMenu -> openDrawer()
-
-                            HomeEvent.ToggleFilters -> showHideFilter()
+                    onNewState = { state ->
+                        if (::binding.isInitialized) {
+                            updateScreen(state)
                         }
                     },
                     onNewScreen = { currentScreen ->
@@ -183,7 +179,7 @@ class MainActivity : ActivityGlobalAbstract() {
                     onLayoutInflated = {
                         binding = it
                         initBinding()
-                    }
+                    },
                 )
             }
         }
