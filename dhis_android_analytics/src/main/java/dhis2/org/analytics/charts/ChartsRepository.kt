@@ -7,7 +7,7 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.settings.AnalyticsDhisVisualizationsGroup
 
 interface ChartsRepository {
-    fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph>
+    suspend fun getAnalyticsForEnrollment(enrollmentUid: String): List<Graph>
 
     fun getProgramVisualization(
         groupUid: String?,

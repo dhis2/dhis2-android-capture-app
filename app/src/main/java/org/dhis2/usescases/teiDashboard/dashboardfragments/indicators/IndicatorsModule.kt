@@ -5,7 +5,7 @@ import dagger.Provides
 import dhis2.org.analytics.charts.Charts
 import org.dhis2.commons.di.dagger.PerFragment
 import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.commons.schedulers.SchedulerProvider
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobileProgramRules.RuleEngineHelper
 import org.hisp.dhis.android.core.D2
 
@@ -19,9 +19,9 @@ class IndicatorsModule(
     @Provides
     @PerFragment
     fun providesPresenter(
-        schedulerProvider: SchedulerProvider,
+        dispatcherProvider: DispatcherProvider,
         indicatorRepository: IndicatorRepository,
-    ): IndicatorsPresenter = IndicatorsPresenter(schedulerProvider, view, indicatorRepository)
+    ): IndicatorsPresenter = IndicatorsPresenter(dispatcherProvider, view, indicatorRepository)
 
     @Provides
     @PerFragment
