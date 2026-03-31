@@ -1,24 +1,51 @@
 package org.dhis2.usescases.main.domain
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import org.dhis2.R
+import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.mobile.commons.domain.UseCase
 import org.dhis2.mobile.commons.error.DomainError
 import org.dhis2.usescases.main.data.HomeRepository
-import org.dhis2.usescases.main.domain.model.BottomNavigationItem
+import org.dhis2.usescases.main.ui.Form
+import org.dhis2.utils.customviews.navigationbar.NavigationPage
+import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBarItem
 
 class ConfigureHomeNavigationBar(
     private val homeRepository: HomeRepository,
-) : UseCase<Unit, List<BottomNavigationItem>> {
+    private val resourceManager: ResourceManager,
+) : UseCase<Unit, List<NavigationBarItem<NavigationPage>>> {
     override suspend operator fun invoke(input: Unit) =
         try {
             val list =
                 buildList {
-                    add(BottomNavigationItem.Program)
+                    add(
+                        NavigationBarItem(
+                            id = NavigationPage.PROGRAMS,
+                            icon = Icons.Filled.Form,
+                            label = resourceManager.getString(R.string.navigation_programs),
+                        )
+                    )
                     if (homeRepository.hasHomeAnalytics()) {
-                        add(BottomNavigationItem.Analytics)
+                        add(
+                            NavigationBarItem(
+                                id = NavigationPage.ANALYTICS,
+                                icon = Icons.Filled.BarChart,
+                                label = resourceManager.getString(R.string.navigation_charts),
+                            )
+                        )
                     }
                 }
             Result.success(list)
         } catch (_: DomainError) {
-            Result.success(listOf(BottomNavigationItem.Program))
+            Result.success(
+                listOf(
+                    NavigationBarItem(
+                        id = NavigationPage.PROGRAMS,
+                        icon = Icons.Filled.Form,
+                        label = resourceManager.getString(R.string.navigation_programs),
+                    )
+                )
+            )
         }
 }

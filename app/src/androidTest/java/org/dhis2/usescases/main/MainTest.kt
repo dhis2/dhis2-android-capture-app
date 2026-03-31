@@ -3,14 +3,9 @@ package org.dhis2.usescases.main
 import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.rule.ActivityTestRule
 import org.dhis2.lazyActivityScenarioRule
 import org.dhis2.usescases.BaseTest
-import org.dhis2.usescases.development.DevelopmentActivity
-import org.dhis2.usescases.eventsWithoutRegistration.eventCapture.EventCaptureActivity
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,11 +22,16 @@ class MainTest : BaseTest() {
     @Throws(Exception::class)
     override fun setUp() {
         super.setUp()
-        startActivity()
     }
 
     @Test
     fun checkHomeScreenRecyclerviewHasElements() {
+        startActivity(
+            MainActivity.intent(
+                ApplicationProvider.getApplicationContext(),
+                MainScreenType.Home(HomeScreen.Programs),
+            )
+        )
         homeRobot(composeTestRule) {
             composeTestRule.waitForIdle()
             checkViewIsNotEmpty(composeTestRule)
@@ -40,19 +40,19 @@ class MainTest : BaseTest() {
 
     @Test
     fun shouldNavigateToHomeWhenBackPressed() {
+        startActivity(
+            MainActivity.intent(
+                ApplicationProvider.getApplicationContext(),
+                MainScreenType.Settings,
+            )
+        )
         homeRobot(composeTestRule) {
-            clickOnNavigationDrawerMenu()
-            clickOnSettings()
             pressBack()
             checkHomeIsDisplayed(composeTestRule)
         }
     }
 
-    private fun startActivity() {
-        val intent = Intent(
-            ApplicationProvider.getApplicationContext(),
-            MainActivity::class.java
-        ).putExtra(AVOID_SYNC, true)
+    private fun startActivity(intent: Intent) {
         rule.launch(intent)
     }
 }
