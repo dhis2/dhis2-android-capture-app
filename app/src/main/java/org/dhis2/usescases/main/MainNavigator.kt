@@ -4,13 +4,8 @@ import android.transition.ChangeBounds
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import dhis2.org.analytics.charts.ui.GroupAnalyticsFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.dhis2.R
-import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.usescases.about.AboutFragment
 import org.dhis2.usescases.main.program.ProgramFragment
 import org.dhis2.usescases.qrReader.QrReaderFragment
@@ -18,7 +13,6 @@ import org.dhis2.usescases.settings.SyncManagerFragment
 import org.dhis2.usescases.troubleshooting.TroubleshootingFragment
 
 class MainNavigator(
-    private val dispatcherProvider: DispatcherProvider,
     private val fragmentManager: FragmentManager,
 ) {
     private var currentFragment: Fragment? = null
@@ -93,32 +87,23 @@ class MainNavigator(
         useFadeInTransition: Boolean = false,
     ) {
         currentFragment = fragment
-        CoroutineScope(dispatcherProvider.ui()).launch {
-            withContext(dispatcherProvider.io()) {
-                val transaction: FragmentTransaction = fragmentManager.beginTransaction()
-                transaction
-                    .apply {
-                        if (sharedView == null) {
-                            val (enterAnimation, exitAnimation) = getEnterExitAnimation(
-                                useFadeInTransition
-                            )
-                            val (enterPopAnimation, exitPopAnimation) = getEnterExitPopAnimation(
-                                useFadeInTransition
-                            )
-                            setCustomAnimations(
-                                enterAnimation,
-                                exitAnimation,
-                                enterPopAnimation,
-                                exitPopAnimation,
-                            )
-                        } else {
-                            setReorderingAllowed(true)
-                            addSharedElement(sharedView, "contenttest")
-                        }
-                    }.replace(R.id.fragment_container, fragment, fragment::class.simpleName)
-                    .commitAllowingStateLoss()
-            }
-        }
+        fragmentManager.beginTransaction()
+            .apply {
+                if (sharedView == null) {
+                    val (enterAnimation, exitAnimation) = getEnterExitAnimation(useFadeInTransition)
+                    val (enterPopAnimation, exitPopAnimation) = getEnterExitPopAnimation(useFadeInTransition)
+                    setCustomAnimations(
+                        enterAnimation,
+                        exitAnimation,
+                        enterPopAnimation,
+                        exitPopAnimation,
+                    )
+                } else {
+                    setReorderingAllowed(true)
+                    addSharedElement(sharedView, "contenttest")
+                }
+            }.replace(R.id.fragment_container, fragment, fragment::class.simpleName)
+            .commitAllowingStateLoss()
     }
 
     private fun getEnterExitPopAnimation(useFadeInTransition: Boolean): Pair<Int, Int> =
