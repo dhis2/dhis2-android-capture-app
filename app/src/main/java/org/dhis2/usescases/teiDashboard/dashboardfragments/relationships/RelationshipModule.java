@@ -2,6 +2,7 @@ package org.dhis2.usescases.teiDashboard.dashboardfragments.relationships;
 
 import android.content.Context;
 
+import org.dhis2.R;
 import org.dhis2.commons.data.ProgramConfigurationRepository;
 import org.dhis2.commons.date.DateLabelProvider;
 import org.dhis2.commons.date.DateUtils;
@@ -11,6 +12,8 @@ import org.dhis2.commons.resources.D2ErrorUtils;
 import org.dhis2.commons.resources.MetadataIconProvider;
 import org.dhis2.commons.resources.ResourceManager;
 import org.dhis2.commons.viewmodel.DispatcherProvider;
+import org.dhis2.data.enrollment.EnrollmentUiDataHelper;
+import org.dhis2.data.sorting.SearchSortingValueSetter;
 import org.dhis2.maps.geometry.bound.GetBoundingBox;
 import org.dhis2.maps.geometry.line.MapLineRelationshipToFeature;
 import org.dhis2.maps.geometry.mapper.featurecollection.MapRelationshipsToFeatureCollection;
@@ -108,7 +111,8 @@ public class RelationshipModule {
             ResourceManager resourceManager,
             MetadataIconProvider metadataIconProvider,
             DateLabelProvider dateLabelProvider,
-            DateUtils dateUtils
+            DateUtils dateUtils,
+            SearchSortingValueSetter sortingValueSetter
     ) {
         RelationshipConfiguration config;
         if (teiUid != null) {
@@ -124,7 +128,8 @@ public class RelationshipModule {
                         d2,
                         profilePictureProvider,
                         dateLabelProvider,
-                        metadataIconProvider
+                        metadataIconProvider,
+                        sortingValueSetter
                 ),
                 new EventInfoProvider(
                         d2,
@@ -136,6 +141,42 @@ public class RelationshipModule {
                 )
         );
     }
+
+    @Provides
+    @PerFragment
+    SearchSortingValueSetter searchSortingValueSetter(
+            Context context,
+            D2 d2,
+            EnrollmentUiDataHelper enrollmentUiDataHelper,
+            ResourceManager resourceManager) {
+        String unknownLabel = context.getString(R.string.unknownValue);
+        String eventDateLabel = context.getString(R.string.most_recent_event_date);
+        String enrollmentStatusLabel = resourceManager.formatWithEnrollmentLabel(
+                null,
+                R.string.filters_title_enrollment_status,
+                1,
+                false);
+        String enrollmentDateDefaultLabel = resourceManager.formatWithEnrollmentLabel(
+                null,
+                R.string.enrollment_date_V2,
+                1,
+                false);
+        String uiDateFormat = DateUtils.SIMPLE_DATE_FORMAT;
+        return new SearchSortingValueSetter(d2,
+                unknownLabel,
+                eventDateLabel,
+                enrollmentStatusLabel,
+                enrollmentDateDefaultLabel,
+                uiDateFormat,
+                enrollmentUiDataHelper);
+    }
+
+    @Provides
+    @PerFragment
+    EnrollmentUiDataHelper enrollmentUiDataHelper(Context context) {
+        return new EnrollmentUiDataHelper(context);
+    }
+
 
     @Provides
     @PerFragment

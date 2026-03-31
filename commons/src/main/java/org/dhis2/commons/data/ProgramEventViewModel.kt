@@ -17,6 +17,4 @@ data class ProgramEventViewModel(
     val attributeOptionComboName: String,
     val geometry: Geometry?,
     val canBeEdited: Boolean,
-) : CarouselItemModel {
-    override fun uid() = uid
-}
+)
