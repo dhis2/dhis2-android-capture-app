@@ -48,7 +48,7 @@
     <string name="saved">Gravado!</string>
     <string name="not_now">Agora não</string>
     <string name="keep_editing">Continue a editar</string>
-    <string name="event_can_be_completed">Deseja marcar este formulário como completo?</string>
+    <string name="event_can_be_completed">Deseja marcar este formulário como completo\?</string>
     <string name="discard_go_back">Se sair agora, todas as informações do formulário serão descartadas.</string>
     <string name="share">Partilhar</string>
     <string name="action_close">Fechar</string>
