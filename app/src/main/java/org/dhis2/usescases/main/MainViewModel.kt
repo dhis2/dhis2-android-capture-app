@@ -6,16 +6,15 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.reactive.asFlow
 import org.dhis2.commons.filters.FilterManager
 import org.dhis2.commons.matomo.Actions.Companion.BLOCK_SESSION_PIN
@@ -26,11 +25,11 @@ import org.dhis2.commons.matomo.Categories.Companion.HOME
 import org.dhis2.commons.matomo.Labels.Companion.CLICK
 import org.dhis2.commons.matomo.MatomoAnalyticsController
 import org.dhis2.commons.prefs.Preference
-import org.dhis2.commons.prefs.PreferenceProvider
-import org.dhis2.commons.resources.ResourceManager
-import org.dhis2.data.service.VersionRepository
+import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.mobile.commons.domain.invoke
 import org.dhis2.mobile.commons.extensions.launchUseCase
+import org.dhis2.mobile.commons.providers.PreferenceProvider
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.mobile.sync.model.SyncStatusData
 import org.dhis2.usescases.main.domain.CheckSingleNavigation
@@ -55,18 +54,12 @@ import org.dhis2.utils.analytics.CLOSE_SESSION
 import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import timber.log.Timber
 
-const val DEFAULT = "default"
-const val SERVER_ACTION = "Server"
-const val DHIS2 = "dhis2_server"
-
 class MainViewModel(
     private val preferences: PreferenceProvider,
     private val filterManager: FilterManager,
     private val matomoAnalyticsController: MatomoAnalyticsController,
     syncStatusController: SyncStatusController,
-    versionRepository: VersionRepository,
-    private val resourceManager: ResourceManager,
-    private val mainNavigator: MainNavigator,
+    val mainNavigator: MainNavigator,
     private val getUserName: GetUserName,
     private val configureHomeNavigationBar: ConfigureHomeNavigationBar,
     private val getHomeFilters: GetHomeFilters,
@@ -78,6 +71,9 @@ class MainViewModel(
     private val checkSingleNavigation: CheckSingleNavigation,
     private val launchInitialSync: LaunchInitialSync,
     private val scheduleNewVersionAlert: ScheduleNewVersionAlert,
+    private val syncBackgroundJobAction: SyncBackgroundJobAction,
+    private val initialScreen: MainScreenType,
+    private val dispatcher: DispatcherProvider,
 ) : ViewModel() {
     private val _homeScreenState = MutableStateFlow(defaultHomeScreenState)
 
@@ -87,7 +83,7 @@ class MainViewModel(
     val homeScreenState =
         _homeScreenState
             .onStart {
-                loadData()
+                loadData(initialScreen)
             }.stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000),
@@ -96,7 +92,7 @@ class MainViewModel(
 
     init {
 
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             preferences.removeValue(Preference.CURRENT_ORG_UNIT)
         }
 
@@ -105,12 +101,7 @@ class MainViewModel(
             .onEach(::handleDownloadProcess)
             .launchIn(viewModelScope)
 
-        mainNavigator.selectedScreenFlow
-            .filter { it != MainNavigator.MainScreen.NONE }
-            .onEach(::handleScreen)
-            .launchIn(viewModelScope)
-
-        versionRepository.newAppVersion
+        scheduleNewVersionAlert.newVersionFlow
             .onEach(::onNewVersionAvailable)
             .launchIn(viewModelScope)
 
@@ -135,7 +126,7 @@ class MainViewModel(
                 _homeEvents.send(HomeEvent.OrgUnitFilterRequest)
             }.launchIn(viewModelScope)
 
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             launchInitialSync().fold(
                 onSuccess = ::handleInitialSyncResult,
                 onFailure = {
@@ -166,47 +157,27 @@ class MainViewModel(
         }
     }
 
-    private fun handleScreen(selectedScreen: MainNavigator.MainScreen) {
-        when (selectedScreen) {
-            MainNavigator.MainScreen.VISUALIZATIONS ->
-                trackHomeAnalytics()
-
-            MainNavigator.MainScreen.QR ->
-                trackQRScanner()
-
-            else -> {
-                // do nothing
-            }
-        }
-        _homeScreenState.update {
-            it.copy(
-                title = resourceManager.getString(selectedScreen.title),
-                filterButtonVisible = mainNavigator.isPrograms(),
-                bottomNavigationBarVisible = mainNavigator.isHome(),
-                syncButtonVisible = mainNavigator.isHome(),
-            )
-        }
-    }
-
-    private fun loadData() {
-        launchUseCase {
+    private fun loadData(initialScreen: MainScreenType) {
+        launchUseCase(dispatcher.io()) {
             val userName = getUserName().getOrDefault("")
             val navigationBarItems = configureHomeNavigationBar().getOrDefault(emptyList())
             val homeFilters = getHomeFilters().getOrDefault(emptyList())
-            val currentScreen = mainNavigator.selectedScreenFlow.value
 
             _homeScreenState.update {
                 HomeScreenState(
                     userName = userName,
-                    title = resourceManager.getString(currentScreen.title),
                     navigationBarItems = navigationBarItems,
                     homeFilters = homeFilters,
                     activeFilters = filterManager.totalFilters,
                     versionToUpdate = VersionToUpdateState.None,
-                    filterButtonVisible = mainNavigator.isPrograms(),
-                    bottomNavigationBarVisible = mainNavigator.isHome(),
-                    syncButtonVisible = mainNavigator.isHome(),
+                    filterButtonVisible = initialScreen.isPrograms(),
+                    bottomNavigationBarVisible = initialScreen.isHome() && navigationBarItems.size > 1,
+                    syncButtonVisible = initialScreen.isHome(),
+                    currentScreen = initialScreen,
                 )
+            }
+            withContext(dispatcher.ui()) {
+                openScreen(initialScreen)
             }
         }
     }
@@ -243,7 +214,7 @@ class MainViewModel(
     }
 
     private fun shouldNavigateToSingleProgram() {
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             checkSingleNavigation().fold(
                 onSuccess = { homeItemData ->
                     _homeEvents.send(HomeEvent.SingleProgramNavigation(homeItemData))
@@ -260,7 +231,7 @@ class MainViewModel(
     }
 
     fun logOut() {
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             matomoAnalyticsController.trackEvent(HOME, CLOSE_SESSION, CLICK)
             logOutUser().fold(
                 onSuccess = { accountCount ->
@@ -275,11 +246,11 @@ class MainViewModel(
 
     context(context: Context)
     fun onDeleteAccount() {
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             _homeEvents.send(HomeEvent.ShowDeleteNotification)
             deleteAccount(context.cacheDir).fold(
                 onSuccess = { accountCount ->
-                    _homeEvents.send(HomeEvent.CancelAllNotifications)
+                    syncBackgroundJobAction.cancelAll()
                     _homeEvents.send(HomeEvent.GoToLogin(accountCount, true))
                 },
                 onFailure = {
@@ -290,36 +261,30 @@ class MainViewModel(
     }
 
     fun onSyncAllClick() {
-        viewModelScope.launch {
+        launchUseCase(dispatcher.io()) {
             _homeEvents.send(HomeEvent.ShowGranularSync)
         }
     }
 
     fun showFilter() {
-        viewModelScope.launch {
+        launchUseCase(dispatcher.io()) {
             _homeEvents.send(HomeEvent.ToggleFilters)
             _homeScreenState.update {
                 it.copy(
-                    bottomNavigationBarVisible = !it.bottomNavigationBarVisible,
+                    bottomNavigationBarVisible = !it.bottomNavigationBarVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1,
                 )
             }
         }
     }
 
     fun onMenuClick() {
-        viewModelScope.launch {
+        launchUseCase(dispatcher.io()) {
             _homeEvents.send(HomeEvent.ToggleSideMenu)
         }
     }
 
-    fun onClickSyncManager() {
-        viewModelScope.launch {
-            matomoAnalyticsController.trackEvent(HOME, SETTINGS, CLICK)
-        }
-    }
-
     fun onDataSuccess() {
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             updateInitialSyncStatus().fold(
                 onSuccess = {
                     // Do nothing
@@ -331,14 +296,8 @@ class MainViewModel(
         }
     }
 
-    fun trackHomeAnalytics() {
-        viewModelScope.launch {
-            matomoAnalyticsController.trackEvent(HOME, OPEN_ANALYTICS, CLICK)
-        }
-    }
-
     fun onBlockSession() {
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             getLockAction().fold(
                 onSuccess = { result ->
                     when (result) {
@@ -355,19 +314,13 @@ class MainViewModel(
         matomoAnalyticsController.trackEvent(HOME, BLOCK_SESSION_PIN, CLICK)
     }
 
-    fun trackQRScanner() {
-        viewModelScope.launch {
-            matomoAnalyticsController.trackEvent(HOME, QR_SCANNER, CLICK)
-        }
-    }
-
     fun remindLaterAlertNewVersion() {
         _homeScreenState.update {
             it.copy(
                 versionToUpdate = VersionToUpdateState.None,
             )
         }
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             scheduleNewVersionAlert()
         }
     }
@@ -377,7 +330,7 @@ class MainViewModel(
         onDownloadCompleted: (Uri) -> Unit,
         onLaunchUrl: (Uri) -> Unit,
     ) {
-        launchUseCase {
+        launchUseCase(dispatcher.io()) {
             _homeScreenState.update {
                 it.copy(
                     versionToUpdate = VersionToUpdateState.Downloading,
@@ -401,11 +354,88 @@ class MainViewModel(
     }
 
     fun onBackPressed() {
-        viewModelScope.launch {
-            when {
-                !mainNavigator.isHome() -> mainNavigator.openHome()
-                else -> _homeEvents.send(HomeEvent.BlockSession)
+        if (!_homeScreenState.value.currentScreen.isHome()) {
+            navigateToScreen(mainNavigator.openHome())
+        } else {
+            launchUseCase { _homeEvents.send(HomeEvent.BlockSession) }
+        }
+    }
+
+    fun onChangeToHome() {
+        navigateToScreen(mainNavigator.openHome())
+    }
+
+    fun updateNavigationBarVisibility(bottomNavigationBarIsVisible: Boolean) {
+        launchUseCase(dispatcher.io()) {
+            _homeScreenState.update {
+                it.copy(bottomNavigationBarVisible = bottomNavigationBarIsVisible && it.currentScreen.isHome() && it.navigationBarItems.size > 1)
             }
+        }
+    }
+
+    fun onChangeScreen(screenToOpen: MainScreenType) {
+        navigateToScreen(screenToOpen)
+    }
+
+    private fun navigateToScreen(screenToOpen: MainScreenType) {
+        if (_homeScreenState.value.currentScreen == screenToOpen) return
+        _homeScreenState.update {
+            it.copy(
+                filterButtonVisible = screenToOpen.isPrograms(),
+                bottomNavigationBarVisible = screenToOpen.isHome() && it.navigationBarItems.size > 1,
+                syncButtonVisible = screenToOpen.isHome(),
+                currentScreen = screenToOpen,
+            )
+        }
+        openScreen(screenToOpen)
+    }
+
+    private fun openScreen(screenToOpen: MainScreenType) {
+        when (screenToOpen) {
+            MainScreenType.About -> mainNavigator.openAbout()
+            is MainScreenType.Home -> {
+                when (screenToOpen.homeScreen) {
+                    HomeScreen.Programs ->
+                        mainNavigator.openPrograms()
+
+                    HomeScreen.Visualizations -> {
+                        matomoAnalyticsController.trackEvent(HOME, OPEN_ANALYTICS, CLICK)
+                        mainNavigator.openVisualizations()
+                    }
+                }
+            }
+
+            MainScreenType.Loading -> {
+                /*no-op*/
+            }
+
+            MainScreenType.QRScanner -> {
+                matomoAnalyticsController.trackEvent(HOME, QR_SCANNER, CLICK)
+                mainNavigator.openQR()
+            }
+
+            MainScreenType.Settings -> {
+                matomoAnalyticsController.trackEvent(HOME, SETTINGS, CLICK)
+                mainNavigator.openSettings()
+            }
+
+            MainScreenType.TroubleShooting ->
+                mainNavigator.openTroubleShooting()
+
+        }
+    }
+
+    fun onGranularSyncFinished(hasChanged: Boolean) {
+        launchUseCase(dispatcher.io()) {
+            if (hasChanged) {
+                mainNavigator.getCurrentIfProgram()?.programViewModel?.updateProgramQueries()
+            }
+        }
+    }
+
+    fun onPinSet() {
+        launchUseCase(dispatcher.io()) {
+            _homeEvents.send(HomeEvent.BlockSession)
         }
     }
 }

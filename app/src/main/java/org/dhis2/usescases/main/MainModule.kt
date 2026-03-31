@@ -62,9 +62,8 @@ val mainModule = module {
     }
     singleOf(::VersionRepository)
     factoryOf(::ResourceManager)
-    single { params ->
+    factory { params ->
         MainNavigator(
-            dispatcherProvider = dispatcher,
             fragmentManager = params.get(),
         )
     }
