@@ -47,8 +47,7 @@ abstract class SessionManagerActivity :
 
     open var handleEdgeToEdge = true
 
-    @Inject
-    lateinit var analyticsHelper: AnalyticsHelper
+    val analyticsHelper: AnalyticsHelper by inject()
 
     private var pinComposeView: androidx.compose.ui.platform.ComposeView? = null
 
@@ -70,7 +69,6 @@ abstract class SessionManagerActivity :
                         true,
                         null,
                     )
-                    Unit
                 }
             if (serverComponent.userManager().isUserLoggedIn().blockingFirst() &&
                 !serverComponent.userManager().allowScreenShare()
