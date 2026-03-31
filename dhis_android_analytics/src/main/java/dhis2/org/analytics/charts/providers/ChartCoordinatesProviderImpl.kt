@@ -21,7 +21,7 @@ class ChartCoordinatesProviderImpl(
     val periodStepProvider: PeriodStepProvider,
     val resourceManager: ResourceManager,
 ) : ChartCoordinatesProvider {
-    override fun dataElementCoordinates(
+    override suspend fun dataElementCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
@@ -65,7 +65,7 @@ class ChartCoordinatesProviderImpl(
                             } else {
                                 periodStepProvider
                                     .getPeriodDiff(
-                                        initialPeriod!!,
+                                        initialPeriod,
                                         lineListResponse.period,
                                     ).toFloat()
                             },
@@ -76,7 +76,7 @@ class ChartCoordinatesProviderImpl(
             }
     }
 
-    override fun indicatorCoordinates(
+    override suspend fun indicatorCoordinates(
         stageUid: String,
         teiUid: String,
         indicatorUid: String,
@@ -112,7 +112,7 @@ class ChartCoordinatesProviderImpl(
                             .value
                             ?.toFloat() ?: Float.NaN
                     ).isNaN()
-                } catch (e: java.lang.Exception) {
+                } catch (_: java.lang.Exception) {
                     false
                 }
             }.mapNotNull { lineListResponse ->
@@ -131,7 +131,7 @@ class ChartCoordinatesProviderImpl(
                             } else {
                                 periodStepProvider
                                     .getPeriodDiff(
-                                        initialPeriod!!,
+                                        initialPeriod,
                                         lineListResponse.period,
                                     ).toFloat()
                             },
@@ -142,7 +142,7 @@ class ChartCoordinatesProviderImpl(
             }
     }
 
-    override fun nutritionCoordinates(
+    override suspend fun nutritionCoordinates(
         stageUid: String,
         teiUid: String,
         zScoreValueContainerUid: String,
@@ -205,7 +205,7 @@ class ChartCoordinatesProviderImpl(
             }
     }
 
-    override fun pieChartCoordinates(
+    override suspend fun pieChartCoordinates(
         stageUid: String,
         teiUid: String,
         dataElementUid: String,
@@ -294,11 +294,11 @@ class ChartCoordinatesProviderImpl(
             val formattedDateString = SimpleDateFormat("yyyy-MM-dd").format(date)
             val formattedDate = SimpleDateFormat("yyyy-MM-dd").parse(formattedDateString)
             formattedDate ?: date
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             date
         }
 
-    private fun getLegend(legendUid: String?): Legend? =
+    private suspend fun getLegend(legendUid: String?): Legend? =
         legendUid?.let {
             d2
                 .legendSetModule()

@@ -19,18 +19,6 @@ class TeiDashboardPageConfiguratorTest {
     }
 
     @Test
-    fun `Should display analytics screen if the program is configured`() {
-        whenever(dashboardRepository.programHasAnalytics()) doReturn true
-        assertTrue(pageConfigurator.displayAnalytics())
-    }
-
-    @Test
-    fun `Should not display analytics screen if the program is configured`() {
-        whenever(dashboardRepository.programHasAnalytics()) doReturn false
-        assertTrue(!pageConfigurator.displayAnalytics())
-    }
-
-    @Test
     fun `Should display relationships screen if the program is configured`() {
         whenever(dashboardRepository.programHasRelationships()) doReturn true
         assertTrue(pageConfigurator.displayRelationships())

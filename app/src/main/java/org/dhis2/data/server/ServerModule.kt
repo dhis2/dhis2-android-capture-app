@@ -5,7 +5,9 @@ import android.content.ContextWrapper
 import dagger.Module
 import dagger.Provides
 import dhis2.org.analytics.charts.Charts
-import dhis2.org.analytics.charts.DhisAnalyticCharts
+import dhis2.org.analytics.charts.di.ChartsComponent
+import dhis2.org.analytics.charts.di.DaggerChartsComponent
+import dhis2.org.analytics.charts.domain.GetEnrollmentAnalyticsUseCase
 import okhttp3.Interceptor
 import org.dhis2.BuildConfig
 import org.dhis2.R
@@ -81,7 +83,20 @@ class ServerModule {
 
     @Provides
     @PerServer
-    fun provideCharts(serverComponent: ServerComponent): Charts = DhisAnalyticCharts.Provider.get(serverComponent)
+    fun provideChartsComponent(serverComponent: ServerComponent): ChartsComponent =
+        DaggerChartsComponent
+            .builder()
+            .dependencies(serverComponent)
+            .build()
+
+    @Provides
+    @PerServer
+    fun provideCharts(chartsComponent: ChartsComponent): Charts = chartsComponent.charts()
+
+    @Provides
+    @PerServer
+    fun provideGetEnrollmentAnalyticsUseCase(chartsComponent: ChartsComponent): GetEnrollmentAnalyticsUseCase =
+        chartsComponent.getEnrollmentAnalyticsUseCase()
 
     @Provides
     @PerServer
