@@ -182,26 +182,30 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Should go to delete account`() {
+    fun `Should go to delete account`() = runTest {
         val randomFile = File("random")
         whenever(view.obtainFileView()) doReturn randomFile
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
+        whenever(userManager.d2.wipeModule()) doReturn mock()
+        whenever(userManager.d2.wipeModule().wipeEverything()) doReturn Unit
         whenever(view.obtainFileView()) doReturn randomFile
         whenever(repository.accountsCount()) doReturn 1
+        whenever(repository.checkDeleteBiometricsPermission()) doReturn Unit
 
         presenter.onDeleteAccount()
 
         verify(view).showProgressDeleteNotification()
-        verify(deleteUserData).wipeCacheAndPreferences(randomFile)
+        verify(deleteUserData).wipeCacheAndPreferences(randomFile, dispatcherProvider)
+        verify(userManager.d2?.wipeModule())?.wipeEverything()
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).cancelNotifications()
         verify(view).goToLogin(1, true)
     }
 
     @Test
-    fun `Should go to manage account`() {
+    fun `Should go to manage account`() = runTest {
         val firstRandomUserAccount =
             DatabaseAccount
                 .builder()
@@ -227,6 +231,8 @@ class MainPresenterTest {
         whenever(userManager.d2) doReturn mock()
         whenever(userManager.d2.userModule()) doReturn mock()
         whenever(userManager.d2.userModule().accountManager()) doReturn mock()
+        whenever(userManager.d2.wipeModule()) doReturn mock()
+        whenever(userManager.d2.wipeModule().wipeEverything()) doReturn Unit
         whenever(
             userManager.d2
                 .userModule()
@@ -238,10 +244,12 @@ class MainPresenterTest {
                 secondRandomUserAccount,
             )
         whenever(repository.accountsCount()) doReturn 2
+        whenever(repository.checkDeleteBiometricsPermission()) doReturn Unit
 
         presenter.onDeleteAccount()
 
-        verify(deleteUserData).wipeCacheAndPreferences(randomFile)
+        verify(deleteUserData).wipeCacheAndPreferences(randomFile, dispatcherProvider)
+        verify(userManager.d2?.wipeModule())?.wipeEverything()
         verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()

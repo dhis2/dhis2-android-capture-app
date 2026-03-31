@@ -258,7 +258,7 @@ class MainPresenter(
                 repository.checkDeleteBiometricsPermission()
                 syncBackgroundJobAction.cancelAll()
                 syncStatusController.restore()
-                deleteUserData.wipeCacheAndPreferences(view.obtainFileView())
+                deleteUserData.wipeCacheAndPreferences(view.obtainFileView(), dispatcherProvider)
                 userManager.d2?.wipeModule()?.wipeEverything()
                 userManager.d2
                     ?.userModule()
