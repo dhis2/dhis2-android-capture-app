@@ -606,7 +606,6 @@
     <string name="complete_enrollment_label">Dokončeno %s</string>
     <string name="deactivate_enrollment_label">Deaktivovat %s</string>
     <string name="reopen_enrollment_label">Znovu otevřít %s</string>
-
     <plurals name="error_count_label">
         <item quantity="one">%s chyba</item>
         <item quantity="few">%s chyby</item>
