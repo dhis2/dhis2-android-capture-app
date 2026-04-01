@@ -1,6 +1,7 @@
 package org.dhis2.di
 
 import android.app.Application
+import dhis2.org.analytics.charts.di.chartsModule
 import org.dhis2.BuildConfig
 import org.dhis2.android.rtsm.di.stockModule
 import org.dhis2.appModule
@@ -52,6 +53,7 @@ object KoinInitialization {
                 biometricModule,
                 matomoModule,
                 syncModule,
+                chartsModule,
             )
         }
     }
