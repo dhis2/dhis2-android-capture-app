@@ -38,7 +38,6 @@ import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
-import kotlin.test.assertContains
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
