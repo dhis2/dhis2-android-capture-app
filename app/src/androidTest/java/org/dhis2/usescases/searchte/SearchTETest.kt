@@ -217,7 +217,6 @@ class SearchTETest : BaseTest() {
 
         const val TB_SEARCH_ATTR_CITY = "City"
         const val TB_SEARCH_ATTR_STATE = "State"
-        const val TB_SEARCH_ATTR_ZIP = "Zip code"
         const val TB_SEARCH_ATTR_TB_NUMBER = "TB number"
 
         const val TB_SEARCH_CITY_SHORT = "C"
