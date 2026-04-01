@@ -200,7 +200,7 @@ class MainPresenterTest {
         presenter.onDeleteAccount()
 
         verify(view).showProgressDeleteNotification()
-        verify(deleteUserData).wipeCacheAndPreferences(randomFile, dispatcherProvider)
+        verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(accountManager).deleteCurrentAccount()
         verify(view).cancelNotifications()
         verify(view).goToLogin(1, true)
@@ -241,7 +241,7 @@ class MainPresenterTest {
 
         presenter.onDeleteAccount()
 
-        verify(deleteUserData).wipeCacheAndPreferences(randomFile, dispatcherProvider)
+        verify(deleteUserData).wipeCacheAndPreferences(randomFile)
         verify(accountManager).deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()

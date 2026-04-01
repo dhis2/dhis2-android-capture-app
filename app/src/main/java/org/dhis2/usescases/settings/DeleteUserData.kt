@@ -7,12 +7,13 @@ import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.service.workManager.WorkManagerController
 import java.io.File
 
-class DeleteUserData(
+class  DeleteUserData(
     private val workManagerController: WorkManagerController,
     private val filterManager: FilterManager,
     private val preferencesProvider: PreferenceProvider,
+    private val dispatcherProvider: DispatcherProvider,
 ) {
-     suspend fun wipeCacheAndPreferences(file: File?, dispatcherProvider: DispatcherProvider) {
+     suspend fun wipeCacheAndPreferences(file: File?) {
         withContext(dispatcherProvider.ui()) {
             filterManager.clearAllFilters()
         }

@@ -29,12 +29,12 @@ class DeleteUserDataTest {
     @Before
     fun setup() {
         deleteUserData =
-            DeleteUserData(workManagerController, filterManager, preferencesProvider)
+            DeleteUserData(workManagerController, filterManager, preferencesProvider, dispatcherProvider)
     }
 
     @Test
     fun `Should delete user data`() = runTest {
-        deleteUserData.wipeCacheAndPreferences(null, dispatcherProvider)
+        deleteUserData.wipeCacheAndPreferences(null)
 
         verify(workManagerController).cancelAllWork()
         verify(workManagerController).pruneWork()
