@@ -163,7 +163,7 @@ class SearchTETest : BaseTest() {
             checkMinCharactersErrorIsDisplayed(
                 TB_SEARCH_ATTR_CITY,
                 TB_SEARCH_ATTR_STATE,
-                TB_SEARCH_ATTR_TB_NUMBER
+                TB_SEARCH_ATTR_TB_NUMBER,
             )
 
             // Clear the field
