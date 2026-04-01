@@ -18,6 +18,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -271,18 +273,30 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun typeOnSearchParameter(label: String, value: String) {
+        composeTestRule.waitForIdle()
+        
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
         composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
+        
+        // Close keyboard after typing to reveal fields that might be hidden behind it
+        closeKeyboard()
+        composeTestRule.waitForIdle()
     }
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnClearSearch() {
         // The reset button in InputText has the test tag "INPUT_TEXT_RESET_BUTTON"
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_RESET_BUTTON"), TIMEOUT)
-        composeTestRule.onNodeWithTag("INPUT_TEXT_RESET_BUTTON").performClick()
-        composeTestRule.waitForIdle()
+        // Click all reset buttons to clear all fields
+        val resetButtons = composeTestRule.onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON")
+        val count = resetButtons.fetchSemanticsNodes().size
+        for (i in 0 until count) {
+            // Always click the first one (indices shift as we clear fields)
+            composeTestRule.onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON")[0].performClick()
+            composeTestRule.waitForIdle()
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -296,11 +310,24 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     }
 
     @OptIn(ExperimentalTestApi::class)
-    fun checkMinCharactersErrorIsDisplayed() {
+    fun checkMinCharactersErrorIsDisplayed(vararg fieldLabels: String) {
+        // Wait for error messages to appear
+        composeTestRule.waitForIdle()
+        
+        // Count the number of "Enter at least" error messages
         composeTestRule.waitUntilAtLeastOneExists(
             hasText("Enter at least", substring = true),
             TIMEOUT,
         )
+        
+        val errorNodes = composeTestRule
+            .onAllNodes(hasText("Enter at least", substring = true))
+            .fetchSemanticsNodes()
+        
+        // Verify that we have the expected number of error messages (one per field)
+        assert(errorNodes.size >= fieldLabels.size) {
+            "Expected at least ${fieldLabels.size} error messages but found ${errorNodes.size}"
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
