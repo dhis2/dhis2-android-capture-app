@@ -18,7 +18,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -38,6 +37,8 @@ import org.dhis2.usescases.searchte.entity.DisplayListFieldsUIModel
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hisp.dhis.mobile.ui.designsystem.component.AdditionalInfoItem
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 
 fun searchTeiRobot(
     composeTestRule: ComposeTestRule,
@@ -252,9 +253,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .onAllNodesWithTag("SEARCH_PARAM_ITEM")
             .fetchSemanticsNodes()
             .size
-        assert(count == expectedCount) {
-            "Expected $expectedCount search parameters, but found $count"
-        }
+        assertEquals("Expected $expectedCount search parameters, but found $count", expectedCount, count)
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -322,9 +321,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
             .fetchSemanticsNodes()
         
         // Verify that we have the expected number of error messages (one per field)
-        assert(errorNodes.size >= fieldLabels.size) {
-            "Expected at least ${fieldLabels.size} error messages but found ${errorNodes.size}"
-        }
+        assertTrue(
+            "Expected at least ${fieldLabels.size} error messages but found ${errorNodes.size}",
+            errorNodes.size >= fieldLabels.size,
+        )
     }
 
     @OptIn(ExperimentalTestApi::class)
@@ -341,9 +341,7 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val nodes = composeTestRule
             .onAllNodesWithTag("LIST_CARD_ITEM_TAG")
             .fetchSemanticsNodes()
-        assert(nodes.size == expectedCount) {
-            "Expected $expectedCount search results, but found ${nodes.size}"
-        }
+        assertEquals("Expected $expectedCount search results, but found ${nodes.size}", expectedCount, nodes.size)
     }
 
     @OptIn(ExperimentalTestApi::class)
