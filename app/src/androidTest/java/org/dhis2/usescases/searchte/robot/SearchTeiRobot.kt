@@ -283,6 +283,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun clickOnClearSearch() {
+        // Ensure keyboard is fully closed and UI has settled
+        closeKeyboard()
+        composeTestRule.waitForIdle()
+        
         // The reset button in InputText has the test tag "INPUT_TEXT_RESET_BUTTON"
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_RESET_BUTTON"), TIMEOUT)
         // Click all reset buttons to clear all fields
@@ -290,7 +294,10 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         val count = resetButtons.fetchSemanticsNodes().size
         for (i in 0 until count) {
             // Always click the first one (indices shift as we clear fields)
-            composeTestRule.onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON")[0].performClick()
+            // Scroll to make sure the button is visible before clicking
+            composeTestRule.onAllNodesWithTag("INPUT_TEXT_RESET_BUTTON")[0]
+                .performScrollTo()
+                .performClick()
             composeTestRule.waitForIdle()
         }
     }
