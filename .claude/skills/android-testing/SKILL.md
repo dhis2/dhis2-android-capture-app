@@ -25,14 +25,14 @@ description: >
 # All unit tests
 ./gradlew testDebugUnitTest testDhis2DebugUnitTest testAndroidHostTest
 
-# Single KMP module test class
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
+# Single KMP module test class (commonTest source set)
+./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 
 # Single legacy Android module test class
 ./gradlew :form:testDebugUnitTest --tests "org.dhis2.form.ui.FormViewModelTest"
 
-# Single test method
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
+# Single test method (commonTest source set)
+./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
 ```
 
 ## Critical Rule: No Hard-Coded Delays
@@ -102,6 +102,11 @@ class ExampleViewModelTest {
         Dispatchers.setMain(testDispatcher)
     }
 
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     @Test
     fun `should emit success state when use case succeeds`() = runTest {
         whenever(useCase()).thenReturn(Result.success(flowOf(listOf(item))))
@@ -118,7 +123,9 @@ class ExampleViewModelTest {
 ### Repository test
 ```kotlin
 class ExampleRepositoryTest {
-    private val d2: D2 = mock()
+    // D2 chains calls across multiple intermediate objects — RETURNS_DEEP_STUBS is required
+    // so that d2.someModule().someRepository().blockingGet() doesn't NPE on the intermediates.
+    private val d2: D2 = mock(defaultAnswer = Mockito.RETURNS_DEEP_STUBS)
     private val domainErrorMapper: DomainErrorMapper = mock()
     private val repository = ExampleRepositoryImpl(d2, domainErrorMapper)
 

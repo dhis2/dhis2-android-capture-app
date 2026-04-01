@@ -20,11 +20,11 @@ targeting Android, Desktop, and iOS. The app uses MVVM + Repository + Use Case a
 # Shortcut: lint + all unit tests (mirrors CI)
 ./run_tests.sh
 
-# Run a single test class
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
+# Run a single test class (KMP commonTest)
+./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest"
 
-# Run a single test method
-./gradlew :login:testAndroidDebugUnitTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
+# Run a single test method (KMP commonTest)
+./gradlew :login:testAndroidHostTest --tests "org.dhis2.mobile.login.main.ui.viewmodel.LoginViewModelTest.initial screen is set correctly when starting"
 
 # Build debug APK
 ./gradlew assembleDhis2Debug
@@ -35,7 +35,8 @@ targeting Android, Desktop, and iOS. The app uses MVVM + Repository + Use Case a
 
 **Gradle task naming by module type:**
 - Legacy Android modules (`form`, `commons`, `tracker`, etc.): `testDebugUnitTest`
-- KMP modules (`login`, `commonskmm`, `sync`, `aggregates`): `testAndroidDebugUnitTest` or `testAndroidHostTest`
+- KMP modules (`login`, `commonskmm`, `sync`, `aggregates`), `commonTest` source set: `testAndroidHostTest`
+- KMP modules, `androidUnitTest` source set: `testAndroidDebugUnitTest`
 - Desktop targets in KMP modules: `desktopTest`
 
 ---
@@ -123,10 +124,10 @@ suspend operator fun <T> UseCase<Unit, T>.invoke() = this(Unit)
 
 Implementation pattern:
 ```kotlin
-class SavePinUseCase(private val repo: SessionRepository) {
-    suspend operator fun invoke(pin: String): Result<Unit> =
+class SavePinUseCase(private val repo: SessionRepository) : UseCase<String, Unit> {
+    override suspend fun invoke(input: String): Result<Unit> =
         try {
-            repo.savePin(pin)
+            repo.savePin(input)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -180,7 +181,10 @@ val featureModule = module {
 
 ### Running a single test
 ```bash
-# KMP module (commonTest / androidUnitTest)
+# KMP module (commonTest source set)
+./gradlew :login:testAndroidHostTest --tests "fully.qualified.ClassName.method name"
+
+# KMP module (androidUnitTest source set)
 ./gradlew :login:testAndroidDebugUnitTest --tests "fully.qualified.ClassName.method name"
 
 # Legacy Android module
