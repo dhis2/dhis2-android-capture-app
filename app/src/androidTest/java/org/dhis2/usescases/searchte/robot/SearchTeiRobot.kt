@@ -273,12 +273,11 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
     @OptIn(ExperimentalTestApi::class)
     fun typeOnSearchParameter(label: String, value: String) {
         composeTestRule.waitForIdle()
-        
+
         composeTestRule.waitUntilAtLeastOneExists(hasText(label), TIMEOUT)
         composeTestRule.onNodeWithText(label).performClick()
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_FIELD"), TIMEOUT)
         composeTestRule.onAllNodesWithTag("INPUT_TEXT_FIELD").onLast().performTextInput(value)
-        
         // Close keyboard after typing to reveal fields that might be hidden behind it
         closeKeyboard()
         composeTestRule.waitForIdle()
