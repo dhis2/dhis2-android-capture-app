@@ -143,18 +143,25 @@ class SearchTETest : BaseTest() {
             // [Part A] ANDROAPP-5862: Search button is now enabled
             checkSearchButtonIsEnabled()
 
-            // ANDROAPP-5970: Reset search field
             clickOnClearSearch()
 
             // Re-enter a short value (1 char) to enable the button
             typeOnSearchParameter(TB_SEARCH_ATTR_CITY, TB_SEARCH_CITY_SHORT)
+            checkFocusedFieldShowsOperatorSupportingText()
+            typeOnSearchParameter(TB_SEARCH_ATTR_STATE, TB_SEARCH_CITY_SHORT)
+            checkFocusedFieldShowsOperatorSupportingText()
+            typeOnSearchParameter(TB_SEARCH_ATTR_TB_NUMBER, TB_SEARCH_CITY_SHORT)
 
             // Click Search – triggers per-field min-character validation
             clickOnSearch()
 
-            // [Part B] ANDROAPP-7489/7490 & ANDROAPP-1056/7491:
+            // ANDROAPP-7489/7490 & ANDROAPP-1056/7491:
             // Error is displayed because value is below the minimum character requirement
-            checkMinCharactersErrorIsDisplayed()
+            checkMinCharactersErrorIsDisplayed(
+                TB_SEARCH_ATTR_CITY,
+                TB_SEARCH_ATTR_STATE,
+                TB_SEARCH_ATTR_TB_NUMBER
+            )
 
             // Clear the field
             clickOnClearSearch()
