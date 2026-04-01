@@ -134,6 +134,9 @@ class SearchTETest : BaseTest() {
             // ANDROAPP-5861: Unique attribute (TB identifier) is first after sort ordering
             checkFirstSearchParamIsBarcodeOrQROrUnique(TB_IDENTIFIER_LABEL)
 
+            // Check that all 9 search fields are displayed
+            checkSearchParamCount(9)
+
             // ANDROAPP-5862: Search button is disabled when no values are entered
             checkSearchButtonIsDisabled()
 
