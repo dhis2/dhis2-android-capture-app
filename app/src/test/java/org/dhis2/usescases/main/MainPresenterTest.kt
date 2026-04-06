@@ -33,12 +33,15 @@ import org.dhis2.mobile.sync.domain.SyncStatusController
 import org.dhis2.usescases.login.SyncIsPerformedInteractor
 import org.dhis2.usescases.main.domain.LogoutUser
 import org.dhis2.usescases.settings.DeleteUserData
+import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.helpers.DateUtils
 import org.hisp.dhis.android.core.category.CategoryCombo
 import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.configuration.internal.DatabaseAccount
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
+import org.hisp.dhis.android.core.user.AccountManager
 import org.hisp.dhis.android.core.user.User
+import org.hisp.dhis.android.core.user.UserModule
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -81,6 +84,9 @@ class MainPresenterTest {
     private val forceToNotSynced: Boolean = false
 
     private val logoutUser: LogoutUser = mock()
+    private val accountManager: AccountManager = mock()
+    private val userModule: UserModule = mock()
+    private val d2: D2 = mock()
 
     @Rule
     @JvmField
@@ -182,26 +188,26 @@ class MainPresenterTest {
     }
 
     @Test
-    fun `Should go to delete account`() {
+    fun `Should go to delete account`() = runTest {
         val randomFile = File("random")
+
         whenever(view.obtainFileView()) doReturn randomFile
-        whenever(userManager.d2) doReturn mock()
-        whenever(userManager.d2.userModule()) doReturn mock()
-        whenever(userManager.d2.userModule().accountManager()) doReturn mock()
-        whenever(view.obtainFileView()) doReturn randomFile
+        whenever(userManager.d2) doReturn d2
+        whenever(d2.userModule()) doReturn userModule
+        whenever(userModule.accountManager()) doReturn accountManager
         whenever(repository.accountsCount()) doReturn 1
 
         presenter.onDeleteAccount()
 
         verify(view).showProgressDeleteNotification()
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
-        verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
+        verify(accountManager).deleteCurrentAccount()
         verify(view).cancelNotifications()
         verify(view).goToLogin(1, true)
     }
 
     @Test
-    fun `Should go to manage account`() {
+    fun `Should go to manage account`() = runTest {
         val firstRandomUserAccount =
             DatabaseAccount
                 .builder()
@@ -224,25 +230,19 @@ class MainPresenterTest {
         val randomFile = File("random")
 
         whenever(view.obtainFileView()) doReturn randomFile
-        whenever(userManager.d2) doReturn mock()
-        whenever(userManager.d2.userModule()) doReturn mock()
-        whenever(userManager.d2.userModule().accountManager()) doReturn mock()
-        whenever(
-            userManager.d2
-                .userModule()
-                .accountManager()
-                .getAccounts(),
-        ) doReturn
-            listOf(
-                firstRandomUserAccount,
-                secondRandomUserAccount,
-            )
+        whenever(userManager.d2) doReturn d2
+        whenever(d2.userModule()) doReturn userModule
+        whenever(userModule.accountManager()) doReturn accountManager
+        whenever(accountManager.getAccounts()) doReturn listOf(
+            firstRandomUserAccount,
+            secondRandomUserAccount,
+        )
         whenever(repository.accountsCount()) doReturn 2
 
         presenter.onDeleteAccount()
 
         verify(deleteUserData).wipeCacheAndPreferences(randomFile)
-        verify(userManager.d2?.userModule()?.accountManager())?.deleteCurrentAccount()
+        verify(accountManager).deleteCurrentAccount()
         verify(view).showProgressDeleteNotification()
         verify(view).cancelNotifications()
         verify(view).goToLogin(2, true)

@@ -152,10 +152,12 @@ class MainModule(
         workManagerController: WorkManagerController,
         preferencesProvider: PreferenceProvider,
         filterManager: FilterManager,
+        dispatcherProvider: DispatcherProvider
     ): DeleteUserData =
         DeleteUserData(
             workManagerController,
             filterManager,
             preferencesProvider,
+            dispatcherProvider,
         )
 }
