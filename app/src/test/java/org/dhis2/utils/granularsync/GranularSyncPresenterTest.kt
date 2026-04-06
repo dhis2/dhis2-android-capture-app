@@ -19,6 +19,7 @@ import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.viewmodel.DispatcherProvider
 import org.dhis2.data.schedulers.TrampolineSchedulerProvider
 import org.dhis2.data.service.workManager.WorkManagerController
+import org.dhis2.mobile.sync.data.SyncBackgroundJobAction
 import org.dhis2.usescases.sms.SmsSendingService
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.common.ObjectWithUid
@@ -42,6 +43,9 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -63,9 +67,17 @@ class GranularSyncPresenterTest {
     private val smsSyncProvider: SMSSyncProvider = mock()
     private val context: Context = mock()
     private val syncContext: SyncContext = SyncContext.Global()
+    private val syncBackgroundJobAction: SyncBackgroundJobAction = mock()
 
     @Before
     fun setUp() {
+        startKoin {
+            modules(
+                module {
+                    single<SyncBackgroundJobAction> { syncBackgroundJobAction }
+                },
+            )
+        }
         Dispatchers.setMain(testingDispatcher)
         runBlocking {
             whenever(repository.getUiState(anyOrNull())) doReturn
@@ -83,6 +95,7 @@ class GranularSyncPresenterTest {
 
     @After
     fun tearDown() {
+        stopKoin()
         Dispatchers.resetMain()
     }
 
