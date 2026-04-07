@@ -12,6 +12,7 @@ import androidx.compose.ui.test.hasParent
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodes
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -314,24 +315,28 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
 
     @OptIn(ExperimentalTestApi::class)
     fun checkMinCharactersErrorIsDisplayed(vararg fieldLabels: String) {
-        // Wait for error messages to appear
+        // Wait for UI to settle before checking for errors
         composeTestRule.waitForIdle()
-        
-        // Count the number of "Enter at least" error messages
-        composeTestRule.waitUntilAtLeastOneExists(
-            hasText("Enter at least", substring = true),
-            TIMEOUT,
-        )
-        
-        val errorNodes = composeTestRule
-            .onAllNodes(hasText("Enter at least", substring = true))
-            .fetchSemanticsNodes()
-        
-        // Verify that we have the expected number of error messages (one per field)
-        assertTrue(
-            "Expected at least ${fieldLabels.size} error messages but found ${errorNodes.size}",
-            errorNodes.size >= fieldLabels.size,
-        )
+
+        fieldLabels.forEach { label ->
+            // Look for a container that has both the field label and its corresponding
+            // "Enter at least" error message as descendants. This ensures the error is
+            // associated with the correct field.
+            val containerMatcher =
+                hasAnyDescendant(hasText(label)) and
+                    hasAnyDescendant(hasText("Enter at least", substring = true))
+
+            composeTestRule.waitUntilAtLeastOneExists(containerMatcher, TIMEOUT)
+
+            val matchingNodes = composeTestRule
+                .onAllNodes(containerMatcher)
+                .fetchSemanticsNodes()
+
+            assertTrue(
+                "Expected a min-characters error associated with field label \"$label\", but none was found.",
+                matchingNodes.isNotEmpty(),
+            )
+        }
     }
 
     @OptIn(ExperimentalTestApi::class)
