@@ -188,6 +188,8 @@
     <string name="invalid_file">Invalid file</string>
     <string name="not_in_totp_2fa_enrollment_mode">Not in TOTP 2FA enrollment mode</string>
     <string name="openid_login_cancelled">Authentication cancelled</string>
+    <string name="openig_error_expected_intent">Expected IntentWithRequestCode</string>
+    <string name="openig_error_controller_not_bounded">OpenIdController is not bound to a lifecycle scope</string>
     <!--*******************
        END OF D2 Error Messages
     **********************-->

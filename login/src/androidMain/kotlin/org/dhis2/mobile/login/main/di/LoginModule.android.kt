@@ -2,11 +2,11 @@ package org.dhis2.mobile.login.main.di
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
-import org.dhis2.mobile.commons.auth.OpenIdController
-import org.dhis2.mobile.commons.auth.OpenIdControllerImpl
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepository
 import org.dhis2.mobile.login.accounts.data.repository.AccountRepositoryImpl
 import org.dhis2.mobile.login.accounts.ui.viewmodel.AccountsViewModel
+import org.dhis2.mobile.login.authentication.OpenIdController
+import org.dhis2.mobile.login.authentication.OpenIdControllerImpl
 import org.dhis2.mobile.login.main.data.LoginRepository
 import org.dhis2.mobile.login.main.data.LoginRepositoryImpl
 import org.koin.core.module.dsl.viewModel
@@ -26,11 +26,10 @@ internal actual val accountModule =
             )
         }
 
-        single<OpenIdController> { params ->
-            OpenIdControllerImpl(params.get())
-        }
+        single { OpenIdControllerImpl() }
+        single<OpenIdController> { get<OpenIdControllerImpl>() }
 
-        factory<LoginRepository> { params ->
+        factory<LoginRepository> { _ ->
             LoginRepositoryImpl(
                 d2 = get(),
                 authenticator = get(),
@@ -39,7 +38,7 @@ internal actual val accountModule =
                 d2ErrorMessageProvider = get(),
                 crashReportController = get(),
                 analyticActions = get(),
-                openIdController = get { parametersOf(params.get()) },
+                openIdController = get(),
                 dispatcher = get(),
                 domainErrorMapper = get(),
             )
