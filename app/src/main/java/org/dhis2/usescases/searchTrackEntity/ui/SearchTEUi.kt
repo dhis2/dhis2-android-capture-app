@@ -160,8 +160,8 @@ fun AddNewButton(
         modifier =
             Modifier
                 .requiredHeight(44.dp)
-                .testTag("ADD_NEW_BUTTON")
-                .then(modifier),
+                .then(modifier)
+                .testTag("ADD_NEW_BUTTON"),
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = SurfaceColor.PrimaryContainer,
