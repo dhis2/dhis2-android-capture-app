@@ -7,4 +7,6 @@ interface OpenIdController {
     )
 
     fun bind(context: Any)
+
+    fun unbind()
 }

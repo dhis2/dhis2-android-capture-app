@@ -135,6 +135,11 @@ class LoginActivity : ActivityGlobalAbstract() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        openIdController.unbind()
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (isPinScreenVisible) {

@@ -22,11 +22,11 @@ class OpenIdControllerImpl : OpenIdController {
     private var lifecycleScope: LifecycleCoroutineScope? = null
 
     override fun bind(context: Any) {
-        (context as? FragmentActivity)?.let {
+        (context as? FragmentActivity)?.let { activity ->
             openIdLauncher?.unregister()
-            lifecycleScope = it.lifecycleScope
+            lifecycleScope = activity.lifecycleScope
             openIdLauncher =
-                it.activityResultRegistry.register(
+                activity.activityResultRegistry.register(
                     key = "OPEN_ID_LAUNCHER",
                     contract = ActivityResultContracts.StartActivityForResult(),
                 ) { result ->
@@ -51,6 +51,13 @@ class OpenIdControllerImpl : OpenIdController {
                     }
                 }
         }
+    }
+
+    override fun unbind() {
+        openIdLauncher?.unregister()
+        openIdLauncher = null
+        lifecycleScope = null
+        onResultCallback = null
     }
 
     override fun handleIntent(
