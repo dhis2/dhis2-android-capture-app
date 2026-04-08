@@ -26,7 +26,10 @@ internal actual val accountModule =
             )
         }
 
-        single { OpenIdControllerImpl() }
+        // Register the concrete implementation for direct injection (used in LoginActivity)
+        single<OpenIdControllerImpl> { OpenIdControllerImpl() }
+
+        // Also register as interface for dependency injection
         single<OpenIdController> { get<OpenIdControllerImpl>() }
 
         factory<LoginRepository> { _ ->
