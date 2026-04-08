@@ -137,9 +137,7 @@ class LoginActivity : ActivityGlobalAbstract() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (isFinishing && !isChangingConfigurations) {
-            openIdController.unbind()
-        }
+        openIdController.unbind()
     }
 
     @Deprecated("Deprecated in Java")
