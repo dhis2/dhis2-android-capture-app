@@ -16,7 +16,6 @@ import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
 import org.dhis2.mobile.login.authentication.OpenIdController
-import org.dhis2.mobile.login.authentication.OpenIdControllerImpl
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.screen.LoginScreen
 import org.dhis2.usescases.about.PolicyView
