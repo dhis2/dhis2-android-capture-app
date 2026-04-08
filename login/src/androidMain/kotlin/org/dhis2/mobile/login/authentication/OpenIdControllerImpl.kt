@@ -22,35 +22,40 @@ class OpenIdControllerImpl : OpenIdController {
     private var lifecycleScope: LifecycleCoroutineScope? = null
 
     override fun bind(context: Any) {
-        (context as? FragmentActivity)?.let { activity ->
-            openIdLauncher?.unregister()
-            lifecycleScope = activity.lifecycleScope
-            openIdLauncher =
-                activity.activityResultRegistry.register(
-                    key = "OPEN_ID_LAUNCHER",
-                    contract = ActivityResultContracts.StartActivityForResult(),
-                ) { result ->
-                    val scope = lifecycleScope ?: return@register
-                    if (result.resultCode == RESULT_OK && result.data != null) {
-                        val intentResult =
-                            IntentWithRequestCode(
-                                intent = result.data!!,
-                                requestCode = openIDRequestCode,
-                            )
-                        scope.launch {
-                            onResultCallback?.invoke(Result.success(intentResult))
-                        }
-                    } else {
-                        scope.launch {
-                            onResultCallback?.invoke(
-                                Result.failure<IntentWithRequestCode>(
-                                    Exception(getString(Res.string.openid_login_cancelled)),
-                                ),
-                            )
-                        }
+        if (context !is FragmentActivity) {
+            unbind()
+            throw IllegalArgumentException(
+                "Context must be an instance of FragmentActivity",
+            )
+        }
+
+        openIdLauncher?.unregister()
+        lifecycleScope = context.lifecycleScope
+        openIdLauncher =
+            context.activityResultRegistry.register(
+                key = "OPEN_ID_LAUNCHER",
+                contract = ActivityResultContracts.StartActivityForResult(),
+            ) { result ->
+                val scope = lifecycleScope ?: return@register
+                if (result.resultCode == RESULT_OK && result.data != null) {
+                    val intentResult =
+                        IntentWithRequestCode(
+                            intent = result.data!!,
+                            requestCode = openIDRequestCode,
+                        )
+                    scope.launch {
+                        onResultCallback?.invoke(Result.success(intentResult))
+                    }
+                } else {
+                    scope.launch {
+                        onResultCallback?.invoke(
+                            Result.failure<IntentWithRequestCode>(
+                                Exception(getString(Res.string.openid_login_cancelled)),
+                            ),
+                        )
                     }
                 }
-        }
+            }
     }
 
     override fun unbind() {
