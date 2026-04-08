@@ -8,10 +8,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import org.dhis2.mobile.commons.resources.Res
-import org.dhis2.mobile.commons.resources.openid_login_cancelled
-import org.dhis2.mobile.commons.resources.openig_error_controller_not_bounded
-import org.dhis2.mobile.commons.resources.openig_error_expected_intent
+import org.dhis2.mobile.login.resources.Res
+import org.dhis2.mobile.login.resources.openid_error_controller_not_bounded
+import org.dhis2.mobile.login.resources.openid_error_expected_intent
+import org.dhis2.mobile.login.resources.openid_login_cancelled
 import org.hisp.dhis.android.core.user.openid.IntentWithRequestCode
 import org.jetbrains.compose.resources.getString
 
@@ -68,7 +68,7 @@ class OpenIdControllerImpl : OpenIdController {
             lifecycleScope?.launch {
                 onResult(
                     Result.failure<IntentWithRequestCode>(
-                        IllegalArgumentException(getString(Res.string.openig_error_expected_intent)),
+                        IllegalArgumentException(getString(Res.string.openid_error_expected_intent)),
                     ),
                 )
             } ?: throw IllegalStateException()
@@ -80,7 +80,7 @@ class OpenIdControllerImpl : OpenIdController {
             lifecycleScope?.launch {
                 onResult(
                     Result.failure(
-                        IllegalStateException(getString(Res.string.openig_error_controller_not_bounded)),
+                        IllegalStateException(getString(Res.string.openid_error_controller_not_bounded)),
                     ),
                 )
             } ?: throw IllegalStateException()
