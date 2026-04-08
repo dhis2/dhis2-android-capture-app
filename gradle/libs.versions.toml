@@ -94,6 +94,7 @@ browser = "1.9.0"
 biometric = "1.1.0"
 coil = "3.3.0"
 cyclonedx = "2.1.0"
+materialIconsExtended = "1.7.3"
 
 [libraries]
 gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
@@ -215,6 +216,14 @@ ktxml = { module = "org.kobjects.ktxml:core", version.ref = "ktxml" }
 commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 coil = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil"}
 coil-network = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil"}
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "composePluginVersion" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "composePluginVersion" }
+compose-ui = { group = "or.jetbrains.compose.ui", name = "ui", version.ref = "composePluginVersion" }
+compose-ui-uiToolingPreview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composePluginVersion" }
+compose-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "composePluginVersion" }
+compose-components-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "composePluginVersion" }
+compose-desktop-common = { group = "org.jetbrains.compose.desktop", name = "desktop", version.ref = "composePluginVersion" }
+compose-material3-iconsExtendend = { group = "org.jetbrains.compose.material3", name = "material3-icons-extended", version.ref = "materialIconsExtended" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
