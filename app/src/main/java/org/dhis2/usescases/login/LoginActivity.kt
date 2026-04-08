@@ -15,6 +15,7 @@ import org.dhis2.commons.Constants.SESSION_DIALOG_RQ
 import org.dhis2.commons.dialogs.CustomDialog
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.data.server.OpenIdSession
+import org.dhis2.mobile.login.authentication.OpenIdController
 import org.dhis2.mobile.login.authentication.OpenIdControllerImpl
 import org.dhis2.mobile.login.main.ui.navigation.AppLinkNavigation
 import org.dhis2.mobile.login.main.ui.screen.LoginScreen
@@ -43,7 +44,7 @@ class LoginActivity : ActivityGlobalAbstract() {
     lateinit var resourceManager: ResourceManager
 
     private val appLinkNavigation: AppLinkNavigation by inject()
-    private val openIdController: OpenIdControllerImpl by inject()
+    private val openIdController: OpenIdController by inject()
 
     private var isPinScreenVisible = false
 
