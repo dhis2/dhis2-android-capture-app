@@ -121,7 +121,16 @@ class SyncStatusController {
     }
 
     suspend fun restore() {
-        downloadStatus.emit(SyncStatusData())
+        if (downloadStatus.value.running == true) {
+            downloadStatus.emit(
+                SyncStatusData(
+                    isInitialSync = true,
+                    running = true,
+                ),
+            )
+        } else {
+            downloadStatus.emit(SyncStatusData())
+        }
     }
 
     suspend fun onNetworkUnavailable() {
