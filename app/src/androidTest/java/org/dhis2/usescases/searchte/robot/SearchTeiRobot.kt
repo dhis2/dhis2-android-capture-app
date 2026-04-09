@@ -287,7 +287,6 @@ class SearchTeiRobot(val composeTestRule: ComposeTestRule) : BaseRobot() {
         // Ensure keyboard is fully closed and UI has settled
         closeKeyboard()
         composeTestRule.waitForIdle()
-        
         // The reset button in InputText has the test tag "INPUT_TEXT_RESET_BUTTON"
         composeTestRule.waitUntilAtLeastOneExists(hasTestTag("INPUT_TEXT_RESET_BUTTON"), TIMEOUT)
         // Click all reset buttons to clear all fields
